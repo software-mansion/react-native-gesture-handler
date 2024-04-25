@@ -5,13 +5,25 @@ sidebar_label: Pan gesture
 sidebar_position: 3
 ---
 
+import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import PanGestureBasic from '@site/static/examples/PanGestureBasic';
 import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasic';
 
-<InteractiveExample
-component={<PanGestureBasic/>}
-src={PanGestureBasicSrc}
-/>
+<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<PanGestureBasic/>}
+    src={PanGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</ResponsiveWrapper>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -27,13 +39,13 @@ Configurations such as a minimum initial distance, specific vertical or horizont
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
-  </video>
-</div>
+<ResponsiveWrapper>
+  <div className={appearOnMobile} style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+</ResponsiveWrapper>
 
 <samp id="PanGestureBasicSrc">Pan Gesture</samp>
 

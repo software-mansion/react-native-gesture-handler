@@ -7,7 +7,7 @@ import {
 } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 
-const COLORS = ['#fa7f7c', '#b58df1', '#ffe780', '#82cab2'];
+const COLORS = ['#b58df1', '#fa7f7c', '#ffe780', '#82cab2'];
 
 export default function App() {
   const [color, setColor] = React.useState(COLORS[0]);

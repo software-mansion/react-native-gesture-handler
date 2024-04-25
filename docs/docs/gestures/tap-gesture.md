@@ -5,13 +5,25 @@ sidebar_label: Tap gesture
 sidebar_position: 4
 ---
 
+import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import TapGestureBasic from '@site/static/examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
 
-<InteractiveExample
-component={<TapGestureBasic/>}
-src={TapGestureBasicSrc}
-/>
+<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<TapGestureBasic/>}
+    src={TapGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</ResponsiveWrapper>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -26,13 +38,13 @@ For example, you might configure tap gesture recognizers to detect single taps, 
 
 In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
-  </video>
-</div>
+<ResponsiveWrapper>
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+</ResponsiveWrapper>
 
 <samp id="TapGestureBasic">Tap Gesture</samp>
 

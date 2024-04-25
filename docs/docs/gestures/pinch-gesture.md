@@ -5,13 +5,25 @@ sidebar_label: Pinch gesture
 sidebar_position: 7
 ---
 
+import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import PinchGestureBasic from '@site/static/examples/PinchGestureBasic';
 import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestureBasicSrc';
 
-<InteractiveExample
-component={<PinchGestureBasic/>}
-src={PinchGestureBasicSrc}
-/>
+<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pinch.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<PinchGestureBasic/>}
+    src={PinchGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</ResponsiveWrapper>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -28,13 +40,13 @@ Similarly, the scale factor decreases as the distance between the fingers decrea
 Pinch gestures are used most commonly to change the size of objects or content onscreen.
 For example, map views use pinch gestures to change the zoom level of the map.
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/pinch.mp4")} type="video/mp4"/>
-  </video>
-</div>
+<ResponsiveWrapper>
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pinch.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+</ResponsiveWrapper>
 
 <samp id="PinchGestureBasicSrc">Pinch Gesture</samp>
 

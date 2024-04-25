@@ -1,0 +1,17 @@
+.vanishOnMobile {
+    display: flex !important;
+}
+
+.appearOnMobile {
+    display: none !important;
+}
+
+@media (max-width: 1440px) {
+    .vanishOnMobile {
+        display: none !important;
+    }
+
+    .appearOnMobile {
+        display: flex !important;
+    }
+}

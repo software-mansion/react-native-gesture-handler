@@ -5,13 +5,25 @@ sidebar_label: Long press gesture
 sidebar_position: 5
 ---
 
-<InteractiveExample
-component={<LongPressGestureBasic/>}
-src={LongPressGestureBasicSrc}
-/>
+import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
 import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
+
+<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<LongPressGestureBasic/>}
+    src={LongPressGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</ResponsiveWrapper>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -21,13 +33,13 @@ A discrete gesture that activates when the corresponding view is pressed for a s
 This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](/docs/gestures/long-press-gesture#mindurationvalue-number) or if the finger is moved further than the [allowable distance](/docs/gestures/long-press-gesture#maxdistancevalue-number).
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
-  </video>
-</div>
+<ResponsiveWrapper>
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+</ResponsiveWrapper>
 
 <samp id="LongPressGestureBasic">Long Press Gesture</samp>
 

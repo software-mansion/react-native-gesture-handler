@@ -5,13 +5,25 @@ sidebar_label: Hover gesture
 sidebar_position: 9
 ---
 
+import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
-<InteractiveExample
-component={<HoverGestureBasic/>}
-src={HoverGestureBasicSrc}
-/>
+<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<HoverGestureBasic/>}
+    src={HoverGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</ResponsiveWrapper>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -22,13 +34,13 @@ A continuous gesture that can recognize hovering above the view it's attached to
 
 On iOS additional visual effects may be configured.
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 375}}>
-    <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
-  </video>
-</div>
+<ResponsiveWrapper>
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+</ResponsiveWrapper>
 
 <samp id="HoverGestureBasic">Hover Gesture</samp>
 

@@ -44,14 +44,14 @@ export default function App() {
       containerRef.current.measureInWindow((x, y, w, h) => {
         width.value = w;
         height.value = h;
+
+        boxWidth.value = clamp(
+          boxWidth.value,
+          100,
+          Math.min(w, h)
+        );
       });
     }
-
-    boxWidth.value = clamp(
-      boxWidth.value,
-      100,
-      Math.min(width.value, height.value)
-    );
   }
 
   React.useEffect(() => {

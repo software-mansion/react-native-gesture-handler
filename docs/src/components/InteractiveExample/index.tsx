@@ -21,6 +21,7 @@ interface Props {
   label?: string;
   showCode?: boolean; // whether to show code by default
   larger?: boolean; // should the view be enlarged?
+  disableMarginBottom?: boolean;
 }
 
 export default function InteractiveExample({
@@ -29,6 +30,7 @@ export default function InteractiveExample({
   label,
   showCode = false,
   larger = false,
+  disableMarginBottom
 }: Props) {
   const [_, copy] = useCopyToClipboard();
   const [key, setKey] = React.useState(0);
@@ -47,7 +49,8 @@ export default function InteractiveExample({
           className={clsx(
             styles.container,
             larger && styles.largerContainer,
-            !showPreview ? styles.code : ''
+            !showPreview ? styles.code : '',
+            !disableMarginBottom ? styles.marginBottom : ''
           )}
           data-ispreview={showPreview}>
           {showPreview && prefersReducedMotion && <ReducedMotionWarning />}
@@ -88,37 +91,35 @@ export default function InteractiveExample({
               />
             </div>
           )}
-          <div className={styles.previewContainer}>
-            {showPreview ? (
-              <>
-                <React.Fragment key={key}>{component}</React.Fragment>
+          {showPreview ? (
+            <>
+              <React.Fragment key={key}>{component}</React.Fragment>
 
-                <div
-                  className={clsx(
-                    styles.buttonsContainer,
-                    styles.lowerButtonsContainer
-                  )}>
-                  <div className={styles.iconStub} />
-                  {label && <div className={styles.label}>{label}</div>}
-                  <AnimableIcon
-                    icon={<Reset />}
-                    iconDark={<ResetDark />}
-                    animation={Animation.FADE_IN_OUT}
-                    onClick={(actionPerformed, setActionPerformed) => {
-                      if (!actionPerformed) {
-                        resetExample();
-                        setActionPerformed(true);
-                      }
-                    }}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className={styles.interactiveCodeBlock}>
-                <CodeBlock language="jsx">{src}</CodeBlock>
+              <div
+                className={clsx(
+                  styles.buttonsContainer,
+                  styles.lowerButtonsContainer
+                )}>
+                <div className={styles.iconStub} />
+                {label && <div className={styles.label}>{label}</div>}
+                <AnimableIcon
+                  icon={<Reset />}
+                  iconDark={<ResetDark />}
+                  animation={Animation.FADE_IN_OUT}
+                  onClick={(actionPerformed, setActionPerformed) => {
+                    if (!actionPerformed) {
+                      resetExample();
+                      setActionPerformed(true);
+                    }
+                  }}
+                />
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className={styles.interactiveCodeBlock}>
+              <CodeBlock language="jsx">{src}</CodeBlock>
+            </div>
+          )}
         </div>
       )}
     </BrowserOnly>
