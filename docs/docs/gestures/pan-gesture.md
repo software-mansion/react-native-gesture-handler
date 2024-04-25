@@ -10,7 +10,7 @@ import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/com
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import PanGestureBasic from '@site/static/examples/PanGestureBasic';
-import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasic';
+import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasicSrc';
 
 <ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
