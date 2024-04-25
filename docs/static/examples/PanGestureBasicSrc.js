@@ -11,7 +11,6 @@ import {
 import { StyleSheet, Dimensions } from 'react-native';
 
 function clamp(val, min, max) {
-  'worklet';
   return Math.min(Math.max(val, min), max);
 }
 
@@ -50,7 +49,8 @@ export default function App() {
         -maxTranslateY,
         maxTranslateY
       );
-    });
+    })
+    .runOnJS(true);
 
   return (
     <GestureHandlerRootView style={styles.container}>
