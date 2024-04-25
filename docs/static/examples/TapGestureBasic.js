@@ -1,26 +1,43 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const COLORS = ['#b58df1', '#fa7f7c', '#ffe780', '#82cab2'];
 
 export default function App() {
-  const [color, setColor] = React.useState(COLORS[0]);
+  const colorIndex = useSharedValue(1);
 
   const tap = Gesture.Tap().onEnd(() => {
-    const nextColorIndex = (COLORS.indexOf(color) + 1) % COLORS.length;
-    setColor(COLORS[nextColorIndex]);
+    if (colorIndex.value > COLORS.length) {
+      colorIndex.value = colorIndex.value % 1 === 0 ? 1 : colorIndex.value % 1;
+    }
+
+    const nextIndex = Math.ceil(colorIndex.value + 1);
+    colorIndex.value = withTiming(nextIndex, { duration: 1000 });
   });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      colorIndex.value,
+      [0, ...COLORS.map((_, i) => i + 1), COLORS.length + 1],
+      [COLORS[COLORS.length - 1], ...COLORS, COLORS[0]]
+    ),
+  }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={tap}>
-        <View style={{ ...styles.box, backgroundColor: color }}></View>
+        <Animated.View style={[styles.box, animatedStyle]}></Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
   );
