@@ -343,9 +343,9 @@ export default function createHandler<
         const actionType = (() => {
           if (
             (this.props?.onGestureEvent &&
-              'current' in this.props.onGestureEvent) ||
+              'workletEventHandler' in this.props.onGestureEvent) ||
             (this.props?.onHandlerStateChange &&
-              'current' in this.props.onHandlerStateChange)
+              'workletEventHandler' in this.props.onHandlerStateChange)
           ) {
             // Reanimated worklet
             return ActionType.REANIMATED_WORKLET;
