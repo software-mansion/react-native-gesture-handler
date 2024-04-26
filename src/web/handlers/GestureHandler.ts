@@ -23,7 +23,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
-  protected shouldCancellWhenOutside = false;
+  protected shouldCancelWhenOutside = false;
   protected hasCustomActivationCriteria = false;
   protected enabled = false;
 
@@ -176,13 +176,13 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
   }
 
-  public activate(_force = false) {
+  public activate(force = false) {
     if (
-      this.currentState === State.UNDETERMINED ||
-      this.currentState === State.BEGAN
+      (this.config.manualActivation !== true || force) &&
+      (this.currentState === State.UNDETERMINED ||
+        this.currentState === State.BEGAN)
     ) {
       this.delegate.onActivate();
-
       this.moveToState(State.ACTIVE);
     }
   }
@@ -317,7 +317,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
   }
   protected onPointerLeave(event: AdaptedEvent): void {
-    if (this.shouldCancellWhenOutside) {
+    if (this.shouldCancelWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
           this.cancel();
@@ -362,7 +362,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (
       this.enabled &&
       this.active &&
-      (!out || (out && !this.shouldCancellWhenOutside))
+      (!out || (out && !this.shouldCancelWhenOutside))
     ) {
       this.sendEvent(this.currentState, this.currentState);
     }
@@ -805,11 +805,11 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
-    this.shouldCancellWhenOutside = shouldCancel;
+    this.shouldCancelWhenOutside = shouldCancel;
   }
 
   protected getShouldCancelWhenOutside(): boolean {
-    return this.shouldCancellWhenOutside;
+    return this.shouldCancelWhenOutside;
   }
 
   public getPointerType(): PointerType {
