@@ -43,7 +43,9 @@ export class PanGesture extends ContinousBaseGesture<
     this.handlerName = 'PanGestureHandler';
   }
 
-  activeOffsetY(offset: number | number[]) {
+  activeOffsetY(
+    offset: number | [activeOffsetYStart: number, activeOffsetYEnd: number]
+  ) {
     if (Array.isArray(offset)) {
       this.config.activeOffsetYStart = offset[0];
       this.config.activeOffsetYEnd = offset[1];
@@ -55,7 +57,9 @@ export class PanGesture extends ContinousBaseGesture<
     return this;
   }
 
-  activeOffsetX(offset: number | number[]) {
+  activeOffsetX(
+    offset: number | [activeOffsetXStart: number, activeOffsetXEnd: number]
+  ) {
     if (Array.isArray(offset)) {
       this.config.activeOffsetXStart = offset[0];
       this.config.activeOffsetXEnd = offset[1];
@@ -67,7 +71,9 @@ export class PanGesture extends ContinousBaseGesture<
     return this;
   }
 
-  failOffsetY(offset: number | number[]) {
+  failOffsetY(
+    offset: number | [failOffsetYStart: number, failOffsetYEnd: number]
+  ) {
     if (Array.isArray(offset)) {
       this.config.failOffsetYStart = offset[0];
       this.config.failOffsetYEnd = offset[1];
@@ -79,7 +85,9 @@ export class PanGesture extends ContinousBaseGesture<
     return this;
   }
 
-  failOffsetX(offset: number | number[]) {
+  failOffsetX(
+    offset: number | [failOffsetXStart: number, failOffsetXEnd: number]
+  ) {
     if (Array.isArray(offset)) {
       this.config.failOffsetXStart = offset[0];
       this.config.failOffsetXEnd = offset[1];
