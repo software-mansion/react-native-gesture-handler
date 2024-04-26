@@ -17,7 +17,7 @@ export default function DocItemMetadata() {
       title={metadata.title}
       description={metadata.description}
       keywords={frontMatter.keywords}
-      image={`docs/og/${
+      image={`docs/img/og/${
         ogImage === '' || !ogImage ? 'React Native Reanimated' : ogImage
       }.png`}
     />
