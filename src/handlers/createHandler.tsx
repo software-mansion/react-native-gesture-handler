@@ -341,18 +341,22 @@ export default function createHandler<
         });
 
         const actionType = (() => {
-          if (
-            (this.props?.onGestureEvent &&
-              'workletEventHandler' in this.props.onGestureEvent) ||
-            (this.props?.onHandlerStateChange &&
-              'workletEventHandler' in this.props.onHandlerStateChange)
-          ) {
+          const onGestureEvent = this.props?.onGestureEvent;
+          const isGestureHandlerWorklet =
+            onGestureEvent &&
+            ('current' in onGestureEvent ||
+              'workletEventHandler' in onGestureEvent);
+          const onHandlerStateChange = this.props?.onHandlerStateChange;
+          const isStateChangeWorklet =
+            onHandlerStateChange &&
+            ('current' in onHandlerStateChange ||
+              'workletEventHandler' in onHandlerStateChange);
+          const isReanimatedHandler =
+            isGestureHandlerWorklet || isStateChangeWorklet;
+          if (isReanimatedHandler) {
             // Reanimated worklet
             return ActionType.REANIMATED_WORKLET;
-          } else if (
-            this.props?.onGestureEvent &&
-            '__isNative' in this.props.onGestureEvent
-          ) {
+          } else if (onGestureEvent && '__isNative' in onGestureEvent) {
             // Animated.event with useNativeDriver: true
             return ActionType.NATIVE_ANIMATED_EVENT;
           } else {
