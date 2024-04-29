@@ -347,12 +347,12 @@ export default function createHandler<
             ('current' in onGestureEvent ||
               'workletEventHandler' in onGestureEvent);
           const onHandlerStateChange = this.props?.onHandlerStateChange;
-          const isStateChangeWorklet =
+          const isStateChangeHandlerWorklet =
             onHandlerStateChange &&
             ('current' in onHandlerStateChange ||
               'workletEventHandler' in onHandlerStateChange);
           const isReanimatedHandler =
-            isGestureHandlerWorklet || isStateChangeWorklet;
+            isGestureHandlerWorklet || isStateChangeHandlerWorklet;
           if (isReanimatedHandler) {
             // Reanimated worklet
             return ActionType.REANIMATED_WORKLET;
