@@ -40,16 +40,30 @@ export class ForceTouchGesture extends ContinousBaseGesture<
     this.handlerName = 'ForceTouchGestureHandler';
   }
 
+  /**
+   * A minimal pressure that is required before gesture can activate.
+   * Should be a value from range [0.0, 1.0]. Default is 0.2.
+   * @param force
+   */
   minForce(force: number) {
     this.config.minForce = force;
     return this;
   }
 
+  /**
+   * A maximal pressure that could be applied for gesture.
+   * If the pressure is greater, gesture fails. Should be a value from range [0.0, 1.0].
+   * @param force
+   */
   maxForce(force: number) {
     this.config.maxForce = force;
     return this;
   }
 
+  /**
+   * Value defining if haptic feedback has to be performed on activation.
+   * @param value
+   */
   feedbackOnActivation(value: boolean) {
     this.config.feedbackOnActivation = value;
     return this;

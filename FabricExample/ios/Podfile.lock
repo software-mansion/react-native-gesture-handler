@@ -1399,9 +1399,9 @@ SPEC CHECKSUMS:
   React-perflogger: 271f1111779fef70f9502d1d38da5132e5585230
   React-RCTActionSheet: 5d6fb9adb11ab1bfbce6695a2b785767e4658c53
   React-RCTAnimation: 86ace32c56e69b3822e7e5184ea83a79d47fc7b9
-  React-RCTAppDelegate: 72f997b4e418d9db8715f12b2edc002fd583e9ec
+  React-RCTAppDelegate: 74b45c4e3c1c23db88385d74cf4f5a8500694527
   React-RCTBlob: fb91c62a549f004e251235c65c665c6890a923a3
-  React-RCTFabric: 593660526e2b6b59857acf9585de1247660e9b68
+  React-RCTFabric: af6b9bc4aa9dfa0af1a1bcf5d8e5c5b1f17ae99c
   React-RCTImage: b482f07cfdbe8e413edbf9d85953cecdb569472c
   React-RCTLinking: fbd73a66cab34df69b2389c17f200e4722890fd9
   React-RCTNetwork: fbdd716fbd6e53feb6d8e00eeb85e8184ad42ac8
@@ -1417,9 +1417,9 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 7fe561d179b97cecd0c2bec0bbd08f9fd8581c26
   React-utils: f013537c3371270d2095bff1d594d00d4bc9261b
   ReactCommon: 2cde697fd80bd31da1d6448d25a5803088585219
-  RNGestureHandler: 9265c3b902cd8408ba4376b1a34d9708a6da4ac3
+  RNGestureHandler: 4d271a5d9178403bd8dae0d853e2be21cf53743c
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Yoga: 56f906bf6c11c931588191dde1229fd3e4e3d557
+  Yoga: ff1d575b119f510a5de23c22a794872562078ccf
 
 PODFILE CHECKSUM: 2938316990faaa0507be8ddd9716fed018b28bde
 
