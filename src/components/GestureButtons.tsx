@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
   Animated,
-  Platform,
   processColor,
   StyleSheet,
   StyleProp,
   ViewStyle,
-} from 'react-native';
+  Platform,
+} from '../ReactCompat';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';

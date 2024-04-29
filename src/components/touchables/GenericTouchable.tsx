@@ -2,12 +2,12 @@ import * as React from 'react';
 import { Component } from 'react';
 import {
   Animated,
-  Platform,
   StyleProp,
   ViewStyle,
   TouchableWithoutFeedbackProps,
   Insets,
-} from 'react-native';
+  Platform,
+} from '../../ReactCompat';
 
 import { State } from '../../State';
 import { BaseButton } from '../GestureButtons';

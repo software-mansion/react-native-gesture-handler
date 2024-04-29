@@ -3,8 +3,6 @@ import { initialize } from './init';
 export { Directions } from './Directions';
 export { State } from './State';
 export { PointerType } from './PointerType';
-export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
-export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
   // event types
   GestureEvent,
@@ -84,38 +82,6 @@ export type {
 } from './handlers/gestures/gestureComposition';
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
-export type {
-  RawButtonProps,
-  BaseButtonProps,
-  RectButtonProps,
-  BorderlessButtonProps,
-} from './components/GestureButtons';
-export {
-  RawButton,
-  BaseButton,
-  RectButton,
-  BorderlessButton,
-  PureNativeButton,
-} from './components/GestureButtons';
-export type {
-  TouchableHighlightProps,
-  TouchableOpacityProps,
-  TouchableWithoutFeedbackProps,
-} from './components/touchables';
-export {
-  TouchableHighlight,
-  TouchableNativeFeedback,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from './components/touchables';
-export {
-  ScrollView,
-  Switch,
-  TextInput,
-  DrawerLayoutAndroid,
-  FlatList,
-  RefreshControl,
-} from './components/GestureComponents';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   //events
@@ -156,21 +122,11 @@ export type {
   BorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
-export type { SwipeableProps } from './components/Swipeable';
-export { default as Swipeable } from './components/Swipeable';
-export type {
-  DrawerLayoutProps,
-  DrawerPosition,
-  DrawerState,
-  DrawerType,
-  DrawerLockMode,
-  DrawerKeyboardDismissMode,
-} from './components/DrawerLayout';
-export { default as DrawerLayout } from './components/DrawerLayout';
-
 export {
   enableExperimentalWebImplementation,
   enableLegacyWebImplementation,
 } from './EnableNewWebImplementation';
+
+export * from './components';
 
 initialize();

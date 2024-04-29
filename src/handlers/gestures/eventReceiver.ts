@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
+import { DeviceEventEmitter, EmitterSubscription } from '../../ReactCompat';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import {

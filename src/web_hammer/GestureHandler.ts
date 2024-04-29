@@ -1,7 +1,7 @@
 /* eslint-disable eslint-comments/no-unlimited-disable */
 /* eslint-disable */
 import Hammer from '@egjs/hammerjs';
-import { findNodeHandle } from 'react-native';
+import { findNodeHandle } from '../ReactCompat';
 
 import { State } from '../State';
 import { EventMap } from './constants';
@@ -40,7 +40,7 @@ let gestureInstances = 0;
 abstract class GestureHandler {
   public handlerTag: any;
   public isGestureRunning = false;
-  public view: number | null = null;
+  public view: Element | number | null = null;
   protected hasCustomActivationCriteria: boolean;
   protected hasGestureFailed = false;
   protected hammer: HammerManager | null = null;
