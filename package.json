@@ -152,5 +152,6 @@
     "android": {
       "javaPackageName": "com.swmansion.gesturehandler"
     }
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

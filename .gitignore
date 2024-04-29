@@ -57,7 +57,7 @@ jsconfig.json
 .vscode
 
 # Yarn
-.yarn
+.yarn/*
 !.yarn/releases
 
 # TS
