@@ -20,6 +20,7 @@ export default class PanGestureHandler extends GestureHandler {
     'failOffsetYEnd',
     'minVelocityX',
     'minVelocityY',
+    'minVelocity',
   ];
 
   public velocityX = 0;
