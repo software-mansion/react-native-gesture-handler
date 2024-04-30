@@ -53,7 +53,6 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
-@synthesize bridge = _bridge;
 @synthesize dispatchToJSThread = _dispatchToJSThread;
 #endif // RCT_NEW_ARCH_ENABLED
 
@@ -133,14 +132,14 @@ void decorateRuntime(jsi::Runtime &runtime)
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
 {
   dispatch_block_t block = ^{
-    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)[RCTBridge currentBridge];
+    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
     auto runtime = (jsi::Runtime *)cxxBridge.runtime;
     decorateRuntime(*runtime);
   };
   if (_dispatchToJSThread) {
     _dispatchToJSThread(block);
   } else {
-    [[RCTBridge currentBridge] dispatchBlock:block queue:RCTJSThread];
+    [self.bridge dispatchBlock:block queue:RCTJSThread];
   }
 
   return @true;
