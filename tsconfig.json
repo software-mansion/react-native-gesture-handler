@@ -21,7 +21,7 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
 
-    "moduleSuffixes": [".native", ""]
+    "moduleSuffixes": [".native.*", ""]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
 }
