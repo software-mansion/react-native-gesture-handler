@@ -155,6 +155,10 @@ export abstract class BaseGesture<
       : [gesture];
   }
 
+  /**
+   * Sets a `ref` to the gesture object, allowing for interoperability with the old API.
+   * @param ref
+   */
   withRef(ref: React.MutableRefObject<GestureType | undefined>) {
     this.config.ref = ref;
     return this;
@@ -166,18 +170,32 @@ export abstract class BaseGesture<
     return callback.__workletHash !== undefined;
   }
 
+  /**
+   * Set the callback that is being called when given gesture handler starts receiving touches.
+   * At the moment of this callback the handler is in `BEGAN` state and we don't know yet if it will recognize the gesture at all.
+   * @param callback
+   */
   onBegin(callback: (event: GestureStateChangeEvent<EventPayloadT>) => void) {
     this.handlers.onBegin = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
     return this;
   }
 
+  /**
+   * Set the callback that is being called when the gesture is recognized by the handler and it transitions to the `ACTIVE` state.
+   * @param callback
+   */
   onStart(callback: (event: GestureStateChangeEvent<EventPayloadT>) => void) {
     this.handlers.onStart = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.START] = this.isWorklet(callback);
     return this;
   }
 
+  /**
+   * Set the callback that is being called when the gesture that was recognized by the handler finishes and handler reaches `END` state.
+   * It will be called only if the handler was previously in the `ACTIVE` state.
+   * @param callback
+   */
   onEnd(
     callback: (
       event: GestureStateChangeEvent<EventPayloadT>,
@@ -190,6 +208,10 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
+   * @param callback
+   */
   onFinalize(
     callback: (
       event: GestureStateChangeEvent<EventPayloadT>,
@@ -202,6 +224,10 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Set the `onTouchesDown` callback which is called every time a pointer is placed on the screen.
+   * @param callback
+   */
   onTouchesDown(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesDown = callback;
@@ -211,6 +237,10 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Set the `onTouchesMove` callback which is called every time a pointer is moved on the screen.
+   * @param callback
+   */
   onTouchesMove(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesMove = callback;
@@ -220,6 +250,10 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Set the `onTouchesUp` callback which is called every time a pointer is lifted from the screen.
+   * @param callback
+   */
   onTouchesUp(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesUp = callback;
@@ -229,6 +263,10 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Set the `onTouchesCancelled` callback which is called every time a pointer stops being tracked, for example when the gesture finishes.
+   * @param callback
+   */
   onTouchesCancelled(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesCancelled = callback;
@@ -238,36 +276,77 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Indicates whether the given handler should be analyzing stream of touch events or not.
+   * @param enabled
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#enabledvalue-boolean
+   */
   enabled(enabled: boolean) {
     this.config.enabled = enabled;
     return this;
   }
 
+  /**
+   * When true the handler will cancel or fail recognition (depending on its current state) whenever the finger leaves the area of the connected view.
+   * @param value
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#shouldcancelwhenoutsidevalue-boolean
+   */
   shouldCancelWhenOutside(value: boolean) {
     this.config.shouldCancelWhenOutside = value;
     return this;
   }
 
+  /**
+   * This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
+   * When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+   * @param hitSlop
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#hitslopsettings
+   */
   hitSlop(hitSlop: HitSlop) {
     this.config.hitSlop = hitSlop;
     return this;
   }
 
+  /**
+   * #### Web only
+   * This parameter allows to specify which `cursor` should be used when gesture activates.
+   * Supports all CSS cursor values (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
+   * @param activeCursor
+   */
   activeCursor(activeCursor: ActiveCursor) {
     this.config.activeCursor = activeCursor;
     return this;
   }
 
+  /**
+   * #### Web & Android only
+   * Allows users to choose which mouse button should handler respond to.
+   * Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`.
+   * Default value is set to `MouseButton.LEFT`.
+   * @param mouseButton
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#mousebuttonvalue-mousebutton-web--android-only
+   */
   mouseButton(mouseButton: MouseButton) {
     this.config.mouseButton = mouseButton;
     return this;
   }
 
+  /**
+   * When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called.
+   * This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
+   * Defaults to `false`.
+   * @param runOnJS
+   */
   runOnJS(runOnJS: boolean) {
     this.config.runOnJS = runOnJS;
     return this;
   }
 
+  /**
+   * Allows gestures across different components to be recognized simultaneously.
+   * @param gestures
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-composition/#simultaneouswithexternalgesture
+   */
   simultaneousWithExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
       this.addDependency('simultaneousWith', gesture);
@@ -275,6 +354,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Allows to delay activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
+   * @param gestures
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-composition/#requireexternalgesturetofail
+   */
   requireExternalGestureToFail(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
       this.addDependency('requireToFail', gesture);
@@ -282,6 +366,11 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Works similarily to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being one-to-many relation, it's many-to-one.
+   * @param gestures
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-composition/#blocksexternalgesture
+   */
   blocksExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
       this.addDependency('blocksHandlers', gesture);
@@ -289,11 +378,21 @@ export abstract class BaseGesture<
     return this;
   }
 
+  /**
+   * Sets a `testID` property for gesture object, allowing for querying for it in tests.
+   * @param id
+   */
   withTestId(id: string) {
     this.config.testId = id;
     return this;
   }
 
+  /**
+   * #### iOS only
+   * When `true`, the handler will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes `ACTIVE`.
+   * Default value is `true`.
+   * @param value
+   */
   cancelsTouchesInView(value: boolean) {
     this.config.cancelsTouchesInView = value;
     return this;
@@ -332,12 +431,21 @@ export abstract class ContinousBaseGesture<
   EventPayloadT extends Record<string, unknown>,
   EventChangePayloadT extends Record<string, unknown>
 > extends BaseGesture<EventPayloadT> {
+  /**
+   * Set the callback that is being called every time the gesture receives an update while it's active.
+   * @param callback
+   */
   onUpdate(callback: (event: GestureUpdateEvent<EventPayloadT>) => void) {
     this.handlers.onUpdate = callback;
     this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
     return this;
   }
 
+  /**
+   * Set the callback that is being called every time the gesture receives an update while it's active.
+   * This callback will receive information about change in value in relation to the last received event.
+   * @param callback
+   */
   onChange(
     callback: (
       event: GestureUpdateEvent<EventPayloadT & EventChangePayloadT>
@@ -348,6 +456,11 @@ export abstract class ContinousBaseGesture<
     return this;
   }
 
+  /**
+   * When `true` the handler will not activate by itself even if its activation criteria are met.
+   * Instead you can manipulate its state using state manager.
+   * @param manualActivation
+   */
   manualActivation(manualActivation: boolean) {
     this.config.manualActivation = manualActivation;
     return this;
