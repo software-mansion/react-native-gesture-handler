@@ -6,6 +6,12 @@
 
   background-color: var(--swm-off-background);
   border: 1px solid var(--swm-border);
+
+  width: 100%;
+  align-self: stretch;
+}
+
+.marginBottom {
   margin-bottom: var(--ifm-leading);
 }
 
@@ -15,7 +21,7 @@
 
 /* Preferred height in code section of container. */
 .container[data-ispreview='false'] {
-  height: 400px;
+  height: 360px;
 }
 
 /* Classes used to omit default docusaurus styling. */
@@ -23,8 +29,13 @@
   box-shadow: none;
 }
 
+.interactiveCodeBlock {
+  overflow-y: auto;
+}
+
 .interactiveCodeBlock [class*='codeBlockContent'] pre {
   border: none;
+  padding: 16px 20px;
 }
 
 .interactiveCodeBlock [class*='codeBlockContent'] code {
@@ -32,6 +43,7 @@
   width: 100%;
   padding: 0;
   border: none;
+  text-wrap: wrap;
 }
 
 /* Hide default action buttons, displayed by Docusaurus */
@@ -93,9 +105,9 @@
   }
 }
 
-.previewContainer {
+/* .previewContainer {
   flex: 1 1 auto;
-}
+} */
 
 /* Style preview only when user is in the 'code' section. */
 .container[data-ispreview='false'] .previewContainer {

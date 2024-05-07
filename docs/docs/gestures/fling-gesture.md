@@ -5,12 +5,24 @@ sidebar_label: Fling gesture
 sidebar_position: 8
 ---
 
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
-  </video>
+import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
+import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasicSrc';
+
+<div style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<FlingGestureBasic/>}
+    src={FlingGestureBasicSrc}
+    disableMarginBottom={true}
+  />
 </div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -21,6 +33,14 @@ A discrete gesture that activates when the movement is sufficiently long and fas
 Gesture gets [ACTIVE](/docs/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
 When gesture gets activated it will turn into [END](/docs/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+<samp id="FlingGestureBasicSrc">Fling Gesture</samp>
 
 ## Reference
 

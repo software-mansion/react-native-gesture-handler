@@ -21,6 +21,14 @@ const config = {
   customFields: {
     shortTitle: 'Gesture Handler',
   },
+
+  scripts: [
+    {
+      src: '/react-native-gesture-handler/js/snack-helpers.js',
+      async: true,
+    },
+  ],
+
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 

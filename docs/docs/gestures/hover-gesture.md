@@ -5,12 +5,25 @@ sidebar_label: Hover gesture
 sidebar_position: 9
 ---
 
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 375}}>
-    <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
-  </video>
+import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
+import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
+
+<div style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<HoverGestureBasic/>}
+    src={HoverGestureBasicSrc}
+    disableMarginBottom={true}
+  />
 </div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -21,6 +34,14 @@ import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callb
 A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional visual effects may be configured.
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+<samp id="HoverGestureBasic">Hover Gesture</samp>
 
 ## Reference
 
