@@ -1,5 +1,2 @@
-// customDirectEventTypes doesn't exist in react-native-web, therefore importing it
-// directly in createHandler.tsx would end in crash.
-const customDirectEventTypes = {};
-
-export { customDirectEventTypes };
+// @ts-ignore - its taken straight from RN
+export { customDirectEventTypes } from 'react-native/Libraries/Renderer/shims/ReactNativeViewConfigRegistry';
