@@ -23,7 +23,7 @@ export default function App() {
     }
 
     const nextIndex = Math.ceil(colorIndex.value + 1);
-    colorIndex.value = withTiming(nextIndex, { duration: 1000 });
+    colorIndex.value = withTiming(nextIndex, { duration: 250 });
   });
 
   const animatedStyle = useAnimatedStyle(() => ({
