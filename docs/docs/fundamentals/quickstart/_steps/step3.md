@@ -5,7 +5,7 @@ import {
   withSpring,
 } from 'react-native-reanimated';
 
-function App() {
+function Ball() {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({ x: 0, y: 0 });
 
