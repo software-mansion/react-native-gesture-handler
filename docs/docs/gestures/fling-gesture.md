@@ -5,14 +5,14 @@ sidebar_label: Fling gesture
 sidebar_position: 8
 ---
 
-import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
 import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasicSrc';
 
-<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+<div style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
       <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
@@ -23,7 +23,7 @@ import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestur
     src={FlingGestureBasicSrc}
     disableMarginBottom={true}
   />
-</ResponsiveWrapper>
+</div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -34,13 +34,11 @@ Gesture gets [ACTIVE](/docs/fundamentals/states-events#active) when movement is 
 When gesture gets activated it will turn into [END](/docs/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
 
-<ResponsiveWrapper>
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
       <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
     </video>
   </div>
-</ResponsiveWrapper>
 
 <samp id="FlingGestureBasicSrc">Fling Gesture</samp>
 

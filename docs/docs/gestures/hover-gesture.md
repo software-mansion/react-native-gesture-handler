@@ -5,14 +5,15 @@ sidebar_label: Hover gesture
 sidebar_position: 9
 ---
 
-import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
-<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+<div style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
       <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
@@ -23,7 +24,7 @@ import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestur
     src={HoverGestureBasicSrc}
     disableMarginBottom={true}
   />
-</ResponsiveWrapper>
+</div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -34,13 +35,11 @@ A continuous gesture that can recognize hovering above the view it's attached to
 
 On iOS additional visual effects may be configured.
 
-<ResponsiveWrapper>
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
       <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
     </video>
   </div>
-</ResponsiveWrapper>
 
 <samp id="HoverGestureBasic">Hover Gesture</samp>
 

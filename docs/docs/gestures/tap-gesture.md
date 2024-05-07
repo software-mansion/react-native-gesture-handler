@@ -5,14 +5,14 @@ sidebar_label: Tap gesture
 sidebar_position: 4
 ---
 
-import ResponsiveWrapper, { vanishOnMobile, appearOnMobile } from '@site/src/components/ResponsiveWrapper';
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import TapGestureBasic from '@site/static/examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
 
-<ResponsiveWrapper style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
+<div style={{display: 'flex', gap: 10, justifyContent: 'stretch', width: '100%', alignItems: 'stretch', marginBottom: 16}}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
       <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
@@ -23,7 +23,7 @@ import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBas
     src={TapGestureBasicSrc}
     disableMarginBottom={true}
   />
-</ResponsiveWrapper>
+</div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
@@ -38,13 +38,11 @@ For example, you might configure tap gesture recognizers to detect single taps, 
 
 In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
 
-<ResponsiveWrapper>
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
       <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
     </video>
   </div>
-</ResponsiveWrapper>
 
 <samp id="TapGestureBasic">Tap Gesture</samp>
 
