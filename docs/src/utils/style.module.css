@@ -1,0 +1,26 @@
+.vanishOnMobile {
+  display: flex !important;
+}
+
+.appearOnMobile {
+  display: none !important;
+}
+
+@media (max-width: 1440px) {
+  .vanishOnMobile {
+    display: none !important;
+  }
+
+  .appearOnMobile {
+    display: flex !important;
+  }
+}
+
+.container {
+  display: flex;
+  gap: 1rem;
+  justify-content: stretch;
+  width: 100%;
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
