@@ -31,6 +31,7 @@ import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { RNGestureHandlerModuleWeb } from '../web/RNGestureHandlerModuleType';
 
 const UIManagerAny = UIManager as any;
 
@@ -153,14 +154,6 @@ type InternalEventHandlers = {
   onGestureHandlerEvent?: (event: any) => void;
   onGestureHandlerStateChange?: (event: any) => void;
 };
-
-type AttachGestureHandlerWeb = (
-  handlerTag: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  newView: any,
-  _actionType: ActionType,
-  propsRef: React.RefObject<unknown>
-) => void;
 
 const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 
@@ -328,13 +321,8 @@ export default function createHandler<
       if (Platform.OS === 'web') {
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
-          RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
-        )(
-          this.handlerTag,
-          newViewTag,
-          ActionType.JS_FUNCTION_OLD_API, // ignored on web
-          this.propsRef
-        );
+          RNGestureHandlerModule as RNGestureHandlerModuleWeb
+        ).attachGestureHandlerWeb(this.handlerTag, newViewTag, this.propsRef);
       } else {
         registerOldGestureHandler(this.handlerTag, {
           onGestureEvent: this.onGestureHandlerEvent,

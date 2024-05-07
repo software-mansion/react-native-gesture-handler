@@ -4,6 +4,7 @@ import {
   Switch as RNSwitch,
   TextInput as RNTextInput,
   ScrollView as RNScrollView,
+  ScrollViewProps,
   FlatListProps,
   View,
 } from '../ReactCompat';
@@ -35,7 +36,9 @@ export const FlatList = React.forwardRef(
     <RNFlatList
       ref={ref}
       {...props}
-      renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
+      renderScrollComponent={(scrollProps: ScrollViewProps) => (
+        <ScrollView {...scrollProps} />
+      )}
     />
   )
 );

@@ -23,19 +23,7 @@ export interface Handler {
   handlerTag: number;
 }
 
-type ConfigArgs =
-  | number
-  | boolean
-  | HitSlop
-  | UserSelect
-  | TouchAction
-  | ActiveCursor
-  | Directions
-  | Handler[]
-  | null
-  | undefined;
-
-export interface Config extends Record<string, ConfigArgs> {
+export interface Config extends Record<string, unknown> {
   enabled?: boolean;
   simultaneousHandlers?: Handler[] | null;
   waitFor?: Handler[] | null;

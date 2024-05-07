@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
-import { View, ViewProps, StyleSheet } from '../ReactCompat';
+import { View, StyleSheet } from '../ReactCompat';
+import type { ViewProps } from '../ReactCompat';
 import { maybeInitializeFabric } from '../init';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 

@@ -16,11 +16,7 @@ export default {
   handleClearJSResponder() {
     console.warn('handleClearJSResponder: ');
   },
-  createGestureHandler<T>(
-    handlerName: keyof typeof Gestures,
-    handlerTag: number,
-    config: T
-  ) {
+  createGestureHandler<T>(handlerName: string, handlerTag: number, config: T) {
     if (isNewWebImplementationEnabled()) {
       if (!(handlerName in Gestures)) {
         throw new Error(
@@ -28,7 +24,7 @@ export default {
         );
       }
 
-      const GestureClass = Gestures[handlerName];
+      const GestureClass = Gestures[handlerName as keyof typeof Gestures];
       NodeManager.createGestureHandler(
         handlerTag,
         new GestureClass(new GestureHandlerWebDelegate())
@@ -53,12 +49,12 @@ export default {
 
     this.updateGestureHandler(handlerTag, config as unknown as Config);
   },
+
   attachGestureHandler(
     handlerTag: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newView: any,
-    _actionType: ActionType,
-    propsRef: React.RefObject<unknown>
+    propsRef: React.RefObject<unknown> | ActionType
   ) {
     if (
       !(newView instanceof HTMLElement || newView instanceof React.Component)
@@ -73,6 +69,14 @@ export default {
       //@ts-ignore Types should be HTMLElement or React.Component
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
+  },
+  attachGestureHandlerWeb(
+    handlerTag: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    newView: any,
+    propsRef: React.RefObject<unknown>
+  ) {
+    this.attachGestureHandler(handlerTag, newView, propsRef);
   },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
     if (isNewWebImplementationEnabled()) {
@@ -102,4 +106,7 @@ export default {
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  install() {},
 };

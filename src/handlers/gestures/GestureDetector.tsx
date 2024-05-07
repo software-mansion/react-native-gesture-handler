@@ -39,7 +39,6 @@ import { TouchEventType } from '../../TouchEventType';
 import { ComposedGesture } from './gestureComposition';
 import { ActionType } from '../../ActionType';
 import { isFabric, isJestEnv, tagMessage } from '../../utils';
-import { getReactNativeVersion } from '../../getReactNativeVersion';
 import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
 import { Platform, isDEV } from '../../ReactCompat';
 import { onGestureHandlerEvent } from './eventReceiver';
@@ -48,14 +47,7 @@ import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation'
 import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
 import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
-
-type AttachGestureHandlerWeb = (
-  handlerTag: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  newView: any,
-  _actionType: ActionType,
-  propsRef: React.RefObject<unknown>
-) => void;
+import { RNGestureHandlerModuleWeb } from '../../web/RNGestureHandlerModuleType';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
@@ -227,10 +219,11 @@ function attachHandlers({
       : ActionType.JS_FUNCTION_NEW_API;
 
     if (Platform.OS === 'web') {
-      (RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb)(
+      (
+        RNGestureHandlerModule as RNGestureHandlerModuleWeb
+      ).attachGestureHandlerWeb(
         gesture.handlerTag,
         viewTag,
-        ActionType.JS_FUNCTION_OLD_API, // ignored on web
         webEventHandlersRef
       );
     } else {
@@ -573,14 +566,9 @@ function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (isDEV && Platform.OS !== 'web') {
-    const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const wrapType =
-      REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
-        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ref._reactInternals.elementType
-        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ref._reactInternalFiber.elementType;
+    const wrapType = ref._reactInternals.elementType;
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let instance =
       RNRenderer.findHostInstance_DEPRECATED(

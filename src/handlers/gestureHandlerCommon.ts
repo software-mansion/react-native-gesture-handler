@@ -263,10 +263,17 @@ function transformIntoHandlerTags(handlerIDs: any) {
 
 export function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
-): null | number | React.Component<any, any> | React.ComponentClass<any> {
+):
+  | null
+  | number
+  | React.Component<any, any>
+  | React.ComponentClass<any>
+  | Element
+  | Text {
   if (Platform.OS === 'web') {
     return node;
   }
+
   return findNodeHandleRN(node);
 }
 
