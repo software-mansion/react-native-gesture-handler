@@ -57,7 +57,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
+  internal inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
     override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
       val currentState = state
       // we shouldn't stop intercepting events when there is an active handler already, which could happen when
