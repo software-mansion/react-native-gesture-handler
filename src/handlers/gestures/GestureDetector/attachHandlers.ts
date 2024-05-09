@@ -21,7 +21,7 @@ import {
 interface AttachHandlersConfig {
   preparedGesture: GestureConfigReference;
   gestureConfig: ComposedGesture | GestureType;
-  gesture: GestureType[];
+  gestures: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
   mountedRef: React.RefObject<boolean>;
@@ -30,7 +30,7 @@ interface AttachHandlersConfig {
 export function attachHandlers({
   preparedGesture,
   gestureConfig,
-  gesture,
+  gestures,
   viewTag,
   webEventHandlersRef,
   mountedRef,
@@ -50,7 +50,7 @@ export function attachHandlers({
     gestureConfig.prepare();
   });
 
-  for (const handler of gesture) {
+  for (const handler of gestures) {
     checkGestureCallbacksForWorklets(handler);
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
@@ -67,7 +67,7 @@ export function attachHandlers({
     if (!mountedRef.current) {
       return;
     }
-    for (const handler of gesture) {
+    for (const handler of gestures) {
       let requireToFail: number[] = [];
       if (handler.config.requireToFail) {
         requireToFail = extractValidHandlerTags(handler.config.requireToFail);
@@ -98,7 +98,7 @@ export function attachHandlers({
     scheduleFlushOperations();
   });
 
-  preparedGesture.gesturesToAttach = gesture;
+  preparedGesture.gesturesToAttach = gestures;
 
   for (const gesture of preparedGesture.gesturesToAttach) {
     const actionType = gesture.shouldUseReanimated
@@ -126,7 +126,7 @@ export function attachHandlers({
   if (preparedGesture.animatedHandlers) {
     const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
 
-    preparedGesture.animatedHandlers.value = gesture
+    preparedGesture.animatedHandlers.value = gestures
       .filter(isAnimatedGesture)
       .map((g) => g.handlers) as unknown as HandlerCallbacks<
       Record<string, unknown>

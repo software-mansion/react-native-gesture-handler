@@ -165,7 +165,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       attachHandlers({
         preparedGesture,
         gestureConfig,
-        gesture: gesturesToAttach,
+        gestures: gesturesToAttach,
         webEventHandlersRef,
         viewTag,
         mountedRef,
@@ -215,7 +215,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     attachHandlers({
       preparedGesture,
       gestureConfig,
-      gesture: gesturesToAttach,
+      gestures: gesturesToAttach,
       webEventHandlersRef,
       viewTag,
       mountedRef,
