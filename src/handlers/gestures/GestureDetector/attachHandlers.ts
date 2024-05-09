@@ -13,7 +13,7 @@ import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web'
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { GestureConfigReference, WebEventHandler } from './types';
 import {
-  extractValidHandlerTags,
+  extractGestureRelations,
   checkGestureCallbacksForWorklets,
   ALLOWED_PROPS,
 } from './utils';
@@ -64,30 +64,13 @@ export function attachHandlers({
       return;
     }
     for (const handler of gestures) {
-      let requireToFail: number[] = [];
-      if (handler.config.requireToFail) {
-        requireToFail = extractValidHandlerTags(handler.config.requireToFail);
-      }
-
-      let simultaneousWith: number[] = [];
-      if (handler.config.simultaneousWith) {
-        simultaneousWith = extractValidHandlerTags(
-          handler.config.simultaneousWith
-        );
-      }
-
-      let blocksHandlers: number[] = [];
-      if (handler.config.blocksHandlers) {
-        blocksHandlers = extractValidHandlerTags(handler.config.blocksHandlers);
-      }
-
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
-        filterConfig(handler.config, ALLOWED_PROPS, {
-          simultaneousHandlers: simultaneousWith,
-          waitFor: requireToFail,
-          blocksHandlers: blocksHandlers,
-        })
+        filterConfig(
+          handler.config,
+          ALLOWED_PROPS,
+          extractGestureRelations(handler)
+        )
       );
     }
 

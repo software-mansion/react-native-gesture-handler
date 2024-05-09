@@ -10,7 +10,7 @@ import { ComposedGesture } from '../gestureComposition';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { GestureConfigReference } from './types';
 import {
-  extractValidHandlerTags,
+  extractGestureRelations,
   checkGestureCallbacksForWorklets,
   ALLOWED_PROPS,
 } from './utils';
@@ -48,20 +48,13 @@ export function updateHandlers(
       handler.config = gesture[i].config;
       handler.handlers = gesture[i].handlers;
 
-      const requireToFail = extractValidHandlerTags(
-        handler.config.requireToFail
-      );
-
-      const simultaneousWith = extractValidHandlerTags(
-        handler.config.simultaneousWith
-      );
-
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
-        filterConfig(handler.config, ALLOWED_PROPS, {
-          simultaneousHandlers: simultaneousWith,
-          waitFor: requireToFail,
-        })
+        filterConfig(
+          handler.config,
+          ALLOWED_PROPS,
+          extractGestureRelations(handler)
+        )
       );
 
       registerHandler(handler.handlerTag, handler, handler.config.testId);

@@ -42,12 +42,24 @@ function convertToHandlerTag(ref: GestureRef): number {
   }
 }
 
-export function extractValidHandlerTags(
-  interactionGroup: GestureRef[] | undefined
-) {
+function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
   return (
     interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
   );
+}
+
+export function extractGestureRelations(gesture: GestureType) {
+  const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
+  const simultaneousWith = extractValidHandlerTags(
+    gesture.config.simultaneousWith
+  );
+  const blocksHandlers = extractValidHandlerTags(gesture.config.blocksHandlers);
+
+  return {
+    waitFor: requireToFail,
+    simultaneousHandlers: simultaneousWith,
+    blocksHandlers: blocksHandlers,
+  };
 }
 
 export function checkGestureCallbacksForWorklets(gesture: GestureType) {
