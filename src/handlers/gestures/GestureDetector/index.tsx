@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-prop-types */
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { GestureType } from '../gesture';
 import {
@@ -27,34 +28,31 @@ declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
 };
 
-const applyUserSelectProp = (
-  userSelect: UserSelect,
+function propagateDetectorConfig(
+  props: GestureDetectorProps,
   gesture: ComposedGesture | GestureType
-): void => {
-  for (const g of gesture.toGestureArray()) {
-    g.config.userSelect = userSelect;
-  }
-};
+) {
+  const keysToPropagate: (keyof GestureDetectorProps)[] = [
+    'userSelect',
+    'enableContextMenu',
+    'touchAction',
+  ];
 
-const applyEnableContextMenuProp = (
-  enableContextMenu: boolean,
-  gesture: ComposedGesture | GestureType
-): void => {
-  for (const g of gesture.toGestureArray()) {
-    g.config.enableContextMenu = enableContextMenu;
-  }
-};
+  for (const key of keysToPropagate) {
+    const value = props[key];
+    if (value === undefined) {
+      continue;
+    }
 
-const applyTouchActionProp = (
-  touchAction: TouchAction,
-  gesture: ComposedGesture | GestureType
-): void => {
-  for (const g of gesture.toGestureArray()) {
-    g.config.touchAction = touchAction;
+    for (const g of gesture.toGestureArray()) {
+      const config = g.config as { [key: string]: unknown };
+      config[key] = value;
+    }
   }
-};
+}
 
 interface GestureDetectorProps {
+  children?: React.ReactNode;
   /**
    * A gesture object containing the configuration and callbacks.
    * Can be any of:
@@ -62,8 +60,6 @@ interface GestureDetectorProps {
    * - `ComposedGesture` (`Race`, `Simultaneous`, `Exclusive`)
    */
   gesture: ComposedGesture | GestureType;
-  children?: React.ReactNode;
-
   /**
    * #### Web only
    * This parameter allows to specify which `userSelect` property should be applied to underlying view.
@@ -83,6 +79,7 @@ interface GestureDetectorProps {
    */
   touchAction?: TouchAction;
 }
+
 interface GestureDetectorState {
   firstRender: boolean;
   viewRef: React.Component | null;
@@ -114,18 +111,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }
 
   const gestureConfig = props.gesture;
-
-  if (props.userSelect) {
-    applyUserSelectProp(props.userSelect, gestureConfig);
-  }
-
-  if (props.enableContextMenu !== undefined) {
-    applyEnableContextMenuProp(props.enableContextMenu, gestureConfig);
-  }
-
-  if (props.touchAction !== undefined) {
-    applyTouchActionProp(props.touchAction, gestureConfig);
-  }
+  propagateDetectorConfig(props, gestureConfig);
 
   const gesture = gestureConfig.toGestureArray();
   const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
