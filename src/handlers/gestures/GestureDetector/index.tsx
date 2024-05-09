@@ -151,7 +151,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   if (useReanimatedHook !== preparedGesture.useReanimatedHook) {
     throw new Error(
       tagMessage(
-        'You cannot change the thread the callbacks are ran on while the app is running'
+        'You cannot change the thread the callbacks are run on while the app is running'
       )
     );
   }
