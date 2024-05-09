@@ -5,10 +5,10 @@ import {
   BaseGesture,
   GestureRef,
   CALLBACK_TYPE,
-} from './gesture';
-import { Reanimated, SharedValue } from './reanimatedWrapper';
-import { registerHandler, unregisterHandler } from '../handlersRegistry';
-import RNGestureHandlerModule from '../../RNGestureHandlerModule';
+} from '../gesture';
+import { Reanimated, SharedValue } from '../reanimatedWrapper';
+import { registerHandler, unregisterHandler } from '../../handlersRegistry';
+import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import {
   baseGestureHandlerWithMonitorProps,
   filterConfig,
@@ -20,35 +20,35 @@ import {
   scheduleFlushOperations,
   UserSelect,
   TouchAction,
-} from '../gestureHandlerCommon';
+} from '../../gestureHandlerCommon';
 import {
   GestureStateManager,
   GestureStateManagerType,
-} from './gestureStateManager';
-import { flingGestureHandlerProps } from '../FlingGestureHandler';
-import { forceTouchGestureHandlerProps } from '../ForceTouchGestureHandler';
-import { longPressGestureHandlerProps } from '../LongPressGestureHandler';
+} from '../gestureStateManager';
+import { flingGestureHandlerProps } from '../../FlingGestureHandler';
+import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
+import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
 import {
   panGestureHandlerProps,
   panGestureHandlerCustomNativeProps,
-} from '../PanGestureHandler';
-import { tapGestureHandlerProps } from '../TapGestureHandler';
-import { hoverGestureHandlerProps } from './hoverGesture';
-import { State } from '../../State';
-import { TouchEventType } from '../../TouchEventType';
-import { ComposedGesture } from './gestureComposition';
-import { ActionType } from '../../ActionType';
-import { isFabric, isJestEnv, tagMessage } from '../../utils';
-import { getReactNativeVersion } from '../../getReactNativeVersion';
-import { getShadowNodeFromRef } from '../../getShadowNodeFromRef';
+} from '../../PanGestureHandler';
+import { tapGestureHandlerProps } from '../../TapGestureHandler';
+import { hoverGestureHandlerProps } from '../hoverGesture';
+import { State } from '../../../State';
+import { TouchEventType } from '../../../TouchEventType';
+import { ComposedGesture } from '../gestureComposition';
+import { ActionType } from '../../../ActionType';
+import { isFabric, isJestEnv, tagMessage } from '../../../utils';
+import { getReactNativeVersion } from '../../../getReactNativeVersion';
+import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
-import type RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
-import { onGestureHandlerEvent } from './eventReceiver';
-import { RNRenderer } from '../../RNRenderer';
-import { isNewWebImplementationEnabled } from '../../EnableNewWebImplementation';
-import { nativeViewGestureHandlerProps } from '../NativeViewGestureHandler';
-import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
-import { ghQueueMicrotask } from '../../ghQueueMicrotask';
+import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
+import { onGestureHandlerEvent } from '../eventReceiver';
+import { RNRenderer } from '../../../RNRenderer';
+import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
+import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
+import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
+import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
