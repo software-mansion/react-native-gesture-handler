@@ -54,6 +54,10 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
       return otherHandler.disallowInterruption
     }
 
+    if (otherHandler is RNGestureHandlerRootHelper.RootViewGestureHandler) {
+      return true
+    }
+
     return false
   }
   override fun shouldRecognizeSimultaneously(
