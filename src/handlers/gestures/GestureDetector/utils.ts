@@ -51,23 +51,36 @@ export function extractValidHandlerTags(
 }
 
 export function checkGestureCallbacksForWorklets(gesture: GestureType) {
-  // if a gesture is explicitly marked to run on the JS thread there is no need to check
-  // if callbacks are worklets as the user is aware they will be ran on the JS thread
-  if (gesture.config.runOnJS) {
-    return;
-  }
+  if (__DEV__) {
+    // if a gesture is explicitly marked to run on the JS thread there is no need to check
+    // if callbacks are worklets as the user is aware they will be ran on the JS thread
+    if (gesture.config.runOnJS) {
+      return;
+    }
 
-  const areSomeNotWorklets = gesture.handlers.isWorklet.includes(false);
-  const areSomeWorklets = gesture.handlers.isWorklet.includes(true);
+    const areSomeNotWorklets = gesture.handlers.isWorklet.includes(false);
+    const areSomeWorklets = gesture.handlers.isWorklet.includes(true);
 
-  // if some of the callbacks are worklets and some are not, and the gesture is not
-  // explicitly marked with `.runOnJS(true)` show an error
-  if (areSomeNotWorklets && areSomeWorklets) {
-    console.error(
-      tagMessage(
-        `Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
-      )
-    );
+    // if some of the callbacks are worklets and some are not, and the gesture is not
+    // explicitly marked with `.runOnJS(true)` show an error
+    if (areSomeNotWorklets && areSomeWorklets) {
+      console.error(
+        tagMessage(
+          `Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
+        )
+      );
+    }
+
+    const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
+    // if none of the callbacks are worklets and the gesture is not explicitly marked with
+    // `.runOnJS(true)` show an error
+    if (areAllNotWorklets) {
+      console.warn(
+        tagMessage(
+          `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`
+        )
+      );
+    }
   }
 }
 

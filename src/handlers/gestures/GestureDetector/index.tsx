@@ -146,7 +146,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     shouldUseReanimated: shouldUseReanimated,
   }).current;
 
-  if (shouldUseReanimated !== preparedGesture.shouldUseReanimated) {
+  if (__DEV__ && shouldUseReanimated !== preparedGesture.shouldUseReanimated) {
     throw new Error(
       tagMessage(
         'You cannot change the thread the callbacks are run on while the app is running'
@@ -249,7 +249,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       // in case the view has changed, while config update would be handled be the `useEffect` above
       onHandlersUpdate(true);
 
-      if (isFabric() && global.isFormsStackingContext) {
+      if (__DEV__ && isFabric() && global.isFormsStackingContext) {
         const node = getShadowNodeFromRef(ref);
         if (global.isFormsStackingContext(node) === false) {
           console.error(
