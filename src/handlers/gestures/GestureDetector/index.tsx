@@ -139,14 +139,14 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   });
 
   const preparedGesture = React.useRef<GestureConfigReference>({
-    config: gesturesToAttach,
+    gesturesToAttach: gesturesToAttach,
     animatedEventHandler: null,
     animatedHandlers: null,
     firstExecution: true,
-    useReanimatedHook: shouldUseReanimated,
+    shouldUseReanimated: shouldUseReanimated,
   }).current;
 
-  if (shouldUseReanimated !== preparedGesture.useReanimatedHook) {
+  if (shouldUseReanimated !== preparedGesture.shouldUseReanimated) {
     throw new Error(
       tagMessage(
         'You cannot change the thread the callbacks are run on while the app is running'

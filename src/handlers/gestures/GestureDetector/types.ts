@@ -3,13 +3,13 @@ import { SharedValue } from '../reanimatedWrapper';
 import { HandlerStateChangeEvent } from '../../gestureHandlerCommon';
 
 export type GestureConfigReference = {
-  config: GestureType[];
+  gesturesToAttach: GestureType[];
   animatedEventHandler: unknown;
   animatedHandlers: SharedValue<
     HandlerCallbacks<Record<string, unknown>>[] | null
   > | null;
   firstExecution: boolean;
-  useReanimatedHook: boolean;
+  shouldUseReanimated: boolean;
 };
 
 export interface WebEventHandler {

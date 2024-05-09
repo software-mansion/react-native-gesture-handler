@@ -98,9 +98,9 @@ export function attachHandlers({
     scheduleFlushOperations();
   });
 
-  preparedGesture.config = gesture;
+  preparedGesture.gesturesToAttach = gesture;
 
-  for (const gesture of preparedGesture.config) {
+  for (const gesture of preparedGesture.gesturesToAttach) {
     const actionType = gesture.shouldUseReanimated
       ? ActionType.REANIMATED_WORKLET
       : ActionType.JS_FUNCTION_NEW_API;

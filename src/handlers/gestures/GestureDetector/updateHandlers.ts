@@ -24,7 +24,7 @@ export function updateHandlers(
   gestureConfig.prepare();
 
   for (let i = 0; i < gesture.length; i++) {
-    const handler = preparedGesture.config[i];
+    const handler = preparedGesture.gesturesToAttach[i];
     checkGestureCallbacksForWorklets(handler);
 
     // only update handlerTag when it's actually different, it may be the same
@@ -43,7 +43,7 @@ export function updateHandlers(
       return;
     }
     for (let i = 0; i < gesture.length; i++) {
-      const handler = preparedGesture.config[i];
+      const handler = preparedGesture.gesturesToAttach[i];
 
       handler.config = gesture[i].config;
       handler.handlers = gesture[i].handlers;
@@ -70,7 +70,7 @@ export function updateHandlers(
     if (preparedGesture.animatedHandlers) {
       const previousHandlersValue =
         preparedGesture.animatedHandlers.value ?? [];
-      const newHandlersValue = preparedGesture.config
+      const newHandlersValue = preparedGesture.gesturesToAttach
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
         .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
