@@ -16,6 +16,7 @@ import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
 import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
 import { getReactNativeVersion } from '../../../getReactNativeVersion';
 import { RNRenderer } from '../../../RNRenderer';
+import { useCallback, useState } from 'react';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -121,4 +122,13 @@ export function validateDetectorChildren(ref: any) {
       instance = instance.return;
     }
   }
+}
+
+export function useForceRender() {
+  const [renderState, setRenderState] = useState(false);
+  const forceRender = useCallback(() => {
+    setRenderState(!renderState);
+  }, [renderState, setRenderState]);
+
+  return forceRender;
 }

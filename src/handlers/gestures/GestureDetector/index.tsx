@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { GestureType } from '../gesture';
 import {
   findNodeHandle,
@@ -21,7 +21,7 @@ import { attachHandlers } from './attachHandlers';
 import { updateHandlers } from './updateHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
-import { validateDetectorChildren } from './utils';
+import { useForceRender, validateDetectorChildren } from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
 
 declare const global: {
@@ -109,12 +109,15 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
     );
   }
+  const forceRender = useForceRender();
 
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
 
-  const gesture = gestureConfig.toGestureArray();
-  const useReanimatedHook = gesture.some((g) => g.shouldUseReanimated);
+  const gesturesToAttach = gestureConfig.toGestureArray();
+  const shouldUseReanimated = gesturesToAttach.some(
+    (g) => g.shouldUseReanimated
+  );
 
   // store state in ref to prevent unnecessary renders
   const state = useRef<GestureDetectorState>({
@@ -135,20 +138,15 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       : undefined,
   });
 
-  const [renderState, setRenderState] = useState(false);
-  function forceRender() {
-    setRenderState(!renderState);
-  }
-
   const preparedGesture = React.useRef<GestureConfigReference>({
-    config: gesture,
+    config: gesturesToAttach,
     animatedEventHandler: null,
     animatedHandlers: null,
     firstExecution: true,
-    useReanimatedHook: useReanimatedHook,
+    useReanimatedHook: shouldUseReanimated,
   }).current;
 
-  if (useReanimatedHook !== preparedGesture.useReanimatedHook) {
+  if (shouldUseReanimated !== preparedGesture.useReanimatedHook) {
     throw new Error(
       tagMessage(
         'You cannot change the thread the callbacks are run on while the app is running'
@@ -161,13 +159,13 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     const viewTag = findNodeHandle(state.viewRef) as number;
     const forceReattach = viewTag !== state.previousViewTag;
 
-    if (forceReattach || needsToReattach(preparedGesture, gesture)) {
+    if (forceReattach || needsToReattach(preparedGesture, gesturesToAttach)) {
       validateDetectorChildren(state.viewRef);
       dropHandlers(preparedGesture);
       attachHandlers({
         preparedGesture,
         gestureConfig,
-        gesture,
+        gesture: gesturesToAttach,
         webEventHandlersRef,
         viewTag,
         mountedRef,
@@ -179,7 +177,12 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         forceRender();
       }
     } else if (!skipConfigUpdate) {
-      updateHandlers(preparedGesture, gestureConfig, gesture, mountedRef);
+      updateHandlers(
+        preparedGesture,
+        gestureConfig,
+        gesturesToAttach,
+        mountedRef
+      );
     }
   }
 
@@ -187,7 +190,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   // config update will be enough as all necessary items are stored in shared values anyway
   const needsToRebuildReanimatedEvent =
     preparedGesture.firstExecution ||
-    needsToReattach(preparedGesture, gesture) ||
+    needsToReattach(preparedGesture, gesturesToAttach) ||
     state.forceReattach;
 
   state.forceReattach = false;
@@ -196,7 +199,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     gestureConfig.initialize();
   }
 
-  if (useReanimatedHook) {
+  if (shouldUseReanimated) {
     // Whether animatedGesture or gesture is used shouldn't change while the app is running
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
@@ -212,7 +215,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     attachHandlers({
       preparedGesture,
       gestureConfig,
-      gesture,
+      gesture: gesturesToAttach,
       webEventHandlersRef,
       viewTag,
       mountedRef,
@@ -260,7 +263,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     }
   };
 
-  if (useReanimatedHook) {
+  if (shouldUseReanimated) {
     return (
       <AnimatedWrap
         ref={refFunction}
