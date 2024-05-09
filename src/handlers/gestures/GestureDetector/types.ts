@@ -8,7 +8,6 @@ export type GestureConfigReference = {
   animatedHandlers: SharedValue<
     HandlerCallbacks<Record<string, unknown>>[] | null
   > | null;
-  firstExecution: boolean;
   shouldUseReanimated: boolean;
 };
 

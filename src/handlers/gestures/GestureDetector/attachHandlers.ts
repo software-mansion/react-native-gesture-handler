@@ -35,11 +35,7 @@ export function attachHandlers({
   webEventHandlersRef,
   mountedRef,
 }: AttachHandlersConfig) {
-  if (!preparedGesture.firstExecution) {
-    gestureConfig.initialize();
-  } else {
-    preparedGesture.firstExecution = false;
-  }
+  gestureConfig.initialize();
 
   // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran

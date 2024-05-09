@@ -142,7 +142,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     gesturesToAttach: gesturesToAttach,
     animatedEventHandler: null,
     animatedHandlers: null,
-    firstExecution: true,
     shouldUseReanimated: shouldUseReanimated,
   }).current;
 
@@ -189,15 +188,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
   // config update will be enough as all necessary items are stored in shared values anyway
   const needsToRebuildReanimatedEvent =
-    preparedGesture.firstExecution ||
+    state.firstRender ||
     needsToReattach(preparedGesture, gesturesToAttach) ||
     state.forceReattach;
 
   state.forceReattach = false;
-
-  if (preparedGesture.firstExecution) {
-    gestureConfig.initialize();
-  }
 
   if (shouldUseReanimated) {
     // Whether animatedGesture or gesture is used shouldn't change while the app is running
@@ -207,7 +202,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useEffect(() => {
     const viewTag = findNodeHandle(state.viewRef) as number;
-    state.firstRender = true;
     mountedRef.current = true;
 
     validateDetectorChildren(state.viewRef);
