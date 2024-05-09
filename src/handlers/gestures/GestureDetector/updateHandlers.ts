@@ -1,0 +1,103 @@
+import React from 'react';
+import { GestureType, HandlerCallbacks } from '../gesture';
+import { registerHandler } from '../../handlersRegistry';
+import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
+import {
+  filterConfig,
+  scheduleFlushOperations,
+} from '../../gestureHandlerCommon';
+import { ComposedGesture } from '../gestureComposition';
+import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
+import { GestureConfigReference } from './types';
+import {
+  extractValidHandlerTags,
+  checkGestureCallbacksForWorklets,
+  ALLOWED_PROPS,
+} from './utils';
+
+export function updateHandlers(
+  preparedGesture: GestureConfigReference,
+  gestureConfig: ComposedGesture | GestureType,
+  gesture: GestureType[],
+  mountedRef: React.RefObject<boolean>
+) {
+  gestureConfig.prepare();
+
+  for (let i = 0; i < gesture.length; i++) {
+    const handler = preparedGesture.config[i];
+    checkGestureCallbacksForWorklets(handler);
+
+    // only update handlerTag when it's actually different, it may be the same
+    // if gesture config object is wrapped with useMemo
+    if (gesture[i].handlerTag !== handler.handlerTag) {
+      gesture[i].handlerTag = handler.handlerTag;
+      gesture[i].handlers.handlerTag = handler.handlerTag;
+    }
+  }
+
+  // use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
+  // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
+  // in case of external relations)
+  ghQueueMicrotask(() => {
+    if (!mountedRef.current) {
+      return;
+    }
+    for (let i = 0; i < gesture.length; i++) {
+      const handler = preparedGesture.config[i];
+
+      handler.config = gesture[i].config;
+      handler.handlers = gesture[i].handlers;
+
+      const requireToFail = extractValidHandlerTags(
+        handler.config.requireToFail
+      );
+
+      const simultaneousWith = extractValidHandlerTags(
+        handler.config.simultaneousWith
+      );
+
+      RNGestureHandlerModule.updateGestureHandler(
+        handler.handlerTag,
+        filterConfig(handler.config, ALLOWED_PROPS, {
+          simultaneousHandlers: simultaneousWith,
+          waitFor: requireToFail,
+        })
+      );
+
+      registerHandler(handler.handlerTag, handler, handler.config.testId);
+    }
+
+    if (preparedGesture.animatedHandlers) {
+      const previousHandlersValue =
+        preparedGesture.animatedHandlers.value ?? [];
+      const newHandlersValue = preparedGesture.config
+        .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
+        .map((g) => g.handlers) as unknown as HandlerCallbacks<
+        Record<string, unknown>
+      >[];
+
+      // if amount of gesture configs changes, we need to update the callbacks in shared value
+      let shouldUpdateSharedValue =
+        previousHandlersValue.length !== newHandlersValue.length;
+
+      if (!shouldUpdateSharedValue) {
+        // if the amount is the same, we need to check if any of the configs inside has changed
+        for (let i = 0; i < newHandlersValue.length; i++) {
+          if (
+            // we can use the `gestureId` prop as it's unique for every config instance
+            newHandlersValue[i].gestureId !== previousHandlersValue[i].gestureId
+          ) {
+            shouldUpdateSharedValue = true;
+            break;
+          }
+        }
+      }
+
+      if (shouldUpdateSharedValue) {
+        preparedGesture.animatedHandlers.value = newHandlersValue;
+      }
+    }
+
+    scheduleFlushOperations();
+  });
+}
