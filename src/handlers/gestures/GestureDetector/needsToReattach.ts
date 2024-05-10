@@ -1,8 +1,8 @@
 import { GestureType } from '../gesture';
-import { GestureConfigReference } from './types';
+import { AttachedGestureState } from './types';
 
 export function needsToReattach(
-  preparedGesture: GestureConfigReference,
+  preparedGesture: AttachedGestureState,
   gesture: GestureType[]
 ) {
   if (gesture.length !== preparedGesture.gesturesToAttach.length) {

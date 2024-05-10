@@ -8,7 +8,7 @@ import {
 } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
-import { GestureConfigReference } from './types';
+import { AttachedGestureState } from './types';
 import {
   extractGestureRelations,
   checkGestureCallbacksForWorklets,
@@ -16,7 +16,7 @@ import {
 } from './utils';
 
 export function updateHandlers(
-  preparedGesture: GestureConfigReference,
+  preparedGesture: AttachedGestureState,
   gestureConfig: ComposedGesture | GestureType,
   gesture: GestureType[],
   mountedRef: React.RefObject<boolean>

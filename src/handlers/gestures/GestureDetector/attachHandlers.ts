@@ -11,7 +11,7 @@ import { ActionType } from '../../../ActionType';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
-import { GestureConfigReference, WebEventHandler } from './types';
+import { AttachedGestureState, WebEventHandler } from './types';
 import {
   extractGestureRelations,
   checkGestureCallbacksForWorklets,
@@ -19,7 +19,7 @@ import {
 } from './utils';
 
 interface AttachHandlersConfig {
-  preparedGesture: GestureConfigReference;
+  preparedGesture: AttachedGestureState;
   gestureConfig: ComposedGesture | GestureType;
   gestures: GestureType[];
   viewTag: number;

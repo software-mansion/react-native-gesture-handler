@@ -15,7 +15,7 @@ import { onGestureHandlerEvent } from '../eventReceiver';
 
 import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
-import { GestureConfigReference, WebEventHandler } from './types';
+import { AttachedGestureState, WebEventHandler } from './types';
 import { useAnimatedGesture } from './useAnimatedGesture';
 import { attachHandlers } from './attachHandlers';
 import { updateHandlers } from './updateHandlers';
@@ -138,7 +138,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       : undefined,
   });
 
-  const preparedGesture = React.useRef<GestureConfigReference>({
+  const preparedGesture = React.useRef<AttachedGestureState>({
     gesturesToAttach: gesturesToAttach,
     animatedEventHandler: null,
     animatedHandlers: null,

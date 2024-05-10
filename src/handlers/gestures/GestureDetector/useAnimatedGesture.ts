@@ -12,7 +12,7 @@ import {
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { tagMessage } from '../../../utils';
-import { GestureConfigReference } from './types';
+import { AttachedGestureState } from './types';
 
 function getHandler(
   type: CALLBACK_TYPE,
@@ -93,7 +93,7 @@ function isTouchEvent(
 }
 
 export function useAnimatedGesture(
-  preparedGesture: GestureConfigReference,
+  preparedGesture: AttachedGestureState,
   needsRebuild: boolean
 ) {
   if (!Reanimated) {
