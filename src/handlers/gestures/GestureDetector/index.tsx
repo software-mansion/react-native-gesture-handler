@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { GestureType } from '../gesture';
 import {
   findNodeHandle,
@@ -96,10 +96,14 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     );
   }
 
+  // Gesture config should be wrapped with useMemo to prevent unnecessary re-renders
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
 
-  const gesturesToAttach = gestureConfig.toGestureArray();
+  const gesturesToAttach = useMemo(
+    () => gestureConfig.toGestureArray(),
+    [gestureConfig]
+  );
   const shouldUseReanimated = gesturesToAttach.some(
     (g) => g.shouldUseReanimated
   );
@@ -135,8 +139,8 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   // config update will be enough as all necessary items are stored in shared values anyway
   const needsToRebuildReanimatedEvent =
     state.firstRender ||
-    needsToReattach(preparedGesture, gesturesToAttach) ||
-    state.forceRebuildReanimatedEvent;
+    state.forceRebuildReanimatedEvent ||
+    needsToReattach(preparedGesture, gesturesToAttach);
   state.forceRebuildReanimatedEvent = false;
 
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
