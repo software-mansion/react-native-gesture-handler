@@ -3,7 +3,8 @@
   flex-direction: column;
   align-items: center;
   gap: 2.5rem;
-  margin-bottom: 9.5rem;
+  margin-bottom: 16rem;
+  margin-top: 4.5rem;
 }
 
 @media (max-width: 768px) {
