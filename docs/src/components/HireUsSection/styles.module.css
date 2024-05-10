@@ -1,11 +1,8 @@
 .hireUsSectionWrapper {
   display: flex;
-  position: relative;
   flex-direction: column;
   align-items: center;
   gap: 2.5rem;
-  width: 60%;
-  margin: 0 auto;
   margin-bottom: 9.5rem;
 }
 @media (max-width: 1440px) {
