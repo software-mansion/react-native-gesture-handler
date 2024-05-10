@@ -17,6 +17,13 @@ export interface AttachedGestureState {
   isMounted: boolean;
 }
 
+export interface GestureDetectorState {
+  firstRender: boolean;
+  viewRef: React.Component | null;
+  previousViewTag: number;
+  forceRebuildReanimatedEvent: boolean;
+}
+
 export interface WebEventHandler {
   onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
   onGestureHandlerStateChange?: (

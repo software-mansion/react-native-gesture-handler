@@ -7,27 +7,19 @@ import {
   TouchAction,
 } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
-import { isFabric, isJestEnv, tagMessage } from '../../../utils';
-import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
+import { isJestEnv } from '../../../utils';
 import { Platform } from 'react-native';
 
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
-import { AttachedGestureState } from './types';
+import { AttachedGestureState, GestureDetectorState } from './types';
 import { useAnimatedGesture } from './useAnimatedGesture';
 import { attachHandlers } from './attachHandlers';
-import { updateHandlers } from './updateHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
-import {
-  useForceRender,
-  useWebEventHandlers,
-  validateDetectorChildren,
-} from './utils';
+import { useWebEventHandlers } from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
-
-declare const global: {
-  isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
-};
+import { useDetectorUpdater } from './useDetectorUpdater';
+import { useViewRefHandler } from './useViewRefHandler';
 
 function propagateDetectorConfig(
   props: GestureDetectorProps,
@@ -81,13 +73,6 @@ interface GestureDetectorProps {
   touchAction?: TouchAction;
 }
 
-interface GestureDetectorState {
-  firstRender: boolean;
-  viewRef: React.Component | null;
-  previousViewTag: number;
-  forceRebuildReanimatedEvent: boolean;
-}
-
 /**
  * `GestureDetector` is responsible for creating and updating native gesture handlers based on the config of provided gesture.
  *
@@ -110,8 +95,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
     );
   }
-  const forceRender = useForceRender();
-  const webEventHandlersRef = useWebEventHandlers();
 
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
@@ -121,6 +104,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     (g) => g.shouldUseReanimated
   );
 
+  const webEventHandlersRef = useWebEventHandlers();
   // store state in ref to prevent unnecessary renders
   const state = useRef<GestureDetectorState>({
     firstRender: true,
@@ -137,6 +121,16 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     isMounted: false,
   }).current;
 
+  const updateAttachedGestures = useDetectorUpdater(
+    state,
+    preparedGesture,
+    gesturesToAttach,
+    gestureConfig,
+    webEventHandlersRef
+  );
+
+  const refHandler = useViewRefHandler(state, updateAttachedGestures);
+
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
   // config update will be enough as all necessary items are stored in shared values anyway
   const needsToRebuildReanimatedEvent =
@@ -147,40 +141,9 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
-  function onHandlersUpdate(skipConfigUpdate?: boolean) {
-    // if the underlying view has changed we need to reattach handlers to the new view
-    const viewTag = findNodeHandle(state.viewRef) as number;
-    const didUnderlyingViewChange = viewTag !== state.previousViewTag;
-
-    if (
-      didUnderlyingViewChange ||
-      needsToReattach(preparedGesture, gesturesToAttach)
-    ) {
-      validateDetectorChildren(state.viewRef);
-      dropHandlers(preparedGesture);
-      attachHandlers({
-        preparedGesture,
-        gestureConfig,
-        gesturesToAttach,
-        webEventHandlersRef,
-        viewTag,
-      });
-
-      if (didUnderlyingViewChange) {
-        state.previousViewTag = viewTag;
-        state.forceRebuildReanimatedEvent = true;
-        forceRender();
-      }
-    } else if (!skipConfigUpdate) {
-      updateHandlers(preparedGesture, gestureConfig, gesturesToAttach);
-    }
-  }
-
   useEffect(() => {
     const viewTag = findNodeHandle(state.viewRef) as number;
     preparedGesture.isMounted = true;
-
-    validateDetectorChildren(state.viewRef);
 
     attachHandlers({
       preparedGesture,
@@ -198,51 +161,21 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useEffect(() => {
     if (!state.firstRender) {
-      onHandlersUpdate();
+      updateAttachedGestures();
     } else {
       state.firstRender = false;
     }
   }, [props]);
 
-  const refFunction = (ref: unknown) => {
-    if (ref === null) {
-      return;
-    }
-
-    // @ts-ignore Just setting the view ref
-    state.viewRef = ref;
-
-    // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
-    if (state.previousViewTag === -1) {
-      state.previousViewTag = findNodeHandle(state.viewRef) as number;
-    }
-
-    // pass true as `skipConfigUpdate`, here we only want to trigger the eventual reattaching of handlers
-    // in case the view has changed, while config update would be handled be the `useEffect` above
-    onHandlersUpdate(true);
-
-    if (__DEV__ && isFabric() && global.isFormsStackingContext) {
-      const node = getShadowNodeFromRef(ref);
-      if (global.isFormsStackingContext(node) === false) {
-        console.error(
-          tagMessage(
-            'GestureDetector has received a child that may get view-flattened. ' +
-              '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
-          )
-        );
-      }
-    }
-  };
-
   if (shouldUseReanimated) {
     return (
       <AnimatedWrap
-        ref={refFunction}
+        ref={refHandler}
         onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
         {props.children}
       </AnimatedWrap>
     );
   } else {
-    return <Wrap ref={refFunction}>{props.children}</Wrap>;
+    return <Wrap ref={refHandler}>{props.children}</Wrap>;
   }
 };
