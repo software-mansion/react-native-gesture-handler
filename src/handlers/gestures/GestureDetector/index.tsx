@@ -145,13 +145,15 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     shouldUseReanimated: shouldUseReanimated,
   }).current;
 
-  if (__DEV__ && shouldUseReanimated !== preparedGesture.shouldUseReanimated) {
-    throw new Error(
-      tagMessage(
-        'You cannot change the thread the callbacks are run on while the app is running'
-      )
-    );
-  }
+  // Reanimated event should be rebuilt only when gestures are reattached, otherwise
+  // config update will be enough as all necessary items are stored in shared values anyway
+  const needsToRebuildReanimatedEvent =
+    state.firstRender ||
+    needsToReattach(preparedGesture, gesturesToAttach) ||
+    state.forceReattach;
+  state.forceReattach = false;
+
+  useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   function onHandlersUpdate(skipConfigUpdate?: boolean) {
     // if the underlying view has changed we need to reattach handlers to the new view
@@ -183,21 +185,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         mountedRef
       );
     }
-  }
-
-  // Reanimated event should be rebuilt only when gestures are reattached, otherwise
-  // config update will be enough as all necessary items are stored in shared values anyway
-  const needsToRebuildReanimatedEvent =
-    state.firstRender ||
-    needsToReattach(preparedGesture, gesturesToAttach) ||
-    state.forceReattach;
-
-  state.forceReattach = false;
-
-  if (shouldUseReanimated) {
-    // Whether animatedGesture or gesture is used shouldn't change while the app is running
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
   }
 
   useEffect(() => {
