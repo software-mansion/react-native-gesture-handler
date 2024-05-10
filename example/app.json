@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "example",
+    "slug": "example",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "sdkVersion": "51.0.0",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#F8F9FF"
+    },
+    "ios": {
+      "entitlements": {
+        "com.apple.developer.applesignin": ["Default"]
+      },
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example",
+      "buildNumber": "1"
+    },
+    "android": {
+      "versionCode": 1,
+      "package": "com.example",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F8F9FF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

@@ -1,9 +1,7 @@
 import React, { Component, PropsWithChildren } from 'react';
 import { Animated, StyleSheet, I18nManager, View } from 'react-native';
 
-import { RectButton } from 'react-native-gesture-handler';
-
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { RectButton, Swipeable } from 'react-native-gesture-handler';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 

@@ -27,13 +27,11 @@ If you want to play with the API but don't feel like trying it on a real app, yo
 yarn install
 ```
 
-If you are running on ios, run `pod install` in the ios folder
-
 Run `yarn start` to start the metro bundler
 
 Run `yarn android` or `yarn ios` (depending on which platform you want to run the example app on).
 
-You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
+You will need to have an Android or iOS device or emulator connected.
 
 ## React Native Support
 

@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">RNGH Example</string>
+  <string name="app_name">example</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">cover</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
 </resources>

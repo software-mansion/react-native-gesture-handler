@@ -9,50 +9,53 @@ import {
   GestureHandlerRootView,
   RectButton,
 } from 'react-native-gesture-handler';
-import OverflowParent from './release_tests/overflowParent';
-import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
-import DoubleDraggable from './release_tests/doubleDraggable';
-import { ComboWithGHScroll } from './release_tests/combo';
-import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
-import Rows from './release_tests/rows';
-import NestedFling from './release_tests/nestedFling';
-import MouseButtons from './release_tests/mouseButtons';
-import ContextMenu from './release_tests/contextMenu';
-import NestedTouchables from './release_tests/nestedTouchables';
-import NestedButtons from './release_tests/nestedButtons';
-import PointerType from './release_tests/pointerType';
-import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
-import { PinchableBox } from './recipes/scaleAndRotate';
-import PanAndScroll from './recipes/panAndScroll';
-import { BottomSheet } from './showcase/bottomSheet';
-import Swipeables from './showcase/swipeable';
-import ChatHeads from './showcase/chatHeads';
-import Draggable from './basic/draggable';
-import MultiTap from './basic/multitap';
-import BouncingBox from './basic/bouncing';
-import PanResponder from './basic/panResponder';
-import HorizontalDrawer from './basic/horizontalDrawer';
-import PagerAndDrawer from './basic/pagerAndDrawer';
-import ForceTouch from './basic/forcetouch';
-import Fling from './basic/fling';
+import OverflowParent from './src/release_tests/overflowParent';
+import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
+import DoubleDraggable from './src/release_tests/doubleDraggable';
+import { ComboWithGHScroll } from './src/release_tests/combo';
+import {
+  TouchablesIndex,
+  TouchableExample,
+} from './src/release_tests/touchables';
+import Rows from './src/release_tests/rows';
+import NestedFling from './src/release_tests/nestedFling';
+import MouseButtons from './src/release_tests/mouseButtons';
+import ContextMenu from './src/release_tests/contextMenu';
+import NestedTouchables from './src/release_tests/nestedTouchables';
+import NestedButtons from './src/release_tests/nestedButtons';
+import PointerType from './src/release_tests/pointerType';
+import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
+import { PinchableBox } from './src/recipes/scaleAndRotate';
+import PanAndScroll from './src/recipes/panAndScroll';
+import { BottomSheet } from './src/showcase/bottomSheet';
+import Swipeables from './src/showcase/swipeable';
+import ChatHeads from './src/showcase/chatHeads';
+import Draggable from './src/basic/draggable';
+import MultiTap from './src/basic/multitap';
+import BouncingBox from './src/basic/bouncing';
+import PanResponder from './src/basic/panResponder';
+import HorizontalDrawer from './src/basic/horizontalDrawer';
+import PagerAndDrawer from './src/basic/pagerAndDrawer';
+import ForceTouch from './src/basic/forcetouch';
+import Fling from './src/basic/fling';
 
-import ReanimatedSimple from './new_api/reanimated';
-import Camera from './new_api/camera';
-import Transformations from './new_api/transformations';
-import OverlapParents from './new_api/overlap_parent';
-import OverlapSiblings from './new_api/overlap_siblings';
-import Calculator from './new_api/calculator';
-import BottomSheetNewApi from './new_api/bottom_sheet';
-import ChatHeadsNewApi from './new_api/chat_heads';
-import DragNDrop from './new_api/drag_n_drop';
-import BetterHorizontalDrawer from './new_api/betterHorizontalDrawer';
-import ManualGestures from './new_api/manualGestures/index';
-import Hover from './new_api/hover';
-import HoverableIcons from './new_api/hoverable_icons';
-import VelocityTest from './new_api/velocityTest';
+import ReanimatedSimple from './src/new_api/reanimated';
+import Camera from './src/new_api/camera';
+import Transformations from './src/new_api/transformations';
+import OverlapParents from './src/new_api/overlap_parent';
+import OverlapSiblings from './src/new_api/overlap_siblings';
+import Calculator from './src/new_api/calculator';
+import BottomSheetNewApi from './src/new_api/bottom_sheet';
+import ChatHeadsNewApi from './src/new_api/chat_heads';
+import DragNDrop from './src/new_api/drag_n_drop';
+import BetterHorizontalDrawer from './src/new_api/betterHorizontalDrawer';
+import ManualGestures from './src/new_api/manualGestures/index';
+import Hover from './src/new_api/hover';
+import HoverableIcons from './src/new_api/hoverable_icons';
+import VelocityTest from './src/new_api/velocityTest';
 
-import EmptyExample from './empty/EmptyExample';
-import RectButtonBorders from './release_tests/rectButton';
+import EmptyExample from './src/empty/EmptyExample';
+import RectButtonBorders from './src/release_tests/rectButton';
 
 interface Example {
   name: string;
