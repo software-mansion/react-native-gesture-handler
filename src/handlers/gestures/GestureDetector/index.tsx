@@ -126,7 +126,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     previousViewTag: -1,
     forceReattach: false,
   }).current;
-  const mountedRef = useRef(false);
   const webEventHandlersRef = useRef<WebEventHandler>({
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
@@ -143,6 +142,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     animatedEventHandler: null,
     animatedHandlers: null,
     shouldUseReanimated: shouldUseReanimated,
+    isMounted: false,
   }).current;
 
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
@@ -169,7 +169,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         gestures: gesturesToAttach,
         webEventHandlersRef,
         viewTag,
-        mountedRef,
       });
 
       state.previousViewTag = viewTag;
@@ -178,18 +177,13 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         forceRender();
       }
     } else if (!skipConfigUpdate) {
-      updateHandlers(
-        preparedGesture,
-        gestureConfig,
-        gesturesToAttach,
-        mountedRef
-      );
+      updateHandlers(preparedGesture, gestureConfig, gesturesToAttach);
     }
   }
 
   useEffect(() => {
     const viewTag = findNodeHandle(state.viewRef) as number;
-    mountedRef.current = true;
+    preparedGesture.isMounted = true;
 
     validateDetectorChildren(state.viewRef);
 
@@ -199,11 +193,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       gestures: gesturesToAttach,
       webEventHandlersRef,
       viewTag,
-      mountedRef,
     });
 
     return () => {
-      mountedRef.current = false;
+      preparedGesture.isMounted = false;
       dropHandlers(preparedGesture);
     };
   }, []);

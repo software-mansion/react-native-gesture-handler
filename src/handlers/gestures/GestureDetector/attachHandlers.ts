@@ -24,7 +24,6 @@ interface AttachHandlersConfig {
   gestures: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
-  mountedRef: React.RefObject<boolean>;
 }
 
 export function attachHandlers({
@@ -33,14 +32,13 @@ export function attachHandlers({
   gestures,
   viewTag,
   webEventHandlersRef,
-  mountedRef,
 }: AttachHandlersConfig) {
   gestureConfig.initialize();
 
   // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
-    if (!mountedRef.current) {
+    if (!preparedGesture.isMounted) {
       return;
     }
     gestureConfig.prepare();
@@ -60,7 +58,7 @@ export function attachHandlers({
   // use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
-    if (!mountedRef.current) {
+    if (!preparedGesture.isMounted) {
       return;
     }
     for (const handler of gestures) {

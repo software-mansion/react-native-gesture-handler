@@ -1,4 +1,3 @@
-import React from 'react';
 import { GestureType, HandlerCallbacks } from '../gesture';
 import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
@@ -18,8 +17,7 @@ import {
 export function updateHandlers(
   preparedGesture: AttachedGestureState,
   gestureConfig: ComposedGesture | GestureType,
-  gesture: GestureType[],
-  mountedRef: React.RefObject<boolean>
+  gesture: GestureType[]
 ) {
   gestureConfig.prepare();
 
@@ -39,7 +37,7 @@ export function updateHandlers(
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
   ghQueueMicrotask(() => {
-    if (!mountedRef.current) {
+    if (!preparedGesture.isMounted) {
       return;
     }
     for (let i = 0; i < gesture.length; i++) {

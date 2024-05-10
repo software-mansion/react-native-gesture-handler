@@ -13,6 +13,8 @@ export interface AttachedGestureState {
   > | null;
   // Whether `useAnimatedGesture` should be called inside detector
   shouldUseReanimated: boolean;
+  // Whether the GestureDetector is mounted
+  isMounted: boolean;
 }
 
 export interface WebEventHandler {
