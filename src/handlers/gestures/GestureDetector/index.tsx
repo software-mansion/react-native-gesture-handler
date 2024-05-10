@@ -210,7 +210,9 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }, [props]);
 
   const refFunction = (ref: unknown) => {
-    if (ref !== null) {
+    if (ref === null) {
+      return;
+    }
       // @ts-ignore Just setting the view ref
       state.viewRef = ref;
 
