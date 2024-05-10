@@ -92,6 +92,11 @@ export interface BaseButtonProps extends RawButtonProps {
    * Defaults to 600.
    */
   delayLongPress?: number;
+
+  /**
+   * Used to pass ref from parent into `BaseButton`
+   */
+  innerRef?: React.ForwardedRef<unknown>;
 }
 
 export interface RectButtonProps extends BaseButtonProps {
@@ -122,7 +127,7 @@ export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldActivateOnStart: false,
 });
 
-export class BaseButton extends React.Component<BaseButtonProps> {
+class InnerBaseButton extends React.Component<BaseButtonProps> {
   static defaultProps = {
     delayLongPress: 600,
   };
@@ -222,6 +227,9 @@ export class BaseButton extends React.Component<BaseButtonProps> {
 
     return (
       <RawButton
+        ref={
+          this.props.innerRef as React.ForwardedRef<React.ComponentType<any>>
+        }
         rippleColor={processColor(rippleColor)}
         {...rest}
         onGestureEvent={this.onGestureEvent}
@@ -230,6 +238,11 @@ export class BaseButton extends React.Component<BaseButtonProps> {
     );
   }
 }
+
+export const BaseButton = React.forwardRef<
+  unknown,
+  Omit<BaseButtonProps, 'innerRef'>
+>((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
 const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
 
@@ -243,7 +256,7 @@ const btnStyles = StyleSheet.create({
   },
 });
 
-export class RectButton extends React.Component<RectButtonProps> {
+class InnerRectButton extends React.Component<RectButtonProps> {
   static defaultProps = {
     activeOpacity: 0.105,
     underlayColor: 'black',
@@ -272,6 +285,7 @@ export class RectButton extends React.Component<RectButtonProps> {
     return (
       <BaseButton
         {...rest}
+        ref={this.props.innerRef}
         style={resolvedStyle}
         onActiveStateChange={this.onActiveStateChange}>
         <Animated.View
@@ -294,7 +308,12 @@ export class RectButton extends React.Component<RectButtonProps> {
   }
 }
 
-export class BorderlessButton extends React.Component<BorderlessButtonProps> {
+export const RectButton = React.forwardRef<
+  unknown,
+  Omit<RectButtonProps, 'innerRef'>
+>((props, ref) => <InnerRectButton innerRef={ref} {...props} />);
+
+class InnerBorderlessButton extends React.Component<BorderlessButtonProps> {
   static defaultProps = {
     activeOpacity: 0.3,
     borderless: true,
@@ -316,11 +335,14 @@ export class BorderlessButton extends React.Component<BorderlessButtonProps> {
   };
 
   render() {
-    const { children, style, ...rest } = this.props;
+    const { children, style, innerRef, ...rest } = this.props;
 
     return (
       <AnimatedBaseButton
         {...rest}
+        // @ts-ignore We don't want `innerRef` to be accessible from public API.
+        // However in this case we need to set it indirectly on `BaseButton`, hence we use ts-ignore
+        innerRef={innerRef}
         onActiveStateChange={this.onActiveStateChange}
         style={[style, Platform.OS === 'ios' && { opacity: this.opacity }]}>
         {children}
@@ -328,5 +350,10 @@ export class BorderlessButton extends React.Component<BorderlessButtonProps> {
     );
   }
 }
+
+export const BorderlessButton = React.forwardRef<
+  unknown,
+  Omit<BorderlessButtonProps, 'innerRef'>
+>((props, ref) => <InnerBorderlessButton innerRef={ref} {...props} />);
 
 export { default as PureNativeButton } from './GestureHandlerButton';
