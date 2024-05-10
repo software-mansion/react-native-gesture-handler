@@ -13,11 +13,17 @@ import {
 import { tapGestureHandlerProps } from '../../TapGestureHandler';
 import { hoverGestureHandlerProps } from '../hoverGesture';
 import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
+import {
+  HandlerStateChangeEvent,
+  baseGestureHandlerWithDetectorProps,
+} from '../../gestureHandlerCommon';
+import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
 import { getReactNativeVersion } from '../../../getReactNativeVersion';
 import { RNRenderer } from '../../../RNRenderer';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
+import { onGestureHandlerEvent } from '../eventReceiver';
+import { WebEventHandler } from './types';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -163,4 +169,17 @@ export function useForceRender() {
   }, [renderState, setRenderState]);
 
   return forceRender;
+}
+
+export function useWebEventHandlers() {
+  return useRef<WebEventHandler>({
+    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
+      onGestureHandlerEvent(e.nativeEvent);
+    },
+    onGestureHandlerStateChange: isNewWebImplementationEnabled()
+      ? (e: HandlerStateChangeEvent<unknown>) => {
+          onGestureHandlerEvent(e.nativeEvent);
+        }
+      : undefined,
+  });
 }

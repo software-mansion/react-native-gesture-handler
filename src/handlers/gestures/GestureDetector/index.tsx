@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { GestureType } from '../gesture';
 import {
   findNodeHandle,
-  HandlerStateChangeEvent,
   UserSelect,
   TouchAction,
 } from '../../gestureHandlerCommon';
@@ -11,17 +10,19 @@ import { ComposedGesture } from '../gestureComposition';
 import { isFabric, isJestEnv, tagMessage } from '../../../utils';
 import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
 import { Platform } from 'react-native';
-import { onGestureHandlerEvent } from '../eventReceiver';
 
-import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
-import { AttachedGestureState, WebEventHandler } from './types';
+import { AttachedGestureState } from './types';
 import { useAnimatedGesture } from './useAnimatedGesture';
 import { attachHandlers } from './attachHandlers';
 import { updateHandlers } from './updateHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
-import { useForceRender, validateDetectorChildren } from './utils';
+import {
+  useForceRender,
+  useWebEventHandlers,
+  validateDetectorChildren,
+} from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
 
 declare const global: {
@@ -84,7 +85,7 @@ interface GestureDetectorState {
   firstRender: boolean;
   viewRef: React.Component | null;
   previousViewTag: number;
-  forceReattach: boolean;
+  forceRebuildReanimatedEvent: boolean;
 }
 
 /**
@@ -110,6 +111,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     );
   }
   const forceRender = useForceRender();
+  const webEventHandlersRef = useWebEventHandlers();
 
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
@@ -124,18 +126,8 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     firstRender: true,
     viewRef: null,
     previousViewTag: -1,
-    forceReattach: false,
+    forceRebuildReanimatedEvent: false,
   }).current;
-  const webEventHandlersRef = useRef<WebEventHandler>({
-    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
-      onGestureHandlerEvent(e.nativeEvent);
-    },
-    onGestureHandlerStateChange: isNewWebImplementationEnabled()
-      ? (e: HandlerStateChangeEvent<unknown>) => {
-          onGestureHandlerEvent(e.nativeEvent);
-        }
-      : undefined,
-  });
 
   const preparedGesture = React.useRef<AttachedGestureState>({
     attachedGestures: [],
@@ -150,17 +142,20 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   const needsToRebuildReanimatedEvent =
     state.firstRender ||
     needsToReattach(preparedGesture, gesturesToAttach) ||
-    state.forceReattach;
-  state.forceReattach = false;
+    state.forceRebuildReanimatedEvent;
+  state.forceRebuildReanimatedEvent = false;
 
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   function onHandlersUpdate(skipConfigUpdate?: boolean) {
     // if the underlying view has changed we need to reattach handlers to the new view
     const viewTag = findNodeHandle(state.viewRef) as number;
-    const forceReattach = viewTag !== state.previousViewTag;
+    const didUnderlyingViewChange = viewTag !== state.previousViewTag;
 
-    if (forceReattach || needsToReattach(preparedGesture, gesturesToAttach)) {
+    if (
+      didUnderlyingViewChange ||
+      needsToReattach(preparedGesture, gesturesToAttach)
+    ) {
       validateDetectorChildren(state.viewRef);
       dropHandlers(preparedGesture);
       attachHandlers({
@@ -171,9 +166,9 @@ export const GestureDetector = (props: GestureDetectorProps) => {
         viewTag,
       });
 
-      state.previousViewTag = viewTag;
-      state.forceReattach = forceReattach;
-      if (forceReattach) {
+      if (didUnderlyingViewChange) {
+        state.previousViewTag = viewTag;
+        state.forceRebuildReanimatedEvent = true;
         forceRender();
       }
     } else if (!skipConfigUpdate) {
