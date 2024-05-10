@@ -213,28 +213,28 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     if (ref === null) {
       return;
     }
-      // @ts-ignore Just setting the view ref
-      state.viewRef = ref;
 
-      // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
-      if (state.previousViewTag === -1) {
-        state.previousViewTag = findNodeHandle(state.viewRef) as number;
-      }
+    // @ts-ignore Just setting the view ref
+    state.viewRef = ref;
 
-      // pass true as `skipConfigUpdate`, here we only want to trigger the eventual reattaching of handlers
-      // in case the view has changed, while config update would be handled be the `useEffect` above
-      onHandlersUpdate(true);
+    // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
+    if (state.previousViewTag === -1) {
+      state.previousViewTag = findNodeHandle(state.viewRef) as number;
+    }
 
-      if (__DEV__ && isFabric() && global.isFormsStackingContext) {
-        const node = getShadowNodeFromRef(ref);
-        if (global.isFormsStackingContext(node) === false) {
-          console.error(
-            tagMessage(
-              'GestureDetector has received a child that may get view-flattened. ' +
-                '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
-            )
-          );
-        }
+    // pass true as `skipConfigUpdate`, here we only want to trigger the eventual reattaching of handlers
+    // in case the view has changed, while config update would be handled be the `useEffect` above
+    onHandlersUpdate(true);
+
+    if (__DEV__ && isFabric() && global.isFormsStackingContext) {
+      const node = getShadowNodeFromRef(ref);
+      if (global.isFormsStackingContext(node) === false) {
+        console.error(
+          tagMessage(
+            'GestureDetector has received a child that may get view-flattened. ' +
+              '\nTo prevent it from misbehaving you need to wrap the child with a `<View collapsable={false}>`.'
+          )
+        );
       }
     }
   };
