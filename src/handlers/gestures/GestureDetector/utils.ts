@@ -91,7 +91,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
 
     const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
     // if none of the callbacks are worklets and the gesture is not explicitly marked with
-    // `.runOnJS(true)` show an error
+    // `.runOnJS(true)` show a warning
     if (areAllNotWorklets) {
       console.warn(
         tagMessage(
