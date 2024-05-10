@@ -138,7 +138,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   });
 
   const preparedGesture = React.useRef<AttachedGestureState>({
-    gesturesToAttach: gesturesToAttach,
+    attachedGestures: [],
     animatedEventHandler: null,
     animatedHandlers: null,
     shouldUseReanimated: shouldUseReanimated,
@@ -166,7 +166,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       attachHandlers({
         preparedGesture,
         gestureConfig,
-        gestures: gesturesToAttach,
+        gesturesToAttach,
         webEventHandlersRef,
         viewTag,
       });
@@ -190,7 +190,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     attachHandlers({
       preparedGesture,
       gestureConfig,
-      gestures: gesturesToAttach,
+      gesturesToAttach,
       webEventHandlersRef,
       viewTag,
     });

@@ -17,19 +17,19 @@ import {
 export function updateHandlers(
   preparedGesture: AttachedGestureState,
   gestureConfig: ComposedGesture | GestureType,
-  gesture: GestureType[]
+  newGestures: GestureType[]
 ) {
   gestureConfig.prepare();
 
-  for (let i = 0; i < gesture.length; i++) {
-    const handler = preparedGesture.gesturesToAttach[i];
+  for (let i = 0; i < newGestures.length; i++) {
+    const handler = preparedGesture.attachedGestures[i];
     checkGestureCallbacksForWorklets(handler);
 
     // only update handlerTag when it's actually different, it may be the same
     // if gesture config object is wrapped with useMemo
-    if (gesture[i].handlerTag !== handler.handlerTag) {
-      gesture[i].handlerTag = handler.handlerTag;
-      gesture[i].handlers.handlerTag = handler.handlerTag;
+    if (newGestures[i].handlerTag !== handler.handlerTag) {
+      newGestures[i].handlerTag = handler.handlerTag;
+      newGestures[i].handlers.handlerTag = handler.handlerTag;
     }
   }
 
@@ -40,11 +40,11 @@ export function updateHandlers(
     if (!preparedGesture.isMounted) {
       return;
     }
-    for (let i = 0; i < gesture.length; i++) {
-      const handler = preparedGesture.gesturesToAttach[i];
+    for (let i = 0; i < newGestures.length; i++) {
+      const handler = preparedGesture.attachedGestures[i];
 
-      handler.config = gesture[i].config;
-      handler.handlers = gesture[i].handlers;
+      handler.config = newGestures[i].config;
+      handler.handlers = newGestures[i].handlers;
 
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
@@ -61,7 +61,7 @@ export function updateHandlers(
     if (preparedGesture.animatedHandlers) {
       const previousHandlersValue =
         preparedGesture.animatedHandlers.value ?? [];
-      const newHandlersValue = preparedGesture.gesturesToAttach
+      const newHandlersValue = preparedGesture.attachedGestures
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
         .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>

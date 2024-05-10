@@ -21,7 +21,7 @@ import {
 interface AttachHandlersConfig {
   preparedGesture: AttachedGestureState;
   gestureConfig: ComposedGesture | GestureType;
-  gestures: GestureType[];
+  gesturesToAttach: GestureType[];
   viewTag: number;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
 }
@@ -29,7 +29,7 @@ interface AttachHandlersConfig {
 export function attachHandlers({
   preparedGesture,
   gestureConfig,
-  gestures,
+  gesturesToAttach,
   viewTag,
   webEventHandlersRef,
 }: AttachHandlersConfig) {
@@ -44,7 +44,7 @@ export function attachHandlers({
     gestureConfig.prepare();
   });
 
-  for (const handler of gestures) {
+  for (const handler of gesturesToAttach) {
     checkGestureCallbacksForWorklets(handler);
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName,
@@ -61,7 +61,7 @@ export function attachHandlers({
     if (!preparedGesture.isMounted) {
       return;
     }
-    for (const handler of gestures) {
+    for (const handler of gesturesToAttach) {
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
         filterConfig(
@@ -75,9 +75,7 @@ export function attachHandlers({
     scheduleFlushOperations();
   });
 
-  preparedGesture.gesturesToAttach = gestures;
-
-  for (const gesture of preparedGesture.gesturesToAttach) {
+  for (const gesture of gesturesToAttach) {
     const actionType = gesture.shouldUseReanimated
       ? ActionType.REANIMATED_WORKLET
       : ActionType.JS_FUNCTION_NEW_API;
@@ -100,10 +98,12 @@ export function attachHandlers({
     }
   }
 
+  preparedGesture.attachedGestures = gesturesToAttach;
+
   if (preparedGesture.animatedHandlers) {
     const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
 
-    preparedGesture.animatedHandlers.value = gestures
+    preparedGesture.animatedHandlers.value = gesturesToAttach
       .filter(isAnimatedGesture)
       .map((g) => g.handlers) as unknown as HandlerCallbacks<
       Record<string, unknown>
