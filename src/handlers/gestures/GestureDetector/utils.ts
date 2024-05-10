@@ -64,7 +64,9 @@ export function extractGestureRelations(gesture: GestureType) {
 }
 
 export function checkGestureCallbacksForWorklets(gesture: GestureType) {
-  if (__DEV__) {
+  if (!__DEV__) {
+    return;
+  }
     // if a gesture is explicitly marked to run on the JS thread there is no need to check
     // if callbacks are worklets as the user is aware they will be ran on the JS thread
     if (gesture.config.runOnJS) {
