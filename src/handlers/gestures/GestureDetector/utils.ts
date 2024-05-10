@@ -17,6 +17,7 @@ import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon'
 import { getReactNativeVersion } from '../../../getReactNativeVersion';
 import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useState } from 'react';
+import { Reanimated } from '../reanimatedWrapper';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -81,6 +82,11 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
           `Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
         )
       );
+    }
+
+    if (Reanimated === undefined) {
+      // if Reanimated is not available, we can't run worklets, so we shouldn't show the warning
+      return;
     }
 
     const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
