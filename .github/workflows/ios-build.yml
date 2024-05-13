@@ -41,4 +41,4 @@ jobs:
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
       - name: Build app
         working-directory: ${{ matrix.working-directory }}
-        run: react-native run-ios
+        run: npx react-native run-ios
