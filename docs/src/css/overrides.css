@@ -1,6 +1,8 @@
 :root {
   --swm-expandable-transition: transform 200ms ease;
   --ifm-code-font-size: 14px;
+  --swm-logo-title-width: 177px;
+  --swm-logo-height: 50px !important;
 }
 
 [class*='plugin-pages'] {
@@ -128,4 +130,16 @@ table thead tr {
   [class*='codeBlockContent'] code {
     -webkit-text-size-adjust: 100%;
   }
+}
+
+/* TODO: Remove after @swmansion/t-rex-ui 0.0.3 patch */
+
+[class*='sidebarLogo'] {
+  min-height: 0 !important;
+  margin: 0 !important;
+}
+
+[class*='sidebar'] [class*='logoWrapper'] a {
+  padding-left: 1.5rem;
+  align-items: center;
 }
