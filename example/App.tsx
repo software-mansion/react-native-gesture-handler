@@ -6,6 +6,7 @@ import {
   SectionList,
   Platform,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -179,10 +180,14 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function App() {
   return (
     <GestureHandlerRootView>
+      <StatusBar barStyle="dark-content" />
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
-            cardStyle: { height: Dimensions.get('window').height },
+            cardStyle: {
+              // It's important to set height for the screen, without it scroll doesn't work on web platform.
+              height: Dimensions.get('window').height,
+            },
           }}>
           <Stack.Screen
             name="Home"
