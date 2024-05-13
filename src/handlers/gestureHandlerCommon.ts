@@ -3,11 +3,7 @@
 // e.g. React.createRef<TapGestureHandler> -> React.createRef<typeof TapGestureHandler>.
 // See https://www.typescriptlang.org/docs/handbook/classes.html#constructor-functions for reference.
 import * as React from 'react';
-import {
-  Insets,
-  Platform,
-  findNodeHandle as findNodeHandleRN,
-} from 'react-native';
+import { Platform, findNodeHandle as findNodeHandleRN } from 'react-native';
 
 import { State } from '../State';
 import { TouchEventType } from '../TouchEventType';
@@ -65,7 +61,20 @@ export interface HandlerStateChangeEventPayload extends GestureEventPayload {
   oldState: ValueOf<typeof State>;
 }
 
-export type HitSlop = number | Insets | null | undefined;
+export type HitSlop =
+  | number
+  | null
+  | undefined
+  | Partial<
+      Record<
+        'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+        number
+      >
+    >
+  | Record<'width' | 'left', number>
+  | Record<'width' | 'right', number>
+  | Record<'height' | 'top', number>
+  | Record<'height' | 'bottom', number>;
 
 export type UserSelect = 'none' | 'auto' | 'text';
 export type ActiveCursor =
