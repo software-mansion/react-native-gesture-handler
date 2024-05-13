@@ -40,6 +40,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   if (_firstTouch) {
     // ignore rest of fingers
     return;
@@ -86,7 +87,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (void)performFeedbackIfRequired
 {
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_VISION
   if (_feedbackOnActivation) {
     if (@available(iOS 10.0, *)) {
       [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
@@ -125,6 +126,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  [_gestureHandler reset];
   _force = 0;
   _firstTouch = NULL;
 }
@@ -170,7 +172,8 @@ static const BOOL defaultFeedbackOnActivation = NO;
   return [RNGestureHandlerEventExtraData forForce:recognizer.force
                                       forPosition:[recognizer locationInView:recognizer.view]
                              withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                              withNumberOfTouches:recognizer.numberOfTouches];
+                              withNumberOfTouches:recognizer.numberOfTouches
+                                  withPointerType:_pointerType];
 }
 
 @end

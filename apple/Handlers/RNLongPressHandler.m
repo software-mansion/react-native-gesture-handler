@@ -14,11 +14,9 @@
 
 #import <React/RCTConvert.h>
 
-#import <mach/mach_time.h>
-
 @interface RNBetterLongPressGestureRecognizer : UILongPressGestureRecognizer {
-  uint64_t startTime;
-  uint64_t previousTime;
+  CFTimeInterval startTime;
+  CFTimeInterval previousTime;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
@@ -42,7 +40,7 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
-  previousTime = mach_absolute_time();
+  previousTime = CACurrentMediaTime();
   [_gestureHandler handleGesture:recognizer];
 }
 
@@ -59,11 +57,12 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   _initPosition = [self locationInView:self.view];
-  startTime = mach_absolute_time();
+  startTime = CACurrentMediaTime();
   [_gestureHandler reset];
   [self triggerAction];
 }
@@ -103,17 +102,12 @@
   [_gestureHandler.pointerTracker reset];
 
   [super reset];
+  [_gestureHandler reset];
 }
 
 - (NSUInteger)getDuration
 {
-  static mach_timebase_info_data_t sTimebaseInfo;
-
-  if (sTimebaseInfo.denom == 0) {
-    mach_timebase_info(&sTimebaseInfo);
-  }
-
-  return (NSUInteger)(((previousTime - startTime) * sTimebaseInfo.numer / (sTimebaseInfo.denom * 1000000)));
+  return (previousTime - startTime) * 1000;
 }
 
 @end
@@ -180,7 +174,8 @@
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                  withNumberOfTouches:recognizer.numberOfTouches
-                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]];
+                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
+                                     withPointerType:_pointerType];
 }
 @end
 
@@ -190,7 +185,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"Long press gesture handler is not supported on macOS");
+  RCTLogWarn(@"LongPressGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }

@@ -5,12 +5,24 @@ sidebar_label: Tap gesture
 sidebar_position: 4
 ---
 
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
-  </video>
+import TapGestureBasic from '@site/static/examples/TapGestureBasic';
+import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<TapGestureBasic/>}
+    src={TapGestureBasicSrc}
+    disableMarginBottom={true}
+  />
 </div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -25,6 +37,14 @@ The required number of taps and allowed distance from initial position may be co
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
 In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+<samp id="TapGestureBasic">Tap Gesture</samp>
 
 ## Reference
 
@@ -74,6 +94,19 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 ### `maxDistance(value: number)`
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
+
+### `mouseButton(value: MouseButton)` (Web & Android only)
+
+Allows users to choose which mouse button should handler respond to. The enum `MouseButton` consists of the following predefined fields:
+
+- `LEFT`
+- `RIGHT`
+- `MIDDLE`
+- `BUTTON_4`
+- `BUTTON_5`
+- `ALL`
+
+Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
 <BaseEventConfig />
 

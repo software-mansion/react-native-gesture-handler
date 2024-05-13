@@ -39,6 +39,7 @@ You will need to have an Android or iOS device or emulator connected as well as 
 
 | version | react-native version |
 | ------- | -------------------- |
+| 2.16.0+ | 0.68.0+              |
 | 2.14.0+ | 0.67.0+              |
 | 2.10.0+ | 0.64.0+              |
 | 2.0.0+  | 0.63.0+              |
@@ -60,3 +61,11 @@ This project has been build and is maintained thanks to the support from [Shopif
 [![shopify](https://avatars1.githubusercontent.com/u/8085?v=3&s=100 'Shopify.com')](https://shopify.com)
 [![expo](https://avatars2.githubusercontent.com/u/12504344?v=3&s=100 'Expo.io')](https://expo.io)
 [![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=react-native-reanimated-github 'Software Mansion')](https://swmansion.com)
+
+## Community Discord
+
+[Join the Software Mansion Community Discord](https://discord.swmansion.com) to chat about Gesture Handler or other Software Mansion libraries.
+
+## Gesture Handler is created by Software Mansion
+
+Since 2012 [Software Mansion](https://swmansion.com) is a software agency with experience in building web and mobile apps. We are Core React Native Contributors and experts in dealing with all kinds of React Native issues. We can help you build your next dream product – [Hire us](https://swmansion.com/contact#contact-form).

@@ -5,6 +5,9 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.DashPathEffect
+import android.graphics.Paint
+import android.graphics.PathEffect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.PaintDrawable
@@ -65,6 +68,41 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.borderRadius = borderRadius
   }
 
+  @ReactProp(name = "borderTopLeftRadius")
+  override fun setBorderTopLeftRadius(view: ButtonViewGroup, borderTopLeftRadius: Float) {
+    view.borderTopLeftRadius = borderTopLeftRadius
+  }
+
+  @ReactProp(name = "borderTopRightRadius")
+  override fun setBorderTopRightRadius(view: ButtonViewGroup, borderTopRightRadius: Float) {
+    view.borderTopRightRadius = borderTopRightRadius
+  }
+
+  @ReactProp(name = "borderBottomLeftRadius")
+  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, borderBottomLeftRadius: Float) {
+    view.borderBottomLeftRadius = borderBottomLeftRadius
+  }
+
+  @ReactProp(name = "borderBottomRightRadius")
+  override fun setBorderBottomRightRadius(view: ButtonViewGroup, borderBottomRightRadius: Float) {
+    view.borderBottomRightRadius = borderBottomRightRadius
+  }
+
+  @ReactProp(name = "borderWidth")
+  override fun setBorderWidth(view: ButtonViewGroup, borderWidth: Float) {
+    view.borderWidth = borderWidth
+  }
+
+  @ReactProp(name = "borderColor")
+  override fun setBorderColor(view: ButtonViewGroup, borderColor: Int?) {
+    view.borderColor = borderColor
+  }
+
+  @ReactProp(name = "borderStyle")
+  override fun setBorderStyle(view: ButtonViewGroup, borderStyle: String?) {
+    view.borderStyle = borderStyle
+  }
+
   @ReactProp(name = "rippleColor")
   override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
     view.rippleColor = rippleColor
@@ -115,6 +153,42 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       set(radius) = withBackgroundUpdate {
         field = radius * resources.displayMetrics.density
       }
+    var borderTopLeftRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderTopRightRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderBottomLeftRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderBottomRightRadius = 0f
+      set(radius) = withBackgroundUpdate {
+        field = radius * resources.displayMetrics.density
+      }
+    var borderWidth = 0f
+      set(width) = withBackgroundUpdate {
+        field = width * resources.displayMetrics.density
+      }
+    var borderColor: Int? = null
+      set(color) = withBackgroundUpdate {
+        field = color
+      }
+    var borderStyle: String? = "solid"
+      set(style) = withBackgroundUpdate {
+        field = style
+      }
+
+    private val hasBorderRadii: Boolean
+      get() = borderRadius != 0f ||
+        borderTopLeftRadius != 0f ||
+        borderTopRightRadius != 0f ||
+        borderBottomLeftRadius != 0f ||
+        borderBottomRightRadius != 0f
+
     var exclusive = true
 
     private var _backgroundColor = Color.TRANSPARENT
@@ -137,6 +211,30 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     private inline fun withBackgroundUpdate(block: () -> Unit) {
       block()
       needBackgroundUpdate = true
+    }
+
+    private fun buildBorderRadii(): FloatArray {
+      // duplicate radius for each corner, as setCornerRadii expects X radius and Y radius for each
+      return floatArrayOf(
+        borderTopLeftRadius,
+        borderTopLeftRadius,
+        borderTopRightRadius,
+        borderTopRightRadius,
+        borderBottomRightRadius,
+        borderBottomRightRadius,
+        borderBottomLeftRadius,
+        borderBottomLeftRadius,
+      )
+        .map { if (it != 0f) it else borderRadius }
+        .toFloatArray()
+    }
+
+    private fun buildBorderStyle(): PathEffect? {
+      return when (borderStyle) {
+        "dotted" -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0f)
+        "dashed" -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0f)
+        else -> null
+      }
     }
 
     override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
@@ -188,14 +286,25 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return false
     }
 
-    private fun updateBackgroundColor(backgroundColor: Int, borderRadius: Float, selectable: Drawable?) {
+    private fun updateBackgroundColor(backgroundColor: Int, selectable: Drawable?) {
       val colorDrawable = PaintDrawable(backgroundColor)
+      val borderDrawable = PaintDrawable(Color.TRANSPARENT)
 
-      if (borderRadius != 0f) {
-        colorDrawable.setCornerRadius(borderRadius)
+      if (hasBorderRadii) {
+        colorDrawable.setCornerRadii(buildBorderRadii())
+        borderDrawable.setCornerRadii(buildBorderRadii())
       }
 
-      val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable) else arrayOf(colorDrawable))
+      if (borderWidth > 0f) {
+        borderDrawable.paint.apply {
+          style = Paint.Style.STROKE
+          strokeWidth = borderWidth
+          color = borderColor ?: Color.BLACK
+          pathEffect = buildBorderStyle()
+        }
+      }
+
+      val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable, borderDrawable) else arrayOf(colorDrawable, borderDrawable))
       background = layerDrawable
     }
 
@@ -216,30 +325,21 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
       val selectable = createSelectableDrawable()
 
-      if (borderRadius != 0f) {
-        // Radius-connected lines below ought to be considered
-        // as a temporary solution. It do not allow to set
-        // different radius on each corner. However, I suppose it's fairly
-        // fine for button-related use cases.
-        // Therefore it might be used as long as:
-        // 1. ReactViewManager is not a generic class with a possibility to handle another ViewGroup
-        // 2. There's no way to force native behavior of ReactViewGroup's superclass's onTouchEvent
-        if (selectable is RippleDrawable) {
-          val mask = PaintDrawable(Color.WHITE)
-          mask.setCornerRadius(borderRadius)
-          selectable.setDrawableByLayerId(android.R.id.mask, mask)
-        }
+      if (hasBorderRadii && selectable is RippleDrawable) {
+        val mask = PaintDrawable(Color.WHITE)
+        mask.setCornerRadii(buildBorderRadii())
+        selectable.setDrawableByLayerId(android.R.id.mask, mask)
       }
 
       if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         foreground = selectable
         if (_backgroundColor != Color.TRANSPARENT) {
-          updateBackgroundColor(_backgroundColor, borderRadius, null)
+          updateBackgroundColor(_backgroundColor, null)
         }
       } else if (_backgroundColor == Color.TRANSPARENT && rippleColor == null) {
         background = selectable
       } else {
-        updateBackgroundColor(_backgroundColor, borderRadius, selectable)
+        updateBackgroundColor(_backgroundColor, selectable)
       }
     }
 

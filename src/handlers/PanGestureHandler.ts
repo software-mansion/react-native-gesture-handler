@@ -150,7 +150,9 @@ export interface PanGestureHandlerProps
    * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
    * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
    */
-  activeOffsetY?: number | number[];
+  activeOffsetY?:
+    | number
+    | [activeOffsetYStart: number, activeOffsetYEnd: number];
 
   /**
    * Range along X axis (in points) where fingers travels without activation of
@@ -160,7 +162,9 @@ export interface PanGestureHandlerProps
    * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
    * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
    */
-  activeOffsetX?: number | number[];
+  activeOffsetX?:
+    | number
+    | [activeOffsetXStart: number, activeOffsetXEnd: number];
 
   /**
    * When the finger moves outside this range (in points) along Y axis and
@@ -170,7 +174,7 @@ export interface PanGestureHandlerProps
    * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
    * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
    */
-  failOffsetY?: number | number[];
+  failOffsetY?: number | [failOffsetYStart: number, failOffsetYEnd: number];
 
   /**
    * When the finger moves outside this range (in points) along X axis and
@@ -180,7 +184,7 @@ export interface PanGestureHandlerProps
    * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
    * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
    */
-  failOffsetX?: number | number[];
+  failOffsetX?: number | [failOffsetXStart: number, failOffsetXEnd: number];
 }
 
 export const panHandlerName = 'PanGestureHandler';

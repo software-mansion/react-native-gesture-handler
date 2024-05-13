@@ -16,17 +16,17 @@
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
     "react": "18.2.0",
-    "react-native": "0.73.0-rc.5",
+    "react-native": "0.74.0",
     "react-native-gesture-handler": "link:../"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
-    "@react-native/babel-preset": "^0.73.18",
-    "@react-native/eslint-config": "^0.73.1",
-    "@react-native/metro-config": "^0.73.2",
-    "@react-native/typescript-config": "^0.73.1",
+    "@react-native/babel-preset": "^0.74.81",
+    "@react-native/eslint-config": "^0.74.81",
+    "@react-native/metro-config": "^0.74.81",
+    "@react-native/typescript-config": "0.74.81",
     "@tsconfig/react-native": "^3.0.0",
     "@types/jest": "^29.2.1",
     "@types/metro-config": "^0.76.3",
@@ -43,5 +43,6 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

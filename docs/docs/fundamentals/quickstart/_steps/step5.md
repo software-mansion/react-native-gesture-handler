@@ -1,7 +1,7 @@
 ```jsx
 import { Gesture } from 'react-native-gesture-handler';
 
-function App() {
+function Ball() {
   // ...
   const start = useSharedValue({ x: 0, y: 0 });
   const gesture = Gesture.Pan()

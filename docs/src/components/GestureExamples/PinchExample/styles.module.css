@@ -1,0 +1,35 @@
+.handPinchLeft,
+.handPinchRight {
+  position: absolute;
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 0.3s, opacity 0.3s ease-in-out;
+  z-index: 5;
+}
+
+.handPinchLeft {
+  transform: translate(-70%, 135%) rotate(10deg) scaleX(-1);
+}
+.handPinchRight {
+  transform: translate(100%, 200%) rotate(29deg);
+}
+
+.hands {
+  transform: scale(1);
+}
+
+.pinchClone {
+  height: 56px;
+  width: 56px;
+  border-radius: 100%;
+  position: relative;
+  left: -0.5rem;
+  top: -0.5rem;
+  z-index: 10;
+}
+
+.pinchClone:hover .handPinchLeft,
+.pinchClone:hover .handPinchRight {
+  opacity: 0;
+  visibility: hidden;
+}

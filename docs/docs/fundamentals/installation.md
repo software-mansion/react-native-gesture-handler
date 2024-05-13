@@ -8,6 +8,7 @@ sidebar_position: 2
 
 | version   | `react-native` version |
 | --------- | ---------------------- |
+| 2.16.0+   | 0.68.0+                |
 | 2.14.0+   | 0.67.0+                |
 | 2.10.0+   | 0.64.0+                |
 | 2.0.0+    | 0.63.0+                |
@@ -68,7 +69,7 @@ export default function App() {
 :::info
 If you use props such as `shouldCancelWhenOutside`, `simultaneousHandlers`, `waitFor` etc. with gesture handlers, the handlers need to be mounted under a single `GestureHandlerRootView`. So it's important to keep the `GestureHandlerRootView` as close to the actual root view as possible.
 
-Note that `GestureHandlerRootView` acts like a normal `View`. So if you want it to fill the screen, you will need to pass `{ flex: 1 }` like you'll need to do with a normal `View`. By default, it'll take the size of the content nested inside.
+Note that `GestureHandlerRootView` acts like a normal `View`. Also, gestures will only be recognized within the `GestureHandlerRootView` area. So if you want it to fill the screen, you will need to pass `{ flex: 1 }` like you'll need to do with a normal `View`. By default, it'll take the size of the content nested inside.
 :::
 
 :::tip

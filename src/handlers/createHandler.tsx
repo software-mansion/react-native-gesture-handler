@@ -5,10 +5,10 @@ import {
   DeviceEventEmitter,
   EmitterSubscription,
 } from 'react-native';
+import { customDirectEventTypes } from './customDirectEventTypes';
 // @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
 import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import type RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { State } from '../State';
 import {
   handlerIDToTag,
@@ -32,6 +32,10 @@ import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 const UIManagerAny = UIManager as any;
+
+customDirectEventTypes.topGestureHandlerEvent = {
+  registrationName: 'onGestureHandlerEvent',
+};
 
 const customGHEventsConfigFabricAndroid = {
   topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
@@ -148,6 +152,14 @@ type InternalEventHandlers = {
   onGestureHandlerEvent?: (event: any) => void;
   onGestureHandlerStateChange?: (event: any) => void;
 };
+
+type AttachGestureHandlerWeb = (
+  handlerTag: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  newView: any,
+  _actionType: ActionType,
+  propsRef: React.RefObject<unknown>
+) => void;
 
 const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 
@@ -315,7 +327,7 @@ export default function createHandler<
       if (Platform.OS === 'web') {
         // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
-          RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+          RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
         )(
           this.handlerTag,
           newViewTag,
@@ -329,18 +341,22 @@ export default function createHandler<
         });
 
         const actionType = (() => {
-          if (
-            (this.props?.onGestureEvent &&
-              'current' in this.props.onGestureEvent) ||
-            (this.props?.onHandlerStateChange &&
-              'current' in this.props.onHandlerStateChange)
-          ) {
+          const onGestureEvent = this.props?.onGestureEvent;
+          const isGestureHandlerWorklet =
+            onGestureEvent &&
+            ('current' in onGestureEvent ||
+              'workletEventHandler' in onGestureEvent);
+          const onHandlerStateChange = this.props?.onHandlerStateChange;
+          const isStateChangeHandlerWorklet =
+            onHandlerStateChange &&
+            ('current' in onHandlerStateChange ||
+              'workletEventHandler' in onHandlerStateChange);
+          const isReanimatedHandler =
+            isGestureHandlerWorklet || isStateChangeHandlerWorklet;
+          if (isReanimatedHandler) {
             // Reanimated worklet
             return ActionType.REANIMATED_WORKLET;
-          } else if (
-            this.props?.onGestureEvent &&
-            '__isNative' in this.props.onGestureEvent
-          ) {
+          } else if (onGestureEvent && '__isNative' in onGestureEvent) {
             // Animated.event with useNativeDriver: true
             return ActionType.NATIVE_ANIMATED_EVENT;
           } else {

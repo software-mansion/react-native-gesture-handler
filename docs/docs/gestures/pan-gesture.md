@@ -5,12 +5,24 @@ sidebar_label: Pan gesture
 sidebar_position: 3
 ---
 
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
-  </video>
+import PanGestureBasic from '@site/static/examples/PanGestureBasic';
+import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasicSrc';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<PanGestureBasic/>}
+    src={PanGestureBasicSrc}
+    disableMarginBottom={true}
+  />
 </div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -26,6 +38,14 @@ The gesture [activates](/docs/fundamentals/states-events#active) when a finger i
 Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](/docs/gestures/pan-gesture#minpointersvalue-number) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
+
+  <div className={appearOnMobile} style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+<samp id="PanGestureBasicSrc">Pan Gesture</samp>
 
 ## Reference
 
@@ -111,6 +131,19 @@ Android, by default, will calculate translation values based on the position of 
 ### `enableTrackpadTwoFingerGesture(value: boolean)` (iOS only)
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+
+### `mouseButton(value: MouseButton)` (Web & Android only)
+
+Allows users to choose which mouse button should handler respond to. The enum `MouseButton` consists of the following predefined fields:
+
+- `LEFT`
+- `RIGHT`
+- `MIDDLE`
+- `BUTTON_4`
+- `BUTTON_5`
+- `ALL`
+
+Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
 <BaseEventConfig />
 <BaseContinousEventConfig />

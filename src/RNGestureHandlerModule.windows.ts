@@ -1,11 +1,8 @@
 import React from 'react';
 
 import { ActionType } from './ActionType';
-import { isNewWebImplementationEnabled } from './EnableNewWebImplementation';
 
-//GestureHandlers
-import InteractionManager from './web/tools/InteractionManager';
-import NodeManager from './web/tools/NodeManager';
+// GestureHandlers
 import PanGestureHandler from './web/handlers/PanGestureHandler';
 import TapGestureHandler from './web/handlers/TapGestureHandler';
 import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
@@ -14,18 +11,7 @@ import RotationGestureHandler from './web/handlers/RotationGestureHandler';
 import FlingGestureHandler from './web/handlers/FlingGestureHandler';
 import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
 import ManualGestureHandler from './web/handlers/ManualGestureHandler';
-
-//Hammer Handlers
-import * as HammerNodeManager from './web_hammer/NodeManager';
-import HammerNativeViewGestureHandler from './web_hammer/NativeViewGestureHandler';
-import HammerPanGestureHandler from './web_hammer/PanGestureHandler';
-import HammerTapGestureHandler from './web_hammer/TapGestureHandler';
-import HammerLongPressGestureHandler from './web_hammer/LongPressGestureHandler';
-import HammerPinchGestureHandler from './web_hammer/PinchGestureHandler';
-import HammerRotationGestureHandler from './web_hammer/RotationGestureHandler';
-import HammerFlingGestureHandler from './web_hammer/FlingGestureHandler';
 import { Config } from './web/interfaces';
-import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -38,16 +24,6 @@ export const Gestures = {
   ManualGestureHandler,
 };
 
-export const HammerGestures = {
-  NativeViewGestureHandler: HammerNativeViewGestureHandler,
-  PanGestureHandler: HammerPanGestureHandler,
-  TapGestureHandler: HammerTapGestureHandler,
-  LongPressGestureHandler: HammerLongPressGestureHandler,
-  PinchGestureHandler: HammerPinchGestureHandler,
-  RotationGestureHandler: HammerRotationGestureHandler,
-  FlingGestureHandler: HammerFlingGestureHandler,
-};
-
 export default {
   handleSetJSResponder(_tag: number, _blockNativeResponder: boolean) {
     // NO-OP
@@ -56,89 +32,31 @@ export default {
     // NO-OP
   },
   createGestureHandler<T>(
-    handlerName: keyof typeof Gestures,
-    handlerTag: number,
-    config: T
+    _handlerName: keyof typeof Gestures,
+    _handlerTag: number,
+    _config: T
   ) {
-    if (isNewWebImplementationEnabled()) {
-      if (!(handlerName in Gestures)) {
-        throw new Error(
-          `react-native-gesture-handler: ${handlerName} is not supported on web.`
-        );
-      }
-
-      const GestureClass = Gestures[handlerName];
-      NodeManager.createGestureHandler(
-        handlerTag,
-        new GestureClass(new GestureHandlerWebDelegate())
-      );
-      InteractionManager.getInstance().configureInteractions(
-        NodeManager.getHandler(handlerTag),
-        config as unknown as Config
-      );
-    } else {
-      if (!(handlerName in HammerGestures)) {
-        throw new Error(
-          `react-native-gesture-handler: ${handlerName} is not supported on web.`
-        );
-      }
-
-      // @ts-ignore If it doesn't exist, the error is thrown
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const GestureClass = HammerGestures[handlerName];
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
-    }
-
-    this.updateGestureHandler(handlerTag, config as unknown as Config);
+    // NO-OP
   },
   attachGestureHandler(
-    handlerTag: number,
+    _handlerTag: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    newView: any,
+    _newView: any,
     _actionType: ActionType,
-    propsRef: React.RefObject<unknown>
+    _propsRef: React.RefObject<unknown>
   ) {
-    if (
-      !(newView instanceof HTMLElement || newView instanceof React.Component)
-    ) {
-      return;
-    }
-
-    if (isNewWebImplementationEnabled()) {
-      //@ts-ignore Types should be HTMLElement or React.Component
-      NodeManager.getHandler(handlerTag).init(newView, propsRef);
-    } else {
-      //@ts-ignore Types should be HTMLElement or React.Component
-      HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
-    }
+    // NO-OP
   },
-  updateGestureHandler(handlerTag: number, newConfig: Config) {
-    if (isNewWebImplementationEnabled()) {
-      NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
-
-      InteractionManager.getInstance().configureInteractions(
-        NodeManager.getHandler(handlerTag),
-        newConfig
-      );
-    } else {
-      HammerNodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
-    }
+  updateGestureHandler(_handlerTag: number, _newConfig: Config) {
+    // NO-OP
   },
-  getGestureHandlerNode(handlerTag: number) {
-    if (isNewWebImplementationEnabled()) {
-      return NodeManager.getHandler(handlerTag);
-    } else {
-      return HammerNodeManager.getHandler(handlerTag);
-    }
+  getGestureHandlerNode(_handlerTag: number) {
+    // NO-OP
   },
-  dropGestureHandler(handlerTag: number) {
-    if (isNewWebImplementationEnabled()) {
-      NodeManager.dropGestureHandler(handlerTag);
-    } else {
-      HammerNodeManager.dropGestureHandler(handlerTag);
-    }
+  dropGestureHandler(_handlerTag: number) {
+    // NO-OP
   },
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  flushOperations() {},
+  flushOperations() {
+    // NO-OP
+  },
 };

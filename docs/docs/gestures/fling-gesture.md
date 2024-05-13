@@ -5,12 +5,24 @@ sidebar_label: Fling gesture
 sidebar_position: 8
 ---
 
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
-  </video>
+import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
+import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasicSrc';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<FlingGestureBasic/>}
+    src={FlingGestureBasicSrc}
+    disableMarginBottom={true}
+  />
 </div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -21,6 +33,14 @@ A discrete gesture that activates when the movement is sufficiently long and fas
 Gesture gets [ACTIVE](/docs/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
 When gesture gets activated it will turn into [END](/docs/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+<samp id="FlingGestureBasicSrc">Fling Gesture</samp>
 
 ## Reference
 
@@ -61,6 +81,19 @@ fling.direction(Directions.DOWN);
 ### `numberOfPointers(value: number)`
 
 Determine exact number of points required to handle the fling gesture.
+
+### `mouseButton(value: MouseButton)` (Web & Android only)
+
+Allows users to choose which mouse button should handler respond to. The enum `MouseButton` consists of the following predefined fields:
+
+- `LEFT`
+- `RIGHT`
+- `MIDDLE`
+- `BUTTON_4`
+- `BUTTON_5`
+- `ALL`
+
+Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
 <BaseEventConfig />
 

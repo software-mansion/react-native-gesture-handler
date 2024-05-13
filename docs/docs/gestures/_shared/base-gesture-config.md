@@ -63,6 +63,6 @@ Adds a relation that makes other gestures wait with activation until this gestur
 
 **IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition).[`GestureDetector`](/docs/gestures/gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
-### `activeCursor(value)` (**web only**)
+### `activeCursor(value)` (Web only)
 
 This parameter allows to specify which cursor should be used when gesture activates. Supports all CSS cursor values (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.

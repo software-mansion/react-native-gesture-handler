@@ -105,6 +105,10 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (!shouldActivateWithMouse(sourceEvent)) {
+      return
+    }
+
     val state = state
     val action = sourceEvent.actionMasked
     if (state == STATE_UNDETERMINED) {
@@ -130,14 +134,14 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     if (shouldFail()) {
       fail()
     } else if (state == STATE_UNDETERMINED) {
-      if (action == MotionEvent.ACTION_DOWN) {
+      if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_BUTTON_PRESS) {
         begin()
       }
       startTap()
     } else if (state == STATE_BEGAN) {
-      if (action == MotionEvent.ACTION_UP) {
+      if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_BUTTON_RELEASE) {
         endTap()
-      } else if (action == MotionEvent.ACTION_DOWN) {
+      } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_BUTTON_PRESS) {
         startTap()
       }
     }

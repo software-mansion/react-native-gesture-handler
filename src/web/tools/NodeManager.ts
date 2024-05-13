@@ -1,5 +1,6 @@
 import { ValueOf } from '../../typeUtils';
-import { Gestures } from '../../RNGestureHandlerModule.web';
+import { Gestures } from '../Gestures';
+import type IGestureHandler from '../handlers/IGestureHandler';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default abstract class NodeManager {
@@ -8,9 +9,9 @@ export default abstract class NodeManager {
     InstanceType<ValueOf<typeof Gestures>>
   > = {};
 
-  public static getHandler(tag: number) {
+  public static getHandler(tag: number): IGestureHandler {
     if (tag in this.gestures) {
-      return this.gestures[tag];
+      return this.gestures[tag] as IGestureHandler;
     }
 
     throw new Error(`No handler for tag ${tag}`);
@@ -21,7 +22,9 @@ export default abstract class NodeManager {
     handler: InstanceType<ValueOf<typeof Gestures>>
   ): void {
     if (handlerTag in this.gestures) {
-      throw new Error(`Handler with tag ${handlerTag} already exists`);
+      throw new Error(
+        `Handler with tag ${handlerTag} already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.`
+      );
     }
 
     this.gestures[handlerTag] = handler;
@@ -32,6 +35,8 @@ export default abstract class NodeManager {
     if (!(handlerTag in this.gestures)) {
       return;
     }
+
+    this.gestures[handlerTag].onDestroy();
 
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.gestures[handlerTag];

@@ -1,7 +1,7 @@
 #import "RNGestureHandlerManager.h"
 
 #import <React/RCTComponent.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTModalHostViewController.h>
 #import <React/RCTRootContentView.h>
@@ -49,28 +49,59 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 @implementation RNGestureHandlerManager {
   RNGestureHandlerRegistry *_registry;
-  RCTUIManager *_uiManager;
   NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
   NSMutableDictionary<NSNumber *, NSNumber *> *_attachRetryCounter;
-  RCTEventDispatcher *_eventDispatcher;
+#ifdef RCT_NEW_ARCH_ENABLED
+  RCTModuleRegistry *_moduleRegistry;
+  RCTViewRegistry *_viewRegistry;
+#else
+  RCTUIManager *_uiManager;
+#endif // RCT_NEW_ARCH_ENABLED
+  id<RCTEventDispatcherProtocol> _eventDispatcher;
   id _reanimatedModule;
 }
 
-- (instancetype)initWithUIManager:(RCTUIManager *)uiManager eventDispatcher:(RCTEventDispatcher *)eventDispatcher
+#ifdef RCT_NEW_ARCH_ENABLED
+- (instancetype)initWithModuleRegistry:(RCTModuleRegistry *)moduleRegistry viewRegistry:(RCTViewRegistry *)viewRegistry
+{
+  if ((self = [super init])) {
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry = viewRegistry;
+    _eventDispatcher = [_moduleRegistry moduleForName:"EventDispatcher"];
+    [self initCommonProps];
+  }
+  return self;
+}
+#else
+- (instancetype)initWithUIManager:(RCTUIManager *)uiManager
+                  eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   if ((self = [super init])) {
     _uiManager = uiManager;
     _eventDispatcher = eventDispatcher;
-    _registry = [RNGestureHandlerRegistry new];
-    _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
-    _attachRetryCounter = [[NSMutableDictionary alloc] init];
-    _reanimatedModule = nil;
+    [self initCommonProps];
   }
   return self;
+}
+#endif // RCT_NEW_ARCH_ENABLED
+
+- (void)initCommonProps
+{
+  _registry = [RNGestureHandlerRegistry new];
+  _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
+  _attachRetryCounter = [[NSMutableDictionary alloc] init];
 }
 
 - (void)createGestureHandler:(NSString *)handlerName tag:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
+  if ([_registry handlerWithTag:handlerTag] != nullptr) {
+    NSString *errorMessage = [NSString
+        stringWithFormat:
+            @"Handler with tag %@ already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.",
+            handlerTag];
+    @throw [NSException exceptionWithName:@"HandlerAlreadyRegistered" reason:errorMessage userInfo:nil];
+  }
+
   static NSDictionary *map;
   static dispatch_once_t mapToken;
   dispatch_once(&mapToken, ^{
@@ -106,7 +137,11 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                toViewWithTag:(nonnull NSNumber *)viewTag
               withActionType:(RNGestureHandlerActionType)actionType
 {
+#ifdef RCT_NEW_ARCH_ENABLED
+  RNGHUIView *view = [_viewRegistry viewForReactTag:viewTag];
+#else
   RNGHUIView *view = [_uiManager viewForReactTag:viewTag];
+#endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
   if (view == nil || view.superview == nil) {
@@ -177,9 +212,9 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [_registry dropAllHandlers];
 }
 
-- (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
+- (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(BOOL)blockNativeResponder
 {
-  if ([blockNativeResponder boolValue]) {
+  if (blockNativeResponder) {
     for (RNRootViewGestureRecognizer *recognizer in _rootViewGestureRecognizers) {
       [recognizer blockOtherRecognizers];
     }
@@ -341,7 +376,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 #ifdef RCT_NEW_ARCH_ENABLED
   // Send event directly to Reanimated
   if (_reanimatedModule == nil) {
-    _reanimatedModule = [_uiManager.bridge moduleForName:@"ReanimatedModule"];
+    _reanimatedModule = [_moduleRegistry moduleForName:"ReanimatedModule"];
   }
 
   [_reanimatedModule eventDispatcherWillDispatchEvent:event];

@@ -5,12 +5,24 @@ sidebar_label: Long press gesture
 sidebar_position: 5
 ---
 
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<div style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-  <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-    <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
-  </video>
+import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
+import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<LongPressGestureBasic/>}
+    src={LongPressGestureBasicSrc}
+    disableMarginBottom={true}
+  />
 </div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -20,6 +32,14 @@ import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](/docs/gestures/long-press-gesture#mindurationvalue-number) or if the finger is moved further than the [allowable distance](/docs/gestures/long-press-gesture#maxdistancevalue-number).
+
+<div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+</div>
+
+<samp id="LongPressGestureBasic">Long Press Gesture</samp>
 
 ## Reference
 
@@ -49,6 +69,19 @@ Minimum time, expressed in milliseconds, that a finger must remain pressed on th
 ### `maxDistance(value: number)`
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture. The default value is 10.
+
+### `mouseButton(value: MouseButton)` (Web & Android only)
+
+Allows users to choose which mouse button should handler respond to. The enum `MouseButton` consists of the following predefined fields:
+
+- `LEFT`
+- `RIGHT`
+- `MIDDLE`
+- `BUTTON_4`
+- `BUTTON_5`
+- `ALL`
+
+Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
 <BaseEventConfig />
 

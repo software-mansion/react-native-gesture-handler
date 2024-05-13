@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import java.util.*
+import kotlin.collections.HashSet
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
@@ -22,6 +23,14 @@ class GestureHandlerOrchestrator(
   private val gestureHandlers = arrayListOf<GestureHandler<*>>()
   private val awaitingHandlers = arrayListOf<GestureHandler<*>>()
   private val preparedHandlers = arrayListOf<GestureHandler<*>>()
+
+  // In `onHandlerStateChange` method we iterate through `awaitingHandlers`, but calling `tryActivate` may modify this list.
+  // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
+  // removed from `awaitingHandlers`, it was still present in copy of original list. This hashset helps us identify which handlers
+  // are really inside `awaitingHandlers`.
+  // `contains` method on HashSet has O(1) complexity, so calling it inside for loop won't result in O(n^2) (contrary to ArrayList)
+  private val awaitingHandlersTags = HashSet<Int>()
+
   private var isHandlingTouch = false
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
@@ -73,16 +82,18 @@ class GestureHandlerOrchestrator(
     finishedHandlersCleanupScheduled = false
   }
 
-  private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>): Boolean {
-    for (otherHandler in gestureHandlers) {
-      if (!isFinished(otherHandler.state) && shouldHandlerWaitForOther(handler, otherHandler)) {
-        return true
-      }
-    }
-    return false
-  }
+  private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>) =
+    gestureHandlers.any { !isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
+
+  private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) = gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
 
   private fun tryActivate(handler: GestureHandler<*>) {
+    // If we are waiting for a gesture that has successfully finished, we should cancel handler
+    if (shouldBeCancelledByFinishedHandler(handler)) {
+      handler.cancel()
+      return
+    }
+
     // see if there is anyone else who we need to wait for
     if (hasOtherHandlerToWaitFor(handler)) {
       addAwaitingHandler(handler)
@@ -94,34 +105,47 @@ class GestureHandlerOrchestrator(
   }
 
   private fun cleanupAwaitingHandlers() {
-    awaitingHandlers.removeAll { !it.isAwaiting }
+    val awaitingHandlersCopy = awaitingHandlers.toList()
+
+    for (handler in awaitingHandlersCopy) {
+      if (!handler.isAwaiting) {
+        awaitingHandlers.remove(handler)
+        awaitingHandlersTags.remove(handler.tag)
+      }
+    }
   }
 
   /*package*/
   fun onHandlerStateChange(handler: GestureHandler<*>, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
     if (isFinished(newState)) {
+      // We have to loop through copy in order to avoid modifying collection
+      // while iterating over its elements
+      val currentlyAwaitingHandlers = awaitingHandlers.toList()
+
       // if there were handlers awaiting completion of this handler, we can trigger active state
-      for (otherHandler in awaitingHandlers) {
-        if (shouldHandlerWaitForOther(otherHandler, handler)) {
-          if (newState == GestureHandler.STATE_END) {
-            // gesture has ended, we need to kill the awaiting handler
-            otherHandler.cancel()
-            if (otherHandler.state == GestureHandler.STATE_END) {
-              // Handle edge case, where discrete gestures end immediately after activation thus
-              // their state is set to END and when the gesture they are waiting for activates they
-              // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
-              // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
-              otherHandler.dispatchStateChange(
-                GestureHandler.STATE_CANCELLED,
-                GestureHandler.STATE_BEGAN
-              )
-            }
-            otherHandler.isAwaiting = false
-          } else {
-            // gesture has failed recognition, we may try activating
-            tryActivate(otherHandler)
+      for (otherHandler in currentlyAwaitingHandlers) {
+        if (!shouldHandlerWaitForOther(otherHandler, handler) || !awaitingHandlersTags.contains(otherHandler.tag)) {
+          continue
+        }
+
+        if (newState == GestureHandler.STATE_END) {
+          // gesture has ended, we need to kill the awaiting handler
+          otherHandler.cancel()
+          if (otherHandler.state == GestureHandler.STATE_END) {
+            // Handle edge case, where discrete gestures end immediately after activation thus
+            // their state is set to END and when the gesture they are waiting for activates they
+            // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
+            // Send synthetic BEGAN -> CANCELLED to properly handle JS logic
+            otherHandler.dispatchStateChange(
+              GestureHandler.STATE_CANCELLED,
+              GestureHandler.STATE_BEGAN
+            )
           }
+          otherHandler.isAwaiting = false
+        } else {
+          // gesture has failed recognition, we may try activating
+          tryActivate(otherHandler)
         }
       }
       cleanupAwaitingHandlers()
@@ -168,15 +192,24 @@ class GestureHandlerOrchestrator(
     // Clear all awaiting handlers waiting for the current handler to fail
     for (otherHandler in awaitingHandlers.reversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler.cancel()
         otherHandler.isAwaiting = false
       }
     }
     cleanupAwaitingHandlers()
 
-    // Dispatch state change event if handler is no longer in the active state we should also
-    // trigger END state change and UNDETERMINED state change if necessary
+    // At this point the waiting handler is allowed to activate, so we need to send BEGAN -> ACTIVE event
+    // as it wasn't sent before. If handler has finished recognizing the gesture before it was allowed to
+    // activate, we also need to send ACTIVE -> END and END -> UNDETERMINED events, as it was blocked from
+    // sending events while waiting.
+    // There is one catch though - if the handler failed or was cancelled while waiting, relevant event has
+    // already been sent. The following chain would result in artificially activating that handler after the
+    // failure logic was ran and we don't want to do that.
+    if (currentState == GestureHandler.STATE_FAILED || currentState == GestureHandler.STATE_CANCELLED) {
+      return
+    }
+
     handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
+
     if (currentState != GestureHandler.STATE_ACTIVE) {
       handler.dispatchStateChange(GestureHandler.STATE_END, GestureHandler.STATE_ACTIVE)
       if (currentState != GestureHandler.STATE_END) {
@@ -373,6 +406,8 @@ class GestureHandlerOrchestrator(
     }
 
     awaitingHandlers.add(handler)
+    awaitingHandlersTags.add(handler.tag)
+
     with(handler) {
       isAwaiting = true
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++

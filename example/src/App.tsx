@@ -15,9 +15,12 @@ import DoubleDraggable from './release_tests/doubleDraggable';
 import { ComboWithGHScroll } from './release_tests/combo';
 import { TouchablesIndex, TouchableExample } from './release_tests/touchables';
 import Rows from './release_tests/rows';
-import Fling from './release_tests/fling';
+import NestedFling from './release_tests/nestedFling';
+import MouseButtons from './release_tests/mouseButtons';
+import ContextMenu from './release_tests/contextMenu';
 import NestedTouchables from './release_tests/nestedTouchables';
 import NestedButtons from './release_tests/nestedButtons';
+import PointerType from './release_tests/pointerType';
 import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './recipes/scaleAndRotate';
 import PanAndScroll from './recipes/panAndScroll';
@@ -31,6 +34,7 @@ import PanResponder from './basic/panResponder';
 import HorizontalDrawer from './basic/horizontalDrawer';
 import PagerAndDrawer from './basic/pagerAndDrawer';
 import ForceTouch from './basic/forcetouch';
+import Fling from './basic/fling';
 
 import ReanimatedSimple from './new_api/reanimated';
 import Camera from './new_api/camera';
@@ -48,6 +52,7 @@ import HoverableIcons from './new_api/hoverable_icons';
 import VelocityTest from './new_api/velocityTest';
 
 import EmptyExample from './empty/EmptyExample';
+import RectButtonBorders from './release_tests/rectButton';
 
 interface Example {
   name: string;
@@ -73,6 +78,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Horizontal drawer', component: HorizontalDrawer },
       { name: 'Pager & drawer', component: PagerAndDrawer },
       { name: 'Force touch', component: ForceTouch },
+      { name: 'Fling', component: Fling },
     ],
   },
   {
@@ -112,9 +118,13 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
-      { name: 'Fling', component: Fling },
+      { name: 'Nested Fling', component: NestedFling },
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+      { name: 'MouseButtons', component: MouseButtons },
+      { name: 'ContextMenu (web only)', component: ContextMenu },
+      { name: 'PointerType', component: PointerType },
+      { name: 'RectButton (borders)', component: RectButtonBorders },
     ],
   },
   {
@@ -157,7 +167,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <GestureHandlerRootView>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -216,9 +226,6 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   sectionTitle: {
     ...Platform.select({
       ios: {

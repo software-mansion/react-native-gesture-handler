@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
+import com.facebook.react.uimanager.ThemedReactContext
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
 
@@ -24,7 +25,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
     check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
     val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
@@ -49,14 +50,14 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView"
     )
-    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
     with(module) {
       registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)
     }
   }
 
-  private inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
+  internal inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
     override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
       val currentState = state
       // we shouldn't stop intercepting events when there is an active handler already, which could happen when
@@ -77,13 +78,13 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         action = MotionEvent.ACTION_CANCEL
       }
       if (rootView is RootView) {
-        rootView.onChildStartedNativeGesture(event)
+        rootView.onChildStartedNativeGesture(rootView, event)
       }
       event.recycle()
     }
   }
 
-  fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+  fun requestDisallowInterceptTouchEvent() {
     // If this method gets called it means that some native view is attempting to grab lock for
     // touch event delivery. In that case we cancel all gesture recognizers
     if (orchestrator != null && !passingTouch) {
@@ -115,6 +116,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   /*package*/
+  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
+  // We want to keep order of parameters, so instead of removing viewTag we suppress the warning
   fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
     if (blockNativeResponder) {
       UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }

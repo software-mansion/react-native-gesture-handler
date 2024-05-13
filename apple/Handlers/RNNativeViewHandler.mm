@@ -39,6 +39,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [_gestureHandler setCurrentPointerType:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -65,6 +66,7 @@
 {
   [_gestureHandler.pointerTracker reset];
   [super reset];
+  [_gestureHandler reset];
 }
 
 @end
@@ -132,6 +134,7 @@
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self setCurrentPointerType:event];
   [self reset];
 
   if (_disallowInterruption) {
@@ -147,21 +150,21 @@
 
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
 }
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
 }
 
 - (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event
@@ -172,11 +175,11 @@
     [control cancelTrackingWithEvent:event];
     [self sendEventsInState:RNGestureHandlerStateEnd
              forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
   } else {
     [self sendEventsInState:RNGestureHandlerStateActive
              forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
   }
 }
 
@@ -184,14 +187,14 @@
 {
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES withPointerType:_pointerType]];
 }
 
 - (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self sendEventsInState:RNGestureHandlerStateCancelled
            forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO]];
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
 }
 
 @end
@@ -216,7 +219,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"Manual gesture handler is not supported on macOS");
+  RCTLogWarn(@"NativeViewGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }

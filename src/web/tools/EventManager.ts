@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 
+type PointerEventCallback = (event: AdaptedEvent) => void;
+
 export default abstract class EventManager<T> {
   protected readonly view: T;
   protected pointersInBounds: number[] = [];
@@ -11,7 +13,9 @@ export default abstract class EventManager<T> {
     this.activePointersCounter = 0;
   }
 
-  public abstract setListeners(): void;
+  public abstract registerListeners(): void;
+  public abstract unregisterListeners(): void;
+
   protected abstract mapEvent(
     event: Event,
     eventType: EventTypes,
@@ -36,39 +40,37 @@ export default abstract class EventManager<T> {
   protected onPointerMoveOver(_event: AdaptedEvent): void {}
   protected onPointerMoveOut(_event: AdaptedEvent): void {}
 
-  public setOnPointerDown(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerDown(callback: PointerEventCallback): void {
     this.onPointerDown = callback;
   }
-  public setOnPointerAdd(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerAdd(callback: PointerEventCallback): void {
     this.onPointerAdd = callback;
   }
-  public setOnPointerUp(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerUp(callback: PointerEventCallback): void {
     this.onPointerUp = callback;
   }
-  public setOnPointerRemove(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerRemove(callback: PointerEventCallback): void {
     this.onPointerRemove = callback;
   }
-  public setOnPointerMove(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerMove(callback: PointerEventCallback): void {
     this.onPointerMove = callback;
   }
-  public setOnPointerLeave(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerLeave(callback: PointerEventCallback): void {
     this.onPointerLeave = callback;
   }
-  public setOnPointerEnter(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerEnter(callback: PointerEventCallback): void {
     this.onPointerEnter = callback;
   }
-  public setOnPointerCancel(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerCancel(callback: PointerEventCallback): void {
     this.onPointerCancel = callback;
   }
-  public setOnPointerOutOfBounds(
-    callback: (event: AdaptedEvent) => void
-  ): void {
+  public setOnPointerOutOfBounds(callback: PointerEventCallback): void {
     this.onPointerOutOfBounds = callback;
   }
-  public setOnPointerMoveOver(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerMoveOver(callback: PointerEventCallback): void {
     this.onPointerMoveOver = callback;
   }
-  public setOnPointerMoveOut(callback: (event: AdaptedEvent) => void): void {
+  public setOnPointerMoveOut(callback: PointerEventCallback): void {
     this.onPointerMoveOut = callback;
   }
 

@@ -107,24 +107,24 @@ If you've build something with this library you'd like to share, please contact 
 
 ### Gesture Handler Team 🚀
 
-<div class="community-holder-container">
+<div className="community-holder-container">
 
-  <div class="community-holder-container-item">
-    <div class="community-imageHolder">
+  <div className="community-holder-container-item">
+    <div className="community-imageHolder">
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U02700KC6J1-0c9e18c89e71-512" />
     </div>
     <div>Jakub Piasecki</div>
   </div>
 
-  <div class="community-holder-container-item">
-    <div class="community-imageHolder">
+  <div className="community-holder-container-item">
+    <div className="community-imageHolder">
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U03N3HU2C0M-60a31c54a7d5-512" />
     </div>
     <div>Michał Bert</div>
   </div>
 
-  <div class="community-holder-container-item">
-    <div class="community-imageHolder">
+  <div className="community-holder-container-item">
+    <div className="community-imageHolder">
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
     </div>
     <div>Krzysztof Magiera</div>
@@ -137,21 +137,21 @@ If you've build something with this library you'd like to share, please contact 
 
 We really appreciate our sponsors! Thanks to them we can develop our library and make the react-native world a better place. Special thanks for:
 
-<div class="community-holder-container">
+<div className="community-holder-container">
 
-  <div class="community-holder-container-item">
+  <div className="community-holder-container-item">
     <a href="https://www.shopify.com/">
-      <div class="community-imageHolder">
+      <div className="community-imageHolder">
         <img src="https://avatars1.githubusercontent.com/u/8085?v=3&s=100" />
       </div>
       <div>Shopify</div>
     </a>
   </div>
 
-  <div class="community-holder-container-item">
+  <div className="community-holder-container-item">
     <a href="https://expo.dev">
-      <div class="community-imageHolder">
-        <img class="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
+      <div className="community-imageHolder">
+        <img className="community-imageHolder" src="https://avatars2.githubusercontent.com/u/12504344?v=3&s=100" />
       </div>
       <div>Expo</div>
     </a>

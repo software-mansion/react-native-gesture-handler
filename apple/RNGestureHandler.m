@@ -176,6 +176,38 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.recognizer.enabled = enabled;
 }
 
+#if !TARGET_OS_OSX
+- (void)setCurrentPointerType:(UIEvent *)event
+{
+  UITouch *touch = [[event allTouches] anyObject];
+
+  switch (touch.type) {
+    case UITouchTypeDirect:
+      _pointerType = RNGestureHandlerTouch;
+      break;
+    case UITouchTypePencil:
+      _pointerType = RNGestureHandlerStylus;
+      break;
+    case UITouchTypeIndirectPointer:
+      _pointerType = RNGestureHandlerMouse;
+      break;
+    default:
+      _pointerType = RNGestureHandlerOtherPointer;
+      break;
+  }
+}
+#else
+- (void)setCurrentPointerTypeToMouse
+{
+  _pointerType = RNGestureHandlerMouse;
+}
+#endif
+
+- (UITouchType)getPointerType
+{
+  return _pointerType;
+}
+
 - (void)bindToView:(RNGHUIView *)view
 {
 #if !TARGET_OS_OSX
@@ -200,11 +232,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #if TARGET_OS_OSX
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
-                                 withNumberOfTouches:1];
+                                 withNumberOfTouches:1
+                                     withPointerType:RNGestureHandlerMouse];
 #else
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                 withNumberOfTouches:recognizer.numberOfTouches];
+                                 withNumberOfTouches:recognizer.numberOfTouches
+                                     withPointerType:_pointerType];
 #endif
 }
 
@@ -237,6 +271,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     // callback
     if (_lastState == RNGestureHandlerStateEnd &&
         (state == RNGestureHandlerStateFailed || state == RNGestureHandlerStateCancelled)) {
+      return;
+    }
+
+    // Recognizers don't respect manually changing their state (that happens when we are activating handler
+    // under custom conditions). If we send a custom event in state ACTIVE and the recognizer will later update its
+    // state, we will end up sending ACTIVE->BEGAN and BEGAN->ACTIVE chain. To prevent this, we simply detect the first
+    // weird state change and stop it (then we don't update _lastState), so the second call ends up without state change
+    // and is fine.
+    if (state == RNGestureHandlerStateBegan && _lastState == RNGestureHandlerStateActive) {
       return;
     }
 
@@ -285,7 +328,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
                                           withChangedPointers:_pointerTracker.changedPointersData
                                               withAllPointers:_pointerTracker.allPointersData
-                                          withNumberOfTouches:_pointerTracker.trackedPointersCount];
+                                          withNumberOfTouches:_pointerTracker.trackedPointersCount
+                                              withPointerType:_pointerType];
   id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
                                                   handlerTag:_tag
                                                        state:state
@@ -438,7 +482,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
           return YES;
         }
       }
-    } else if (handler->_simultaneousHandlers) {
+    }
+
+    if (handler->_simultaneousHandlers) {
       for (NSNumber *handlerTag in handler->_simultaneousHandlers) {
         if ([self.tag isEqual:handlerTag]) {
           return YES;

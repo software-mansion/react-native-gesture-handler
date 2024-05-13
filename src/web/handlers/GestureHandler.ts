@@ -7,7 +7,6 @@ import {
   ResultEvent,
   PointerData,
   ResultTouchEvent,
-  PointerType,
   TouchEventType,
   EventTypes,
 } from '../interfaces';
@@ -16,12 +15,15 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import { PointerType } from '../../PointerType';
 
-export default abstract class GestureHandler {
+export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
 
-  protected shouldCancellWhenOutside = false;
+  protected shouldCancelWhenOutside = false;
   protected hasCustomActivationCriteria = false;
   protected enabled = false;
 
@@ -37,11 +39,13 @@ export default abstract class GestureHandler {
   protected awaiting = false;
   protected active = false;
   protected shouldResetProgress = false;
-  protected pointerType: PointerType = PointerType.NONE;
+  protected pointerType: PointerType = PointerType.MOUSE;
 
-  protected delegate: GestureHandlerDelegate<unknown>;
+  protected delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
 
-  public constructor(delegate: GestureHandlerDelegate<unknown>) {
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
     this.delegate = delegate;
   }
 
@@ -70,7 +74,8 @@ export default abstract class GestureHandler {
     manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
     manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
     manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
-    manager.setListeners();
+
+    manager.registerListeners();
   }
 
   //
@@ -117,6 +122,10 @@ export default abstract class GestureHandler {
     );
 
     this.onStateChange(newState, oldState);
+
+    if (!this.enabled && this.isFinished()) {
+      this.currentState = State.UNDETERMINED;
+    }
   }
 
   protected onStateChange(_newState: State, _oldState: State): void {}
@@ -167,13 +176,13 @@ export default abstract class GestureHandler {
     }
   }
 
-  public activate(_force = false) {
+  public activate(force = false) {
     if (
-      this.currentState === State.UNDETERMINED ||
-      this.currentState === State.BEGAN
+      (this.config.manualActivation !== true || force) &&
+      (this.currentState === State.UNDETERMINED ||
+        this.currentState === State.BEGAN)
     ) {
       this.delegate.onActivate();
-
       this.moveToState(State.ACTIVE);
     }
   }
@@ -224,7 +233,7 @@ export default abstract class GestureHandler {
     this.activationIndex = value;
   }
 
-  public shouldWaitForHandlerFailure(handler: GestureHandler): boolean {
+  public shouldWaitForHandlerFailure(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -235,7 +244,7 @@ export default abstract class GestureHandler {
     );
   }
 
-  public shouldRequireToWaitForFailure(handler: GestureHandler): boolean {
+  public shouldRequireToWaitForFailure(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -246,7 +255,7 @@ export default abstract class GestureHandler {
     );
   }
 
-  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+  public shouldRecognizeSimultaneously(handler: IGestureHandler): boolean {
     if (handler === this) {
       return true;
     }
@@ -257,7 +266,7 @@ export default abstract class GestureHandler {
     );
   }
 
-  public shouldBeCancelledByOther(handler: GestureHandler): boolean {
+  public shouldBeCancelledByOther(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
     }
@@ -308,7 +317,7 @@ export default abstract class GestureHandler {
     }
   }
   protected onPointerLeave(event: AdaptedEvent): void {
-    if (this.shouldCancellWhenOutside) {
+    if (this.shouldCancelWhenOutside) {
       switch (this.currentState) {
         case State.ACTIVE:
           this.cancel();
@@ -353,7 +362,7 @@ export default abstract class GestureHandler {
     if (
       this.enabled &&
       this.active &&
-      (!out || (out && !this.shouldCancellWhenOutside))
+      (!out || (out && !this.shouldCancelWhenOutside))
     ) {
       this.sendEvent(this.currentState, this.currentState);
     }
@@ -416,6 +425,7 @@ export default abstract class GestureHandler {
         handlerTag: this.handlerTag,
         target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
@@ -736,7 +746,19 @@ export default abstract class GestureHandler {
     return false;
   }
 
+  public isButtonInConfig(mouseButton: MouseButton | undefined) {
+    return (
+      !mouseButton ||
+      (!this.config.mouseButton && mouseButton === MouseButton.LEFT) ||
+      (this.config.mouseButton && mouseButton & this.config.mouseButton)
+    );
+  }
+
   protected resetConfig(): void {}
+
+  public onDestroy(): void {
+    this.delegate.destroy(this.config);
+  }
 
   //
   // Getters and setters
@@ -754,7 +776,7 @@ export default abstract class GestureHandler {
     return this.config;
   }
 
-  public getDelegate(): GestureHandlerDelegate<unknown> {
+  public getDelegate(): GestureHandlerDelegate<unknown, IGestureHandler> {
     return this.delegate;
   }
 
@@ -783,11 +805,11 @@ export default abstract class GestureHandler {
   }
 
   protected setShouldCancelWhenOutside(shouldCancel: boolean) {
-    this.shouldCancellWhenOutside = shouldCancel;
+    this.shouldCancelWhenOutside = shouldCancel;
   }
 
   protected getShouldCancelWhenOutside(): boolean {
-    return this.shouldCancellWhenOutside;
+    return this.shouldCancelWhenOutside;
   }
 
   public getPointerType(): PointerType {

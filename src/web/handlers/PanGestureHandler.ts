@@ -20,6 +20,7 @@ export default class PanGestureHandler extends GestureHandler {
     'failOffsetYEnd',
     'minVelocityX',
     'minVelocityY',
+    'minVelocity',
   ];
 
   public velocityX = 0;
@@ -211,11 +212,18 @@ export default class PanGestureHandler extends GestureHandler {
 
   //EventsHandling
   protected onPointerDown(event: AdaptedEvent): void {
+    if (!this.isButtonInConfig(event.button)) {
+      return;
+    }
+
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
 
     this.lastX = this.tracker.getLastAvgX();
     this.lastY = this.tracker.getLastAvgY();
+
+    this.startX = this.lastX;
+    this.startY = this.lastY;
 
     this.tryBegin(event);
     this.checkBegan();

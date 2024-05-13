@@ -1,6 +1,12 @@
-import { UserSelect, ActiveCursor } from '../handlers/gestureHandlerCommon';
+import {
+  UserSelect,
+  ActiveCursor,
+  MouseButton,
+  TouchAction,
+} from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { State } from '../State';
+import { PointerType } from '../PointerType';
 
 export interface HitSlop {
   left?: number;
@@ -22,6 +28,7 @@ type ConfigArgs =
   | boolean
   | HitSlop
   | UserSelect
+  | TouchAction
   | ActiveCursor
   | Directions
   | Handler[]
@@ -37,6 +44,10 @@ export interface Config extends Record<string, ConfigArgs> {
   shouldCancelWhenOutside?: boolean;
   userSelect?: UserSelect;
   activeCursor?: ActiveCursor;
+  mouseButton?: MouseButton;
+  enableContextMenu?: boolean;
+  touchAction?: TouchAction;
+  manualActivation?: boolean;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
@@ -77,6 +88,12 @@ interface NativeEvent extends Record<string, NativeEventArgs> {
   handlerTag: number;
   target: number;
   oldState?: State;
+  pointerType: PointerType;
+}
+
+export interface Point {
+  x: number;
+  y: number;
 }
 
 export interface PointerData {
@@ -122,22 +139,11 @@ export interface AdaptedEvent {
   pointerId: number;
   eventType: EventTypes;
   pointerType: PointerType;
-  buttons: number;
   time: number;
+  button?: MouseButton;
   allTouches?: TouchList;
   changedTouches?: TouchList;
   touchEventType?: TouchEventType;
-}
-
-export enum MouseButtons {
-  NONE,
-  LEFT,
-  RIGHT,
-  LEFT_RIGHT,
-  SCROLL,
-  SCROLL_LEFT,
-  SCROLL_RIGHT,
-  SCROLL_LEFT_RIGHT,
 }
 
 export enum EventTypes {
@@ -157,11 +163,4 @@ export enum TouchEventType {
   MOVE,
   UP,
   CANCELLED,
-}
-
-export enum PointerType {
-  NONE = 'none',
-  MOUSE = 'mouse',
-  TOUCH = 'touch',
-  PEN = 'pen',
 }
