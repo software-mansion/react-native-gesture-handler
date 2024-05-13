@@ -36,9 +36,6 @@ jobs:
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
         run: yarn
-      - name: Generate native source code
-        working-directory: ${{ matrix.working-directory }}
-        run: expo prebuild
       - name: Install pods
         working-directory: ${{ matrix.working-directory }}/ios
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
