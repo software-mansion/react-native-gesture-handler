@@ -162,6 +162,7 @@ const EXAMPLES: ExamplesSection[] = [
 
 type RootStackParamList = {
   Home: undefined;
+  TouchableExample: { item: string };
 } & {
   [Screen: string]: undefined;
 };

@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     height: BOX_SIZE,
     backgroundColor: '#001A72',
     borderRadius: 20,
+    //@ts-expect-error
     cursor: 'grab',
   },
 });
