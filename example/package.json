@@ -4,10 +4,10 @@
   "private": true,
   "main": "expo/AppEntry.js",
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "expo start --android --dev-client",
+    "ios": "expo start --ios --dev-client",
     "web": "expo start --web",
-    "start": "react-native start",
+    "start": "expo start --dev-client",
     "test": "jest",
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint src/ && yarn prettier --check src/",
