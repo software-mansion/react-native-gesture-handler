@@ -5,7 +5,7 @@ on:
       - '.github/workflows/ios-build.yml'
       - 'RNGestureHandler.podspec'
       - 'apple/**'
-      - 'Example/ios/**'
+      - 'example/ios/**'
       - 'FabricExample/ios/**'
   push:
     branches:

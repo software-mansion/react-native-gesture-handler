@@ -1,5 +1,12 @@
 import React from 'react';
-import { Text, View, StyleSheet, SectionList, Platform } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SectionList,
+  Platform,
+  Dimensions,
+} from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
@@ -173,7 +180,10 @@ export default function App() {
   return (
     <GestureHandlerRootView>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator
+          screenOptions={{
+            cardStyle: { height: Dimensions.get('window').height },
+          }}>
           <Stack.Screen
             name="Home"
             options={{ title: '✌️ Gesture Handler Demo' }}

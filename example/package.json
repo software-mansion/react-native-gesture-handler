@@ -10,7 +10,7 @@
     "start": "expo start --dev-client",
     "test": "jest",
     "ts-check": "yarn tsc --noEmit",
-    "lint-check": "yarn eslint src/ && yarn prettier --check src/",
+    "lint-check": "yarn eslint App.tsx src/ && yarn prettier --check App.tsx src/",
     "postinstall": "patch-package && expo prebuild"
   },
   "dependencies": {
