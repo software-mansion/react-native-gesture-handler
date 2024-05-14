@@ -128,65 +128,67 @@ export function useAnimatedGesture(
     for (let i = 0; i < currentCallback.length; i++) {
       const gesture = currentCallback[i];
 
-      if (event.handlerTag === gesture.handlerTag) {
-        if (isStateChangeEvent(event)) {
-          if (
-            event.oldState === State.UNDETERMINED &&
-            event.state === State.BEGAN
-          ) {
-            runWorklet(CALLBACK_TYPE.BEGAN, gesture, event);
-          } else if (
-            (event.oldState === State.BEGAN ||
-              event.oldState === State.UNDETERMINED) &&
-            event.state === State.ACTIVE
-          ) {
-            runWorklet(CALLBACK_TYPE.START, gesture, event);
-            lastUpdateEvent.value[gesture.handlerTag] = undefined;
-          } else if (
-            event.oldState !== event.state &&
-            event.state === State.END
-          ) {
-            if (event.oldState === State.ACTIVE) {
-              runWorklet(CALLBACK_TYPE.END, gesture, event, true);
-            }
-            runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, true);
-          } else if (
-            (event.state === State.FAILED || event.state === State.CANCELLED) &&
-            event.state !== event.oldState
-          ) {
-            if (event.oldState === State.ACTIVE) {
-              runWorklet(CALLBACK_TYPE.END, gesture, event, false);
-            }
-            runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, false);
-          }
-        } else if (isTouchEvent(event)) {
-          if (!stateControllers[i]) {
-            stateControllers[i] = GestureStateManager.create(event.handlerTag);
-          }
+      if (event.handlerTag !== gesture.handlerTag) {
+        continue;
+      }
 
-          if (event.eventType !== TouchEventType.UNDETERMINED) {
-            runWorklet(
-              touchEventTypeToCallbackType(event.eventType),
-              gesture,
+      if (isStateChangeEvent(event)) {
+        if (
+          event.oldState === State.UNDETERMINED &&
+          event.state === State.BEGAN
+        ) {
+          runWorklet(CALLBACK_TYPE.BEGAN, gesture, event);
+        } else if (
+          (event.oldState === State.BEGAN ||
+            event.oldState === State.UNDETERMINED) &&
+          event.state === State.ACTIVE
+        ) {
+          runWorklet(CALLBACK_TYPE.START, gesture, event);
+          lastUpdateEvent.value[gesture.handlerTag] = undefined;
+        } else if (
+          event.oldState !== event.state &&
+          event.state === State.END
+        ) {
+          if (event.oldState === State.ACTIVE) {
+            runWorklet(CALLBACK_TYPE.END, gesture, event, true);
+          }
+          runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, true);
+        } else if (
+          (event.state === State.FAILED || event.state === State.CANCELLED) &&
+          event.state !== event.oldState
+        ) {
+          if (event.oldState === State.ACTIVE) {
+            runWorklet(CALLBACK_TYPE.END, gesture, event, false);
+          }
+          runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, false);
+        }
+      } else if (isTouchEvent(event)) {
+        if (!stateControllers[i]) {
+          stateControllers[i] = GestureStateManager.create(event.handlerTag);
+        }
+
+        if (event.eventType !== TouchEventType.UNDETERMINED) {
+          runWorklet(
+            touchEventTypeToCallbackType(event.eventType),
+            gesture,
+            event,
+            stateControllers[i]
+          );
+        }
+      } else {
+        runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);
+
+        if (gesture.onChange && gesture.changeEventCalculator) {
+          runWorklet(
+            CALLBACK_TYPE.CHANGE,
+            gesture,
+            gesture.changeEventCalculator?.(
               event,
-              stateControllers[i]
-            );
-          }
-        } else {
-          runWorklet(CALLBACK_TYPE.UPDATE, gesture, event);
+              lastUpdateEvent.value[gesture.handlerTag]
+            )
+          );
 
-          if (gesture.onChange && gesture.changeEventCalculator) {
-            runWorklet(
-              CALLBACK_TYPE.CHANGE,
-              gesture,
-              gesture.changeEventCalculator?.(
-                event,
-                lastUpdateEvent.value[gesture.handlerTag]
-              )
-            );
-
-            lastUpdateEvent.value[gesture.handlerTag] = event;
-          }
+          lastUpdateEvent.value[gesture.handlerTag] = event;
         }
       }
     }
