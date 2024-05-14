@@ -1,5 +1,4 @@
 import { findNodeHandle } from '../../gestureHandlerCommon';
-import { validateDetectorChildren } from './utils';
 
 import { isFabric, tagMessage } from '../../../utils';
 import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
@@ -24,7 +23,6 @@ export function useViewRefHandler(
         return;
       }
 
-      validateDetectorChildren(ref);
       state.viewRef = ref;
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
