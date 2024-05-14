@@ -7,9 +7,6 @@ import {
 } from '@docusaurus/theme-common/internal';
 import { translate } from '@docusaurus/Translate';
 import NavbarMobileSidebar from '@theme/Navbar/MobileSidebar';
-import Planets from '@site/src/components/Hero/Planets';
-import Stars from '@site/src/components/Hero/Stars';
-import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import styles from './styles.module.css';
 import usePageType from '@site/src/hooks/usePageType';
 
@@ -23,19 +20,6 @@ function NavbarBackdrop(props) {
   );
 }
 
-const LandingBackground = () => {
-  return (
-    <div className={styles.heroBackground}>
-      {ExecutionEnvironment.canUseViewport && (
-        <>
-          <Planets />
-          <Stars />
-        </>
-      )}
-    </div>
-  );
-};
-
 export default function NavbarLayout({ children }) {
   const {
     navbar: { hideOnScroll, style },
@@ -46,7 +30,6 @@ export default function NavbarLayout({ children }) {
 
   return (
     <div>
-      {isLanding && <LandingBackground />}
       <nav
         ref={navbarRef}
         aria-label={translate({
