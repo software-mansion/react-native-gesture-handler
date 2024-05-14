@@ -148,11 +148,13 @@ table thead tr {
     padding-left: 1.5rem;
   }
   [class*='colorModeToggle'] {
-    margin: 0 1.5em;
+    margin: 0 1.5em !important;
   }
 }
-[class*='colorModeToggle'] {
-  margin: 0 !important;
+@media (max-width: 996px) {
+  [class*='colorModeToggle'] {
+    margin: 0 0 !important;
+  }
 }
 
 /* // this wouldn't be in the patch because it only applies to Gesture Hander */
