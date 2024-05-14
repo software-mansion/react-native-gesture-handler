@@ -83,11 +83,21 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
     if (event.actionMasked == MotionEvent.ACTION_UP) {
-      view.onTouchEvent(event)
-      if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
-        activate()
+      if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
+        cancel()
+      } else {
+        view.onTouchEvent(event)
+        if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
+          activate()
+        }
+
+        if (state == STATE_UNDETERMINED) {
+          cancel()
+        } else {
+          end()
+        }
       }
-      end()
+
       hook.afterGestureEnd(event)
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       when {
@@ -104,10 +114,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           hook.handleEventBeforeActivation(event)
         }
         state != STATE_BEGAN -> {
-          if (hook.canBegin()) {
+          if (hook.canBegin(event)) {
             begin()
-          } else {
-            cancel()
           }
         }
       }
@@ -144,7 +152,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * @return Boolean value signalling whether the handler can transition to the BEGAN state. If false
      * the gesture will be cancelled.
      */
-    fun canBegin() = true
+    fun canBegin(event: MotionEvent) = true
 
     /**
      * Called after the gesture transitions to the END state.
