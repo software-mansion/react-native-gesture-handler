@@ -96,7 +96,7 @@ export interface BaseButtonProps extends RawButtonProps {
   /**
    * Used to pass ref from parent into `BaseButton`
    */
-  innerRef?: React.ForwardedRef<unknown>;
+  innerRef?: React.ForwardedRef<React.ComponentType<any>>;
 }
 
 export interface RectButtonProps extends BaseButtonProps {
@@ -227,9 +227,7 @@ class InnerBaseButton extends React.Component<BaseButtonProps> {
 
     return (
       <RawButton
-        ref={
-          this.props.innerRef as React.ForwardedRef<React.ComponentType<any>>
-        }
+        ref={this.props.innerRef}
         rippleColor={processColor(rippleColor)}
         {...rest}
         onGestureEvent={this.onGestureEvent}
@@ -240,7 +238,7 @@ class InnerBaseButton extends React.Component<BaseButtonProps> {
 }
 
 export const BaseButton = React.forwardRef<
-  unknown,
+  any,
   Omit<BaseButtonProps, 'innerRef'>
 >((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
@@ -309,7 +307,7 @@ class InnerRectButton extends React.Component<RectButtonProps> {
 }
 
 export const RectButton = React.forwardRef<
-  unknown,
+  any,
   Omit<RectButtonProps, 'innerRef'>
 >((props, ref) => <InnerRectButton innerRef={ref} {...props} />);
 
@@ -352,7 +350,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonProps> {
 }
 
 export const BorderlessButton = React.forwardRef<
-  unknown,
+  any,
   Omit<BorderlessButtonProps, 'innerRef'>
 >((props, ref) => <InnerBorderlessButton innerRef={ref} {...props} />);
 
