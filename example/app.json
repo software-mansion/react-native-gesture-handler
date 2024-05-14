@@ -13,7 +13,8 @@
     },
     "ios": {
       "bundleIdentifier": "com.example",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "supportsTablet": true
     },
     "android": {
       "versionCode": 1,
