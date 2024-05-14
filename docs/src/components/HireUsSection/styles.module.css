@@ -69,3 +69,9 @@
 .buttonNavyBorderStyling {
   border: 1px solid var(--swm-navy-light-100);
 }
+
+[data-theme='dark'] .buttonNavyStyling:hover,
+[data-theme='dark'] .buttonNavyStyling:hover svg {
+  stroke: var(--swm-landing-button-purple);
+  color: var(--swm-landing-button-purple);
+}
