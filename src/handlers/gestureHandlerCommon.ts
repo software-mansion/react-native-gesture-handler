@@ -63,6 +63,8 @@ export interface HandlerStateChangeEventPayload extends GestureEventPayload {
 
 export type HitSlop =
   | number
+  | null
+  | undefined
   | Partial<
       Record<
         'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
