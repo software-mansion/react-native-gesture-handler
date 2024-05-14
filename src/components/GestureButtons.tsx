@@ -65,6 +65,10 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
   touchSoundDisabled?: boolean;
 }
 
+interface ButtonWithRefProps {
+  innerRef?: React.ForwardedRef<React.ComponentType<any>>;
+}
+
 export interface BaseButtonProps extends RawButtonProps {
   /**
    * Called when the button gets pressed (analogous to `onPress` in
@@ -92,12 +96,9 @@ export interface BaseButtonProps extends RawButtonProps {
    * Defaults to 600.
    */
   delayLongPress?: number;
-
-  /**
-   * Used to pass ref from parent into `BaseButton`
-   */
-  innerRef?: React.ForwardedRef<React.ComponentType<any>>;
 }
+
+interface BaseButtonWithRefProps extends BaseButtonProps, ButtonWithRefProps {}
 
 export interface RectButtonProps extends BaseButtonProps {
   /**
@@ -113,6 +114,8 @@ export interface RectButtonProps extends BaseButtonProps {
   activeOpacity?: number;
 }
 
+interface RectButtonWithRefProps extends RectButtonProps, ButtonWithRefProps {}
+
 export interface BorderlessButtonProps extends BaseButtonProps {
   /**
    * iOS only.
@@ -122,12 +125,16 @@ export interface BorderlessButtonProps extends BaseButtonProps {
   activeOpacity?: number;
 }
 
+interface BorderlessButtonWithRefProps
+  extends BorderlessButtonProps,
+    ButtonWithRefProps {}
+
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
 
-class InnerBaseButton extends React.Component<BaseButtonProps> {
+class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
     delayLongPress: 600,
   };
@@ -254,7 +261,7 @@ const btnStyles = StyleSheet.create({
   },
 });
 
-class InnerRectButton extends React.Component<RectButtonProps> {
+class InnerRectButton extends React.Component<RectButtonWithRefProps> {
   static defaultProps = {
     activeOpacity: 0.105,
     underlayColor: 'black',
@@ -311,7 +318,7 @@ export const RectButton = React.forwardRef<
   Omit<RectButtonProps, 'innerRef'>
 >((props, ref) => <InnerRectButton innerRef={ref} {...props} />);
 
-class InnerBorderlessButton extends React.Component<BorderlessButtonProps> {
+class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps> {
   static defaultProps = {
     activeOpacity: 0.3,
     borderless: true,
