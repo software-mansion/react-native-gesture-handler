@@ -140,6 +140,26 @@ table thead tr {
 }
 
 [class*='sidebar'] [class*='logoWrapper'] a {
-  padding-left: 1.5rem;
   align-items: center;
+}
+
+@media (min-width: 996px) {
+  [class*='logoWrapper'] a {
+    padding-left: 1.5rem;
+  }
+  [class*='colorModeToggle'] {
+    margin: 0 1.5em;
+  }
+}
+[class*='colorModeToggle'] {
+  margin: 0 !important;
+}
+
+/* // this wouldn't be in the patch because it only applies to Gesture Hander */
+[class*='navbar__logo'] img {
+  margin-right: 0.5rem;
+}
+
+[class*='logoWrapper'] {
+  justify-content: flex-start !important;
 }
