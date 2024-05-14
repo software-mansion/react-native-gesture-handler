@@ -1,33 +1,30 @@
-const blacklist = require('metro-config/src/defaults/exclusionList');
+// Learn more https://docs.expo.io/guides/customizing-metro
+const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-const glob = require('glob-to-regexp');
+const config = getDefaultConfig(__dirname);
 
-function getBlacklist() {
-  const rootDir = path.resolve(__dirname, '..');
-  const currentDir = path.resolve(__dirname);
-  const nodeModuleDirs = [
-    glob(`${rootDir}/node_modules/*`),
-    glob(`${rootDir}/e2e/*`),
-    glob(`${currentDir}/node_modules/*/node_modules/fbjs/*`),
-    glob(`${currentDir}/node_modules/react-native/node_modules/@babel/*`),
-    glob(`${currentDir}/node_modules/*/node_modules/hoist-non-react-statics/*`),
-  ];
-  return blacklist(nodeModuleDirs);
-}
+// npm v7+ will install ../node_modules/react-native because of peerDependencies.
+// To prevent the incompatible react-native bewtween ./node_modules/react-native and ../node_modules/react-native,
+// excludes the one from the parent folder when bundling.
+config.resolver.blockList = [
+  ...Array.from(config.resolver.blockList ?? []),
+  new RegExp(path.resolve('..', 'node_modules', 'react-native')),
+  new RegExp(path.resolve('..', 'node_modules', 'react')),
+];
 
-module.exports = {
-  resolver: {
-    blocklist: getBlacklist(),
-    resolverMainFields: ['browser', 'react-native', 'main'],
+config.resolver.nodeModulesPaths = [
+  path.resolve(__dirname, './node_modules'),
+  path.resolve(__dirname, '../node_modules'),
+];
+
+config.watchFolders = [path.resolve(__dirname, '..')];
+
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    experimentalImportSupport: false,
+    inlineRequires: true,
   },
-  watchFolders: [path.resolve(__dirname, '..')],
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: false,
-      },
-    }),
-  },
-};
+});
+
+module.exports = config;
