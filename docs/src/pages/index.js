@@ -4,10 +4,13 @@ import styles from './styles.module.css';
 import Wave from '@site/src/components/Wave';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HomepageStartScreen from '@site/src/components/Hero/StartScreen';
+import LandingBackground from '@site/src/components/Hero/LandingBackground';
+import FooterBackground from '../components/FooterBackground';
 import Playground from '@site/src/components/Playground';
 import GestureFeatures from '@site/src/components/GestureFeatures';
 import Testimonials from '@site/src/components/Testimonials';
 import Sponsors from '@site/src/components/Sponsors';
+import HireUsSection from '../components/HireUsSection';
 
 function Home() {
   const context = useDocusaurusContext();
@@ -17,6 +20,7 @@ function Home() {
     <Layout
       title={`React Native Gesture Handler`}
       description="Declarative API exposing platform native touch and gesture system to React Native.">
+      <LandingBackground />
       <div className={styles.container}>
         <HomepageStartScreen />
         <Playground />
@@ -28,7 +32,9 @@ function Home() {
         <GestureFeatures />
         <Testimonials />
         <Sponsors />
+        <HireUsSection />
       </div>
+      <FooterBackground />
     </Layout>
   );
 }

@@ -1,0 +1,8 @@
+.moonContainer {
+  position: relative;
+  margin-top: 106px;
+}
+
+[class*='footerLanding'] {
+  margin-top: -106px;
+}
