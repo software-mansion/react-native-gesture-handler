@@ -211,6 +211,8 @@
   --swm-search-hit-border-hover: var(--swm-blue-light-100);
   --swm-search-hit-active-color: var(--swm-off-white);
 
+  --swm-docsearch-hit-source-color: var(--swm-navy-light-100);
+
   --swm-search-hit-results-color: var(--swm-navy-light-40);
 
   --swm-search-page-query-text-color: var(--swm-navy-light-100);
@@ -375,9 +377,11 @@
   --swm-search-hit-border-hover: var(--swm-blue-dark-40);
   --swm-search-hit-active-color: var(--swm-navy-light-100);
 
+  --swm-docsearch-hit-source-color: var(--swm-navy-light-10);
+
   --swm-search-hit-results-color: var(--swm-navy-light-20);
 
-  --swm-search-page-query-text-color: var(--swm-navy-light-10);
+  --swm-search-page-query-text-color: var(--swm-off-white);
 
   /* Sidebar */
   --swm-sidebar-background: var(--swm-navy);
