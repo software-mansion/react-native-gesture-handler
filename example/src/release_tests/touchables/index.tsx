@@ -373,7 +373,6 @@ export class TouchableExample extends Component<
           }}>
           <RNTouchable
             {...props}
-            // @ts-expect-error ATM types between root directory and example are divergent (73 vs 72)
             background={background?.(RNTouchableNativeFeedback)}>
             {renderChild(color)}
           </RNTouchable>

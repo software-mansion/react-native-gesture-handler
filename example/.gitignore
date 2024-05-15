@@ -73,3 +73,7 @@ buck-out/
 
 # testing
 /coverage
+
+# Expo
+android/
+ios/

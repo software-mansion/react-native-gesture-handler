@@ -5,16 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "react-native-gesture-handler": ["../src/index.ts"],
-      "react-native-gesture-handler/Swipeable": [
-        "../src/components/Swipeable.tsx"
-      ],
-      "react-native-gesture-handler/DrawerLayout": [
-        "../src/components/DrawerLayout.tsx"
-      ],
-      "react-native-gesture-handler/jest-utils": [
-        "../src/jestUtils/index.ts"
-      ]
+      "react-native-gesture-handler/jest-utils": ["../src/jestUtils/index.ts"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "App.tsx"]
 }

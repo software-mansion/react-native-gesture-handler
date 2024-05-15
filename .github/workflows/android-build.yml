@@ -5,7 +5,7 @@ on:
       - '.github/workflows/android-build.yml'
       - 'android/**'
       - 'Common/**'
-      - 'Example/android/**'
+      - 'example/android/**'
       - 'FabricExample/android/**'
   push:
     branches:
