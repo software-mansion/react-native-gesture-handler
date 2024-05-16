@@ -62,7 +62,6 @@
     "@egjs/hammerjs": "^2.0.17",
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
-    "lodash": "^4.17.21",
     "prop-types": "^15.7.2"
   },
   "jest": {
