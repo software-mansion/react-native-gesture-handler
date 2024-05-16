@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Text,
   View,
@@ -7,6 +7,8 @@ import {
   Platform,
   Dimensions,
   StatusBar,
+  SafeAreaView,
+  ScrollViewProps,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -17,6 +19,7 @@ import {
   GestureHandlerRootView,
   RectButton,
 } from 'react-native-gesture-handler';
+import Header, { HEADER_HEIGHT } from 'src/header';
 import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './src/release_tests/doubleDraggable';
@@ -64,6 +67,13 @@ import VelocityTest from './src/new_api/velocityTest';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
+import Animated, {
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useScrollViewOffset,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 interface Example {
   name: string;
@@ -191,7 +201,7 @@ export default function App() {
           }}>
           <Stack.Screen
             name="Home"
-            options={{ title: '✌️ Gesture Handler Demo' }}
+            options={{ headerShown: false }}
             component={MainScreen}
           />
           {EXAMPLES.flatMap(({ data }) => data).flatMap(
@@ -212,24 +222,63 @@ export default function App() {
 }
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
+  const scrollOffset = useSharedValue(0);
+
   return (
-    <SectionList
-      style={styles.list}
-      sections={EXAMPLES}
-      keyExtractor={(example) => example.name}
-      renderItem={({ item }) => (
-        <MainScreenItem
-          name={item.name}
-          onPressItem={(name) => navigation.navigate(name)}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <Header scrollOffset={scrollOffset} />
+        <SectionList
+          style={styles.list}
+          sections={EXAMPLES}
+          keyExtractor={(example) => example.name}
+          renderItem={({ item }) => (
+            <MainScreenItem
+              name={item.name}
+              onPressItem={(name) => navigation.navigate(name)}
+            />
+          )}
+          renderSectionHeader={({ section: { sectionTitle } }) => (
+            <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+          )}
+          renderScrollComponent={(props) => (
+            <ScrollComponentWithOffset
+              {...props}
+              contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
+              scrollOffset={scrollOffset}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
-      )}
-      renderSectionHeader={({ section: { sectionTitle } }) => (
-        <Text style={styles.sectionTitle}>{sectionTitle}</Text>
-      )}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
-    />
+      </View>
+    </SafeAreaView>
   );
 }
+
+const ScrollComponentWithOffset = React.forwardRef(
+  (
+    props: ScrollViewProps & { scrollOffset: SharedValue<number> },
+    ref: any
+  ) => {
+    const scrollRef = useAnimatedRef<Animated.ScrollView>();
+    const scrollViewOffset = useScrollViewOffset(scrollRef);
+
+    useAnimatedReaction(
+      () => {
+        return scrollViewOffset.value;
+      },
+      (offset) => {
+        props.scrollOffset.value = offset;
+      }
+    );
+
+    useEffect(() => {
+      ref.current = scrollRef.current;
+    }, [ref, scrollRef]);
+
+    return <Animated.ScrollView {...props} ref={scrollRef} />;
+  }
+);
 
 interface MainScreenItemProps {
   name: string;
@@ -245,6 +294,10 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9ff',
+  },
   sectionTitle: {
     ...Platform.select({
       ios: {
@@ -259,7 +312,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 5,
     paddingLeft: 10,
-    backgroundColor: '#efefef',
+    backgroundColor: '#f8f9ff',
   },
   list: {},
   separator: {
