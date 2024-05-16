@@ -1,14 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Text,
   View,
   StyleSheet,
-  SectionList,
   Platform,
   Dimensions,
   StatusBar,
   SafeAreaView,
-  ScrollViewProps,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -19,7 +17,6 @@ import {
   GestureHandlerRootView,
   RectButton,
 } from 'react-native-gesture-handler';
-import Header, { HEADER_HEIGHT } from 'src/header';
 import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './src/release_tests/doubleDraggable';
@@ -67,13 +64,7 @@ import VelocityTest from './src/new_api/velocityTest';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
-import Animated, {
-  SharedValue,
-  useAnimatedReaction,
-  useAnimatedRef,
-  useScrollViewOffset,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { ListWithHeader } from './src/ListWithHeader';
 
 interface Example {
   name: string;
@@ -222,63 +213,26 @@ export default function App() {
 }
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
-  const scrollOffset = useSharedValue(0);
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
-        <Header scrollOffset={scrollOffset} />
-        <SectionList
-          style={styles.list}
-          sections={EXAMPLES}
-          keyExtractor={(example) => example.name}
-          renderItem={({ item }) => (
-            <MainScreenItem
-              name={item.name}
-              onPressItem={(name) => navigation.navigate(name)}
-            />
-          )}
-          renderSectionHeader={({ section: { sectionTitle } }) => (
-            <Text style={styles.sectionTitle}>{sectionTitle}</Text>
-          )}
-          renderScrollComponent={(props) => (
-            <ScrollComponentWithOffset
-              {...props}
-              contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
-              scrollOffset={scrollOffset}
-            />
-          )}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-        />
-      </View>
+      <ListWithHeader
+        style={styles.list}
+        sections={EXAMPLES}
+        keyExtractor={(example) => example.name}
+        renderItem={({ item }) => (
+          <MainScreenItem
+            name={item.name}
+            onPressItem={(name) => navigation.navigate(name)}
+          />
+        )}
+        renderSectionHeader={({ section: { sectionTitle } }) => (
+          <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
     </SafeAreaView>
   );
 }
-
-const ScrollComponentWithOffset = React.forwardRef(
-  (
-    props: ScrollViewProps & { scrollOffset: SharedValue<number> },
-    ref: any
-  ) => {
-    const scrollRef = useAnimatedRef<Animated.ScrollView>();
-    const scrollViewOffset = useScrollViewOffset(scrollRef);
-
-    useAnimatedReaction(
-      () => {
-        return scrollViewOffset.value;
-      },
-      (offset) => {
-        props.scrollOffset.value = offset;
-      }
-    );
-
-    useEffect(() => {
-      ref.current = scrollRef.current;
-    }, [ref, scrollRef]);
-
-    return <Animated.ScrollView {...props} ref={scrollRef} />;
-  }
-);
 
 interface MainScreenItemProps {
   name: string;
