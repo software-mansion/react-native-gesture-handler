@@ -45,7 +45,7 @@ export const baseGestureHandlerProps = [
   'onHandlerStateChange',
 ] as const;
 
-export const baseGestureHandlerWithMonitorProps = [
+export const baseGestureHandlerWithDetectorProps = [
   ...commonProps,
   'needsPointerData',
   'manualActivation',
