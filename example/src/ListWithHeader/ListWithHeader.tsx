@@ -11,10 +11,10 @@ import Animated, {
   useScrollViewOffset,
   useAnimatedReaction,
   useSharedValue,
-  withTiming,
   useAnimatedProps,
   useAnimatedStyle,
   runOnJS,
+  withSpring,
 } from 'react-native-reanimated';
 import Header, { HEADER_HEIGHT } from './Header';
 import {
@@ -30,6 +30,7 @@ export function ListWithHeader<ItemT, SectionT>(
 ) {
   const scrollOffset = useSharedValue(0);
   const scrollEnabled = useSharedValue(true);
+  const androidDragDist = useSharedValue(0);
 
   function enableScroll() {
     setTimeout(() => {
@@ -40,8 +41,13 @@ export function ListWithHeader<ItemT, SectionT>(
   const dragGesture = Gesture.Pan()
     .onChange((e) => {
       if (IS_ANDROID) {
-        if (scrollOffset.value <= 0) {
-          scrollOffset.value -= e.changeY;
+        if (scrollOffset.value <= 0 && e.changeY > 0) {
+          androidDragDist.value -= e.changeY;
+          scrollOffset.value = -Math.pow(
+            Math.max(-androidDragDist.value, 0),
+            0.85
+          );
+          console.log(scrollOffset.value);
           scrollEnabled.value = false;
         } else {
           runOnJS(enableScroll)();
@@ -50,9 +56,11 @@ export function ListWithHeader<ItemT, SectionT>(
     })
     .onFinalize(() => {
       if (IS_ANDROID && scrollOffset.value <= 0) {
-        scrollOffset.value = withTiming(0);
+        scrollOffset.value = withSpring(0, { damping: 50, stiffness: 500 });
         runOnJS(enableScroll)();
       }
+
+      androidDragDist.value = 0;
     });
 
   const containerProps = useAnimatedStyle(() => {
