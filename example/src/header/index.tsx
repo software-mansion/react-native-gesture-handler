@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Animated, {
   SharedValue,
+  interpolate,
   measure,
   useAnimatedRef,
   useAnimatedStyle,
@@ -47,20 +48,22 @@ export default function Header(props: HeaderProps) {
   const signetStyle = useAnimatedStyle(() => {
     const size = measure(containerRef);
     const imageSize = headerHeight.value * 0.5;
+    const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
+
     return {
       position: 'absolute',
       width: imageSize,
       height: imageSize,
-      top:
-        Math.min(headerHeight.value, HEADER_HEIGHT) *
-        0.25 *
-        (1 - expandFactor.value),
-      left:
-        ((size?.width ?? 0) - imageSize) *
-          0.5 *
-          expandFactor.value *
-          expandFactor.value +
-        (1 - expandFactor.value) * COLLAPSED_HEADER_HEIGHT * 0.25,
+      top: interpolate(
+        Math.sqrt(expandFactor.value),
+        [0, 1],
+        [clampedHeight * 0.25, 0]
+      ),
+      left: interpolate(
+        expandFactor.value,
+        [0, 1],
+        [COLLAPSED_HEADER_HEIGHT * 0.25, ((size?.width ?? 0) - imageSize) * 0.5]
+      ),
       opacity: opacity.value,
     };
   });
@@ -74,7 +77,11 @@ export default function Header(props: HeaderProps) {
       position: 'absolute',
       width: width,
       height: height,
-      bottom: COLLAPSED_HEADER_HEIGHT * 0.25 * (1 - expandFactor.value),
+      bottom: interpolate(
+        expandFactor.value,
+        [0, 1],
+        [COLLAPSED_HEADER_HEIGHT * 0.25, 0]
+      ),
       left: ((size?.width ?? 0) - width) * 0.5,
       opacity: opacity.value,
     };
@@ -87,6 +94,7 @@ export default function Header(props: HeaderProps) {
   return (
     <Animated.View
       ref={containerRef}
+      collapsable={false}
       style={[
         headerStyle,
         {
