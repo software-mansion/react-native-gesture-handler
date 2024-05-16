@@ -189,6 +189,9 @@ export default function App() {
               // It's important to set height for the screen, without it scroll doesn't work on web platform.
               height: Dimensions.get('window').height,
             },
+            headerStyle: {
+              backgroundColor: '#f8f9ff',
+            },
           }}>
           <Stack.Screen
             name="Home"
@@ -263,9 +266,7 @@ const styles = StyleSheet.create({
         fontFamily: 'sans-serif-medium',
       },
     }),
-    paddingTop: 10,
-    paddingBottom: 5,
-    paddingLeft: 10,
+    padding: 16,
     backgroundColor: '#f8f9ff',
   },
   list: {},
