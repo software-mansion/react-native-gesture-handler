@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
 import Animated, {
   SharedValue,
   interpolate,
@@ -13,14 +14,21 @@ import Animated, {
 const SIGNET = require('./signet.png');
 const TEXT = require('./text.png');
 
-export const HEADER_HEIGHT = 192;
-export const COLLAPSED_HEADER_HEIGHT = 96;
+export const HEADER_HEIGHT = Platform.OS === 'web' ? 64 : 192;
+export const COLLAPSED_HEADER_HEIGHT = Platform.OS === 'web' ? 64 : 96;
 
 export interface HeaderProps {
   scrollOffset: SharedValue<number>;
 }
 
 export default function Header(props: HeaderProps) {
+  if (Platform.OS === 'web') {
+    return <HeaderWeb {...props} />;
+  }
+  return <HeaderNative {...props} />;
+}
+
+function HeaderNative(props: HeaderProps) {
   const containerRef = useAnimatedRef();
   const headerHeight = useDerivedValue(() => {
     return Math.max(
@@ -111,6 +119,40 @@ export default function Header(props: HeaderProps) {
         resizeMode="contain"
       />
       <Animated.Image source={TEXT} style={textStyle} resizeMode="contain" />
+    </Animated.View>
+  );
+}
+
+function HeaderWeb(_props: HeaderProps) {
+  return (
+    <Animated.View
+      collapsable={false}
+      style={{
+        width: '100%',
+        position: 'absolute',
+        backgroundColor: '#f8f9ff',
+        zIndex: 100,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingStart: 16,
+        height: HEADER_HEIGHT,
+      }}>
+      <Animated.Image
+        source={SIGNET}
+        style={{
+          width: 48,
+          height: 48,
+        }}
+        resizeMode="contain"
+      />
+      <Animated.Image
+        source={TEXT}
+        style={{
+          width: 170,
+          height: 32,
+        }}
+        resizeMode="contain"
+      />
     </Animated.View>
   );
 }
