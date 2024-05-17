@@ -40,18 +40,24 @@ export function ListWithHeader<ItemT, SectionT>(
 
   const dragGesture = Gesture.Pan()
     .onChange((e) => {
-      if (IS_ANDROID) {
-        if (scrollOffset.value <= 0 && e.changeY > 0) {
-          androidDragDist.value -= e.changeY;
-          scrollOffset.value = -Math.pow(
-            Math.max(-androidDragDist.value, 0),
-            0.85
-          );
-          console.log(scrollOffset.value);
+      if (!IS_ANDROID) {
+        return;
+      }
+
+      if (scrollOffset.value <= 0) {
+        androidDragDist.value -= e.changeY;
+        scrollOffset.value = -Math.pow(
+          Math.max(-androidDragDist.value, 0),
+          0.85
+        );
+
+        if (scrollOffset.value < 0) {
           scrollEnabled.value = false;
         } else {
           runOnJS(enableScroll)();
         }
+      } else {
+        runOnJS(enableScroll)();
       }
     })
     .onFinalize(() => {
