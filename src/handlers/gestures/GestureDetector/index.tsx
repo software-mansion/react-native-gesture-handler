@@ -164,10 +164,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   }, []);
 
   useEffect(() => {
-    if (!state.firstRender) {
-      updateAttachedGestures();
-    } else {
+    if (state.firstRender) {
       state.firstRender = false;
+    } else {
+      updateAttachedGestures();
     }
   }, [props]);
 
