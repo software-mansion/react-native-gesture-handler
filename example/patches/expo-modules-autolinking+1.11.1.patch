@@ -1,0 +1,26 @@
+diff --git a/node_modules/expo-modules-autolinking/build/ReactImportsPatcher.js b/node_modules/expo-modules-autolinking/build/ReactImportsPatcher.js
+index 9b62410..0a25fd4 100644
+--- a/node_modules/expo-modules-autolinking/build/ReactImportsPatcher.js
++++ b/node_modules/expo-modules-autolinking/build/ReactImportsPatcher.js
+@@ -83,7 +83,7 @@ exports.patchFileAsync = patchFileAsync;
+  * @param dryRun true if not writing changes to file
+  */
+ async function patchDirAsync(headerSet, dir, dryRun) {
+-    const files = await (0, fast_glob_1.default)('**/*.{h,m,mm}', { cwd: dir, absolute: true });
++    const files = await (0, fast_glob_1.default)('**/*.{h,m,mm}', { cwd: dir, absolute: true, followSymbolicLinks: false });
+     return Promise.all(files.map((file) => patchFileAsync(headerSet, file, dryRun)));
+ }
+ //# sourceMappingURL=ReactImportsPatcher.js.map
+\ No newline at end of file
+diff --git a/node_modules/expo-modules-autolinking/src/ReactImportsPatcher.ts b/node_modules/expo-modules-autolinking/src/ReactImportsPatcher.ts
+index 7625652..96e4fc8 100644
+--- a/node_modules/expo-modules-autolinking/src/ReactImportsPatcher.ts
++++ b/node_modules/expo-modules-autolinking/src/ReactImportsPatcher.ts
+@@ -96,6 +96,6 @@ export async function patchFileAsync(headerSet: Set<string>, file: string, dryRu
+  * @param dryRun true if not writing changes to file
+  */
+ async function patchDirAsync(headerSet: Set<string>, dir: string, dryRun: boolean) {
+-  const files = await glob('**/*.{h,m,mm}', { cwd: dir, absolute: true });
++  const files = await glob('**/*.{h,m,mm}', { cwd: dir, absolute: true, followSymbolicLinks: false });
+   return Promise.all(files.map((file) => patchFileAsync(headerSet, file, dryRun)));
+ }

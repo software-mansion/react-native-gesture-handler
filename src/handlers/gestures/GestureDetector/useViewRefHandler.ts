@@ -32,7 +32,9 @@ export function useViewRefHandler(
 
       // Pass true as `skipConfigUpdate`. Here we only want to trigger the eventual reattaching of handlers
       // in case the view has changed. If the view doesn't change, the update will be handled by detector.
-      updateAttachedGestures(true);
+      if (!state.firstRender) {
+        updateAttachedGestures(true);
+      }
 
       if (__DEV__ && isFabric() && global.isFormsStackingContext) {
         const node = getShadowNodeFromRef(ref);
