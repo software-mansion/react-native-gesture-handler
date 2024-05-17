@@ -47,11 +47,9 @@ import PagerAndDrawer from './src/basic/pagerAndDrawer';
 import ForceTouch from './src/basic/forcetouch';
 import Fling from './src/basic/fling';
 
-import ReanimatedSimple from './src/new_api/reanimated';
 import Camera from './src/new_api/camera';
 import Transformations from './src/new_api/transformations';
-import OverlapParents from './src/new_api/overlap_parent';
-import OverlapSiblings from './src/new_api/overlap_siblings';
+import Overlap from './src/new_api/overlap';
 import Calculator from './src/new_api/calculator';
 import BottomSheetNewApi from './src/new_api/bottom_sheet';
 import ChatHeadsNewApi from './src/new_api/chat_heads';
@@ -84,12 +82,10 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'New api',
     data: [
-      { name: 'Ball', component: ReanimatedSimple },
-      { name: 'Velocity test', component: VelocityTest },
+      { name: 'Ball with velocity', component: VelocityTest },
       { name: 'Camera', component: Camera },
       { name: 'Transformations', component: Transformations },
-      { name: 'Overlap parents', component: OverlapParents },
-      { name: 'Overlap siblings', component: OverlapSiblings },
+      { name: 'Overlap', component: Overlap },
       { name: 'Bottom Sheet', component: BottomSheetNewApi },
       { name: 'Calculator', component: Calculator },
       { name: 'Chat Heads', component: ChatHeadsNewApi },
