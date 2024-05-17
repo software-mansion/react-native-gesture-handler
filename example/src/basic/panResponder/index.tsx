@@ -146,7 +146,6 @@ export default class Example extends Component {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
   },
   circle: {
     width: CIRCLE_SIZE,

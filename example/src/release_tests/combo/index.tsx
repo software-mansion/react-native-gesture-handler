@@ -225,7 +225,6 @@ export const ComboWithRNScroll = () => <Combo ScrollViewComponent={RNScroll} />;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
   },
   rectButton: {
     flex: 1,

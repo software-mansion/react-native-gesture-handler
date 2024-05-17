@@ -11,6 +11,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { COLORS } from 'src/common';
 
 const SIGNET = require('./signet.png');
 const TEXT = require('./text.png');
@@ -153,14 +154,14 @@ const styles = StyleSheet.create({
   nativeHeader: {
     width: '100%',
     position: 'absolute',
-    backgroundColor: '#f8f9ff',
+    backgroundColor: COLORS.offWhite,
     zIndex: 100,
     flexDirection: 'row',
   },
   webHeader: {
     width: '100%',
     position: 'absolute',
-    backgroundColor: '#f8f9ff',
+    backgroundColor: COLORS.offWhite,
     zIndex: 100,
     flexDirection: 'row',
     alignItems: 'center',
