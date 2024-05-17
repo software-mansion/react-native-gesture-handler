@@ -3,10 +3,10 @@ import {
   Text,
   View,
   StyleSheet,
-  SectionList,
   Platform,
   Dimensions,
   StatusBar,
+  SafeAreaView,
 } from 'react-native';
 import {
   createStackNavigator,
@@ -64,6 +64,7 @@ import VelocityTest from './src/new_api/velocityTest';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
+import { ListWithHeader } from './src/ListWithHeader';
 
 interface Example {
   name: string;
@@ -188,10 +189,13 @@ export default function App() {
               // It's important to set height for the screen, without it scroll doesn't work on web platform.
               height: Dimensions.get('window').height,
             },
+            headerStyle: {
+              backgroundColor: '#f8f9ff',
+            },
           }}>
           <Stack.Screen
             name="Home"
-            options={{ title: '✌️ Gesture Handler Demo' }}
+            options={{ headerShown: false }}
             component={MainScreen}
           />
           {EXAMPLES.flatMap(({ data }) => data).flatMap(
@@ -213,21 +217,23 @@ export default function App() {
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   return (
-    <SectionList
-      style={styles.list}
-      sections={EXAMPLES}
-      keyExtractor={(example) => example.name}
-      renderItem={({ item }) => (
-        <MainScreenItem
-          name={item.name}
-          onPressItem={(name) => navigation.navigate(name)}
-        />
-      )}
-      renderSectionHeader={({ section: { sectionTitle } }) => (
-        <Text style={styles.sectionTitle}>{sectionTitle}</Text>
-      )}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
-    />
+    <SafeAreaView style={styles.container}>
+      <ListWithHeader
+        style={styles.list}
+        sections={EXAMPLES}
+        keyExtractor={(example) => example.name}
+        renderItem={({ item }) => (
+          <MainScreenItem
+            name={item.name}
+            onPressItem={(name) => navigation.navigate(name)}
+          />
+        )}
+        renderSectionHeader={({ section: { sectionTitle } }) => (
+          <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -245,6 +251,10 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9ff',
+  },
   sectionTitle: {
     ...Platform.select({
       ios: {
@@ -256,10 +266,8 @@ const styles = StyleSheet.create({
         fontFamily: 'sans-serif-medium',
       },
     }),
-    paddingTop: 10,
-    paddingBottom: 5,
-    paddingLeft: 10,
-    backgroundColor: '#efefef',
+    padding: 16,
+    backgroundColor: '#f8f9ff',
   },
   list: {},
   separator: {
