@@ -16,7 +16,7 @@ const SIGNET = require('./signet.png');
 const TEXT = require('./text.png');
 
 export const HEADER_HEIGHT = Platform.OS === 'web' ? 64 : 192;
-export const COLLAPSED_HEADER_HEIGHT = Platform.OS === 'web' ? 64 : 96;
+export const COLLAPSED_HEADER_HEIGHT = 64;
 
 export interface HeaderProps {
   scrollOffset: SharedValue<number>;
@@ -57,7 +57,11 @@ function HeaderNative(props: HeaderProps) {
 
   const signetStyle = useAnimatedStyle(() => {
     const size = isMounted.value ? measure(containerRef) : undefined;
-    const imageSize = headerHeight.value * 0.5;
+    const imageSize = interpolate(
+      expandFactor.value,
+      [0, 1],
+      [headerHeight.value * 0.7, headerHeight.value * 0.5]
+    );
     const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
 
     return {
@@ -67,7 +71,7 @@ function HeaderNative(props: HeaderProps) {
       top: interpolate(
         Math.sqrt(expandFactor.value),
         [0, 1],
-        [clampedHeight * 0.25, 0]
+        [clampedHeight * 0.1, 0]
       ),
       left: interpolate(
         expandFactor.value,
@@ -81,7 +85,11 @@ function HeaderNative(props: HeaderProps) {
 
   const textStyle = useAnimatedStyle(() => {
     const size = isMounted.value ? measure(containerRef) : undefined;
-    const height = headerHeight.value * 0.5;
+    const height = interpolate(
+      expandFactor.value,
+      [0, 1],
+      [headerHeight.value * 0.7, headerHeight.value * 0.5]
+    );
     const width = (size?.width ?? 0) * (expandFactor.value * 0.2 + 0.4);
 
     return {
@@ -91,7 +99,7 @@ function HeaderNative(props: HeaderProps) {
       bottom: interpolate(
         expandFactor.value,
         [0, 1],
-        [COLLAPSED_HEADER_HEIGHT * 0.25, 0]
+        [COLLAPSED_HEADER_HEIGHT * 0.2, 0]
       ),
       left: ((size?.width ?? 0) - width) * 0.5,
       opacity: opacity.value,
