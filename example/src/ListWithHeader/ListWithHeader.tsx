@@ -33,9 +33,7 @@ export function ListWithHeader<ItemT, SectionT>(
   const androidDragDist = useSharedValue(0);
 
   function enableScroll() {
-    setTimeout(() => {
-      scrollEnabled.value = true;
-    });
+    scrollEnabled.value = true;
   }
 
   const dragGesture = Gesture.Pan()
