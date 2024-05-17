@@ -60,6 +60,15 @@ export function isRemoteDebuggingEnabled(): boolean {
   );
 }
 
+/**
+ * Recursively compares two objects for deep equality.
+ *
+ * **Note:** This function does not support cyclic references.
+ *
+ * @param obj1 - The first object to compare.
+ * @param obj2 - The second object to compare.
+ * @returns `true` if the objects are deeply equal, `false` otherwise.
+ */
 export function deepEqual(obj1: any, obj2: any) {
   if (obj1 === obj2) {
     return true;
