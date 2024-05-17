@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import Animated, {
+  Easing,
   SharedValue,
   interpolate,
   measure,
@@ -45,6 +46,7 @@ function HeaderNative(props: HeaderProps) {
     );
   });
 
+  const isMounted = useSharedValue(false);
   const opacity = useSharedValue(0);
 
   const headerStyle = useAnimatedStyle(() => {
@@ -54,7 +56,7 @@ function HeaderNative(props: HeaderProps) {
   });
 
   const signetStyle = useAnimatedStyle(() => {
-    const size = measure(containerRef);
+    const size = isMounted.value ? measure(containerRef) : undefined;
     const imageSize = headerHeight.value * 0.5;
     const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
 
@@ -73,11 +75,12 @@ function HeaderNative(props: HeaderProps) {
         [COLLAPSED_HEADER_HEIGHT * 0.25, ((size?.width ?? 0) - imageSize) * 0.5]
       ),
       opacity: opacity.value,
+      transform: [{ translateY: (1 - opacity.value) * 20 }],
     };
   });
 
   const textStyle = useAnimatedStyle(() => {
-    const size = measure(containerRef);
+    const size = isMounted.value ? measure(containerRef) : undefined;
     const height = headerHeight.value * 0.5;
     const width = (size?.width ?? 0) * (expandFactor.value * 0.2 + 0.4);
 
@@ -92,12 +95,19 @@ function HeaderNative(props: HeaderProps) {
       ),
       left: ((size?.width ?? 0) - width) * 0.5,
       opacity: opacity.value,
+      transform: [{ translateY: (1 - opacity.value) * 20 }],
     };
   });
 
   useEffect(() => {
-    opacity.value = withTiming(1, { duration: 100 });
-  }, [opacity]);
+    setTimeout(() => {
+      isMounted.value = true;
+      opacity.value = withTiming(1, {
+        duration: 200,
+        easing: Easing.out(Easing.quad),
+      });
+    }, 100);
+  }, [opacity, isMounted]);
 
   return (
     <Animated.View
