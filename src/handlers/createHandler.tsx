@@ -6,8 +6,6 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import { customDirectEventTypes } from './customDirectEventTypes';
-// @ts-ignore - it isn't typed by TS & don't have definitelyTyped types
-import deepEqual from 'lodash/isEqual';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
 import {
@@ -25,7 +23,7 @@ import {
   scheduleFlushOperations,
 } from './gestureHandlerCommon';
 import { ValueOf } from '../typeUtils';
-import { isFabric, isJestEnv, tagMessage } from '../utils';
+import { deepEqual, isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
