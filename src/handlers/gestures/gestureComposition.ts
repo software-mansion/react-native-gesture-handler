@@ -29,6 +29,8 @@ export class ComposedGesture extends Gesture {
     if (gesture instanceof BaseGesture) {
       const newConfig = { ...gesture.config };
 
+      // no need to extend `blocksHandlers` here, because it's not changed in composition
+      // the same effect is achieved by reversing the order of 2 gestures in `Exclusive`
       newConfig.simultaneousWith = extendRelation(
         newConfig.simultaneousWith,
         simultaneousGestures

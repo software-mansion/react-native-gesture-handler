@@ -9,23 +9,25 @@ export interface SharedValue<T> {
   value: T;
 }
 
-let Reanimated: {
-  default: {
-    // Slightly modified definition copied from 'react-native-reanimated'
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    createAnimatedComponent<P extends object>(
-      component: ComponentClass<P>,
-      options?: unknown
-    ): ComponentClass<P>;
-  };
-  useEvent: (
-    callback: (event: GestureUpdateEvent | GestureStateChangeEvent) => void,
-    events: string[],
-    rebuild: boolean
-  ) => unknown;
-  useSharedValue: <T>(value: T) => SharedValue<T>;
-  setGestureState: (handlerTag: number, newState: number) => void;
-};
+let Reanimated:
+  | {
+      default: {
+        // Slightly modified definition copied from 'react-native-reanimated'
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        createAnimatedComponent<P extends object>(
+          component: ComponentClass<P>,
+          options?: unknown
+        ): ComponentClass<P>;
+      };
+      useEvent: (
+        callback: (event: GestureUpdateEvent | GestureStateChangeEvent) => void,
+        events: string[],
+        rebuild: boolean
+      ) => unknown;
+      useSharedValue: <T>(value: T) => SharedValue<T>;
+      setGestureState: (handlerTag: number, newState: number) => void;
+    }
+  | undefined;
 
 try {
   Reanimated = require('react-native-reanimated');

@@ -270,15 +270,15 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
      * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-      if (event.action == MotionEvent.ACTION_CANCEL) {
-        tryFreeingResponder()
-        return super.onTouchEvent(event)
-      }
-
       val eventTime = event.eventTime
       val action = event.action
+
+      if (event.action == MotionEvent.ACTION_CANCEL) {
+        tryFreeingResponder()
+      }
+
       // always true when lastEventTime or lastAction have default value (-1)
-      if (lastEventTime != eventTime || lastAction != action) {
+      if (lastEventTime != eventTime || lastAction != action || action == MotionEvent.ACTION_CANCEL) {
         lastEventTime = eventTime
         lastAction = action
         return super.onTouchEvent(event)
@@ -384,7 +384,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
     }
 
-    override fun canBegin(): Boolean {
+    override fun canBegin(event: MotionEvent): Boolean {
+      if (event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+        return false
+      }
+
       val isResponder = tryGrabbingResponder()
       if (isResponder) {
         isTouched = true

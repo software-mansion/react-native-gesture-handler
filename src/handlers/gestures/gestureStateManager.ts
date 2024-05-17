@@ -24,7 +24,9 @@ function create(handlerTag: number): GestureStateManagerType {
     begin: () => {
       'worklet';
       if (REANIMATED_AVAILABLE) {
-        setGestureState(handlerTag, State.BEGAN);
+        // When Reanimated is available, setGestureState should be defined
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        setGestureState!(handlerTag, State.BEGAN);
       } else {
         console.warn(warningMessage);
       }
@@ -33,7 +35,9 @@ function create(handlerTag: number): GestureStateManagerType {
     activate: () => {
       'worklet';
       if (REANIMATED_AVAILABLE) {
-        setGestureState(handlerTag, State.ACTIVE);
+        // When Reanimated is available, setGestureState should be defined
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        setGestureState!(handlerTag, State.ACTIVE);
       } else {
         console.warn(warningMessage);
       }
@@ -42,7 +46,9 @@ function create(handlerTag: number): GestureStateManagerType {
     fail: () => {
       'worklet';
       if (REANIMATED_AVAILABLE) {
-        setGestureState(handlerTag, State.FAILED);
+        // When Reanimated is available, setGestureState should be defined
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        setGestureState!(handlerTag, State.FAILED);
       } else {
         console.warn(warningMessage);
       }
@@ -51,7 +57,9 @@ function create(handlerTag: number): GestureStateManagerType {
     end: () => {
       'worklet';
       if (REANIMATED_AVAILABLE) {
-        setGestureState(handlerTag, State.END);
+        // When Reanimated is available, setGestureState should be defined
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        setGestureState!(handlerTag, State.END);
       } else {
         console.warn(warningMessage);
       }
