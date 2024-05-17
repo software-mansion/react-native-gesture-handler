@@ -71,7 +71,7 @@ export function deepEqual(obj1: any, obj2: any) {
     obj1 === null ||
     obj2 === null
   ) {
-    return obj1 === obj2;
+    return false;
   }
 
   const keys1 = Object.keys(obj1);
