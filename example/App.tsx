@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Text,
   View,
@@ -10,13 +10,16 @@ import {
 } from 'react-native';
 import {
   createStackNavigator,
+  StackNavigationProp,
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import {
   GestureHandlerRootView,
   RectButton,
+  Switch,
 } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './src/release_tests/doubleDraggable';
@@ -169,6 +172,9 @@ const EXAMPLES: ExamplesSection[] = [
   },
 ];
 
+const OPEN_LAST_EXAMPLE_KEY = 'openLastExample';
+const LAST_EXAMPLE_KEY = 'lastExample';
+
 type RootStackParamList = {
   Home: undefined;
   TouchableExample: { item: string };
@@ -215,17 +221,38 @@ export default function App() {
   );
 }
 
+function navigate(
+  navigation: StackNavigationProp<ParamListBase>,
+  dest: string
+) {
+  AsyncStorage.setItem(LAST_EXAMPLE_KEY, dest);
+  navigation.navigate(dest);
+}
+
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
+  useEffect(() => {
+    AsyncStorage.multiGet([OPEN_LAST_EXAMPLE_KEY, LAST_EXAMPLE_KEY]).then(
+      ([openLastExample, lastExample]) => {
+        if (openLastExample[1] === 'true' && lastExample[1]) {
+          navigate(navigation, lastExample[1]);
+        }
+      }
+    );
+    // we only want to run this effect once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <ListWithHeader
         style={styles.list}
         sections={EXAMPLES}
         keyExtractor={(example) => example.name}
+        ListHeaderComponent={OpenLastExampleSetting}
         renderItem={({ item }) => (
           <MainScreenItem
             name={item.name}
-            onPressItem={(name) => navigation.navigate(name)}
+            onPressItem={(name) => navigate(navigation, name)}
           />
         )}
         renderSectionHeader={({ section: { sectionTitle } }) => (
@@ -234,6 +261,37 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </SafeAreaView>
+  );
+}
+
+function OpenLastExampleSetting() {
+  const [openLastExample, setOpenLastExample] = React.useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem(OPEN_LAST_EXAMPLE_KEY).then((value) => {
+      setOpenLastExample(value === 'true');
+    });
+  }, []);
+
+  function updateSetting(value: boolean) {
+    AsyncStorage.setItem(OPEN_LAST_EXAMPLE_KEY, value.toString());
+    setOpenLastExample(value);
+  }
+
+  return (
+    <RectButton
+      style={[styles.button, styles.autoOpenSetting]}
+      onPress={() => {
+        updateSetting(!openLastExample);
+      }}>
+      <Text>Open last example on launch</Text>
+      <Switch
+        value={openLastExample}
+        onValueChange={() => {
+          updateSetting(!openLastExample);
+        }}
+      />
+    </RectButton>
   );
 }
 
@@ -280,5 +338,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  autoOpenSetting: {
+    margin: 16,
+    borderRadius: 16,
+    backgroundColor: '#eef0ff',
+    paddingHorizontal: 16,
+    justifyContent: 'space-between',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });
