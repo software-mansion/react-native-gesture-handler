@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import Animated, {
   Easing,
   SharedValue,
@@ -121,16 +121,7 @@ function HeaderNative(props: HeaderProps) {
     <Animated.View
       ref={containerRef}
       collapsable={false}
-      style={[
-        headerStyle,
-        {
-          width: '100%',
-          position: 'absolute',
-          backgroundColor: '#f8f9ff',
-          zIndex: 100,
-          flexDirection: 'row',
-        },
-      ]}>
+      style={[headerStyle, styles.nativeHeader]}>
       <Animated.Image
         source={SIGNET}
         style={signetStyle}
@@ -143,34 +134,45 @@ function HeaderNative(props: HeaderProps) {
 
 function HeaderWeb(_props: HeaderProps) {
   return (
-    <Animated.View
-      collapsable={false}
-      style={{
-        width: '100%',
-        position: 'absolute',
-        backgroundColor: '#f8f9ff',
-        zIndex: 100,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingStart: 16,
-        height: HEADER_HEIGHT,
-      }}>
+    <Animated.View collapsable={false} style={styles.webHeader}>
       <Animated.Image
         source={SIGNET}
-        style={{
-          width: 48,
-          height: 48,
-        }}
+        style={styles.webSignet}
         resizeMode="contain"
       />
       <Animated.Image
         source={TEXT}
-        style={{
-          width: 170,
-          height: 32,
-        }}
+        style={styles.webText}
         resizeMode="contain"
       />
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  nativeHeader: {
+    width: '100%',
+    position: 'absolute',
+    backgroundColor: '#f8f9ff',
+    zIndex: 100,
+    flexDirection: 'row',
+  },
+  webHeader: {
+    width: '100%',
+    position: 'absolute',
+    backgroundColor: '#f8f9ff',
+    zIndex: 100,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingStart: 16,
+    height: HEADER_HEIGHT,
+  },
+  webSignet: {
+    width: 48,
+    height: 48,
+  },
+  webText: {
+    width: 170,
+    height: 32,
+  },
+});
