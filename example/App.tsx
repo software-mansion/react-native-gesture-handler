@@ -284,13 +284,17 @@ function OpenLastExampleSetting() {
       onPress={() => {
         updateSetting(!openLastExample);
       }}>
-      <Text>Open last example on launch</Text>
-      <Switch
-        value={openLastExample}
-        onValueChange={() => {
-          updateSetting(!openLastExample);
-        }}
-      />
+      <View
+        style={styles.buttonContent}
+        pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
+        <Text>Open last example on launch</Text>
+        <Switch
+          value={openLastExample}
+          onValueChange={() => {
+            updateSetting(!openLastExample);
+          }}
+        />
+      </View>
     </RectButton>
   );
 }
@@ -335,9 +339,13 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     padding: 10,
+    backgroundColor: '#fff',
+  },
+  buttonContent: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: 'space-between',
   },
   autoOpenSetting: {
     margin: 16,
