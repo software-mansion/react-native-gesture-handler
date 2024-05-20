@@ -71,11 +71,15 @@ export default function Camera() {
     .shouldCancelWhenOutside(false)
     .requireExternalGestureToFail(filterChangeGesture)
     .onChange((e) => {
-      zoom.value = Math.max(1, Math.min(2, zoom.value - e.changeY / 200));
+      zoom.value = Math.max(1, Math.min(2, zoom.value - e.changeY / 500));
     });
 
   const pinchZoomGesture = Gesture.Pinch().onChange((e) => {
-    zoom.value = Math.max(1, Math.min(2, zoom.value * e.scaleChange));
+    zoom.value = Math.max(
+      1,
+      Math.min(2, zoom.value * ((e.scaleChange - 1) * 0.2 + 1))
+    );
+    console.log(zoom.value);
   });
 
   const changeCameraGesture = Gesture.Tap()
