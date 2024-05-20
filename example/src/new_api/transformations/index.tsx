@@ -1,12 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  measure,
-  useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { useState } from 'react';
 
 function identity4() {
   'worklet';
@@ -146,11 +145,13 @@ function applyTransformations(
 }
 
 function Photo() {
-  const animatedRef = useAnimatedRef();
+  const [size, setSize] = useState({ width: 0, height: 0 });
   const translation = useSharedValue({ x: 0, y: 0 });
   const origin = useSharedValue({ x: 0, y: 0 });
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
+  const isRotating = useSharedValue(false);
+  const isScaling = useSharedValue(false);
 
   const transform = useSharedValue(identity4());
 
@@ -170,11 +171,13 @@ function Photo() {
 
   const rotationGesture = Gesture.Rotation()
     .onStart((e) => {
-      const measured = measure(animatedRef)!;
-      origin.value = {
-        x: -(e.anchorX - measured.width / 2),
-        y: -(e.anchorY - measured.height / 2),
-      };
+      if (!isRotating.value && !isScaling.value) {
+        origin.value = {
+          x: -(e.anchorX - size.width / 2),
+          y: -(e.anchorY - size.height / 2),
+        };
+      }
+      isRotating.value = true;
     })
     .onChange((e) => {
       'worklet';
@@ -193,15 +196,18 @@ function Photo() {
       rotation.value = 0;
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
+      isRotating.value = false;
     });
 
   const scaleGesture = Gesture.Pinch()
     .onStart((e) => {
-      const measured = measure(animatedRef)!;
-      origin.value = {
-        x: -(e.focalX - measured.width / 2),
-        y: -(e.focalY - measured.height / 2),
-      };
+      if (!isRotating.value && !isScaling.value) {
+        origin.value = {
+          x: -(e.focalX - size.width / 2),
+          y: -(e.focalY - size.height / 2),
+        };
+      }
+      isScaling.value = true;
     })
     .onChange((e) => {
       'worklet';
@@ -219,6 +225,7 @@ function Photo() {
       rotation.value = 0;
       translation.value = { x: 0, y: 0 };
       scale.value = 1;
+      isScaling.value = false;
     });
 
   const panGesture = Gesture.Pan()
@@ -263,7 +270,15 @@ function Photo() {
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View ref={animatedRef} style={[styles.button, style]} />
+      <Animated.View
+        onLayout={({ nativeEvent }) => {
+          setSize({
+            width: nativeEvent.layout.width,
+            height: nativeEvent.layout.height,
+          });
+        }}
+        style={[styles.button, style]}
+      />
     </GestureDetector>
   );
 }
