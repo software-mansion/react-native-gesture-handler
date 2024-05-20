@@ -45,10 +45,10 @@ function OverlapSiblings() {
       <Text style={styles.text}>Overlap Siblings</Text>
       <View style={{ width: 225 }}>
         <GestureDetector gesture={tapRed}>
-          <Box color="red" elevated={elevated === 'red'} />
+          <Box color="#fa7f7c" elevated={elevated === 'red'} />
         </GestureDetector>
         <GestureDetector gesture={tapGreen}>
-          <Box color="green" overlap elevated={elevated === 'green'} />
+          <Box color="#57b495" overlap elevated={elevated === 'green'} />
         </GestureDetector>
       </View>
     </View>
@@ -78,9 +78,9 @@ function OverlapParents() {
       <Text style={styles.text}>Overlap Child</Text>
       <View style={{ width: 225 }}>
         <GestureDetector gesture={tapRed}>
-          <Box color="red" elevated={elevated === 'red'}>
+          <Box color="#fa7f7c" elevated={elevated === 'red'}>
             <GestureDetector gesture={tapGreen}>
-              <Box color="green" overlap elevated={elevated === 'green'} />
+              <Box color="#57b495" overlap elevated={elevated === 'green'} />
             </GestureDetector>
           </Box>
         </GestureDetector>
