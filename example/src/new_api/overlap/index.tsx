@@ -59,7 +59,7 @@ function OverlapParents() {
   const [elevated, setElevated] = React.useState('');
 
   const tapRed = Gesture.Tap()
-    .onEnd((e, success) => {
+    .onEnd((_e, success) => {
       if (success) {
         setElevated('red');
       }
@@ -67,7 +67,7 @@ function OverlapParents() {
     .runOnJS(true);
 
   const tapGreen = Gesture.Tap()
-    .onEnd((e, success) => {
+    .onEnd((_e, success) => {
       if (success) {
         setElevated('green');
       }
