@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -144,6 +144,8 @@ function applyTransformations(
   return multiply4(transform, matrix);
 }
 
+const SIGNET = require('../../ListWithHeader/signet.png');
+
 function Photo() {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const translation = useSharedValue({ x: 0, y: 0 });
@@ -277,8 +279,9 @@ function Photo() {
             height: nativeEvent.layout.height,
           });
         }}
-        style={[styles.button, style]}
-      />
+        style={[styles.container, style]}>
+        <Image source={SIGNET} style={styles.image} resizeMode="contain" />
+      </Animated.View>
     </GestureDetector>
   );
 }
@@ -293,13 +296,25 @@ export default function Example() {
 
 const styles = StyleSheet.create({
   home: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  button: {
-    width: 200,
-    height: 200,
-    backgroundColor: 'green',
+  container: {
+    width: 240,
+    height: 240,
+    backgroundColor: '#eef0ff',
+    padding: 16,
+    elevation: 8,
+    borderRadius: 48,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  image: {
+    flex: 1,
+    width: null,
+    height: null,
   },
 });
