@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
+import { findNodeHandle } from 'react-native';
 import { GestureType } from '../gesture';
-import { findNodeHandle } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
 
 import {
