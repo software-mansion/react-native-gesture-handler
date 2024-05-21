@@ -1,14 +1,10 @@
 /* eslint-disable react/no-unused-prop-types */
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import { Platform, findNodeHandle } from 'react-native';
 import { GestureType } from '../gesture';
-import {
-  findNodeHandle,
-  UserSelect,
-  TouchAction,
-} from '../../gestureHandlerCommon';
+import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
 import { isJestEnv } from '../../../utils';
-import { Platform } from 'react-native';
 
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
 import { AttachedGestureState, GestureDetectorState } from './types';
