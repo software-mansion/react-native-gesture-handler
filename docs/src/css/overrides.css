@@ -135,3 +135,8 @@ table thead tr {
 [class*='navbar__link']:not([class*='header-github']):not([role='button']) {
   display: none;
 }
+
+/* Remove in @swmansion-t-rex-ui 0.0.10 patch */
+button[class*='DocSearch-Button'] {
+  margin: 0 !important;
+}
