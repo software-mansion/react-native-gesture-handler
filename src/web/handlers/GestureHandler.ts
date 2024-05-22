@@ -288,33 +288,20 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
-
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
   }
   // Adding another pointer to existing ones
   protected onPointerAdd(event: AdaptedEvent): void {
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendTouchEvent(event);
   }
   protected onPointerUp(event: AdaptedEvent): void {
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendTouchEvent(event);
   }
   // Removing pointer, when there is more than one pointers
   protected onPointerRemove(event: AdaptedEvent): void {
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendTouchEvent(event);
   }
   protected onPointerMove(event: AdaptedEvent): void {
-    this.tryToSendMoveEvent(false);
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendMoveEvent(false, event);
   }
   protected onPointerLeave(event: AdaptedEvent): void {
     if (this.shouldCancelWhenOutside) {
@@ -329,28 +316,19 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendTouchEvent(event);
   }
   protected onPointerEnter(event: AdaptedEvent): void {
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendTouchEvent(event);
   }
   protected onPointerCancel(event: AdaptedEvent): void {
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendTouchEvent(event);
 
     this.cancel();
     this.reset();
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    this.tryToSendMoveEvent(true);
-    if (this.config.needsPointerData) {
-      this.sendTouchEvent(event);
-    }
+    this.tryToSendMoveEvent(true, event);
   }
   protected onPointerMoveOver(_event: AdaptedEvent): void {
     // used only by hover gesture handler atm
@@ -358,13 +336,20 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected onPointerMoveOut(_event: AdaptedEvent): void {
     // used only by hover gesture handler atm
   }
-  private tryToSendMoveEvent(out: boolean): void {
+  private tryToSendMoveEvent(out: boolean, event: AdaptedEvent): void {
     if (
       this.enabled &&
       this.active &&
       (!out || (out && !this.shouldCancelWhenOutside))
     ) {
       this.sendEvent(this.currentState, this.currentState);
+      this.tryToSendTouchEvent(event);
+    }
+  }
+
+  protected tryToSendTouchEvent(event: AdaptedEvent): void {
+    if (this.config.needsPointerData) {
+      this.sendTouchEvent(event);
     }
   }
 
