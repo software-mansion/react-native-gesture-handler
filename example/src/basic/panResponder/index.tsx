@@ -23,14 +23,10 @@ type CircleStyles = {
 };
 
 // A clone of: https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js
-class PanResponderExample extends Component {
+class PanResponderExample extends Component<{}, { style: CircleStyles }> {
   private panResponder: { panHandlers?: GestureResponderHandlers } = {};
   private previousLeft = 0;
   private previousTop = 0;
-  private circleStyles: { style: CircleStyles } = {
-    style: { left: 0, top: 0, backgroundColor: '#000' },
-  };
-  private circle: React.ElementRef<typeof View> | null = null;
 
   constructor(props: Record<string, unknown>) {
     super(props);
@@ -42,45 +38,56 @@ class PanResponderExample extends Component {
       onPanResponderRelease: this.handlePanResponderEnd,
       onPanResponderTerminate: this.handlePanResponderEnd,
     });
+
     this.previousLeft = 20;
     this.previousTop = 84;
-    this.circleStyles = {
+
+    this.state = {
       style: {
+        backgroundColor: 'green',
         left: this.previousLeft,
         top: this.previousTop,
-        backgroundColor: 'green',
       },
     };
-  }
-
-  componentDidMount() {
-    this.updateNativeStyles();
   }
 
   render() {
     return (
       <View
-        ref={(circle) => {
-          this.circle = circle;
-        }}
-        style={styles.circle}
+        style={[styles.circle, this.state.style]}
         {...this.panResponder.panHandlers}
       />
     );
   }
 
   private highlight = () => {
-    this.circleStyles.style.backgroundColor = 'blue';
-    this.updateNativeStyles();
+    this.setState({
+      style: {
+        backgroundColor: 'blue',
+        left: this.previousLeft,
+        top: this.previousTop,
+      },
+    });
   };
 
   private unHighlight = () => {
-    this.circleStyles.style.backgroundColor = 'green';
-    this.updateNativeStyles();
+    this.setState({
+      style: {
+        backgroundColor: 'green',
+        left: this.previousLeft,
+        top: this.previousTop,
+      },
+    });
   };
 
-  private updateNativeStyles = () => {
-    this.circle?.setNativeProps(this.circleStyles);
+  private setPosition = (x: number, y: number) => {
+    this.setState({
+      style: {
+        backgroundColor: 'blue',
+        left: x,
+        top: y,
+      },
+    });
   };
 
   private handleStartShouldSetPanResponder = (
@@ -110,19 +117,19 @@ class PanResponderExample extends Component {
     _e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
-    this.circleStyles.style.left =
-      this.previousLeft + gestureState.dx * (I18nManager.isRTL ? -1 : 1);
-    this.circleStyles.style.top = this.previousTop + gestureState.dy;
-    this.updateNativeStyles();
+    this.setPosition(
+      this.previousLeft + gestureState.dx * (I18nManager.isRTL ? -1 : 1),
+      this.previousTop + gestureState.dy
+    );
   };
 
   private handlePanResponderEnd = (
     _e: GestureResponderEvent,
     gestureState: PanResponderGestureState
   ) => {
-    this.unHighlight();
     this.previousLeft += gestureState.dx * (I18nManager.isRTL ? -1 : 1);
     this.previousTop += gestureState.dy;
+    this.unHighlight();
   };
 }
 
