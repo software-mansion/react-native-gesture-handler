@@ -131,3 +131,7 @@ table thead tr {
     -webkit-text-size-adjust: 100%;
   }
 }
+
+[class*='navbar__link']:not([class*='header-github']):not([role='button']) {
+  display: none;
+}

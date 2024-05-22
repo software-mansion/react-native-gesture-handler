@@ -10,7 +10,6 @@ export default function NavbarWrapper(props) {
 
   const heroImages = {
     logo: useBaseUrl('/img/logo-hero.svg'),
-    title: useBaseUrl('/img/title.svg'),
   };
   return (
     <>
