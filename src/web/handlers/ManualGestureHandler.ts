@@ -14,6 +14,8 @@ export default class ManualGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.begin();
+
+    this.tryToSendTouchEvent(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
