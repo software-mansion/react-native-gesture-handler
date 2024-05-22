@@ -1,23 +1,3 @@
-import React from 'react';
-import { PageMetadata } from '@docusaurus/theme-common';
-import { useDoc } from '@docusaurus/theme-common/internal';
-export default function DocItemMetadata() {
-  const { metadata, frontMatter } = useDoc();
+import { DocItemMetadata } from '@swmansion/t-rex-ui';
 
-  if (!metadata) return null;
-
-  const ogImageName = metadata.title
-    .replace(/[ /]/g, '-')
-    .replace(/`/g, '')
-    .replace(/:/g, '')
-    .toLowerCase();
-
-  return (
-    <PageMetadata
-      title={metadata.title}
-      description={metadata.description}
-      keywords={frontMatter.keywords}
-      image={`img/og/${ogImageName}.png`}
-    />
-  );
-}
+export default DocItemMetadata;
