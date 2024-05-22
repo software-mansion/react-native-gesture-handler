@@ -1,10 +1,9 @@
-import { findNodeHandle } from '../../gestureHandlerCommon';
-
 import { isFabric, tagMessage } from '../../../utils';
 import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
 
 import { GestureDetectorState } from './types';
 import React, { useCallback } from 'react';
+import { findNodeHandle } from 'react-native';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
