@@ -343,8 +343,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       (!out || (out && !this.shouldCancelWhenOutside))
     ) {
       this.sendEvent(this.currentState, this.currentState);
-      this.tryToSendTouchEvent(event);
     }
+
+    this.tryToSendTouchEvent(event);
   }
 
   protected tryToSendTouchEvent(event: AdaptedEvent): void {
