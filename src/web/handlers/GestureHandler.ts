@@ -337,11 +337,11 @@ export default abstract class GestureHandler implements IGestureHandler {
     // used only by hover gesture handler atm
   }
   private tryToSendMoveEvent(out: boolean, event: AdaptedEvent): void {
-    if (
-      this.enabled &&
-      this.active &&
-      (!out || (out && !this.shouldCancelWhenOutside))
-    ) {
+    if ((out && this.shouldCancelWhenOutside) || !this.enabled) {
+      return;
+    }
+
+    if (this.active) {
       this.sendEvent(this.currentState, this.currentState);
     }
 
