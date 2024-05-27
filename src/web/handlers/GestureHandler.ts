@@ -288,6 +288,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
     }
+
+    // TODO: Bring back touch events along with introducing `handleDown` method that will handle handler specific stuff
   }
   // Adding another pointer to existing ones
   protected onPointerAdd(event: AdaptedEvent): void {
