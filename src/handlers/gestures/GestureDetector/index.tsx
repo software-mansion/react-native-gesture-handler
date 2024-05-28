@@ -1,5 +1,11 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { GestureType } from '../gesture';
 import {
   findNodeHandle,
@@ -145,7 +151,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const viewTag = findNodeHandle(state.viewRef) as number;
     preparedGesture.isMounted = true;
 
