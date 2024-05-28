@@ -16,6 +16,7 @@
   "dependencies": {
     "@expo/metro-config": "~0.18.1",
     "@expo/metro-runtime": "^3.2.1",
+    "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/slider": "^4.5.2",
     "@react-native-community/viewpager": "^5.0.11",
     "@react-native-masked-view/masked-view": "^0.2.8",

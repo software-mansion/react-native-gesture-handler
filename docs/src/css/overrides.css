@@ -1,6 +1,8 @@
 :root {
   --swm-expandable-transition: transform 200ms ease;
   --ifm-code-font-size: 14px;
+  --swm-logo-title-width: 177px;
+  --swm-logo-height: 50px !important;
 }
 
 [class*='plugin-pages'] {
@@ -128,4 +130,13 @@ table thead tr {
   [class*='codeBlockContent'] code {
     -webkit-text-size-adjust: 100%;
   }
+}
+
+[class*='navbar__link']:not([class*='header-github']):not([role='button']) {
+  display: none;
+}
+
+/* TODO: Remove after @swmansion-t-rex-ui 0.0.10 patch */
+button[class*='DocSearch-Button'] {
+  margin: 0 !important;
 }
