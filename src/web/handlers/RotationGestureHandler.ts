@@ -78,6 +78,8 @@ export default class RotationGestureHandler extends GestureHandler {
   protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
+
+    this.tryToSendTouchEvent(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {

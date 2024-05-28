@@ -227,6 +227,8 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.tryBegin(event);
     this.checkBegan();
+
+    this.tryToSendTouchEvent(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
@@ -256,7 +258,6 @@ export default class PanGestureHandler extends GestureHandler {
 
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
-
     if (this.currentState === State.ACTIVE) {
       this.lastX = this.tracker.getLastAvgX();
       this.lastY = this.tracker.getLastAvgY();
@@ -271,6 +272,7 @@ export default class PanGestureHandler extends GestureHandler {
       this.fail();
     }
   }
+
   protected onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);

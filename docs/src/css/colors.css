@@ -114,9 +114,9 @@
   --swm-color-mode-enabled: var(--swm-navy-light-20);
   --swm-color-mode-disabled-color: var(--swm-navy-light-20);
 
-  --swm-color-mode-enabled-landing: var(--swm-off-white);
-  --swm-color-mode-enabled-color-landing: var(--ifm-font-color-base);
-  --swm-color-mode-disabled-color-landing: var(--swm-off-white);
+  --swm-color-mode-enabled-landing: var(--ifm-font-color-base);
+  --swm-color-mode-enabled-color-landing: var(--swm-off-white);
+  --swm-color-mode-disabled-color-landing: var(--ifm-font-color-base);
 
   /* Typography */
   --ifm-heading-color: var(--ifm-color-primary);
@@ -210,6 +210,8 @@
   --swm-search-hit-border: var(--swm-blue-light-40);
   --swm-search-hit-border-hover: var(--swm-blue-light-100);
   --swm-search-hit-active-color: var(--swm-off-white);
+
+  --swm-docsearch-hit-source-color: var(--swm-navy-light-100);
 
   --swm-search-hit-results-color: var(--swm-navy-light-40);
 
@@ -374,6 +376,8 @@
   --swm-search-hit-border: var(--swm-blue-dark-120);
   --swm-search-hit-border-hover: var(--swm-blue-dark-40);
   --swm-search-hit-active-color: var(--swm-navy-light-100);
+
+  --swm-docsearch-hit-source-color: var(--swm-navy-light-10);
 
   --swm-search-hit-results-color: var(--swm-navy-light-20);
 
