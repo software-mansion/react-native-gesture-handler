@@ -67,6 +67,8 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.tryBegin(event);
     this.tryActivate();
     this.checkDistanceFail(event);
+
+    this.tryToSendTouchEvent(event);
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
