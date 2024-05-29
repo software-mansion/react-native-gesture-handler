@@ -12,19 +12,6 @@
 #import <UIKit/UIKit.h>
 #endif
 
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <React/RCTConversions.h>
-#import <React/RCTFabricComponentsPlugins.h>
-#import <React/RCTViewComponentView.h>
-
-#import <react/renderer/components/rngesturehandler_codegen/ComponentDescriptors.h>
-#import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
-#import <react/renderer/components/rngesturehandler_codegen/Props.h>
-#import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
-
-using namespace facebook::react;
-#endif // RCT_NEW_ARCH_ENABLED
-
 /**
  * Gesture Handler Button components overrides standard mechanism used by RN
  * to determine touch target, which normally would reurn the UIView that is placed
@@ -94,32 +81,5 @@ using namespace facebook::react;
   return inner;
 }
 #endif
-
-#ifdef RCT_NEW_ARCH_ENABLED
-+ (ComponentDescriptorProvider)componentDescriptorProvider
-{
-  return concreteComponentDescriptorProvider<RNGestureHandlerButtonComponentDescriptor>();
-}
-
-- (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
-{
-  const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
-
-  self.userEnabled = newProps.enabled;
-#if !TARGET_OS_TV
-  self.exclusiveTouch = newProps.exclusive;
-#endif
-  self.hitTestEdgeInsets = UIEdgeInsetsMake(
-      -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
-
-  [super updateProps:props oldProps:oldProps];
-}
-
-Class<RCTComponentViewProtocol> RNGestureHandlerButtonCls(void)
-{
-  return RNGestureHandlerButton.class;
-}
-
-#endif // RCT_NEW_ARCH_ENABLED
 
 @end
