@@ -34,6 +34,16 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  [_buttonView mountChildComponentView:childComponentView index:index];
+}
+
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  [_buttonView unmountChildComponentView:childComponentView index:index];
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
