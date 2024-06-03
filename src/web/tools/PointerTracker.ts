@@ -40,14 +40,8 @@ export default class PointerTracker {
     this.lastMovedPointerId = event.pointerId;
 
     const newElement: TrackerElement = {
-      abosoluteCoords: {
-        x: event.x,
-        y: event.y,
-      },
-      viewRelativeCoords: {
-        x: event.offsetX,
-        y: event.offsetY,
-      },
+      abosoluteCoords: { x: event.x, y: event.y },
+      viewRelativeCoords: { x: event.offsetX, y: event.offsetY },
       timestamp: event.time,
       velocityX: 0,
       velocityY: 0,
@@ -81,15 +75,8 @@ export default class PointerTracker {
     element.velocityX = velocityX;
     element.velocityY = velocityY;
 
-    element.abosoluteCoords = {
-      x: event.x,
-      y: event.y,
-    };
-
-    element.viewRelativeCoords = {
-      x: event.offsetX,
-      y: event.offsetY,
-    };
+    element.abosoluteCoords = { x: event.x, y: event.y };
+    element.viewRelativeCoords = { x: event.offsetX, y: event.offsetY };
 
     this.trackedPointers.set(event.pointerId, element);
 
@@ -146,15 +133,31 @@ export default class PointerTracker {
     }
   }
 
+  public getLastViewRelativeCoords(pointerId?: number) {
+    if (pointerId !== undefined) {
+      return {
+        x: this.trackedPointers.get(pointerId)?.viewRelativeCoords.x as number,
+        y: this.trackedPointers.get(pointerId)?.viewRelativeCoords.y as number,
+      };
+    } else {
+      return {
+        x: this.trackedPointers.get(this.lastMovedPointerId)?.viewRelativeCoords
+          .x as number,
+        y: this.trackedPointers.get(this.lastMovedPointerId)?.viewRelativeCoords
+          .y as number,
+      };
+    }
+  }
+
   // Some handlers use these methods to send average values in native event.
   // This may happen when pointers have already been removed from tracker (i.e. pointerup event).
   // In situation when NaN would be sent as a response, we return cached value.
   // That prevents handlers from crashing
   public getAbsoluteCoordsAverage() {
-    const { totalX, totalY } = this.getAbsoluteCoordsSum();
+    const coordsSum = this.getAbsoluteCoordsSum();
 
-    const avgX = totalX / this.trackedPointers.size;
-    const avgY = totalY / this.trackedPointers.size;
+    const avgX = coordsSum.x / this.trackedPointers.size;
+    const avgY = coordsSum.y / this.trackedPointers.size;
 
     const averages = {
       x: isNaN(avgX) ? this.cachedAverages.x : avgX,
@@ -165,23 +168,35 @@ export default class PointerTracker {
   }
 
   public getAbsoluteCoordsSum(ignoredPointer?: number) {
-    const sum = {
-      totalX: 0,
-      totalY: 0,
-    };
+    const sum = { x: 0, y: 0 };
 
     this.trackedPointers.forEach((value, key) => {
       if (key !== ignoredPointer) {
-        sum.totalX += value.abosoluteCoords.x;
-        sum.totalY += value.abosoluteCoords.y;
+        sum.x += value.abosoluteCoords.x;
+        sum.y += value.abosoluteCoords.y;
       }
     });
 
     return sum;
   }
+
+  public getViewRelativeCoordsSum(ignoredPointer?: number) {
+    const sum = { x: 0, y: 0 };
+
+    this.trackedPointers.forEach((value, key) => {
+      if (key !== ignoredPointer) {
+        sum.x += value.viewRelativeCoords.x;
+        sum.y += value.viewRelativeCoords.y;
+      }
+    });
+
+    return sum;
+  }
+
   public getTrackedPointersCount(): number {
     return this.trackedPointers.size;
   }
+
   public getTrackedPointersID(): number[] {
     const keys: number[] = [];
 
