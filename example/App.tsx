@@ -66,7 +66,7 @@ import VelocityTest from './src/new_api/velocityTest';
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
-import { COLORS } from 'src/common';
+import { COLORS } from './src/common';
 
 interface Example {
   name: string;

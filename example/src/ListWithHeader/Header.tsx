@@ -11,7 +11,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { COLORS } from 'src/common';
+import { COLORS } from '../common';
 
 const SIGNET = require('./signet.png');
 const TEXT = require('./text.png');
