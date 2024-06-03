@@ -167,7 +167,12 @@ function Photo() {
     );
 
     return {
-      transform: [{ matrix: matrix }],
+      transform: [
+        { translateX: matrix[12] },
+        { translateY: matrix[13] },
+        { scale: Math.hypot(matrix[0], matrix[1]) },
+        { rotateZ: `${Math.atan2(matrix[1], matrix[0])}rad` },
+      ],
     };
   });
 
@@ -313,8 +318,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   image: {
-    flex: 1,
-    width: null,
-    height: null,
+    width: 208,
+    height: 208,
   },
 });
