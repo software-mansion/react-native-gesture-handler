@@ -25,10 +25,8 @@ export default class Vector {
   }
 
   static fromVelocity(tracker: PointerTracker, pointerId: number) {
-    return new Vector(
-      tracker.getVelocityX(pointerId),
-      tracker.getVelocityY(pointerId)
-    );
+    const velocity = tracker.getVelocity(pointerId);
+    return new Vector(velocity.x, velocity.y);
   }
 
   get magnitude() {

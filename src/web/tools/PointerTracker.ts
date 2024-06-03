@@ -1,12 +1,10 @@
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, Point } from '../interfaces';
 import VelocityTracker from './VelocityTracker';
 
 export interface TrackerElement {
-  lastX: number;
-  lastY: number;
-
-  timeStamp: number;
-
+  abosoluteCoords: Point;
+  viewRelativeCoords: Point;
+  timestamp: number;
   velocityX: number;
   velocityY: number;
 }
@@ -42,9 +40,15 @@ export default class PointerTracker {
     this.lastMovedPointerId = event.pointerId;
 
     const newElement: TrackerElement = {
-      lastX: event.x,
-      lastY: event.y,
-      timeStamp: event.time,
+      abosoluteCoords: {
+        x: event.x,
+        y: event.y,
+      },
+      viewRelativeCoords: {
+        x: event.offsetX,
+        y: event.offsetY,
+      },
+      timestamp: event.time,
       velocityX: 0,
       velocityY: 0,
     };
@@ -52,10 +56,7 @@ export default class PointerTracker {
     this.trackedPointers.set(event.pointerId, newElement);
     this.mapTouchEventId(event.pointerId);
 
-    this.cachedAverages = {
-      x: this.getLastAvgX(),
-      y: this.getLastAvgY(),
-    };
+    this.cachedAverages = this.getAbsoluteCoordsAverage();
   }
 
   public removeFromTracker(pointerId: number): void {
@@ -80,18 +81,19 @@ export default class PointerTracker {
     element.velocityX = velocityX;
     element.velocityY = velocityY;
 
-    element.lastX = event.x;
-    element.lastY = event.y;
+    element.abosoluteCoords = {
+      x: event.x,
+      y: event.y,
+    };
+
+    element.viewRelativeCoords = {
+      x: event.offsetX,
+      y: event.offsetY,
+    };
 
     this.trackedPointers.set(event.pointerId, element);
 
-    const avgX: number = this.getLastAvgX();
-    const avgY: number = this.getLastAvgY();
-
-    this.cachedAverages = {
-      x: avgX,
-      y: avgY,
-    };
+    this.cachedAverages = this.getAbsoluteCoordsAverage();
   }
 
   //Mapping TouchEvents ID
@@ -121,52 +123,26 @@ export default class PointerTracker {
     return NaN;
   }
 
-  public getVelocityX(pointerId: number): number {
-    return this.trackedPointers.get(pointerId)?.velocityX as number;
+  public getVelocity(pointerId: number) {
+    return {
+      x: this.trackedPointers.get(pointerId)?.velocityX as number,
+      y: this.trackedPointers.get(pointerId)?.velocityY as number,
+    };
   }
-  public getVelocityY(pointerId: number): number {
-    return this.trackedPointers.get(pointerId)?.velocityY as number;
-  }
 
-  /**
-   * Returns X coordinate of last moved pointer
-   */
-  public getLastX(): number;
-
-  /**
-   *
-   * @param pointerId
-   * Returns X coordinate of given pointer
-   */
-  // eslint-disable-next-line @typescript-eslint/unified-signatures
-  public getLastX(pointerId: number): number;
-
-  public getLastX(pointerId?: number): number {
+  public getLastAbsoluteCoords(pointerId?: number) {
     if (pointerId !== undefined) {
-      return this.trackedPointers.get(pointerId)?.lastX as number;
+      return {
+        x: this.trackedPointers.get(pointerId)?.abosoluteCoords.x as number,
+        y: this.trackedPointers.get(pointerId)?.abosoluteCoords.y as number,
+      };
     } else {
-      return this.trackedPointers.get(this.lastMovedPointerId)?.lastX as number;
-    }
-  }
-
-  /**
-   * Returns Y coordinate of last moved pointer
-   */
-  public getLastY(): number;
-
-  /**
-   *
-   * @param pointerId
-   * Returns Y coordinate of given pointer
-   */
-  // eslint-disable-next-line @typescript-eslint/unified-signatures
-  public getLastY(pointerId: number): number;
-
-  public getLastY(pointerId?: number): number {
-    if (pointerId !== undefined) {
-      return this.trackedPointers.get(pointerId)?.lastY as number;
-    } else {
-      return this.trackedPointers.get(this.lastMovedPointerId)?.lastY as number;
+      return {
+        x: this.trackedPointers.get(this.lastMovedPointerId)?.abosoluteCoords
+          .x as number,
+        y: this.trackedPointers.get(this.lastMovedPointerId)?.abosoluteCoords
+          .y as number,
+      };
     }
   }
 
@@ -174,35 +150,34 @@ export default class PointerTracker {
   // This may happen when pointers have already been removed from tracker (i.e. pointerup event).
   // In situation when NaN would be sent as a response, we return cached value.
   // That prevents handlers from crashing
-  public getLastAvgX(): number {
-    const avgX: number = this.getSumX() / this.trackedPointers.size;
-    return isNaN(avgX) ? this.cachedAverages.x : avgX;
+  public getAbsoluteCoordsAverage() {
+    const { totalX, totalY } = this.getAbsoluteCoordsSum();
+
+    const avgX = totalX / this.trackedPointers.size;
+    const avgY = totalY / this.trackedPointers.size;
+
+    const averages = {
+      x: isNaN(avgX) ? this.cachedAverages.x : avgX,
+      y: isNaN(avgY) ? this.cachedAverages.y : avgY,
+    };
+
+    return averages;
   }
-  public getLastAvgY(): number {
-    const avgY: number = this.getSumY() / this.trackedPointers.size;
-    return isNaN(avgY) ? this.cachedAverages.y : avgY;
-  }
-  public getSumX(ignoredPointer?: number): number {
-    let sumX = 0;
+
+  public getAbsoluteCoordsSum(ignoredPointer?: number) {
+    const sum = {
+      totalX: 0,
+      totalY: 0,
+    };
 
     this.trackedPointers.forEach((value, key) => {
       if (key !== ignoredPointer) {
-        sumX += value.lastX;
+        sum.totalX += value.abosoluteCoords.x;
+        sum.totalY += value.abosoluteCoords.y;
       }
     });
 
-    return sumX;
-  }
-  public getSumY(ignoredPointer?: number): number {
-    let sumY = 0;
-
-    this.trackedPointers.forEach((value, key) => {
-      if (key !== ignoredPointer) {
-        sumY += value.lastY;
-      }
-    });
-
-    return sumY;
+    return sum;
   }
   public getTrackedPointersCount(): number {
     return this.trackedPointers.size;

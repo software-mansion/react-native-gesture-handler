@@ -76,11 +76,10 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
-    const sumX = tracker.getSumX(ignoredPointer);
-    const sumY = tracker.getSumY(ignoredPointer);
+    const { totalX, totalY } = tracker.getAbsoluteCoordsSum();
 
-    const focusX = sumX / div;
-    const focusY = sumY / div;
+    const focusX = totalX / div;
+    const focusY = totalY / div;
 
     //Determine average deviation from focal point
 
@@ -92,8 +91,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
         return;
       }
 
-      devSumX += Math.abs(value.lastX - focusX);
-      devSumY += Math.abs(value.lastY - focusY);
+      devSumX += Math.abs(value.abosoluteCoords.x - focusX);
+      devSumY += Math.abs(value.abosoluteCoords.y - focusY);
     });
 
     const devX: number = devSumX / div;

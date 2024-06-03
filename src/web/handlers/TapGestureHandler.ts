@@ -133,19 +133,22 @@ export default class TapGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
-    this.startX = this.tracker.getLastAvgX();
-    this.startY = this.tracker.getLastAvgY();
+    this.startX = lastCoords.x;
+    this.startY = lastCoords.y;
 
     this.updateState(event);
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
     this.tracker.removeFromTracker(event.pointerId);
 
@@ -159,8 +162,9 @@ export default class TapGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -172,8 +176,9 @@ export default class TapGestureHandler extends GestureHandler {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
     this.updateState(event);
 
@@ -184,8 +189,9 @@ export default class TapGestureHandler extends GestureHandler {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
     this.updateState(event);
 

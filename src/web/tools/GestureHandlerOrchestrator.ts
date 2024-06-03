@@ -335,13 +335,7 @@ export default class GestureHandlerOrchestrator {
     // TODO: Find better way to handle that issue, for example by activation order and handler cancelling
 
     const isPointerWithinBothBounds = (pointer: number) => {
-      const handlerX: number = handler.getTracker().getLastX(pointer);
-      const handlerY: number = handler.getTracker().getLastY(pointer);
-
-      const point = {
-        x: handlerX,
-        y: handlerY,
-      };
+      const point = handler.getTracker().getLastAbsoluteCoords(pointer);
 
       return (
         handler.getDelegate().isPointerInBounds(point) &&

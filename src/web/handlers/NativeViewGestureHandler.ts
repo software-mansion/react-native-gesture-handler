@@ -64,8 +64,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   private newPointerAction(): void {
-    this.startX = this.tracker.getLastAvgX();
-    this.startY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.startX = lastCoords.x;
+    this.startY = lastCoords.y;
 
     if (this.currentState !== State.UNDETERMINED) {
       return;
@@ -80,8 +81,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
-    const dx = this.startX - this.tracker.getLastAvgX();
-    const dy = this.startY - this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const dx = this.startX - lastCoords.x;
+    const dy = this.startY - lastCoords.y;
     const distSq = dx * dx + dy * dy;
 
     if (distSq >= this.minDistSq) {
