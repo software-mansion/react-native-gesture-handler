@@ -63,16 +63,7 @@ class TouchableHighlight extends Component<
   private onStateChange = (event: TapGestureHandlerStateChangeEvent) => {
     const nextGestureHandlerState = event.nativeEvent.state;
     if (this.state.gestureHandlerState !== nextGestureHandlerState) {
-      this.setState({ gestureHandlerState: nextGestureHandlerState }, () => {
-        const pressed = nextGestureHandlerState === State.BEGAN;
-        // @ts-ignore old API
-        // eslint-disable-next-line react/no-string-refs
-        this.refs[CHILD_REF].setNativeProps({
-          style: pressed
-            ? { opacity: this.props.activeOpacity }
-            : { opacity: 1.0 },
-        });
-      });
+      this.setState({ gestureHandlerState: nextGestureHandlerState });
       if (event.nativeEvent.state === State.ACTIVE && this.props.onClick) {
         this.props.onClick();
       }
@@ -86,10 +77,18 @@ class TouchableHighlight extends Component<
     return (
       <TapGestureHandler onHandlerStateChange={this.onStateChange}>
         <View style={[this.props.style, style]}>
-          {/* @ts-ignore not typed properly? */}
-          {React.cloneElement(React.Children.only(this.props.children), {
-            ref: CHILD_REF,
-          })}
+          <View
+            style={{
+              opacity:
+                this.state.gestureHandlerState === State.BEGAN
+                  ? this.props.activeOpacity
+                  : 1,
+            }}>
+            {/* @ts-ignore not typed properly? */}
+            {React.cloneElement(React.Children.only(this.props.children), {
+              ref: CHILD_REF,
+            })}
+          </View>
         </View>
       </TapGestureHandler>
     );
