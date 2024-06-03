@@ -1,10 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 import Animated, {
+  interpolateColor,
   measure,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withDecay,
+  withTiming,
 } from 'react-native-reanimated';
 
 import React from 'react';
@@ -17,10 +19,14 @@ export default function App() {
   const offsetX = useSharedValue(0);
   const offsetY = useSharedValue(0);
   const isPressed = useSharedValue(false);
+  const colorProgress = useSharedValue(0);
 
   const pan = Gesture.Pan()
     .onBegin(() => {
       isPressed.value = true;
+      colorProgress.value = withTiming(1, {
+        duration: 100,
+      });
     })
     .onChange((event) => {
       offsetX.value += event.changeX;
@@ -28,6 +34,9 @@ export default function App() {
     })
     .onFinalize((event) => {
       isPressed.value = false;
+      colorProgress.value = withTiming(0, {
+        duration: 100,
+      });
       // If we can't get view size, just ignore it. Half of the view will be
       // able to go outside the screen
       const size = measure(aref) ?? { width: 0, height: 0 };
@@ -50,14 +59,22 @@ export default function App() {
       });
     });
 
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: offsetX.value },
-      { translateY: offsetY.value },
-      { scale: isPressed.value ? 1.2 : 1 },
-    ],
-    backgroundColor: isPressed.value ? '#FFD61E' : '#001A72',
-  }));
+  const animatedStyles = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      colorProgress.value,
+      [0, 1],
+      ['#0a2688', '#6fcef5']
+    );
+
+    return {
+      transform: [
+        { translateX: offsetX.value },
+        { translateY: offsetY.value },
+        { scale: withTiming(isPressed.value ? 1.2 : 1, { duration: 100 }) },
+      ],
+      backgroundColor,
+    };
+  });
 
   return (
     <View style={styles.container} ref={aref} collapsable={false}>
