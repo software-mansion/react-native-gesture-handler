@@ -39,16 +39,14 @@ export default class RotationGestureDetector
 
     const [firstPointerID, secondPointerID] = this.keyPointers;
 
-    const firstPointerX: number = tracker.getLastX(firstPointerID);
-    const firstPointerY: number = tracker.getLastY(firstPointerID);
-    const secondPointerX: number = tracker.getLastX(secondPointerID);
-    const secondPointerY: number = tracker.getLastY(secondPointerID);
+    const firstPointerCoords = tracker.getLastAbsoluteCoords(firstPointerID);
+    const secondPointerCoords = tracker.getLastAbsoluteCoords(secondPointerID);
 
-    const vectorX: number = secondPointerX - firstPointerX;
-    const vectorY: number = secondPointerY - firstPointerY;
+    const vectorX: number = secondPointerCoords.x - firstPointerCoords.x;
+    const vectorY: number = secondPointerCoords.y - firstPointerCoords.y;
 
-    this.anchorX = (firstPointerX + secondPointerX) / 2;
-    this.anchorY = (firstPointerY + secondPointerY) / 2;
+    this.anchorX = (firstPointerCoords.x + secondPointerCoords.x) / 2;
+    this.anchorY = (firstPointerCoords.y + secondPointerCoords.y) / 2;
 
     //Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
