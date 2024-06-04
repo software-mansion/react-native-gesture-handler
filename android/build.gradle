@@ -261,12 +261,12 @@ tasks.register("copyCodegenArtifacts") {
 
         generatedFiles.forEach { generatedFile -> 
             if (!existingFilesMap.containsKey(generatedFile.name)) {
-                println("[RNGH] ${generatedFile.name} not found in paper dir, if it's used in Android you need to copy it manually and implement yourself before using auto-copy feature")
+                logger.warn("[RNGH] ${generatedFile.name} not found in paper dir, if it's used in Android you need to copy it manually and implement yourself before using auto-copy feature")
             }
         }
 
         if (existingFiles.size() == 0) {
-            println "[RNGH] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used in Android, if that's not the case please check if codegenArtifactsPaperDestination in android/gradle.properties is correct"
+            logger.warn("[RNGH] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used in Android, if that's not the case please check if codegenArtifactsPaperDestination in android/gradle.properties is correct")
         }
 
         if (existingFiles.size() > generatedFiles.size()) {
