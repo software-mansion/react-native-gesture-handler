@@ -3,7 +3,7 @@ import VelocityTracker from './VelocityTracker';
 
 export interface TrackerElement {
   abosoluteCoords: Point;
-  viewRelativeCoords: Point;
+  relativeCoords: Point;
   timestamp: number;
   velocityX: number;
   velocityY: number;
@@ -41,7 +41,7 @@ export default class PointerTracker {
 
     const newElement: TrackerElement = {
       abosoluteCoords: { x: event.x, y: event.y },
-      viewRelativeCoords: { x: event.offsetX, y: event.offsetY },
+      relativeCoords: { x: event.offsetX, y: event.offsetY },
       timestamp: event.time,
       velocityX: 0,
       velocityY: 0,
@@ -76,7 +76,7 @@ export default class PointerTracker {
     element.velocityY = velocityY;
 
     element.abosoluteCoords = { x: event.x, y: event.y };
-    element.viewRelativeCoords = { x: event.offsetX, y: event.offsetY };
+    element.relativeCoords = { x: event.offsetX, y: event.offsetY };
 
     this.trackedPointers.set(event.pointerId, element);
 
@@ -133,17 +133,17 @@ export default class PointerTracker {
     }
   }
 
-  public getLastViewRelativeCoords(pointerId?: number) {
+  public getLastRelativeCoords(pointerId?: number) {
     if (pointerId !== undefined) {
       return {
-        x: this.trackedPointers.get(pointerId)?.viewRelativeCoords.x as number,
-        y: this.trackedPointers.get(pointerId)?.viewRelativeCoords.y as number,
+        x: this.trackedPointers.get(pointerId)?.relativeCoords.x as number,
+        y: this.trackedPointers.get(pointerId)?.relativeCoords.y as number,
       };
     } else {
       return {
-        x: this.trackedPointers.get(this.lastMovedPointerId)?.viewRelativeCoords
+        x: this.trackedPointers.get(this.lastMovedPointerId)?.relativeCoords
           .x as number,
-        y: this.trackedPointers.get(this.lastMovedPointerId)?.viewRelativeCoords
+        y: this.trackedPointers.get(this.lastMovedPointerId)?.relativeCoords
           .y as number,
       };
     }
@@ -180,13 +180,13 @@ export default class PointerTracker {
     return sum;
   }
 
-  public getViewRelativeCoordsSum(ignoredPointer?: number) {
+  public getRelativeCoordsSum(ignoredPointer?: number) {
     const sum = { x: 0, y: 0 };
 
     this.trackedPointers.forEach((value, key) => {
       if (key !== ignoredPointer) {
-        sum.x += value.viewRelativeCoords.x;
-        sum.y += value.viewRelativeCoords.y;
+        sum.x += value.relativeCoords.x;
+        sum.y += value.relativeCoords.y;
       }
     });
 
