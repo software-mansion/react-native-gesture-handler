@@ -231,7 +231,7 @@ def getAbsoluteCodegenArtifactsSource() {
 
 tasks.register("copyCodegenArtifacts") {
     group 'After build tasks'
-    description 'Tasks which copy codegen artifacts to paper architecture'
+    description 'Task which copies codegen artifacts to paper architecture'
     
     if (!isGHExampleApp() || !isNewArchitectureEnabled()) {
         return
