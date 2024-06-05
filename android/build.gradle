@@ -222,7 +222,7 @@ def getAbsoluteCodegenArtifactsPaperDestination() {
 
 def getAbsoluteCodegenArtifactsSource() {
     if (!project.hasProperty('codegenArtifactsSource')) {
-        throw new Exception('[RNGH] Please fill codegenArtifactsSource variable in android/gradle.properties correct path to codegenerated artifacts')
+        throw new Exception('[react-native-gesture-handler] Please fill codegenArtifactsSource variable in android/gradle.properties to point to the correct path to codegenerated artifacts')
     }
 
     return "${project.rootDir}/../../${project.property('codegenArtifactsSource')}"
