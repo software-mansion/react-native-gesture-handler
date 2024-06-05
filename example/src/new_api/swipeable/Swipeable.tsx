@@ -464,45 +464,48 @@ export default function Swipeable(props: SwipeableProps) {
     </Animated.View>
   );
 
-
-  const onHandlerStateChange = (
-    ev: HandlerStateChangeEvent<PanGestureHandlerEventPayload>
-  ) => {
-    if (ev.nativeEvent.oldState === State.ACTIVE) {
-      handleRelease(ev);
-    }
-
-    if (ev.nativeEvent.state === State.ACTIVE) {
-      const { velocityX, translationX: dragX } = ev.nativeEvent;
-      const { friction } = props;
-
-      const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
-
-      const direction =
-        rowState === -1
-          ? 'right'
-          : rowState === 1
-          ? 'left'
-          : translationX > 0
-          ? 'left'
-          : 'right';
-
-      if (rowState === 0) {
-        props.onSwipeableOpenStartDrag?.(direction);
-      } else {
-        props.onSwipeableCloseStartDrag?.(direction);
-      }
-    }
-  };
-
-
-  const panGesture = Gesture.Tap()
+  const panGesture = Gesture.Pan()
   const tapGesture = Gesture.Tap()
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
-  return <>
-    <GestureDetector gesture={composedGesture}>
-    <Animated.View
+  tapGesture.onStart(() => {
+    close();
+  })
+
+  panGesture.onFinalize(() => {
+    handleRelease(ev);  
+  });
+
+  panGesture.onStart(() => {
+    const { velocityX, translationX: dragX } = ev.nativeEvent;
+    const { friction } = props;
+
+    const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
+
+    const direction =
+      rowState === -1
+        ? 'right'
+        : rowState === 1
+        ? 'left'
+        : translationX > 0
+        ? 'left'
+        : 'right';
+    if (rowState === 0) {
+      props.onSwipeableOpenStartDrag?.(direction);
+    } else {
+      props.onSwipeableCloseStartDrag?.(direction);
+    }
+  });
+
+  panGesture.activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]);
+  tapGesture.enabled(rowState !== 0)
+
+  return (
+    <GestureDetector gesture={composedGesture}
+      touchAction="pan-y"
+      
+      {...props}>
+      <Animated.View
         onLayout={onRowLayout}
         style={[styles.container, props.containerStyle]}>
         {left}
@@ -519,18 +522,8 @@ export default function Swipeable(props: SwipeableProps) {
         </Animated.View>
       </Animated.View>
     </GestureDetector>
-
-    <PanGestureHandler
-      activeOffsetX={[-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]}
-      touchAction="pan-y"
-      {...props}
-      onGestureEvent={onGestureEvent}>
-        <TapGestureHandler
-          enabled={rowState !== 0}
-          touchAction="pan-y">
-        </TapGestureHandler>
-    </PanGestureHandler>
-    </>
+  )
+    
 }
 
 const styles = StyleSheet.create({
