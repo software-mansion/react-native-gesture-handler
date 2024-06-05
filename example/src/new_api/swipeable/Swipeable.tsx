@@ -3,9 +3,9 @@
 // move faster and fix possible issues quicker
 
 import { useEffect, useState } from "react";
-import { Gesture, GestureDetector, PanGestureHandlerProps } from "react-native-gesture-handler";
-import Animated, { useSharedValue } from "react-native-reanimated";
-import { I18nManager, StyleSheet } from "react-native";
+import { Gesture, GestureDetector, HandlerStateChangeEvent, PanGestureHandlerEventPayload, PanGestureHandlerProps } from "react-native-gesture-handler";
+import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
+import { I18nManager, LayoutChangeEvent, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 const DRAG_TOSS = 0.05;
 
@@ -201,57 +201,51 @@ export default function Swipeable(props: SwipeableProps) {
   const [rightOffset, setRightOffset] = useState<number>(0);
   const [rowWidth, setRowWidth] = useState<number>(0);
 
+  // todo: if things don't work, set all the default values from the original file
+  // they are set everywhere thoughout this file, many functions set the default states themselves
   
-  static defaultProps = {
+  const defaultProps = {
     friction: 1,
     overshootFriction: 1,
     useNativeAnimations: true,
   };
 
-  useEffect(() => {
-    updateAnimatedEvent(props, state);
-
-    onGestureEvent = Animated.event(
-      [{ nativeEvent: { translationX: dragX } }],
-      { useNativeDriver: props.useNativeAnimations! }
-    );
+  useEffect(() => {  
+    if (!props.friction) props.friction = defaultProps.friction;
+    if (!props.overshootFriction) props.overshootFriction = defaultProps.overshootFriction;
+    if (!props.useNativeAnimations) props.useNativeAnimations = defaultProps.useNativeAnimations;
+    
+    updateAnimatedEvent(props);
   }, []);
 
-  const shouldComponentUpdate = (props: SwipeableProps, state: SwipeableState) => {
+  useEffect(() => {
+    updateAnimatedEvent(props);
+  }, [leftWidth, rightOffset, rowWidth])
+
+  const shouldComponentUpdate = (props: SwipeableProps) => {
     if (
       props.friction !== props.friction ||
       props.overshootLeft !== props.overshootLeft ||
       props.overshootRight !== props.overshootRight ||
       props.overshootFriction !== props.overshootFriction ||
-      leftWidth !== leftWidth ||
-      rightOffset !== rightOffset ||
-      rowWidth !== rowWidth
     ) {
-      updateAnimatedEvent(props, state);
+      updateAnimatedEvent(props);
     }
 
     return true;
   }
 
-  const onGestureEvent?: (
-    event: GestureEvent<PanGestureHandlerEventPayload>
-  ) => void;
-  const transX?: AnimatedInterpolation;
-  const showLeftAction?: AnimatedInterpolation | Animated.Value;
-  const leftActionTranslate?: AnimatedInterpolation;
-  const showRightAction?: AnimatedInterpolation | Animated.Value;
-  const rightActionTranslate?: AnimatedInterpolation;
+  const transX = useSharedValue(0); // only IV
+  const showLeftAction = useSharedValue(0); // can AV
+  const leftActionTranslate = useSharedValue(0); // only IV
+  const showRightAction = useSharedValue(0) // can AV;
+  const rightActionTranslate = useSharedValue(0); // only IV
 
   const updateAnimatedEvent = (
     props: SwipeableProps,
   ) => {
     const { friction, overshootFriction } = props;
-
-    setLeftWidth(0);
-    setRowWidth(0);
-    setRightOffset(0);
-
-    const { rightOffset = rowWidth } = state;
+    
     const rightWidth = Math.max(0, rowWidth - rightOffset);
 
     const { overshootLeft = leftWidth > 0, overshootRight = rightWidth > 0 } =
@@ -272,7 +266,7 @@ export default function Swipeable(props: SwipeableProps) {
         leftWidth + (overshootLeft ? 1 / overshootFriction! : 0),
       ],
     });
-    transX = transX;
+
     showLeftAction =
       leftWidth > 0
         ? transX.interpolate({
@@ -299,53 +293,15 @@ export default function Swipeable(props: SwipeableProps) {
     });
   };
 
-  const onTapHandlerStateChange = ({
-    nativeEvent,
-  }: HandlerStateChangeEvent<TapGestureHandlerEventPayload>) => {
-    if (nativeEvent.oldState === State.ACTIVE) {
-      close();
-    }
-  };
-
-  const onHandlerStateChange = (
-    ev: HandlerStateChangeEvent<PanGestureHandlerEventPayload>
-  ) => {
-    if (ev.nativeEvent.oldState === State.ACTIVE) {
-      handleRelease(ev);
-    }
-
-    if (ev.nativeEvent.state === State.ACTIVE) {
-      const { velocityX, translationX: dragX } = ev.nativeEvent;
-      const { friction } = props;
-
-      const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
-
-      const direction =
-        rowState === -1
-          ? 'right'
-          : rowState === 1
-          ? 'left'
-          : translationX > 0
-          ? 'left'
-          : 'right';
-
-      if (rowState === 0) {
-        props.onSwipeableOpenStartDrag?.(direction);
-      } else {
-        props.onSwipeableCloseStartDrag?.(direction);
-      }
-    }
-  };
-
   const handleRelease = (
     ev: HandlerStateChangeEvent<PanGestureHandlerEventPayload>
   ) => {
     const { velocityX, translationX: dragX } = ev.nativeEvent;
-    setLeftWidth(0);
 
-    const { leftWidth = 0, rowWidth = 0, rowState } = state;
-    const rightOffset = rowWidth;
+    // original, is this a mistake?
+    setRightOffset(rowWidth);
     const rightWidth = rowWidth - rightOffset;
+
     const {
       friction,
       leftThreshold = leftWidth / 2,
@@ -387,12 +343,12 @@ export default function Swipeable(props: SwipeableProps) {
           y: number;
         }
   ) => {
-    const { dragX, rowTranslation } = state;
-    dragX.setValue(0);
-    rowTranslation.setValue(fromValue);
+    dragX.value = 0;
+    rowTranslation.value = fromValue;
 
-    setState({ rowState: Math.sign(toValue) });
-    Animated.spring(rowTranslation, {
+    setRowState(Math.sign(toValue));
+
+    rowTranslation.value = withSpring(toValue, {
       restSpeedThreshold: 1.7,
       restDisplacementThreshold: 0.4,
       velocity: velocityX,
@@ -400,8 +356,8 @@ export default function Swipeable(props: SwipeableProps) {
       toValue,
       useNativeDriver: props.useNativeAnimations!,
       ...props.animationOptions,
-    }).start(({ finished }) => {
-      if (finished) {
+    }, (isFinished) => {
+      if (isFinished) {
         if (toValue > 0) {
           props.onSwipeableLeftOpen?.();
           props.onSwipeableOpen?.('left', this);
@@ -413,7 +369,8 @@ export default function Swipeable(props: SwipeableProps) {
           props.onSwipeableClose?.(closingDirection, this);
         }
       }
-    });
+    })
+
     if (toValue > 0) {
       props.onSwipeableLeftWillOpen?.();
       props.onSwipeableWillOpen?.('left');
@@ -427,12 +384,10 @@ export default function Swipeable(props: SwipeableProps) {
   };
 
   const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-    setState({ rowWidth: nativeEvent.layout.width });
+    setRowWidth(nativeEvent.layout.width);
   };
 
   const currentOffset = () => {
-    const { leftWidth = 0, rowWidth = 0, rowState } = state;
-    const { rightOffset = rowWidth } = state;
     const rightWidth = rowWidth - rightOffset;
     if (rowState === 1) {
       return leftWidth;
@@ -442,32 +397,27 @@ export default function Swipeable(props: SwipeableProps) {
     return 0;
   };
 
-  close = () => {
+  const close = () => {
     animateRow(currentOffset(), 0);
   };
-
-  openLeft = () => {
-    const { leftWidth = 0 } = state;
+  
+  const openLeft = () => {
     animateRow(currentOffset(), leftWidth);
   };
 
-  openRight = () => {
-    const { rowWidth = 0 } = state;
-    const { rightOffset = rowWidth } = state;
+  const openRight = () => {
     const rightWidth = rowWidth - rightOffset;
-    animateRow(currentOffset(), -rightWidth);
+    animateRow(currentOffset(), - rightWidth);
   };
 
-  reset = () => {
-    const { dragX, rowTranslation } = state;
-    dragX.setValue(0);
-    rowTranslation.setValue(0);
-    setState({ rowState: 0 });
+  const reset = () => {
+    dragX.value = 0;
+    rowTranslation.value = 0;
+    setRowState(0);
   };
 
   // RENDER() WAS HERE
 
-  const { rowState } = state;
   const {
     children,
     renderLeftActions,
@@ -475,6 +425,11 @@ export default function Swipeable(props: SwipeableProps) {
     dragOffsetFromLeftEdge = 10,
     dragOffsetFromRightEdge = 10,
   } = props;
+
+  const onGestureEvent = Animated.event(
+    [{ nativeEvent: { translationX: dragX } }],
+    { useNativeDriver: props.useNativeAnimations! }
+  );
 
   const left = renderLeftActions && (
     <Animated.View
@@ -488,7 +443,7 @@ export default function Swipeable(props: SwipeableProps) {
       {renderLeftActions(showLeftAction!, transX!, this)}
       <View
         onLayout={({ nativeEvent }) =>
-          setState({ leftWidth: nativeEvent.layout.x })
+          setLeftWidth(nativeEvent.layout.x)
         }
       />
     </Animated.View>
@@ -503,11 +458,43 @@ export default function Swipeable(props: SwipeableProps) {
       {renderRightActions(showRightAction!, transX!, this)}
       <View
         onLayout={({ nativeEvent }) =>
-          setState({ rightOffset: nativeEvent.layout.x })
+          setRightOffset(nativeEvent.layout.x)
         }
       />
     </Animated.View>
   );
+
+
+  const onHandlerStateChange = (
+    ev: HandlerStateChangeEvent<PanGestureHandlerEventPayload>
+  ) => {
+    if (ev.nativeEvent.oldState === State.ACTIVE) {
+      handleRelease(ev);
+    }
+
+    if (ev.nativeEvent.state === State.ACTIVE) {
+      const { velocityX, translationX: dragX } = ev.nativeEvent;
+      const { friction } = props;
+
+      const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
+
+      const direction =
+        rowState === -1
+          ? 'right'
+          : rowState === 1
+          ? 'left'
+          : translationX > 0
+          ? 'left'
+          : 'right';
+
+      if (rowState === 0) {
+        props.onSwipeableOpenStartDrag?.(direction);
+      } else {
+        props.onSwipeableCloseStartDrag?.(direction);
+      }
+    }
+  };
+
 
   const panGesture = Gesture.Tap()
   const tapGesture = Gesture.Tap()
@@ -537,12 +524,10 @@ export default function Swipeable(props: SwipeableProps) {
       activeOffsetX={[-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]}
       touchAction="pan-y"
       {...props}
-      onGestureEvent={onGestureEvent}
-      onHandlerStateChange={onHandlerStateChange}>
+      onGestureEvent={onGestureEvent}>
         <TapGestureHandler
           enabled={rowState !== 0}
-          touchAction="pan-y"
-          onHandlerStateChange={onTapHandlerStateChange}>
+          touchAction="pan-y">
         </TapGestureHandler>
     </PanGestureHandler>
     </>
