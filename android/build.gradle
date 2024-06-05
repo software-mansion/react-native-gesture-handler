@@ -261,7 +261,7 @@ tasks.register("copyCodegenArtifacts") {
 
         generatedFiles.forEach { generatedFile -> 
             if (!existingFilesMap.containsKey(generatedFile.name)) {
-                logger.warn("[RNGH] ${generatedFile.name} not found in paper dir, if it's used in Android you need to copy it manually and implement yourself before using auto-copy feature")
+                logger.warn("[react-native-gesture-handler] ${generatedFile.name} not found in paper dir, if it's used in Android you need to copy it manually and implement yourself before using auto-copy feature")
             }
         }
 
