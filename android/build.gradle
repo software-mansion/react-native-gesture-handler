@@ -270,7 +270,7 @@ tasks.register("copyCodegenArtifacts") {
         }
 
         if (existingFiles.size() > generatedFiles.size()) {
-            throw new Exception("[RNGH] Number od generated artifacts should be greather then or equal to paper interfaces. Please check if codegenArtifactsSource in android/gradle.properties is correct")
+            throw new Exception("[react-native-gesture-handler] Number od generated artifacts should be greater than or equal to paper interfaces. Please check if codegenArtifactsSource in android/gradle.properties is correct")
         }
 
         copy {
