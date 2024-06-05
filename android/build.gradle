@@ -266,7 +266,7 @@ tasks.register("copyCodegenArtifacts") {
         }
 
         if (existingFiles.size() == 0) {
-            logger.warn("[RNGH] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used in Android, if that's not the case please check if codegenArtifactsPaperDestination in android/gradle.properties is correct")
+            logger.warn("[react-native-gesture-handler] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used in Android, if that's not the case please check if codegenArtifactsPaperDestination in android/gradle.properties is correct")
         }
 
         if (existingFiles.size() > generatedFiles.size()) {
