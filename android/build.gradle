@@ -214,7 +214,7 @@ def isGHExampleApp() {
 
 def getAbsoluteCodegenArtifactsPaperDestination() {
     if (!project.hasProperty('codegenArtifactsPaperDestination')) {
-        throw new Exception('[RNGH] Please fill codegenArtifactsPaperDestination variable in android/gradle.properties correct path to paper paper destination')
+        throw new Exception('[react-native-gesture-handler] Please fill codegenArtifactsPaperDestination variable in android/gradle.properties to point to the correct path to generated specs for paper')
     }
 
     return "${project.rootDir}/../../${project.property('codegenArtifactsPaperDestination')}"
