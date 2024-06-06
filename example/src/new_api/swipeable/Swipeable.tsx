@@ -7,7 +7,6 @@ import {
   Gesture,
   GestureDetector,
   GestureStateChangeEvent,
-  HandlerStateChangeEvent,
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
 } from 'react-native-gesture-handler';
@@ -40,6 +39,13 @@ type SwipeableExcludes = Exclude<
 // with all versions of @types/react-native
 // todo check what can replace this, and if its necessary
 //type SharedValue = ReturnType<Animated.Value['interpolate']>;
+
+export interface SwipeableActions {
+  close: () => void;
+  openLeft: () => void;
+  openRight: () => void;
+  reset: () => void;
+}
 
 export interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
@@ -123,14 +129,17 @@ export interface SwipeableProps
   /**
    * Called when action panel gets open (either right or left).
    */
-  onSwipeableOpen?: (direction: 'left' | 'right', swipeable: Swipeable) => void;
+  onSwipeableOpen?: (
+    direction: 'left' | 'right',
+    swipeable: SwipeableActions
+  ) => void;
 
   /**
    * Called when action panel is closed.
    */
   onSwipeableClose?: (
     direction: 'left' | 'right',
-    swipeable: Swipeable
+    swipeable: SwipeableActions
   ) => void;
 
   /**
@@ -179,7 +188,7 @@ export interface SwipeableProps
   renderLeftActions?: (
     progressAnimatedValue: SharedValue,
     dragAnimatedValue: SharedValue,
-    swipeable: Swipeable
+    swipeable: SwipeableActions
   ) => React.ReactNode;
   /**
    *
@@ -193,7 +202,7 @@ export interface SwipeableProps
   renderRightActions?: (
     progressAnimatedValue: SharedValue,
     dragAnimatedValue: SharedValue,
-    swipeable: Swipeable
+    swipeable: SwipeableActions
   ) => React.ReactNode;
 
   useNativeAnimations?: boolean;
@@ -244,6 +253,7 @@ export default function Swipeable(props: SwipeableProps) {
     updateAnimatedEvent(props);
   }, [leftWidth, rightOffset, rowWidth]);
 
+  // todo: export to the exposed store
   const shouldComponentUpdate = (props: SwipeableProps) => {
     if (
       props.friction !== props.friction ||
@@ -409,7 +419,7 @@ export default function Swipeable(props: SwipeableProps) {
     return 0;
   };
 
-  const exposedStore = {
+  const exposedStore: SwipeableActions = {
     close: () => {
       animateRow(currentOffset(), 0);
     },
@@ -427,8 +437,6 @@ export default function Swipeable(props: SwipeableProps) {
     },
   };
 
-  // RENDER() WAS HERE
-
   const {
     children,
     renderLeftActions,
@@ -437,10 +445,12 @@ export default function Swipeable(props: SwipeableProps) {
     dragOffsetFromRightEdge = 10,
   } = props;
 
-  const onGestureEvent = Animated.event(
-    [{ nativeEvent: { translationX: dragX } }],
-    { useNativeDriver: props.useNativeAnimations! }
-  );
+  /* important but not crucial for now
+
+  const onGestureEvent = Animated.event([
+    { nativeEvent: { translationX: dragX } },
+  ]);
+ */
 
   const left = renderLeftActions && (
     <Animated.View

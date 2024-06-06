@@ -161,7 +161,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Bottom Sheet', component: BottomSheetNewApi },
       { name: 'Chat Heads', component: ChatHeadsNewApi },
       { name: 'Drag and drop', component: DragNDrop },
-      { name: 'Swipeable', component: Swipeable},
+      { name: 'Swipeable', component: Swipeable },
       {
         name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
         component: BetterHorizontalDrawer,
