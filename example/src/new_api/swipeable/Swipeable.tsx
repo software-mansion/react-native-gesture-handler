@@ -4,6 +4,7 @@
 
 import {
   ForwardedRef,
+  RefAttributes,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -21,6 +22,7 @@ import Animated, {
   SharedValue,
   interpolate,
   useDerivedValue,
+  useFrameCallback,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -124,7 +126,7 @@ export interface SwipeableProps
    */
   onSwipeableOpen?: (
     direction: 'left' | 'right',
-    swipeable: ForwardedRef<unknown>
+    swipeable: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>>
   ) => void;
 
   /**
@@ -132,7 +134,7 @@ export interface SwipeableProps
    */
   onSwipeableClose?: (
     direction: 'left' | 'right',
-    swipeable: ForwardedRef<unknown>
+    swipeable: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>>
   ) => void;
 
   /**
@@ -181,7 +183,7 @@ export interface SwipeableProps
   renderLeftActions?: (
     progressAnimatedValue: SharedValue,
     dragAnimatedValue: SharedValue,
-    swipeable: ForwardedRef<unknown> // we have to use ref here, as it now holds all the objects
+    swipeable: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>> // we have to use ref here, as it now holds all the objects
   ) => React.ReactNode;
   /**
    *
@@ -195,7 +197,7 @@ export interface SwipeableProps
   renderRightActions?: (
     progressAnimatedValue: SharedValue,
     dragAnimatedValue: SharedValue,
-    swipeable: ForwardedRef<unknown>
+    swipeable: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>>
   ) => React.ReactNode;
 
   useNativeAnimations?: boolean;
@@ -215,13 +217,26 @@ export interface SwipeableProps
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }
 
-const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
+export interface ExposedFunctions {
+  close: () => void;
+  openLeft: () => void;
+  openRight: () => void;
+  reset: () => void;
+}
+
+const Swipeable = forwardRef<
+  SwipeableProps & React.RefAttributes<ExposedFunctions>
+>(function Swipeable(
+  props: SwipeableProps,
+  ref: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>>
+) {
+  const [rowState, setRowState] = useState<number>(0);
+
   const dragX = useSharedValue<number>(0);
   const rowTranslation = useSharedValue<number>(0);
-  const [rowState, setRowState] = useState<number>(0);
   const [leftWidth, setLeftWidth] = useState<number>(0);
-  const [rightOffset, setRightOffset] = useState<number>(0);
-  const [rowWidth, setRowWidth] = useState<number>(0);
+  const rightOffset = useSharedValue<number>(0);
+  const rowWidth = useSharedValue<number>(0);
 
   // todo: if things don't work, set all the default values from the original file
   // they are set everywhere thoughout this file, many functions set the default states themselves
@@ -270,7 +285,7 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
   const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
 
   const updateAnimatedEvent = (props: SwipeableProps) => {
-    const rightWidth = Math.max(0, rowWidth - rightOffset);
+    const rightWidth = Math.max(0, rowWidth.value - rightOffset.value);
 
     const {
       friction,
@@ -319,9 +334,10 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
   ) => {
     const { velocityX, translationX: dragX } = event;
 
-    // doublecheck with original, this has to be a mistake
-    setRightOffset(rowWidth);
-    const rightWidth = rowWidth - rightOffset;
+    console.log('handling');
+
+    // rightOffset default if undefined set to rowWidth.value
+    const rightWidth = rowWidth.value - rightOffset.value;
 
     const {
       friction,
@@ -400,11 +416,11 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
   };
 
   const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-    setRowWidth(nativeEvent.layout.width);
+    rowWidth.value = nativeEvent.layout.width;
   };
 
   const currentOffset = () => {
-    const rightWidth = rowWidth - rightOffset;
+    const rightWidth = rowWidth.value - rightOffset.value;
     if (rowState === 1) {
       return leftWidth;
     } else if (rowState === -1) {
@@ -456,7 +472,9 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
       ]}>
       {renderRightActions(showRightAction!, transX!, ref)}
       <View
-        onLayout={({ nativeEvent }) => setRightOffset(nativeEvent.layout.x)}
+        onLayout={({ nativeEvent }) =>
+          (rightOffset.value = nativeEvent.layout.x)
+        }
       />
     </Animated.View>
   );
@@ -477,11 +495,13 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
 
   panGesture.onStart(
     (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
-      // what does `translationX: dragX` do?
-      const { velocityX, translationX: dragX } = event;
+      const { velocityX } = event;
+      dragX.value = event.translationX;
       const { friction } = props;
 
-      const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
+      console.log('dragX:', dragX);
+
+      const translationX = (dragX.value + DRAG_TOSS * velocityX) / friction!;
 
       const direction =
         rowState === -1
@@ -513,7 +533,7 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
           animateRow(currentOffset(), leftWidth);
         },
         openRight() {
-          const rightWidth = rowWidth - rightOffset;
+          const rightWidth = rowWidth.value - rightOffset.value;
           animateRow(currentOffset(), -rightWidth);
         },
         reset() {
@@ -521,10 +541,17 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
           rowTranslation.value = 0;
           setRowState(0);
         },
-      };
+      } as SwipeableProps & RefAttributes<ExposedFunctions>;
     },
     []
   );
+
+  // note: key to success now is activating updateAnimatedEvent(props); every frame of the animation
+  //       where'd be a viable entry point for that?
+
+  useFrameCallback(() => {
+    updateAnimatedEvent(props);
+  });
 
   return (
     <GestureDetector gesture={composedGesture} touchAction="pan-y" {...props}>
