@@ -253,7 +253,8 @@ export default function Swipeable(props: SwipeableProps) {
     updateAnimatedEvent(props);
   }, [leftWidth, rightOffset, rowWidth]);
 
-  // todo: export to the exposed store
+  /* todo: export to the exposed store
+  
   const shouldComponentUpdate = (props: SwipeableProps) => {
     if (
       props.friction !== props.friction ||
@@ -266,12 +267,14 @@ export default function Swipeable(props: SwipeableProps) {
     }
     return false;
   };
+  */
 
   const transX = useSharedValue(0); // only IV
   const showLeftAction = useSharedValue(0); // can AV
   const leftActionTranslate = useSharedValue(0); // only IV
   const showRightAction = useSharedValue(0); // can AV;
   const rightActionTranslate = useSharedValue(0); // only IV
+  const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
 
   const updateAnimatedEvent = (props: SwipeableProps) => {
     const rightWidth = Math.max(0, rowWidth - rightOffset);
@@ -284,8 +287,6 @@ export default function Swipeable(props: SwipeableProps) {
     } = props;
 
     dragX.value = interpolate(dragX.value, [0, friction!], [0, 1]);
-
-    const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
 
     transX.value = interpolate(
       composedX.value,
