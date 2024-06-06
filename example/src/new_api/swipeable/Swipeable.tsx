@@ -19,6 +19,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
+  ReduceMotion,
   SharedValue,
   interpolate,
   useDerivedValue,
@@ -380,13 +381,17 @@ const Swipeable = forwardRef<
 
     setRowState(Math.sign(toValue));
 
+    console.log('rowTrans:', rowTranslation.value);
     rowTranslation.value = withSpring(
       toValue,
       {
-        restSpeedThreshold: 1.7,
-        restDisplacementThreshold: 0.4,
-        velocity: velocityX,
-        damping: 1,
+        duration: 1000,
+        dampingRatio: 1.2,
+        stiffness: 500,
+        overshootClamping: true,
+        restDisplacementThreshold: 0.01,
+        restSpeedThreshold: 0.01,
+        reduceMotion: ReduceMotion.System,
         ...props.animationOptions,
       },
       () => {
@@ -550,6 +555,8 @@ const Swipeable = forwardRef<
   //       where'd be a viable entry point for that?
 
   useFrameCallback(() => {
+    // fixme, this is partially correct but shared values should be applied automatically with proper hooks
+    console.log('frame update');
     updateAnimatedEvent(props);
   });
 
