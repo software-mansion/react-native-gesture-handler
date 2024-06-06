@@ -14,14 +14,18 @@ import {
   Gesture,
   GestureDetector,
   GestureStateChangeEvent,
+  GestureUpdateEvent,
+  PanGestureHandler,
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
+  TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   ReduceMotion,
   SharedValue,
   interpolate,
+  useAnimatedStyle,
   useDerivedValue,
   useFrameCallback,
   useSharedValue,
@@ -255,11 +259,11 @@ const Swipeable = forwardRef<
     if (!props.useNativeAnimations)
       props.useNativeAnimations = defaultProps.useNativeAnimations;
 
-    updateAnimatedEvent(props);
+    updateAnimatedEvent();
   }, []);
 
   useEffect(() => {
-    updateAnimatedEvent(props);
+    updateAnimatedEvent();
   }, [leftWidth, rightOffset, rowWidth]);
 
   /* todo: export to the exposed store
@@ -285,7 +289,7 @@ const Swipeable = forwardRef<
   const rightActionTranslate = useSharedValue(0); // only IV
   const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
 
-  const updateAnimatedEvent = (props: SwipeableProps) => {
+  const updateAnimatedEvent = () => {
     const rightWidth = Math.max(0, rowWidth.value - rightOffset.value);
 
     const {
@@ -335,7 +339,7 @@ const Swipeable = forwardRef<
   ) => {
     const { velocityX, translationX: dragX } = event;
 
-    console.log('handling');
+    console.log(rightOffset.value);
 
     // rightOffset default if undefined set to rowWidth.value
     const rightWidth = rowWidth.value - rightOffset.value;
@@ -377,12 +381,11 @@ const Swipeable = forwardRef<
     velocityX?: number
   ) => {
     dragX.value = 0;
-    rowTranslation.value = fromValue;
+    transX.value = fromValue;
 
     setRowState(Math.sign(toValue));
 
-    console.log('rowTrans:', rowTranslation.value);
-    rowTranslation.value = withSpring(
+    transX.value = withSpring(
       toValue,
       {
         duration: 1000,
@@ -392,18 +395,21 @@ const Swipeable = forwardRef<
         restDisplacementThreshold: 0.01,
         restSpeedThreshold: 0.01,
         reduceMotion: ReduceMotion.System,
+        velocity: velocityX,
         ...props.animationOptions,
       },
-      () => {
-        if (toValue > 0) {
-          props.onSwipeableLeftOpen?.();
-          props.onSwipeableOpen?.('left', ref);
-        } else if (toValue < 0) {
-          props.onSwipeableRightOpen?.();
-          props.onSwipeableOpen?.('right', ref);
-        } else {
-          const closingDirection = fromValue > 0 ? 'left' : 'right';
-          props.onSwipeableClose?.(closingDirection, ref);
+      (isFinished) => {
+        if (isFinished) {
+          if (toValue > 0) {
+            props.onSwipeableLeftOpen?.();
+            props.onSwipeableOpen?.('left', ref);
+          } else if (toValue < 0) {
+            props.onSwipeableRightOpen?.();
+            props.onSwipeableOpen?.('right', ref);
+          } else {
+            const closingDirection = fromValue > 0 ? 'left' : 'right';
+            props.onSwipeableClose?.(closingDirection, ref);
+          }
         }
       }
     );
@@ -469,6 +475,10 @@ const Swipeable = forwardRef<
     </Animated.View>
   );
 
+  const rightAnimatedStyle = useAnimatedStyle(() => {
+    return {};
+  });
+
   const right = renderRightActions && (
     <Animated.View
       style={[
@@ -498,13 +508,11 @@ const Swipeable = forwardRef<
     }
   );
 
-  panGesture.onStart(
-    (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+  panGesture
+    .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
       const { velocityX } = event;
       dragX.value = event.translationX;
       const { friction } = props;
-
-      console.log('dragX:', dragX);
 
       const translationX = (dragX.value + DRAG_TOSS * velocityX) / friction!;
 
@@ -521,8 +529,12 @@ const Swipeable = forwardRef<
       } else {
         props.onSwipeableCloseStartDrag?.(direction);
       }
-    }
-  );
+
+      updateAnimatedEvent();
+    })
+    .onEnd((event) => {
+      handleRelease(event);
+    });
 
   panGesture.activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]);
   tapGesture.enabled(rowState !== 0);
@@ -543,7 +555,7 @@ const Swipeable = forwardRef<
         },
         reset() {
           dragX.value = 0;
-          rowTranslation.value = 0;
+          transX.value = 0;
           setRowState(0);
         },
       } as SwipeableProps & RefAttributes<ExposedFunctions>;
@@ -551,13 +563,13 @@ const Swipeable = forwardRef<
     []
   );
 
-  // note: key to success now is activating updateAnimatedEvent(props); every frame of the animation
-  //       where'd be a viable entry point for that?
+  // note: during the dragging, we seem to not keeping track of all the changes
+  // note: after dragging, we have no actual entrypoint to keep on updating after the end of the animation
 
-  useFrameCallback(() => {
-    // fixme, this is partially correct but shared values should be applied automatically with proper hooks
-    console.log('frame update');
-    updateAnimatedEvent(props);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: transX.value! }],
+    };
   });
 
   return (
@@ -569,12 +581,7 @@ const Swipeable = forwardRef<
         {right}
         <Animated.View
           pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
-          style={[
-            {
-              transform: [{ translateX: transX! }],
-            },
-            props.childrenContainerStyle,
-          ]}>
+          style={[animatedStyle, props.childrenContainerStyle]}>
           {children}
         </Animated.View>
       </Animated.View>
