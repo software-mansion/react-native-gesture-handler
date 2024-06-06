@@ -2,7 +2,13 @@
 // separate repo. Although, keeping it here for the time being will allow us to
 // move faster and fix possible issues quicker
 
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import {
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import {
   Gesture,
   GestureDetector,
@@ -33,19 +39,6 @@ type SwipeableExcludes = Exclude<
   keyof PanGestureHandlerProps,
   'onGestureEvent' | 'onHandlerStateChange'
 >;
-
-// Animated.SharedValue has been converted to a generic type
-// in @types/react-native 0.70. This way we can maintain compatibility
-// with all versions of @types/react-native
-// todo check what can replace this, and if its necessary
-//type SharedValue = ReturnType<Animated.Value['interpolate']>;
-
-export interface SwipeableActions {
-  close: () => void;
-  openLeft: () => void;
-  openRight: () => void;
-  reset: () => void;
-}
 
 export interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
@@ -131,7 +124,7 @@ export interface SwipeableProps
    */
   onSwipeableOpen?: (
     direction: 'left' | 'right',
-    swipeable: SwipeableActions
+    swipeable: ForwardedRef<unknown>
   ) => void;
 
   /**
@@ -139,7 +132,7 @@ export interface SwipeableProps
    */
   onSwipeableClose?: (
     direction: 'left' | 'right',
-    swipeable: SwipeableActions
+    swipeable: ForwardedRef<unknown>
   ) => void;
 
   /**
@@ -188,7 +181,7 @@ export interface SwipeableProps
   renderLeftActions?: (
     progressAnimatedValue: SharedValue,
     dragAnimatedValue: SharedValue,
-    swipeable: SwipeableActions
+    swipeable: ForwardedRef<unknown> // we have to use ref here, as it now holds all the objects
   ) => React.ReactNode;
   /**
    *
@@ -202,7 +195,7 @@ export interface SwipeableProps
   renderRightActions?: (
     progressAnimatedValue: SharedValue,
     dragAnimatedValue: SharedValue,
-    swipeable: SwipeableActions
+    swipeable: ForwardedRef<unknown>
   ) => React.ReactNode;
 
   useNativeAnimations?: boolean;
@@ -383,13 +376,13 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
       () => {
         if (toValue > 0) {
           props.onSwipeableLeftOpen?.();
-          props.onSwipeableOpen?.('left', exposedStore);
+          props.onSwipeableOpen?.('left', ref);
         } else if (toValue < 0) {
           props.onSwipeableRightOpen?.();
-          props.onSwipeableOpen?.('right', exposedStore);
+          props.onSwipeableOpen?.('right', ref);
         } else {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          props.onSwipeableClose?.(closingDirection, exposedStore);
+          props.onSwipeableClose?.(closingDirection, ref);
         }
       }
     );
@@ -420,22 +413,8 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
     return 0;
   };
 
-  const exposedStore: SwipeableActions = {
-    close: () => {
-      animateRow(currentOffset(), 0);
-    },
-    openLeft: () => {
-      animateRow(currentOffset(), leftWidth);
-    },
-    openRight: () => {
-      const rightWidth = rowWidth - rightOffset;
-      animateRow(currentOffset(), -rightWidth);
-    },
-    reset: () => {
-      dragX.value = 0;
-      rowTranslation.value = 0;
-      setRowState(0);
-    },
+  const close = () => {
+    animateRow(currentOffset(), 0);
   };
 
   const {
@@ -462,7 +441,7 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
         // it for some reason
         { transform: [{ translateX: leftActionTranslate! }] },
       ]}>
-      {renderLeftActions(showLeftAction!, transX!, exposedStore)}
+      {renderLeftActions(showLeftAction!, transX!, ref)}
       <View
         onLayout={({ nativeEvent }) => setLeftWidth(nativeEvent.layout.x)}
       />
@@ -475,7 +454,7 @@ const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
         styles.rightActions,
         { transform: [{ translateX: rightActionTranslate! }] },
       ]}>
-      {renderRightActions(showRightAction!, transX!, exposedStore)}
+      {renderRightActions(showRightAction!, transX!, ref)}
       <View
         onLayout={({ nativeEvent }) => setRightOffset(nativeEvent.layout.x)}
       />
