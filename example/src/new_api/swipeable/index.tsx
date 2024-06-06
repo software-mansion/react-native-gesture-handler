@@ -1,9 +1,17 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import Swipeable from './Swipeable';
 
 function ExampleSwipeable() {
-  return <Swipeable />;
+  return (
+    <Swipeable
+      friction={2}
+      leftThreshold={80}
+      enableTrackpadTwoFingerGesture
+      rightThreshold={40}>
+      <Text>Lorem Ipsum</Text>
+    </Swipeable>
+  );
 }
 
 export default function Example() {

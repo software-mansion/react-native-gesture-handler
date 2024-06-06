@@ -2,7 +2,7 @@
 // separate repo. Although, keeping it here for the time being will allow us to
 // move faster and fix possible issues quicker
 
-import { useEffect, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import {
   Gesture,
   GestureDetector,
@@ -222,7 +222,7 @@ export interface SwipeableProps
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }
 
-export default function Swipeable(props: SwipeableProps) {
+const Swipeable = forwardRef(function Swipeable(props: SwipeableProps, ref) {
   const dragX = useSharedValue<number>(0);
   const rowTranslation = useSharedValue<number>(0);
   const [rowState, setRowState] = useState<number>(0);
@@ -523,6 +523,30 @@ export default function Swipeable(props: SwipeableProps) {
   panGesture.activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]);
   tapGesture.enabled(rowState !== 0);
 
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        close() {
+          animateRow(currentOffset(), 0);
+        },
+        openLeft() {
+          animateRow(currentOffset(), leftWidth);
+        },
+        openRight() {
+          const rightWidth = rowWidth - rightOffset;
+          animateRow(currentOffset(), -rightWidth);
+        },
+        reset() {
+          dragX.value = 0;
+          rowTranslation.value = 0;
+          setRowState(0);
+        },
+      };
+    },
+    []
+  );
+
   return (
     <GestureDetector gesture={composedGesture} touchAction="pan-y" {...props}>
       <Animated.View
@@ -543,7 +567,9 @@ export default function Swipeable(props: SwipeableProps) {
       </Animated.View>
     </GestureDetector>
   );
-}
+});
+
+export default Swipeable;
 
 const styles = StyleSheet.create({
   container: {
