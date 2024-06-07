@@ -329,6 +329,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       toValue: number,
       velocityX?: number
     ) => {
+      'worklet';
       dragX.value = 0;
       transX.value = fromValue;
 
