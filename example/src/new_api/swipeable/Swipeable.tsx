@@ -232,7 +232,7 @@ const Swipeable = forwardRef<
   props: SwipeableProps,
   ref: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>>
 ) {
-  const [rowState, setRowState] = useState<number>(0);
+  const rowState = useSharedValue<number>(0);
 
   const dragX = useSharedValue<number>(0);
   const rowTranslation = useSharedValue<number>(0);
@@ -346,13 +346,13 @@ const Swipeable = forwardRef<
 
     let toValue = 0;
 
-    if (rowState === 0) {
+    if (rowState.value === 0) {
       if (translationX > leftThreshold) {
         toValue = leftWidth.value;
       } else if (translationX < -rightThreshold) {
         toValue = -rightWidth;
       }
-    } else if (rowState === 1) {
+    } else if (rowState.value === 1) {
       // swiped to left
       if (translationX > -leftThreshold) {
         toValue = leftWidth.value;
@@ -375,7 +375,7 @@ const Swipeable = forwardRef<
     dragX.value = 0;
     transX.value = fromValue;
 
-    setRowState(Math.sign(toValue));
+    rowState.value = Math.sign(toValue);
 
     transX.value = withSpring(
       toValue,
@@ -424,9 +424,10 @@ const Swipeable = forwardRef<
 
   const currentOffset = () => {
     const rightWidth = rowWidth.value - rightOffset.value;
-    if (rowState === 1) {
+    console.log('row state:', rowState.value);
+    if (rowState.value === 1) {
       return leftWidth.value;
-    } else if (rowState === -1) {
+    } else if (rowState.value === -1) {
       return -rightWidth;
     }
     return 0;
@@ -492,7 +493,7 @@ const Swipeable = forwardRef<
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
   const close = () => {
-    console.log('closing from inside');
+    console.log('closing from inside:', currentOffset());
     animateRow(currentOffset(), 0);
   };
 
@@ -511,14 +512,14 @@ const Swipeable = forwardRef<
       const translationX = (dragX.value + DRAG_TOSS * velocityX) / friction!;
 
       const direction =
-        rowState === -1
+        rowState.value === -1
           ? 'right'
-          : rowState === 1
+          : rowState.value === 1
           ? 'left'
           : translationX > 0
           ? 'left'
           : 'right';
-      if (rowState === 0) {
+      if (rowState.value === 0) {
         props.onSwipeableOpenStartDrag?.(direction);
       } else {
         props.onSwipeableCloseStartDrag?.(direction);
@@ -532,7 +533,7 @@ const Swipeable = forwardRef<
     });
 
   panGesture.activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]);
-  tapGesture.enabled(rowState !== 0);
+  tapGesture.enabled(rowState.value !== 0);
   tapGesture.shouldCancelWhenOutside(true);
 
   useImperativeHandle(
@@ -540,7 +541,7 @@ const Swipeable = forwardRef<
     () => {
       return {
         close() {
-          console.log('closing from outside');
+          console.log('closing from outside:', currentOffset());
           animateRow(currentOffset(), 0);
         },
         openLeft() {
@@ -553,7 +554,7 @@ const Swipeable = forwardRef<
         reset() {
           dragX.value = 0;
           transX.value = 0;
-          setRowState(0);
+          rowState.value = 0;
         },
       } as SwipeableProps & RefAttributes<ExposedFunctions>;
     },
@@ -580,7 +581,7 @@ const Swipeable = forwardRef<
           style={[
             animatedStyle,
             props.childrenContainerStyle,
-            { pointerEvents: rowState === 0 ? 'auto' : 'box-only' },
+            { pointerEvents: rowState.value === 0 ? 'auto' : 'box-only' },
           ]}>
           {children}
         </Animated.View>
