@@ -1,4 +1,3 @@
-'use strict';
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. Although, keeping it here for the time being will allow us to
 // move faster and fix possible issues quicker
@@ -237,10 +236,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     } = props;
 
     const transX = useSharedValue(0);
-    const showLeftAction = useSharedValue(0);
+    const showLeftProgress = useSharedValue(0);
     const leftActionTranslate = useSharedValue(0);
-    const showRightAction = useSharedValue(0);
+    const showRightProgress = useSharedValue(0);
     const rightActionTranslate = useSharedValue(0);
+
     const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
 
     const currentOffset = () => {
@@ -263,35 +263,36 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         overshootRight = rightWidth > 0,
       } = props;
 
+      // potential issue
       dragX.value = interpolate(dragX.value, [0, friction!], [0, 1]);
 
       transX.value = interpolate(
         composedX.value,
         [-rightWidth - 1, -rightWidth, leftWidth.value, leftWidth.value + 1],
         [
-          -rightWidth - (overshootRight ? 1 / overshootFriction! : 0),
+          -rightWidth - (overshootRight ? 1 / overshootFriction : 0),
           -rightWidth,
           leftWidth.value,
-          leftWidth.value + (overshootLeft ? 1 / overshootFriction! : 0),
+          leftWidth.value + (overshootLeft ? 1 / overshootFriction : 0),
         ]
       );
 
-      showLeftAction.value =
+      showLeftProgress.value =
         leftWidth.value > 0
           ? interpolate(transX.value, [-1, 0, leftWidth.value], [0, 0, 1])
           : 0;
       leftActionTranslate.value = interpolate(
-        showLeftAction.value,
+        showLeftProgress.value,
         [0, Number.MIN_VALUE],
         [-10000, 0],
         Extrapolation.CLAMP
       );
-      showRightAction.value =
+      showRightProgress.value =
         rightWidth > 0
           ? interpolate(transX.value, [-rightWidth, 0, 1], [1, 0, 0])
           : 0;
       rightActionTranslate.value = interpolate(
-        showRightAction.value,
+        showRightProgress.value,
         [0, Number.MIN_VALUE],
         [-10000, 0],
         Extrapolation.CLAMP
@@ -306,6 +307,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       'worklet';
       dragX.value = 0;
       transX.value = fromValue;
+      // rowTranslation.value = fromValue;
 
       rowState.value = Math.sign(toValue);
 
@@ -405,7 +407,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const left = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
-        {renderLeftActions(showLeftAction, transX, swipeableMethods)}
+        {renderLeftActions(showLeftProgress, transX, swipeableMethods)}
         <View
           onLayout={({ nativeEvent }) =>
             (leftWidth.value = nativeEvent.layout.x)
@@ -424,7 +426,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const right = renderRightActions && (
       <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
-        {renderRightActions(showRightAction, transX, swipeableMethods)}
+        {renderRightActions(showRightProgress, transX, swipeableMethods)}
         <View
           onLayout={({ nativeEvent }) =>
             (rightOffset.value = nativeEvent.layout.x)
@@ -437,8 +439,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       animateRow(currentOffset(), 0);
     };
 
-    const tapGesture = Gesture.Tap().onEnd(() => {
-      close();
+    const tapGesture = Gesture.Tap().onStart(() => {
+      if (rowState.value !== 0) {
+        close();
+      }
     });
 
     const panGesture = Gesture.Pan()
@@ -472,7 +476,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       -dragOffsetFromRightEdge,
       dragOffsetFromLeftEdge,
     ]);
-    tapGesture.enabled(rowState.value !== 0);
     tapGesture.shouldCancelWhenOutside(true);
 
     useImperativeHandle(ref, () => swipeableMethods, []);
