@@ -41,19 +41,23 @@ export default function GmailStyleSwipeableRow({
     _progress: SharedValue<number>,
     dragX: SharedValue<number>
   ) => {
-    const scale = interpolate(
-      dragX.value,
-      [-80, 0],
-      [1, 0],
-      Extrapolation.CLAMP
-    );
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          scale: interpolate(
+            dragX.value,
+            [-80, 0],
+            [1, 0],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+    }));
 
     return (
       <RectButton style={styles.rightAction} onPress={close}>
         {/* Change it to some icons */}
-        <Animated.View
-          style={[styles.actionIcon, { transform: [{ scale }] }]}
-        />
+        <Animated.View style={[styles.actionIcon, animatedStyle]} />
       </RectButton>
     );
   };
