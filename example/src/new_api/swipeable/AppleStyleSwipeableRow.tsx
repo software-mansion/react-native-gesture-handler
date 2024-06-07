@@ -1,11 +1,13 @@
 import React, { ReactNode, useRef } from 'react';
-import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
+import { StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
-import {
+import Animated, {
   Extrapolation,
   SharedValue,
   interpolate,
+  useAnimatedStyle,
+  useFrameCallback,
 } from 'react-native-reanimated';
 import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
 
@@ -47,7 +49,17 @@ export default function AppleStyleSwipeableRow({
     x: number,
     progress: SharedValue<number>
   ) => {
-    const trans = interpolate(progress.value, [0, 1], [x, 0]);
+    useFrameCallback(() => {
+      console.log('a', progress.value);
+    });
+
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: interpolate(progress.value, [0, 1], [x, 0]),
+        },
+      ],
+    }));
     const pressHandler = () => {
       close();
       // eslint-disable-next-line no-alert
@@ -55,7 +67,7 @@ export default function AppleStyleSwipeableRow({
     };
 
     return (
-      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
+      <Animated.View style={[{ flex: 1 }, animatedStyle]}>
         <RectButton
           style={[styles.rightAction, { backgroundColor: color }]}
           onPress={pressHandler}>
@@ -116,7 +128,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     backgroundColor: 'transparent',
-    padding: 10,
+    padding: 30,
   },
   rightAction: {
     alignItems: 'center',

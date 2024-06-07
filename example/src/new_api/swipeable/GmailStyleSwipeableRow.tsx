@@ -6,6 +6,7 @@ import Animated, {
   Extrapolation,
   SharedValue,
   interpolate,
+  useAnimatedStyle,
 } from 'react-native-reanimated';
 import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
 
@@ -20,18 +21,18 @@ export default function GmailStyleSwipeableRow({
     _progress: SharedValue<number>,
     dragX: SharedValue<number>
   ) => {
-    const scale = interpolate(
-      dragX.value,
-      [0, 80],
-      [0, 1],
-      Extrapolation.CLAMP
-    );
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          scale: interpolate(dragX.value, [0, 80], [0, 1], Extrapolation.CLAMP),
+        },
+      ],
+    }));
+
     return (
       <RectButton style={styles.leftAction} onPress={close}>
         {/* Change it to some icons */}
-        <Animated.View
-          style={[styles.actionIcon, { transform: [{ scale }] }]}
-        />
+        <Animated.View style={[styles.actionIcon, animatedStyle]} />
       </RectButton>
     );
   };
