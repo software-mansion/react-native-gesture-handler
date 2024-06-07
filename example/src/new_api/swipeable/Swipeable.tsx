@@ -230,7 +230,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       () => rowTranslation.value + dragX.value / friction
     );
 
-    const currentOffset = () => {
+    const calculateCurrentOffset = () => {
       'worklet';
       rightWidth.value = rowWidth.value - rightOffset.value;
       if (rowState.value === 1) {
@@ -348,7 +348,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         rightThreshold = rightWidth.value / 2,
       } = props;
 
-      const startOffsetX = currentOffset() + dragX / friction;
+      const startOffsetX = calculateCurrentOffset() + dragX / friction;
       const translationX = (dragX + DRAG_TOSS * velocityX) / friction;
 
       let toValue = 0;
@@ -398,16 +398,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       () => ({
         close() {
           'worklet';
-          animateRow(currentOffset(), 0);
+          animateRow(calculateCurrentOffset(), 0);
         },
         openLeft() {
           'worklet';
-          animateRow(currentOffset(), leftWidth.value);
+          animateRow(calculateCurrentOffset(), leftWidth.value);
         },
         openRight() {
           'worklet';
           rightWidth.value = rowWidth.value - rightOffset.value;
-          animateRow(currentOffset(), -rightWidth.value);
+          animateRow(calculateCurrentOffset(), -rightWidth.value);
         },
         reset() {
           'worklet';
@@ -451,7 +451,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const close = () => {
       'worklet';
-      animateRow(currentOffset(), 0);
+      animateRow(calculateCurrentOffset(), 0);
     };
 
     const tapGesture = Gesture.Tap().onStart(() => {
@@ -465,7 +465,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         // fixme: after gesture start, set initial translation,
         // for some reason, the real offset is not enough,
         // so there must be a deeper issue here
-        dragX.value = (currentOffset() + event.translationX) / friction;
+        dragX.value =
+          (calculateCurrentOffset() + event.translationX) / friction;
 
         const translationX =
           (event.translationX + DRAG_TOSS * event.velocityX) / friction;
