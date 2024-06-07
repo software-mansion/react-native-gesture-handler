@@ -23,6 +23,7 @@ import Animated, {
   Extrapolation,
   SharedValue,
   interpolate,
+  runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -347,24 +348,26 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         (isFinished) => {
           if (isFinished) {
             if (toValue > 0) {
-              props.onSwipeableOpen?.('left', swipeableMethods);
+              runOnJS(() => props.onSwipeableOpen?.('left', swipeableMethods));
             } else if (toValue < 0) {
-              props.onSwipeableOpen?.('right', swipeableMethods);
+              runOnJS(() => props.onSwipeableOpen?.('right', swipeableMethods));
             } else {
               const closingDirection = fromValue > 0 ? 'left' : 'right';
-              props.onSwipeableClose?.(closingDirection, swipeableMethods);
+              runOnJS(() =>
+                props.onSwipeableClose?.(closingDirection, swipeableMethods)
+              );
             }
           }
         }
       );
 
       if (toValue > 0) {
-        props.onSwipeableWillOpen?.('left');
+        runOnJS(() => props.onSwipeableWillOpen?.('left'));
       } else if (toValue < 0) {
-        props.onSwipeableWillOpen?.('right');
+        runOnJS(() => props.onSwipeableWillOpen?.('right'));
       } else {
         const closingDirection = fromValue > 0 ? 'left' : 'right';
-        props.onSwipeableWillClose?.(closingDirection);
+        runOnJS(() => props.onSwipeableWillClose?.(closingDirection));
       }
     };
 
@@ -488,9 +491,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? 'left'
             : 'right';
         if (rowState.value === 0) {
-          props.onSwipeableOpenStartDrag?.(direction);
+          runOnJS(() => props.onSwipeableOpenStartDrag?.(direction));
         } else {
-          props.onSwipeableCloseStartDrag?.(direction);
+          runOnJS(() => props.onSwipeableCloseStartDrag?.(direction));
         }
 
         updateAnimatedEvent();
