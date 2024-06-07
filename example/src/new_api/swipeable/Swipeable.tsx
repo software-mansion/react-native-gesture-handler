@@ -213,8 +213,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           animateRow(currentOffset(), leftWidth.value);
         },
         openRight() {
-          const rightWidth = rowWidth.value - rightOffset.value;
-          animateRow(currentOffset(), -rightWidth);
+          rightWidth.value = rowWidth.value - rightOffset.value;
+          animateRow(currentOffset(), -rightWidth.value);
         },
         reset() {
           dragX.value = 0;
@@ -240,38 +240,44 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const leftActionTranslate = useSharedValue(0);
     const showRightProgress = useSharedValue(0);
     const rightActionTranslate = useSharedValue(0);
+    const rightWidth = useSharedValue(0);
 
-    const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
+    const composedX = useDerivedValue(
+      () =>
+        rowTranslation.value + interpolate(dragX.value, [0, friction!], [0, 1])
+    );
 
     const currentOffset = () => {
       'worklet';
-      const rightWidth = rowWidth.value - rightOffset.value;
+      rightWidth.value = rowWidth.value - rightOffset.value;
       if (rowState.value === 1) {
         return leftWidth.value;
       } else if (rowState.value === -1) {
-        return -rightWidth;
+        return -rightWidth.value;
       }
       return 0;
     };
 
     const updateAnimatedEvent = () => {
       'worklet';
-      const rightWidth = Math.max(0, rowWidth.value - rightOffset.value);
+      rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
 
       const {
         overshootLeft = leftWidth.value > 0,
-        overshootRight = rightWidth > 0,
+        overshootRight = rightWidth.value > 0,
       } = props;
-
-      // potential issue
-      dragX.value = interpolate(dragX.value, [0, friction!], [0, 1]);
 
       transX.value = interpolate(
         composedX.value,
-        [-rightWidth - 1, -rightWidth, leftWidth.value, leftWidth.value + 1],
         [
-          -rightWidth - (overshootRight ? 1 / overshootFriction : 0),
-          -rightWidth,
+          -rightWidth.value - 1,
+          -rightWidth.value,
+          leftWidth.value,
+          leftWidth.value + 1,
+        ],
+        [
+          -rightWidth.value - (overshootRight ? 1 / overshootFriction : 0),
+          -rightWidth.value,
           leftWidth.value,
           leftWidth.value + (overshootLeft ? 1 / overshootFriction : 0),
         ]
@@ -288,8 +294,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         Extrapolation.CLAMP
       );
       showRightProgress.value =
-        rightWidth > 0
-          ? interpolate(transX.value, [-rightWidth, 0, 1], [1, 0, 0])
+        rightWidth.value > 0
+          ? interpolate(transX.value, [-rightWidth.value, 0, 1], [1, 0, 0])
           : 0;
       rightActionTranslate.value = interpolate(
         showRightProgress.value,
@@ -352,11 +358,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       'worklet';
       const { velocityX, translationX: dragX } = event;
 
-      const rightWidth = rowWidth.value - rightOffset.value;
+      rightWidth.value = rowWidth.value - rightOffset.value;
 
       const {
         leftThreshold = leftWidth.value / 2,
-        rightThreshold = rightWidth / 2,
+        rightThreshold = rightWidth.value / 2,
       } = props;
 
       const startOffsetX = currentOffset() + dragX / friction;
@@ -368,7 +374,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         if (translationX > leftThreshold) {
           toValue = leftWidth.value;
         } else if (translationX < -rightThreshold) {
-          toValue = -rightWidth;
+          toValue = -rightWidth.value;
         }
       } else if (rowState.value === 1) {
         // swiped to left
@@ -378,7 +384,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       } else {
         // swiped to right
         if (translationX < rightThreshold) {
-          toValue = -rightWidth;
+          toValue = -rightWidth.value;
         }
       }
 
@@ -436,6 +442,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     );
 
     const close = () => {
+      'worklet';
       animateRow(currentOffset(), 0);
     };
 

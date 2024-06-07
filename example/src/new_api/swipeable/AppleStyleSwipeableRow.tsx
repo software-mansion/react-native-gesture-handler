@@ -7,7 +7,6 @@ import Animated, {
   SharedValue,
   interpolate,
   useAnimatedStyle,
-  useFrameCallback,
 } from 'react-native-reanimated';
 import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
 
@@ -22,21 +21,21 @@ export default function AppleStyleSwipeableRow({
     _progress: SharedValue<number>,
     dragX: SharedValue<number>
   ) => {
-    const trans = interpolate(
-      dragX.value,
-      [0, 50, 100, 101],
-      [-20, 0, 0, 1],
-      Extrapolation.CLAMP
-    );
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: interpolate(
+            dragX.value,
+            [0, 50, 100, 101],
+            [-20, 0, 0, 1],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+    }));
     return (
       <RectButton style={styles.leftAction} onPress={close}>
-        <Animated.Text
-          style={[
-            styles.actionText,
-            {
-              transform: [{ translateX: trans }],
-            },
-          ]}>
+        <Animated.Text style={[styles.actionText, animatedStyle]}>
           Archive
         </Animated.Text>
       </RectButton>
@@ -47,16 +46,13 @@ export default function AppleStyleSwipeableRow({
     text: string,
     color: string,
     x: number,
-    progress: SharedValue<number>
+    progress: SharedValue<number>,
+    totalWidth: number
   ) => {
-    useFrameCallback(() => {
-      console.log('a', progress.value);
-    });
-
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [
         {
-          translateX: interpolate(progress.value, [0, 1], [x, 0]),
+          translateX: interpolate(progress.value, [0, -totalWidth], [x, 0]),
         },
       ],
     }));
@@ -77,18 +73,15 @@ export default function AppleStyleSwipeableRow({
     );
   };
 
-  const renderRightActions = (
-    progress: SharedValue<number>,
-    _dragAnimatedValue: SharedValue<number>
-  ) => (
+  const renderRightActions = (_: any, progress: SharedValue<number>) => (
     <View
       style={{
         width: 192,
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
       }}>
-      {renderRightAction('More', '#C8C7CD', 192, progress)}
-      {renderRightAction('Flag', '#ffab00', 128, progress)}
-      {renderRightAction('More', '#dd2c00', 64, progress)}
+      {renderRightAction('More', '#C8C7CD', 192, progress, 192)}
+      {renderRightAction('Flag', '#ffab00', 128, progress, 192)}
+      {renderRightAction('More', '#dd2c00', 64, progress, 192)}
     </View>
   );
 
@@ -128,7 +121,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     backgroundColor: 'transparent',
-    padding: 30,
+    padding: 20,
   },
   rightAction: {
     alignItems: 'center',
