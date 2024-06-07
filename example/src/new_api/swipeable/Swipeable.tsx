@@ -227,8 +227,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     } = props;
 
     const composedX = useDerivedValue(
-      () =>
-        rowTranslation.value + interpolate(dragX.value, [0, friction], [0, 1])
+      () => rowTranslation.value + dragX.value / friction
     );
 
     const currentOffset = () => {
@@ -466,7 +465,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         // fixme: after gesture start, set initial translation,
         // for some reason, the real offset is not enough,
         // so there must be a deeper issue here
-        dragX.value = event.translationX + currentOffset();
+        dragX.value = (currentOffset() + event.translationX) / friction;
 
         const translationX =
           (event.translationX + DRAG_TOSS * event.velocityX) / friction;
