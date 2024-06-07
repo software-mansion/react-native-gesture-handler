@@ -414,15 +414,13 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
   ]);
  */
 
-    const leftAnimatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            translateX: leftActionTranslate.value,
-          },
-        ],
-      };
-    });
+    const leftAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: leftActionTranslate.value,
+        },
+      ],
+    }));
 
     const left = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
@@ -435,15 +433,13 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
       </Animated.View>
     );
 
-    const rightAnimatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            translateX: rightActionTranslate.value,
-          },
-        ],
-      };
-    });
+    const rightAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: rightActionTranslate.value,
+        },
+      ],
+    }));
 
     const right = renderRightActions && (
       <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
@@ -508,36 +504,32 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
 
     useImperativeHandle(
       ref,
-      () => {
-        return {
-          close() {
-            animateRow(currentOffset(), 0);
-          },
-          openLeft() {
-            animateRow(currentOffset(), leftWidth.value);
-          },
-          openRight() {
-            const rightWidth = rowWidth.value - rightOffset.value;
-            animateRow(currentOffset(), -rightWidth);
-          },
-          reset() {
-            dragX.value = 0;
-            transX.value = 0;
-            rowState.value = 0;
-          },
-        };
-      },
+      () => ({
+        close() {
+          animateRow(currentOffset(), 0);
+        },
+        openLeft() {
+          animateRow(currentOffset(), leftWidth.value);
+        },
+        openRight() {
+          const rightWidth = rowWidth.value - rightOffset.value;
+          animateRow(currentOffset(), -rightWidth);
+        },
+        reset() {
+          dragX.value = 0;
+          transX.value = 0;
+          rowState.value = 0;
+        },
+      }),
       []
     );
 
     // note: during the dragging, we seem to not keeping track of all the changes
     // note: after dragging, we have no actual entrypoint to keep on updating after the end of the animation
 
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateX: transX.value! }],
-      };
-    });
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ translateX: transX.value! }],
+    }));
 
     return (
       <Animated.View
