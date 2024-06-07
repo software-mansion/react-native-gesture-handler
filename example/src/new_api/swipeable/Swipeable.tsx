@@ -7,6 +7,7 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
 } from 'react';
 import {
   Gesture,
@@ -208,23 +209,26 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const rightOffset = useSharedValue<number>(0);
     const rowWidth = useSharedValue<number>(0);
 
-    const swipeableMethods = {
-      close() {
-        animateRow(currentOffset(), 0);
-      },
-      openLeft() {
-        animateRow(currentOffset(), leftWidth.value);
-      },
-      openRight() {
-        const rightWidth = rowWidth.value - rightOffset.value;
-        animateRow(currentOffset(), -rightWidth);
-      },
-      reset() {
-        dragX.value = 0;
-        transX.value = 0;
-        rowState.value = 0;
-      },
-    };
+    const swipeableMethods = useMemo<SwipeableMethods>(
+      () => ({
+        close() {
+          animateRow(currentOffset(), 0);
+        },
+        openLeft() {
+          animateRow(currentOffset(), leftWidth.value);
+        },
+        openRight() {
+          const rightWidth = rowWidth.value - rightOffset.value;
+          animateRow(currentOffset(), -rightWidth);
+        },
+        reset() {
+          dragX.value = 0;
+          transX.value = 0;
+          rowState.value = 0;
+        },
+      }),
+      []
+    );
 
     const defaultProps = {
       friction: 1,
