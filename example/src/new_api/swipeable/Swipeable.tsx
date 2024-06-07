@@ -1,3 +1,4 @@
+'use strict';
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. Although, keeping it here for the time being will allow us to
 // move faster and fix possible issues quicker
@@ -8,6 +9,7 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useState,
 } from 'react';
 import {
   Gesture,
@@ -233,27 +235,21 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const defaultProps = {
       friction: 1,
       overshootFriction: 1,
-      useNativeAnimations: true,
     };
 
-    useEffect(() => {
-      if (!props.friction) props.friction = defaultProps.friction;
-      if (!props.overshootFriction)
-        props.overshootFriction = defaultProps.overshootFriction;
-      if (!props.useNativeAnimations)
-        props.useNativeAnimations = defaultProps.useNativeAnimations;
-
-      updateAnimatedEvent();
-    }, []);
+    const [friction] = useState(props.friction ?? defaultProps.friction);
+    const [overshootFriction] = useState(
+      props.overshootFriction ?? defaultProps.overshootFriction
+    );
 
     /* todo: export to the exposed store
   
     const shouldComponentUpdate = (props: SwipeableProps) => {
       if (
-        props.friction !== props.friction ||
+        friction !== friction ||
         props.overshootLeft !== props.overshootLeft ||
         props.overshootRight !== props.overshootRight ||
-        props.overshootFriction !== props.overshootFriction
+        overshootFriction !== overshootFriction
       ) {
         updateAnimatedEvent(props);
         return true;
@@ -269,12 +265,22 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const rightActionTranslate = useSharedValue(0);
     const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
 
+    const currentOffset = () => {
+      'worklet';
+      const rightWidth = rowWidth.value - rightOffset.value;
+      if (rowState.value === 1) {
+        return leftWidth.value;
+      } else if (rowState.value === -1) {
+        return -rightWidth;
+      }
+      return 0;
+    };
+
     const updateAnimatedEvent = () => {
+      'worklet';
       const rightWidth = Math.max(0, rowWidth.value - rightOffset.value);
 
       const {
-        friction,
-        overshootFriction,
         overshootLeft = leftWidth.value > 0,
         overshootRight = rightWidth > 0,
       } = props;
@@ -314,44 +320,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
     };
 
-    const handleRelease = (
-      event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
-    ) => {
-      const { velocityX, translationX: dragX } = event;
-
-      const rightWidth = rowWidth.value - rightOffset.value;
-
-      const {
-        friction,
-        leftThreshold = leftWidth.value / 2,
-        rightThreshold = rightWidth / 2,
-      } = props;
-
-      const startOffsetX = currentOffset() + dragX / friction!;
-      const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
-
-      let toValue = 0;
-
-      if (rowState.value === 0) {
-        if (translationX > leftThreshold) {
-          toValue = leftWidth.value;
-        } else if (translationX < -rightThreshold) {
-          toValue = -rightWidth;
-        }
-      } else if (rowState.value === 1) {
-        // swiped to left
-        if (translationX > -leftThreshold) {
-          toValue = leftWidth.value;
-        }
-      } else {
-        // swiped to right
-        if (translationX < rightThreshold) {
-          toValue = -rightWidth;
-        }
-      }
-
-      animateRow(startOffsetX, toValue, velocityX / friction!);
-    };
+    useEffect(() => {
+      updateAnimatedEvent();
+    }, []);
 
     const animateRow = (
       fromValue: number,
@@ -396,18 +367,47 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     };
 
-    const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-      rowWidth.value = nativeEvent.layout.width;
+    const handleRelease = (
+      event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+    ) => {
+      'worklet';
+      const { velocityX, translationX: dragX } = event;
+
+      const rightWidth = rowWidth.value - rightOffset.value;
+
+      const {
+        leftThreshold = leftWidth.value / 2,
+        rightThreshold = rightWidth / 2,
+      } = props;
+
+      const startOffsetX = currentOffset() + dragX / friction;
+      const translationX = (dragX + DRAG_TOSS * velocityX) / friction;
+
+      let toValue = 0;
+
+      if (rowState.value === 0) {
+        if (translationX > leftThreshold) {
+          toValue = leftWidth.value;
+        } else if (translationX < -rightThreshold) {
+          toValue = -rightWidth;
+        }
+      } else if (rowState.value === 1) {
+        // swiped to left
+        if (translationX > -leftThreshold) {
+          toValue = leftWidth.value;
+        }
+      } else {
+        // swiped to right
+        if (translationX < rightThreshold) {
+          toValue = -rightWidth;
+        }
+      }
+
+      animateRow(startOffsetX, toValue, velocityX / friction);
     };
 
-    const currentOffset = () => {
-      const rightWidth = rowWidth.value - rightOffset.value;
-      if (rowState.value === 1) {
-        return leftWidth.value;
-      } else if (rowState.value === -1) {
-        return -rightWidth;
-      }
-      return 0;
+    const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+      rowWidth.value = nativeEvent.layout.width;
     };
 
     const {
@@ -475,9 +475,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
         const { velocityX } = event;
         dragX.value = event.translationX;
-        const { friction } = props;
 
-        const translationX = (dragX.value + DRAG_TOSS * velocityX) / friction!;
+        const translationX = (dragX.value + DRAG_TOSS * velocityX) / friction;
 
         const direction =
           rowState.value === -1
