@@ -1,4 +1,4 @@
-import React, { Component, PropsWithChildren, useRef } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import { StyleSheet, I18nManager } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
@@ -9,10 +9,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
 
-export default class GmailStyleSwipeableRow extends Component<
-  PropsWithChildren<unknown>
-> {
-  private renderLeftActions = (
+interface GmailStyleSwipeableRowProps {
+  children?: ReactNode;
+}
+
+export default function GmailStyleSwipeableRow({
+  children,
+}: GmailStyleSwipeableRowProps) {
+  const renderLeftActions = (
     _progress: SharedValue<number>,
     dragX: SharedValue<number>
   ) => {
@@ -23,7 +27,7 @@ export default class GmailStyleSwipeableRow extends Component<
       Extrapolation.CLAMP
     );
     return (
-      <RectButton style={styles.leftAction} onPress={this.close}>
+      <RectButton style={styles.leftAction} onPress={close}>
         {/* Change it to some icons */}
         <Animated.View
           style={[styles.actionIcon, { transform: [{ scale }] }]}
@@ -31,7 +35,8 @@ export default class GmailStyleSwipeableRow extends Component<
       </RectButton>
     );
   };
-  private renderRightActions = (
+
+  const renderRightActions = (
     _progress: SharedValue<number>,
     dragX: SharedValue<number>
   ) => {
@@ -43,7 +48,7 @@ export default class GmailStyleSwipeableRow extends Component<
     );
 
     return (
-      <RectButton style={styles.rightAction} onPress={this.close}>
+      <RectButton style={styles.rightAction} onPress={close}>
         {/* Change it to some icons */}
         <Animated.View
           style={[styles.actionIcon, { transform: [{ scale }] }]}
@@ -52,26 +57,24 @@ export default class GmailStyleSwipeableRow extends Component<
     );
   };
 
-  private swipeableRow = useRef<SwipeableMethods>(null);
+  const swipeableRow = useRef<SwipeableMethods>(null);
 
-  private close = () => {
-    this.swipeableRow.current?.close();
+  const close = () => {
+    swipeableRow.current?.close();
   };
-  render() {
-    const { children } = this.props;
-    return (
-      <Swipeable
-        ref={this.swipeableRow}
-        friction={2}
-        leftThreshold={80}
-        enableTrackpadTwoFingerGesture
-        rightThreshold={40}
-        renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
-        {children}
-      </Swipeable>
-    );
-  }
+
+  return (
+    <Swipeable
+      ref={swipeableRow}
+      friction={2}
+      leftThreshold={80}
+      enableTrackpadTwoFingerGesture
+      rightThreshold={40}
+      renderLeftActions={renderLeftActions}
+      renderRightActions={renderRightActions}>
+      {children}
+    </Swipeable>
+  );
 }
 
 const styles = StyleSheet.create({
