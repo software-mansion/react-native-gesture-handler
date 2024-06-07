@@ -459,22 +459,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
-    const panGesture = Gesture.Pan();
-    const tapGesture = Gesture.Tap();
-    const composedGesture = Gesture.Race(panGesture, tapGesture);
-
     const close = () => {
       animateRow(currentOffset(), 0);
     };
 
-    tapGesture.onEnd(() => {
-      'worklet';
+    const tapGesture = Gesture.Tap().onEnd(() => {
       close();
     });
 
-    panGesture
+    const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
-        'worklet';
         const { velocityX } = event;
         dragX.value = event.translationX;
         const { friction } = props;
@@ -498,7 +492,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         updateAnimatedEvent();
       })
       .onEnd((event) => {
-        'worklet';
         handleRelease(event);
       });
 
@@ -514,6 +507,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: transX.value }],
     }));
+
+    const composedGesture = Gesture.Race(panGesture, tapGesture);
 
     return (
       <Animated.View
