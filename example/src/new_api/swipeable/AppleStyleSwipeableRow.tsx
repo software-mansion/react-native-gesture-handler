@@ -1,20 +1,27 @@
 import React, { Component, PropsWithChildren } from 'react';
 import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
 
-import { RectButton, Swipeable } from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
+import {
+  Extrapolation,
+  SharedValue,
+  interpolate,
+} from 'react-native-reanimated';
+import Swipeable, { SwipeableRef } from 'src/new_api/swipeable/Swipeable';
 
 export default class AppleStyleSwipeableRow extends Component<
   PropsWithChildren<unknown>
 > {
   private renderLeftActions = (
-    _progress: Animated.AnimatedInterpolation<number>,
-    dragX: Animated.AnimatedInterpolation<number>
+    _progress: SharedValue<number>,
+    dragX: SharedValue<number>
   ) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-      extrapolate: 'clamp',
-    });
+    const trans = interpolate(
+      dragX.value,
+      [0, 50, 100, 101],
+      [-20, 0, 0, 1],
+      Extrapolation.CLAMP
+    );
     return (
       <RectButton style={styles.leftAction} onPress={this.close}>
         <Animated.Text
@@ -34,12 +41,9 @@ export default class AppleStyleSwipeableRow extends Component<
     text: string,
     color: string,
     x: number,
-    progress: Animated.AnimatedInterpolation<number>
+    progress: SharedValue<number>
   ) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [x, 0],
-    });
+    const trans = interpolate(progress.value, [0, 1], [x, 0]);
     const pressHandler = () => {
       this.close();
       // eslint-disable-next-line no-alert
@@ -58,8 +62,8 @@ export default class AppleStyleSwipeableRow extends Component<
   };
 
   private renderRightActions = (
-    progress: Animated.AnimatedInterpolation<number>,
-    _dragAnimatedValue: Animated.AnimatedInterpolation<number>
+    progress: SharedValue<number>,
+    _dragAnimatedValue: SharedValue<number>
   ) => (
     <View
       style={{
@@ -72,9 +76,9 @@ export default class AppleStyleSwipeableRow extends Component<
     </View>
   );
 
-  private swipeableRow?: Swipeable;
+  private swipeableRow?: SwipeableRef;
 
-  private updateRef = (ref: Swipeable) => {
+  private updateRef = (ref: SwipeableRef) => {
     this.swipeableRow = ref;
   };
   private close = () => {

@@ -1,21 +1,19 @@
 import React, { Component, PropsWithChildren } from 'react';
-import { Animated, StyleSheet, I18nManager, View } from 'react-native';
+import { StyleSheet, I18nManager } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
-import {
+import Animated, {
   Extrapolation,
   SharedValue,
   interpolate,
 } from 'react-native-reanimated';
-import Swipeable from './Swipeable';
-
-const AnimatedView = Animated.createAnimatedComponent(View);
+import Swipeable, { SwipeableRef } from 'src/new_api/swipeable/Swipeable';
 
 export default class GmailStyleSwipeableRow extends Component<
   PropsWithChildren<unknown>
 > {
   private renderLeftActions = (
-    _progress: Animated.AnimatedInterpolation<number>,
+    _progress: SharedValue<number>,
     dragX: SharedValue<number>
   ) => {
     const scale = interpolate(
@@ -27,12 +25,14 @@ export default class GmailStyleSwipeableRow extends Component<
     return (
       <RectButton style={styles.leftAction} onPress={this.close}>
         {/* Change it to some icons */}
-        <AnimatedView style={[styles.actionIcon, { transform: [{ scale }] }]} />
+        <Animated.View
+          style={[styles.actionIcon, { transform: [{ scale }] }]}
+        />
       </RectButton>
     );
   };
   private renderRightActions = (
-    _progress: Animated.AnimatedInterpolation<number>,
+    _progress: SharedValue<number>,
     dragX: SharedValue<number>
   ) => {
     const scale = interpolate(
@@ -45,14 +45,16 @@ export default class GmailStyleSwipeableRow extends Component<
     return (
       <RectButton style={styles.rightAction} onPress={this.close}>
         {/* Change it to some icons */}
-        <AnimatedView style={[styles.actionIcon, { transform: [{ scale }] }]} />
+        <Animated.View
+          style={[styles.actionIcon, { transform: [{ scale }] }]}
+        />
       </RectButton>
     );
   };
 
-  private swipeableRow?: typeof Swipeable;
+  private swipeableRow?: SwipeableRef;
 
-  private updateRef = (ref: typeof Swipeable) => {
+  private updateRef = (ref: SwipeableRef) => {
     this.swipeableRow = ref;
   };
   private close = () => {
