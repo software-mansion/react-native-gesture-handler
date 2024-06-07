@@ -207,16 +207,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const swipeableMethods = useMemo<SwipeableMethods>(
       () => ({
         close() {
+          'worklet';
           animateRow(currentOffset(), 0);
         },
         openLeft() {
+          'worklet';
           animateRow(currentOffset(), leftWidth.value);
         },
         openRight() {
+          'worklet';
           rightWidth.value = rowWidth.value - rightOffset.value;
           animateRow(currentOffset(), -rightWidth.value);
         },
         reset() {
+          'worklet';
           dragX.value = 0;
           transX.value = 0;
           rowState.value = 0;
@@ -454,8 +458,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
-        //console.log('dX', dragX.value, 'tX', event.translationX, 'rx', event.x);
-
         // fixme: after gesture start, set initial translation,
         // for some reason, the real offset is not enough,
         // so there must be a deeper issue here
