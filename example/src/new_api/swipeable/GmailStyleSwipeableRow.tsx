@@ -1,4 +1,4 @@
-import React, { Component, PropsWithChildren } from 'react';
+import React, { Component, PropsWithChildren, useRef } from 'react';
 import { StyleSheet, I18nManager } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
@@ -7,7 +7,7 @@ import Animated, {
   SharedValue,
   interpolate,
 } from 'react-native-reanimated';
-import Swipeable, { SwipeableRef } from 'src/new_api/swipeable/Swipeable';
+import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
 
 export default class GmailStyleSwipeableRow extends Component<
   PropsWithChildren<unknown>
@@ -52,19 +52,16 @@ export default class GmailStyleSwipeableRow extends Component<
     );
   };
 
-  private swipeableRow?: SwipeableRef;
+  private swipeableRow = useRef<SwipeableMethods>(null);
 
-  private updateRef = (ref: SwipeableRef) => {
-    this.swipeableRow = ref;
-  };
   private close = () => {
-    this.swipeableRow?.close();
+    this.swipeableRow.current?.close();
   };
   render() {
     const { children } = this.props;
     return (
       <Swipeable
-        ref={this.updateRef}
+        ref={this.swipeableRow}
         friction={2}
         leftThreshold={80}
         enableTrackpadTwoFingerGesture
