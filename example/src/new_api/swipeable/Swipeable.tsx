@@ -198,36 +198,23 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
   ) {
     const rowState = useSharedValue<number>(0);
 
+    // this block has to be reduced, most of these values can be easily removed
     const dragX = useSharedValue<number>(0);
+    const transX = useSharedValue<number>(0);
     const rowTranslation = useSharedValue<number>(0);
-    const leftWidth = useSharedValue<number>(0);
-    const rightOffset = useSharedValue<number>(0);
-    const rowWidth = useSharedValue<number>(0);
 
-    const swipeableMethods = useMemo<SwipeableMethods>(
-      () => ({
-        close() {
-          'worklet';
-          animateRow(currentOffset(), 0);
-        },
-        openLeft() {
-          'worklet';
-          animateRow(currentOffset(), leftWidth.value);
-        },
-        openRight() {
-          'worklet';
-          rightWidth.value = rowWidth.value - rightOffset.value;
-          animateRow(currentOffset(), -rightWidth.value);
-        },
-        reset() {
-          'worklet';
-          dragX.value = 0;
-          transX.value = 0;
-          rowState.value = 0;
-        },
-      }),
-      []
-    );
+    const rowWidth = useSharedValue<number>(0);
+    const leftWidth = useSharedValue<number>(0);
+    const rightWidth = useSharedValue<number>(0);
+    const rightOffset = useSharedValue<number>(0);
+
+    const leftActionTranslate = useSharedValue<number>(0);
+    const rightActionTranslate = useSharedValue<number>(0);
+
+    const showLeftProgress = useSharedValue<number>(0);
+    const showRightProgress = useSharedValue<number>(0);
+
+    let swipeableMethods: SwipeableMethods;
 
     const defaultProps = {
       friction: 1,
@@ -239,16 +226,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
-    const transX = useSharedValue(0);
-    const showLeftProgress = useSharedValue(0);
-    const leftActionTranslate = useSharedValue(0);
-    const showRightProgress = useSharedValue(0);
-    const rightActionTranslate = useSharedValue(0);
-    const rightWidth = useSharedValue(0);
-
     const composedX = useDerivedValue(
       () =>
-        rowTranslation.value + interpolate(dragX.value, [0, friction!], [0, 1])
+        rowTranslation.value + interpolate(dragX.value, [0, friction], [0, 1])
     );
 
     const currentOffset = () => {
@@ -316,7 +296,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     ) => {
       'worklet';
       transX.value = fromValue;
-      // rowTranslation.value = fromValue;
+      rowTranslation.value = fromValue;
 
       rowState.value = Math.sign(toValue);
 
@@ -414,6 +394,31 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         },
       ],
     }));
+
+    swipeableMethods = useMemo<SwipeableMethods>(
+      () => ({
+        close() {
+          'worklet';
+          animateRow(currentOffset(), 0);
+        },
+        openLeft() {
+          'worklet';
+          animateRow(currentOffset(), leftWidth.value);
+        },
+        openRight() {
+          'worklet';
+          rightWidth.value = rowWidth.value - rightOffset.value;
+          animateRow(currentOffset(), -rightWidth.value);
+        },
+        reset() {
+          'worklet';
+          dragX.value = 0;
+          transX.value = 0;
+          rowState.value = 0;
+        },
+      }),
+      []
+    );
 
     const left = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
