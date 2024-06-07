@@ -4,8 +4,6 @@
 
 import {
   ForwardedRef,
-  LegacyRef,
-  RefAttributes,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -20,7 +18,6 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
-  ReduceMotion,
   SharedValue,
   interpolate,
   useAnimatedStyle,
@@ -114,7 +111,7 @@ export interface SwipeableProps
    */
   onSwipeableOpen?: (
     direction: 'left' | 'right',
-    swipeable: ForwardedRef<SwipeableMethods>
+    swipeable: SwipeableMethods
   ) => void;
 
   /**
@@ -122,7 +119,7 @@ export interface SwipeableProps
    */
   onSwipeableClose?: (
     direction: 'left' | 'right',
-    swipeable: ForwardedRef<SwipeableMethods>
+    swipeable: SwipeableMethods
   ) => void;
 
   /**
@@ -157,7 +154,7 @@ export interface SwipeableProps
   renderLeftActions?: (
     progressAnimatedValue: SharedValue<number>,
     dragAnimatedValue: SharedValue<number>,
-    swipeable: ForwardedRef<SwipeableMethods> // we have to use ref here, as it now holds all the objects
+    swipeable: SwipeableMethods // we have to use ref here, as it now holds all the objects
   ) => React.ReactNode;
   /**
    *
@@ -171,7 +168,7 @@ export interface SwipeableProps
   renderRightActions?: (
     progressAnimatedValue: SharedValue<number>,
     dragAnimatedValue: SharedValue<number>,
-    swipeable: ForwardedRef<SwipeableMethods>
+    swipeable: SwipeableMethods
   ) => React.ReactNode;
 
   useNativeAnimations?: boolean;
@@ -210,6 +207,24 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const leftWidth = useSharedValue<number>(0);
     const rightOffset = useSharedValue<number>(0);
     const rowWidth = useSharedValue<number>(0);
+
+    const swipeableMethods = {
+      close() {
+        animateRow(currentOffset(), 0);
+      },
+      openLeft() {
+        animateRow(currentOffset(), leftWidth.value);
+      },
+      openRight() {
+        const rightWidth = rowWidth.value - rightOffset.value;
+        animateRow(currentOffset(), -rightWidth);
+      },
+      reset() {
+        dragX.value = 0;
+        transX.value = 0;
+        rowState.value = 0;
+      },
+    };
 
     const defaultProps = {
       friction: 1,
@@ -356,12 +371,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         (isFinished) => {
           if (isFinished) {
             if (toValue > 0) {
-              props.onSwipeableOpen?.('left', ref);
+              props.onSwipeableOpen?.('left', swipeableMethods);
             } else if (toValue < 0) {
-              props.onSwipeableOpen?.('right', ref);
+              props.onSwipeableOpen?.('right', swipeableMethods);
             } else {
               const closingDirection = fromValue > 0 ? 'left' : 'right';
-              props.onSwipeableClose?.(closingDirection, ref);
+              props.onSwipeableClose?.(closingDirection, swipeableMethods);
             }
           }
         }
@@ -416,7 +431,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const left = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
-        {renderLeftActions(showLeftAction, transX, ref)}
+        {renderLeftActions(showLeftAction, transX, swipeableMethods)}
         <View
           onLayout={({ nativeEvent }) =>
             (leftWidth.value = nativeEvent.layout.x)
@@ -435,7 +450,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const right = renderRightActions && (
       <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
-        {renderRightActions(showRightAction, transX, ref)}
+        {renderRightActions(showRightAction, transX, swipeableMethods)}
         <View
           onLayout={({ nativeEvent }) =>
             (rightOffset.value = nativeEvent.layout.x)
@@ -494,27 +509,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     tapGesture.enabled(rowState.value !== 0);
     tapGesture.shouldCancelWhenOutside(true);
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        close() {
-          animateRow(currentOffset(), 0);
-        },
-        openLeft() {
-          animateRow(currentOffset(), leftWidth.value);
-        },
-        openRight() {
-          const rightWidth = rowWidth.value - rightOffset.value;
-          animateRow(currentOffset(), -rightWidth);
-        },
-        reset() {
-          dragX.value = 0;
-          transX.value = 0;
-          rowState.value = 0;
-        },
-      }),
-      []
-    );
+    useImperativeHandle(ref, () => swipeableMethods, []);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: transX.value }],
