@@ -15,10 +15,8 @@ import {
   GestureDetector,
   GestureStateChangeEvent,
   GestureUpdateEvent,
-  PanGestureHandler,
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
-  TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
@@ -27,7 +25,6 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
-  useFrameCallback,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -239,7 +236,7 @@ const Swipeable = forwardRef<
 
   const dragX = useSharedValue<number>(0);
   const rowTranslation = useSharedValue<number>(0);
-  const [leftWidth, setLeftWidth] = useState<number>(0);
+  const leftWidth = useSharedValue<number>(0);
   const rightOffset = useSharedValue<number>(0);
   const rowWidth = useSharedValue<number>(0);
 
@@ -261,10 +258,6 @@ const Swipeable = forwardRef<
 
     updateAnimatedEvent();
   }, []);
-
-  useEffect(() => {
-    updateAnimatedEvent();
-  }, [leftWidth, rightOffset, rowWidth]);
 
   /* todo: export to the exposed store
   
@@ -295,7 +288,7 @@ const Swipeable = forwardRef<
     const {
       friction,
       overshootFriction,
-      overshootLeft = leftWidth > 0,
+      overshootLeft = leftWidth.value > 0,
       overshootRight = rightWidth > 0,
     } = props;
 
@@ -303,18 +296,18 @@ const Swipeable = forwardRef<
 
     transX.value = interpolate(
       composedX.value,
-      [-rightWidth - 1, -rightWidth, leftWidth, leftWidth + 1],
+      [-rightWidth - 1, -rightWidth, leftWidth.value, leftWidth.value + 1],
       [
         -rightWidth - (overshootRight ? 1 / overshootFriction! : 0),
         -rightWidth,
-        leftWidth,
-        leftWidth + (overshootLeft ? 1 / overshootFriction! : 0),
+        leftWidth.value,
+        leftWidth.value + (overshootLeft ? 1 / overshootFriction! : 0),
       ]
     );
 
     showLeftAction.value =
-      leftWidth > 0
-        ? interpolate(transX.value, [-1, 0, leftWidth], [0, 0, 1])
+      leftWidth.value > 0
+        ? interpolate(transX.value, [-1, 0, leftWidth.value], [0, 0, 1])
         : 0;
     leftActionTranslate.value = interpolate(
       showLeftAction.value,
@@ -339,14 +332,12 @@ const Swipeable = forwardRef<
   ) => {
     const { velocityX, translationX: dragX } = event;
 
-    console.log(rightOffset.value);
-
     // rightOffset default if undefined set to rowWidth.value
     const rightWidth = rowWidth.value - rightOffset.value;
 
     const {
       friction,
-      leftThreshold = leftWidth / 2,
+      leftThreshold = leftWidth.value / 2,
       rightThreshold = rightWidth / 2,
     } = props;
 
@@ -354,16 +345,19 @@ const Swipeable = forwardRef<
     const translationX = (dragX + DRAG_TOSS * velocityX) / friction!;
 
     let toValue = 0;
+
+    console.log('reading state as', rowState);
+
     if (rowState === 0) {
       if (translationX > leftThreshold) {
-        toValue = leftWidth;
+        toValue = leftWidth.value;
       } else if (translationX < -rightThreshold) {
         toValue = -rightWidth;
       }
     } else if (rowState === 1) {
       // swiped to left
       if (translationX > -leftThreshold) {
-        toValue = leftWidth;
+        toValue = leftWidth.value;
       }
     } else {
       // swiped to right
@@ -371,6 +365,8 @@ const Swipeable = forwardRef<
         toValue = -rightWidth;
       }
     }
+
+    console.log('handling:', startOffsetX, toValue, rowState);
 
     animateRow(startOffsetX, toValue, velocityX / friction!);
   };
@@ -383,6 +379,7 @@ const Swipeable = forwardRef<
     dragX.value = 0;
     transX.value = fromValue;
 
+    console.log('setting state to', Math.sign(toValue));
     setRowState(Math.sign(toValue));
 
     transX.value = withSpring(
@@ -433,7 +430,7 @@ const Swipeable = forwardRef<
   const currentOffset = () => {
     const rightWidth = rowWidth.value - rightOffset.value;
     if (rowState === 1) {
-      return leftWidth;
+      return leftWidth.value;
     } else if (rowState === -1) {
       return -rightWidth;
     }
@@ -441,7 +438,7 @@ const Swipeable = forwardRef<
   };
 
   const close = () => {
-    animateRow(currentOffset(), 0);
+    //animateRow(currentOffset(), 0);
   };
 
   const {
@@ -459,32 +456,37 @@ const Swipeable = forwardRef<
   ]);
  */
 
+  const leftAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: leftActionTranslate.value,
+        },
+      ],
+    };
+  });
+
   const left = renderLeftActions && (
-    <Animated.View
-      style={[
-        styles.leftActions,
-        // all those and below parameters can have ! since they are all
-        // asigned in constructor in `updateAnimatedEvent` but TS cannot spot
-        // it for some reason
-        { transform: [{ translateX: leftActionTranslate! }] },
-      ]}>
+    <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
       {renderLeftActions(showLeftAction!, transX!, ref)}
       <View
-        onLayout={({ nativeEvent }) => setLeftWidth(nativeEvent.layout.x)}
+        onLayout={({ nativeEvent }) => (leftWidth.value = nativeEvent.layout.x)}
       />
     </Animated.View>
   );
 
   const rightAnimatedStyle = useAnimatedStyle(() => {
-    return {};
+    return {
+      transform: [
+        {
+          translateX: rightActionTranslate.value,
+        },
+      ],
+    };
   });
 
   const right = renderRightActions && (
-    <Animated.View
-      style={[
-        styles.rightActions,
-        { transform: [{ translateX: rightActionTranslate! }] },
-      ]}>
+    <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
       {renderRightActions(showRightAction!, transX!, ref)}
       <View
         onLayout={({ nativeEvent }) =>
@@ -499,17 +501,21 @@ const Swipeable = forwardRef<
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
   tapGesture.onStart(() => {
+    'worklet';
+    console.log('closing from gesture');
     close();
   });
 
   panGesture.onFinalize(
     (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+      'worklet';
       handleRelease(event);
     }
   );
 
   panGesture
     .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+      'worklet';
       const { velocityX } = event;
       dragX.value = event.translationX;
       const { friction } = props;
@@ -533,6 +539,7 @@ const Swipeable = forwardRef<
       updateAnimatedEvent();
     })
     .onEnd((event) => {
+      'worklet';
       handleRelease(event);
     });
 
@@ -544,10 +551,11 @@ const Swipeable = forwardRef<
     () => {
       return {
         close() {
+          console.log('closing from outside');
           animateRow(currentOffset(), 0);
         },
         openLeft() {
-          animateRow(currentOffset(), leftWidth);
+          animateRow(currentOffset(), leftWidth.value);
         },
         openRight() {
           const rightWidth = rowWidth.value - rightOffset.value;
@@ -571,6 +579,8 @@ const Swipeable = forwardRef<
       transform: [{ translateX: transX.value! }],
     };
   });
+
+  console.log('rerendering with state:', rowState);
 
   return (
     <GestureDetector gesture={composedGesture} touchAction="pan-y" {...props}>
