@@ -211,9 +211,6 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
     const rightOffset = useSharedValue<number>(0);
     const rowWidth = useSharedValue<number>(0);
 
-    // todo: if things don't work, set all the default values from the original file
-    // they are set everywhere thoughout this file, many functions set the default states themselves
-
     const defaultProps = {
       friction: 1,
       overshootFriction: 1,
@@ -232,25 +229,25 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
 
     /* todo: export to the exposed store
   
-  const shouldComponentUpdate = (props: SwipeableProps) => {
-    if (
-      props.friction !== props.friction ||
-      props.overshootLeft !== props.overshootLeft ||
-      props.overshootRight !== props.overshootRight ||
-      props.overshootFriction !== props.overshootFriction
-    ) {
-      updateAnimatedEvent(props);
-      return true;
-    }
-    return false;
-  };
-  */
+    const shouldComponentUpdate = (props: SwipeableProps) => {
+      if (
+        props.friction !== props.friction ||
+        props.overshootLeft !== props.overshootLeft ||
+        props.overshootRight !== props.overshootRight ||
+        props.overshootFriction !== props.overshootFriction
+      ) {
+        updateAnimatedEvent(props);
+        return true;
+      }
+      return false;
+    };
+    */
 
-    const transX = useSharedValue(0); // only IV
-    const showLeftAction = useSharedValue(0); // can AV
-    const leftActionTranslate = useSharedValue(0); // only IV
-    const showRightAction = useSharedValue(0); // can AV;
-    const rightActionTranslate = useSharedValue(0); // only IV
+    const transX = useSharedValue(0);
+    const showLeftAction = useSharedValue(0);
+    const leftActionTranslate = useSharedValue(0);
+    const showRightAction = useSharedValue(0);
+    const rightActionTranslate = useSharedValue(0);
     const composedX = useDerivedValue(() => rowTranslation.value + dragX.value);
 
     const updateAnimatedEvent = () => {
@@ -303,7 +300,6 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
     ) => {
       const { velocityX, translationX: dragX } = event;
 
-      // rightOffset default if undefined set to rowWidth.value
       const rightWidth = rowWidth.value - rightOffset.value;
 
       const {
@@ -408,11 +404,11 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
     } = props;
 
     /* important but not crucial for now
-
-  const onGestureEvent = Animated.event([
-    { nativeEvent: { translationX: dragX } },
-  ]);
- */
+      todo:
+      const onGestureEvent = Animated.event([
+        { nativeEvent: { translationX: dragX } },
+      ]);
+    */
 
     const leftAnimatedStyle = useAnimatedStyle(() => ({
       transform: [
@@ -523,9 +519,6 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
       }),
       []
     );
-
-    // note: during the dragging, we seem to not keeping track of all the changes
-    // note: after dragging, we have no actual entrypoint to keep on updating after the end of the animation
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: transX.value! }],
