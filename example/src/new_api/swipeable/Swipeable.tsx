@@ -3,14 +3,7 @@
 // separate repo. Although, keeping it here for the time being will allow us to
 // move faster and fix possible issues quicker
 
-import {
-  ForwardedRef,
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from 'react';
+import { ForwardedRef, forwardRef, useImperativeHandle, useMemo } from 'react';
 import {
   Gesture,
   GestureDetector,
@@ -243,22 +236,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
-    /* todo: export to the exposed store
-  
-    const shouldComponentUpdate = (props: SwipeableProps) => {
-      if (
-        friction !== friction ||
-        props.overshootLeft !== props.overshootLeft ||
-        props.overshootRight !== props.overshootRight ||
-        overshootFriction !== overshootFriction
-      ) {
-        updateAnimatedEvent(props);
-        return true;
-      }
-      return false;
-    };
-    */
-
     const transX = useSharedValue(0);
     const showLeftAction = useSharedValue(0);
     const leftActionTranslate = useSharedValue(0);
@@ -320,10 +297,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         Extrapolation.CLAMP
       );
     };
-
-    useEffect(() => {
-      updateAnimatedEvent();
-    }, []);
 
     const animateRow = (
       fromValue: number,
@@ -421,13 +394,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       dragOffsetFromLeftEdge = 10,
       dragOffsetFromRightEdge = 10,
     } = props;
-
-    /* important but not crucial for now
-      todo:
-      const onGestureEvent = Animated.event([
-        { nativeEvent: { translationX: dragX } },
-      ]);
-    */
 
     const leftAnimatedStyle = useAnimatedStyle(() => ({
       transform: [
