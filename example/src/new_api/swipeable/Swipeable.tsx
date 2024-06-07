@@ -238,10 +238,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction: 1,
     };
 
-    const [friction] = useState(props.friction ?? defaultProps.friction);
-    const [overshootFriction] = useState(
-      props.overshootFriction ?? defaultProps.overshootFriction
-    );
+    const {
+      friction = defaultProps.friction,
+      overshootFriction = defaultProps.overshootFriction,
+    } = props;
 
     /* todo: export to the exposed store
   
