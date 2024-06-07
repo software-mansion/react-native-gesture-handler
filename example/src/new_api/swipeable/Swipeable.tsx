@@ -4,11 +4,11 @@
 
 import {
   ForwardedRef,
+  LegacyRef,
   RefAttributes,
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useState,
 } from 'react';
 import {
   Gesture,
@@ -424,7 +424,6 @@ const Swipeable = forwardRef<
 
   const currentOffset = () => {
     const rightWidth = rowWidth.value - rightOffset.value;
-    console.log('row state:', rowState.value);
     if (rowState.value === 1) {
       return leftWidth.value;
     } else if (rowState.value === -1) {
@@ -493,7 +492,6 @@ const Swipeable = forwardRef<
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
   const close = () => {
-    console.log('closing from inside:', currentOffset());
     animateRow(currentOffset(), 0);
   };
 
@@ -541,7 +539,6 @@ const Swipeable = forwardRef<
     () => {
       return {
         close() {
-          console.log('closing from outside:', currentOffset());
           animateRow(currentOffset(), 0);
         },
         openLeft() {
@@ -571,12 +568,12 @@ const Swipeable = forwardRef<
   });
 
   return (
-    <GestureDetector gesture={composedGesture} touchAction="pan-y" {...props}>
-      <Animated.View
-        onLayout={onRowLayout}
-        style={[styles.container, props.containerStyle]}>
-        {left}
-        {right}
+    <Animated.View
+      onLayout={onRowLayout}
+      style={[styles.container, props.containerStyle]}>
+      {left}
+      {right}
+      <GestureDetector gesture={composedGesture} touchAction="pan-y" {...props}>
         <Animated.View
           style={[
             animatedStyle,
@@ -585,12 +582,15 @@ const Swipeable = forwardRef<
           ]}>
           {children}
         </Animated.View>
-      </Animated.View>
-    </GestureDetector>
+      </GestureDetector>
+    </Animated.View>
   );
 });
 
 export default Swipeable;
+export type SwipeableRef = LegacyRef<
+  SwipeableProps & RefAttributes<ExposedFunctions>
+>;
 
 const styles = StyleSheet.create({
   container: {
