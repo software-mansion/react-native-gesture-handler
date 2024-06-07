@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { FlatList, RectButton } from 'react-native-gesture-handler';
@@ -42,19 +42,17 @@ const SwipeableRow = ({ item, index }: { item: DataRow; index: number }) => {
   }
 };
 
-export default class Example extends Component {
-  render() {
-    return (
-      <FlatList
-        data={DATA}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item, index }) => (
-          <SwipeableRow item={item} index={index} />
-        )}
-        keyExtractor={(_item, index) => `message ${index}`}
-      />
-    );
-  }
+export default function App() {
+  return (
+    <FlatList
+      data={DATA}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      renderItem={({ item, index }) => (
+        <SwipeableRow item={item} index={index} />
+      )}
+      keyExtractor={(_item, index) => `message ${index}`}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
