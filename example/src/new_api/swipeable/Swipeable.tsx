@@ -110,20 +110,6 @@ export interface SwipeableProps
   overshootFriction?: number;
 
   /**
-   * @deprecated Use `direction` argument of onSwipeableOpen()
-   *
-   * Called when left action panel gets open.
-   */
-  onSwipeableLeftOpen?: () => void;
-
-  /**
-   * @deprecated Use `direction` argument of onSwipeableOpen()
-   *
-   * Called when right action panel gets open.
-   */
-  onSwipeableRightOpen?: () => void;
-
-  /**
    * Called when action panel gets open (either right or left).
    */
   onSwipeableOpen?: (
@@ -138,20 +124,6 @@ export interface SwipeableProps
     direction: 'left' | 'right',
     swipeable: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>>
   ) => void;
-
-  /**
-   * @deprecated Use `direction` argument of onSwipeableWillOpen()
-   *
-   * Called when left action panel starts animating on open.
-   */
-  onSwipeableLeftWillOpen?: () => void;
-
-  /**
-   * @deprecated Use `direction` argument of onSwipeableWillOpen()
-   *
-   * Called when right action panel starts animating on open.
-   */
-  onSwipeableRightWillOpen?: () => void;
 
   /**
    * Called when action panel starts animating on open (either right or left).
@@ -183,8 +155,8 @@ export interface SwipeableProps
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue: SharedValue,
-    dragAnimatedValue: SharedValue,
+    progressAnimatedValue: SharedValue<number>,
+    dragAnimatedValue: SharedValue<number>,
     swipeable: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>> // we have to use ref here, as it now holds all the objects
   ) => React.ReactNode;
   /**
@@ -197,8 +169,8 @@ export interface SwipeableProps
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue: SharedValue,
-    dragAnimatedValue: SharedValue,
+    progressAnimatedValue: SharedValue<number>,
+    dragAnimatedValue: SharedValue<number>,
     swipeable: ForwardedRef<SwipeableProps & RefAttributes<ExposedFunctions>>
   ) => React.ReactNode;
 
@@ -393,10 +365,8 @@ const Swipeable = forwardRef<
       (isFinished) => {
         if (isFinished) {
           if (toValue > 0) {
-            props.onSwipeableLeftOpen?.();
             props.onSwipeableOpen?.('left', ref);
           } else if (toValue < 0) {
-            props.onSwipeableRightOpen?.();
             props.onSwipeableOpen?.('right', ref);
           } else {
             const closingDirection = fromValue > 0 ? 'left' : 'right';
@@ -407,10 +377,8 @@ const Swipeable = forwardRef<
     );
 
     if (toValue > 0) {
-      props.onSwipeableLeftWillOpen?.();
       props.onSwipeableWillOpen?.('left');
     } else if (toValue < 0) {
-      props.onSwipeableRightWillOpen?.();
       props.onSwipeableWillOpen?.('right');
     } else {
       const closingDirection = fromValue > 0 ? 'left' : 'right';
