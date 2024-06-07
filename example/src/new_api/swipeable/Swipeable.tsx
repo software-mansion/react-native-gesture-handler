@@ -114,7 +114,7 @@ export interface SwipeableProps
    */
   onSwipeableOpen?: (
     direction: 'left' | 'right',
-    swipeable: ForwardedRef<ExposedFunctions>
+    swipeable: ForwardedRef<SwipeableMethods>
   ) => void;
 
   /**
@@ -122,7 +122,7 @@ export interface SwipeableProps
    */
   onSwipeableClose?: (
     direction: 'left' | 'right',
-    swipeable: ForwardedRef<ExposedFunctions>
+    swipeable: ForwardedRef<SwipeableMethods>
   ) => void;
 
   /**
@@ -157,7 +157,7 @@ export interface SwipeableProps
   renderLeftActions?: (
     progressAnimatedValue: SharedValue<number>,
     dragAnimatedValue: SharedValue<number>,
-    swipeable: ForwardedRef<ExposedFunctions> // we have to use ref here, as it now holds all the objects
+    swipeable: ForwardedRef<SwipeableMethods> // we have to use ref here, as it now holds all the objects
   ) => React.ReactNode;
   /**
    *
@@ -171,7 +171,7 @@ export interface SwipeableProps
   renderRightActions?: (
     progressAnimatedValue: SharedValue<number>,
     dragAnimatedValue: SharedValue<number>,
-    swipeable: ForwardedRef<ExposedFunctions>
+    swipeable: ForwardedRef<SwipeableMethods>
   ) => React.ReactNode;
 
   useNativeAnimations?: boolean;
@@ -191,17 +191,17 @@ export interface SwipeableProps
   childrenContainerStyle?: StyleProp<ViewStyle>;
 }
 
-export interface ExposedFunctions {
+export interface SwipeableMethods {
   close: () => void;
   openLeft: () => void;
   openRight: () => void;
   reset: () => void;
 }
 
-const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
+const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
   function Swipeable(
     props: SwipeableProps,
-    ref: ForwardedRef<ExposedFunctions>
+    ref: ForwardedRef<SwipeableMethods>
   ) {
     const rowState = useSharedValue<number>(0);
 
@@ -350,10 +350,6 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
           duration: 1000,
           dampingRatio: 1.2,
           stiffness: 500,
-          overshootClamping: true,
-          restDisplacementThreshold: 0.01,
-          restSpeedThreshold: 0.01,
-          reduceMotion: ReduceMotion.System,
           velocity: velocityX,
           ...props.animationOptions,
         },
@@ -420,7 +416,7 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
 
     const left = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
-        {renderLeftActions(showLeftAction!, transX!, ref)}
+        {renderLeftActions(showLeftAction, transX, ref)}
         <View
           onLayout={({ nativeEvent }) =>
             (leftWidth.value = nativeEvent.layout.x)
@@ -439,7 +435,7 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
 
     const right = renderRightActions && (
       <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
-        {renderRightActions(showRightAction!, transX!, ref)}
+        {renderRightActions(showRightAction, transX, ref)}
         <View
           onLayout={({ nativeEvent }) =>
             (rightOffset.value = nativeEvent.layout.x)
@@ -521,7 +517,7 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
     );
 
     const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: transX.value! }],
+      transform: [{ translateX: transX.value }],
     }));
 
     return (
@@ -549,7 +545,7 @@ const Swipeable = forwardRef<ExposedFunctions, SwipeableProps>(
 );
 
 export default Swipeable;
-export type SwipeableRef = ForwardedRef<ExposedFunctions>;
+export type SwipeableRef = ForwardedRef<SwipeableMethods>;
 
 const styles = StyleSheet.create({
   container: {
