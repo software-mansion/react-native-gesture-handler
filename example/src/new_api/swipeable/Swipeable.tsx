@@ -346,8 +346,6 @@ const Swipeable = forwardRef<
 
     let toValue = 0;
 
-    console.log('reading state as', rowState);
-
     if (rowState === 0) {
       if (translationX > leftThreshold) {
         toValue = leftWidth.value;
@@ -366,8 +364,6 @@ const Swipeable = forwardRef<
       }
     }
 
-    console.log('handling:', startOffsetX, toValue, rowState);
-
     animateRow(startOffsetX, toValue, velocityX / friction!);
   };
 
@@ -379,7 +375,6 @@ const Swipeable = forwardRef<
     dragX.value = 0;
     transX.value = fromValue;
 
-    console.log('setting state to', Math.sign(toValue));
     setRowState(Math.sign(toValue));
 
     transX.value = withSpring(
@@ -435,10 +430,6 @@ const Swipeable = forwardRef<
       return -rightWidth;
     }
     return 0;
-  };
-
-  const close = () => {
-    //animateRow(currentOffset(), 0);
   };
 
   const {
@@ -500,18 +491,15 @@ const Swipeable = forwardRef<
   const tapGesture = Gesture.Tap();
   const composedGesture = Gesture.Race(panGesture, tapGesture);
 
-  tapGesture.onStart(() => {
+  const close = () => {
+    console.log('closing from inside');
+    animateRow(currentOffset(), 0);
+  };
+
+  tapGesture.onEnd(() => {
     'worklet';
-    console.log('closing from gesture');
     close();
   });
-
-  panGesture.onFinalize(
-    (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
-      'worklet';
-      handleRelease(event);
-    }
-  );
 
   panGesture
     .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
@@ -545,6 +533,7 @@ const Swipeable = forwardRef<
 
   panGesture.activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge]);
   tapGesture.enabled(rowState !== 0);
+  tapGesture.shouldCancelWhenOutside(true);
 
   useImperativeHandle(
     ref,
@@ -580,8 +569,6 @@ const Swipeable = forwardRef<
     };
   });
 
-  console.log('rerendering with state:', rowState);
-
   return (
     <GestureDetector gesture={composedGesture} touchAction="pan-y" {...props}>
       <Animated.View
@@ -590,8 +577,11 @@ const Swipeable = forwardRef<
         {left}
         {right}
         <Animated.View
-          pointerEvents={rowState === 0 ? 'auto' : 'box-only'}
-          style={[animatedStyle, props.childrenContainerStyle]}>
+          style={[
+            animatedStyle,
+            props.childrenContainerStyle,
+            { pointerEvents: rowState === 0 ? 'auto' : 'box-only' },
+          ]}>
           {children}
         </Animated.View>
       </Animated.View>
