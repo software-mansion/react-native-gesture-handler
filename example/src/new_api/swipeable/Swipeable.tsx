@@ -199,9 +199,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const rowState = useSharedValue<number>(0);
 
     // this block has to be reduced, most of these values can be easily removed
-    const dragX = useSharedValue<number>(0);
-    const transX = useSharedValue<number>(0);
-    const rowTranslation = useSharedValue<number>(0);
+    const userDrag = useSharedValue<number>(0);
+    const appliedTranslation = useSharedValue<number>(0);
+    const fromTranslation = useSharedValue<number>(0);
 
     const rowWidth = useSharedValue<number>(0);
     const leftWidth = useSharedValue<number>(0);
@@ -226,10 +226,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
-    const composedX = useDerivedValue(
-      () => rowTranslation.value + dragX.value / friction
-    );
-
     const calculateCurrentOffset = () => {
       'worklet';
       rightWidth.value = rowWidth.value - rightOffset.value;
@@ -245,13 +241,17 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       'worklet';
       rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
 
+      console.log('rw', rightWidth.value, 'ro', rightOffset.value);
+
       const {
         overshootLeft = leftWidth.value > 0,
         overshootRight = rightWidth.value > 0,
       } = props;
 
-      transX.value = interpolate(
-        composedX.value,
+      const offsetDrag = fromTranslation.value + userDrag.value / friction;
+
+      appliedTranslation.value = interpolate(
+        offsetDrag,
         [
           -rightWidth.value - 1,
           -rightWidth.value,
@@ -268,7 +268,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
       showLeftProgress.value =
         leftWidth.value > 0
-          ? interpolate(transX.value, [-1, 0, leftWidth.value], [0, 0, 1])
+          ? interpolate(
+              appliedTranslation.value,
+              [-1, 0, leftWidth.value],
+              [0, 0, 1]
+            )
           : 0;
       leftActionTranslate.value = interpolate(
         showLeftProgress.value,
@@ -278,7 +282,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
       showRightProgress.value =
         rightWidth.value > 0
-          ? interpolate(transX.value, [-rightWidth.value, 0, 1], [1, 0, 0])
+          ? interpolate(
+              appliedTranslation.value,
+              [-rightWidth.value, 0, 1],
+              [1, 0, 0]
+            )
           : 0;
       rightActionTranslate.value = interpolate(
         showRightProgress.value,
@@ -294,12 +302,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       velocityX?: number
     ) => {
       'worklet';
-      transX.value = fromValue;
-      rowTranslation.value = fromValue;
+
+      console.log('running animation from', fromValue, ' to', toValue);
+
+      fromTranslation.value = fromValue;
 
       rowState.value = Math.sign(toValue);
 
-      transX.value = withSpring(
+      appliedTranslation.value = withSpring(
         toValue,
         {
           duration: 1000,
@@ -339,7 +349,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
     ) => {
       'worklet';
-      const { velocityX, translationX: dragX } = event;
+      const { velocityX } = event;
+      userDrag.value = event.translationX;
 
       rightWidth.value = rowWidth.value - rightOffset.value;
 
@@ -348,8 +359,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         rightThreshold = rightWidth.value / 2,
       } = props;
 
-      const startOffsetX = calculateCurrentOffset() + dragX / friction;
-      const translationX = (dragX + DRAG_TOSS * velocityX) / friction;
+      const startOffsetX = calculateCurrentOffset() + userDrag.value / friction;
+      const translationX = (userDrag.value + DRAG_TOSS * velocityX) / friction;
 
       let toValue = 0;
 
@@ -386,14 +397,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       dragOffsetFromRightEdge = 10,
     } = props;
 
-    const leftAnimatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateX: leftActionTranslate.value,
-        },
-      ],
-    }));
-
     swipeableMethods = useMemo<SwipeableMethods>(
       () => ({
         close() {
@@ -411,17 +414,29 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         },
         reset() {
           'worklet';
-          dragX.value = 0;
-          transX.value = 0;
+          userDrag.value = 0;
+          appliedTranslation.value = 0;
           rowState.value = 0;
         },
       }),
       []
     );
 
-    const left = renderLeftActions && (
+    const leftAnimatedStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: leftActionTranslate.value,
+        },
+      ],
+    }));
+
+    const leftElement = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
-        {renderLeftActions(showLeftProgress, transX, swipeableMethods)}
+        {renderLeftActions(
+          showLeftProgress,
+          appliedTranslation,
+          swipeableMethods
+        )}
         <View
           onLayout={({ nativeEvent }) =>
             (leftWidth.value = nativeEvent.layout.x)
@@ -438,9 +453,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ],
     }));
 
-    const right = renderRightActions && (
+    const rightElement = renderRightActions && (
       <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
-        {renderRightActions(showRightProgress, transX, swipeableMethods)}
+        {renderRightActions(
+          showRightProgress,
+          appliedTranslation,
+          swipeableMethods
+        )}
         <View
           onLayout={({ nativeEvent }) =>
             (rightOffset.value = nativeEvent.layout.x)
@@ -462,11 +481,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
-        // fixme: after gesture start, set initial translation,
-        // for some reason, the real offset is not enough,
-        // so there must be a deeper issue here
-        dragX.value =
-          (calculateCurrentOffset() + event.translationX) / friction;
+        // fixme: apply progress atop of drag
+        // fixme: apply offset from cursor to translation
+        userDrag.value = event.translationX;
 
         const translationX =
           (event.translationX + DRAG_TOSS * event.velocityX) / friction;
@@ -479,12 +496,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             : translationX > 0
             ? 'left'
             : 'right';
+
         if (rowState.value === 0 && props.onSwipeableOpenStartDrag) {
           runOnJS(props.onSwipeableOpenStartDrag)(direction);
         } else if (props.onSwipeableCloseStartDrag) {
           runOnJS(props.onSwipeableCloseStartDrag)(direction);
         }
-
         updateAnimatedEvent();
       })
       .onEnd((event) => {
@@ -500,7 +517,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     useImperativeHandle(ref, () => swipeableMethods, []);
 
     const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: transX.value }],
+      transform: [{ translateX: appliedTranslation.value }],
     }));
 
     const composedGesture = Gesture.Race(panGesture, tapGesture);
@@ -508,8 +525,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       <Animated.View
         onLayout={onRowLayout}
         style={[styles.container, props.containerStyle]}>
-        {left}
-        {right}
+        {leftElement}
+        {rightElement}
         <GestureDetector
           gesture={composedGesture}
           touchAction="pan-y"
