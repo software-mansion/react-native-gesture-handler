@@ -100,10 +100,10 @@ export default function AppleStyleSwipeableRow({
       rightThreshold={40}
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
-      onSwipeableOpen={(direction) => {
+      onSwipeableWillOpen={(direction) => {
         console.log(`Opening swipeable from the ${direction}`);
       }}
-      onSwipeableClose={(direction) => {
+      onSwipeableWillClose={(direction) => {
         console.log(`Closing swipeable to the ${direction}`);
       }}>
       {children}
