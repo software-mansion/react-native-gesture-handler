@@ -2,7 +2,12 @@
 // separate repo. Although, keeping it here for the time being will allow us to
 // move faster and fix possible issues quicker
 
-import { ForwardedRef, forwardRef, useImperativeHandle, useMemo } from 'react';
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import {
   Gesture,
   GestureDetector,
@@ -417,7 +422,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           rowState.value = 0;
         },
       }),
-      []
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [
+        appliedTranslation,
+        leftWidth,
+        rightOffset,
+        rightWidth,
+        rowState,
+        rowWidth,
+        userDrag,
+      ]
     );
 
     const leftAnimatedStyle = useAnimatedStyle(() => ({
@@ -509,10 +523,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     ]);
     tapGesture.shouldCancelWhenOutside(true);
 
-    useImperativeHandle(ref, () => swipeableMethods, []);
+    useImperativeHandle(ref, () => swipeableMethods, [swipeableMethods]);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: appliedTranslation.value }],
+      pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
     }));
 
     const composedGesture = Gesture.Race(panGesture, tapGesture);
@@ -526,12 +541,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           gesture={composedGesture}
           touchAction="pan-y"
           {...props}>
-          <Animated.View
-            style={[
-              animatedStyle,
-              props.childrenContainerStyle,
-              { pointerEvents: rowState.value === 0 ? 'auto' : 'box-only' },
-            ]}>
+          <Animated.View style={[animatedStyle, props.childrenContainerStyle]}>
             {children}
           </Animated.View>
         </GestureDetector>
