@@ -162,7 +162,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     backgroundColor: 'transparent',
-    padding: 20,
+    textAlign: 'center',
+    margin: 'auto',
   },
   rightActionView: {
     flex: 1,
