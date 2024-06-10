@@ -8,5 +8,10 @@
       "react-native-gesture-handler/jest-utils": ["../src/jestUtils/index.ts"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "App.tsx"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "App.tsx",
+    "../src/components/ReanimatedSwipeable.tsx"
+  ]
 }
