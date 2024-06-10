@@ -217,7 +217,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
-    let swipeableMethods: SwipeableMethods;
+    let swipeableMethods: SwipeableMethods | undefined;
 
     const defaultProps = {
       friction: 1,
