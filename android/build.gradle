@@ -266,7 +266,7 @@ tasks.register("copyCodegenArtifacts") {
         }
 
         if (existingFiles.size() == 0) {
-            logger.warn('[react-native-gesture-handler] Paper destination with codegen interfaces is empty. This might be okay if you don\'t have any interfaces/delegates used on Android, but if that\'s not the case please check if codegenArtifactsPaperDestination property in android/gradle.properties is correct.')
+            logger.warn("[react-native-gesture-handler] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used on Android, but if that's not the case please check if codegenArtifactsPaperDestination property in android/gradle.properties is correct.")
         }
 
         existingFiles.forEach { existingFile -> 
