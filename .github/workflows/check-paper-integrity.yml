@@ -31,6 +31,9 @@ jobs:
       - name: Install node dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Install node dependencies of FabricExample
+        run: (cd FabricExample && yarn install --frozen-lockfile)
+
       - name: Restore build from cache
         uses: actions/cache@v3
         with:
@@ -40,5 +43,6 @@ jobs:
             android/build
             android/.gradle
           key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'android/build.gradle') }}
+          
       - name: Check check integrity
         run: yarn checkIntegrity
