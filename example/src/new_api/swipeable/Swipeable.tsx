@@ -217,7 +217,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
-    let swipeableMethods: SwipeableMethods | undefined;
+    let swipeableMethods: SwipeableMethods;
 
     const defaultProps = {
       friction: 1,
@@ -385,11 +385,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         animateRow,
         calculateCurrentOffset,
         appliedTranslation,
-        leftWidth.value,
-        rightOffset.value,
+        leftWidth,
+        rightOffset,
         rightWidth,
         rowState,
-        rowWidth.value,
+        rowWidth,
         userDrag,
       ]
     );
