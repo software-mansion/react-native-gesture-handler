@@ -17,7 +17,6 @@ import Animated, {
   interpolate,
   runOnJS,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -201,7 +200,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     // this block has to be reduced, most of these values can be easily removed
     const userDrag = useSharedValue<number>(0);
     const appliedTranslation = useSharedValue<number>(0);
-    const fromTranslation = useSharedValue<number>(0);
 
     const rowWidth = useSharedValue<number>(0);
     const leftWidth = useSharedValue<number>(0);
@@ -228,11 +226,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const calculateCurrentOffset = () => {
       'worklet';
-      rightWidth.value = rowWidth.value - rightOffset.value;
       if (rowState.value === 1) {
         return leftWidth.value;
       } else if (rowState.value === -1) {
-        return -rightWidth.value;
+        return -rowWidth.value - rightOffset.value;
       }
       return 0;
     };
@@ -241,14 +238,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       'worklet';
       rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
 
-      console.log('rw', rightWidth.value, 'ro', rightOffset.value);
-
       const {
         overshootLeft = leftWidth.value > 0,
         overshootRight = rightWidth.value > 0,
       } = props;
 
-      const offsetDrag = fromTranslation.value + userDrag.value / friction;
+      const offsetDrag = userDrag.value / friction;
 
       appliedTranslation.value = interpolate(
         offsetDrag,
@@ -302,10 +297,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       velocityX?: number
     ) => {
       'worklet';
-
-      console.log('running animation from', fromValue, ' to', toValue);
-
-      fromTranslation.value = fromValue;
 
       rowState.value = Math.sign(toValue);
 
@@ -485,15 +476,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         // fixme: apply offset from cursor to translation
         userDrag.value = event.translationX;
 
-        const translationX =
-          (event.translationX + DRAG_TOSS * event.velocityX) / friction;
-
         const direction =
           rowState.value === -1
             ? 'right'
             : rowState.value === 1
             ? 'left'
-            : translationX > 0
+            : event.translationX > 0
             ? 'left'
             : 'right';
 
