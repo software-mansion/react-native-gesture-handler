@@ -229,7 +229,7 @@ def getAbsoluteCodegenArtifactsSource() {
 }
 
 
-tasks.register("copyCodegenArtifacts") {
+tasks.register('copyCodegenArtifacts') {
     group 'After build tasks'
     description 'Task which copies codegen artifacts to paper architecture'
     
@@ -289,7 +289,7 @@ if (isGHExampleApp() && isNewArchitectureEnabled()) {
     tasks.generateCodegenArtifactsFromSchema.finalizedBy('copyCodegenArtifacts')
 }
 
-tasks.register("checkIntegrityBetweenArchitectures") {
+tasks.register('checkIntegrityBetweenArchitectures') {
     group 'Verification tasks'
     description 'Task to check integrity between fabric and paper architecture in terms of codegen generated interfaces/delegates'
 
