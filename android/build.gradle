@@ -285,7 +285,7 @@ tasks.register('copyCodegenArtifacts') {
     }
 }
 
-if (isGHExampleApp() && isNewArchitectureEnabled()) {
+if (isGHExampleApp() && isNewArchitectureEnabled() && !project.hasProperty('skipCodegenCopyTask')) {
     tasks.generateCodegenArtifactsFromSchema.finalizedBy('copyCodegenArtifacts')
 }
 
