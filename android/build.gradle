@@ -261,16 +261,20 @@ tasks.register("copyCodegenArtifacts") {
 
         generatedFiles.forEach { generatedFile -> 
             if (!existingFilesMap.containsKey(generatedFile.name)) {
-                logger.warn("[react-native-gesture-handler] ${generatedFile.name} not found in paper dir, if it's used in Android you need to copy it manually and implement yourself before using auto-copy feature")
+                logger.warn("[react-native-gesture-handler] ${generatedFile.name} not found in paper dir, if it's used on Android you need to copy it manually and implement yourself before using auto-copy feature.")
             }
         }
 
         if (existingFiles.size() == 0) {
-            logger.warn("[react-native-gesture-handler] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used in Android, if that's not the case please check if codegenArtifactsPaperDestination in android/gradle.properties is correct")
+            logger.warn("[react-native-gesture-handler] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used on Android, but if that's not the case please check if codegenArtifactsPaperDestination property in android/gradle.properties is correct.")
         }
 
-        if (existingFiles.size() > generatedFiles.size()) {
-            throw new Exception("[react-native-gesture-handler] Number od generated artifacts should be greater than or equal to paper interfaces. Please check if codegenArtifactsSource in android/gradle.properties is correct")
+        existingFiles.forEach { existingFile -> 
+            def generatedFile = new File("${absoluteCodegenArtifactsSource}/${existingFile.name}")
+
+            if (!generatedFile.exists()) {
+                logger.warn("[react-native-gesture-handler] ${existingFile.name} file does not exist in codegen artifacts source destination. Please check if you still need this interface/delagete.")
+            }
         }
 
         copy {
