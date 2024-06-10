@@ -10,6 +10,59 @@ import Animated, {
 } from 'react-native-reanimated';
 import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
 
+interface LeftActionProps {
+  dragX: SharedValue<number>;
+  swipeableRef: React.RefObject<SwipeableMethods>;
+}
+const LeftAction = ({ dragX, swipeableRef }: LeftActionProps) => {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: interpolate(dragX.value, [0, 80], [0, 1], Extrapolation.CLAMP),
+      },
+    ],
+  }));
+
+  return (
+    <RectButton style={styles.leftAction} onPress={swipeableRef.current?.close}>
+      {/* Change it to some icons */}
+      <Animated.View style={[styles.actionIcon, animatedStyle]} />
+    </RectButton>
+  );
+};
+
+const renderLeftActions = (
+  _: any,
+  progress: SharedValue<number>,
+  swipeableRef: React.RefObject<SwipeableMethods>
+) => <LeftAction dragX={progress} swipeableRef={swipeableRef} />;
+
+interface RightActionProps {
+  dragX: SharedValue<number>;
+  swipeableRef: React.RefObject<SwipeableMethods>;
+}
+const RightAction = ({ dragX }: RightActionProps) => {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: interpolate(dragX.value, [-80, 0], [1, 0], Extrapolation.CLAMP),
+      },
+    ],
+  }));
+
+  return (
+    <RectButton style={styles.rightAction} onPress={close}>
+      {/* Change it to some icons */}
+      <Animated.View style={[styles.actionIcon, animatedStyle]} />
+    </RectButton>
+  );
+};
+
+const renderRightActions = (
+  _: any,
+  progress: SharedValue<number>,
+  swipeableRef: React.RefObject<SwipeableMethods>
+) => <RightAction dragX={progress} swipeableRef={swipeableRef} />;
 interface GmailStyleSwipeableRowProps {
   children?: ReactNode;
 }
@@ -17,57 +70,7 @@ interface GmailStyleSwipeableRowProps {
 export default function GmailStyleSwipeableRow({
   children,
 }: GmailStyleSwipeableRowProps) {
-  const renderLeftActions = (
-    _progress: SharedValue<number>,
-    dragX: SharedValue<number>
-  ) => {
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        {
-          scale: interpolate(dragX.value, [0, 80], [0, 1], Extrapolation.CLAMP),
-        },
-      ],
-    }));
-
-    return (
-      <RectButton style={styles.leftAction} onPress={close}>
-        {/* Change it to some icons */}
-        <Animated.View style={[styles.actionIcon, animatedStyle]} />
-      </RectButton>
-    );
-  };
-
-  const renderRightActions = (
-    _progress: SharedValue<number>,
-    dragX: SharedValue<number>
-  ) => {
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        {
-          scale: interpolate(
-            dragX.value,
-            [-80, 0],
-            [1, 0],
-            Extrapolation.CLAMP
-          ),
-        },
-      ],
-    }));
-
-    return (
-      <RectButton style={styles.rightAction} onPress={close}>
-        {/* Change it to some icons */}
-        <Animated.View style={[styles.actionIcon, animatedStyle]} />
-      </RectButton>
-    );
-  };
-
   const swipeableRow = useRef<SwipeableMethods>(null);
-
-  const close = () => {
-    swipeableRow.current?.close();
-  };
-
   return (
     <Swipeable
       ref={swipeableRow}
@@ -75,8 +78,12 @@ export default function GmailStyleSwipeableRow({
       leftThreshold={80}
       enableTrackpadTwoFingerGesture
       rightThreshold={40}
-      renderLeftActions={renderLeftActions}
-      renderRightActions={renderRightActions}>
+      renderLeftActions={(_, progress) =>
+        renderLeftActions(_, progress, swipeableRow)
+      }
+      renderRightActions={(_, progress) =>
+        renderRightActions(_, progress, swipeableRow)
+      }>
       {children}
     </Swipeable>
   );
