@@ -33,7 +33,9 @@ const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
     ],
   }));
   return (
-    <RectButton style={styles.leftAction} onPress={swipeableRef.current?.close}>
+    <RectButton
+      style={styles.leftAction}
+      onPress={() => swipeableRef.current!.close()}>
       <Animated.Text style={[styles.actionText, animatedStyle]}>
         Archive
       </Animated.Text>

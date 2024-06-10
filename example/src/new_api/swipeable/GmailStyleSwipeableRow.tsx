@@ -24,7 +24,9 @@ const LeftAction = ({ dragX, swipeableRef }: LeftActionProps) => {
   }));
 
   return (
-    <RectButton style={styles.leftAction} onPress={swipeableRef.current?.close}>
+    <RectButton
+      style={styles.leftAction}
+      onPress={() => swipeableRef.current!.close()}>
       {/* Change it to some icons */}
       <Animated.View style={[styles.actionIcon, animatedStyle]} />
     </RectButton>
@@ -41,7 +43,7 @@ interface RightActionProps {
   dragX: SharedValue<number>;
   swipeableRef: React.RefObject<SwipeableMethods>;
 }
-const RightAction = ({ dragX }: RightActionProps) => {
+const RightAction = ({ dragX, swipeableRef }: RightActionProps) => {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -51,7 +53,9 @@ const RightAction = ({ dragX }: RightActionProps) => {
   }));
 
   return (
-    <RectButton style={styles.rightAction} onPress={close}>
+    <RectButton
+      style={styles.rightAction}
+      onPress={() => swipeableRef.current!.close()}>
       {/* Change it to some icons */}
       <Animated.View style={[styles.actionIcon, animatedStyle]} />
     </RectButton>
