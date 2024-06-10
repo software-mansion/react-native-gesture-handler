@@ -243,7 +243,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         overshootRight = rightWidth.value > 0,
       } = props;
 
-      const offsetDrag = userDrag.value / friction;
+      const startOffset =
+        rowState.value === 1
+          ? leftWidth.value
+          : rowState.value === -1
+          ? -rightWidth.value
+          : 0;
+
+      const offsetDrag = userDrag.value / friction + startOffset;
 
       appliedTranslation.value = interpolate(
         offsetDrag,
