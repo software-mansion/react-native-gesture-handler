@@ -154,7 +154,7 @@ export interface SwipeableProps
   renderLeftActions?: (
     progressAnimatedValue: SharedValue<number>,
     dragAnimatedValue: SharedValue<number>,
-    swipeable: SwipeableMethods // we have to use ref here, as it now holds all the objects
+    swipeable: SwipeableMethods
   ) => React.ReactNode;
   /**
    *
@@ -202,7 +202,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
   ) {
     const rowState = useSharedValue<number>(0);
 
-    // this block has to be reduced, most of these values can be easily removed
     const userDrag = useSharedValue<number>(0);
     const appliedTranslation = useSharedValue<number>(0);
 
@@ -348,46 +347,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     };
 
-    const handleRelease = (
-      event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
-    ) => {
-      'worklet';
-      const { velocityX } = event;
-      userDrag.value = event.translationX;
-
-      rightWidth.value = rowWidth.value - rightOffset.value;
-
-      const {
-        leftThreshold = leftWidth.value / 2,
-        rightThreshold = rightWidth.value / 2,
-      } = props;
-
-      const startOffsetX = calculateCurrentOffset() + userDrag.value / friction;
-      const translationX = (userDrag.value + DRAG_TOSS * velocityX) / friction;
-
-      let toValue = 0;
-
-      if (rowState.value === 0) {
-        if (translationX > leftThreshold) {
-          toValue = leftWidth.value;
-        } else if (translationX < -rightThreshold) {
-          toValue = -rightWidth.value;
-        }
-      } else if (rowState.value === 1) {
-        // swiped to left
-        if (translationX > -leftThreshold) {
-          toValue = leftWidth.value;
-        }
-      } else {
-        // swiped to right
-        if (translationX < rightThreshold) {
-          toValue = -rightWidth.value;
-        }
-      }
-
-      animateRow(startOffsetX, toValue, velocityX / friction);
-    };
-
     const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
       rowWidth.value = nativeEvent.layout.width;
     };
@@ -480,6 +439,46 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
+    const handleRelease = (
+      event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+    ) => {
+      'worklet';
+      const { velocityX } = event;
+      userDrag.value = event.translationX;
+
+      rightWidth.value = rowWidth.value - rightOffset.value;
+
+      const {
+        leftThreshold = leftWidth.value / 2,
+        rightThreshold = rightWidth.value / 2,
+      } = props;
+
+      const startOffsetX = calculateCurrentOffset() + userDrag.value / friction;
+      const translationX = (userDrag.value + DRAG_TOSS * velocityX) / friction;
+
+      let toValue = 0;
+
+      if (rowState.value === 0) {
+        if (translationX > leftThreshold) {
+          toValue = leftWidth.value;
+        } else if (translationX < -rightThreshold) {
+          toValue = -rightWidth.value;
+        }
+      } else if (rowState.value === 1) {
+        // swiped to left
+        if (translationX > -leftThreshold) {
+          toValue = leftWidth.value;
+        }
+      } else {
+        // swiped to right
+        if (translationX < rightThreshold) {
+          toValue = -rightWidth.value;
+        }
+      }
+
+      animateRow(startOffsetX, toValue, velocityX / friction);
+    };
+
     const close = () => {
       'worklet';
       animateRow(calculateCurrentOffset(), 0);
@@ -493,8 +492,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
-        // fixme: apply progress atop of drag
-        // fixme: apply offset from cursor to translation
         userDrag.value = event.translationX;
 
         const direction =
