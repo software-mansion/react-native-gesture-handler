@@ -36,7 +36,7 @@ const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
     <RectButton
       style={styles.leftAction}
       onPress={() => swipeableRef.current!.close()}>
-      <Animated.Text style={[styles.actionText, animatedStyle]}>
+      <Animated.Text style={[styles.archiveText, animatedStyle]}>
         Archive
       </Animated.Text>
     </RectButton>
@@ -157,6 +157,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#497AFC',
     justifyContent: 'center',
+  },
+  archiveText: {
+    color: 'white',
+    fontSize: 16,
+    backgroundColor: 'transparent',
+    padding: 20,
   },
   actionText: {
     color: 'white',
