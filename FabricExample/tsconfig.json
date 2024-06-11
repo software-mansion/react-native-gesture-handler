@@ -8,12 +8,13 @@
       "react-native-gesture-handler/Swipeable": [
         "../src/components/Swipeable.tsx"
       ],
+      "react-native-gesture-handler/ReanimatedSwipeable": [
+        "../src/components/ReanimatedSwipeable"
+      ],
       "react-native-gesture-handler/DrawerLayout": [
         "../src/components/DrawerLayout.tsx"
       ],
-      "react-native-gesture-handler/jest-utils": [
-        "../src/jestUtils/index.ts"
-      ]
+      "react-native-gesture-handler/jest-utils": ["../src/jestUtils/index.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"]
