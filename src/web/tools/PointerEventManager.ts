@@ -234,11 +234,13 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
+    const rect = this.view.getBoundingClientRect();
+
     return {
       x: event.clientX,
       y: event.clientY,
-      offsetX: event.offsetX,
-      offsetY: event.offsetY,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
       pointerId: event.pointerId,
       eventType: eventType,
       pointerType:
