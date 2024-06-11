@@ -380,8 +380,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     } = props;
 
     useEffect(() => {
-      console.log('useEffect');
-
       swipeableMethods.current = {
         close() {
           'worklet';
@@ -550,8 +548,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       transform: [{ translateX: appliedTranslation.value }],
       pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
     }));
-
-    console.log('rerender');
 
     const composedGesture = Gesture.Race(panGesture, tapGesture);
     return (
