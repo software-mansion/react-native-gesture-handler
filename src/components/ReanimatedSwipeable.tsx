@@ -413,13 +413,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       userDrag,
     ]);
 
-    const leftAnimatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateX: leftActionTranslate.value,
-        },
-      ],
-    }));
+    const leftAnimatedStyle = useAnimatedStyle(
+      () => ({
+        transform: [
+          {
+            translateX: leftActionTranslate.value,
+          },
+        ],
+      }),
+      [leftActionTranslate]
+    );
 
     const leftElement = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
@@ -436,13 +439,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
-    const rightAnimatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateX: rightActionTranslate.value,
-        },
-      ],
-    }));
+    const rightAnimatedStyle = useAnimatedStyle(
+      () => ({
+        transform: [
+          {
+            translateX: rightActionTranslate.value,
+          },
+        ],
+      }),
+      [rightActionTranslate]
+    );
 
     const rightElement = renderRightActions && (
       <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
@@ -546,10 +552,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       swipeableMethods,
     ]);
 
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: appliedTranslation.value }],
-      pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
-    }));
+    const animatedStyle = useAnimatedStyle(
+      () => ({
+        transform: [{ translateX: appliedTranslation.value }],
+        pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
+      }),
+      [appliedTranslation, rowState]
+    );
 
     const composedGesture = Gesture.Race(panGesture, tapGesture);
     return (
