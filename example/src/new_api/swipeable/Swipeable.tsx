@@ -6,8 +6,9 @@ import React, {
   ForwardedRef,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
-  useMemo,
+  useRef,
 } from 'react';
 import {
   Gesture,
@@ -217,7 +218,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
-    let swipeableMethods: SwipeableMethods | undefined;
+    const swipeableMethods = useRef<SwipeableMethods>({
+      close: () => {
+        'worklet';
+      },
+      openLeft: () => {
+        'worklet';
+      },
+      openRight: () => {
+        'worklet';
+      },
+      reset: () => {
+        'worklet';
+      },
+    });
 
     const defaultProps = {
       friction: 1,
@@ -321,14 +335,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           (isFinished) => {
             if (isFinished) {
               if (toValue > 0 && props.onSwipeableOpen) {
-                runOnJS(props.onSwipeableOpen)('left', swipeableMethods!);
+                runOnJS(props.onSwipeableOpen)(
+                  'left',
+                  swipeableMethods.current
+                );
               } else if (toValue < 0 && props.onSwipeableOpen) {
-                runOnJS(props.onSwipeableOpen)('right', swipeableMethods!);
+                runOnJS(props.onSwipeableOpen)(
+                  'right',
+                  swipeableMethods.current
+                );
               } else if (props.onSwipeableClose) {
                 const closingDirection = fromValue > 0 ? 'left' : 'right';
                 runOnJS(props.onSwipeableClose)(
                   closingDirection,
-                  swipeableMethods!
+                  swipeableMethods.current
                 );
               }
             }
@@ -359,8 +379,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       dragOffsetFromRightEdge = 10,
     } = props;
 
-    swipeableMethods = useMemo<SwipeableMethods>(
-      () => ({
+    useEffect(() => {
+      console.log('useEffect');
+
+      swipeableMethods.current = {
         close() {
           'worklet';
           animateRow(calculateCurrentOffset(), 0);
@@ -380,19 +402,18 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           appliedTranslation.value = 0;
           rowState.value = 0;
         },
-      }),
-      [
-        animateRow,
-        calculateCurrentOffset,
-        appliedTranslation,
-        leftWidth,
-        rightOffset,
-        rightWidth,
-        rowState,
-        rowWidth,
-        userDrag,
-      ]
-    );
+      };
+    }, [
+      animateRow,
+      calculateCurrentOffset,
+      appliedTranslation,
+      leftWidth,
+      rightOffset,
+      rightWidth,
+      rowState,
+      rowWidth,
+      userDrag,
+    ]);
 
     const leftAnimatedStyle = useAnimatedStyle(() => ({
       transform: [
@@ -407,7 +428,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         {renderLeftActions(
           showLeftProgress,
           appliedTranslation,
-          swipeableMethods
+          swipeableMethods.current
         )}
         <View
           onLayout={({ nativeEvent }) =>
@@ -430,7 +451,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         {renderRightActions(
           showRightProgress,
           appliedTranslation,
-          swipeableMethods
+          swipeableMethods.current
         )}
         <View
           onLayout={({ nativeEvent }) =>
@@ -521,12 +542,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     ]);
     tapGesture.shouldCancelWhenOutside(true);
 
-    useImperativeHandle(ref, () => swipeableMethods, [swipeableMethods]);
+    useImperativeHandle(ref, () => swipeableMethods.current, [
+      swipeableMethods,
+    ]);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: appliedTranslation.value }],
       pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
     }));
+
+    console.log('rerender');
 
     const composedGesture = Gesture.Race(panGesture, tapGesture);
     return (
