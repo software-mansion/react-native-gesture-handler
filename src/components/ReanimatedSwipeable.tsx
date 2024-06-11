@@ -5,8 +5,10 @@
 import React, {
   ForwardedRef,
   forwardRef,
+  useCallback,
+  useEffect,
   useImperativeHandle,
-  useMemo,
+  useRef,
 } from 'react';
 import {
   Gesture,
@@ -216,7 +218,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
-    let swipeableMethods: SwipeableMethods;
+    const swipeableMethods = useRef<SwipeableMethods>({
+      close: () => {
+        'worklet';
+      },
+      openLeft: () => {
+        'worklet';
+      },
+      openRight: () => {
+        'worklet';
+      },
+      reset: () => {
+        'worklet';
+      },
+    });
 
     const defaultProps = {
       friction: 1,
@@ -228,7 +243,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
-    const calculateCurrentOffset = () => {
+    const calculateCurrentOffset = useCallback(() => {
       'worklet';
       if (rowState.value === 1) {
         return leftWidth.value;
@@ -236,7 +251,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         return -rowWidth.value - rightOffset.value;
       }
       return 0;
-    };
+    }, [leftWidth, rightOffset, rowState, rowWidth]);
 
     const updateAnimatedEvent = () => {
       'worklet';
@@ -302,50 +317,55 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
     };
 
-    const animateRow = (
-      fromValue: number,
-      toValue: number,
-      velocityX?: number
-    ) => {
-      'worklet';
+    const animateRow = useCallback(
+      (fromValue: number, toValue: number, velocityX?: number) => {
+        'worklet';
 
-      rowState.value = Math.sign(toValue);
+        rowState.value = Math.sign(toValue);
 
-      appliedTranslation.value = withSpring(
-        toValue,
-        {
-          duration: 1000,
-          dampingRatio: 1.2,
-          stiffness: 500,
-          velocity: velocityX,
-          ...props.animationOptions,
-        },
-        (isFinished) => {
-          if (isFinished) {
-            if (toValue > 0 && props.onSwipeableOpen) {
-              runOnJS(props.onSwipeableOpen)('left', swipeableMethods);
-            } else if (toValue < 0 && props.onSwipeableOpen) {
-              runOnJS(props.onSwipeableOpen)('right', swipeableMethods);
-            } else if (props.onSwipeableClose) {
-              const closingDirection = fromValue > 0 ? 'left' : 'right';
-              runOnJS(props.onSwipeableClose)(
-                closingDirection,
-                swipeableMethods
-              );
+        appliedTranslation.value = withSpring(
+          toValue,
+          {
+            duration: 1000,
+            dampingRatio: 1.2,
+            stiffness: 500,
+            velocity: velocityX,
+            ...props.animationOptions,
+          },
+          (isFinished) => {
+            if (isFinished) {
+              if (toValue > 0 && props.onSwipeableOpen) {
+                runOnJS(props.onSwipeableOpen)(
+                  'left',
+                  swipeableMethods.current
+                );
+              } else if (toValue < 0 && props.onSwipeableOpen) {
+                runOnJS(props.onSwipeableOpen)(
+                  'right',
+                  swipeableMethods.current
+                );
+              } else if (props.onSwipeableClose) {
+                const closingDirection = fromValue > 0 ? 'left' : 'right';
+                runOnJS(props.onSwipeableClose)(
+                  closingDirection,
+                  swipeableMethods.current
+                );
+              }
             }
           }
-        }
-      );
+        );
 
-      if (toValue > 0 && props.onSwipeableWillOpen) {
-        runOnJS(props.onSwipeableWillOpen)('left');
-      } else if (toValue < 0 && props.onSwipeableWillOpen) {
-        runOnJS(props.onSwipeableWillOpen)('right');
-      } else if (props.onSwipeableWillClose) {
-        const closingDirection = fromValue > 0 ? 'left' : 'right';
-        runOnJS(props.onSwipeableWillClose)(closingDirection);
-      }
-    };
+        if (toValue > 0 && props.onSwipeableWillOpen) {
+          runOnJS(props.onSwipeableWillOpen)('left');
+        } else if (toValue < 0 && props.onSwipeableWillOpen) {
+          runOnJS(props.onSwipeableWillOpen)('right');
+        } else if (props.onSwipeableWillClose) {
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          runOnJS(props.onSwipeableWillClose)(closingDirection);
+        }
+      },
+      [appliedTranslation, props, rowState, swipeableMethods]
+    );
 
     const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
       rowWidth.value = nativeEvent.layout.width;
@@ -359,8 +379,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       dragOffsetFromRightEdge = 10,
     } = props;
 
-    swipeableMethods = useMemo<SwipeableMethods>(
-      () => ({
+    useEffect(() => {
+      swipeableMethods.current = {
         close() {
           'worklet';
           animateRow(calculateCurrentOffset(), 0);
@@ -380,18 +400,18 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           appliedTranslation.value = 0;
           rowState.value = 0;
         },
-      }),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [
-        appliedTranslation,
-        leftWidth,
-        rightOffset,
-        rightWidth,
-        rowState,
-        rowWidth,
-        userDrag,
-      ]
-    );
+      };
+    }, [
+      animateRow,
+      calculateCurrentOffset,
+      appliedTranslation,
+      leftWidth,
+      rightOffset,
+      rightWidth,
+      rowState,
+      rowWidth,
+      userDrag,
+    ]);
 
     const leftAnimatedStyle = useAnimatedStyle(() => ({
       transform: [
@@ -406,7 +426,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         {renderLeftActions(
           showLeftProgress,
           appliedTranslation,
-          swipeableMethods
+          swipeableMethods.current
         )}
         <View
           onLayout={({ nativeEvent }) =>
@@ -429,7 +449,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         {renderRightActions(
           showRightProgress,
           appliedTranslation,
-          swipeableMethods
+          swipeableMethods.current
         )}
         <View
           onLayout={({ nativeEvent }) =>
@@ -520,7 +540,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     ]);
     tapGesture.shouldCancelWhenOutside(true);
 
-    useImperativeHandle(ref, () => swipeableMethods, [swipeableMethods]);
+    useImperativeHandle(ref, () => swipeableMethods.current, [
+      swipeableMethods,
+    ]);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: appliedTranslation.value }],
