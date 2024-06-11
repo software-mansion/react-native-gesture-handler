@@ -8,7 +8,9 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
+import Swipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 interface LeftActionProps {
   dragX: SharedValue<number>;
@@ -82,10 +84,10 @@ export default function GmailStyleSwipeableRow({
       leftThreshold={80}
       enableTrackpadTwoFingerGesture
       rightThreshold={40}
-      renderLeftActions={(_, progress) =>
+      renderLeftActions={(_: any, progress: SharedValue<number>) =>
         renderLeftActions(_, progress, swipeableRow)
       }
-      renderRightActions={(_, progress) =>
+      renderRightActions={(_: any, progress: SharedValue<number>) =>
         renderRightActions(_, progress, swipeableRow)
       }>
       {children}

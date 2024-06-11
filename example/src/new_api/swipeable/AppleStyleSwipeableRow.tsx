@@ -8,7 +8,9 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
+import Swipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 interface AppleStyleSwipeableRowProps {
   children?: ReactNode;
@@ -135,16 +137,16 @@ export default function AppleStyleSwipeableRow({
       enableTrackpadTwoFingerGesture
       leftThreshold={30}
       rightThreshold={40}
-      renderLeftActions={(_, progress) =>
+      renderLeftActions={(_: any, progress: SharedValue<number>) =>
         renderLeftActions(_, progress, swipeableRow)
       }
-      renderRightActions={(_, progress) =>
+      renderRightActions={(_: any, progress: SharedValue<number>) =>
         renderRightActions(_, progress, swipeableRow)
       }
-      onSwipeableWillOpen={(direction) => {
+      onSwipeableWillOpen={(direction: any) => {
         console.log(`Opening swipeable from the ${direction}`);
       }}
-      onSwipeableWillClose={(direction) => {
+      onSwipeableWillClose={(direction: any) => {
         console.log(`Closing swipeable to the ${direction}`);
       }}>
       {children}
