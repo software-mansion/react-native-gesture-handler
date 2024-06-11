@@ -17,7 +17,7 @@ import {
   GestureUpdateEvent,
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
-} from 'react-native-gesture-handler';
+} from '../.';
 import Animated, {
   Extrapolation,
   SharedValue,
@@ -530,9 +530,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
         updateAnimatedEvent();
       })
-      .onEnd((event) => {
-        handleRelease(event);
-      });
+      .onEnd(
+        (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+          handleRelease(event);
+        }
+      );
 
     panGesture.activeOffsetX([
       -dragOffsetFromRightEdge,
