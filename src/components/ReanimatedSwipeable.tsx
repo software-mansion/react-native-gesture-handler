@@ -8,7 +8,6 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
 } from 'react';
 import {
@@ -403,41 +402,28 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       dragOffsetFromRightEdge = 10,
     } = props;
 
-    swipeableMethods.current = useMemo(
-      () => ({
-        close() {
-          'worklet';
-          console.log('somethin');
-          animateRow.current(calculateCurrentOffset(), 0);
-        },
-        openLeft() {
-          'worklet';
-          animateRow.current(calculateCurrentOffset(), leftWidth.value);
-        },
-        openRight() {
-          'worklet';
-          rightWidth.value = rowWidth.value - rightOffset.value;
-          animateRow.current(calculateCurrentOffset(), -rightWidth.value);
-        },
-        reset() {
-          'worklet';
-          userDrag.value = 0;
-          appliedTranslation.value = 0;
-          rowState.value = 0;
-        },
-      }),
-      [
-        animateRow,
-        calculateCurrentOffset,
-        appliedTranslation,
-        leftWidth,
-        rightOffset,
-        rightWidth,
-        rowState,
-        rowWidth,
-        userDrag,
-      ]
-    );
+    swipeableMethods.current = {
+      close() {
+        'worklet';
+        console.log('somethin');
+        animateRow.current(calculateCurrentOffset(), 0);
+      },
+      openLeft() {
+        'worklet';
+        animateRow.current(calculateCurrentOffset(), leftWidth.value);
+      },
+      openRight() {
+        'worklet';
+        rightWidth.value = rowWidth.value - rightOffset.value;
+        animateRow.current(calculateCurrentOffset(), -rightWidth.value);
+      },
+      reset() {
+        'worklet';
+        userDrag.value = 0;
+        appliedTranslation.value = 0;
+        rowState.value = 0;
+      },
+    };
 
     const leftAnimatedStyle = useAnimatedStyle(
       () => ({
