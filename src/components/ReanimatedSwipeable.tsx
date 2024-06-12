@@ -6,7 +6,6 @@ import React, {
   ForwardedRef,
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useRef,
 } from 'react';
@@ -348,18 +347,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [props.onSwipeableClose, props.onSwipeableOpen]
     );
 
-    const animateRow = useRef(
-      (_fromValue: number, _toValue: number, _velocityX?: number) => {
-        'worklet';
-      }
-    );
-
-    useEffect(() => {
-      animateRow.current = (
-        fromValue: number,
-        toValue: number,
-        velocityX?: number
-      ) => {
+    const animateRow = useCallback(
+      (fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
         console.log('animatin');
         rowState.value = Math.sign(toValue);
@@ -381,14 +370,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         );
 
         dispatchImmidiateEvents(fromValue, toValue);
-      };
-    }, [
-      appliedTranslation,
-      dispatchEndEvents,
-      dispatchImmidiateEvents,
-      props.animationOptions,
-      rowState,
-    ]);
+      },
+      [
+        appliedTranslation,
+        dispatchEndEvents,
+        dispatchImmidiateEvents,
+        props.animationOptions,
+        rowState,
+      ]
+    );
 
     const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
       rowWidth.value = nativeEvent.layout.width;
@@ -406,16 +396,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       close() {
         'worklet';
         console.log('somethin');
-        animateRow.current(calculateCurrentOffset(), 0);
+        animateRow(calculateCurrentOffset(), 0);
       },
       openLeft() {
         'worklet';
-        animateRow.current(calculateCurrentOffset(), leftWidth.value);
+        animateRow(calculateCurrentOffset(), leftWidth.value);
       },
       openRight() {
         'worklet';
         rightWidth.value = rowWidth.value - rightOffset.value;
-        animateRow.current(calculateCurrentOffset(), -rightWidth.value);
+        animateRow(calculateCurrentOffset(), -rightWidth.value);
       },
       reset() {
         'worklet';
@@ -514,12 +504,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
       }
 
-      animateRow.current(startOffsetX, toValue, velocityX / friction);
+      animateRow(startOffsetX, toValue, velocityX / friction);
     };
 
     const close = () => {
       'worklet';
-      animateRow.current(calculateCurrentOffset(), 0);
+      animateRow(calculateCurrentOffset(), 0);
     };
 
     const tapGesture = Gesture.Tap().onStart(() => {
