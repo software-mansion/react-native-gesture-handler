@@ -22,7 +22,8 @@ export default class PointerTracker {
 
   private lastMovedPointerId: number;
 
-  private cachedAverages: { x: number; y: number } = { x: 0, y: 0 };
+  private cachedAbsoluteAverages: { x: number; y: number } = { x: 0, y: 0 };
+  private cachedRelativeAverages: { x: number; y: number } = { x: 0, y: 0 };
 
   public constructor() {
     this.lastMovedPointerId = NaN;
@@ -50,7 +51,8 @@ export default class PointerTracker {
     this.trackedPointers.set(event.pointerId, newElement);
     this.mapTouchEventId(event.pointerId);
 
-    this.cachedAverages = this.getAbsoluteCoordsAverage();
+    this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
+    this.cachedRelativeAverages = this.getRelativeCoordsAverage();
   }
 
   public removeFromTracker(pointerId: number): void {
@@ -80,7 +82,8 @@ export default class PointerTracker {
 
     this.trackedPointers.set(event.pointerId, element);
 
-    this.cachedAverages = this.getAbsoluteCoordsAverage();
+    this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
+    this.cachedRelativeAverages = this.getRelativeCoordsAverage();
   }
 
   //Mapping TouchEvents ID
@@ -160,8 +163,22 @@ export default class PointerTracker {
     const avgY = coordsSum.y / this.trackedPointers.size;
 
     const averages = {
-      x: isNaN(avgX) ? this.cachedAverages.x : avgX,
-      y: isNaN(avgY) ? this.cachedAverages.y : avgY,
+      x: isNaN(avgX) ? this.cachedAbsoluteAverages.x : avgX,
+      y: isNaN(avgY) ? this.cachedAbsoluteAverages.y : avgY,
+    };
+
+    return averages;
+  }
+
+  public getRelativeCoordsAverage() {
+    const coordsSum = this.getRelativeCoordsSum();
+
+    const avgX = coordsSum.x / this.trackedPointers.size;
+    const avgY = coordsSum.y / this.trackedPointers.size;
+
+    const averages = {
+      x: isNaN(avgX) ? this.cachedRelativeAverages.x : avgX,
+      y: isNaN(avgY) ? this.cachedRelativeAverages.y : avgY,
     };
 
     return averages;
