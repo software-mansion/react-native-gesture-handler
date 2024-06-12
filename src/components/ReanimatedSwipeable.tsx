@@ -8,6 +8,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react';
 import {
@@ -317,7 +318,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
     };
 
-    const dispatchWillEvents = useCallback(
+    const dispatchImmidiateEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0 && props.onSwipeableWillOpen) {
           runOnJS(props.onSwipeableWillOpen)('left');
@@ -348,10 +349,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [props.onSwipeableClose, props.onSwipeableOpen]
     );
 
-    const animateRow = useCallback(
-      (fromValue: number, toValue: number, velocityX?: number) => {
+    const animateRow = useRef(
+      (_fromValue: number, _toValue: number, _velocityX?: number) => {
         'worklet';
+      }
+    );
 
+    useEffect(() => {
+      animateRow.current = (
+        fromValue: number,
+        toValue: number,
+        velocityX?: number
+      ) => {
+        'worklet';
+        console.log('animatin');
         rowState.value = Math.sign(toValue);
 
         appliedTranslation.value = withSpring(
@@ -370,16 +381,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           }
         );
 
-        dispatchWillEvents(fromValue, toValue);
-      },
-      [
-        appliedTranslation,
-        dispatchEndEvents,
-        dispatchWillEvents,
-        props.animationOptions,
-        rowState,
-      ]
-    );
+        dispatchImmidiateEvents(fromValue, toValue);
+      };
+    }, [
+      appliedTranslation,
+      dispatchEndEvents,
+      dispatchImmidiateEvents,
+      props.animationOptions,
+      rowState,
+    ]);
 
     const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
       rowWidth.value = nativeEvent.layout.width;
@@ -393,20 +403,21 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       dragOffsetFromRightEdge = 10,
     } = props;
 
-    useEffect(() => {
-      swipeableMethods.current = {
+    swipeableMethods.current = useMemo(
+      () => ({
         close() {
           'worklet';
-          animateRow(calculateCurrentOffset(), 0);
+          console.log('somethin');
+          animateRow.current(calculateCurrentOffset(), 0);
         },
         openLeft() {
           'worklet';
-          animateRow(calculateCurrentOffset(), leftWidth.value);
+          animateRow.current(calculateCurrentOffset(), leftWidth.value);
         },
         openRight() {
           'worklet';
           rightWidth.value = rowWidth.value - rightOffset.value;
-          animateRow(calculateCurrentOffset(), -rightWidth.value);
+          animateRow.current(calculateCurrentOffset(), -rightWidth.value);
         },
         reset() {
           'worklet';
@@ -414,18 +425,19 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           appliedTranslation.value = 0;
           rowState.value = 0;
         },
-      };
-    }, [
-      animateRow,
-      calculateCurrentOffset,
-      appliedTranslation,
-      leftWidth,
-      rightOffset,
-      rightWidth,
-      rowState,
-      rowWidth,
-      userDrag,
-    ]);
+      }),
+      [
+        animateRow,
+        calculateCurrentOffset,
+        appliedTranslation,
+        leftWidth,
+        rightOffset,
+        rightWidth,
+        rowState,
+        rowWidth,
+        userDrag,
+      ]
+    );
 
     const leftAnimatedStyle = useAnimatedStyle(
       () => ({
@@ -516,12 +528,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
       }
 
-      animateRow(startOffsetX, toValue, velocityX / friction);
+      animateRow.current(startOffsetX, toValue, velocityX / friction);
     };
 
     const close = () => {
       'worklet';
-      animateRow(calculateCurrentOffset(), 0);
+      animateRow.current(calculateCurrentOffset(), 0);
     };
 
     const tapGesture = Gesture.Tap().onStart(() => {
