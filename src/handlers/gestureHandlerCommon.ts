@@ -167,7 +167,7 @@ export type GestureTouchEvent = {
   eventType: TouchEventType;
   allTouches: TouchData[];
   changedTouches: TouchData[];
-  pointerType: number;
+  pointerType: PointerType;
 };
 
 export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
