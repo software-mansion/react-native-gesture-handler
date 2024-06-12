@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Swipeable, {
   SwipeableMethods,
-} from 'react-native-gesture-handler/ReanimatedSwipeable';
+} from '../../../../src/components/ReanimatedSwipeable';
 
 interface AppleStyleSwipeableRowProps {
   children?: ReactNode;
