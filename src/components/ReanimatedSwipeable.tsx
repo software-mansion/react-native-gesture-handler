@@ -317,6 +317,37 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
     };
 
+    const dispatchWillEvents = useCallback(
+      (fromValue: number, toValue: number) => {
+        if (toValue > 0 && props.onSwipeableWillOpen) {
+          runOnJS(props.onSwipeableWillOpen)('left');
+        } else if (toValue < 0 && props.onSwipeableWillOpen) {
+          runOnJS(props.onSwipeableWillOpen)('right');
+        } else if (props.onSwipeableWillClose) {
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          runOnJS(props.onSwipeableWillClose)(closingDirection);
+        }
+      },
+      [props.onSwipeableWillClose, props.onSwipeableWillOpen]
+    );
+
+    const dispatchEndEvents = useCallback(
+      (fromValue: number, toValue: number) => {
+        if (toValue > 0 && props.onSwipeableOpen) {
+          runOnJS(props.onSwipeableOpen)('left', swipeableMethods.current);
+        } else if (toValue < 0 && props.onSwipeableOpen) {
+          runOnJS(props.onSwipeableOpen)('right', swipeableMethods.current);
+        } else if (props.onSwipeableClose) {
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          runOnJS(props.onSwipeableClose)(
+            closingDirection,
+            swipeableMethods.current
+          );
+        }
+      },
+      [props.onSwipeableClose, props.onSwipeableOpen]
+    );
+
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
@@ -334,37 +365,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           },
           (isFinished) => {
             if (isFinished) {
-              if (toValue > 0 && props.onSwipeableOpen) {
-                runOnJS(props.onSwipeableOpen)(
-                  'left',
-                  swipeableMethods.current
-                );
-              } else if (toValue < 0 && props.onSwipeableOpen) {
-                runOnJS(props.onSwipeableOpen)(
-                  'right',
-                  swipeableMethods.current
-                );
-              } else if (props.onSwipeableClose) {
-                const closingDirection = fromValue > 0 ? 'left' : 'right';
-                runOnJS(props.onSwipeableClose)(
-                  closingDirection,
-                  swipeableMethods.current
-                );
-              }
+              dispatchEndEvents(fromValue, toValue);
             }
           }
         );
 
-        if (toValue > 0 && props.onSwipeableWillOpen) {
-          runOnJS(props.onSwipeableWillOpen)('left');
-        } else if (toValue < 0 && props.onSwipeableWillOpen) {
-          runOnJS(props.onSwipeableWillOpen)('right');
-        } else if (props.onSwipeableWillClose) {
-          const closingDirection = fromValue > 0 ? 'left' : 'right';
-          runOnJS(props.onSwipeableWillClose)(closingDirection);
-        }
+        dispatchWillEvents(fromValue, toValue);
       },
-      [appliedTranslation, props, rowState, swipeableMethods]
+      [
+        appliedTranslation,
+        dispatchEndEvents,
+        dispatchWillEvents,
+        props.animationOptions,
+        rowState,
+      ]
     );
 
     const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
