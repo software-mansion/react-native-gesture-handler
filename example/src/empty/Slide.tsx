@@ -21,7 +21,7 @@ interface SlideProps {
   widthItem?: number;
   spacingItem?: number;
   durationLoop?: number;
-  style: ViewStyle;
+  style?: ViewStyle;
 }
 
 const Slide = ({
