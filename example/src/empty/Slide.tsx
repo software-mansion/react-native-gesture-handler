@@ -16,7 +16,7 @@ const { width } = Dimensions.get('window');
 
 interface SlideProps {
   dataSource: any;
-  renderItem: (index: number) => Element;
+  renderItem: (index: number) => React.JSX.Element;
   numberClone?: number;
   widthItem?: number;
   spacingItem?: number;
@@ -122,7 +122,7 @@ const Slide = ({
             ],
           },
         ]}>
-        {dataSourceClone.map((item, index: number) => (
+        {dataSourceClone.map((index: number) => (
           <View key={index} style={{ width: widthItem }} collapsable={false}>
             {renderItem(index)}
           </View>
