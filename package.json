@@ -63,7 +63,8 @@
     "@egjs/hammerjs": "^2.0.17",
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
-    "prop-types": "^15.7.2"
+    "prop-types": "^15.7.2",
+    "react-native-tab-view": "^3.5.2"
   },
   "jest": {
     "preset": "react-native",

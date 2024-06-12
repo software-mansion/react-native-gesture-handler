@@ -8,7 +8,7 @@ const ThirdRoute = () => (
     <Slide
       dataSource={Array.from({ length: 10 })}
       renderItem={(index) => (
-        <View style={{ borderWidth: 2, height: 200 }}>
+        <View style={styles.textView}>
           <Text>{index}</Text>
         </View>
       )}
@@ -113,6 +113,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#673ab7',
   },
   cardIndexWrapper: {
+    borderWidth: 2,
+    height: 200,
+  },
+  textView: {
     borderWidth: 2,
     height: 200,
   },
