@@ -30,11 +30,11 @@ export function calculateViewScale(view: HTMLElement) {
   const scales = styles.scale.split(' ');
 
   if (scales[0] !== 'none') {
-    resultScales.scaleX *= parseFloat(scales[0]);
+    resultScales.scaleX = parseFloat(scales[0]);
   }
 
   if (scales[1]) {
-    resultScales.scaleY *= parseFloat(scales[1]);
+    resultScales.scaleY = parseFloat(scales[1]);
   }
 
   const transform = styles.transform;
