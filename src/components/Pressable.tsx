@@ -193,11 +193,9 @@ export default function Pressable(props: PressableProps) {
     })
     .onEnd((event) => {
       setTimeout(
-        () => props.onHoverIn?.(event),
+        () => props.onHoverOut?.(event),
         props.delayHoverOut ?? DEFAULT_HOVER_DELAY
       );
-
-      props.onHoverOut?.(event);
     });
 
   press.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);

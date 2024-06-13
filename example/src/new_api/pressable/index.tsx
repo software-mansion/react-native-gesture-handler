@@ -8,7 +8,7 @@ export default function EmptyExample() {
   };
 
   const pressOut = () => {
-    console.log('Pressable pressed in');
+    console.log('Pressable pressed out');
   };
 
   const hoverIn = () => {
