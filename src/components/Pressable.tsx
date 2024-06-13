@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   AccessibilityProps,
@@ -19,6 +19,7 @@ import {
   GestureStateChangeEvent,
   GestureTouchEvent,
   LongPressGestureHandlerEventPayload,
+  TouchData,
 } from '../.';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 
@@ -169,13 +170,52 @@ export interface PressableProps
   unstable_pressDelay?: number;
 }
 
+function touchWithinBounds(touch: TouchData, bounds: Insets): boolean {
+  const leftbound = bounds.left ? bounds.left < touch.absoluteX : true;
+  const rightbound = bounds.right ? bounds.right > touch.absoluteX : true;
+  const bottombound = bounds.bottom ? bounds.bottom < touch.absoluteY : true;
+  const topbound = bounds.top ? bounds.top > touch.absoluteY : true;
+
+  return leftbound && rightbound && topbound && bottombound;
+}
+
 export default function Pressable(props: PressableProps) {
-  const touch = Gesture.Tap()
+  const previousTouchData = useRef<TouchData[] | null>(null);
+
+  const pressRetentionOffset: Insets | null | undefined =
+    typeof props.pressRetentionOffset === 'number'
+      ? {
+          top: props.pressRetentionOffset,
+          left: props.pressRetentionOffset,
+          bottom: props.pressRetentionOffset,
+          right: props.pressRetentionOffset,
+        }
+      : props.pressRetentionOffset;
+
+  const touch = Gesture.Manual()
     .onTouchesDown((event) => {
+      // note: hitslop checking support is built in
       props.onPressIn?.(event);
+      previousTouchData.current = event.allTouches;
     })
     .onTouchesUp((event) => {
-      props.onPressOut?.(event);
+      // doesn't call onPressOut untill the last pointer leaves, while within bounds
+      if (event.allTouches.length > 1) {
+        return;
+      }
+
+      if (!pressRetentionOffset) {
+        props.onPressOut?.(event);
+        return;
+      }
+
+      if (
+        previousTouchData.current?.find((touch) =>
+          touchWithinBounds(touch, pressRetentionOffset)
+        )
+      ) {
+        props.onPressOut?.(event);
+      }
     });
 
   const press = Gesture.LongPress().onEnd((event, success) => {
@@ -206,7 +246,7 @@ export default function Pressable(props: PressableProps) {
   press.hitSlop(props.hitSlop);
   hover.hitSlop(props.hitSlop);
 
-  // todo: add props.pressRetentionOffset to touch and check if relative to pressable or to hitSlop
+  // add props.pressRetentionOffset, according to docs, they're relative to pressable, not hitSlop
 
   touch.enabled(!(props.disabled ?? false));
   press.enabled(!(props.disabled ?? false));
