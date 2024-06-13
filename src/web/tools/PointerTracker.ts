@@ -3,7 +3,7 @@ import VelocityTracker from './VelocityTracker';
 
 export interface TrackerElement {
   abosoluteCoords: Point;
-  viewRelativeCoords: Point;
+  relativeCoords: Point;
   timestamp: number;
   velocityX: number;
   velocityY: number;
@@ -22,7 +22,8 @@ export default class PointerTracker {
 
   private lastMovedPointerId: number;
 
-  private cachedAverages: { x: number; y: number } = { x: 0, y: 0 };
+  private cachedAbsoluteAverages: { x: number; y: number } = { x: 0, y: 0 };
+  private cachedRelativeAverages: { x: number; y: number } = { x: 0, y: 0 };
 
   public constructor() {
     this.lastMovedPointerId = NaN;
@@ -41,7 +42,7 @@ export default class PointerTracker {
 
     const newElement: TrackerElement = {
       abosoluteCoords: { x: event.x, y: event.y },
-      viewRelativeCoords: { x: event.offsetX, y: event.offsetY },
+      relativeCoords: { x: event.offsetX, y: event.offsetY },
       timestamp: event.time,
       velocityX: 0,
       velocityY: 0,
@@ -50,7 +51,8 @@ export default class PointerTracker {
     this.trackedPointers.set(event.pointerId, newElement);
     this.mapTouchEventId(event.pointerId);
 
-    this.cachedAverages = this.getAbsoluteCoordsAverage();
+    this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
+    this.cachedRelativeAverages = this.getRelativeCoordsAverage();
   }
 
   public removeFromTracker(pointerId: number): void {
@@ -76,11 +78,12 @@ export default class PointerTracker {
     element.velocityY = velocityY;
 
     element.abosoluteCoords = { x: event.x, y: event.y };
-    element.viewRelativeCoords = { x: event.offsetX, y: event.offsetY };
+    element.relativeCoords = { x: event.offsetX, y: event.offsetY };
 
     this.trackedPointers.set(event.pointerId, element);
 
-    this.cachedAverages = this.getAbsoluteCoordsAverage();
+    this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
+    this.cachedRelativeAverages = this.getRelativeCoordsAverage();
   }
 
   //Mapping TouchEvents ID
@@ -133,17 +136,17 @@ export default class PointerTracker {
     }
   }
 
-  public getLastViewRelativeCoords(pointerId?: number) {
+  public getLastRelativeCoords(pointerId?: number) {
     if (pointerId !== undefined) {
       return {
-        x: this.trackedPointers.get(pointerId)?.viewRelativeCoords.x as number,
-        y: this.trackedPointers.get(pointerId)?.viewRelativeCoords.y as number,
+        x: this.trackedPointers.get(pointerId)?.relativeCoords.x as number,
+        y: this.trackedPointers.get(pointerId)?.relativeCoords.y as number,
       };
     } else {
       return {
-        x: this.trackedPointers.get(this.lastMovedPointerId)?.viewRelativeCoords
+        x: this.trackedPointers.get(this.lastMovedPointerId)?.relativeCoords
           .x as number,
-        y: this.trackedPointers.get(this.lastMovedPointerId)?.viewRelativeCoords
+        y: this.trackedPointers.get(this.lastMovedPointerId)?.relativeCoords
           .y as number,
       };
     }
@@ -160,8 +163,22 @@ export default class PointerTracker {
     const avgY = coordsSum.y / this.trackedPointers.size;
 
     const averages = {
-      x: isNaN(avgX) ? this.cachedAverages.x : avgX,
-      y: isNaN(avgY) ? this.cachedAverages.y : avgY,
+      x: isNaN(avgX) ? this.cachedAbsoluteAverages.x : avgX,
+      y: isNaN(avgY) ? this.cachedAbsoluteAverages.y : avgY,
+    };
+
+    return averages;
+  }
+
+  public getRelativeCoordsAverage() {
+    const coordsSum = this.getRelativeCoordsSum();
+
+    const avgX = coordsSum.x / this.trackedPointers.size;
+    const avgY = coordsSum.y / this.trackedPointers.size;
+
+    const averages = {
+      x: isNaN(avgX) ? this.cachedRelativeAverages.x : avgX,
+      y: isNaN(avgY) ? this.cachedRelativeAverages.y : avgY,
     };
 
     return averages;
@@ -180,13 +197,13 @@ export default class PointerTracker {
     return sum;
   }
 
-  public getViewRelativeCoordsSum(ignoredPointer?: number) {
+  public getRelativeCoordsSum(ignoredPointer?: number) {
     const sum = { x: 0, y: 0 };
 
     this.trackedPointers.forEach((value, key) => {
       if (key !== ignoredPointer) {
-        sum.x += value.viewRelativeCoords.x;
-        sum.y += value.viewRelativeCoords.y;
+        sum.x += value.relativeCoords.x;
+        sum.y += value.relativeCoords.y;
       }
     });
 

@@ -49,6 +49,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
       putInt("state", handler.state)
       putInt("numberOfTouches", handler.trackedPointersCount)
       putInt("eventType", handler.touchEventType)
+      putInt("pointerType", handler.pointerType)
 
       handler.consumeChangedTouchesPayload()?.let {
         putArray("changedTouches", it)
