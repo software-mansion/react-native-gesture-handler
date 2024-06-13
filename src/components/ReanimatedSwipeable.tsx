@@ -316,7 +316,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
     };
 
-    const dispatchImmidiateEvents = useCallback(
+    const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0 && props.onSwipeableWillOpen) {
           runOnJS(props.onSwipeableWillOpen)('left');
@@ -350,7 +350,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
-        console.log('animatin');
         rowState.value = Math.sign(toValue);
 
         appliedTranslation.value = withSpring(
@@ -369,12 +368,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           }
         );
 
-        dispatchImmidiateEvents(fromValue, toValue);
+        dispatchImmediateEvents(fromValue, toValue);
       },
       [
         appliedTranslation,
         dispatchEndEvents,
-        dispatchImmidiateEvents,
+        dispatchImmediateEvents,
         props.animationOptions,
         rowState,
       ]
@@ -395,7 +394,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     swipeableMethods.current = {
       close() {
         'worklet';
-        console.log('somethin');
         animateRow(calculateCurrentOffset(), 0);
       },
       openLeft() {
