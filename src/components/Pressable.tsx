@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  View,
   AccessibilityProps,
   ColorValue,
   GestureResponderEvent,
@@ -7,10 +8,12 @@ import {
   NativeSyntheticEvent,
   StyleProp,
   TargetedEvent,
-  View,
   ViewProps,
   ViewStyle,
+  StyleSheet,
 } from 'react-native';
+
+import { Gesture, GestureDetector, GestureHandlerRootView } from '../.';
 
 export interface PressableStateCallbackType {
   readonly pressed: boolean;
@@ -153,16 +156,36 @@ export interface PressableProps
 }
 
 export default function Pressable(props: PressableProps) {
+  const gesture = Gesture.Manual()
+    .onTouchesDown((event) => {
+      console.log('Touch down:', event.changedTouches);
+    })
+    .onTouchesUp((event) => {
+      console.log('Touch up:', event.changedTouches);
+    });
+
   return (
-    <View
-      style={
-        typeof props.style === 'function'
-          ? props.style({ pressed: false })
-          : props.style
-      }>
-      {typeof props.children === 'function'
-        ? props.children({ pressed: false })
-        : props.children}
-    </View>
+    <GestureHandlerRootView>
+      <GestureDetector gesture={gesture}>
+        <View
+          style={[
+            styles.container,
+            typeof props.style === 'function'
+              ? props.style({ pressed: false })
+              : props.style,
+          ]}>
+          {typeof props.children === 'function'
+            ? props.children({ pressed: false })
+            : props.children}
+        </View>
+      </GestureDetector>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: 'auto',
+    height: 'auto',
+  },
+});
