@@ -19,7 +19,7 @@ export const degToRad = (degrees: number) => (degrees * Math.PI) / 180;
 export const coneToDeviation = (degrees: number) =>
   Math.cos(degToRad(degrees / 2));
 
-export function getScaleFromView(view: HTMLElement) {
+export function calculateViewScale(view: HTMLElement) {
   const styles = getComputedStyle(view);
 
   const resultScales = {
