@@ -27,6 +27,9 @@ export default function EmptyExample() {
     console.log('Blurred pressable');
   };
 
+  const longPress = () => {
+    console.log('Long pressed');
+  };
   return (
     <View style={styles.container}>
       <Pressable
@@ -36,7 +39,8 @@ export default function EmptyExample() {
         onHoverIn={hoverIn}
         onHoverOut={hoverOut}
         onFocus={focus}
-        onBlur={blur}>
+        onBlur={blur}
+        onLongPress={longPress}>
         <View style={styles.textWrapper}>
           <Text style={styles.text}>Pressable!</Text>
         </View>

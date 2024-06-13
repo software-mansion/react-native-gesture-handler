@@ -252,7 +252,7 @@ export default function Pressable(props: PressableProps) {
   press.enabled(!(props.disabled ?? false));
   hover.enabled(!(props.disabled ?? false));
 
-  const gesture = Gesture.Race(hover, press, touch);
+  const gesture = Gesture.Simultaneous(hover, press, touch);
 
   return (
     <GestureHandlerRootView>
