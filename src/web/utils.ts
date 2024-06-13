@@ -37,8 +37,9 @@ export function calculateViewScale(view: HTMLElement) {
     resultScales.scaleY = parseFloat(scales[1]);
   }
 
-  const transform = styles.transform;
-  const matrixElements = transform.match(/matrix\((.+)\)/)?.[1];
+  const matrixElements = new RegExp(/matrix\((.+)\)/).exec(
+    styles.transform
+  )?.[1];
 
   if (!matrixElements) {
     return resultScales;
