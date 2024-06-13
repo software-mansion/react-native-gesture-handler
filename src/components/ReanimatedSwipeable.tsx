@@ -528,7 +528,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
         if (rowState.value === 0 && props.onSwipeableOpenStartDrag) {
           runOnJS(props.onSwipeableOpenStartDrag)(direction);
-        } else if (props.onSwipeableCloseStartDrag) {
+        } else if (rowState.value !== 0 && props.onSwipeableCloseStartDrag) {
           runOnJS(props.onSwipeableCloseStartDrag)(direction);
         }
         updateAnimatedEvent();
