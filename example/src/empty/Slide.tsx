@@ -122,7 +122,7 @@ const Slide = ({
             ],
           },
         ]}>
-        {dataSourceClone.map((index: number) => (
+        {dataSourceClone.map((_: any, index: number) => (
           <View key={index} style={{ width: widthItem }} collapsable={false}>
             {renderItem(index)}
           </View>

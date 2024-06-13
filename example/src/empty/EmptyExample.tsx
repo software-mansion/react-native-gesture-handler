@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, useWindowDimensions } from 'react-native';
-import { SceneMap, TabView } from 'react-native-tab-view';
+import { TabView, SceneMap } from 'react-native-tab-view';
 import Slide from './Slide';
 
 const ThirdRoute = () => (
