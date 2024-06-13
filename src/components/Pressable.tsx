@@ -8,7 +8,6 @@ import {
   StyleProp,
   TargetedEvent,
   View,
-  Text,
   ViewProps,
   ViewStyle,
 } from 'react-native';
@@ -155,10 +154,14 @@ export interface PressableProps
 
 export default function Pressable(props: PressableProps) {
   return (
-    <View>
-      <Text>Lorem</Text>
+    <View
+      style={
+        typeof props.style === 'function'
+          ? props.style({ pressed: false })
+          : props.style
+      }>
       {typeof props.children === 'function'
-        ? props.children({ pressed: true })
+        ? props.children({ pressed: false })
         : props.children}
     </View>
   );
