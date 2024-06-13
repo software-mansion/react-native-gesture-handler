@@ -10864,6 +10864,11 @@ react-native-tab-view@^3.5.2:
   dependencies:
     use-latest-callback "^0.1.5"
 
+react-native-view-pager@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-view-pager/-/react-native-view-pager-0.2.3.tgz#7ccdc95ee4b420a43e2bea2894367061dcba10b8"
+  integrity sha512-M9PR9pPyt6Q4rd75abOXrFiBx7fmOVUwOuhBqoad64E2HFgZZQsPUeNv+wLAPQG6aEid1OdQNPz8IczkbUDv3A==
+
 react-native-view-shot@2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-2.6.0.tgz#3b23675826f67658366352c4b97b59a6aded2f43"
