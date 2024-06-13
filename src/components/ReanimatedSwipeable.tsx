@@ -327,7 +327,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           props.onSwipeableWillClose(closingDirection);
         }
       },
-      [props.onSwipeableWillClose, props.onSwipeableWillOpen, swipeableMethods]
+      [
+        props,
+        props.onSwipeableWillClose,
+        props.onSwipeableWillOpen,
+        swipeableMethods,
+      ]
     );
 
     const dispatchEndEvents = useCallback(
