@@ -17,7 +17,9 @@ export default function EmptyExample() {
         style={styles.pressable}
         onPressIn={pressIn}
         onPressOut={pressOut}>
-        <Text>Pressable!</Text>
+        <View style={styles.textWrapper}>
+          <Text style={styles.text}>Pressable!</Text>
+        </View>
       </Pressable>
     </View>
   );
@@ -31,8 +33,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   pressable: {
-    backgroundColor: 'purple',
-    width: 100,
-    height: 100,
+    backgroundColor: 'mediumpurple',
+    width: 120,
+    height: 120,
+    margin: 'auto',
+  },
+  textWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#F5FCFF',
   },
 });
