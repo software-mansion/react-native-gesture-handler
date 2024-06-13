@@ -39,10 +39,8 @@ export default class RotationGestureDetector
 
     const [firstPointerID, secondPointerID] = this.keyPointers;
 
-    const firstPointerCoords =
-      tracker.getLastViewRelativeCoords(firstPointerID);
-    const secondPointerCoords =
-      tracker.getLastViewRelativeCoords(secondPointerID);
+    const firstPointerCoords = tracker.getLastRelativeCoords(firstPointerID);
+    const secondPointerCoords = tracker.getLastRelativeCoords(secondPointerID);
 
     const vectorX: number = secondPointerCoords.x - firstPointerCoords.x;
     const vectorY: number = secondPointerCoords.y - firstPointerCoords.y;
