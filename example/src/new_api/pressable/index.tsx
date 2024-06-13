@@ -11,12 +11,32 @@ export default function EmptyExample() {
     console.log('Pressable pressed in');
   };
 
+  const hoverIn = () => {
+    console.log('Hovered in');
+  };
+
+  const hoverOut = () => {
+    console.log('Hovered out');
+  };
+
+  const focus = () => {
+    console.log('Focused pressable');
+  };
+
+  const blur = () => {
+    console.log('Blurred pressable');
+  };
+
   return (
     <View style={styles.container}>
       <Pressable
         style={styles.pressable}
         onPressIn={pressIn}
-        onPressOut={pressOut}>
+        onPressOut={pressOut}
+        onHoverIn={hoverIn}
+        onHoverOut={hoverOut}
+        onFocus={focus}
+        onBlur={blur}>
         <View style={styles.textWrapper}>
           <Text style={styles.text}>Pressable!</Text>
         </View>
