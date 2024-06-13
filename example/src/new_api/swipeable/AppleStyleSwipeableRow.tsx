@@ -137,16 +137,16 @@ export default function AppleStyleSwipeableRow({
       enableTrackpadTwoFingerGesture
       leftThreshold={30}
       rightThreshold={40}
-      renderLeftActions={(_: any, progress: SharedValue<number>) =>
+      renderLeftActions={(_, progress) =>
         renderLeftActions(_, progress, swipeableRow)
       }
-      renderRightActions={(_: any, progress: SharedValue<number>) =>
+      renderRightActions={(_, progress) =>
         renderRightActions(_, progress, swipeableRow)
       }
-      onSwipeableWillOpen={(direction: any) => {
+      onSwipeableWillOpen={(direction) => {
         console.log(`Opening swipeable from the ${direction}`);
       }}
-      onSwipeableWillClose={(direction: any) => {
+      onSwipeableWillClose={(direction) => {
         console.log(`Closing swipeable to the ${direction}`);
       }}>
       {children}

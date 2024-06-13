@@ -84,10 +84,10 @@ export default function GmailStyleSwipeableRow({
       leftThreshold={80}
       enableTrackpadTwoFingerGesture
       rightThreshold={40}
-      renderLeftActions={(_: any, progress: SharedValue<number>) =>
+      renderLeftActions={(_, progress) =>
         renderLeftActions(_, progress, swipeableRow)
       }
-      renderRightActions={(_: any, progress: SharedValue<number>) =>
+      renderRightActions={(_, progress) =>
         renderRightActions(_, progress, swipeableRow)
       }>
       {children}
