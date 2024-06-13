@@ -153,7 +153,7 @@ export interface PressableProps
   unstable_pressDelay?: number | undefined;
 }
 
-export function Pressable(props: PressableProps) {
+export default function Pressable(props: PressableProps) {
   return (
     <View>
       <Text>Lorem</Text>
