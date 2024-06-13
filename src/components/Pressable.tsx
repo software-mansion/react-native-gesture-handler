@@ -3,7 +3,6 @@ import {
   View,
   AccessibilityProps,
   ColorValue,
-  GestureResponderEvent,
   Insets,
   NativeSyntheticEvent,
   StyleProp,
@@ -13,7 +12,52 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import { Gesture, GestureDetector, GestureHandlerRootView } from '../.';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+  GestureStateChangeEvent,
+  GestureTouchEvent,
+  LongPressGestureHandlerEventPayload,
+} from '../.';
+import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
+
+// const hoverEventToMouseEvent = (
+//   hoverEvent: GestureStateChangeEvent<HoverGestureHandlerEventPayload>,
+//   previousHoverEvent?: GestureStateChangeEvent<HoverGestureHandlerEventPayload>
+// ): MouseEvent => {
+//   const mouseEvent: MouseEvent = {
+//     altKey: false,
+//     button: 0, // which button activated event
+//     buttons: 1, // bitmask for all buttons
+//     clientX: hoverEvent.absoluteX,
+//     clientY: hoverEvent.absoluteY,
+//     ctrlKey: false,
+//     layerX: hoverEvent.absoluteX, // non_standard! poor docs!
+//     layerY: hoverEvent.absoluteY, // non_standard! poor docs!
+//     metaKey: false,
+//     movementX:
+//       hoverEvent.absoluteX -
+//       (previousHoverEvent?.absoluteX ?? hoverEvent.absoluteX),
+//     movementY:
+//       hoverEvent.absoluteY -
+//       (previousHoverEvent?.absoluteY ?? hoverEvent.absoluteY),
+//     offsetX: hoverEvent.x,
+//     offsetY: hoverEvent.y,
+//     pageX: hoverEvent.absoluteX,
+//     pageY: hoverEvent.absoluteY,
+//     relatedTarget: null, // add target ref
+//     screenX: hoverEvent.absoluteX,
+//     screenY: hoverEvent.absoluteY,
+//     shiftKey: false,
+//     x: hoverEvent.absoluteX,
+//     y: hoverEvent.absoluteY,
+//     getModifierState: () => false,
+//     initMouseEvent: () => null,
+//   };
+
+//   return mouseEvent;
+// };
 
 export interface PressableStateCallbackType {
   readonly pressed: boolean;
@@ -32,32 +76,47 @@ export interface PressableProps
   /**
    * Called when the hover is activated to provide visual feedback.
    */
-  onHoverIn?: null | ((event: MouseEvent) => void) | undefined;
+  onHoverIn?:
+    | null
+    | ((
+        event: GestureStateChangeEvent<HoverGestureHandlerEventPayload>
+      ) => void)
+    | undefined;
 
   /**
    * Called when the hover is deactivated to undo visual feedback.
    */
-  onHoverOut?: null | ((event: MouseEvent) => void) | undefined;
+  onHoverOut?:
+    | null
+    | ((
+        event: GestureStateChangeEvent<HoverGestureHandlerEventPayload>
+      ) => void)
+    | undefined;
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: null | ((event: GestureResponderEvent) => void) | undefined;
+  onPress?: null | ((event: GestureTouchEvent) => void) | undefined;
 
   /**
    * Called when a touch is engaged before `onPress`.
    */
-  onPressIn?: null | ((event: GestureResponderEvent) => void) | undefined;
+  onPressIn?: null | ((event: GestureTouchEvent) => void) | undefined;
 
   /**
    * Called when a touch is released before `onPress`.
    */
-  onPressOut?: null | ((event: GestureResponderEvent) => void) | undefined;
+  onPressOut?: null | ((event: GestureTouchEvent) => void) | undefined;
 
   /**
    * Called when a long-tap gesture is detected.
    */
-  onLongPress?: null | ((event: GestureResponderEvent) => void) | undefined;
+  onLongPress?:
+    | null
+    | ((
+        event: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>
+      ) => void)
+    | undefined;
 
   /**
    * Called after the element loses focus.
@@ -156,13 +215,39 @@ export interface PressableProps
 }
 
 export default function Pressable(props: PressableProps) {
-  const gesture = Gesture.Manual()
+  const touch = Gesture.Tap()
     .onTouchesDown((event) => {
-      console.log('Touch down:', event.changedTouches);
+      props.onPressIn?.(event);
     })
     .onTouchesUp((event) => {
-      console.log('Touch up:', event.changedTouches);
+      props.onPressOut?.(event);
     });
+
+  const press = Gesture.LongPress().onEnd((event, success) => {
+    if (success) {
+      props.onLongPress?.(event);
+    }
+  });
+
+  const hover = Gesture.Hover()
+    .onBegin((event) => {
+      props.onHoverIn?.(event);
+    })
+    .onEnd((event) => {
+      props.onHoverOut?.(event);
+    });
+
+  // onBlur and onFocus don't exist in the docs
+
+  touch.hitSlop(props.hitSlop);
+  hover.hitSlop(props.hitSlop);
+
+  // todo: add props.pressRetentionOffset to touch and check if relative to pressable or to hitSlop
+
+  touch.enabled(!props.disabled);
+  hover.enabled(!props.disabled);
+
+  const gesture = Gesture.Race(hover, press, touch);
 
   return (
     <GestureHandlerRootView>
