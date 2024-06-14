@@ -34,6 +34,13 @@ function touchWithinBounds(
   return leftbound && rightbound && topbound && bottombound;
 }
 
+const calculateEvenBounds = (distance: number) => ({
+  bottom: distance,
+  top: distance,
+  left: distance,
+  right: distance,
+});
+
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
   const pressableRef = useRef<View>(null);
@@ -51,8 +58,10 @@ export default function Pressable(props: PressableProps) {
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
       // note: hitslop checking support is built in
+      if (event.numberOfTouches === 1) {
         props.onPressIn?.(event);
         previousTouchData.current = event.allTouches;
+      }
     })
     .onTouchesUp((event) => {
       // doesn't call onPressOut untill the last pointer leaves, while within bounds
@@ -67,16 +76,12 @@ export default function Pressable(props: PressableProps) {
         pressableRef.current?.measure((x, y, width, height) => {
           if (
             previousTouchData.current?.find((touch) =>
-              touchWithinBounds(
-                touch,
-                { bottom: 0, top: 0, left: 0, right: 0 },
-                {
+              touchWithinBounds(touch, calculateEvenBounds(0), {
                 bottom: y,
                 top: y + height,
                 left: x,
                 right: x + width,
-                }
-              )
+              })
             )
           ) {
             props.onPressOut?.(event);
