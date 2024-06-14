@@ -113,6 +113,7 @@ interface NativeTouchEvent extends Record<string, TouchNativeArgs> {
   changedTouches: PointerData[];
   allTouches: PointerData[];
   numberOfTouches: number;
+  pointerType: PointerType;
 }
 
 export interface ResultEvent extends Record<string, NativeEvent | number> {

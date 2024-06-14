@@ -511,6 +511,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: numberOfTouches,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
@@ -556,6 +557,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: all.length,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
