@@ -1,6 +1,0 @@
-{
-  "main": "../lib/commonjs/components/Pressable",
-  "module": "../lib/module/components/Pressable",
-  "react-native": "../src/components/Pressable",
-  "types": "../lib/typescript/components/Pressable.d.ts"
-}
