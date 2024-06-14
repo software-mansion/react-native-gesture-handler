@@ -91,6 +91,7 @@ export default function Pressable(props: PressableProps) {
               })
             )
           ) {
+            props.onPress?.(event);
             props.onPressOut?.(event);
           }
         });
@@ -112,6 +113,7 @@ export default function Pressable(props: PressableProps) {
             touchWithinBounds(touch, pressRetentionOffset, pressableDimensions)
           )
         ) {
+          props.onPress?.(event);
           props.onPressOut?.(event);
         }
       });
