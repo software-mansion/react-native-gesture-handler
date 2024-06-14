@@ -11,27 +11,27 @@ const DEFAULT_HOVER_DELAY = 0;
 
 function touchWithinBounds(
   touch: TouchData,
-  bounds: Insets,
+  offsets: Insets,
   dimensions: Insets
 ): boolean {
-  const leftbound =
-    bounds.left && dimensions.left
-      ? bounds.left + dimensions.left < touch.absoluteX
+  const isLeftbound =
+    offsets.left && dimensions.left
+      ? touch.absoluteX > offsets.left + dimensions.left
       : true;
-  const rightbound =
-    bounds.right && dimensions.right
-      ? bounds.right + dimensions.right > touch.absoluteX
+  const isRightbound =
+    offsets.right && dimensions.right
+      ? touch.absoluteX < offsets.right + dimensions.right
       : true;
-  const bottombound =
-    bounds.bottom && dimensions.bottom
-      ? bounds.bottom + dimensions.bottom < touch.absoluteY
+  const isBottombound =
+    offsets.bottom && dimensions.bottom
+      ? touch.absoluteY > offsets.bottom + dimensions.bottom
       : true;
-  const topbound =
-    bounds.top && dimensions.top
-      ? bounds.top + dimensions.top > touch.absoluteY
+  const isTopbound =
+    offsets.top && dimensions.top
+      ? touch.absoluteY < offsets.top + dimensions.top
       : true;
 
-  return leftbound && rightbound && topbound && bottombound;
+  return isLeftbound && isRightbound && isTopbound && isBottombound;
 }
 
 const calculateEvenBounds = (distance: number) => ({
@@ -100,7 +100,6 @@ export default function Pressable(props: PressableProps) {
       }
 
       pressableRef.current?.measure((x, y, width, height) => {
-        console.log(x, y, width, height);
         const pressableDimensions = {
           bottom: y,
           top: y + height,
@@ -142,13 +141,13 @@ export default function Pressable(props: PressableProps) {
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
-  // onBlur and onFocus don't exist in the docs
+  // todo: implement onBlur and onFocus, more details on how available in the PR
 
   touchGesture.hitSlop(props.hitSlop);
   pressGesture.hitSlop(props.hitSlop);
   hoverGesture.hitSlop(props.hitSlop);
 
-  // add props.pressRetentionOffset, according to docs, they're relative to pressable, not hitSlop
+  // todo: add props.pressRetentionOffset, according to docs, they're relative to pressable, not hitSlop
 
   touchGesture.enabled(props.disabled !== false);
   pressGesture.enabled(props.disabled !== false);
