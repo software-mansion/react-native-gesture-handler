@@ -181,6 +181,7 @@ function touchWithinBounds(touch: TouchData, bounds: Insets): boolean {
 
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
+  const pressableRef = useRef<View>(null);
 
   const pressRetentionOffset: Insets | null | undefined =
     typeof props.pressRetentionOffset === 'number'
@@ -192,7 +193,7 @@ export default function Pressable(props: PressableProps) {
         }
       : props.pressRetentionOffset;
 
-  const touch = Gesture.Manual()
+  const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
       // note: hitslop checking support is built in
       props.onPressIn?.(event);
@@ -201,30 +202,62 @@ export default function Pressable(props: PressableProps) {
     .onTouchesUp((event) => {
       // doesn't call onPressOut untill the last pointer leaves, while within bounds
       if (event.allTouches.length > 1) {
+        previousTouchData.current = event.allTouches;
         return;
       }
 
       if (!pressRetentionOffset) {
-        props.onPressOut?.(event);
+        // we cannot just set shouldCancelWhenOutside,
+        // that would disablepressRetentionOffset
+        pressableRef.current?.measure((x, y, width, height) => {
+          if (
+            previousTouchData.current?.find((touch) =>
+              touchWithinBounds(
+                touch,
+                { bottom: 0, top: 0, left: 0, right: 0 },
+                {
+                  bottom: y,
+                  top: y + height,
+                  left: x,
+                  right: x + width,
+                }
+              )
+            )
+          ) {
+            props.onPressOut?.(event);
+          }
+        });
+        previousTouchData.current = event.allTouches;
         return;
       }
 
-      if (
-        previousTouchData.current?.find((touch) =>
-          touchWithinBounds(touch, pressRetentionOffset)
-        )
-      ) {
-        props.onPressOut?.(event);
-      }
+      pressableRef.current?.measure((x, y, width, height) => {
+        console.log(x, y, width, height);
+        const pressableDimensions = {
+          bottom: y,
+          top: y + height,
+          left: x,
+          right: x + width,
+        } as Insets;
+
+        if (
+          previousTouchData.current?.find((touch) =>
+            touchWithinBounds(touch, pressRetentionOffset, pressableDimensions)
+          )
+        ) {
+          props.onPressOut?.(event);
+        }
+      });
+      previousTouchData.current = event.allTouches;
     });
 
-  const press = Gesture.LongPress().onEnd((event, success) => {
+  const pressGesture = Gesture.LongPress().onEnd((event, success) => {
     if (success) {
       props.onLongPress?.(event);
     }
   });
 
-  const hover = Gesture.Hover()
+  const hoverGesture = Gesture.Hover()
     .onBegin((event) => {
       setTimeout(
         () => props.onHoverIn?.(event),
@@ -238,26 +271,31 @@ export default function Pressable(props: PressableProps) {
       );
     });
 
-  press.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
+  pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
   // onBlur and onFocus don't exist in the docs
 
-  touch.hitSlop(props.hitSlop);
-  press.hitSlop(props.hitSlop);
-  hover.hitSlop(props.hitSlop);
+  touchGesture.hitSlop(props.hitSlop);
+  pressGesture.hitSlop(props.hitSlop);
+  hoverGesture.hitSlop(props.hitSlop);
 
   // add props.pressRetentionOffset, according to docs, they're relative to pressable, not hitSlop
 
-  touch.enabled(!(props.disabled ?? false));
-  press.enabled(!(props.disabled ?? false));
-  hover.enabled(!(props.disabled ?? false));
+  touchGesture.enabled(props.disabled !== false);
+  pressGesture.enabled(props.disabled !== false);
+  hoverGesture.enabled(props.disabled !== false);
 
-  const gesture = Gesture.Simultaneous(hover, press, touch);
+  const gesture = Gesture.Simultaneous(
+    hoverGesture,
+    pressGesture,
+    touchGesture
+  );
 
   return (
     <GestureHandlerRootView>
       <GestureDetector gesture={gesture}>
         <View
+          ref={pressableRef}
           style={[
             styles.container,
             typeof props.style === 'function'
