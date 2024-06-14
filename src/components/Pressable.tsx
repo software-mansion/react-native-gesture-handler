@@ -12,16 +12,16 @@ import {
   StyleSheet,
 } from 'react-native';
 
+import GestureHandlerRootView from '../components/GestureHandlerRootView';
+import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../handlers/gestures/GestureDetector';
+import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
+import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
   GestureStateChangeEvent,
   GestureTouchEvent,
-  LongPressGestureHandlerEventPayload,
   TouchData,
-} from '../.';
-import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
+} from '../handlers/gestureHandlerCommon';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
