@@ -170,11 +170,27 @@ export interface PressableProps
   unstable_pressDelay?: number;
 }
 
-function touchWithinBounds(touch: TouchData, bounds: Insets): boolean {
-  const leftbound = bounds.left ? bounds.left < touch.absoluteX : true;
-  const rightbound = bounds.right ? bounds.right > touch.absoluteX : true;
-  const bottombound = bounds.bottom ? bounds.bottom < touch.absoluteY : true;
-  const topbound = bounds.top ? bounds.top > touch.absoluteY : true;
+function touchWithinBounds(
+  touch: TouchData,
+  bounds: Insets,
+  dimensions: Insets
+): boolean {
+  const leftbound =
+    bounds.left && dimensions.left
+      ? bounds.left + dimensions.left < touch.absoluteX
+      : true;
+  const rightbound =
+    bounds.right && dimensions.right
+      ? bounds.right + dimensions.right > touch.absoluteX
+      : true;
+  const bottombound =
+    bounds.bottom && dimensions.bottom
+      ? bounds.bottom + dimensions.bottom < touch.absoluteY
+      : true;
+  const topbound =
+    bounds.top && dimensions.top
+      ? bounds.top + dimensions.top > touch.absoluteY
+      : true;
 
   return leftbound && rightbound && topbound && bottombound;
 }
@@ -208,7 +224,7 @@ export default function Pressable(props: PressableProps) {
 
       if (!pressRetentionOffset) {
         // we cannot just set shouldCancelWhenOutside,
-        // that would disablepressRetentionOffset
+        // that would disable pressRetentionOffset
         pressableRef.current?.measure((x, y, width, height) => {
           if (
             previousTouchData.current?.find((touch) =>
@@ -284,6 +300,10 @@ export default function Pressable(props: PressableProps) {
   touchGesture.enabled(props.disabled !== false);
   pressGesture.enabled(props.disabled !== false);
   hoverGesture.enabled(props.disabled !== false);
+
+  touchGesture.runOnJS(true);
+  pressGesture.runOnJS(true);
+  hoverGesture.runOnJS(true);
 
   const gesture = Gesture.Simultaneous(
     hoverGesture,
