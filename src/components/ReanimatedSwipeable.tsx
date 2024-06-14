@@ -9,14 +9,16 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
+import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
-  Gesture,
-  GestureDetector,
   GestureStateChangeEvent,
   GestureUpdateEvent,
+} from '../handlers/gestureHandlerCommon';
+import {
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
-} from '../.';
+} from '../handlers/PanGestureHandler';
 import Animated, {
   Extrapolation,
   SharedValue,
