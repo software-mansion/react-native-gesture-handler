@@ -11,6 +11,10 @@ export default function EmptyExample() {
     console.log('Pressable pressed out');
   };
 
+  const press = () => {
+    console.log('Pressable pressed');
+  };
+
   const hoverIn = () => {
     console.log('Hovered in');
   };
@@ -36,6 +40,7 @@ export default function EmptyExample() {
         style={styles.pressable}
         onPressIn={pressIn}
         onPressOut={pressOut}
+        onPress={press}
         onHoverIn={hoverIn}
         onHoverOut={hoverOut}
         onFocus={focus}
