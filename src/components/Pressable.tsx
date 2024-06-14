@@ -16,19 +16,19 @@ function touchWithinBounds(
 ): boolean {
   const isLeftbound =
     offsets.left && dimensions.left
-      ? touch.absoluteX > offsets.left + dimensions.left
+      ? touch.absoluteX > dimensions.left - offsets.left
       : true;
   const isRightbound =
     offsets.right && dimensions.right
-      ? touch.absoluteX < offsets.right + dimensions.right
+      ? touch.absoluteX < dimensions.right + offsets.right
       : true;
   const isBottombound =
     offsets.bottom && dimensions.bottom
-      ? touch.absoluteY > offsets.bottom + dimensions.bottom
+      ? touch.absoluteY > dimensions.bottom - offsets.bottom
       : true;
   const isTopbound =
     offsets.top && dimensions.top
-      ? touch.absoluteY < offsets.top + dimensions.top
+      ? touch.absoluteY < dimensions.top + offsets.top
       : true;
 
   return isLeftbound && isRightbound && isTopbound && isBottombound;
