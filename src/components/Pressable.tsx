@@ -43,6 +43,7 @@ const calculateEvenBounds = (distance: number) => ({
 
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
+  const previousChangeData = useRef<TouchData[] | null>(null);
   const pressableRef = useRef<View>(null);
 
   const pressRetentionOffset: Insets | null | undefined =
@@ -57,10 +58,16 @@ export default function Pressable(props: PressableProps) {
 
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
-      // note: hitslop checking support is built in
-      if (event.numberOfTouches === 1) {
+      console.log(previousChangeData.current);
+      // check if all touching fingers were lifted up on the previous event
+      if (
+        !previousTouchData.current ||
+        !previousChangeData.current ||
+        previousTouchData.current?.length === previousChangeData.current?.length
+      ) {
         props.onPressIn?.(event);
         previousTouchData.current = event.allTouches;
+        previousChangeData.current = event.changedTouches;
       }
     })
     .onTouchesUp((event) => {
