@@ -58,7 +58,6 @@ export default function Pressable(props: PressableProps) {
 
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
-      console.log(previousChangeData.current);
       // check if all touching fingers were lifted up on the previous event
       if (
         !previousTouchData.current ||
@@ -72,8 +71,9 @@ export default function Pressable(props: PressableProps) {
     })
     .onTouchesUp((event) => {
       // doesn't call onPressOut untill the last pointer leaves, while within bounds
-      if (event.allTouches.length > 1) {
+      if (event.allTouches.length > event.changedTouches.length) {
         previousTouchData.current = event.allTouches;
+        previousChangeData.current = event.changedTouches;
         return;
       }
 
@@ -95,6 +95,7 @@ export default function Pressable(props: PressableProps) {
           }
         });
         previousTouchData.current = event.allTouches;
+        previousChangeData.current = event.changedTouches;
         return;
       }
 
@@ -108,7 +109,7 @@ export default function Pressable(props: PressableProps) {
         } as Insets;
 
         if (
-          previousTouchData.current?.find((touch) =>
+          event.allTouches.find((touch) =>
             touchWithinBounds(touch, pressRetentionOffset, pressableDimensions)
           )
         ) {
@@ -116,6 +117,7 @@ export default function Pressable(props: PressableProps) {
         }
       });
       previousTouchData.current = event.allTouches;
+      previousChangeData.current = event.changedTouches;
     });
 
   const pressGesture = Gesture.LongPress().onEnd((event, success) => {
