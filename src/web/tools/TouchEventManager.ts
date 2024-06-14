@@ -1,6 +1,6 @@
 import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
 import EventManager from './EventManager';
-import { isPointerInBounds } from '../utils';
+import { calculateViewScale, isPointerInBounds } from '../utils';
 import { PointerType } from '../../PointerType';
 
 export default class TouchEventManager extends EventManager<HTMLElement> {
@@ -156,11 +156,13 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
     const clientX = event.changedTouches[index].clientX;
     const clientY = event.changedTouches[index].clientY;
 
+    const { scaleX, scaleY } = calculateViewScale(this.view);
+
     return {
       x: clientX,
       y: clientY,
-      offsetX: clientX - rect.left,
-      offsetY: clientY - rect.top,
+      offsetX: (clientX - rect.left) / scaleX,
+      offsetY: (clientY - rect.top) / scaleY,
       pointerId: event.changedTouches[index].identifier,
       eventType: eventType,
       pointerType: PointerType.TOUCH,
