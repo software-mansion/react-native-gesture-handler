@@ -1,174 +1,13 @@
 import React, { useRef } from 'react';
-import {
-  View,
-  AccessibilityProps,
-  ColorValue,
-  Insets,
-  NativeSyntheticEvent,
-  StyleProp,
-  TargetedEvent,
-  ViewProps,
-  ViewStyle,
-  StyleSheet,
-} from 'react-native';
-
+import { View, Insets, StyleSheet } from 'react-native';
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
-import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
-import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
-import {
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-  TouchData,
-} from '../handlers/gestureHandlerCommon';
+import { TouchData } from '../handlers/gestureHandlerCommon';
+import { PressableProps } from './PressableProps';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
-
-export interface PressableStateCallbackType {
-  readonly pressed: boolean;
-}
-
-export interface PressableAndroidRippleConfig {
-  color?: null | ColorValue | undefined;
-  borderless?: null | boolean | undefined;
-  radius?: null | number | undefined;
-  foreground?: null | boolean | undefined;
-}
-
-export interface PressableProps
-  extends AccessibilityProps,
-    Omit<ViewProps, 'children' | 'style' | 'hitSlop'> {
-  /**
-   * Called when the hover is activated to provide visual feedback.
-   */
-  onHoverIn?:
-    | null
-    | ((
-        event: GestureStateChangeEvent<HoverGestureHandlerEventPayload>
-      ) => void);
-
-  /**
-   * Called when the hover is deactivated to undo visual feedback.
-   */
-  onHoverOut?:
-    | null
-    | ((
-        event: GestureStateChangeEvent<HoverGestureHandlerEventPayload>
-      ) => void);
-
-  /**
-   * Called when a single tap gesture is detected.
-   */
-  onPress?: null | ((event: GestureTouchEvent) => void);
-
-  /**
-   * Called when a touch is engaged before `onPress`.
-   */
-  onPressIn?: null | ((event: GestureTouchEvent) => void);
-
-  /**
-   * Called when a touch is released before `onPress`.
-   */
-  onPressOut?: null | ((event: GestureTouchEvent) => void);
-
-  /**
-   * Called when a long-tap gesture is detected.
-   */
-  onLongPress?:
-    | null
-    | ((
-        event: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>
-      ) => void);
-
-  /**
-   * Called after the element loses focus.
-   * @platform macos windows
-   */
-  onBlur?: null | ((event: NativeSyntheticEvent<TargetedEvent>) => void);
-
-  /**
-   * Called after the element is focused.
-   * @platform macos windows
-   */
-  onFocus?: null | ((event: NativeSyntheticEvent<TargetedEvent>) => void);
-
-  /**
-   * Either children or a render prop that receives a boolean reflecting whether
-   * the component is currently pressed.
-   */
-  children?:
-    | React.ReactNode
-    | ((state: PressableStateCallbackType) => React.ReactNode);
-
-  /**
-   * Whether a press gesture can be interrupted by a parent gesture such as a
-   * scroll event. Defaults to true.
-   */
-  cancelable?: null | boolean;
-
-  /**
-   * Duration to wait after hover in before calling `onHoverIn`.
-   * @platform macos windows
-   */
-  delayHoverIn?: number | null;
-
-  /**
-   * Duration to wait after hover out before calling `onHoverOut`.
-   * @platform macos windows
-   */
-  delayHoverOut?: number | null;
-
-  /**
-   * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
-   */
-  delayLongPress?: null | number;
-
-  /**
-   * Whether the press behavior is disabled.
-   */
-  disabled?: null | boolean;
-
-  /**
-   * Additional distance outside of this view in which a press is detected.
-   */
-  hitSlop?: null | Insets | number;
-
-  /**
-   * Additional distance outside of this view in which a touch is considered a
-   * press before `onPressOut` is triggered.
-   */
-  pressRetentionOffset?: null | Insets | number;
-
-  /**
-   * If true, doesn't play system sound on touch.
-   */
-  android_disableSound?: null | boolean;
-
-  /**
-   * Enables the Android ripple effect and configures its color.
-   */
-  android_ripple?: null | PressableAndroidRippleConfig;
-
-  /**
-   * Used only for documentation or testing (e.g. snapshot testing).
-   */
-  testOnly_pressed?: null | boolean;
-
-  /**
-   * Either view styles or a function that receives a boolean reflecting whether
-   * the component is currently pressed and returns view styles.
-   */
-  style?:
-    | StyleProp<ViewStyle>
-    | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
-
-  /**
-   * Duration (in milliseconds) to wait after press down before calling onPressIn.
-   */
-  unstable_pressDelay?: number;
-}
 
 function touchWithinBounds(
   touch: TouchData,
@@ -212,8 +51,8 @@ export default function Pressable(props: PressableProps) {
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
       // note: hitslop checking support is built in
-      props.onPressIn?.(event);
-      previousTouchData.current = event.allTouches;
+        props.onPressIn?.(event);
+        previousTouchData.current = event.allTouches;
     })
     .onTouchesUp((event) => {
       // doesn't call onPressOut untill the last pointer leaves, while within bounds
@@ -232,10 +71,10 @@ export default function Pressable(props: PressableProps) {
                 touch,
                 { bottom: 0, top: 0, left: 0, right: 0 },
                 {
-                  bottom: y,
-                  top: y + height,
-                  left: x,
-                  right: x + width,
+                bottom: y,
+                top: y + height,
+                left: x,
+                right: x + width,
                 }
               )
             )
