@@ -570,12 +570,12 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   protected transformNativeEvent(): Record<string, unknown> {
     // those properties are shared by most handlers and if not this method will be overriden
-    const rect = this.delegate.measureView();
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastRelativeCoords = this.tracker.getRelativeCoordsAverage();
 
     return {
-      x: lastCoords.x - rect.pageX,
-      y: lastCoords.y - rect.pageY,
+      x: lastRelativeCoords.x,
+      y: lastRelativeCoords.y,
       absoluteX: lastCoords.x,
       absoluteY: lastCoords.y,
     };
