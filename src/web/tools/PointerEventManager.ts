@@ -1,7 +1,11 @@
 import EventManager from './EventManager';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { AdaptedEvent, EventTypes, Point } from '../interfaces';
-import { PointerTypeMapping, isPointerInBounds } from '../utils';
+import {
+  PointerTypeMapping,
+  calculateViewScale,
+  isPointerInBounds,
+} from '../utils';
 import { PointerType } from '../../PointerType';
 
 const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
@@ -235,12 +239,13 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
     const rect = this.view.getBoundingClientRect();
+    const { scaleX, scaleY } = calculateViewScale(this.view);
 
     return {
       x: event.clientX,
       y: event.clientY,
-      offsetX: event.clientX - rect.left,
-      offsetY: event.clientY - rect.top,
+      offsetX: (event.clientX - rect.left) / scaleX,
+      offsetY: (event.clientY - rect.top) / scaleY,
       pointerId: event.pointerId,
       eventType: eventType,
       pointerType:
