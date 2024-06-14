@@ -14,7 +14,8 @@
     "format:ios": "find apple/ -iname *.h -o -iname *.m -o -iname *.cpp -o -iname *.mm | xargs clang-format -i",
     "lint:js": "eslint --ext '.js,.ts,.tsx' src/ example/src FabricExample/src MacOSExample/src && yarn prettier --check './{src,example,FabricExample,MacOSExample}/**/*.{js,jsx,ts,tsx}'",
     "lint:js-root": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
-    "lint:android": "./android/gradlew -p android spotlessCheck -q"
+    "lint:android": "./android/gradlew -p android spotlessCheck -q",
+    "checkIntegrity": "(cd ./FabricExample/android && ./gradlew generateCodegenArtifactsFromSchema -PskipCodegenCopyTask) && (cd ./android && ./gradlew checkIntegrityBetweenArchitectures)"
   },
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
@@ -103,7 +104,7 @@
     "react-dom": "^16.12.0",
     "react-native": "0.74.1",
     "react-native-builder-bob": "^0.17.1",
-    "react-native-reanimated": "^2.3.1",
+    "react-native-reanimated": "^3.12.0",
     "react-native-web": "^0.11.7",
     "react-test-renderer": "17.0.2",
     "release-it": "^13.6.5",

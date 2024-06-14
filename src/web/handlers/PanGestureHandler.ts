@@ -219,8 +219,9 @@ export default class PanGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -239,8 +240,9 @@ export default class PanGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -259,8 +261,9 @@ export default class PanGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     if (this.currentState === State.ACTIVE) {
-      this.lastX = this.tracker.getLastAvgX();
-      this.lastY = this.tracker.getLastAvgY();
+      const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+      this.lastX = lastCoords.x;
+      this.lastY = lastCoords.y;
     }
 
     this.tracker.removeFromTracker(event.pointerId);
@@ -280,8 +283,9 @@ export default class PanGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -299,10 +303,13 @@ export default class PanGestureHandler extends GestureHandler {
   protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
-    this.velocityX = this.tracker.getVelocityX(event.pointerId);
-    this.velocityY = this.tracker.getVelocityY(event.pointerId);
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
+
+    const velocity = this.tracker.getVelocity(event.pointerId);
+    this.velocityX = velocity.x;
+    this.velocityY = velocity.y;
 
     this.checkBegan();
 
@@ -316,10 +323,13 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.tracker.track(event);
 
-    this.lastX = this.tracker.getLastAvgX();
-    this.lastY = this.tracker.getLastAvgY();
-    this.velocityX = this.tracker.getVelocityX(event.pointerId);
-    this.velocityY = this.tracker.getVelocityY(event.pointerId);
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
+
+    const velocity = this.tracker.getVelocity(event.pointerId);
+    this.velocityX = velocity.x;
+    this.velocityY = velocity.y;
 
     this.checkBegan();
 
@@ -453,8 +463,9 @@ export default class PanGestureHandler extends GestureHandler {
         }, this.activateAfterLongPress);
       }
     } else {
-      this.velocityX = this.tracker.getVelocityX(event.pointerId);
-      this.velocityY = this.tracker.getVelocityY(event.pointerId);
+      const velocity = this.tracker.getVelocity(event.pointerId);
+      this.velocityX = velocity.x;
+      this.velocityY = velocity.y;
     }
   }
 

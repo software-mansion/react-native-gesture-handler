@@ -405,10 +405,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         numberOfPointers: this.tracker.getTrackedPointersCount(),
         state: newState,
-        pointerInside: this.delegate.isPointerInBounds({
-          x: this.tracker.getLastAvgX(),
-          y: this.tracker.getLastAvgY(),
-        }),
+        pointerInside: this.delegate.isPointerInBounds(
+          this.tracker.getAbsoluteCoordsAverage()
+        ),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
         target: this.viewRef,
@@ -442,10 +441,10 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       all.push({
         id: id,
-        x: element.lastX - rect.pageX,
-        y: element.lastY - rect.pageY,
-        absoluteX: element.lastX,
-        absoluteY: element.lastY,
+        x: element.abosoluteCoords.x - rect.pageX,
+        y: element.abosoluteCoords.y - rect.pageY,
+        absoluteX: element.abosoluteCoords.x,
+        absoluteY: element.abosoluteCoords.y,
       });
     });
 
@@ -465,10 +464,10 @@ export default abstract class GestureHandler implements IGestureHandler {
 
         changed.push({
           id: id,
-          x: element.lastX - rect.pageX,
-          y: element.lastY - rect.pageY,
-          absoluteX: element.lastX,
-          absoluteY: element.lastY,
+          x: element.abosoluteCoords.x - rect.pageX,
+          y: element.abosoluteCoords.y - rect.pageY,
+          absoluteX: element.abosoluteCoords.x,
+          absoluteY: element.abosoluteCoords.y,
         });
       });
     }
@@ -512,6 +511,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: numberOfTouches,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
@@ -534,18 +534,18 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       all.push({
         id: id,
-        x: element.lastX - rect.pageX,
-        y: element.lastY - rect.pageY,
-        absoluteX: element.lastX,
-        absoluteY: element.lastY,
+        x: element.abosoluteCoords.x - rect.pageX,
+        y: element.abosoluteCoords.y - rect.pageY,
+        absoluteX: element.abosoluteCoords.x,
+        absoluteY: element.abosoluteCoords.y,
       });
 
       changed.push({
         id: id,
-        x: element.lastX - rect.pageX,
-        y: element.lastY - rect.pageY,
-        absoluteX: element.lastX,
-        absoluteY: element.lastY,
+        x: element.abosoluteCoords.x - rect.pageX,
+        y: element.abosoluteCoords.y - rect.pageY,
+        absoluteX: element.abosoluteCoords.x,
+        absoluteY: element.abosoluteCoords.y,
       });
     });
 
@@ -557,6 +557,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: all.length,
+        pointerType: this.pointerType,
       },
       timeStamp: Date.now(),
     };
@@ -569,13 +570,14 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   protected transformNativeEvent(): Record<string, unknown> {
     // those properties are shared by most handlers and if not this method will be overriden
-    const rect = this.delegate.measureView();
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastRelativeCoords = this.tracker.getRelativeCoordsAverage();
 
     return {
-      x: this.tracker.getLastAvgX() - rect.pageX,
-      y: this.tracker.getLastAvgY() - rect.pageY,
-      absoluteX: this.tracker.getLastAvgX(),
-      absoluteY: this.tracker.getLastAvgY(),
+      x: lastRelativeCoords.x,
+      y: lastRelativeCoords.y,
+      absoluteX: lastCoords.x,
+      absoluteY: lastCoords.y,
     };
   }
 
@@ -720,8 +722,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     const rect = this.delegate.measureView();
-    const offsetX: number = this.tracker.getLastX() - rect.pageX;
-    const offsetY: number = this.tracker.getLastY() - rect.pageY;
+    const { x, y } = this.tracker.getLastAbsoluteCoords();
+    const offsetX: number = x - rect.pageX;
+    const offsetY: number = y - rect.pageY;
 
     if (
       offsetX >= left &&
