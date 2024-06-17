@@ -361,38 +361,34 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         'worklet';
         rowState.value = Math.sign(toValue);
 
+        const springConfig = {
+          duration: 1000,
+          dampingRatio: 0.9,
+          stiffness: 500,
+          velocity: velocityX,
+          overshootClamping: true,
+          ...animationOptionsProp,
+        };
+
         appliedTranslation.value = withSpring(
           toValue,
-          {
-            duration: 1000,
-            dampingRatio: 0.9,
-            stiffness: 500,
-            velocity: velocityX,
-            overshootClamping: true,
-            ...animationOptionsProp,
-          },
+          springConfig,
           (isFinished) => {
             if (isFinished) {
               runOnJS(dispatchEndEvents)(fromValue, toValue);
             }
           }
         );
+
+        const progressTarget = toValue == 0 ? 0 : 1;
+
+        // velocity is in px, while progress is in %
+        springConfig.velocity = 0;
+
         showLeftProgress.value =
-          leftWidth.value > 0
-            ? interpolate(
-                appliedTranslation.value,
-                [-1, 0, leftWidth.value],
-                [0, 0, 1]
-              )
-            : 0;
+          leftWidth.value > 0 ? withSpring(progressTarget, springConfig) : 0;
         showRightProgress.value =
-          rightWidth.value > 0
-            ? interpolate(
-                appliedTranslation.value,
-                [-rightWidth.value, 0, 1],
-                [1, 0, 0]
-              )
-            : 0;
+          rightWidth.value > 0 ? withSpring(progressTarget, springConfig) : 0;
 
         runOnJS(dispatchImmediateEvents)(fromValue, toValue);
       },
