@@ -376,10 +376,27 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             }
           }
         );
+        showLeftProgress.value =
+          leftWidth.value > 0
+            ? interpolate(
+                appliedTranslation.value,
+                [-1, 0, leftWidth.value],
+                [0, 0, 1]
+              )
+            : 0;
+        showRightProgress.value =
+          rightWidth.value > 0
+            ? interpolate(
+                appliedTranslation.value,
+                [-rightWidth.value, 0, 1],
+                [1, 0, 0]
+              )
+            : 0;
 
         runOnJS(dispatchImmediateEvents)(fromValue, toValue);
       },
       [
+        showLeftProgress,
         appliedTranslation,
         dispatchEndEvents,
         dispatchImmediateEvents,
@@ -417,6 +434,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       reset() {
         'worklet';
         userDrag.value = 0;
+        showLeftProgress.value = 0;
         appliedTranslation.value = 0;
         rowState.value = 0;
       },
@@ -620,6 +638,8 @@ const styles = StyleSheet.create({
   },
   childrenContainer: {
     flex: 1,
-    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
 });
