@@ -380,7 +380,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           }
         );
 
-        const progressTarget = toValue == 0 ? 0 : 1;
+        const progressTarget = toValue === 0 ? 0 : 1;
 
         // velocity is in px, while progress is in %
         springConfig.velocity = 0;
