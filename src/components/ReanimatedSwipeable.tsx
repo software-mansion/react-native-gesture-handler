@@ -244,6 +244,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
+    const overshootLeftProp = props.overshootLeft;
+    const overshootRightProp = props.overshootRight;
+
     const calculateCurrentOffset = useCallback(() => {
       'worklet';
       if (rowState.value === 1) {
@@ -258,10 +261,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       'worklet';
       rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
 
-      const {
-        overshootLeft = leftWidth.value > 0,
-        overshootRight = rightWidth.value > 0,
-      } = props;
+      const overshootLeft = overshootLeftProp ?? leftWidth.value > 0;
+      const overshootRight = overshootRightProp ?? rightWidth.value > 0;
 
       const startOffset =
         rowState.value === 1
@@ -353,6 +354,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [props, props.onSwipeableClose, props.onSwipeableOpen, swipeableMethods]
     );
 
+    const animationOptionsProp = props.animationOptions;
+
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
@@ -365,7 +368,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             dampingRatio: 1.2,
             stiffness: 500,
             velocity: velocityX,
-            ...props.animationOptions,
+            ...animationOptionsProp,
           },
           (isFinished) => {
             if (isFinished) {
@@ -380,7 +383,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         appliedTranslation,
         dispatchEndEvents,
         dispatchImmediateEvents,
-        props.animationOptions,
+        animationOptionsProp,
         rowState,
       ]
     );
@@ -471,6 +474,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
+    const leftThresholdProp = props.leftThreshold;
+    const rightThresholdProp = props.rightThreshold;
+
     const handleRelease = (
       event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
     ) => {
@@ -480,10 +486,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
       rightWidth.value = rowWidth.value - rightOffset.value;
 
-      const {
-        leftThreshold = leftWidth.value / 2,
-        rightThreshold = rightWidth.value / 2,
-      } = props;
+      const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
+      const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
 
       const startOffsetX = calculateCurrentOffset() + userDrag.value / friction;
       const translationX = (userDrag.value + DRAG_TOSS * velocityX) / friction;
@@ -522,6 +526,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     });
 
+    const onSwipeableOpenStartDrag = props.onSwipeableOpenStartDrag;
+    const onSwipeableCloseStartDrag = props.onSwipeableCloseStartDrag;
+
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
         userDrag.value = event.translationX;
@@ -535,10 +542,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? 'left'
             : 'right';
 
-        if (rowState.value === 0 && props.onSwipeableOpenStartDrag) {
-          runOnJS(props.onSwipeableOpenStartDrag)(direction);
-        } else if (rowState.value !== 0 && props.onSwipeableCloseStartDrag) {
-          runOnJS(props.onSwipeableCloseStartDrag)(direction);
+        if (rowState.value === 0 && onSwipeableOpenStartDrag) {
+          runOnJS(onSwipeableOpenStartDrag)(direction);
+        } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
+          runOnJS(onSwipeableCloseStartDrag)(direction);
         }
         updateAnimatedEvent();
       })
@@ -567,17 +574,22 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     );
 
     const composedGesture = Gesture.Race(panGesture, tapGesture);
+
+    const containerStyle = props.containerStyle;
+    const childrenContainerStyle = props.childrenContainerStyle;
+    const remainingProps = { ...props };
+
     return (
       <Animated.View
         onLayout={onRowLayout}
-        style={[styles.container, props.containerStyle]}>
+        style={[styles.container, containerStyle]}>
         {leftElement}
         {rightElement}
         <GestureDetector
           gesture={composedGesture}
           touchAction="pan-y"
-          {...props}>
-          <Animated.View style={[animatedStyle, props.childrenContainerStyle]}>
+          {...remainingProps}>
+          <Animated.View style={[animatedStyle, childrenContainerStyle]}>
             {children}
           </Animated.View>
         </GestureDetector>
