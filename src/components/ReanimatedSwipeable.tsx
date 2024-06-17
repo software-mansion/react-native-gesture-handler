@@ -365,9 +365,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           toValue,
           {
             duration: 1000,
-            dampingRatio: 1.2,
+            dampingRatio: 0.9,
             stiffness: 500,
             velocity: velocityX,
+            overshootClamping: true,
             ...animationOptionsProp,
           },
           (isFinished) => {
