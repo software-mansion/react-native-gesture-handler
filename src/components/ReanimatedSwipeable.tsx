@@ -589,7 +589,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           gesture={composedGesture}
           touchAction="pan-y"
           {...remainingProps}>
-          <Animated.View style={[animatedStyle, childrenContainerStyle]}>
+          <Animated.View
+            style={[
+              animatedStyle,
+              childrenContainerStyle,
+              styles.childrenContainer,
+            ]}>
             {children}
           </Animated.View>
         </GestureDetector>
@@ -612,5 +617,9 @@ const styles = StyleSheet.create({
   rightActions: {
     ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
+  },
+  childrenContainer: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
