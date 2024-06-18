@@ -16,35 +16,31 @@ const DEFAULT_HOVER_DELAY = 0;
 const adaptPressEvent = (
   event: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>
 ): any => ({
-  // : GestureResponderEvent
-  changedTouches: [], // not provided, source from previous
-  identifier: event.handlerTag, // string,
-
-  // get latest touch point
+  // return: GestureResponderEvent
+  changedTouches: [], // not provided, source from previous touches
+  identifier: event.handlerTag,
   locationX: event.x,
   locationY: event.y,
   pageX: event.absoluteX,
   pageY: event.absoluteY,
   target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? docs: string, lint: Component<unknown> & NativeMethods
-  timestamp: 0, // number,
-  touches: event.numberOfPointers, // docs: NativeTouchEvent[], lint: number
-  force: undefined, // number | undefined,
+  timestamp: 0,
+  touches: event.numberOfPointers, // ??? docs: NativeTouchEvent[], lint: number
+  force: undefined,
 });
 
 const adaptTouchEvent = (event: GestureTouchEvent): any => ({
-  // : GestureResponderEvent
+  // return: GestureResponderEvent
   changedTouches: event.changedTouches, // change to: NativeTouchEvent[], this is actually a recursive structure :/
-  identifier: event.handlerTag, // string,
-
-  // get latest touch point
+  identifier: event.handlerTag,
   locationX: event.allTouches.at(0)?.x,
   locationY: event.allTouches.at(0)?.y,
   pageX: event.allTouches.at(0)?.absoluteX,
   pageY: event.allTouches.at(0)?.absoluteY,
   target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? docs: string, lint: Component<unknown> & NativeMethods
-  timestamp: 0, // number,
-  touches: 0, // NativeTouchEvent[],
-  force: undefined, // number | undefined,
+  timestamp: 0,
+  touches: 0, // ??? docs: NativeTouchEvent[], lint: number
+  force: undefined,
 });
 
 export default function Pressable(props: PressableProps) {
