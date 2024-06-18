@@ -588,32 +588,29 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [appliedTranslation, rowState]
     );
 
-    const composedGesture = Gesture.Race(panGesture, tapGesture);
-
     const containerStyle = props.containerStyle;
     const childrenContainerStyle = props.childrenContainerStyle;
     const remainingProps = { ...props };
 
     return (
-      <Animated.View
-        onLayout={onRowLayout}
-        style={[styles.container, containerStyle]}>
-        {leftElement}
-        {rightElement}
-        <GestureDetector
-          gesture={composedGesture}
-          touchAction="pan-y"
-          {...remainingProps}>
-          <Animated.View
-            style={[
-              animatedStyle,
-              childrenContainerStyle,
-              styles.childrenContainer,
-            ]}>
-            {children}
-          </Animated.View>
-        </GestureDetector>
-      </Animated.View>
+      <GestureDetector gesture={panGesture} touchAction="pan-y">
+        <Animated.View
+          onLayout={onRowLayout}
+          style={[styles.container, containerStyle]}>
+          {leftElement}
+          {rightElement}
+          <GestureDetector gesture={tapGesture} {...remainingProps}>
+            <Animated.View
+              style={[
+                styles.childrenContainer,
+                animatedStyle,
+                childrenContainerStyle,
+              ]}>
+              {children}
+            </Animated.View>
+          </GestureDetector>
+        </Animated.View>
+      </GestureDetector>
     );
   }
 );
