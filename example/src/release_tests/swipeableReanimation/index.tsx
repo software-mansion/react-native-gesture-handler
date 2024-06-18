@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Animated as Laminated, StyleSheet } from 'react-native';
+import { Text, Animated, StyleSheet } from 'react-native';
 
 import {
   GestureHandlerRootView,
@@ -8,7 +8,8 @@ import {
 
 import { Swipeable } from 'react-native-gesture-handler';
 import { default as ReanimatedSwipeable } from 'react-native-gesture-handler/ReanimatedSwipeable';
-import Animated, {
+import {
+  default as Reanimated,
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
@@ -24,9 +25,9 @@ function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   });
 
   return (
-    <Animated.View style={styleAnimation}>
+    <Reanimated.View style={styleAnimation}>
       <Text style={styles.leftAction}>Text</Text>
-    </Animated.View>
+    </Reanimated.View>
   );
 }
 
@@ -41,9 +42,9 @@ function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   });
 
   return (
-    <Animated.View style={styleAnimation}>
+    <Reanimated.View style={styleAnimation}>
       <Text style={styles.rightAction}>Text</Text>
-    </Animated.View>
+    </Reanimated.View>
   );
 }
 
@@ -55,11 +56,11 @@ function LegacyLeftAction(prog: any, drag: any) {
     console.log('[L] appliedTranslation:', value.value);
   });
 
-  const trans = Laminated.subtract(drag, 50);
+  const trans = Animated.subtract(drag, 50);
 
   return (
     <RectButton>
-      <Laminated.Text
+      <Animated.Text
         style={[
           styles.leftAction,
           {
@@ -67,7 +68,7 @@ function LegacyLeftAction(prog: any, drag: any) {
           },
         ]}>
         Text
-      </Laminated.Text>
+      </Animated.Text>
     </RectButton>
   );
 }
@@ -80,11 +81,11 @@ function LegacyRightAction(prog: any, drag: any) {
     console.log('[L] appliedTranslation:', value.value);
   });
 
-  const trans = Laminated.add(drag, 50);
+  const trans = Animated.add(drag, 50);
 
   return (
     <RectButton>
-      <Laminated.Text
+      <Animated.Text
         style={[
           styles.rightAction,
           {
@@ -92,7 +93,7 @@ function LegacyRightAction(prog: any, drag: any) {
           },
         ]}>
         Text
-      </Laminated.Text>
+      </Animated.Text>
     </RectButton>
   );
 }
