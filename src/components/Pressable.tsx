@@ -70,24 +70,37 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      touchGesture.hitSlop(props.hitSlop);
-      pressGesture.hitSlop(props.hitSlop);
-      hoverGesture.hitSlop(props.hitSlop);
+      resetHitSlop();
 
       props.onPress?.(adaptEvent(event));
       props.onPressOut?.(adaptEvent(event));
 
       previousTouchData.current = event.allTouches;
       previousChangeData.current = event.changedTouches;
+    })
+    .onTouchesCancelled((event) => {
+      // we cannot just set `event.allTouches` and `event.changedTouches` here,
+      // as that could break `onTouchesDown` activation metric
+      previousTouchData.current = [];
+      previousChangeData.current = [];
+
+      resetHitSlop();
+
+      props.onPress?.(adaptEvent(event));
+      props.onPressOut?.(adaptEvent(event));
     });
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
   // todo: implement onBlur and onFocus, more details on how available in the PR
 
-  touchGesture.hitSlop(props.hitSlop);
-  pressGesture.hitSlop(props.hitSlop);
-  hoverGesture.hitSlop(props.hitSlop);
+  const resetHitSlop = () => {
+    touchGesture.hitSlop(props.hitSlop);
+    pressGesture.hitSlop(props.hitSlop);
+    hoverGesture.hitSlop(props.hitSlop);
+  };
+
+  resetHitSlop();
 
   touchGesture.enabled(props.disabled !== true);
   pressGesture.enabled(props.disabled !== true);
