@@ -7,13 +7,10 @@ import {
   Insets,
   StyleProp,
   ViewStyle,
+  GestureResponderEvent,
 } from 'react-native';
-import {
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-} from '../handlers/gestureHandlerCommon';
+import { GestureStateChangeEvent } from '../handlers/gestureHandlerCommon';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
-import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
 
 export interface PressableStateCallbackType {
   readonly pressed: boolean;
@@ -50,26 +47,22 @@ export interface PressableProps
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: null | ((event: GestureTouchEvent) => void);
+  onPress?: null | ((event: GestureResponderEvent) => void);
 
   /**
    * Called when a touch is engaged before `onPress`.
    */
-  onPressIn?: null | ((event: GestureTouchEvent) => void);
+  onPressIn?: null | ((event: GestureResponderEvent) => void);
 
   /**
    * Called when a touch is released before `onPress`.
    */
-  onPressOut?: null | ((event: GestureTouchEvent) => void);
+  onPressOut?: null | ((event: GestureResponderEvent) => void);
 
   /**
    * Called when a long-tap gesture is detected.
    */
-  onLongPress?:
-    | null
-    | ((
-        event: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>
-      ) => void);
+  onLongPress?: null | ((event: GestureResponderEvent) => void);
 
   /**
    * Called after the element loses focus.

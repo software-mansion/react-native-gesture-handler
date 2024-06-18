@@ -1,44 +1,28 @@
-import React, { useRef } from 'react';
-import { View, Insets, StyleSheet } from 'react-native';
+import React, { Component, useRef } from 'react';
+import { View, StyleSheet, NativeMethods } from 'react-native';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
-import { TouchData } from '../handlers/gestureHandlerCommon';
+import { GestureTouchEvent, TouchData } from '../handlers/gestureHandlerCommon';
 import { PressableProps } from './PressableProps';
 import { RectButton } from './GestureButtons';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
 
-function touchWithinBounds(
-  touch: TouchData,
-  offsets: Insets,
-  dimensions: Insets
-): boolean {
-  const isLeftbound =
-    offsets.left && dimensions.left
-      ? touch.absoluteX > dimensions.left - offsets.left
-      : true;
-  const isRightbound =
-    offsets.right && dimensions.right
-      ? touch.absoluteX < dimensions.right + offsets.right
-      : true;
-  const isBottombound =
-    offsets.bottom && dimensions.bottom
-      ? touch.absoluteY > dimensions.bottom - offsets.bottom
-      : true;
-  const isTopbound =
-    offsets.top && dimensions.top
-      ? touch.absoluteY < dimensions.top + offsets.top
-      : true;
+const adaptEvent = (event: GestureTouchEvent): any => ({
+  // : GestureResponderEvent
+  changedTouches: event.changedTouches, // change to: NativeTouchEvent[], this is actually a recursive structure :/
+  identifier: event.handlerTag, // string,
 
-  return isLeftbound && isRightbound && isTopbound && isBottombound;
-}
-
-const calculateEvenBounds = (distance: number) => ({
-  bottom: distance,
-  top: distance,
-  left: distance,
-  right: distance,
+  // get latest touch point
+  locationX: event.allTouches.at(-1)?.x,
+  locationY: event.allTouches.at(-1)?.y,
+  pageX: event.allTouches.at(-1)?.absoluteX,
+  pageY: event.allTouches.at(-1)?.absoluteY,
+  target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? string,
+  timestamp: 0, // number,
+  touches: 0, // NativeTouchEvent[],
+  force: undefined, // number | undefined,
 });
 
 export default function Pressable(props: PressableProps) {
@@ -46,83 +30,8 @@ export default function Pressable(props: PressableProps) {
   const previousChangeData = useRef<TouchData[] | null>(null);
   const pressableRef = useRef<View>(null);
 
-  const pressRetentionOffset: Insets | null | undefined =
-    typeof props.pressRetentionOffset === 'number'
-      ? {
-          top: props.pressRetentionOffset,
-          left: props.pressRetentionOffset,
-          bottom: props.pressRetentionOffset,
-          right: props.pressRetentionOffset,
-        }
-      : props.pressRetentionOffset;
-
-  const touchGesture = Gesture.Native()
-    .onTouchesDown((event) => {
-      // check if all touching fingers were lifted up on the previous event
-      if (
-        !previousTouchData.current ||
-        !previousChangeData.current ||
-        previousTouchData.current?.length === previousChangeData.current?.length
-      ) {
-        props.onPressIn?.(event);
-        previousTouchData.current = event.allTouches;
-        previousChangeData.current = event.changedTouches;
-      }
-    })
-    .onTouchesUp((event) => {
-      // doesn't call onPressOut untill the last pointer leaves, while within bounds
-      if (event.allTouches.length > event.changedTouches.length) {
-        previousTouchData.current = event.allTouches;
-        previousChangeData.current = event.changedTouches;
-        return;
-      }
-
-      if (!pressRetentionOffset) {
-        // we cannot just set shouldCancelWhenOutside,
-        // that would disable pressRetentionOffset
-        pressableRef.current?.measure((x, y, width, height) => {
-          if (
-            previousTouchData.current?.find((touch) =>
-              touchWithinBounds(touch, calculateEvenBounds(0), {
-                bottom: y,
-                top: y + height,
-                left: x,
-                right: x + width,
-              })
-            )
-          ) {
-            props.onPress?.(event);
-            props.onPressOut?.(event);
-          }
-        });
-        previousTouchData.current = event.allTouches;
-        previousChangeData.current = event.changedTouches;
-        return;
-      }
-
-      pressableRef.current?.measure((x, y, width, height) => {
-        const pressableDimensions = {
-          bottom: y,
-          top: y + height,
-          left: x,
-          right: x + width,
-        } as Insets;
-
-        if (
-          event.allTouches.find((touch) =>
-            touchWithinBounds(touch, pressRetentionOffset, pressableDimensions)
-          )
-        ) {
-          props.onPress?.(event);
-          props.onPressOut?.(event);
-        }
-      });
-      previousTouchData.current = event.allTouches;
-      previousChangeData.current = event.changedTouches;
-    });
-
   const pressGesture = Gesture.LongPress().onStart((event) => {
-    props.onLongPress?.(event);
+    props.onLongPress?.(adaptEvent(event as any));
   });
 
   const hoverGesture = Gesture.Hover()
@@ -137,6 +46,39 @@ export default function Pressable(props: PressableProps) {
         () => props.onHoverOut?.(event),
         props.delayHoverOut ?? DEFAULT_HOVER_DELAY
       );
+    });
+
+  const touchGesture = Gesture.Native()
+    .onTouchesDown((event) => {
+      // check if all touching fingers were lifted up on the previous event
+      if (
+        !previousTouchData.current ||
+        !previousChangeData.current ||
+        previousTouchData.current?.length === previousChangeData.current?.length
+      ) {
+        props.onPressIn?.(adaptEvent(event));
+        touchGesture.hitSlop(props.pressRetentionOffset);
+        previousTouchData.current = event.allTouches;
+        previousChangeData.current = event.changedTouches;
+      }
+    })
+    .onTouchesUp((event) => {
+      // doesn't call onPressOut untill the last pointer leaves, while within bounds
+      if (event.allTouches.length > event.changedTouches.length) {
+        previousTouchData.current = event.allTouches;
+        previousChangeData.current = event.changedTouches;
+        return;
+      }
+
+      touchGesture.hitSlop(props.hitSlop);
+      pressGesture.hitSlop(props.hitSlop);
+      hoverGesture.hitSlop(props.hitSlop);
+
+      props.onPress?.(adaptEvent(event));
+      props.onPressOut?.(adaptEvent(event));
+
+      previousTouchData.current = event.allTouches;
+      previousChangeData.current = event.changedTouches;
     });
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
