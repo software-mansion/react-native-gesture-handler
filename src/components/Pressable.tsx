@@ -5,21 +5,43 @@ import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import { GestureTouchEvent, TouchData } from '../handlers/gestureHandlerCommon';
 import { PressableProps } from './PressableProps';
 import { RectButton } from './GestureButtons';
+import {
+  GestureStateChangeEvent,
+  LongPressGestureHandlerEventPayload,
+} from '../../src';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
 
-const adaptEvent = (event: GestureTouchEvent): any => ({
+const adaptPressEvent = (
+  event: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>
+): any => ({
+  // : GestureResponderEvent
+  changedTouches: [], // not provided, source from previous
+  identifier: event.handlerTag, // string,
+
+  // get latest touch point
+  locationX: event.x,
+  locationY: event.y,
+  pageX: event.absoluteX,
+  pageY: event.absoluteY,
+  target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? docs: string, lint: Component<unknown> & NativeMethods
+  timestamp: 0, // number,
+  touches: event.numberOfPointers, // docs: NativeTouchEvent[], lint: number
+  force: undefined, // number | undefined,
+});
+
+const adaptTouchEvent = (event: GestureTouchEvent): any => ({
   // : GestureResponderEvent
   changedTouches: event.changedTouches, // change to: NativeTouchEvent[], this is actually a recursive structure :/
   identifier: event.handlerTag, // string,
 
   // get latest touch point
-  locationX: event.allTouches.at(-1)?.x,
-  locationY: event.allTouches.at(-1)?.y,
-  pageX: event.allTouches.at(-1)?.absoluteX,
-  pageY: event.allTouches.at(-1)?.absoluteY,
-  target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? string,
+  locationX: event.allTouches.at(0)?.x,
+  locationY: event.allTouches.at(0)?.y,
+  pageX: event.allTouches.at(0)?.absoluteX,
+  pageY: event.allTouches.at(0)?.absoluteY,
+  target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? docs: string, lint: Component<unknown> & NativeMethods
   timestamp: 0, // number,
   touches: 0, // NativeTouchEvent[],
   force: undefined, // number | undefined,
@@ -31,7 +53,7 @@ export default function Pressable(props: PressableProps) {
   const pressableRef = useRef<View>(null);
 
   const pressGesture = Gesture.LongPress().onStart((event) => {
-    props.onLongPress?.(adaptEvent(event as any));
+    props.onLongPress?.(adaptPressEvent(event));
   });
 
   const hoverGesture = Gesture.Hover()
@@ -59,7 +81,7 @@ export default function Pressable(props: PressableProps) {
         !previousChangeData.current ||
         previousTouchData.current?.length === previousChangeData.current?.length
       ) {
-        props.onPressIn?.(adaptEvent(event));
+        props.onPressIn?.(adaptTouchEvent(event));
         setHitSlop.current();
         previousTouchData.current = event.allTouches;
         previousChangeData.current = event.changedTouches;
@@ -75,8 +97,8 @@ export default function Pressable(props: PressableProps) {
 
       resetHitSlop.current();
 
-      props.onPress?.(adaptEvent(event));
-      props.onPressOut?.(adaptEvent(event));
+      props.onPress?.(adaptTouchEvent(event));
+      props.onPressOut?.(adaptTouchEvent(event));
 
       previousTouchData.current = event.allTouches;
       previousChangeData.current = event.changedTouches;
@@ -89,8 +111,8 @@ export default function Pressable(props: PressableProps) {
 
       resetHitSlop.current();
 
-      props.onPress?.(adaptEvent(event));
-      props.onPressOut?.(adaptEvent(event));
+      props.onPress?.(adaptTouchEvent(event));
+      props.onPressOut?.(adaptTouchEvent(event));
     });
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
