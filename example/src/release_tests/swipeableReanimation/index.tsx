@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Animated, StyleSheet } from 'react-native';
+import { Text, Animated, StyleSheet, View } from 'react-native';
 
 import {
   GestureHandlerRootView,
@@ -101,8 +101,10 @@ function LegacyRightAction(prog: any, drag: any) {
 export default function Example() {
   return (
     <GestureHandlerRootView>
+      <View style={styles.separator} />
+
       <ReanimatedSwipeable
-        containerStyle={styles.reanimatedContainer}
+        containerStyle={styles.swipeable}
         friction={2}
         leftThreshold={80}
         enableTrackpadTwoFingerGesture
@@ -112,8 +114,10 @@ export default function Example() {
         <Text>[Reanimated] Swipe me!</Text>
       </ReanimatedSwipeable>
 
+      <View style={styles.separator} />
+
       <Swipeable
-        containerStyle={styles.legacyContainer}
+        containerStyle={styles.swipeable}
         friction={2}
         leftThreshold={80}
         enableTrackpadTwoFingerGesture
@@ -122,6 +126,8 @@ export default function Example() {
         renderRightActions={LegacyRightAction}>
         <Text>[Legacy] Swipe me!</Text>
       </Swipeable>
+
+      <View style={styles.separator} />
     </GestureHandlerRootView>
   );
 }
@@ -129,17 +135,13 @@ export default function Example() {
 const styles = StyleSheet.create({
   leftAction: { width: 50, height: 50, backgroundColor: 'crimson' },
   rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
-  reanimatedContainer: {
-    height: 50,
-    backgroundColor: 'papayawhip',
-    alignItems: 'center',
+  separator: {
+    width: '100%',
     borderTopWidth: 1,
-    borderBottomWidth: 1,
   },
-  legacyContainer: {
+  swipeable: {
     height: 50,
     backgroundColor: 'papayawhip',
     alignItems: 'center',
-    borderBottomWidth: 1,
   },
 });
