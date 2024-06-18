@@ -16,6 +16,7 @@ import {
   GestureUpdateEvent,
 } from '../handlers/gestureHandlerCommon';
 import {
+  PanGestureConfig,
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
 } from '../handlers/PanGestureHandler';
@@ -36,6 +37,8 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { BaseGestureConfig } from 'src/handlers/gestures/gesture';
+import { TapGestureConfig } from 'src/handlers/TapGestureHandler';
 
 const DRAG_TOSS = 0.05;
 
@@ -570,6 +573,18 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
       );
 
+    const remainingProps = { ...props };
+
+    panGesture.config = { ...remainingProps } as Extract<
+      SwipeableProps,
+      BaseGestureConfig & PanGestureConfig
+    >;
+
+    tapGesture.config = { ...remainingProps } as Extract<
+      SwipeableProps,
+      BaseGestureConfig & TapGestureConfig
+    >;
+
     panGesture.activeOffsetX([
       -dragOffsetFromRightEdge,
       dragOffsetFromLeftEdge,
@@ -590,7 +605,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const containerStyle = props.containerStyle;
     const childrenContainerStyle = props.childrenContainerStyle;
-    const remainingProps = { ...props };
 
     return (
       <GestureDetector gesture={panGesture} touchAction="pan-y">
@@ -599,7 +613,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           style={[styles.container, containerStyle]}>
           {leftElement}
           {rightElement}
-          <GestureDetector gesture={tapGesture} {...remainingProps}>
+          <GestureDetector gesture={tapGesture}>
             <Animated.View
               style={[
                 styles.childrenContainer,
