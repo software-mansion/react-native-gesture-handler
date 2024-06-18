@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
 import { View, Insets, StyleSheet } from 'react-native';
-import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import { TouchData } from '../handlers/gestureHandlerCommon';
 import { PressableProps } from './PressableProps';
+import { RectButton } from './GestureButtons';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
@@ -147,8 +147,6 @@ export default function Pressable(props: PressableProps) {
   pressGesture.hitSlop(props.hitSlop);
   hoverGesture.hitSlop(props.hitSlop);
 
-  // todo: add props.pressRetentionOffset, according to docs, they're relative to pressable, not hitSlop
-
   touchGesture.enabled(props.disabled !== false);
   pressGesture.enabled(props.disabled !== false);
   hoverGesture.enabled(props.disabled !== false);
@@ -163,8 +161,12 @@ export default function Pressable(props: PressableProps) {
     touchGesture
   );
 
+  pressableRef.current?.blur();
+
   return (
-    <GestureHandlerRootView>
+    <RectButton
+      rippleColor={props.android_ripple?.color}
+      rippleRadius={props.android_ripple?.radius}>
       <GestureDetector gesture={gesture}>
         <View
           ref={pressableRef}
@@ -179,7 +181,7 @@ export default function Pressable(props: PressableProps) {
             : props.children}
         </View>
       </GestureDetector>
-    </GestureHandlerRootView>
+    </RectButton>
   );
 }
 
