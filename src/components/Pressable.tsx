@@ -121,10 +121,8 @@ export default function Pressable(props: PressableProps) {
       previousChangeData.current = event.changedTouches;
     });
 
-  const pressGesture = Gesture.LongPress().onEnd((event, success) => {
-    if (success) {
-      props.onLongPress?.(event);
-    }
+  const pressGesture = Gesture.LongPress().onStart((event) => {
+    props.onLongPress?.(event);
   });
 
   const hoverGesture = Gesture.Hover()
