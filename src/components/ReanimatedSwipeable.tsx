@@ -174,8 +174,6 @@ export interface SwipeableProps
     swipeable: SwipeableMethods
   ) => React.ReactNode;
 
-  useNativeAnimations?: boolean;
-
   animationOptions?: Record<string, unknown>;
 
   /**
