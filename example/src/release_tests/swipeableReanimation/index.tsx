@@ -7,7 +7,7 @@ import {
 } from 'react-native-gesture-handler';
 
 import { Swipeable } from 'react-native-gesture-handler';
-import { default as ReanimatedSwipeable } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import {
   default as Reanimated,
   SharedValue,
