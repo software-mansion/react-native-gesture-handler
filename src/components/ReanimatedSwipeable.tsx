@@ -16,7 +16,6 @@ import {
   GestureUpdateEvent,
 } from '../handlers/gestureHandlerCommon';
 import {
-  PanGestureConfig,
   PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
 } from '../handlers/PanGestureHandler';
@@ -37,8 +36,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { BaseGestureConfig } from 'src/handlers/gestures/gesture';
-import { TapGestureConfig } from 'src/handlers/TapGestureHandler';
 
 const DRAG_TOSS = 0.05;
 
@@ -577,12 +574,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     panGesture.config = { ...remainingProps } as Extract<
       SwipeableProps,
-      BaseGestureConfig & PanGestureConfig
+      typeof panGesture.config
     >;
 
     tapGesture.config = { ...remainingProps } as Extract<
       SwipeableProps,
-      BaseGestureConfig & TapGestureConfig
+      typeof tapGesture.config
     >;
 
     panGesture.activeOffsetX([
