@@ -570,17 +570,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
       );
 
-    const remainingProps = { ...props };
-
-    panGesture.config = { ...remainingProps } as Extract<
-      SwipeableProps,
-      typeof panGesture.config
-    >;
-
-    tapGesture.config = { ...remainingProps } as Extract<
-      SwipeableProps,
-      typeof tapGesture.config
-    >;
+    if (props.enableTrackpadTwoFingerGesture) {
+      panGesture.enableTrackpadTwoFingerGesture(
+        props.enableTrackpadTwoFingerGesture
+      );
+    }
 
     panGesture.activeOffsetX([
       -dragOffsetFromRightEdge,
