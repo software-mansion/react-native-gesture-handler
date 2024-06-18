@@ -147,9 +147,9 @@ export default function Pressable(props: PressableProps) {
   pressGesture.hitSlop(props.hitSlop);
   hoverGesture.hitSlop(props.hitSlop);
 
-  touchGesture.enabled(props.disabled !== false);
-  pressGesture.enabled(props.disabled !== false);
-  hoverGesture.enabled(props.disabled !== false);
+  touchGesture.enabled(props.disabled !== true);
+  pressGesture.enabled(props.disabled !== true);
+  hoverGesture.enabled(props.disabled !== true);
 
   touchGesture.runOnJS(true);
   pressGesture.runOnJS(true);
