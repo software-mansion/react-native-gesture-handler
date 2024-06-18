@@ -66,8 +66,8 @@ export default function Pressable(props: PressableProps) {
       );
     });
 
-  const resetHitSlop = useRef(() => undefined);
-  const setHitSlop = useRef(() => undefined);
+  const resetHitSlop = useRef<() => void>(() => null);
+  const setHitSlop = useRef<() => void>(() => null);
 
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
