@@ -48,6 +48,9 @@ export default function Pressable(props: PressableProps) {
       );
     });
 
+  const resetHitSlop = useRef(() => undefined);
+  const setHitSlop = useRef(() => undefined);
+
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
       // check if all touching fingers were lifted up on the previous event
@@ -57,7 +60,7 @@ export default function Pressable(props: PressableProps) {
         previousTouchData.current?.length === previousChangeData.current?.length
       ) {
         props.onPressIn?.(adaptEvent(event));
-        touchGesture.hitSlop(props.pressRetentionOffset);
+        setHitSlop.current();
         previousTouchData.current = event.allTouches;
         previousChangeData.current = event.changedTouches;
       }
@@ -70,7 +73,7 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      resetHitSlop();
+      resetHitSlop.current();
 
       props.onPress?.(adaptEvent(event));
       props.onPressOut?.(adaptEvent(event));
@@ -84,7 +87,7 @@ export default function Pressable(props: PressableProps) {
       previousTouchData.current = [];
       previousChangeData.current = [];
 
-      resetHitSlop();
+      resetHitSlop.current();
 
       props.onPress?.(adaptEvent(event));
       props.onPressOut?.(adaptEvent(event));
@@ -94,13 +97,19 @@ export default function Pressable(props: PressableProps) {
 
   // todo: implement onBlur and onFocus, more details on how available in the PR
 
-  const resetHitSlop = () => {
+  resetHitSlop.current = () => {
     touchGesture.hitSlop(props.hitSlop);
     pressGesture.hitSlop(props.hitSlop);
     hoverGesture.hitSlop(props.hitSlop);
   };
 
-  resetHitSlop();
+  setHitSlop.current = () => {
+    touchGesture.hitSlop(props.pressRetentionOffset);
+    pressGesture.hitSlop(props.pressRetentionOffset);
+    hoverGesture.hitSlop(props.pressRetentionOffset);
+  };
+
+  resetHitSlop.current();
 
   touchGesture.enabled(props.disabled !== true);
   pressGesture.enabled(props.disabled !== true);
