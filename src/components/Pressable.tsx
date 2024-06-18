@@ -161,8 +161,6 @@ export default function Pressable(props: PressableProps) {
     touchGesture
   );
 
-  pressableRef.current?.blur();
-
   return (
     <RectButton
       rippleColor={props.android_ripple?.color}
