@@ -614,12 +614,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           {leftElement}
           {rightElement}
           <GestureDetector gesture={tapGesture}>
-            <Animated.View
-              style={[
-                styles.childrenContainer,
-                animatedStyle,
-                childrenContainerStyle,
-              ]}>
+            <Animated.View style={[animatedStyle, childrenContainerStyle]}>
               {children}
             </Animated.View>
           </GestureDetector>
@@ -643,10 +638,5 @@ const styles = StyleSheet.create({
   rightActions: {
     ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
-  },
-  childrenContainer: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
   },
 });
