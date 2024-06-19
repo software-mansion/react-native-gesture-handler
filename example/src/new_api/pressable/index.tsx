@@ -54,14 +54,14 @@ const BG_COLOR = '#F5FCFF';
 
 const styles = StyleSheet.create({
   pressRectContainer: {
-    backgroundColor: 'lightpink',
+    backgroundColor: '#FFE1F0',
     padding: 20,
     width: 200,
     height: 200,
     margin: 'auto',
   },
   hitRectContainer: {
-    backgroundColor: 'pink',
+    backgroundColor: '#F29DC3',
     padding: 20,
     width: 160,
     height: 160,
