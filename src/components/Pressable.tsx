@@ -1,89 +1,94 @@
-import React, { Component, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  NativeMethods,
-  GestureResponderEvent,
-  NativeTouchEvent,
-} from 'react-native';
+import React, { useRef } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
-import { GestureTouchEvent, TouchData } from '../handlers/gestureHandlerCommon';
-import { PressableProps } from './PressableProps';
-import { RectButton } from './GestureButtons';
 import {
   GestureStateChangeEvent,
-  LongPressGestureHandlerEventPayload,
-} from '../../src';
+  GestureTouchEvent,
+  TouchData,
+} from '../handlers/gestureHandlerCommon';
+import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
+import { RectButton } from './GestureButtons';
+import { HoverGestureHandlerEventPayload } from 'src/handlers/gestures/hoverGesture';
+import { LongPressGestureHandlerEventPayload } from 'src/handlers/LongPressGestureHandler';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
 
-const adaptPressEvent = (
-  event: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>
-): any => ({
-  // return: GestureResponderEvent
-  changedTouches: [], // not available, source from previous touches
-  identifier: event.handlerTag,
-  locationX: event.x,
-  locationY: event.y,
-  pageX: event.absoluteX,
-  pageY: event.absoluteY,
-  target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? docs: string, lint: Component<unknown> & NativeMethods
-  timestamp: 0,
-  touches: event.numberOfPointers, // ??? docs: NativeTouchEvent[], lint: number
-  force: undefined,
+const touchToPressEvent = (data: TouchData, timestamp: number): PressEvent => ({
+  identifier: data.id,
+  locationX: data.x,
+  locationY: data.y,
+  pageX: data.absoluteX,
+  pageY: data.absoluteY,
+  target: 0,
+  timestamp: timestamp,
+  touches: [], // linter-required, not present in reality
+  changedTouches: [], // linter-required, not present in reality
 });
 
-const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
+const changeToTouchData = (
+  event: GestureStateChangeEvent<
+    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+  >
+): TouchData => ({
+  id: 0,
+  x: event.x,
+  y: event.y,
+  absoluteX: event.absoluteX,
+  absoluteY: event.absoluteY,
+});
+
+const adaptStateChangeEvent = (
+  event: GestureStateChangeEvent<
+    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+  >
+): PressableEvent => {
   const timestamp = Date.now();
 
-  const touchToNative = (data: TouchData): NativeTouchEvent => ({
-    identifier: '',
-    locationX: data.x,
-    locationY: data.y,
-    pageX: data.absoluteX,
-    pageY: data.absoluteY,
-    target: '',
-    timestamp: timestamp,
-    touches: [], // linter-required, not present in reality
-    changedTouches: [], // linter-required, not present in reality
-  });
+  const touchData = changeToTouchData(event);
 
-  const nativeTouches = event.allTouches.map((touch) => touchToNative(touch));
+  const pressEvent = touchToPressEvent(touchData, timestamp);
+
+  return {
+    nativeEvent: {
+      touches: [pressEvent],
+      changedTouches: [pressEvent],
+      identifier: event.handlerTag,
+      locationX: event.x ?? -1,
+      locationY: event.y ?? -1,
+      pageX: event.absoluteX ?? -1,
+      pageY: event.absoluteY ?? -1,
+      target: 0, // node ID
+      timestamp: timestamp,
+      force: undefined,
+    },
+  };
+};
+
+const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
+  const timestamp = Date.now();
+
+  const nativeTouches = event.allTouches.map((touch) =>
+    touchToPressEvent(touch, timestamp)
+  );
   const nativeChangedTouches = event.changedTouches.map((touch) =>
-    touchToNative(touch)
+    touchToPressEvent(touch, timestamp)
   );
 
   return {
     nativeEvent: {
-      // in reality this object has combination key press checks
-      // even though this type doesn't allow for that...
       touches: nativeTouches, // NativeTouchEvent[]
       changedTouches: nativeChangedTouches, // NativeTouchEvent[]
-      identifier: event.handlerTag.toString(),
+      identifier: event.handlerTag,
       locationX: event.allTouches.at(0)?.x ?? -1,
       locationY: event.allTouches.at(0)?.y ?? -1,
       pageX: event.allTouches.at(0)?.absoluteX ?? -1,
       pageY: event.allTouches.at(0)?.absoluteY ?? -1,
-      target: 'a', // node ID
+      target: 0, // node ID
       timestamp: timestamp,
       force: undefined,
     },
-    currentTarget: 0 as any,
-    target: 0 as any,
-    bubbles: true,
-    cancelable: true,
-    defaultPrevented: false,
-    eventPhase: 0,
-    isTrusted: true,
-    preventDefault: () => null,
-    isDefaultPrevented: () => false,
-    stopPropagation: () => null,
-    isPropagationStopped: () => false,
-    persist: () => null,
-    timeStamp: timestamp,
-    type: '',
   };
 };
 
@@ -93,19 +98,19 @@ export default function Pressable(props: PressableProps) {
   const pressableRef = useRef<typeof RectButton>(null);
 
   const pressGesture = Gesture.LongPress().onStart((event) => {
-    props.onLongPress?.(adaptPressEvent(event));
+    props.onLongPress?.(adaptStateChangeEvent(event));
   });
 
   const hoverGesture = Gesture.Hover()
     .onBegin((event) => {
       setTimeout(
-        () => props.onHoverIn?.(event),
+        () => props.onHoverIn?.(adaptStateChangeEvent(event)),
         props.delayHoverIn ?? DEFAULT_HOVER_DELAY
       );
     })
     .onEnd((event) => {
       setTimeout(
-        () => props.onHoverOut?.(event),
+        () => props.onHoverOut?.(adaptStateChangeEvent(event)),
         props.delayHoverOut ?? DEFAULT_HOVER_DELAY
       );
     });

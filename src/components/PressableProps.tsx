@@ -2,15 +2,10 @@ import {
   ColorValue,
   AccessibilityProps,
   ViewProps,
-  NativeSyntheticEvent,
-  TargetedEvent,
   Insets,
   StyleProp,
   ViewStyle,
-  GestureResponderEvent,
 } from 'react-native';
-import { GestureStateChangeEvent } from '../handlers/gestureHandlerCommon';
-import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 
 export interface PressableStateCallbackType {
   readonly pressed: boolean;
@@ -23,58 +18,53 @@ export interface PressableAndroidRippleConfig {
   foreground?: null | boolean | undefined;
 }
 
+export type PressEvent = {
+  changedTouches: PressEvent[];
+  identifier: number;
+  locationX: number;
+  locationY: number;
+  pageX: number;
+  pageY: number;
+  target: number;
+  timestamp: number;
+  touches: PressEvent[];
+  force?: number;
+};
+
+export type PressableEvent = { nativeEvent: PressEvent };
+
 export interface PressableProps
   extends AccessibilityProps,
     Omit<ViewProps, 'children' | 'style' | 'hitSlop'> {
   /**
    * Called when the hover is activated to provide visual feedback.
    */
-  onHoverIn?:
-    | null
-    | ((
-        event: GestureStateChangeEvent<HoverGestureHandlerEventPayload>
-      ) => void);
+  onHoverIn?: null | ((event: PressableEvent) => void);
 
   /**
    * Called when the hover is deactivated to undo visual feedback.
    */
-  onHoverOut?:
-    | null
-    | ((
-        event: GestureStateChangeEvent<HoverGestureHandlerEventPayload>
-      ) => void);
+  onHoverOut?: null | ((event: PressableEvent) => void);
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: null | ((event: GestureResponderEvent) => void);
+  onPress?: null | ((event: PressableEvent) => void);
 
   /**
    * Called when a touch is engaged before `onPress`.
    */
-  onPressIn?: null | ((event: GestureResponderEvent) => void);
+  onPressIn?: null | ((event: PressableEvent) => void);
 
   /**
    * Called when a touch is released before `onPress`.
    */
-  onPressOut?: null | ((event: GestureResponderEvent) => void);
+  onPressOut?: null | ((event: PressableEvent) => void);
 
   /**
    * Called when a long-tap gesture is detected.
    */
-  onLongPress?: null | ((event: GestureResponderEvent) => void);
-
-  /**
-   * Called after the element loses focus.
-   * @platform macos windows
-   */
-  onBlur?: null | ((event: NativeSyntheticEvent<TargetedEvent>) => void);
-
-  /**
-   * Called after the element is focused.
-   * @platform macos windows
-   */
-  onFocus?: null | ((event: NativeSyntheticEvent<TargetedEvent>) => void);
+  onLongPress?: null | ((event: PressableEvent) => void);
 
   /**
    * Either children or a render prop that receives a boolean reflecting whether
@@ -93,12 +83,14 @@ export interface PressableProps
   /**
    * Duration to wait after hover in before calling `onHoverIn`.
    * @platform macos windows
+   * | NOTE: not present in RN docs
    */
   delayHoverIn?: number | null;
 
   /**
    * Duration to wait after hover out before calling `onHoverOut`.
    * @platform macos windows
+   * | NOTE: not present in RN docs
    */
   delayHoverOut?: number | null;
 
