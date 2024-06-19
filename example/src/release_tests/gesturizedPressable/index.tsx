@@ -4,36 +4,36 @@ import { Pressable } from 'react-native';
 import { Pressable as GesturizedPressable } from 'react-native-gesture-handler';
 
 export default function Example() {
-  const pressIn = (event: any) => {
-    console.log(`[${event}] Pressable pressed in`);
+  const pressIn = (id: any) => {
+    console.log(`[${id}] Pressable pressed in`);
   };
 
-  const pressOut = (event: any) => {
-    console.log(`[${event}] Pressable pressed out`);
+  const pressOut = (id: any) => {
+    console.log(`[${id}] Pressable pressed out`);
   };
 
-  const press = (event: any) => {
-    console.log(`[${event}] Pressable pressed`);
+  const press = (id: any, event: any) => {
+    console.log(`[${id}] Pressable pressed:`, event);
   };
 
-  const hoverIn = (event: any) => {
-    console.log(`[${event}] Hovered in`);
+  const hoverIn = (id: any) => {
+    console.log(`[${id}] Hovered in`);
   };
 
-  const hoverOut = (event: any) => {
-    console.log(`[${event}] Hovered out`);
+  const hoverOut = (id: any) => {
+    console.log(`[${id}] Hovered out`);
   };
 
-  const focus = (event: any) => {
-    console.log(`[${event}] Focused pressable`);
+  const focus = (id: any) => {
+    console.log(`[${id}] Focused pressable`);
   };
 
-  const blur = (event: any) => {
-    console.log(`[${event}] Blurred pressable`);
+  const blur = (id: any) => {
+    console.log(`[${id}] Blurred pressable`);
   };
 
-  const longPress = (event: any) => {
-    console.log(`[${event}] Long pressed`);
+  const longPress = (id: any) => {
+    console.log(`[${id}] Long pressed`);
   };
 
   return (
@@ -43,11 +43,9 @@ export default function Example() {
           style={styles.pressable}
           onPressIn={() => pressIn('GH')}
           onPressOut={() => pressOut('GH')}
-          onPress={() => press('GH')}
+          onPress={(event) => press('GH', event)}
           onHoverIn={() => hoverIn('GH')}
           onHoverOut={() => hoverOut('GH')}
-          onFocus={() => focus('GH')}
-          onBlur={() => blur('GH')}
           onLongPress={() => longPress('GH')}>
           <View style={styles.textWrapper}>
             <Text style={styles.text}>Gesturized press!</Text>
@@ -59,12 +57,13 @@ export default function Example() {
           style={styles.pressable}
           onPressIn={() => pressIn('P')}
           onPressOut={() => pressOut('P')}
-          onPress={() => press('P')}
+          onPress={(event) => press('P', event)}
           onHoverIn={() => hoverIn('P')}
           onHoverOut={() => hoverOut('P')}
-          onFocus={() => focus('P')}
-          onBlur={() => blur('P')}
-          onLongPress={() => longPress('P')}>
+          onLongPress={() => longPress('P')}
+          onFocus={() => focus('P')} // web only
+          onBlur={() => blur('P')} // web only
+        >
           <View style={styles.textWrapper}>
             <Text style={styles.text}>Legacy press!</Text>
           </View>
