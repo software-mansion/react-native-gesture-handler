@@ -1,5 +1,11 @@
 import React, { Component, useRef } from 'react';
-import { View, StyleSheet, NativeMethods } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  NativeMethods,
+  GestureResponderEvent,
+  NativeTouchEvent,
+} from 'react-native';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import { GestureTouchEvent, TouchData } from '../handlers/gestureHandlerCommon';
@@ -17,7 +23,7 @@ const adaptPressEvent = (
   event: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>
 ): any => ({
   // return: GestureResponderEvent
-  changedTouches: [], // not provided, source from previous touches
+  changedTouches: [], // not available, source from previous touches
   identifier: event.handlerTag,
   locationX: event.x,
   locationY: event.y,
@@ -29,19 +35,66 @@ const adaptPressEvent = (
   force: undefined,
 });
 
-const adaptTouchEvent = (event: GestureTouchEvent): any => ({
-  // return: GestureResponderEvent
-  changedTouches: event.changedTouches, // change to: NativeTouchEvent[], this is actually a recursive structure :/
-  identifier: event.handlerTag,
-  locationX: event.allTouches.at(0)?.x,
-  locationY: event.allTouches.at(0)?.y,
-  pageX: event.allTouches.at(0)?.absoluteX,
-  pageY: event.allTouches.at(0)?.absoluteY,
-  target: 'a' as unknown as Component<unknown> & NativeMethods, // ??? docs: string, lint: Component<unknown> & NativeMethods
-  timestamp: 0,
-  touches: 0, // ??? docs: NativeTouchEvent[], lint: number
-  force: undefined,
-});
+const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
+  // changedTouches and touches is a recursive self referencing structure,
+  // OR they are just using the same data structure for parent and child, even though they have different roles
+  // i will test which one is it, but i'm inclined to believe the former
+  const touchToNative = (data: TouchData): NativeTouchEvent => ({
+    changedTouches: [],
+    identifier: '',
+    locationX: data.x,
+    locationY: data.y,
+    pageX: data.absoluteX,
+    pageY: data.absoluteY,
+    target: '',
+    timestamp: 0,
+    touches: [],
+  });
+
+  const nativeTouches = event.allTouches.map((touch) => touchToNative(touch));
+  const nativeChangedTouches = event.changedTouches.map((touch) =>
+    touchToNative(touch)
+  );
+
+  // set the self referencing structure in place
+  nativeTouches.forEach((element) => (element.touches = nativeTouches));
+  nativeTouches.forEach(
+    (element) => (element.changedTouches = nativeChangedTouches)
+  );
+  nativeChangedTouches.forEach((element) => (element.touches = nativeTouches));
+  nativeChangedTouches.forEach(
+    (element) => (element.changedTouches = nativeChangedTouches)
+  );
+
+  return {
+    nativeEvent: {
+      touches: nativeTouches, // NativeTouchEvent[]
+      changedTouches: nativeChangedTouches, // NativeTouchEvent[]
+      identifier: event.handlerTag.toString(),
+      locationX: event.allTouches.at(0)?.x ?? -1,
+      locationY: event.allTouches.at(0)?.y ?? -1,
+      pageX: event.allTouches.at(0)?.absoluteX ?? -1,
+      pageY: event.allTouches.at(0)?.absoluteY ?? -1,
+      target: 'a', // node ID
+      timestamp: 0,
+      force: undefined,
+    },
+    currentTarget: 0 as any,
+    target: 0 as any,
+    bubbles: true,
+    cancelable: true,
+    defaultPrevented: false,
+    eventPhase: 0,
+    isTrusted: true,
+    preventDefault: () => null,
+    isDefaultPrevented: () => false,
+    stopPropagation: () => null,
+    isPropagationStopped: () => false,
+    persist: () => null,
+    timeStamp: 0,
+    type: '',
+  };
+};
 
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
