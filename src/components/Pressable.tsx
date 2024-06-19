@@ -36,11 +36,7 @@ const adaptPressEvent = (
 });
 
 const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
-  // changedTouches and touches is a recursive self referencing structure,
-  // OR they are just using the same data structure for parent and child, even though they have different roles
-  // i will test which one is it, but i'm inclined to believe the former
   const touchToNative = (data: TouchData): NativeTouchEvent => ({
-    changedTouches: [],
     identifier: '',
     locationX: data.x,
     locationY: data.y,
@@ -48,7 +44,8 @@ const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
     pageY: data.absoluteY,
     target: '',
     timestamp: 0,
-    touches: [],
+    touches: [], // linter-required, not present in reality
+    changedTouches: [], // linter-required, not present in reality
   });
 
   const nativeTouches = event.allTouches.map((touch) => touchToNative(touch));
@@ -56,20 +53,10 @@ const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
     touchToNative(touch)
   );
 
-  // set the self referencing structure in place
-  nativeTouches.forEach((element) => (element.touches = nativeTouches));
-  nativeTouches.forEach(
-    (element) => (element.changedTouches = nativeChangedTouches)
-  );
-  nativeChangedTouches.forEach((element) => (element.touches = nativeTouches));
-  nativeChangedTouches.forEach(
-    (element) => (element.changedTouches = nativeChangedTouches)
-  );
-
   return {
     nativeEvent: {
       touches: nativeTouches, // NativeTouchEvent[]
-      changedTouches: nativeChangedTouches, // NativeTouchEvent[]
+      changedTouches: nativeChangedTouches, // change to: NativeTouchEvent[]
       identifier: event.handlerTag.toString(),
       locationX: event.allTouches.at(0)?.x ?? -1,
       locationY: event.allTouches.at(0)?.y ?? -1,
