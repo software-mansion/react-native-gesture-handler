@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
@@ -115,8 +115,8 @@ export default function Pressable(props: PressableProps) {
       );
     });
 
-  const setHitSlop = useRef<() => void>(() => null);
-  const setPressRetentionOffset = useRef<() => void>(() => null);
+  let setHitSlop: () => void = () => null;
+  let setPressRetentionOffset: () => void = () => null;
 
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
@@ -127,7 +127,7 @@ export default function Pressable(props: PressableProps) {
         previousTouchData.current?.length === previousChangeData.current?.length
       ) {
         props.onPressIn?.(adaptTouchEvent(event));
-        setPressRetentionOffset.current();
+        setPressRetentionOffset();
         previousTouchData.current = event.allTouches;
         previousChangeData.current = event.changedTouches;
       }
@@ -140,7 +140,7 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      setHitSlop.current();
+      setHitSlop();
 
       props.onPress?.(adaptTouchEvent(event));
       props.onPressOut?.(adaptTouchEvent(event));
@@ -154,7 +154,7 @@ export default function Pressable(props: PressableProps) {
       previousTouchData.current = [];
       previousChangeData.current = [];
 
-      setHitSlop.current();
+      setHitSlop();
 
       props.onPress?.(adaptTouchEvent(event));
       props.onPressOut?.(adaptTouchEvent(event));
@@ -164,19 +164,19 @@ export default function Pressable(props: PressableProps) {
 
   // todo: implement onBlur and onFocus, more details on how available in the PR
 
-  setHitSlop.current = () => {
+  setHitSlop = useCallback(() => {
     touchGesture.hitSlop(props.hitSlop);
     pressGesture.hitSlop(props.hitSlop);
     hoverGesture.hitSlop(props.hitSlop);
-  };
+  }, [touchGesture, pressGesture, hoverGesture]);
 
-  setPressRetentionOffset.current = () => {
+  setPressRetentionOffset = useCallback(() => {
     touchGesture.hitSlop(props.pressRetentionOffset);
     pressGesture.hitSlop(props.pressRetentionOffset);
     hoverGesture.hitSlop(props.pressRetentionOffset);
-  };
+  }, [touchGesture, pressGesture, hoverGesture]);
 
-  setHitSlop.current();
+  setHitSlop();
 
   touchGesture.enabled(props.disabled !== true);
   pressGesture.enabled(props.disabled !== true);
