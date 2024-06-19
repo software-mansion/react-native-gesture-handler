@@ -36,6 +36,8 @@ const adaptPressEvent = (
 });
 
 const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
+  const timestamp = Date.now();
+
   const touchToNative = (data: TouchData): NativeTouchEvent => ({
     identifier: '',
     locationX: data.x,
@@ -43,7 +45,7 @@ const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
     pageX: data.absoluteX,
     pageY: data.absoluteY,
     target: '',
-    timestamp: 0,
+    timestamp: timestamp,
     touches: [], // linter-required, not present in reality
     changedTouches: [], // linter-required, not present in reality
   });
@@ -55,15 +57,17 @@ const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
 
   return {
     nativeEvent: {
+      // in reality this object has combination key press checks
+      // even though this type doesn't allow for that...
       touches: nativeTouches, // NativeTouchEvent[]
-      changedTouches: nativeChangedTouches, // change to: NativeTouchEvent[]
+      changedTouches: nativeChangedTouches, // NativeTouchEvent[]
       identifier: event.handlerTag.toString(),
       locationX: event.allTouches.at(0)?.x ?? -1,
       locationY: event.allTouches.at(0)?.y ?? -1,
       pageX: event.allTouches.at(0)?.absoluteX ?? -1,
       pageY: event.allTouches.at(0)?.absoluteY ?? -1,
       target: 'a', // node ID
-      timestamp: 0,
+      timestamp: timestamp,
       force: undefined,
     },
     currentTarget: 0 as any,
@@ -78,7 +82,7 @@ const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
     stopPropagation: () => null,
     isPropagationStopped: () => false,
     persist: () => null,
-    timeStamp: 0,
+    timeStamp: timestamp,
     type: '',
   };
 };
