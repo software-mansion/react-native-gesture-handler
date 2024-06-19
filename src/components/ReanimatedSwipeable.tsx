@@ -328,7 +328,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           props.onSwipeableWillClose(closingDirection);
         }
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         props,
         props.onSwipeableWillClose,
@@ -348,7 +347,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           props.onSwipeableClose(closingDirection, swipeableMethods.current);
         }
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [props, props.onSwipeableClose, props.onSwipeableOpen, swipeableMethods]
     );
 
