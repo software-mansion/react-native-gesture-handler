@@ -90,7 +90,7 @@ const adaptTouchEvent = (event: GestureTouchEvent): GestureResponderEvent => {
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
   const previousChangeData = useRef<TouchData[] | null>(null);
-  const pressableRef = useRef<View>(null);
+  const pressableRef = useRef<typeof RectButton>(null);
 
   const pressGesture = Gesture.LongPress().onStart((event) => {
     props.onLongPress?.(adaptPressEvent(event));
@@ -189,11 +189,11 @@ export default function Pressable(props: PressableProps) {
 
   return (
     <RectButton
+      ref={pressableRef}
       rippleColor={props.android_ripple?.color}
       rippleRadius={props.android_ripple?.radius}>
       <GestureDetector gesture={gesture}>
         <View
-          ref={pressableRef}
           style={[
             styles.container,
             typeof props.style === 'function'
