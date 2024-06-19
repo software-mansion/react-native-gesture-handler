@@ -78,8 +78,8 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
 
   return {
     nativeEvent: {
-      touches: nativeTouches, // NativeTouchEvent[]
-      changedTouches: nativeChangedTouches, // NativeTouchEvent[]
+      touches: nativeTouches,
+      changedTouches: nativeChangedTouches,
       identifier: event.handlerTag,
       locationX: event.allTouches.at(0)?.x ?? -1,
       locationY: event.allTouches.at(0)?.y ?? -1,
