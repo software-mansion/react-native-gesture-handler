@@ -23,8 +23,8 @@ const touchToPressEvent = (data: TouchData, timestamp: number): PressEvent => ({
   pageY: data.absoluteY,
   target: 0,
   timestamp: timestamp,
-  touches: [], // linter-required, not present in reality
-  changedTouches: [], // linter-required, not present in reality
+  touches: [], // intentionally empty
+  changedTouches: [], // intentionally empty
 });
 
 const changeToTouchData = (
@@ -95,7 +95,7 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
   const previousChangeData = useRef<TouchData[] | null>(null);
-  const pressableRef = useRef<typeof RectButton>(null);
+  const pressableRef = useRef<View>(null);
 
   const pressGesture = Gesture.LongPress().onStart((event) => {
     props.onLongPress?.(adaptStateChangeEvent(event));
@@ -115,8 +115,8 @@ export default function Pressable(props: PressableProps) {
       );
     });
 
-  const resetHitSlop = useRef<() => void>(() => null);
   const setHitSlop = useRef<() => void>(() => null);
+  const setPressRetentionOffset = useRef<() => void>(() => null);
 
   const touchGesture = Gesture.Native()
     .onTouchesDown((event) => {
@@ -127,7 +127,7 @@ export default function Pressable(props: PressableProps) {
         previousTouchData.current?.length === previousChangeData.current?.length
       ) {
         props.onPressIn?.(adaptTouchEvent(event));
-        setHitSlop.current();
+        setPressRetentionOffset.current();
         previousTouchData.current = event.allTouches;
         previousChangeData.current = event.changedTouches;
       }
@@ -140,7 +140,7 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      resetHitSlop.current();
+      setHitSlop.current();
 
       props.onPress?.(adaptTouchEvent(event));
       props.onPressOut?.(adaptTouchEvent(event));
@@ -154,7 +154,7 @@ export default function Pressable(props: PressableProps) {
       previousTouchData.current = [];
       previousChangeData.current = [];
 
-      resetHitSlop.current();
+      setHitSlop.current();
 
       props.onPress?.(adaptTouchEvent(event));
       props.onPressOut?.(adaptTouchEvent(event));
@@ -164,19 +164,19 @@ export default function Pressable(props: PressableProps) {
 
   // todo: implement onBlur and onFocus, more details on how available in the PR
 
-  resetHitSlop.current = () => {
+  setHitSlop.current = () => {
     touchGesture.hitSlop(props.hitSlop);
     pressGesture.hitSlop(props.hitSlop);
     hoverGesture.hitSlop(props.hitSlop);
   };
 
-  setHitSlop.current = () => {
+  setPressRetentionOffset.current = () => {
     touchGesture.hitSlop(props.pressRetentionOffset);
     pressGesture.hitSlop(props.pressRetentionOffset);
     hoverGesture.hitSlop(props.pressRetentionOffset);
   };
 
-  resetHitSlop.current();
+  setHitSlop.current();
 
   touchGesture.enabled(props.disabled !== true);
   pressGesture.enabled(props.disabled !== true);
