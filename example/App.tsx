@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './src/release_tests/doubleDraggable';
+import GesturizedPressable from './src/release_tests/gesturizedPressable';
 import { ComboWithGHScroll } from './src/release_tests/combo';
 import {
   TouchablesIndex,
@@ -142,6 +143,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'ContextMenu (web only)', component: ContextMenu },
       { name: 'PointerType', component: PointerType },
       { name: 'RectButton (borders)', component: RectButtonBorders },
+      { name: 'Gesturized pressable', component: GesturizedPressable },
     ],
   },
   {
