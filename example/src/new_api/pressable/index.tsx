@@ -23,14 +23,6 @@ export default function EmptyExample() {
     console.log('Hovered out');
   };
 
-  const focus = () => {
-    console.log('Focused pressable');
-  };
-
-  const blur = () => {
-    console.log('Blurred pressable');
-  };
-
   const longPress = () => {
     console.log('Long pressed');
   };
@@ -43,8 +35,6 @@ export default function EmptyExample() {
         onPress={press}
         onHoverIn={hoverIn}
         onHoverOut={hoverOut}
-        onFocus={focus}
-        onBlur={blur}
         onLongPress={longPress}>
         <View style={styles.textWrapper}>
           <Text style={styles.text}>Pressable!</Text>

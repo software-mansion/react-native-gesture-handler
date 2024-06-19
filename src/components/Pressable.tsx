@@ -9,8 +9,8 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
 import { RectButton } from './GestureButtons';
-import { HoverGestureHandlerEventPayload } from 'src/handlers/gestures/hoverGesture';
-import { LongPressGestureHandlerEventPayload } from 'src/handlers/LongPressGestureHandler';
+import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
+import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
