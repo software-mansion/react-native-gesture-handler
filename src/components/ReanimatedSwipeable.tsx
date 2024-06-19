@@ -602,7 +602,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           style={[styles.container, containerStyle]}>
           {leftElement}
           {rightElement}
-          <GestureDetector gesture={tapGesture}>
+          <GestureDetector gesture={tapGesture} touchAction="pan-y">
             <Animated.View style={[animatedStyle, childrenContainerStyle]}>
               {children}
             </Animated.View>
