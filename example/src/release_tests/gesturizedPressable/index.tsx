@@ -12,8 +12,8 @@ export default function Example() {
     console.log(`[${id}] Pressable pressed out`);
   };
 
-  const press = (id: any, event: any) => {
-    console.log(`[${id}] Pressable pressed:`, event);
+  const press = (id: any) => {
+    console.log(`[${id}] Pressable pressed`);
   };
 
   const hoverIn = (id: any) => {
@@ -53,7 +53,7 @@ export default function Example() {
         pressRetentionOffset={pressRetentionOffset}
         onPressIn={() => pressIn('GH')}
         onPressOut={() => pressOut('GH')}
-        onPress={(event) => press('GH', event)}
+        onPress={() => press('GH')}
         onHoverIn={() => hoverIn('GH')}
         onHoverOut={() => hoverOut('GH')}
         onLongPress={() => longPress('GH')}>
@@ -67,7 +67,7 @@ export default function Example() {
         pressRetentionOffset={pressRetentionOffset} // counts relative to hitSlop
         onPressIn={() => pressIn('P')}
         onPressOut={() => pressOut('P')}
-        onPress={(event) => press('P', event)}
+        onPress={() => press('P')}
         onHoverIn={() => hoverIn('P')}
         onHoverOut={() => hoverOut('P')}
         onLongPress={() => longPress('P')}
