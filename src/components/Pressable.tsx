@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
@@ -10,7 +10,7 @@ import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
 import RNButton from '../specs/RNGestureHandlerButtonNativeComponent';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
-import { Insets, View } from 'react-native';
+import { Insets, StyleProp, View, ViewStyle } from 'react-native';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
@@ -122,6 +122,12 @@ export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
   const previousChangeData = useRef<TouchData[] | null>(null);
   const pressableRef = useRef<View>(null);
+  const [styleProp, setStyleProp] = useState<
+    StyleProp<ViewStyle> | undefined
+  >();
+  const [childrenProp, setChildrenProp] = useState<
+    React.ReactNode | undefined
+  >();
 
   // disabled when onLongPress has been called
   const isPressEnabled = useRef<boolean>(true);
@@ -140,6 +146,19 @@ export default function Pressable(props: PressableProps) {
     props.onLongPress?.(adaptStateChangeEvent(event));
     isPressEnabled.current = false;
   });
+
+  const setPressedState = (isPressed: boolean) => {
+    if (typeof props.style === 'function') {
+      setStyleProp(props.style({ pressed: isPressed }));
+    } else {
+      setStyleProp(props.style);
+    }
+    if (typeof props.children === 'function') {
+      setChildrenProp(props.children({ pressed: isPressed }));
+    } else {
+      setChildrenProp(props.children);
+    }
+  };
 
   const hoverGesture = Gesture.Hover()
     .onBegin((event) => {
@@ -239,6 +258,11 @@ export default function Pressable(props: PressableProps) {
     touchGesture
   );
 
+  useEffect(() => {
+    // initiate functional props
+    setPressedState(true);
+  }, []);
+
   return (
     <GestureDetector gesture={gesture}>
       <RNButton
@@ -247,14 +271,8 @@ export default function Pressable(props: PressableProps) {
         hitSlop={appliedHitSlop}
         rippleColor={props.android_ripple?.color ?? undefined}
         rippleRadius={props.android_ripple?.radius ?? undefined}
-        style={[
-          typeof props.style === 'function'
-            ? props.style({ pressed: false })
-            : props.style,
-        ]}>
-        {typeof props.children === 'function'
-          ? props.children({ pressed: false })
-          : props.children}
+        style={styleProp}>
+        {childrenProp}
       </RNButton>
     </GestureDetector>
   );
