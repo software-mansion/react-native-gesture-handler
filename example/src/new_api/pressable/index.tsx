@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   rectText: {
     color: BG_COLOR,
-    fontWeight: 700,
+    fontWeight: '700',
     position: 'absolute',
     right: 5,
     bottom: 2,
