@@ -118,16 +118,17 @@ export default function Pressable(props: PressableProps) {
   let setHitSlop: () => void = () => null;
   let setPressRetentionOffset: () => void = () => null;
 
-  const touchGesture = Gesture.Native()
+  const touchGesture = Gesture.Manual()
     .onTouchesDown((event) => {
-      // check if all touching fingers were lifted up on the previous event
+      setPressRetentionOffset();
+
       if (
+        // check if all touching fingers were lifted up on the previous event
         !previousTouchData.current ||
         !previousChangeData.current ||
         previousTouchData.current?.length === previousChangeData.current?.length
       ) {
         props.onPressIn?.(adaptTouchEvent(event));
-        setPressRetentionOffset();
         previousTouchData.current = event.allTouches;
         previousChangeData.current = event.changedTouches;
       }
@@ -165,8 +166,6 @@ export default function Pressable(props: PressableProps) {
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
-  // todo: implement onBlur and onFocus, more details on how available in the PR
-
   setHitSlop = useCallback(() => {
     touchGesture.hitSlop(props.hitSlop);
     pressGesture.hitSlop(props.hitSlop);
@@ -180,6 +179,10 @@ export default function Pressable(props: PressableProps) {
   }, [touchGesture, pressGesture, hoverGesture]);
 
   setHitSlop();
+
+  touchGesture.shouldCancelWhenOutside(true);
+  pressGesture.shouldCancelWhenOutside(true);
+  hoverGesture.shouldCancelWhenOutside(true);
 
   touchGesture.enabled(props.disabled !== true);
   pressGesture.enabled(props.disabled !== true);
