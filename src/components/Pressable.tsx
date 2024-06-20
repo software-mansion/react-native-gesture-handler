@@ -97,8 +97,12 @@ export default function Pressable(props: PressableProps) {
   const previousChangeData = useRef<TouchData[] | null>(null);
   const pressableRef = useRef<View>(null);
 
+  // disabled when onLongPress has been called
+  const isPressEnabled = useRef<boolean>(true);
+
   const pressGesture = Gesture.LongPress().onStart((event) => {
     props.onLongPress?.(adaptStateChangeEvent(event));
+    isPressEnabled.current = false;
   });
 
   const hoverGesture = Gesture.Hover()
@@ -129,12 +133,13 @@ export default function Pressable(props: PressableProps) {
         previousTouchData.current?.length === previousChangeData.current?.length
       ) {
         props.onPressIn?.(adaptTouchEvent(event));
+        isPressEnabled.current = true;
         previousTouchData.current = event.allTouches;
         previousChangeData.current = event.changedTouches;
       }
     })
     .onTouchesUp((event) => {
-      // doesn't call onPressOut untill the last pointer leaves, while within bounds
+      // doesn't call onPressOut until last pointer leaves
       if (event.allTouches.length > event.changedTouches.length) {
         previousTouchData.current = event.allTouches;
         previousChangeData.current = event.changedTouches;
@@ -143,8 +148,11 @@ export default function Pressable(props: PressableProps) {
 
       setHitSlop();
 
-      props.onPress?.(adaptTouchEvent(event));
       props.onPressOut?.(adaptTouchEvent(event));
+
+      if (isPressEnabled.current) {
+        props.onPress?.(adaptTouchEvent(event));
+      }
 
       previousTouchData.current = event.allTouches;
       previousChangeData.current = event.changedTouches;
@@ -157,10 +165,7 @@ export default function Pressable(props: PressableProps) {
 
       setHitSlop();
 
-      // FIXME: after long-press, a regular onPress should not activate
-
       // original triggers onPressOut on cancel, but not onPress
-      // props.onPress?.(adaptTouchEvent(event));
       props.onPressOut?.(adaptTouchEvent(event));
     });
 
