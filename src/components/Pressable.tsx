@@ -1,5 +1,4 @@
 import React, { useCallback, useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
@@ -95,7 +94,6 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
   const previousChangeData = useRef<TouchData[] | null>(null);
-  const pressableRef = useRef<View>(null);
 
   // disabled when onLongPress has been called
   const isPressEnabled = useRef<boolean>(true);
@@ -205,30 +203,18 @@ export default function Pressable(props: PressableProps) {
 
   return (
     <RectButton
-      ref={pressableRef}
-      hitSlop={props.hitSlop}
       rippleColor={props.android_ripple?.color}
-      rippleRadius={props.android_ripple?.radius}>
+      rippleRadius={props.android_ripple?.radius}
+      style={[
+        typeof props.style === 'function'
+          ? props.style({ pressed: false })
+          : props.style,
+      ]}>
       <GestureDetector gesture={gesture}>
-        <View
-          style={[
-            styles.container,
-            typeof props.style === 'function'
-              ? props.style({ pressed: false })
-              : props.style,
-          ]}>
-          {typeof props.children === 'function'
-            ? props.children({ pressed: false })
-            : props.children}
-        </View>
+        {typeof props.children === 'function'
+          ? props.children({ pressed: false })
+          : props.children}
       </GestureDetector>
     </RectButton>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: 'auto',
-    height: 'auto',
-  },
-});
