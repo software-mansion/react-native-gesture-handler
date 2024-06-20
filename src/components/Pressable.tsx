@@ -7,7 +7,7 @@ import {
   TouchData,
 } from '../handlers/gestureHandlerCommon';
 import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
-import { RectButton } from './GestureButtons';
+import RNButton from '../specs/RNGestureHandlerButtonNativeComponent';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
 import { Insets, View } from 'react-native';
@@ -216,10 +216,6 @@ export default function Pressable(props: PressableProps) {
     normalizedpressRetentionOffset
   );
 
-  touchGesture.hitSlop(appliedHitSlop);
-  pressGesture.hitSlop(appliedHitSlop);
-  hoverGesture.hitSlop(appliedHitSlop);
-
   touchGesture.shouldCancelWhenOutside(true);
   pressGesture.shouldCancelWhenOutside(true);
   hoverGesture.shouldCancelWhenOutside(true);
@@ -239,20 +235,21 @@ export default function Pressable(props: PressableProps) {
   );
 
   return (
-    <RectButton
-      ref={pressableRef}
-      rippleColor={props.android_ripple?.color}
-      rippleRadius={props.android_ripple?.radius}
-      style={[
-        typeof props.style === 'function'
-          ? props.style({ pressed: false })
-          : props.style,
-      ]}>
-      <GestureDetector gesture={gesture}>
+    <GestureDetector gesture={gesture}>
+      <RNButton
+        ref={pressableRef}
+        hitSlop={appliedHitSlop}
+        rippleColor={props.android_ripple?.color ?? undefined}
+        rippleRadius={props.android_ripple?.radius ?? undefined}
+        style={[
+          typeof props.style === 'function'
+            ? props.style({ pressed: false })
+            : props.style,
+        ]}>
         {typeof props.children === 'function'
           ? props.children({ pressed: false })
           : props.children}
-      </GestureDetector>
-    </RectButton>
+      </RNButton>
+    </GestureDetector>
   );
 }
