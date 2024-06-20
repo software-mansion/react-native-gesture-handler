@@ -37,6 +37,7 @@ export default function Example() {
   };
 
   const hitSlop = 40;
+  const pressRetentionOffset = 40;
 
   return (
     <View style={styles.container}>
@@ -49,6 +50,7 @@ export default function Example() {
       <GesturizedPressable
         style={styles.pressable}
         hitSlop={hitSlop}
+        pressRetentionOffset={pressRetentionOffset}
         onPressIn={() => pressIn('GH')}
         onPressOut={() => pressOut('GH')}
         onPress={(event) => press('GH', event)}
@@ -62,7 +64,7 @@ export default function Example() {
       <Pressable
         style={styles.pressable}
         hitSlop={hitSlop} // ios only, check android
-        pressRetentionOffset={hitSlop * 2}
+        pressRetentionOffset={pressRetentionOffset} // counts relative to hitSlop
         onPressIn={() => pressIn('P')}
         onPressOut={() => pressOut('P')}
         onPress={(event) => press('P', event)}

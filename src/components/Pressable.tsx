@@ -156,7 +156,10 @@ export default function Pressable(props: PressableProps) {
 
       setHitSlop();
 
-      props.onPress?.(adaptTouchEvent(event));
+      // FIXME: after long-press, a regular onPress should not activate
+
+      // original triggers onPressOut on cancel, but not onPress
+      // props.onPress?.(adaptTouchEvent(event));
       props.onPressOut?.(adaptTouchEvent(event));
     });
 
@@ -195,6 +198,7 @@ export default function Pressable(props: PressableProps) {
   return (
     <RectButton
       ref={pressableRef}
+      hitSlop={props.hitSlop}
       rippleColor={props.android_ripple?.color}
       rippleRadius={props.android_ripple?.radius}>
       <GestureDetector gesture={gesture}>
