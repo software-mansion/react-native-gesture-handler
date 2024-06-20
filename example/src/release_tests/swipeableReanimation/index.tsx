@@ -2,11 +2,9 @@ import React from 'react';
 import { Text, Animated, StyleSheet, View } from 'react-native';
 
 import {
+  Swipeable,
   GestureHandlerRootView,
-  RectButton,
 } from 'react-native-gesture-handler';
-
-import { Swipeable } from 'react-native-gesture-handler';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, {
   SharedValue,
@@ -58,17 +56,15 @@ function LegacyLeftAction(prog: any, drag: any) {
   const trans = Animated.subtract(drag, 50);
 
   return (
-    <RectButton>
-      <Animated.Text
-        style={[
-          styles.leftAction,
-          {
-            transform: [{ translateX: trans }],
-          },
-        ]}>
-        Text
-      </Animated.Text>
-    </RectButton>
+    <Animated.Text
+      style={[
+        styles.leftAction,
+        {
+          transform: [{ translateX: trans }],
+        },
+      ]}>
+      Text
+    </Animated.Text>
   );
 }
 
@@ -83,17 +79,15 @@ function LegacyRightAction(prog: any, drag: any) {
   const trans = Animated.add(drag, 50);
 
   return (
-    <RectButton>
-      <Animated.Text
-        style={[
-          styles.rightAction,
-          {
-            transform: [{ translateX: trans }],
-          },
-        ]}>
-        Text
-      </Animated.Text>
-    </RectButton>
+    <Animated.Text
+      style={[
+        styles.rightAction,
+        {
+          transform: [{ translateX: trans }],
+        },
+      ]}>
+      Text
+    </Animated.Text>
   );
 }
 
