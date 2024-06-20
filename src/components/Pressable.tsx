@@ -216,6 +216,11 @@ export default function Pressable(props: PressableProps) {
     normalizedpressRetentionOffset
   );
 
+  // this hitSlop block is required by android
+  touchGesture.hitSlop(appliedHitSlop);
+  pressGesture.hitSlop(appliedHitSlop);
+  hoverGesture.hitSlop(appliedHitSlop);
+
   touchGesture.shouldCancelWhenOutside(true);
   pressGesture.shouldCancelWhenOutside(true);
   hoverGesture.shouldCancelWhenOutside(true);
@@ -238,6 +243,7 @@ export default function Pressable(props: PressableProps) {
     <GestureDetector gesture={gesture}>
       <RNButton
         ref={pressableRef}
+        // this hitSlop block is required by ios
         hitSlop={appliedHitSlop}
         rippleColor={props.android_ripple?.color ?? undefined}
         rippleRadius={props.android_ripple?.radius ?? undefined}
