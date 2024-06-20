@@ -38,7 +38,7 @@ export default function EmptyExample() {
           onHoverOut={hoverOut}
           onLongPress={longPress}
           hitSlop={20}
-          pressRetentionOffset={40}>
+          pressRetentionOffset={20}>
           <View style={styles.textWrapper}>
             <Text style={styles.text}>Pressable!</Text>
           </View>
