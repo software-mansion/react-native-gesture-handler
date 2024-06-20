@@ -10,7 +10,7 @@ import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
 import { RectButton } from './GestureButtons';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
-import { Insets } from 'react-native';
+import { Insets, View } from 'react-native';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
@@ -35,7 +35,7 @@ const touchToPressEvent = (data: TouchData, timestamp: number): PressEvent => ({
   locationY: data.y,
   pageX: data.absoluteX,
   pageY: data.absoluteY,
-  target: 0,
+  target: 0, // fixme if possible, set to correct target ID
   timestamp: timestamp,
   touches: [], // intentionally empty
   changedTouches: [], // intentionally empty
@@ -46,12 +46,24 @@ const changeToTouchData = (
     HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
   >
 ): TouchData => ({
-  id: 0,
+  id: 0, // fixme if possible, set to correct pointer ID
   x: event.x,
   y: event.y,
   absoluteX: event.absoluteX,
   absoluteY: event.absoluteY,
 });
+
+const isTouchWithinInset = (
+  // all of these are guaranteed to be their type,
+  // but we cannot use '!' anymore
+  touch?: TouchData,
+  inset?: Insets,
+  dimensions?: { width: number; height: number }
+) =>
+  (touch?.x ?? 0) < (inset?.right ?? 0) + (dimensions?.width ?? 0) &&
+  (touch?.y ?? 0) < (inset?.top ?? 0) + (dimensions?.height ?? 0) &&
+  (touch?.x ?? 0) > (inset?.left ?? 0) &&
+  (touch?.y ?? 0) > (inset?.bottom ?? 0);
 
 const adaptStateChangeEvent = (
   event: GestureStateChangeEvent<
@@ -109,9 +121,20 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
 export default function Pressable(props: PressableProps) {
   const previousTouchData = useRef<TouchData[] | null>(null);
   const previousChangeData = useRef<TouchData[] | null>(null);
+  const pressableRef = useRef<View>(null);
 
   // disabled when onLongPress has been called
   const isPressEnabled = useRef<boolean>(true);
+
+  const normalizedHitSlop: Insets =
+    typeof props.hitSlop === 'number'
+      ? numberAsInset(props.hitSlop)
+      : props.hitSlop ?? {};
+
+  const normalizedpressRetentionOffset: Insets =
+    typeof props.pressRetentionOffset === 'number'
+      ? numberAsInset(props.pressRetentionOffset)
+      : props.pressRetentionOffset ?? {};
 
   const pressGesture = Gesture.LongPress().onStart((event) => {
     props.onLongPress?.(adaptStateChangeEvent(event));
@@ -134,17 +157,30 @@ export default function Pressable(props: PressableProps) {
 
   const touchGesture = Gesture.Manual()
     .onTouchesDown((event) => {
-      if (
-        // check if all touching fingers were lifted up on the previous event
-        !previousTouchData.current ||
-        !previousChangeData.current ||
-        previousTouchData.current?.length === previousChangeData.current?.length
-      ) {
-        props.onPressIn?.(adaptTouchEvent(event));
-        isPressEnabled.current = true;
-        previousTouchData.current = event.allTouches;
-        previousChangeData.current = event.changedTouches;
-      }
+      pressableRef.current?.measure((_x, _y, width, height) => {
+        if (
+          !isTouchWithinInset(event.changedTouches.at(-1), normalizedHitSlop, {
+            width,
+            height,
+          })
+        ) {
+          return;
+        }
+
+        if (
+          // check if first click
+          !previousTouchData.current ||
+          !previousChangeData.current ||
+          // check if all touching fingers were lifted up on the previous event
+          previousTouchData.current?.length ===
+            previousChangeData.current?.length
+        ) {
+          props.onPressIn?.(adaptTouchEvent(event));
+          isPressEnabled.current = true;
+          previousTouchData.current = event.allTouches;
+          previousChangeData.current = event.changedTouches;
+        }
+      });
     })
     .onTouchesUp((event) => {
       // doesn't call onPressOut until last pointer leaves
@@ -175,16 +211,6 @@ export default function Pressable(props: PressableProps) {
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
-  const normalizedHitSlop: Insets =
-    typeof props.hitSlop === 'number'
-      ? numberAsInset(props.hitSlop)
-      : props.hitSlop ?? {};
-
-  const normalizedpressRetentionOffset: Insets =
-    typeof props.pressRetentionOffset === 'number'
-      ? numberAsInset(props.pressRetentionOffset)
-      : props.pressRetentionOffset ?? {};
-
   const appliedHitSlop = addInsets(
     normalizedHitSlop,
     normalizedpressRetentionOffset
@@ -214,6 +240,7 @@ export default function Pressable(props: PressableProps) {
 
   return (
     <RectButton
+      ref={pressableRef}
       rippleColor={props.android_ripple?.color}
       rippleRadius={props.android_ripple?.radius}
       style={[
