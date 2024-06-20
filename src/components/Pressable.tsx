@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
@@ -10,9 +10,24 @@ import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
 import { RectButton } from './GestureButtons';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
+import { Insets } from 'react-native';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
+
+const numberAsInset = (value: number): Insets => ({
+  left: value,
+  right: value,
+  top: value,
+  bottom: value,
+});
+
+const addInsets = (a: Insets, b: Insets): Insets => ({
+  left: (a.left ?? 0) + (b.left ?? 0),
+  right: (a.right ?? 0) + (b.right ?? 0),
+  top: (a.top ?? 0) + (b.top ?? 0),
+  bottom: (a.bottom ?? 0) + (b.bottom ?? 0),
+});
 
 const touchToPressEvent = (data: TouchData, timestamp: number): PressEvent => ({
   identifier: data.id,
@@ -117,13 +132,8 @@ export default function Pressable(props: PressableProps) {
       );
     });
 
-  let setHitSlop: () => void = () => null;
-  let setPressRetentionOffset: () => void = () => null;
-
   const touchGesture = Gesture.Manual()
     .onTouchesDown((event) => {
-      setPressRetentionOffset();
-
       if (
         // check if all touching fingers were lifted up on the previous event
         !previousTouchData.current ||
@@ -144,8 +154,6 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      setHitSlop();
-
       props.onPressOut?.(adaptTouchEvent(event));
 
       if (isPressEnabled.current) {
@@ -161,27 +169,30 @@ export default function Pressable(props: PressableProps) {
       previousTouchData.current = [];
       previousChangeData.current = [];
 
-      setHitSlop();
-
       // original triggers onPressOut on cancel, but not onPress
       props.onPressOut?.(adaptTouchEvent(event));
     });
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
-  setHitSlop = useCallback(() => {
-    touchGesture.hitSlop(props.hitSlop);
-    pressGesture.hitSlop(props.hitSlop);
-    hoverGesture.hitSlop(props.hitSlop);
-  }, [touchGesture, pressGesture, hoverGesture]);
+  const normalizedHitSlop: Insets =
+    typeof props.hitSlop === 'number'
+      ? numberAsInset(props.hitSlop)
+      : props.hitSlop ?? {};
 
-  setPressRetentionOffset = useCallback(() => {
-    touchGesture.hitSlop(props.pressRetentionOffset);
-    pressGesture.hitSlop(props.pressRetentionOffset);
-    hoverGesture.hitSlop(props.pressRetentionOffset);
-  }, [touchGesture, pressGesture, hoverGesture]);
+  const normalizedpressRetentionOffset: Insets =
+    typeof props.pressRetentionOffset === 'number'
+      ? numberAsInset(props.pressRetentionOffset)
+      : props.pressRetentionOffset ?? {};
 
-  setHitSlop();
+  const appliedHitSlop = addInsets(
+    normalizedHitSlop,
+    normalizedpressRetentionOffset
+  );
+
+  touchGesture.hitSlop(appliedHitSlop);
+  pressGesture.hitSlop(appliedHitSlop);
+  hoverGesture.hitSlop(appliedHitSlop);
 
   touchGesture.shouldCancelWhenOutside(true);
   pressGesture.shouldCancelWhenOutside(true);
