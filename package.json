@@ -39,6 +39,7 @@
     "android/noreanimated/src/main/java/",
     "apple/",
     "Swipeable/",
+    "ReanimatedSwipeable/",
     "jest-utils/",
     "DrawerLayout/",
     "README.md",
