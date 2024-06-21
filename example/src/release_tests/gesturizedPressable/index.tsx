@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { HitSlopExample } from './hitSlop';
 import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { BG_COLOR } from './testingBase';
 
 type TestingEntryProps = {
   title: string;
@@ -27,7 +28,7 @@ export default function Example() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F5FCFF',
+    backgroundColor: BG_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
   },

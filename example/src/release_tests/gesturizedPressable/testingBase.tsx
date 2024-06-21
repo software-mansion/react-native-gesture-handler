@@ -6,12 +6,12 @@ const TestingBase = (props: any) => (
   <>
     <GesturizedPressable {...props}>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Gesturized press!</Text>
+        <Text style={styles.text}>Gesturized pressable!</Text>
       </View>
     </GesturizedPressable>
     <Pressable {...props}>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Legacy press!</Text>
+        <Text style={styles.text}>Legacy pressable!</Text>
       </View>
     </Pressable>
   </>
