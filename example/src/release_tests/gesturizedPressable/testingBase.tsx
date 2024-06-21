@@ -1,8 +1,19 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { Pressable as GesturizedPressable } from 'react-native-gesture-handler';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  PressableProps,
+} from 'react-native';
+import {
+  Pressable as GesturizedPressable,
+  PressableProps as GHPressableProps,
+} from 'react-native-gesture-handler';
 
-const TestingBase = (props: any) => (
+const TestingBase = (
+  props: GHPressableProps & PressableProps & React.RefAttributes<View>
+) => (
   <>
     <GesturizedPressable {...props}>
       <View style={styles.textWrapper}>
