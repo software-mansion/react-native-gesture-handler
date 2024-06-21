@@ -31,25 +31,27 @@ export function HitSlopExample() {
   const pressRetentionOffset = 40;
 
   return (
-    <View style={styles.container}>
+    <>
       <View style={styles.slopIndicator}>
         <Text>Hit Slop</Text>
       </View>
       <View style={styles.retentionIndicator}>
         <Text>Retention Offset</Text>
       </View>
-      <TestingBase
-        style={styles.pressable}
-        hitSlop={hitSlop}
-        pressRetentionOffset={pressRetentionOffset}
-        onPressIn={() => pressIn()}
-        onPressOut={() => pressOut()}
-        onPress={() => press()}
-        onHoverIn={() => hoverIn()}
-        onHoverOut={() => hoverOut()}
-        onLongPress={() => longPress()}
-      />
-    </View>
+      <View style={styles.container}>
+        <TestingBase
+          style={styles.pressable}
+          hitSlop={hitSlop}
+          pressRetentionOffset={pressRetentionOffset}
+          onPressIn={() => pressIn()}
+          onPressOut={() => pressOut()}
+          onPress={() => press()}
+          onHoverIn={() => hoverIn()}
+          onHoverOut={() => hoverOut()}
+          onLongPress={() => longPress()}
+        />
+      </View>
+    </>
   );
 }
 
@@ -79,7 +81,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
-    top: 20,
+    top: 80,
     height: 270,
     width: 180,
     padding: 4,
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
-    top: 20,
+    top: 80,
     height: 300,
     width: 260,
     padding: 4,
