@@ -5,6 +5,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { BG_COLOR } from './testingBase';
 import { FunctionalStyleExample } from './functionalStyles';
+import { DelayedPressExample } from './delayedPress';
 
 type TestingEntryProps = {
   title: string;
@@ -40,6 +41,9 @@ export default function Example() {
       </TestingEntry>
       <TestingEntry title="Functional styling">
         <FunctionalStyleExample />
+      </TestingEntry>
+      <TestingEntry title="Delays on press callbacks">
+        <DelayedPressExample />
       </TestingEntry>
     </ScrollView>
   );
