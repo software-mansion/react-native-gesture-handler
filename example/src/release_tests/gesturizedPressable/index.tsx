@@ -1,124 +1,47 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Pressable } from 'react-native';
-import { Pressable as GesturizedPressable } from 'react-native-gesture-handler';
+import React, { ReactNode } from 'react';
+import { HitSlopExample } from './hitSlop';
+import { Text, View, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+
+type TestingEntryProps = {
+  title: string;
+  children: ReactNode;
+};
+const TestingEntry = ({ children, title }: TestingEntryProps) => (
+  <View style={styles.container}>
+    <Text style={styles.title}>{title}</Text>
+    {children}
+    <View style={styles.separator} />
+  </View>
+);
 
 export default function Example() {
-  const pressIn = (id: any) => {
-    console.log(`[${id}] Pressable pressed in`);
-  };
-
-  const pressOut = (id: any) => {
-    console.log(`[${id}] Pressable pressed out`);
-  };
-
-  const press = (id: any) => {
-    console.log(`[${id}] Pressable pressed`);
-  };
-
-  const hoverIn = (id: any) => {
-    console.log(`[${id}] Hovered in`);
-  };
-
-  const hoverOut = (id: any) => {
-    console.log(`[${id}] Hovered out`);
-  };
-
-  const focus = (id: any) => {
-    console.log(`[${id}] Focused pressable`);
-  };
-
-  const blur = (id: any) => {
-    console.log(`[${id}] Blurred pressable`);
-  };
-
-  const longPress = (id: any) => {
-    console.log(`[${id}] Long pressed`);
-  };
-
-  const hitSlop = 40;
-  const pressRetentionOffset = 40;
-
   return (
-    <View style={styles.container}>
-      <View style={styles.slopIndicator}>
-        <Text>Hit Slop</Text>
-      </View>
-      <View style={styles.retentionIndicator}>
-        <Text>Retention Offset</Text>
-      </View>
-      <GesturizedPressable
-        style={styles.pressable}
-        hitSlop={hitSlop}
-        pressRetentionOffset={pressRetentionOffset}
-        onPressIn={() => pressIn('GH')}
-        onPressOut={() => pressOut('GH')}
-        onPress={() => press('GH')}
-        onHoverIn={() => hoverIn('GH')}
-        onHoverOut={() => hoverOut('GH')}
-        onLongPress={() => longPress('GH')}>
-        <View style={styles.textWrapper}>
-          <Text style={styles.text}>Gesturized press!</Text>
-        </View>
-      </GesturizedPressable>
-      <Pressable
-        style={styles.pressable}
-        hitSlop={hitSlop} // ios only, check android
-        pressRetentionOffset={pressRetentionOffset} // counts relative to hitSlop
-        onPressIn={() => pressIn('P')}
-        onPressOut={() => pressOut('P')}
-        onPress={() => press('P')}
-        onHoverIn={() => hoverIn('P')}
-        onHoverOut={() => hoverOut('P')}
-        onLongPress={() => longPress('P')}
-        onFocus={() => focus('P')} // web only
-        onBlur={() => blur('P')} // web only
-      >
-        <View style={styles.textWrapper}>
-          <Text style={styles.text}>Legacy press!</Text>
-        </View>
-      </Pressable>
-    </View>
+    <ScrollView style={{ flex: 1, height: '100%' }}>
+      <TestingEntry title="Hit Slop">
+        <HitSlopExample />
+      </TestingEntry>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#F5FCFF',
-    gap: 60,
-  },
-  pressable: {
-    backgroundColor: 'mediumpurple',
-    width: 120,
-    height: 120,
-  },
-  textWrapper: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
-    color: '#F5FCFF',
+  title: {
+    fontSize: 28,
+    margin: 12,
+    fontWeight: '400',
+    alignSelf: 'flex-start',
   },
-  slopIndicator: {
-    position: 'absolute',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    height: 380,
-    width: 200,
-    padding: 4,
-    borderRightWidth: StyleSheet.hairlineWidth,
-  },
-  retentionIndicator: {
-    position: 'absolute',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    height: 440,
-    width: 280,
-    padding: 4,
-    borderRightWidth: StyleSheet.hairlineWidth,
+  separator: {
+    width: '90%',
+    // ios bug - different border styling doesn't work on just 1 side
+    borderWidth: 0.6,
+    borderStyle: 'dashed',
+    margin: 12,
   },
 });

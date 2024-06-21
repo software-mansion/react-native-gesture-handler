@@ -1,0 +1,96 @@
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import TestingBase, { BG_COLOR } from './testingBase';
+
+export function HitSlopExample() {
+  const pressIn = () => {
+    console.log('Pressable pressed in');
+  };
+
+  const pressOut = () => {
+    console.log('Pressable pressed out');
+  };
+
+  const press = () => {
+    console.log('Pressable pressed');
+  };
+
+  const hoverIn = () => {
+    console.log('Hovered in');
+  };
+
+  const hoverOut = () => {
+    console.log('Hovered out');
+  };
+
+  const longPress = () => {
+    console.log('Long pressed');
+  };
+
+  const hitSlop = 40;
+  const pressRetentionOffset = 40;
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.slopIndicator}>
+        <Text>Hit Slop</Text>
+      </View>
+      <View style={styles.retentionIndicator}>
+        <Text>Retention Offset</Text>
+      </View>
+      <TestingBase
+        style={styles.pressable}
+        hitSlop={hitSlop}
+        pressRetentionOffset={pressRetentionOffset}
+        onPressIn={() => pressIn()}
+        onPressOut={() => pressOut()}
+        onPress={() => press()}
+        onHoverIn={() => hoverIn()}
+        onHoverOut={() => hoverOut()}
+        onLongPress={() => longPress()}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 40,
+    height: 340,
+    marginBottom: 30,
+  },
+  pressable: {
+    backgroundColor: 'mediumpurple',
+    width: 100,
+    height: 100,
+  },
+  textWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: BG_COLOR,
+  },
+  slopIndicator: {
+    position: 'absolute',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    height: 320,
+    width: 180,
+    padding: 4,
+    borderRightWidth: StyleSheet.hairlineWidth,
+  },
+  retentionIndicator: {
+    position: 'absolute',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    height: 380,
+    width: 260,
+    padding: 4,
+    borderRightWidth: StyleSheet.hairlineWidth,
+  },
+});
