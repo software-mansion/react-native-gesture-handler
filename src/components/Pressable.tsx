@@ -60,10 +60,11 @@ const isTouchWithinInset = (
   inset?: Insets,
   dimensions?: { width: number; height: number }
 ) =>
+  // ^ to right, ^ to bottom
   (touch?.x ?? 0) < (inset?.right ?? 0) + (dimensions?.width ?? 0) &&
-  (touch?.y ?? 0) < (inset?.top ?? 0) + (dimensions?.height ?? 0) &&
-  (touch?.x ?? 0) > (inset?.left ?? 0) &&
-  (touch?.y ?? 0) > (inset?.bottom ?? 0);
+  (touch?.y ?? 0) < (inset?.bottom ?? 0) + (dimensions?.height ?? 0) &&
+  (touch?.x ?? 0) > -(inset?.left ?? 0) &&
+  (touch?.y ?? 0) > -(inset?.top ?? 0);
 
 const adaptStateChangeEvent = (
   event: GestureStateChangeEvent<
@@ -259,7 +260,7 @@ export default function Pressable(props: PressableProps) {
         hitSlop={appliedHitSlop}
         rippleColor={props.android_ripple?.color ?? undefined}
         rippleRadius={props.android_ripple?.radius ?? undefined}
-        style={styleProp}>
+        style={[styleProp, { backgroundColor: 'red' }]}>
         {childrenProp}
       </RNButton>
     </GestureDetector>
