@@ -182,8 +182,7 @@ export default function Pressable(props: PressableProps) {
             width,
             height,
           }) ||
-          // check if all touching fingers were placed this event
-          event.allTouches.length !== event.changedTouches.length
+          isPressedDown.current
         ) {
           return;
         }
@@ -197,7 +196,7 @@ export default function Pressable(props: PressableProps) {
     .onTouchesUp((event) => {
       // doesn't call onPressOut until last pointer leaves
       if (
-        isPressedDown.current ||
+        !isPressedDown.current ||
         event.allTouches.length > event.changedTouches.length
       ) {
         return;
@@ -249,7 +248,7 @@ export default function Pressable(props: PressableProps) {
 
   useEffect(() => {
     // initiate functional props
-    setPressedState(true);
+    setPressedState(false);
   }, []);
 
   return (
