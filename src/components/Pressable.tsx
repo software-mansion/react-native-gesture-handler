@@ -7,10 +7,10 @@ import {
   TouchData,
 } from '../handlers/gestureHandlerCommon';
 import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
-import RNButton from '../specs/RNGestureHandlerButtonNativeComponent';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
 import { Insets, StyleProp, View, ViewStyle } from 'react-native';
+import { RectButton } from './GestureButtons';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
@@ -260,7 +260,7 @@ export default function Pressable(props: PressableProps) {
 
   return (
     <GestureDetector gesture={gesture}>
-      <RNButton
+      <RectButton
         ref={pressableRef}
         // this hitSlop block is required by ios
         hitSlop={appliedHitSlop}
@@ -268,7 +268,7 @@ export default function Pressable(props: PressableProps) {
         rippleRadius={props.android_ripple?.radius ?? undefined}
         style={styleProp}>
         {childrenProp}
-      </RNButton>
+      </RectButton>
     </GestureDetector>
   );
 }
