@@ -257,12 +257,13 @@ export default function Pressable(props: PressableProps) {
   );
 
   useEffect(() => {
-    setPressedState(false);
+    setPressedState(props.testOnly_pressed ?? false);
   }, []);
 
   return (
     <GestureDetector gesture={gesture}>
       <RNButton
+        testID={props.testID}
         ref={pressableRef}
         // this hitSlop block is required by ios
         hitSlop={appliedHitSlop}
