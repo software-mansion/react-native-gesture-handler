@@ -29,20 +29,22 @@ export default function EmptyExample() {
   return (
     <View style={styles.pressRectContainer}>
       <View style={styles.hitRectContainer}>
-        <Pressable
-          style={styles.pressable}
-          onPressIn={pressIn}
-          onPressOut={pressOut}
-          onPress={press}
-          onHoverIn={hoverIn}
-          onHoverOut={hoverOut}
-          onLongPress={longPress}
-          hitSlop={20}
-          pressRetentionOffset={20}>
-          <View style={styles.textWrapper}>
-            <Text style={styles.text}>Pressable!</Text>
-          </View>
-        </Pressable>
+        <View style={styles.pressableWrapper}>
+          <Pressable
+            style={styles.pressable}
+            onPressIn={pressIn}
+            onPressOut={pressOut}
+            onPress={press}
+            onHoverIn={hoverIn}
+            onHoverOut={hoverOut}
+            onLongPress={longPress}
+            hitSlop={20}
+            pressRetentionOffset={20}>
+            <View style={styles.textWrapper}>
+              <Text style={styles.text}>Pressable!</Text>
+            </View>
+          </Pressable>
+        </View>
         <Text style={styles.rectText}>Hit Rect</Text>
       </View>
       <Text style={styles.rectText}>Press Rect</Text>
@@ -54,7 +56,7 @@ const BG_COLOR = '#F5FCFF';
 
 const styles = StyleSheet.create({
   pressRectContainer: {
-    backgroundColor: '#FFE1F0',
+    backgroundColor: '#FFD6E0',
     padding: 20,
     width: 200,
     height: 200,
@@ -74,8 +76,10 @@ const styles = StyleSheet.create({
     right: 5,
     bottom: 2,
   },
-  pressable: {
+  pressableWrapper: {
     backgroundColor: 'mediumpurple',
+  },
+  pressable: {
     width: 120,
     height: 120,
   },
