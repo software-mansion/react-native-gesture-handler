@@ -63,6 +63,8 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    * Set this to true if you don't want the system to play sound when the button is pressed.
    */
   touchSoundDisabled?: boolean;
+
+  style?: StyleProp<ViewStyle>;
 }
 
 interface ButtonWithRefProps {
@@ -88,7 +90,6 @@ export interface BaseButtonProps extends RawButtonProps {
    * method.
    */
   onActiveStateChange?: (active: boolean) => void;
-  style?: StyleProp<ViewStyle>;
   testID?: string;
 
   /**
