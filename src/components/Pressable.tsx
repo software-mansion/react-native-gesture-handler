@@ -119,8 +119,8 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
 };
 
 export default function Pressable(props: PressableProps) {
-  const previousTouchData = useRef<TouchData[] | null>(null);
-  const previousChangeData = useRef<TouchData[] | null>(null);
+  const previousTouchData = useRef<TouchData[]>([]);
+  const previousChangeData = useRef<TouchData[]>([]);
   const pressableRef = useRef<View>(null);
   const [styleProp, setStyleProp] = useState<
     StyleProp<ViewStyle> | undefined
@@ -130,7 +130,8 @@ export default function Pressable(props: PressableProps) {
   >();
 
   // disabled when onLongPress has been called
-  const isPressEnabled = useRef<boolean>(true);
+  const isPressCallbackEnabled = useRef<boolean>(true);
+  const isPressedDown = useRef<boolean>(false);
 
   const normalizedHitSlop: Insets =
     typeof props.hitSlop === 'number'
@@ -144,10 +145,11 @@ export default function Pressable(props: PressableProps) {
 
   const pressGesture = Gesture.LongPress().onStart((event) => {
     props.onLongPress?.(adaptStateChangeEvent(event));
-    isPressEnabled.current = false;
+    isPressCallbackEnabled.current = false;
   });
 
   const setPressedState = (isPressed: boolean) => {
+    isPressedDown.current = isPressed;
     if (typeof props.style === 'function') {
       setStyleProp(props.style({ pressed: isPressed }));
     } else {
@@ -191,14 +193,15 @@ export default function Pressable(props: PressableProps) {
           !previousTouchData.current ||
           !previousChangeData.current ||
           // check if all touching fingers were lifted up on the previous event
-          previousTouchData.current?.length ===
-            previousChangeData.current?.length
+          previousTouchData.current.length === previousChangeData.current.length
         ) {
           props.onPressIn?.(adaptTouchEvent(event));
-          isPressEnabled.current = true;
-          previousTouchData.current = event.allTouches;
-          previousChangeData.current = event.changedTouches;
+          isPressCallbackEnabled.current = true;
         }
+
+        previousTouchData.current = event.allTouches;
+        previousChangeData.current = event.changedTouches;
+        setPressedState(true);
       });
     })
     .onTouchesUp((event) => {
@@ -209,14 +212,19 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
+      if (isPressedDown) {
+        return;
+      }
+
       props.onPressOut?.(adaptTouchEvent(event));
 
-      if (isPressEnabled.current) {
+      if (isPressCallbackEnabled.current) {
         props.onPress?.(adaptTouchEvent(event));
       }
 
-      previousTouchData.current = event.allTouches;
-      previousChangeData.current = event.changedTouches;
+      previousTouchData.current = [];
+      previousChangeData.current = [];
+      setPressedState(false);
     })
     .onTouchesCancelled((event) => {
       // we cannot just set `event.allTouches` and `event.changedTouches` here,
@@ -226,6 +234,7 @@ export default function Pressable(props: PressableProps) {
 
       // original triggers onPressOut on cancel, but not onPress
       props.onPressOut?.(adaptTouchEvent(event));
+      setPressedState(false);
     });
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
