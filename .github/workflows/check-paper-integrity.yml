@@ -5,7 +5,7 @@ jobs:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
     concurrency:
-      group: kotlin-lint-${{ github.ref }}
+      group: check-paper-integrity-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: checkout
