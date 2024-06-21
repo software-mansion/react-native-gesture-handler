@@ -143,8 +143,10 @@ export default function Pressable(props: PressableProps) {
       : props.pressRetentionOffset ?? {};
 
   const pressGesture = Gesture.LongPress().onStart((event) => {
-    props.onLongPress?.(adaptStateChangeEvent(event));
-    isPressCallbackEnabled.current = false;
+    if (isPressedDown.current) {
+      props.onLongPress?.(adaptStateChangeEvent(event));
+      isPressCallbackEnabled.current = false;
+    }
   });
 
   const setPressedState = (isPressed: boolean) => {
