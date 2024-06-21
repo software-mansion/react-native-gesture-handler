@@ -8,10 +8,11 @@ export function RippleExample() {
       <TestingBase
         style={styles.pressable}
         android_ripple={{
-          color: 'red',
-          borderless: true,
+          // @ts-ignore sources say string, android actually wants a number
+          color: 0x26e8f0,
+          borderless: false,
           radius: 50,
-          foreground: true,
+          foreground: false,
         }}
       />
     </View>

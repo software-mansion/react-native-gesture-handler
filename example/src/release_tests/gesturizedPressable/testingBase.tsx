@@ -4,7 +4,7 @@ import {
   Text,
   View,
   Pressable,
-  PressableProps,
+  PressableProps as RNPressableProps,
 } from 'react-native';
 import {
   Pressable as GesturizedPressable,
@@ -12,7 +12,7 @@ import {
 } from 'react-native-gesture-handler';
 
 const TestingBase = (
-  props: GHPressableProps & PressableProps & React.RefAttributes<View>
+  props: GHPressableProps & RNPressableProps & React.RefAttributes<View>
 ) => (
   <>
     <GesturizedPressable {...props}>
