@@ -4,6 +4,7 @@ import { RippleExample } from './androidRipple';
 import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { BG_COLOR } from './testingBase';
+import { FunctionalStyleExample } from './functionalStyles';
 
 type TestingEntryProps = {
   title: string;
@@ -36,6 +37,9 @@ export default function Example() {
       </TestingEntry>
       <TestingEntry title="Ripple" platform="Android">
         <RippleExample />
+      </TestingEntry>
+      <TestingEntry title="Functional styling">
+        <FunctionalStyleExample />
       </TestingEntry>
     </ScrollView>
   );
