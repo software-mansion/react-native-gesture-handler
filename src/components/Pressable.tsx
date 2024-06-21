@@ -137,7 +137,7 @@ export default function Pressable(props: PressableProps) {
       ? numberAsInset(props.hitSlop)
       : props.hitSlop ?? {};
 
-  const normalizedpressRetentionOffset: Insets =
+  const normalizedPressRetentionOffset: Insets =
     typeof props.pressRetentionOffset === 'number'
       ? numberAsInset(props.pressRetentionOffset)
       : props.pressRetentionOffset ?? {};
@@ -189,13 +189,12 @@ export default function Pressable(props: PressableProps) {
         }
 
         props.onPressIn?.(adaptTouchEvent(event));
-        isPressCallbackEnabled.current = true;
 
+        isPressCallbackEnabled.current = true;
         setPressedState(true);
       });
     })
     .onTouchesUp((event) => {
-      // doesn't call onPressOut until last pointer leaves
       if (
         !isPressedDown.current ||
         event.allTouches.length > event.changedTouches.length
@@ -212,8 +211,16 @@ export default function Pressable(props: PressableProps) {
       setPressedState(false);
     })
     .onTouchesCancelled((event) => {
+      if (
+        !isPressedDown.current ||
+        event.allTouches.length > event.changedTouches.length
+      ) {
+        return;
+      }
+
       // original triggers onPressOut on cancel, but not onPress
       props.onPressOut?.(adaptTouchEvent(event));
+
       setPressedState(false);
     });
 
@@ -221,7 +228,7 @@ export default function Pressable(props: PressableProps) {
 
   const appliedHitSlop = addInsets(
     normalizedHitSlop,
-    normalizedpressRetentionOffset
+    normalizedPressRetentionOffset
   );
 
   // this hitSlop block is required by android
@@ -248,7 +255,6 @@ export default function Pressable(props: PressableProps) {
   );
 
   useEffect(() => {
-    // initiate functional props
     setPressedState(false);
   }, []);
 
@@ -260,7 +266,7 @@ export default function Pressable(props: PressableProps) {
         hitSlop={appliedHitSlop}
         rippleColor={props.android_ripple?.color ?? undefined}
         rippleRadius={props.android_ripple?.radius ?? undefined}
-        style={[styleProp, { backgroundColor: 'red' }]}>
+        style={styleProp}>
         {childrenProp}
       </RNButton>
     </GestureDetector>
