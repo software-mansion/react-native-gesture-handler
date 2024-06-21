@@ -11,7 +11,6 @@ export function RippleExample() {
           // @ts-ignore sources say string, android actually wants a number
           color: 0x26e8f0,
           borderless: false,
-          radius: 50,
           foreground: false,
         }}
       />

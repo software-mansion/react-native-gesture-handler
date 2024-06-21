@@ -23,8 +23,8 @@ const TestingEntry = ({
     <View style={styles.data}>
       <Text style={styles.title}>{title}</Text>
       {platform && <Text style={styles.code}>{platform}</Text>}
-      {comment && <Text style={styles.code}>{comment}</Text>}
     </View>
+    {comment && <Text style={styles.comment}>{comment}</Text>}
     {children}
     <View style={styles.separator} />
   </View>
@@ -39,7 +39,9 @@ export default function Example() {
       <TestingEntry title="Ripple" platform="Android">
         <RippleExample />
       </TestingEntry>
-      <TestingEntry title="Functional styling">
+      <TestingEntry
+        title="Functional styling"
+        comment="lorem ipsum dolor sit amet">
         <FunctionalStyleExample />
       </TestingEntry>
       <TestingEntry title="Delays on press callbacks">
@@ -56,28 +58,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   data: {
-    alignSelf: 'flex-start',
     flex: 1,
+    alignSelf: 'flex-start',
     flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
   },
   title: {
     fontSize: 28,
-    margin: 12,
+    marginLeft: 12,
+    marginBottom: 5,
     fontWeight: '400',
   },
   code: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: '400',
     padding: 5,
     borderRadius: 5,
-    height: 44,
+    height: 34,
     margin: 'auto',
 
     color: '#37474f',
-    backgroundColor: '#90a4ae',
+    backgroundColor: '#bbc',
     fontFamily: 'monospace',
+    fontVariant: ['tabular-nums'],
   },
-  comment: {},
+  comment: {
+    alignSelf: 'flex-start',
+    marginLeft: 20,
+    marginTop: 0,
+    marginBottom: 5,
+    color: '#555',
+  },
   scrollable: {},
   separator: {
     width: '90%',
