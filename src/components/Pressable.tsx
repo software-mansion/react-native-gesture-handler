@@ -119,8 +119,6 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
 };
 
 export default function Pressable(props: PressableProps) {
-  const previousTouchData = useRef<TouchData[]>([]);
-  const previousChangeData = useRef<TouchData[]>([]);
   const pressableRef = useRef<View>(null);
   const [styleProp, setStyleProp] = useState<
     StyleProp<ViewStyle> | undefined
@@ -183,36 +181,25 @@ export default function Pressable(props: PressableProps) {
           !isTouchWithinInset(event.changedTouches.at(-1), normalizedHitSlop, {
             width,
             height,
-          })
+          }) ||
+          // check if all touching fingers were placed this event
+          event.allTouches.length !== event.changedTouches.length
         ) {
           return;
         }
 
-        if (
-          // check if first click
-          !previousTouchData.current ||
-          !previousChangeData.current ||
-          // check if all touching fingers were lifted up on the previous event
-          previousTouchData.current.length === previousChangeData.current.length
-        ) {
-          props.onPressIn?.(adaptTouchEvent(event));
-          isPressCallbackEnabled.current = true;
-        }
+        props.onPressIn?.(adaptTouchEvent(event));
+        isPressCallbackEnabled.current = true;
 
-        previousTouchData.current = event.allTouches;
-        previousChangeData.current = event.changedTouches;
         setPressedState(true);
       });
     })
     .onTouchesUp((event) => {
       // doesn't call onPressOut until last pointer leaves
-      if (event.allTouches.length > event.changedTouches.length) {
-        previousTouchData.current = event.allTouches;
-        previousChangeData.current = event.changedTouches;
-        return;
-      }
-
-      if (isPressedDown) {
+      if (
+        isPressedDown.current ||
+        event.allTouches.length > event.changedTouches.length
+      ) {
         return;
       }
 
@@ -222,16 +209,9 @@ export default function Pressable(props: PressableProps) {
         props.onPress?.(adaptTouchEvent(event));
       }
 
-      previousTouchData.current = [];
-      previousChangeData.current = [];
       setPressedState(false);
     })
     .onTouchesCancelled((event) => {
-      // we cannot just set `event.allTouches` and `event.changedTouches` here,
-      // as that could break `onTouchesDown` activation metric
-      previousTouchData.current = [];
-      previousChangeData.current = [];
-
       // original triggers onPressOut on cancel, but not onPress
       props.onPressOut?.(adaptTouchEvent(event));
       setPressedState(false);
