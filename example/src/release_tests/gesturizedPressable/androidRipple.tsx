@@ -5,7 +5,15 @@ import TestingBase from './testingBase';
 export function RippleExample() {
   return (
     <View style={styles.container}>
-      <TestingBase style={styles.pressable} android_ripple={true} />
+      <TestingBase
+        style={styles.pressable}
+        android_ripple={{
+          color: 'red',
+          borderless: true,
+          radius: 50,
+          foreground: true,
+        }}
+      />
     </View>
   );
 }
