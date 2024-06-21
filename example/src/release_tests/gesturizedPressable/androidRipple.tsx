@@ -3,16 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import TestingBase from './testingBase';
 
 export function RippleExample() {
-  const hitSlop = 40;
-
   return (
     <View style={styles.container}>
-      <TestingBase
-        style={styles.pressable}
-        hitSlop={hitSlop}
-        rippleColor="red"
-        rippleRadius={20}
-      />
+      <TestingBase style={styles.pressable} android_ripple={true} />
     </View>
   );
 }
@@ -27,8 +20,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   pressable: {
-    backgroundColor: 'mediumpurple',
     width: 100,
     height: 100,
+    borderWidth: StyleSheet.hairlineWidth,
+    backgroundColor: '#97d9',
   },
 });
