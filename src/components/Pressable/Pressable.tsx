@@ -29,16 +29,6 @@ export default function Pressable(props: PressableProps) {
     props.testOnly_pressed ?? false
   );
 
-  const styleProp =
-    typeof props.style === 'function'
-      ? props.style({ pressed: pressedState })
-      : props.style;
-
-  const childrenProp =
-    typeof props.children === 'function'
-      ? props.children({ pressed: pressedState })
-      : props.children;
-
   const pressableRef = useRef<View>(null);
 
   // disabled when onLongPress has been called
@@ -85,7 +75,7 @@ export default function Pressable(props: PressableProps) {
   );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
-  const onPressInRoutine = useCallback((event: GestureTouchEvent) => {
+  const pressInHandler = useCallback((event: GestureTouchEvent) => {
     props.onPressIn?.(adaptTouchEvent(event));
     isPressCallbackEnabled.current = true;
     isPressedDown.current = true;
@@ -98,6 +88,8 @@ export default function Pressable(props: PressableProps) {
       Gesture.Manual()
         .onTouchesDown((event) => {
           pressableRef.current?.measure((_x, _y, width, height) => {
+            // pressableRef.current?._nativeTag yields targetId on android & ios
+
             if (
               !isTouchWithinInset(
                 {
@@ -114,10 +106,10 @@ export default function Pressable(props: PressableProps) {
 
             if (props.unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
-                onPressInRoutine(event);
+                pressInHandler(event);
               }, props.unstable_pressDelay);
             } else {
-              onPressInRoutine(event);
+              pressInHandler(event);
             }
           });
         })
@@ -135,7 +127,7 @@ export default function Pressable(props: PressableProps) {
           ) {
             // if pressDelay is set, we want to call onPressIn on touch up
             clearTimeout(pressDelayTimeoutRef.current);
-            onPressInRoutine(event);
+            pressInHandler(event);
           }
 
           props.onPressOut?.(adaptTouchEvent(event));
@@ -173,6 +165,7 @@ export default function Pressable(props: PressableProps) {
     ]
   );
 
+  // rippleGesture lives inside RNButton to enable android's ripple
   const rippleGesture = useMemo(() => Gesture.Native(), []);
 
   pressGesture.minDuration(
@@ -185,25 +178,26 @@ export default function Pressable(props: PressableProps) {
     normalizedPressRetentionOffset
   );
 
-  // this hitSlop block is required by android
-  touchGesture.hitSlop(appliedHitSlop);
-  pressGesture.hitSlop(appliedHitSlop);
-  hoverGesture.hitSlop(appliedHitSlop);
-  rippleGesture.hitSlop(normalizedHitSlop);
-
-  touchGesture.shouldCancelWhenOutside(true);
-  pressGesture.shouldCancelWhenOutside(true);
-  hoverGesture.shouldCancelWhenOutside(true);
-
   const isPressableEnabled = props.disabled !== true;
 
   touchGesture.enabled(isPressableEnabled);
   pressGesture.enabled(isPressableEnabled);
   hoverGesture.enabled(isPressableEnabled);
 
+  touchGesture.shouldCancelWhenOutside(true);
+  pressGesture.shouldCancelWhenOutside(true);
+  hoverGesture.shouldCancelWhenOutside(true);
+
   touchGesture.runOnJS(true);
   pressGesture.runOnJS(true);
   hoverGesture.runOnJS(true);
+  rippleGesture.runOnJS(true);
+
+  // this hitSlop block is required by android
+  touchGesture.hitSlop(appliedHitSlop);
+  pressGesture.hitSlop(appliedHitSlop);
+  hoverGesture.hitSlop(appliedHitSlop);
+  rippleGesture.hitSlop(normalizedHitSlop);
 
   const gesture = Gesture.Simultaneous(
     hoverGesture,
@@ -217,6 +211,16 @@ export default function Pressable(props: PressableProps) {
   // `cursor: 'pointer'` on `RNButton` crashes IOS
   const extraStyles: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
+
+  const styleProp =
+    typeof props.style === 'function'
+      ? props.style({ pressed: pressedState })
+      : props.style;
+
+  const childrenProp =
+    typeof props.children === 'function'
+      ? props.children({ pressed: pressedState })
+      : props.children;
 
   return (
     <GestureDetector gesture={gesture}>
