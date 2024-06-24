@@ -47,14 +47,14 @@ const changeToTouchData = (
 });
 
 const isTouchWithinInset = (
+  dimensions: { width: number; height: number },
   touch?: TouchData,
-  inset?: Insets,
-  dimensions?: { width: number; height: number }
+  inset?: Insets
 ) =>
-  touch!.x < inset!.right! + dimensions!.width! &&
-  touch!.y < inset!.bottom! + dimensions!.height! &&
-  touch!.x > -inset!.left! &&
-  touch!.y > -inset!.top!;
+  (touch?.x ?? 0) < (inset?.right ?? 0) + dimensions.width &&
+  (touch?.y ?? 0) < (inset?.bottom ?? 0) + dimensions.height &&
+  (touch?.x ?? 0) > -(inset?.left ?? 0) &&
+  (touch?.y ?? 0) > -(inset?.top ?? 0);
 
 const adaptStateChangeEvent = (
   event: GestureStateChangeEvent<
@@ -72,10 +72,10 @@ const adaptStateChangeEvent = (
       touches: [pressEvent],
       changedTouches: [pressEvent],
       identifier: event.handlerTag,
-      locationX: event.x!,
-      locationY: event.y!,
-      pageX: event.absoluteX!,
-      pageY: event.absoluteY!,
+      locationX: event.x,
+      locationY: event.y,
+      pageX: event.absoluteX,
+      pageY: event.absoluteY,
       target: 0, // node ID
       timestamp: timestamp,
       force: undefined,
@@ -98,10 +98,10 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
       touches: nativeTouches,
       changedTouches: nativeChangedTouches,
       identifier: event.handlerTag,
-      locationX: event.allTouches.at(0)?.x!,
-      locationY: event.allTouches.at(0)?.y!,
-      pageX: event.allTouches.at(0)?.absoluteX!,
-      pageY: event.allTouches.at(0)?.absoluteY!,
+      locationX: event.allTouches.at(0)?.x ?? -1,
+      locationY: event.allTouches.at(0)?.y ?? -1,
+      pageX: event.allTouches.at(0)?.absoluteX ?? -1,
+      pageY: event.allTouches.at(0)?.absoluteY ?? -1,
       target: 0, // node ID
       timestamp: timestamp,
       force: undefined,

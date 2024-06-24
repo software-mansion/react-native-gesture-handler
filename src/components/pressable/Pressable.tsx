@@ -83,10 +83,14 @@ export default function Pressable(props: PressableProps) {
     .onTouchesDown((event) => {
       pressableRef.current?.measure((_x, _y, width, height) => {
         if (
-          !isTouchWithinInset(event.changedTouches.at(-1), normalizedHitSlop, {
-            width,
-            height,
-          }) ||
+          !isTouchWithinInset(
+            {
+              width,
+              height,
+            },
+            event.changedTouches.at(-1),
+            normalizedHitSlop
+          ) ||
           isPressedDown.current
         ) {
           return;
