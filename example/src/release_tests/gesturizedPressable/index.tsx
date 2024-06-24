@@ -1,9 +1,10 @@
 import React, { ReactNode } from 'react';
-import { HitSlopExample } from './hitSlopExample';
-import { RippleExample } from './androidRippleExample';
 import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+
 import { BG_COLOR } from './testingBase';
+import { HitSlopExample } from './hitSlopExample';
+import { RippleExample } from './androidRippleExample';
 import { FunctionalStyleExample } from './functionalStylesExample';
 import { DelayedPressExample } from './delayedPressExample';
 import { BordersExample } from './bordersExample';

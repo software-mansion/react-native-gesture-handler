@@ -2,7 +2,14 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableProps } from './PressableProps';
-import { Insets, View, processColor } from 'react-native';
+import {
+  Insets,
+  Platform,
+  StyleProp,
+  View,
+  ViewStyle,
+  processColor,
+} from 'react-native';
 import RNButton from '../GestureHandlerButton';
 import {
   numberAsInset,
@@ -207,6 +214,10 @@ export default function Pressable(props: PressableProps) {
 
   const defaultRippleColor = props.android_ripple ? undefined : 'transparent';
 
+  // `cursor: 'pointer'` on `RNButton` crashes IOS
+  const extraStyles: StyleProp<ViewStyle> =
+    Platform.OS !== 'ios' ? { cursor: 'pointer' } : {};
+
   return (
     <GestureDetector gesture={gesture}>
       <RNButton
@@ -218,7 +229,7 @@ export default function Pressable(props: PressableProps) {
           props.android_ripple?.color ?? defaultRippleColor
         )}
         rippleRadius={props.android_ripple?.radius ?? undefined}
-        style={[{ cursor: 'pointer' }, styleProp]}>
+        style={[extraStyles, styleProp]}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
