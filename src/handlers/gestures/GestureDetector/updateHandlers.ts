@@ -72,16 +72,14 @@ export function updateHandlers(
       registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
 
-    if (preparedGesture.animatedHandlers) {
+    if (preparedGesture.animatedHandlers && shouldUpdateSharedValueIfUsed) {
       const newHandlersValue = preparedGesture.attachedGestures
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
         .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
       >[];
 
-      if (shouldUpdateSharedValueIfUsed) {
-        preparedGesture.animatedHandlers.value = newHandlersValue;
-      }
+      preparedGesture.animatedHandlers.value = newHandlersValue;
     }
 
     scheduleFlushOperations();
