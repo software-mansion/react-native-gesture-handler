@@ -11,7 +11,6 @@ export function RippleExample() {
       <TestingBase
         style={[styles.pressable, buttonOpacity]}
         android_ripple={{
-          // @ts-ignore sources say string, android actually wants a number
           color: 'green',
           borderless: false,
           foreground: false,

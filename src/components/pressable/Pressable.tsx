@@ -125,7 +125,6 @@ export default function Pressable(props: PressableProps) {
   const rippleGesture = Gesture.Native();
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
-  pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
   const appliedHitSlop = addInsets(
     normalizedHitSlop,
@@ -142,9 +141,11 @@ export default function Pressable(props: PressableProps) {
   pressGesture.shouldCancelWhenOutside(true);
   hoverGesture.shouldCancelWhenOutside(true);
 
-  touchGesture.enabled(props.disabled !== true);
-  pressGesture.enabled(props.disabled !== true);
-  hoverGesture.enabled(props.disabled !== true);
+  const isPressableEnabled = props.disabled !== true;
+
+  touchGesture.enabled(isPressableEnabled);
+  pressGesture.enabled(isPressableEnabled);
+  hoverGesture.enabled(isPressableEnabled);
 
   touchGesture.runOnJS(true);
   pressGesture.runOnJS(true);
@@ -167,9 +168,8 @@ export default function Pressable(props: PressableProps) {
     <GestureDetector gesture={gesture}>
       <RNButton
         testID={props.testID}
+        enabled={isPressableEnabled}
         ref={pressableRef}
-        // this hitSlop block is required by ios
-        hitSlop={appliedHitSlop}
         rippleColor={processColor(
           props.android_ripple?.color ?? defaultRippleColor
         )}
