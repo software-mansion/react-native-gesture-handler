@@ -210,14 +210,15 @@ export default function Pressable(props: PressableProps) {
   return (
     <GestureDetector gesture={gesture}>
       <RNButton
+        ref={pressableRef}
         testID={props.testID}
         enabled={isPressableEnabled}
-        ref={pressableRef}
+        touchSoundDisabled={props.android_disableSound ?? undefined}
         rippleColor={processColor(
           props.android_ripple?.color ?? defaultRippleColor
         )}
         rippleRadius={props.android_ripple?.radius ?? undefined}
-        style={styleProp}>
+        style={[{ cursor: 'pointer' }, styleProp]}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
