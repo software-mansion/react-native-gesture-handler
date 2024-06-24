@@ -1,12 +1,12 @@
 import React, { ReactNode } from 'react';
-import { HitSlopExample } from './hitSlop';
-import { RippleExample } from './androidRipple';
+import { HitSlopExample } from './hitSlopExample';
+import { RippleExample } from './androidRippleExample';
 import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { BG_COLOR } from './testingBase';
-import { FunctionalStyleExample } from './functionalStyles';
-import { DelayedPressExample } from './delayedPress';
-import { BordersExample } from './borders';
+import { FunctionalStyleExample } from './functionalStylesExample';
+import { DelayedPressExample } from './delayedPressExample';
+import { BordersExample } from './bordersExample';
 
 type TestingEntryProps = {
   title: string;
