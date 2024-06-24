@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableProps } from './PressableProps';
@@ -58,81 +58,101 @@ export default function Pressable(props: PressableProps) {
       ? numberAsInset(props.pressRetentionOffset)
       : props.pressRetentionOffset ?? {};
 
-  const pressGesture = Gesture.LongPress().onStart((event) => {
-    if (isPressedDown.current) {
-      props.onLongPress?.(adaptStateChangeEvent(event));
-      isPressCallbackEnabled.current = false;
-    }
-  });
-
-  const hoverGesture = Gesture.Hover()
-    .onBegin((event) => {
-      setTimeout(
-        () => props.onHoverIn?.(adaptStateChangeEvent(event)),
-        props.delayHoverIn ?? DEFAULT_HOVER_DELAY
-      );
-    })
-    .onEnd((event) => {
-      setTimeout(
-        () => props.onHoverOut?.(adaptStateChangeEvent(event)),
-        props.delayHoverOut ?? DEFAULT_HOVER_DELAY
-      );
-    });
-
-  const touchGesture = Gesture.Manual()
-    .onTouchesDown((event) => {
-      pressableRef.current?.measure((_x, _y, width, height) => {
-        if (
-          !isTouchWithinInset(
-            {
-              width,
-              height,
-            },
-            event.changedTouches.at(-1),
-            normalizedHitSlop
-          ) ||
-          isPressedDown.current
-        ) {
-          return;
+  const pressGesture = useMemo(
+    () =>
+      Gesture.LongPress().onStart((event) => {
+        if (isPressedDown.current) {
+          props.onLongPress?.(adaptStateChangeEvent(event));
+          isPressCallbackEnabled.current = false;
         }
+      }),
+    [isPressCallbackEnabled, props.onLongPress, isPressedDown]
+  );
 
-        props.onPressIn?.(adaptTouchEvent(event));
+  const hoverGesture = useMemo(
+    () =>
+      Gesture.Hover()
+        .onBegin((event) => {
+          setTimeout(
+            () => props.onHoverIn?.(adaptStateChangeEvent(event)),
+            props.delayHoverIn ?? DEFAULT_HOVER_DELAY
+          );
+        })
+        .onEnd((event) => {
+          setTimeout(
+            () => props.onHoverOut?.(adaptStateChangeEvent(event)),
+            props.delayHoverOut ?? DEFAULT_HOVER_DELAY
+          );
+        }),
+    [props.onHoverIn, props.onHoverOut, props.delayHoverIn, props.delayHoverOut]
+  );
 
-        isPressCallbackEnabled.current = true;
-        setPressedState(true);
-      });
-    })
-    .onTouchesUp((event) => {
-      if (
-        !isPressedDown.current ||
-        event.allTouches.length > event.changedTouches.length
-      ) {
-        return;
-      }
+  const touchGesture = useMemo(
+    () =>
+      Gesture.Manual()
+        .onTouchesDown((event) => {
+          pressableRef.current?.measure((_x, _y, width, height) => {
+            if (
+              !isTouchWithinInset(
+                {
+                  width,
+                  height,
+                },
+                event.changedTouches.at(-1),
+                normalizedHitSlop
+              ) ||
+              isPressedDown.current
+            ) {
+              return;
+            }
 
-      props.onPressOut?.(adaptTouchEvent(event));
+            props.onPressIn?.(adaptTouchEvent(event));
 
-      if (isPressCallbackEnabled.current) {
-        props.onPress?.(adaptTouchEvent(event));
-      }
+            isPressCallbackEnabled.current = true;
+            setPressedState(true);
+          });
+        })
+        .onTouchesUp((event) => {
+          if (
+            !isPressedDown.current ||
+            event.allTouches.length > event.changedTouches.length
+          ) {
+            return;
+          }
 
-      setPressedState(false);
-    })
-    .onTouchesCancelled((event) => {
-      if (
-        !isPressedDown.current ||
-        event.allTouches.length > event.changedTouches.length
-      ) {
-        return;
-      }
+          props.onPressOut?.(adaptTouchEvent(event));
 
-      // original triggers onPressOut on cancel, but not onPress
-      props.onPressOut?.(adaptTouchEvent(event));
+          if (isPressCallbackEnabled.current) {
+            props.onPress?.(adaptTouchEvent(event));
+          }
 
-      setPressedState(false);
-    });
+          setPressedState(false);
+        })
+        .onTouchesCancelled((event) => {
+          if (
+            !isPressedDown.current ||
+            event.allTouches.length > event.changedTouches.length
+          ) {
+            return;
+          }
 
-  const rippleGesture = Gesture.Native();
+          // original triggers onPressOut on cancel, but not onPress
+          props.onPressOut?.(adaptTouchEvent(event));
+
+          setPressedState(false);
+        }),
+    [
+      props.onPress,
+      props.onPressIn,
+      props.onPressOut,
+      setPressedState,
+      isPressedDown,
+      isPressCallbackEnabled,
+      normalizedHitSlop,
+    ]
+  );
+
+  const rippleGesture = useMemo(() => Gesture.Native(), []);
 
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
