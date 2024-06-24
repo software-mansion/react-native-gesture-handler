@@ -158,8 +158,8 @@ export type {
 
 export type { SwipeableProps } from './components/Swipeable';
 export { default as Swipeable } from './components/Swipeable';
-export type { PressableProps } from './components/pressable/PressableProps';
-export { default as Pressable } from './components/pressable/Pressable';
+export type { PressableProps } from './components/Pressable';
+export { default as Pressable } from './components/Pressable';
 
 export type {
   DrawerLayoutProps,
