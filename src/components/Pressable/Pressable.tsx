@@ -11,6 +11,7 @@ import {
   adaptTouchEvent,
   addInsets,
 } from './utils';
+import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
@@ -196,6 +197,9 @@ export default function Pressable(props: PressableProps) {
         rippleRadius={props.android_ripple?.radius ?? undefined}
         style={styleProp}>
         {childrenProp}
+        {__DEV__ ? (
+          <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
+        ) : null}
       </RNButton>
     </GestureDetector>
   );
