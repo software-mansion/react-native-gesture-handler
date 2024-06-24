@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableProps } from './PressableProps';
-import { Insets, StyleProp, View, ViewStyle, processColor } from 'react-native';
+import { Insets, View, processColor } from 'react-native';
 import RNButton from '../GestureHandlerButton';
 import {
   numberAsInset,
@@ -16,33 +16,21 @@ const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
 
 export default function Pressable(props: PressableProps) {
-  const initialPressedState = props.testOnly_pressed ?? false;
+  const [pressedState, setPressedState] = useState(
+    props.testOnly_pressed ?? false
+  );
+
+  const styleProp =
+    typeof props.style === 'function'
+      ? props.style({ pressed: pressedState })
+      : props.style;
+
+  const childrenProp =
+    typeof props.children === 'function'
+      ? props.children({ pressed: pressedState })
+      : props.children;
 
   const pressableRef = useRef<View>(null);
-  const [styleProp, setStyleProp] = useState<StyleProp<ViewStyle> | undefined>(
-    typeof props.style === 'function'
-      ? props.style({ pressed: initialPressedState })
-      : props.style
-  );
-  const [childrenProp, setChildrenProp] = useState<React.ReactNode | undefined>(
-    typeof props.children === 'function'
-      ? props.children({ pressed: initialPressedState })
-      : props.children
-  );
-
-  const setPressedState = (isPressed: boolean) => {
-    isPressedDown.current = isPressed;
-    if (typeof props.style === 'function') {
-      setStyleProp(props.style({ pressed: isPressed }));
-    } else {
-      setStyleProp(props.style);
-    }
-    if (typeof props.children === 'function') {
-      setChildrenProp(props.children({ pressed: isPressed }));
-    } else {
-      setChildrenProp(props.children);
-    }
-  };
 
   // disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
@@ -109,6 +97,7 @@ export default function Pressable(props: PressableProps) {
             props.onPressIn?.(adaptTouchEvent(event));
 
             isPressCallbackEnabled.current = true;
+            isPressedDown.current = true;
             setPressedState(true);
           });
         })
@@ -126,6 +115,7 @@ export default function Pressable(props: PressableProps) {
             props.onPress?.(adaptTouchEvent(event));
           }
 
+          isPressedDown.current = false;
           setPressedState(false);
         })
         .onTouchesCancelled((event) => {
@@ -139,6 +129,7 @@ export default function Pressable(props: PressableProps) {
           // original triggers onPressOut on cancel, but not onPress
           props.onPressOut?.(adaptTouchEvent(event));
 
+          isPressedDown.current = false;
           setPressedState(false);
         }),
     [
@@ -154,7 +145,10 @@ export default function Pressable(props: PressableProps) {
 
   const rippleGesture = useMemo(() => Gesture.Native(), []);
 
-  pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
+  pressGesture.minDuration(
+    (props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
+      (props.unstable_pressDelay ?? 0)
+  );
 
   const appliedHitSlop = addInsets(
     normalizedHitSlop,
