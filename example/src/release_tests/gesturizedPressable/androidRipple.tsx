@@ -9,7 +9,7 @@ export function RippleExample() {
         style={styles.pressable}
         android_ripple={{
           // @ts-ignore sources say string, android actually wants a number
-          color: 0x26e8f0,
+          color: 'green',
           borderless: false,
           foreground: false,
         }}

@@ -9,7 +9,7 @@ import {
 import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
 import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
 import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
-import { Insets, StyleProp, View, ViewStyle } from 'react-native';
+import { Insets, StyleProp, View, ViewStyle, processColor } from 'react-native';
 import RNButton from './GestureHandlerButton';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
@@ -226,6 +226,9 @@ export default function Pressable(props: PressableProps) {
       setPressedState(false);
     });
 
+  const rippleGesture = Gesture.Native();
+
+  pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
   pressGesture.minDuration(props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
 
   const appliedHitSlop = addInsets(
@@ -237,6 +240,7 @@ export default function Pressable(props: PressableProps) {
   touchGesture.hitSlop(appliedHitSlop);
   pressGesture.hitSlop(appliedHitSlop);
   hoverGesture.hitSlop(appliedHitSlop);
+  rippleGesture.hitSlop(normalizedHitSlop);
 
   touchGesture.shouldCancelWhenOutside(true);
   pressGesture.shouldCancelWhenOutside(true);
@@ -253,12 +257,15 @@ export default function Pressable(props: PressableProps) {
   const gesture = Gesture.Simultaneous(
     hoverGesture,
     pressGesture,
-    touchGesture
+    touchGesture,
+    rippleGesture
   );
 
   useEffect(() => {
     setPressedState(props.testOnly_pressed ?? false);
   }, []);
+
+  const defaultRippleColor = props.android_ripple ? undefined : 'transparent';
 
   return (
     <GestureDetector gesture={gesture}>
@@ -267,7 +274,9 @@ export default function Pressable(props: PressableProps) {
         ref={pressableRef}
         // this hitSlop block is required by ios
         hitSlop={appliedHitSlop}
-        rippleColor={props.android_ripple?.color ?? undefined}
+        rippleColor={processColor(
+          props.android_ripple?.color ?? defaultRippleColor
+        )}
         rippleRadius={props.android_ripple?.radius ?? undefined}
         style={styleProp}>
         {childrenProp}

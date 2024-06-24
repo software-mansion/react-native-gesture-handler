@@ -12,7 +12,7 @@ import {
 } from 'react-native-gesture-handler';
 
 const signallerConfig = {
-  duration: 500,
+  duration: 200,
   dampingRatio: 1,
   stiffness: 500,
   overshootClamping: true,
