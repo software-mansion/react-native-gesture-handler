@@ -216,7 +216,7 @@ export default function Pressable(props: PressableProps) {
 
   // `cursor: 'pointer'` on `RNButton` crashes IOS
   const extraStyles: StyleProp<ViewStyle> =
-    Platform.OS !== 'ios' ? { cursor: 'pointer' } : {};
+    Platform.OS === 'web' ? { cursor: 'pointer' } : {};
 
   return (
     <GestureDetector gesture={gesture}>
