@@ -86,10 +86,10 @@ const adaptStateChangeEvent = (
 const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
   const timestamp = Date.now();
 
-  const nativeTouches = event.allTouches.map((touch) =>
+  const nativeTouches = event.allTouches.map((touch: TouchData) =>
     touchToPressEvent(touch, timestamp)
   );
-  const nativeChangedTouches = event.changedTouches.map((touch) =>
+  const nativeChangedTouches = event.changedTouches.map((touch: TouchData) =>
     touchToPressEvent(touch, timestamp)
   );
 
