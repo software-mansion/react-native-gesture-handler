@@ -20,11 +20,11 @@ export function DelayedPressExample() {
   // new implementation uses this value as the longPressDuration
   const longPressDelay = 1000;
 
-  const onPress = () => {
+  const onPressIn = () => {
     console.log('Pressed with delay');
     animatedColor.value = withSequence(
       withSpring(pressColor, signallerConfig),
-      withSpring(startColor)
+      withSpring(startColor, signallerConfig)
     );
   };
 
@@ -32,7 +32,7 @@ export function DelayedPressExample() {
     console.log('Long pressed with delay');
     animatedColor.value = withSequence(
       withSpring(longPressColor, signallerConfig),
-      withSpring(startColor)
+      withSpring(startColor, signallerConfig)
     );
   };
 
@@ -48,7 +48,7 @@ export function DelayedPressExample() {
           style={styles.pressable}
           delayLongPress={longPressDelay}
           unstable_pressDelay={pressDelay}
-          onPress={onPress}
+          onPressIn={onPressIn}
           onLongPress={onLongPress}
         />
       </View>
