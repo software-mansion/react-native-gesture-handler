@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableProps } from './PressableProps';
@@ -16,13 +16,33 @@ const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
 
 export default function Pressable(props: PressableProps) {
+  const initialPressedState = props.testOnly_pressed ?? false;
+
   const pressableRef = useRef<View>(null);
-  const [styleProp, setStyleProp] = useState<
-    StyleProp<ViewStyle> | undefined
-  >();
-  const [childrenProp, setChildrenProp] = useState<
-    React.ReactNode | undefined
-  >();
+  const [styleProp, setStyleProp] = useState<StyleProp<ViewStyle> | undefined>(
+    typeof props.style === 'function'
+      ? props.style({ pressed: initialPressedState })
+      : props.style
+  );
+  const [childrenProp, setChildrenProp] = useState<React.ReactNode | undefined>(
+    typeof props.children === 'function'
+      ? props.children({ pressed: initialPressedState })
+      : props.children
+  );
+
+  const setPressedState = (isPressed: boolean) => {
+    isPressedDown.current = isPressed;
+    if (typeof props.style === 'function') {
+      setStyleProp(props.style({ pressed: isPressed }));
+    } else {
+      setStyleProp(props.style);
+    }
+    if (typeof props.children === 'function') {
+      setChildrenProp(props.children({ pressed: isPressed }));
+    } else {
+      setChildrenProp(props.children);
+    }
+  };
 
   // disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
@@ -44,20 +64,6 @@ export default function Pressable(props: PressableProps) {
       isPressCallbackEnabled.current = false;
     }
   });
-
-  const setPressedState = (isPressed: boolean) => {
-    isPressedDown.current = isPressed;
-    if (typeof props.style === 'function') {
-      setStyleProp(props.style({ pressed: isPressed }));
-    } else {
-      setStyleProp(props.style);
-    }
-    if (typeof props.children === 'function') {
-      setChildrenProp(props.children({ pressed: isPressed }));
-    } else {
-      setChildrenProp(props.children);
-    }
-  };
 
   const hoverGesture = Gesture.Hover()
     .onBegin((event) => {
@@ -157,10 +163,6 @@ export default function Pressable(props: PressableProps) {
     touchGesture,
     rippleGesture
   );
-
-  useEffect(() => {
-    setPressedState(props.testOnly_pressed ?? false);
-  }, []);
 
   const defaultRippleColor = props.android_ripple ? undefined : 'transparent';
 
