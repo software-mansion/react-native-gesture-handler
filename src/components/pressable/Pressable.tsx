@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
-import { GestureDetector } from '../handlers/gestures/GestureDetector';
+import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import {
   GestureStateChangeEvent,
   GestureTouchEvent,
   TouchData,
-} from '../handlers/gestureHandlerCommon';
+} from '../../handlers/gestureHandlerCommon';
 import { PressEvent, PressableEvent, PressableProps } from './PressableProps';
-import { HoverGestureHandlerEventPayload } from '../handlers/gestures/hoverGesture';
-import { LongPressGestureHandlerEventPayload } from '../handlers/LongPressGestureHandler';
+import { HoverGestureHandlerEventPayload } from '../../handlers/gestures/hoverGesture';
+import { LongPressGestureHandlerEventPayload } from '../../handlers/LongPressGestureHandler';
 import { Insets, StyleProp, View, ViewStyle, processColor } from 'react-native';
-import RNButton from './GestureHandlerButton';
+import RNButton from '../GestureHandlerButton';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
