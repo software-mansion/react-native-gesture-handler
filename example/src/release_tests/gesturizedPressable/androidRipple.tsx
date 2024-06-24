@@ -1,12 +1,15 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import TestingBase from './testingBase';
 
 export function RippleExample() {
+  const buttonOpacity =
+    Platform.OS === 'android' ? { opacity: 1 } : { opacity: 0.6 };
+
   return (
     <View style={styles.container}>
       <TestingBase
-        style={styles.pressable}
+        style={[styles.pressable, buttonOpacity]}
         android_ripple={{
           // @ts-ignore sources say string, android actually wants a number
           color: 'green',
@@ -31,6 +34,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderWidth: StyleSheet.hairlineWidth,
-    backgroundColor: '#97d9',
+    backgroundColor: 'mediumpurple',
   },
 });

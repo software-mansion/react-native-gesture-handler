@@ -33,7 +33,9 @@ const TestingEntry = ({
 export default function Example() {
   return (
     <ScrollView style={styles.scrollable}>
-      <TestingEntry title="Hit Slop">
+      <TestingEntry
+        title="Hit Slop"
+        comment="Increases area which is clickable, and which maintains touch down gesture.">
         <HitSlopExample />
       </TestingEntry>
       <TestingEntry title="Ripple" platform="Android">
@@ -41,10 +43,12 @@ export default function Example() {
       </TestingEntry>
       <TestingEntry
         title="Functional styling"
-        comment="lorem ipsum dolor sit amet">
+        comment="Styles that are set with a function">
         <FunctionalStyleExample />
       </TestingEntry>
-      <TestingEntry title="Delays on press callbacks">
+      <TestingEntry
+        title="Delays on press callbacks"
+        comment="Duration between press down and onPressIn">
         <DelayedPressExample />
       </TestingEntry>
     </ScrollView>
