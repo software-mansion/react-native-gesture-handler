@@ -22,13 +22,17 @@ const addInsets = (a: Insets, b: Insets): Insets => ({
   bottom: (a.bottom ?? 0) + (b.bottom ?? 0),
 });
 
-const touchToPressEvent = (data: TouchData, timestamp: number): PressEvent => ({
+const touchToPressEvent = (
+  data: TouchData,
+  timestamp: number,
+  targetId: number
+): PressEvent => ({
   identifier: data.id,
   locationX: data.x,
   locationY: data.y,
   pageX: data.absoluteX,
   pageY: data.absoluteY,
-  target: 0, // fixme if possible, set to correct target ID
+  target: targetId,
   timestamp: timestamp,
   touches: [], // intentionally empty
   changedTouches: [], // intentionally empty
@@ -39,7 +43,7 @@ const changeToTouchData = (
     HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
   >
 ): TouchData => ({
-  id: 0, // fixme if possible, set to correct pointer ID
+  id: event.handlerTag,
   x: event.x,
   y: event.y,
   absoluteX: event.absoluteX,
@@ -63,20 +67,23 @@ const adaptStateChangeEvent = (
 ): PressableEvent => {
   const timestamp = Date.now();
 
+  // as far as i see, there isn't a conventional way of getting targetId with the data we get
+  const targetId = 0;
+
   const touchData = changeToTouchData(event);
 
-  const pressEvent = touchToPressEvent(touchData, timestamp);
+  const pressEvent = touchToPressEvent(touchData, timestamp, targetId);
 
   return {
     nativeEvent: {
       touches: [pressEvent],
       changedTouches: [pressEvent],
-      identifier: event.handlerTag,
+      identifier: pressEvent.identifier,
       locationX: event.x,
       locationY: event.y,
       pageX: event.absoluteX,
       pageY: event.absoluteY,
-      target: 0, // node ID
+      target: targetId,
       timestamp: timestamp,
       force: undefined,
     },
@@ -86,11 +93,14 @@ const adaptStateChangeEvent = (
 const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
   const timestamp = Date.now();
 
+  // as far as i see, there isn't a conventional way of getting targetId with the data we get
+  const targetId = 0;
+
   const nativeTouches = event.allTouches.map((touch: TouchData) =>
-    touchToPressEvent(touch, timestamp)
+    touchToPressEvent(touch, timestamp, targetId)
   );
   const nativeChangedTouches = event.changedTouches.map((touch: TouchData) =>
-    touchToPressEvent(touch, timestamp)
+    touchToPressEvent(touch, timestamp, targetId)
   );
 
   return {
@@ -102,7 +112,7 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
       locationY: event.allTouches.at(0)?.y ?? -1,
       pageX: event.allTouches.at(0)?.absoluteX ?? -1,
       pageY: event.allTouches.at(0)?.absoluteY ?? -1,
-      target: 0, // node ID
+      target: targetId,
       timestamp: timestamp,
       force: undefined,
     },

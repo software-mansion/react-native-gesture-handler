@@ -117,11 +117,13 @@ export interface PressableProps
 
   /**
    * If true, doesn't play system sound on touch.
+   * @platform android
    */
   android_disableSound?: null | boolean;
 
   /**
    * Enables the Android ripple effect and configures its color.
+   * @platform android
    */
   android_ripple?: null | PressableAndroidRippleConfig;
 
