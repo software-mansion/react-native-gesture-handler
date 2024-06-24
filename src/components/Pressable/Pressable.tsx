@@ -96,8 +96,8 @@ export default function Pressable(props: PressableProps) {
                   width,
                   height,
                 },
-                event.changedTouches.at(-1),
-                normalizedHitSlop
+                normalizedHitSlop,
+                event.changedTouches.at(-1)
               ) ||
               isPressedDown.current
             ) {

@@ -52,13 +52,13 @@ const changeToTouchData = (
 
 const isTouchWithinInset = (
   dimensions: { width: number; height: number },
-  touch?: TouchData,
-  inset?: Insets
+  inset: Insets,
+  touch?: TouchData
 ) =>
-  (touch?.x ?? 0) < (inset?.right ?? 0) + dimensions.width &&
-  (touch?.y ?? 0) < (inset?.bottom ?? 0) + dimensions.height &&
-  (touch?.x ?? 0) > -(inset?.left ?? 0) &&
-  (touch?.y ?? 0) > -(inset?.top ?? 0);
+  (touch?.x ?? 0) < (inset.right ?? 0) + dimensions.width &&
+  (touch?.y ?? 0) < (inset.bottom ?? 0) + dimensions.height &&
+  (touch?.x ?? 0) > -(inset.left ?? 0) &&
+  (touch?.y ?? 0) > -(inset.top ?? 0);
 
 const adaptStateChangeEvent = (
   event: GestureStateChangeEvent<
