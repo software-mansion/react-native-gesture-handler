@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableProps } from './PressableProps';
@@ -12,6 +12,7 @@ import {
   addInsets,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const DEFAULT_HOVER_DELAY = 0;
@@ -76,6 +77,15 @@ export default function Pressable(props: PressableProps) {
     [props.onHoverIn, props.onHoverOut, props.delayHoverIn, props.delayHoverOut]
   );
 
+  const pressDelayTimeoutRef = useRef<number | null>(null);
+  const onPressInRoutine = useCallback((event: GestureTouchEvent) => {
+    props.onPressIn?.(adaptTouchEvent(event));
+    isPressCallbackEnabled.current = true;
+    isPressedDown.current = true;
+    setPressedState(true);
+    pressDelayTimeoutRef.current = null;
+  }, []);
+
   const touchGesture = useMemo(
     () =>
       Gesture.Manual()
@@ -95,11 +105,13 @@ export default function Pressable(props: PressableProps) {
               return;
             }
 
-            props.onPressIn?.(adaptTouchEvent(event));
-
-            isPressCallbackEnabled.current = true;
-            isPressedDown.current = true;
-            setPressedState(true);
+            if (props.unstable_pressDelay) {
+              pressDelayTimeoutRef.current = setTimeout(() => {
+                onPressInRoutine(event);
+              }, props.unstable_pressDelay);
+            } else {
+              onPressInRoutine(event);
+            }
           });
         })
         .onTouchesUp((event) => {
@@ -108,6 +120,15 @@ export default function Pressable(props: PressableProps) {
             event.allTouches.length > event.changedTouches.length
           ) {
             return;
+          }
+
+          if (
+            props.unstable_pressDelay &&
+            pressDelayTimeoutRef.current !== null
+          ) {
+            // if pressDelay is set, we want to call onPressIn on touch up
+            clearTimeout(pressDelayTimeoutRef.current);
+            onPressInRoutine(event);
           }
 
           props.onPressOut?.(adaptTouchEvent(event));
@@ -141,6 +162,7 @@ export default function Pressable(props: PressableProps) {
       isPressedDown,
       isPressCallbackEnabled,
       normalizedHitSlop,
+      pressDelayTimeoutRef,
     ]
   );
 
