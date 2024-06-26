@@ -36,6 +36,7 @@ import ContextMenu from './src/release_tests/contextMenu';
 import NestedTouchables from './src/release_tests/nestedTouchables';
 import NestedButtons from './src/release_tests/nestedButtons';
 import PointerType from './src/release_tests/pointerType';
+import SwipeableReanimation from './src/release_tests/swipeableReanimation';
 import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
@@ -142,6 +143,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'MouseButtons', component: MouseButtons },
       { name: 'ContextMenu (web only)', component: ContextMenu },
       { name: 'PointerType', component: PointerType },
+      { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
     ],

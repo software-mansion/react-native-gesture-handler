@@ -42,11 +42,13 @@ const SwipeableRow = ({ item, index }: { item: DataRow; index: number }) => {
   }
 };
 
+const Separator = () => <View style={styles.separator} />;
+
 export default function App() {
   return (
     <FlatList
       data={DATA}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      ItemSeparatorComponent={Separator}
       renderItem={({ item, index }) => (
         <SwipeableRow item={item} index={index} />
       )}
