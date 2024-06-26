@@ -224,7 +224,7 @@ export default function Pressable(props: PressableProps) {
       : props.children;
 
   return (
-    <View style={[pointerStyle, styleProp]}>
+    <View style={styleProp}>
       <GestureDetector gesture={gesture}>
         <RNButton
           ref={pressableRef}
@@ -235,7 +235,7 @@ export default function Pressable(props: PressableProps) {
             props.android_ripple?.color ?? defaultRippleColor
           )}
           rippleRadius={props.android_ripple?.radius ?? undefined}
-          style={StyleSheet.absoluteFill}>
+          style={[StyleSheet.absoluteFill, pointerStyle]}>
           {childrenProp}
           {__DEV__ ? (
             <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
