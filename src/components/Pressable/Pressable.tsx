@@ -78,7 +78,6 @@ export default function Pressable(props: PressableProps) {
   const pressInHandler = useCallback((event: GestureTouchEvent) => {
     props.onPressIn?.(adaptTouchEvent(event));
     isPressCallbackEnabled.current = true;
-    isPressedDown.current = true;
     setPressedState(true);
     pressDelayTimeoutRef.current = null;
   }, []);
@@ -89,7 +88,6 @@ export default function Pressable(props: PressableProps) {
         .onTouchesDown((event) => {
           pressableRef.current?.measure((_x, _y, width, height) => {
             // pressableRef.current?._nativeTag yields targetId on android & ios
-
             if (
               !isTouchWithinInset(
                 {
@@ -104,6 +102,9 @@ export default function Pressable(props: PressableProps) {
               return;
             }
 
+            console.log('pressed down');
+            isPressedDown.current = true;
+
             if (props.unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
                 pressInHandler(event);
@@ -114,6 +115,7 @@ export default function Pressable(props: PressableProps) {
           });
         })
         .onTouchesUp((event) => {
+          console.log('quitting before handling', !isPressedDown.current);
           if (
             !isPressedDown.current ||
             event.allTouches.length > event.changedTouches.length
@@ -136,6 +138,7 @@ export default function Pressable(props: PressableProps) {
             props.onPress?.(adaptTouchEvent(event));
           }
 
+          console.log('removing pressed down');
           isPressedDown.current = false;
           setPressedState(false);
         })

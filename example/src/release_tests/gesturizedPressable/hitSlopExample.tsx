@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import TestingBase, { BG_COLOR } from './testingBase';
+import TestingBase from './testingBase';
 
 export function HitSlopExample() {
   const pressIn = () => {

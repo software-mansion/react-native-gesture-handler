@@ -36,7 +36,7 @@ const TestingEntry = ({
 
 export default function Example() {
   return (
-    <ScrollView style={styles.scrollable}>
+    <ScrollView>
       <TestingEntry
         title="Hit Slop"
         comment="Increases area which is clickable, and which maintains touch down gesture.">
@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     gap: 12,
+    marginTop: 15,
   },
   header: {
     flex: 1,
@@ -114,12 +115,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
   },
-  scrollable: {},
   separator: {
-    width: '90%',
     // ios bug - different border styling doesn't work on just 1 side
     borderWidth: 0.6,
     borderStyle: 'dashed',
-    margin: 12,
   },
 });

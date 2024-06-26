@@ -50,5 +50,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#F5FCFF',
+    textAlign: 'center',
   },
 });
