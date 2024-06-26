@@ -40,8 +40,22 @@ export function updateHandlers(
     if (!preparedGesture.isMounted) {
       return;
     }
+
+    // if amount of gesture configs changes, we need to update the callbacks in shared value
+    let shouldUpdateSharedValueIfUsed =
+      preparedGesture.attachedGestures.length !== newGestures.length;
+
     for (let i = 0; i < newGestures.length; i++) {
       const handler = preparedGesture.attachedGestures[i];
+
+      // if the gestureId is different (gesture isn't wrapped with useMemo or its dependencies changed),
+      // we need to update the shared value, assuming the gesture runs on UI thread or the thread changed
+      if (
+        handler.handlers.gestureId !== newGestures[i].handlers.gestureId &&
+        (newGestures[i].shouldUseReanimated || handler.shouldUseReanimated)
+      ) {
+        shouldUpdateSharedValueIfUsed = true;
+      }
 
       handler.config = newGestures[i].config;
       handler.handlers = newGestures[i].handlers;
@@ -58,35 +72,14 @@ export function updateHandlers(
       registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
 
-    if (preparedGesture.animatedHandlers) {
-      const previousHandlersValue =
-        preparedGesture.animatedHandlers.value ?? [];
+    if (preparedGesture.animatedHandlers && shouldUpdateSharedValueIfUsed) {
       const newHandlersValue = preparedGesture.attachedGestures
         .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
         .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
       >[];
 
-      // if amount of gesture configs changes, we need to update the callbacks in shared value
-      let shouldUpdateSharedValue =
-        previousHandlersValue.length !== newHandlersValue.length;
-
-      if (!shouldUpdateSharedValue) {
-        // if the amount is the same, we need to check if any of the configs inside has changed
-        for (let i = 0; i < newHandlersValue.length; i++) {
-          if (
-            // we can use the `gestureId` prop as it's unique for every config instance
-            newHandlersValue[i].gestureId !== previousHandlersValue[i].gestureId
-          ) {
-            shouldUpdateSharedValue = true;
-            break;
-          }
-        }
-      }
-
-      if (shouldUpdateSharedValue) {
-        preparedGesture.animatedHandlers.value = newHandlersValue;
-      }
+      preparedGesture.animatedHandlers.value = newHandlersValue;
     }
 
     scheduleFlushOperations();
