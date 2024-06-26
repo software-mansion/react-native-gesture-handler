@@ -9,6 +9,7 @@ import {
   View,
   ViewStyle,
   processColor,
+  StyleSheet,
 } from 'react-native';
 import RNButton from '../GestureHandlerButton';
 import {
@@ -223,22 +224,24 @@ export default function Pressable(props: PressableProps) {
       : props.children;
 
   return (
-    <GestureDetector gesture={gesture}>
-      <RNButton
-        ref={pressableRef}
-        testID={props.testID}
-        enabled={isPressableEnabled}
-        touchSoundDisabled={props.android_disableSound ?? undefined}
-        rippleColor={processColor(
-          props.android_ripple?.color ?? defaultRippleColor
-        )}
-        rippleRadius={props.android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp]}>
-        {childrenProp}
-        {__DEV__ ? (
-          <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
-        ) : null}
-      </RNButton>
-    </GestureDetector>
+    <View style={[pointerStyle, styleProp]}>
+      <GestureDetector gesture={gesture}>
+        <RNButton
+          ref={pressableRef}
+          testID={props.testID}
+          enabled={isPressableEnabled}
+          touchSoundDisabled={props.android_disableSound ?? undefined}
+          rippleColor={processColor(
+            props.android_ripple?.color ?? defaultRippleColor
+          )}
+          rippleRadius={props.android_ripple?.radius ?? undefined}
+          style={StyleSheet.absoluteFill}>
+          {childrenProp}
+          {__DEV__ ? (
+            <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
+          ) : null}
+        </RNButton>
+      </GestureDetector>
+    </View>
   );
 }
