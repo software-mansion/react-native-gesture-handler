@@ -102,7 +102,6 @@ export default function Pressable(props: PressableProps) {
               return;
             }
 
-            console.log('pressed down');
             isPressedDown.current = true;
 
             if (props.unstable_pressDelay) {
@@ -115,7 +114,6 @@ export default function Pressable(props: PressableProps) {
           });
         })
         .onTouchesUp((event) => {
-          console.log('quitting before handling', !isPressedDown.current);
           if (
             !isPressedDown.current ||
             event.allTouches.length > event.changedTouches.length
@@ -138,7 +136,6 @@ export default function Pressable(props: PressableProps) {
             props.onPress?.(adaptTouchEvent(event));
           }
 
-          console.log('removing pressed down');
           isPressedDown.current = false;
           setPressedState(false);
         })
