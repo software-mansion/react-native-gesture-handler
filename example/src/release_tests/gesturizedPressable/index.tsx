@@ -38,11 +38,14 @@ export default function Example() {
   return (
     <ScrollView>
       <TestingEntry
-        title="Hit Slop"
-        comment="Increases area which is clickable, and which maintains touch down gesture.">
+        title="Hit Slop & Press Retention Offset"
+        comment="Parameters which increase the area which is clickable, and which maintains touch down gesture respectively.">
         <HitSlopExample />
       </TestingEntry>
-      <TestingEntry title="Ripple" platform="Android">
+      <TestingEntry
+        title="Ripple"
+        platform="Android"
+        comment="Ripple effect which is only available on android">
         <RippleExample />
       </TestingEntry>
       <TestingEntry
@@ -51,13 +54,13 @@ export default function Example() {
         <FunctionalStyleExample />
       </TestingEntry>
       <TestingEntry
-        title="Delays on press callbacks"
+        title="Delays on press"
         comment="Duration between press down and onPressIn">
         <DelayedPressExample />
       </TestingEntry>
       <TestingEntry
         title="Borders"
-        comment="Behaviour of different border styles on different devices">
+        comment="Behaviour of different border styles on opposite sides">
         <BordersExample />
       </TestingEntry>
     </ScrollView>
@@ -82,20 +85,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignContent: 'center',
-    gap: 10,
+    gap: 8,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '400',
   },
   code: {
-    fontSize: 18,
-    lineHeight: 24,
+    fontSize: 16,
     fontWeight: '400',
     padding: 5,
     borderRadius: 5,
-    height: 34,
-    margin: 'auto',
 
     color: '#37474f',
     backgroundColor: '#bbc',
