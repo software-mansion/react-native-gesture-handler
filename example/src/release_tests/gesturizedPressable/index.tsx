@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { BG_COLOR } from './testingBase';
+import { BACKGROUND_COLOR } from './testingBase';
 import { HitSlopExample } from './hitSlopExample';
 import { RippleExample } from './androidRippleExample';
 import { FunctionalStyleExample } from './functionalStylesExample';
@@ -66,7 +66,7 @@ export default function Example() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: BG_COLOR,
+    backgroundColor: BACKGROUND_COLOR,
     justifyContent: 'center',
   },
   data: {

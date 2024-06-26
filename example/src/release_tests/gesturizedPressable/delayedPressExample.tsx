@@ -1,12 +1,21 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import TestingBase, { signallerConfig } from './testingBase';
+import TestingBase from './testingBase';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withSpring,
 } from 'react-native-reanimated';
+
+const signalerConfig = {
+  duration: 200,
+  dampingRatio: 1,
+  stiffness: 500,
+  overshootClamping: true,
+  restDisplacementThreshold: 0.01,
+  restSpeedThreshold: 2,
+};
 
 export function DelayedPressExample() {
   const startColor = '#fff';
@@ -15,24 +24,21 @@ export function DelayedPressExample() {
   const animatedColor = useSharedValue(startColor);
 
   const pressDelay = 1000;
-
-  // original adds this value to the base longPressDuration
-  // new implementation uses this value as the longPressDuration
   const longPressDelay = 1000;
 
   const onPressIn = () => {
     console.log('Pressed with delay');
     animatedColor.value = withSequence(
-      withSpring(pressColor, signallerConfig),
-      withSpring(startColor, signallerConfig)
+      withSpring(pressColor, signalerConfig),
+      withSpring(startColor, signalerConfig)
     );
   };
 
   const onLongPress = () => {
     console.log('Long pressed with delay');
     animatedColor.value = withSequence(
-      withSpring(longPressColor, signallerConfig),
-      withSpring(startColor, signallerConfig)
+      withSpring(longPressColor, signalerConfig),
+      withSpring(startColor, signalerConfig)
     );
   };
 

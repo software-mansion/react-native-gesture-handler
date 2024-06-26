@@ -2,6 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import TestingBase from './testingBase';
 
+const HIT_SLOP = 40;
+const PRESS_RETENTION_OFFSET = HIT_SLOP;
+
 export function HitSlopExample() {
   const pressIn = () => {
     console.log('Pressable pressed in');
@@ -27,17 +30,14 @@ export function HitSlopExample() {
     console.log('Long pressed');
   };
 
-  const hitSlop = 40;
-  const pressRetentionOffset = 40;
-
   return (
     <View style={styles.retentionIndicator}>
       <View style={styles.slopIndicator}>
         <View style={styles.container}>
           <TestingBase
             style={styles.pressable}
-            hitSlop={hitSlop}
-            pressRetentionOffset={pressRetentionOffset}
+            hitSlop={HIT_SLOP}
+            pressRetentionOffset={PRESS_RETENTION_OFFSET}
             onPressIn={() => pressIn()}
             onPressOut={() => pressOut()}
             onPress={() => press()}
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
   slopIndicator: {
     display: 'flex',
     alignItems: 'center',
-    width: 180,
+    width: 100 + HIT_SLOP * 2,
     borderRightWidth: StyleSheet.hairlineWidth,
   },
   retentionIndicator: {
     display: 'flex',
     alignItems: 'center',
-    width: 260,
+    width: 180 + PRESS_RETENTION_OFFSET * 2,
     borderRightWidth: StyleSheet.hairlineWidth,
     margin: 20,
   },

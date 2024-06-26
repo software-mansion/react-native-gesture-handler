@@ -29,22 +29,20 @@ export default function EmptyExample() {
   return (
     <View style={styles.pressRectContainer}>
       <View style={styles.hitRectContainer}>
-        <View style={styles.pressableWrapper}>
-          <Pressable
-            style={styles.pressable}
-            onPressIn={pressIn}
-            onPressOut={pressOut}
-            onPress={press}
-            onHoverIn={hoverIn}
-            onHoverOut={hoverOut}
-            onLongPress={longPress}
-            hitSlop={20}
-            pressRetentionOffset={20}>
-            <View style={styles.textWrapper}>
-              <Text style={styles.text}>Pressable!</Text>
-            </View>
-          </Pressable>
-        </View>
+        <Pressable
+          style={styles.pressable}
+          onPressIn={pressIn}
+          onPressOut={pressOut}
+          onPress={press}
+          onHoverIn={hoverIn}
+          onHoverOut={hoverOut}
+          onLongPress={longPress}
+          hitSlop={20}
+          pressRetentionOffset={20}>
+          <View style={styles.textWrapper}>
+            <Text style={styles.text}>Pressable!</Text>
+          </View>
+        </Pressable>
         <Text style={styles.rectText}>Hit Rect</Text>
       </View>
       <Text style={styles.rectText}>Press Rect</Text>
@@ -76,12 +74,10 @@ const styles = StyleSheet.create({
     right: 5,
     bottom: 2,
   },
-  pressableWrapper: {
-    backgroundColor: 'mediumpurple',
-  },
   pressable: {
     width: 120,
     height: 120,
+    backgroundColor: 'mediumpurple',
   },
   textWrapper: {
     flex: 1,

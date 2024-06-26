@@ -11,15 +11,6 @@ import {
   PressableProps as GHPressableProps,
 } from 'react-native-gesture-handler';
 
-const signallerConfig = {
-  duration: 200,
-  dampingRatio: 1,
-  stiffness: 500,
-  overshootClamping: true,
-  restDisplacementThreshold: 0.01,
-  restSpeedThreshold: 2,
-};
-
 const TestingBase = (
   props: GHPressableProps & RNPressableProps & React.RefAttributes<View>
 ) => (
@@ -37,10 +28,10 @@ const TestingBase = (
   </>
 );
 
-const BG_COLOR = '#F5FCFF';
+const BACKGROUND_COLOR = '#F5FCFF';
 
 export default TestingBase;
-export { BG_COLOR, signallerConfig };
+export { BACKGROUND_COLOR };
 
 const styles = StyleSheet.create({
   textWrapper: {
@@ -49,7 +40,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#F5FCFF',
+    color: BACKGROUND_COLOR,
     textAlign: 'center',
   },
 });
