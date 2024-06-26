@@ -23,11 +23,13 @@ const TestingEntry = ({
 }: TestingEntryProps) => (
   <View style={styles.container}>
     <View style={styles.data}>
-      <Text style={styles.title}>{title}</Text>
-      {platform && <Text style={styles.code}>{platform}</Text>}
+      <View style={styles.header}>
+        <Text style={styles.title}>{title}</Text>
+        {platform && <Text style={styles.code}>{platform}</Text>}
+      </View>
+      {comment && <Text style={styles.comment}>{comment}</Text>}
     </View>
-    {comment && <Text style={styles.comment}>{comment}</Text>}
-    {children}
+    <View style={styles.testSandbox}>{children}</View>
     <View style={styles.separator} />
   </View>
 );
@@ -66,23 +68,28 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: BG_COLOR,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   data: {
     flex: 1,
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
+    alignSelf: 'center',
+    flexDirection: 'column',
     justifyContent: 'center',
     gap: 12,
   },
+  header: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    gap: 10,
+  },
   title: {
     fontSize: 28,
-    marginLeft: 12,
-    marginBottom: 5,
     fontWeight: '400',
   },
   code: {
     fontSize: 18,
+    lineHeight: 24,
     fontWeight: '400',
     padding: 5,
     borderRadius: 5,
@@ -96,10 +103,16 @@ const styles = StyleSheet.create({
   },
   comment: {
     alignSelf: 'flex-start',
-    marginLeft: 20,
+    textAlign: 'center',
+    margin: 15,
     marginTop: 0,
     marginBottom: 5,
     color: '#555',
+  },
+  testSandbox: {
+    marginTop: 5,
+    display: 'flex',
+    alignItems: 'center',
   },
   scrollable: {},
   separator: {

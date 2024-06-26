@@ -209,7 +209,7 @@ export default function Pressable(props: PressableProps) {
   const defaultRippleColor = props.android_ripple ? undefined : 'transparent';
 
   // `cursor: 'pointer'` on `RNButton` crashes IOS
-  const extraStyles: StyleProp<ViewStyle> =
+  const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
 
   const styleProp =
@@ -233,7 +233,7 @@ export default function Pressable(props: PressableProps) {
           props.android_ripple?.color ?? defaultRippleColor
         )}
         rippleRadius={props.android_ripple?.radius ?? undefined}
-        style={[extraStyles, styleProp]}>
+        style={[pointerStyle, styleProp]}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />

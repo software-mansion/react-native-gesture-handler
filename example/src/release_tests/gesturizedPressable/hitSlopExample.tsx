@@ -31,38 +31,34 @@ export function HitSlopExample() {
   const pressRetentionOffset = 40;
 
   return (
-    <>
+    <View style={styles.retentionIndicator}>
       <View style={styles.slopIndicator}>
-        <Text>Hit Slop</Text>
+        <View style={styles.container}>
+          <TestingBase
+            style={styles.pressable}
+            hitSlop={hitSlop}
+            pressRetentionOffset={pressRetentionOffset}
+            onPressIn={() => pressIn()}
+            onPressOut={() => pressOut()}
+            onPress={() => press()}
+            onHoverIn={() => hoverIn()}
+            onHoverOut={() => hoverOut()}
+            onLongPress={() => longPress()}
+          />
+        </View>
+        <Text style={styles.text}>Hit Slop</Text>
       </View>
-      <View style={styles.retentionIndicator}>
-        <Text>Retention Offset</Text>
-      </View>
-      <View style={styles.container}>
-        <TestingBase
-          style={styles.pressable}
-          hitSlop={hitSlop}
-          pressRetentionOffset={pressRetentionOffset}
-          onPressIn={() => pressIn()}
-          onPressOut={() => pressOut()}
-          onPress={() => press()}
-          onHoverIn={() => hoverIn()}
-          onHoverOut={() => hoverOut()}
-          onLongPress={() => longPress()}
-        />
-      </View>
-    </>
+      <Text style={styles.text}>Retention Offset</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     gap: 40,
-    height: 280,
-    marginBottom: 40,
   },
   pressable: {
     backgroundColor: 'mediumpurple',
@@ -75,26 +71,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: BG_COLOR,
+    alignSelf: 'flex-end',
+    marginBottom: 4,
+    marginRight: 6,
+    marginTop: 12,
   },
   slopIndicator: {
-    position: 'absolute',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    top: 100,
-    height: 275,
+    display: 'flex',
+    alignItems: 'center',
     width: 180,
-    paddingRight: 4,
     borderRightWidth: StyleSheet.hairlineWidth,
   },
   retentionIndicator: {
-    position: 'absolute',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    top: 100,
-    height: 300,
+    display: 'flex',
+    alignItems: 'center',
     width: 260,
-    paddingRight: 4,
     borderRightWidth: StyleSheet.hairlineWidth,
+    margin: 20,
   },
 });
