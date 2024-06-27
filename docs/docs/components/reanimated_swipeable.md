@@ -12,14 +12,14 @@ import GifGallery from '@site/components/GifGallery'
 </GifGallery>
 
 :::info
-This component is a drop-in replacement for the `Swipeable` component, rewritten in `Reanimated2`.
+This component is a drop-in replacement for the `Swipeable` component, rewritten using `Reanimated`.
 :::
 
 Reanimated `Swipeable` allows for implementing swipeable rows or similar interaction. It renders its children within a panable container allows for horizontal swiping left and right. While swiping one of two "action" containers can be shown depends on whether user swipes left or right (containers can be rendered by `renderLeftActions` or `renderRightActions` props).
 
 ### Usage:
 
-Similarly to the `DrawerLayout` and `Swipeable`, Reanimated `Swipeable` component isn't exported by default from the `react-native-gesture-handler` package. To use it, import it in the following way:
+To use it, import it in the following way:
 
 ```js
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -59,22 +59,6 @@ a boolean value indicating if the swipeable panel can be pulled further than the
 
 a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is 1, it mean no friction, for a native feel, try 8 or above.
 
-### `onSwipeableLeftOpen`
-
-:::caution
-This callback is deprecated and will be removed in the next version. Please use `onSwipeableOpen(direction)`
-:::
-
-method that is called when left action panel gets open.
-
-### `onSwipeableRightOpen`
-
-:::caution
-This callback is deprecated and will be removed in the next version. Please use `onSwipeableOpen(direction)`
-:::
-
-method that is called when right action panel gets open.
-
 ### `onSwipeableOpen`
 
 method that is called when action panel gets open (either right or left). Takes swipe direction as
@@ -84,22 +68,6 @@ an argument.
 
 method that is called when action panel is closed. Takes swipe direction as
 an argument.
-
-### `onSwipeableLeftWillOpen`
-
-:::caution
-This callback is deprecated and will be removed in the next version. Please use `onSwipeableWillOpen(direction)`
-:::
-
-method that is called when left action panel starts animating on open.
-
-### `onSwipeableRightWillOpen`
-
-:::caution
-This callback is deprecated and will be removed in the next version. Please use `onSwipeableWillOpen(direction)`
-:::
-
-method that is called when right action panel starts animating on open.
 
 ### `onSwipeableWillOpen`
 
@@ -186,40 +154,62 @@ Unlike method `close`, this method does not trigger any animation.
 
 ### Example:
 
-See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/showcase/swipeable/index.tsx) from GestureHandler Example App or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
 
-```js
+```jsx
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
-class AppleStyleSwipeableRow extends Component {
-  renderLeftActions = (progress, dragX) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-    });
-    return (
-      <RectButton style={styles.leftAction} onPress={this.close}>
-        <Animated.Text
-          style={[
-            styles.actionText,
-            {
-              transform: [{ translateX: trans }],
-            },
-          ]}>
-          Archive
-        </Animated.Text>
-      </RectButton>
-    );
-  };
-  render() {
-    return (
-      <Swipeable renderLeftActions={this.renderLeftActions}>
-        <Text>"hello"</Text>
-      </Swipeable>
-    );
-  }
+const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: interpolate(
+          dragX.value,
+          [0, 50, 100, 101],
+          [-20, 0, 0, 1],
+          Extrapolation.CLAMP
+        ),
+      },
+    ],
+  }));
+  return (
+    <RectButton
+      style={{
+        flex: 1,
+        backgroundColor: '#497AFC',
+        justifyContent: 'center',
+      }}
+      onPress={() => swipeableRef.current!.close()}>
+      <Animated.Text>
+        Archive
+      </Animated.Text>
+    </RectButton>
+  );
+};
+
+const renderLeftActions = (
+  _progress: any,
+  translation: SharedValue<number>,
+  swipeableRef: React.RefObject<SwipeableMethods>
+) => <LeftAction dragX={translation} swipeableRef={swipeableRef} />;
+
+function AppleStyleSwipeableRow({ children }: AppleStyleSwipeableRowProps) {
+  const swipeableRow = useRef<SwipeableMethods>(null);
+
+  return (
+    <Swipeable
+      ref={swipeableRow}
+      friction={2}
+      enableTrackpadTwoFingerGesture
+      leftThreshold={30}
+      renderLeftActions={(_, progress) =>
+        renderLeftActions(_, progress, swipeableRow)
+      }>
+      <Text>Apple style swipeable</Text>
+    </Swipeable>
+  );
 }
 ```
