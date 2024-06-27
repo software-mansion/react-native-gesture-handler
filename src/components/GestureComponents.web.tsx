@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
-import { forwardRef } from '../forwardRefCompat';
 
 export const ScrollView = createNativeWrapper(RNScrollView, {
   disallowInterruption: false,
@@ -31,7 +30,7 @@ export const DrawerLayoutAndroid = () => {
 // on functional components
 export const RefreshControl = createNativeWrapper(View);
 
-export const FlatList = forwardRef(
+export const FlatList = React.forwardRef(
   <ItemT extends any>(props: FlatListProps<ItemT>, ref: any) => (
     <RNFlatList
       ref={ref}

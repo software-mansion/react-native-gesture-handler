@@ -20,7 +20,6 @@ import {
   NativeViewGestureHandlerPayload,
   NativeViewGestureHandlerProps,
 } from '../handlers/NativeViewGestureHandler';
-import { forwardRef } from '../forwardRefCompat';
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
   /**
@@ -245,9 +244,10 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   }
 }
 
-export const BaseButton = forwardRef<any, Omit<BaseButtonProps, 'innerRef'>>(
-  (props, ref) => <InnerBaseButton innerRef={ref} {...props} />
-);
+export const BaseButton = React.forwardRef<
+  any,
+  Omit<BaseButtonProps, 'innerRef'>
+>((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
 const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
 
@@ -313,9 +313,10 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
   }
 }
 
-export const RectButton = forwardRef<any, Omit<RectButtonProps, 'innerRef'>>(
-  (props, ref) => <InnerRectButton innerRef={ref} {...props} />
-);
+export const RectButton = React.forwardRef<
+  any,
+  Omit<RectButtonProps, 'innerRef'>
+>((props, ref) => <InnerRectButton innerRef={ref} {...props} />);
 
 class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps> {
   static defaultProps = {
@@ -355,7 +356,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
   }
 }
 
-export const BorderlessButton = forwardRef<
+export const BorderlessButton = React.forwardRef<
   any,
   Omit<BorderlessButtonProps, 'innerRef'>
 >((props, ref) => <InnerBorderlessButton innerRef={ref} {...props} />);
