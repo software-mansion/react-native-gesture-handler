@@ -6,6 +6,7 @@ import {
   NativeViewGestureHandlerProps,
   nativeViewProps,
 } from './NativeViewGestureHandler';
+import { forwardRef } from '../forwardRefCompat';
 
 /*
  * This array should consist of:
@@ -24,7 +25,7 @@ export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
   config: Readonly<NativeViewGestureHandlerProps> = {}
 ) {
-  const ComponentWrapper = React.forwardRef<
+  const ComponentWrapper = forwardRef<
     React.ComponentType<any>,
     P & NativeViewGestureHandlerProps
   >((props, ref) => {

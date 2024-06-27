@@ -27,6 +27,7 @@ import {
 } from '../handlers/NativeViewGestureHandler';
 
 import { toArray } from '../utils';
+import { forwardRef } from '../forwardRefCompat';
 
 export const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
@@ -42,7 +43,7 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
     shouldCancelWhenOutside: false,
   }
 );
-export const ScrollView = React.forwardRef<
+export const ScrollView = forwardRef<
   RNScrollView,
   RNScrollViewProps & NativeViewGestureHandlerProps
 >((props, ref) => {
@@ -91,7 +92,7 @@ export const DrawerLayoutAndroid = createNativeWrapper<
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
-export const FlatList = React.forwardRef((props, ref) => {
+export const FlatList = forwardRef((props, ref) => {
   const refreshControlGestureRef = React.useRef<RefreshControl>(null);
 
   const { waitFor, refreshControl, ...rest } = props;
