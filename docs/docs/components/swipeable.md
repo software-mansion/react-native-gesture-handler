@@ -11,6 +11,11 @@ import GifGallery from '@site/components/GifGallery'
   <img src={useBaseUrl("gifs/sampleswipeable.gif")} height="120" />
 </GifGallery>
 
+:::caution
+This component is deprecated.
+Please use [the reanimated version](/react-native-gesture-handler/docs/components/reanimated_swipeable).
+:::
+
 This component allows for implementing swipeable rows or similar interaction. It renders its children within a panable container allows for horizontal swiping left and right. While swiping one of two "action" containers can be shown depends on whether user swipes left or right (containers can be rendered by `renderLeftActions` or `renderRightActions` props).
 
 ### Usage:
