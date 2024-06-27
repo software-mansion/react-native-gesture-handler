@@ -296,9 +296,9 @@ export default function createHandler<
       this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
-      // TODO(TS) fix ref type
-      const { ref }: any = child;
-      if (ref !== null) {
+      // @ts-ignore React 19 moved ref to props and shows warning when trying to access it directly on a node
+      const ref: any = React.createFactory ? child?.ref : child?.props?.ref;
+      if (ref !== null && ref !== undefined) {
         if (typeof ref === 'function') {
           ref(node);
         } else {
