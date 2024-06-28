@@ -34,8 +34,8 @@ const touchToPressEvent = (
   pageY: data.absoluteY,
   target: targetId,
   timestamp: timestamp,
-  touches: [], // always empty
-  changedTouches: [], // always empty
+  touches: [], // always empty - legacy compatibility
+  changedTouches: [], // always empty - legacy compatibility
 });
 
 const changeToTouchData = (
