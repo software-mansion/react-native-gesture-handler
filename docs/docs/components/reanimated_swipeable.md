@@ -83,10 +83,12 @@ an argument.
 
 method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
 This map describes the values to use as inputRange for extra interpolation:
-AnimatedValue: [startValue, endValue]
 
-progressAnimatedValue: [0, 1]
-dragAnimatedValue: [0, +]
+SharedValue: [startValue, endValue]
+
+progress: [0, 1]
+
+drag: [0, +]
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
@@ -94,10 +96,12 @@ To support `rtl` flexbox layouts use `flexDirection` styling.
 
 method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
 This map describes the values to use as inputRange for extra interpolation:
-AnimatedValue: [startValue, endValue]
 
-progressAnimatedValue: [0, 1]
-dragAnimatedValue: [0, -]
+SharedValue: [startValue, endValue]
+
+progress: [0, 1]
+
+drag: [0, -]
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
