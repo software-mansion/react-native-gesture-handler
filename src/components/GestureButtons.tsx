@@ -64,6 +64,9 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    */
   touchSoundDisabled?: boolean;
 
+  /**
+   * Style object, use it to set additional styles.
+   */
   style?: StyleProp<ViewStyle>;
 }
 

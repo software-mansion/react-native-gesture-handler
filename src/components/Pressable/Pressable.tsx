@@ -189,6 +189,12 @@ export default function Pressable(props: PressableProps) {
   pressGesture.shouldCancelWhenOutside(true);
   hoverGesture.shouldCancelWhenOutside(true);
 
+  if (Platform.OS === 'web') {
+    touchGesture.shouldCancelWhenOutside(false);
+    pressGesture.shouldCancelWhenOutside(false);
+    hoverGesture.shouldCancelWhenOutside(false);
+  }
+
   touchGesture.runOnJS(true);
   pressGesture.runOnJS(true);
   hoverGesture.runOnJS(true);
@@ -198,6 +204,8 @@ export default function Pressable(props: PressableProps) {
   touchGesture.hitSlop(appliedHitSlop);
   pressGesture.hitSlop(appliedHitSlop);
   hoverGesture.hitSlop(appliedHitSlop);
+
+  // uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
   rippleGesture.hitSlop(normalizedHitSlop);
 
   const gesture = Gesture.Simultaneous(
