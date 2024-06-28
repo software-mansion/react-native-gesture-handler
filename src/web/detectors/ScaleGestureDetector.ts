@@ -89,8 +89,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
         return;
       }
 
-      devSumX += Math.abs(value.abosoluteCoords.x - focusX);
-      devSumY += Math.abs(value.abosoluteCoords.y - focusY);
+      devSumX += Math.abs(value.relativeCoords.x - focusX);
+      devSumY += Math.abs(value.relativeCoords.y - focusY);
     });
 
     const devX: number = devSumX / div;
