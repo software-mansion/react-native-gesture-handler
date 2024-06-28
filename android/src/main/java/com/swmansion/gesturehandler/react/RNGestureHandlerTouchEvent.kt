@@ -11,7 +11,8 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   private var extraData: WritableMap? = null
   private var coalescingKey: Short = 0
   private fun <T : GestureHandler<T>> init(handler: T) {
-    super.init(UIManagerHelper.getSurfaceId(handler.view), handler.view!!.id)
+    val view = handler.view!!
+    super.init(UIManagerHelper.getSurfaceId(view), view.id)
     extraData = createEventData(handler)
     coalescingKey = handler.eventCoalescingKey
   }
