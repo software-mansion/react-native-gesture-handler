@@ -184,10 +184,12 @@ export default function Pressable(props: PressableProps) {
   touchGesture.enabled(isPressableEnabled);
   pressGesture.enabled(isPressableEnabled);
   hoverGesture.enabled(isPressableEnabled);
+  rippleGesture.enabled(isPressableEnabled);
 
   touchGesture.shouldCancelWhenOutside(true);
   pressGesture.shouldCancelWhenOutside(true);
   hoverGesture.shouldCancelWhenOutside(true);
+  rippleGesture.shouldCancelWhenOutside(true);
 
   if (Platform.OS === 'web') {
     touchGesture.shouldCancelWhenOutside(false);

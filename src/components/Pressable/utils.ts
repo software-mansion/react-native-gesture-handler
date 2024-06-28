@@ -34,8 +34,8 @@ const touchToPressEvent = (
   pageY: data.absoluteY,
   target: targetId,
   timestamp: timestamp,
-  touches: [], // intentionally empty
-  changedTouches: [], // intentionally empty
+  touches: [], // always empty
+  changedTouches: [], // always empty
 });
 
 const changeToTouchData = (
@@ -67,7 +67,7 @@ const adaptStateChangeEvent = (
 ): PressableEvent => {
   const timestamp = Date.now();
 
-  // as far as i see, there isn't a conventional way of getting targetId with the data we get
+  // As far as I can see, there isn't a conventional way of getting targetId with the data we get
   const targetId = 0;
 
   const touchData = changeToTouchData(event);
@@ -93,7 +93,7 @@ const adaptStateChangeEvent = (
 const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
   const timestamp = Date.now();
 
-  // as far as i see, there isn't a conventional way of getting targetId with the data we get
+  // As far as I can see, there isn't a conventional way of getting targetId with the data we get
   const targetId = 0;
 
   const nativeTouches = event.allTouches.map((touch: TouchData) =>
