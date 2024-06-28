@@ -16,12 +16,14 @@ import {
 
 import {
   BaseGestureHandlerProps,
-  filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
+} from './gestureHandlerCommon';
+import {
+  filterConfig,
   findNodeHandle,
   scheduleFlushOperations,
-} from './gestureHandlerCommon';
+} from './gestureCommonUtils';
 import { ValueOf } from '../typeUtils';
 import { deepEqual, isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';

@@ -4,7 +4,7 @@ import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import {
   filterConfig,
   scheduleFlushOperations,
-} from '../../gestureHandlerCommon';
+} from 'src/handlers/gestureCommonUtils';
 import { ComposedGesture } from '../gestureComposition';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { AttachedGestureState } from './types';
