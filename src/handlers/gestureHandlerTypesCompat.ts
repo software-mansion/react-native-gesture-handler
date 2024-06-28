@@ -10,38 +10,24 @@ import {
   HandlerStateChangeEvent,
   HandlerStateChangeEventPayload,
 } from './gestureHandlerCommon';
+import { FlingGestureHandlerProps } from './FlingGestureHandler';
 import {
   FlingGestureHandlerEventPayload,
-  FlingGestureHandlerProps,
-} from './FlingGestureHandler';
-import {
   ForceTouchGestureHandlerEventPayload,
-  ForceTouchGestureHandlerProps,
-} from './ForceTouchGestureHandler';
-import {
   LongPressGestureHandlerEventPayload,
-  LongPressGestureHandlerProps,
-} from './LongPressGestureHandler';
-import {
   PanGestureHandlerEventPayload,
-  PanGestureHandlerProps,
-} from './PanGestureHandler';
-import {
   PinchGestureHandlerEventPayload,
-  PinchGestureHandlerProps,
-} from './PinchGestureHandler';
-import {
   RotationGestureHandlerEventPayload,
-  RotationGestureHandlerProps,
-} from './RotationGestureHandler';
-import {
   TapGestureHandlerEventPayload,
-  TapGestureHandlerProps,
-} from './TapGestureHandler';
-import {
   NativeViewGestureHandlerPayload,
-  NativeViewGestureHandlerProps,
-} from './NativeViewGestureHandler';
+} from './GestureHandlerEventPayload';
+import { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
+import { LongPressGestureHandlerProps } from './LongPressGestureHandler';
+import { PanGestureHandlerProps } from './PanGestureHandler';
+import { PinchGestureHandlerProps } from './PinchGestureHandler';
+import { RotationGestureHandlerProps } from './RotationGestureHandler';
+import { TapGestureHandlerProps } from './TapGestureHandler';
+import { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 
 // events
 export type GestureHandlerGestureEventNativeEvent = GestureEventPayload;

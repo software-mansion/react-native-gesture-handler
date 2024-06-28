@@ -17,7 +17,7 @@ import {
   HandlerStateChangeEvent,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
-import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
+import { NativeViewGestureHandlerPayload } from 'src/handlers/GestureHandlerEventPayload';
 import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedback.android';
 
 /**
@@ -33,7 +33,7 @@ export const TOUCHABLE_STATE = {
   MOVED_OUTSIDE: 2,
 } as const;
 
-type TouchableState = typeof TOUCHABLE_STATE[keyof typeof TOUCHABLE_STATE];
+type TouchableState = (typeof TOUCHABLE_STATE)[keyof typeof TOUCHABLE_STATE];
 
 export interface GenericTouchableProps
   extends Omit<TouchableWithoutFeedbackProps, 'hitSlop'> {

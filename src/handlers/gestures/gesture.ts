@@ -1,5 +1,3 @@
-import { FlingGestureHandlerEventPayload } from '../FlingGestureHandler';
-import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
 import {
   HitSlop,
   CommonGestureConfig,
@@ -11,12 +9,16 @@ import {
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlersRegistry';
 import { GestureStateManagerType } from './gestureStateManager';
-import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
-import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
-import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
-import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
-import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
-import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
+import {
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
+} from '../GestureHandlerEventPayload';
 import { isRemoteDebuggingEnabled } from '../../utils';
 
 export type GestureType =
@@ -97,7 +99,7 @@ export const CALLBACK_TYPE = {
 
 // Allow using CALLBACK_TYPE as object and type
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type CALLBACK_TYPE = typeof CALLBACK_TYPE[keyof typeof CALLBACK_TYPE];
+export type CALLBACK_TYPE = (typeof CALLBACK_TYPE)[keyof typeof CALLBACK_TYPE];
 
 export abstract class Gesture {
   /**

@@ -20,13 +20,13 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
-  PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
 } from '../handlers/PanGestureHandler';
 import {
-  TapGestureHandler,
+  PanGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
-} from '../handlers/TapGestureHandler';
+} from 'src/handlers/GestureHandlerEventPayload';
+import { TapGestureHandler } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;

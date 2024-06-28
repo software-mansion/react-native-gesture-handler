@@ -16,10 +16,8 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
 } from '../handlers/gestureHandlerCommon';
-import {
-  NativeViewGestureHandlerPayload,
-  NativeViewGestureHandlerProps,
-} from '../handlers/NativeViewGestureHandler';
+import { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+import { NativeViewGestureHandlerPayload } from 'src/handlers/GestureHandlerEventPayload';
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
   /**
