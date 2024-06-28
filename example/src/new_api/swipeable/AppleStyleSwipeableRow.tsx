@@ -8,7 +8,9 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import Swipeable, { SwipeableMethods } from 'src/new_api/swipeable/Swipeable';
+import Swipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 interface AppleStyleSwipeableRowProps {
   children?: ReactNode;
