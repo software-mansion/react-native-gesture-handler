@@ -3,7 +3,7 @@
 // move faster and fix possible issues quicker
 
 import * as React from 'react';
-import { Component } from 'react';
+import { Component, useEffect } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -496,6 +496,12 @@ export default class Swipeable extends Component<
   };
 
   render() {
+    useEffect(() => {
+      console.warn(
+        'Warning: Swipeable is deprecated. Please use ReanimatedSwipeable instead.'
+      );
+    }, []);
+
     const { rowState } = this.state;
     const {
       children,
