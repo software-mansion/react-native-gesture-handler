@@ -26,7 +26,7 @@ export const TOUCHABLE_STATE = {
   MOVED_OUTSIDE: 2,
 } as const;
 
-type TouchableState = (typeof TOUCHABLE_STATE)[keyof typeof TOUCHABLE_STATE];
+type TouchableState = typeof TOUCHABLE_STATE[keyof typeof TOUCHABLE_STATE];
 
 interface InternalProps {
   extraButtonProps: TouchableNativeFeedbackExtraProps;
