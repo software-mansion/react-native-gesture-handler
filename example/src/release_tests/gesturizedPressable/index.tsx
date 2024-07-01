@@ -8,6 +8,7 @@ import { RippleExample } from './androidRippleExample';
 import { FunctionalStyleExample } from './functionalStylesExample';
 import { DelayedPressExample } from './delayedPressExample';
 import { BordersExample } from './bordersExample';
+import { DelayHoverExample } from './hoverDelayExample';
 
 type TestingEntryProps = {
   title: string;
@@ -57,6 +58,12 @@ export default function Example() {
         title="Delays on press"
         comment="Duration between press down and onPressIn">
         <DelayedPressExample />
+      </TestingEntry>
+      <TestingEntry
+        title="Delay hoverIn/Out"
+        comment="Delay set to hover in and out"
+        platform="web">
+        <DelayHoverExample />
       </TestingEntry>
       <TestingEntry
         title="Borders"

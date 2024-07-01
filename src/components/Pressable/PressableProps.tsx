@@ -82,7 +82,7 @@ export interface PressableProps
 
   /**
    * Duration to wait after hover in before calling `onHoverIn`.
-   * @platform macos windows
+   * @platform web macos windows
    *
    * NOTE: not present in RN docs
    */
@@ -90,7 +90,7 @@ export interface PressableProps
 
   /**
    * Duration to wait after hover out before calling `onHoverOut`.
-   * @platform macos windows
+   * @platform web macos windows
    *
    * NOTE: not present in RN docs
    */
