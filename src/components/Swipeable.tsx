@@ -239,10 +239,6 @@ export default class Swipeable extends Component<
   };
 
   constructor(props: SwipeableProps) {
-    console.warn(
-      'Warning: Swipeable is deprecated. Please use ReanimatedSwipeable instead.'
-    );
-
     super(props);
     const dragX = new Animated.Value(0);
     this.state = {
