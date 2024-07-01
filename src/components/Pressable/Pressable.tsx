@@ -199,31 +199,17 @@ export default function Pressable(props: PressableProps) {
 
   const isPressableEnabled = props.disabled !== true;
 
-  touchGesture.enabled(isPressableEnabled);
-  pressGesture.enabled(isPressableEnabled);
-  hoverGesture.enabled(isPressableEnabled);
-  rippleGesture.enabled(isPressableEnabled);
+  const gestures = [touchGesture, pressGesture, hoverGesture, rippleGesture];
 
-  touchGesture.shouldCancelWhenOutside(true);
-  pressGesture.shouldCancelWhenOutside(true);
-  hoverGesture.shouldCancelWhenOutside(true);
-  rippleGesture.shouldCancelWhenOutside(true);
+  for (const gesture of gestures) {
+    gesture.enabled(isPressableEnabled);
+    gesture.runOnJS(true);
+    gesture.hitSlop(appliedHitSlop);
 
-  if (Platform.OS === 'web') {
-    touchGesture.shouldCancelWhenOutside(false);
-    pressGesture.shouldCancelWhenOutside(false);
-    hoverGesture.shouldCancelWhenOutside(false);
+    if (Platform.OS !== 'web') {
+      gesture.shouldCancelWhenOutside(true);
+    }
   }
-
-  touchGesture.runOnJS(true);
-  pressGesture.runOnJS(true);
-  hoverGesture.runOnJS(true);
-  rippleGesture.runOnJS(true);
-
-  // this hitSlop block is required by android
-  touchGesture.hitSlop(appliedHitSlop);
-  pressGesture.hitSlop(appliedHitSlop);
-  hoverGesture.hitSlop(appliedHitSlop);
 
   // uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
   rippleGesture.hitSlop(normalizedHitSlop);
