@@ -23,7 +23,6 @@ import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
-const DEFAULT_HOVER_DELAY = 0;
 
 export default function Pressable(props: PressableProps) {
   const [pressedState, setPressedState] = useState(
@@ -61,16 +60,23 @@ export default function Pressable(props: PressableProps) {
     () =>
       Gesture.Hover()
         .onBegin((event) => {
-          setTimeout(
-            () => props.onHoverIn?.(adaptStateChangeEvent(event)),
-            props.delayHoverIn ?? DEFAULT_HOVER_DELAY
-          );
+          if (props.delayHoverIn) {
+            setTimeout(
+              () => props.onHoverIn?.(adaptStateChangeEvent(event)),
+              props.delayHoverIn
+            );
+            return;
+          }
+          props.onHoverIn?.(adaptStateChangeEvent(event));
         })
         .onEnd((event) => {
-          setTimeout(
-            () => props.onHoverOut?.(adaptStateChangeEvent(event)),
-            props.delayHoverOut ?? DEFAULT_HOVER_DELAY
-          );
+          if (props.delayHoverOut) {
+            setTimeout(
+              () => props.onHoverOut?.(adaptStateChangeEvent(event)),
+              props.delayHoverOut
+            );
+          }
+          props.onHoverOut?.(adaptStateChangeEvent(event));
         }),
     [props.onHoverIn, props.onHoverOut, props.delayHoverIn, props.delayHoverOut]
   );
