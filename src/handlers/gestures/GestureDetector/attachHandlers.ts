@@ -5,7 +5,7 @@ import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import {
   filterConfig,
   scheduleFlushOperations,
-} from 'src/handlers/gestureCommonUtils';
+} from '../../gestureCommonUtils';
 import { ComposedGesture } from '../gestureComposition';
 import { ActionType } from '../../../ActionType';
 import { Platform } from 'react-native';

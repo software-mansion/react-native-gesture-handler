@@ -34,7 +34,7 @@ import { PanGestureHandler } from '../handlers/PanGestureHandler';
 import {
   PanGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
-} from 'src/handlers/GestureHandlerEventPayload';
+} from '../handlers/GestureHandlerEventPayload';
 import { TapGestureHandler } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 

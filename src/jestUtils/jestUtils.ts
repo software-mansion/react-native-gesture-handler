@@ -37,7 +37,7 @@ import {
   PinchGestureHandlerEventPayload,
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
-} from 'src/handlers/GestureHandlerEventPayload';
+} from '../handlers/GestureHandlerEventPayload';
 import {
   NativeViewGestureHandler,
   nativeViewHandlerName,
