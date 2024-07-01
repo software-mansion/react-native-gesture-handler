@@ -82,11 +82,39 @@ export default function Pressable(props: PressableProps) {
     setPressedState(true);
     pressDelayTimeoutRef.current = null;
   }, []);
+  const pressOutHandler = useCallback((event: GestureTouchEvent) => {
+    if (
+      !isPressedDown.current ||
+      event.allTouches.length > event.changedTouches.length
+    ) {
+      return;
+    }
+
+    if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
+      // if pressDelay is set, we want to call onPressIn on touch up
+      clearTimeout(pressDelayTimeoutRef.current);
+      pressInHandler(event);
+    }
+
+    props.onPressOut?.(adaptTouchEvent(event));
+
+    if (isPressCallbackEnabled.current) {
+      props.onPress?.(adaptTouchEvent(event));
+    }
+
+    isPressedDown.current = false;
+    setPressedState(false);
+  }, []);
+
+  // fix for: touch out is called before touch in due to async .measure() in onTouchesDown()
+  const handlingOnTouchesDown = useRef<boolean>(false);
+  const onEndHandlingTouchesDown = useRef<() => void>(() => null);
 
   const touchGesture = useMemo(
     () =>
       Gesture.Manual()
         .onTouchesDown((event) => {
+          handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
             // pressableRef.current?._nativeTag yields targetId on android & ios
             if (
@@ -112,33 +140,17 @@ export default function Pressable(props: PressableProps) {
             } else {
               pressInHandler(event);
             }
+
+            onEndHandlingTouchesDown.current();
+            handlingOnTouchesDown.current = false;
           });
         })
         .onTouchesUp((event) => {
-          if (
-            !isPressedDown.current ||
-            event.allTouches.length > event.changedTouches.length
-          ) {
+          if (handlingOnTouchesDown.current) {
+            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
             return;
           }
-
-          if (
-            props.unstable_pressDelay &&
-            pressDelayTimeoutRef.current !== null
-          ) {
-            // if pressDelay is set, we want to call onPressIn on touch up
-            clearTimeout(pressDelayTimeoutRef.current);
-            pressInHandler(event);
-          }
-
-          props.onPressOut?.(adaptTouchEvent(event));
-
-          if (isPressCallbackEnabled.current) {
-            props.onPress?.(adaptTouchEvent(event));
-          }
-
-          isPressedDown.current = false;
-          setPressedState(false);
+          pressOutHandler(event);
         })
         .onTouchesCancelled((event) => {
           if (
