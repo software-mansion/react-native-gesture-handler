@@ -7,7 +7,6 @@ import type { Config } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
 import * as HammerNodeManager from './web_hammer/NodeManager';
-import * as createGestureHandler from './web_hammer/modifyGestureHandlerRegistry';
 import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
 
 export default {
@@ -49,7 +48,7 @@ export default {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const GestureClass = HammerGestures[handlerName];
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      createGestureHandler.createGestureHandler(handlerTag, new GestureClass());
+      HammerNodeManager.createGestureHandler(handlerTag, new GestureClass());
     }
 
     this.updateGestureHandler(handlerTag, config as unknown as Config);
@@ -98,7 +97,7 @@ export default {
     if (isNewWebImplementationEnabled()) {
       NodeManager.dropGestureHandler(handlerTag);
     } else {
-      createGestureHandler.dropGestureHandler(handlerTag);
+      HammerNodeManager.dropGestureHandler(handlerTag);
     }
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
