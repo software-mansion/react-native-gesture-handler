@@ -75,6 +75,7 @@ export default function Pressable(props: PressableProps) {
               () => props.onHoverOut?.(adaptStateChangeEvent(event)),
               props.delayHoverOut
             );
+            return;
           }
           props.onHoverOut?.(adaptStateChangeEvent(event));
         }),
