@@ -99,7 +99,7 @@ export const CALLBACK_TYPE = {
 
 // Allow using CALLBACK_TYPE as object and type
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type CALLBACK_TYPE = (typeof CALLBACK_TYPE)[keyof typeof CALLBACK_TYPE];
+export type CALLBACK_TYPE = typeof CALLBACK_TYPE[keyof typeof CALLBACK_TYPE];
 
 export abstract class Gesture {
   /**
