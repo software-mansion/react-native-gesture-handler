@@ -3,7 +3,7 @@ import {
   BorderlessButtonProps,
   RawButtonProps,
   RectButtonProps,
-} from '../components/GestureButtons';
+} from 'src/components/GestureButtonsProps';
 import {
   GestureEvent,
   GestureEventPayload,

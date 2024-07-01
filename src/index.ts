@@ -75,7 +75,7 @@ export type {
   BaseButtonProps,
   RectButtonProps,
   BorderlessButtonProps,
-} from './components/GestureButtons';
+} from './components/GestureButtonsProps';
 export {
   RawButton,
   BaseButton,
