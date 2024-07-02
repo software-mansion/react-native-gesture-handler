@@ -1,10 +1,10 @@
-import {
+import type {
   StyleProp,
   ViewStyle,
   TouchableWithoutFeedbackProps,
   Insets,
 } from 'react-native';
-import { UserSelect } from '../../handlers/gestureHandlerCommon';
+import type { UserSelect } from '../../handlers/gestureHandlerCommon';
 
 export interface GenericTouchableProps
   extends Omit<TouchableWithoutFeedbackProps, 'hitSlop'> {
