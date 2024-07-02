@@ -56,7 +56,7 @@ export default function Pressable(props: PressableProps) {
     [isPressCallbackEnabled, props.onLongPress, isPressedDown]
   );
 
-  // clear timeout on exit,
+  // clear timeout on exit
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
 
