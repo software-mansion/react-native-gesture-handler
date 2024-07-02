@@ -30,4 +30,4 @@ jobs:
       - name: Lint
         run: yarn lint:js-root
       - name: Check for circular dependencies
-        run: yarn circularDependencyCheck
+        run: yarn circular-dependency-check
