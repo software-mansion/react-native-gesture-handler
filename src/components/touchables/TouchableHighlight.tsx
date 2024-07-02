@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
-import GenericTouchable, {
-  GenericTouchableProps,
-  TOUCHABLE_STATE,
-} from './GenericTouchable';
+import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 import {
   StyleSheet,
   View,

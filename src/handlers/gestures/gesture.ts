@@ -1,5 +1,3 @@
-import { FlingGestureHandlerEventPayload } from '../FlingGestureHandler';
-import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
 import {
   HitSlop,
   CommonGestureConfig,
@@ -9,14 +7,18 @@ import {
   ActiveCursor,
   MouseButton,
 } from '../gestureHandlerCommon';
-import { getNextHandlerTag } from '../handlersRegistry';
+import { getNextHandlerTag } from '../getNextHandlerTag';
 import { GestureStateManagerType } from './gestureStateManager';
-import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
-import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
-import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
-import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
-import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
-import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
+import type {
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
+} from '../GestureHandlerEventPayload';
 import { isRemoteDebuggingEnabled } from '../../utils';
 
 export type GestureType =

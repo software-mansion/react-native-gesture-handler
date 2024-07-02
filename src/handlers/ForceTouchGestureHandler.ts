@@ -6,6 +6,7 @@ import {
   BaseGestureHandlerProps,
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
+import type { ForceTouchGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 
 export const forceTouchGestureHandlerProps = [
   'minForce',
@@ -27,18 +28,6 @@ class ForceTouchFallback extends React.Component<PropsWithChildren<unknown>> {
     return this.props.children;
   }
 }
-
-export type ForceTouchGestureHandlerEventPayload = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-
-  /**
-   * The pressure of a touch.
-   */
-  force: number;
-};
 
 export interface ForceTouchGestureConfig {
   /**

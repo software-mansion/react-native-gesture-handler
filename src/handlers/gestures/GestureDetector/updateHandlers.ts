@@ -1,10 +1,7 @@
 import { GestureType, HandlerCallbacks } from '../gesture';
 import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import {
-  filterConfig,
-  scheduleFlushOperations,
-} from '../../gestureHandlerCommon';
+import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { AttachedGestureState } from './types';
