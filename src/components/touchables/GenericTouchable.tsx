@@ -9,7 +9,7 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlerCommon';
-import { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
+import type { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
 import type { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedbackProps';
 import type { GenericTouchableProps } from './GenericTouchableProps';
 

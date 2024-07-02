@@ -1,6 +1,6 @@
 import { BaseGesture, BaseGestureConfig } from './gesture';
 import { FlingGestureConfig } from '../FlingGestureHandler';
-import { FlingGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
+import type { FlingGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
   public config: BaseGestureConfig & FlingGestureConfig = {};

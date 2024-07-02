@@ -6,7 +6,7 @@ import {
   BaseGestureHandlerProps,
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
-import { ForceTouchGestureHandlerEventPayload } from './GestureHandlerEventPayload';
+import type { ForceTouchGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 
 export const forceTouchGestureHandlerProps = [
   'minForce',

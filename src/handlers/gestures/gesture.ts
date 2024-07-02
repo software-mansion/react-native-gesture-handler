@@ -9,7 +9,7 @@ import {
 } from '../gestureHandlerCommon';
 import { getNextHandlerTag } from '../handlerTag';
 import { GestureStateManagerType } from './gestureStateManager';
-import {
+import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,

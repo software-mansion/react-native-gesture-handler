@@ -10,8 +10,8 @@ import {
   HandlerStateChangeEvent,
   HandlerStateChangeEventPayload,
 } from './gestureHandlerCommon';
-import { FlingGestureHandlerProps } from './FlingGestureHandler';
-import {
+import type { FlingGestureHandlerProps } from './FlingGestureHandler';
+import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,

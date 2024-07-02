@@ -1,4 +1,4 @@
-import { TapGestureHandlerEventPayload } from './GestureHandlerEventPayload';
+import type { TapGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,

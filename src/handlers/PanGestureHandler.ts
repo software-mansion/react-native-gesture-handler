@@ -1,4 +1,4 @@
-import { PanGestureHandlerEventPayload } from './GestureHandlerEventPayload';
+import type { PanGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,

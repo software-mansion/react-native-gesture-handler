@@ -28,7 +28,7 @@ import {
   LongPressGestureHandler,
   longPressHandlerName,
 } from '../handlers/LongPressGestureHandler';
-import {
+import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,

@@ -1,4 +1,4 @@
-import { FlingGestureHandlerEventPayload } from './GestureHandlerEventPayload';
+import type { FlingGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
