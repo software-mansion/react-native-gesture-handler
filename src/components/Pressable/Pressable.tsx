@@ -126,6 +126,7 @@ export default function Pressable(props: PressableProps) {
   // fix for: touch out is called before touch in due to async .measure() in onTouchesDown()
   const handlingOnTouchesDown = useRef<boolean>(false);
   const onEndHandlingTouchesDown = useRef<(() => void) | null>(null);
+  const cancelledMidPress = useRef<boolean>(false);
 
   const touchGesture = useMemo(
     () =>
@@ -142,8 +143,10 @@ export default function Pressable(props: PressableProps) {
                 normalizedHitSlop,
                 event.changedTouches.at(-1)
               ) ||
-              isPressedDown.current
+              isPressedDown.current ||
+              cancelledMidPress.current
             ) {
+              cancelledMidPress.current = false;
               onEndHandlingTouchesDown.current = null;
               handlingOnTouchesDown.current = false;
               return;
@@ -169,9 +172,11 @@ export default function Pressable(props: PressableProps) {
             onEndHandlingTouchesDown.current = () => pressOutHandler(event);
             return;
           }
+
           pressOutHandler(event);
         })
         .onTouchesCancelled((event) => {
+          cancelledMidPress.current = true;
           if (
             !isPressedDown.current ||
             event.allTouches.length > event.changedTouches.length
