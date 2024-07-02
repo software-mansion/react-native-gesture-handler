@@ -56,7 +56,6 @@ export default function Pressable(props: PressableProps) {
     [isPressCallbackEnabled, props.onLongPress, isPressedDown]
   );
 
-  // cancel timeout when the other one is started
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
 
@@ -123,7 +122,6 @@ export default function Pressable(props: PressableProps) {
     setPressedState(false);
   }, []);
 
-  // fix for: touch out is called before touch in due to async .measure() in onTouchesDown()
   const handlingOnTouchesDown = useRef<boolean>(false);
   const onEndHandlingTouchesDown = useRef<(() => void) | null>(null);
   const cancelledMidPress = useRef<boolean>(false);
