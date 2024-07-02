@@ -123,7 +123,6 @@ export default function Pressable(props: PressableProps) {
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
-            // pressableRef.current?._nativeTag yields targetId on android & ios
             if (
               !isTouchWithinInset(
                 {
@@ -135,6 +134,8 @@ export default function Pressable(props: PressableProps) {
               ) ||
               isPressedDown.current
             ) {
+              onEndHandlingTouchesDown.current = null;
+              handlingOnTouchesDown.current = false;
               return;
             }
 
@@ -172,6 +173,7 @@ export default function Pressable(props: PressableProps) {
           props.onPressOut?.(adaptTouchEvent(event));
 
           isPressedDown.current = false;
+          handlingOnTouchesDown.current = false;
           setPressedState(false);
         }),
     [
