@@ -10,8 +10,8 @@ import {
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlerCommon';
 import { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
-import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedbackProps';
-import { GenericTouchableProps } from './GenericTouchableProps';
+import type { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedbackProps';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 /**
  * Each touchable is a states' machine which preforms transitions.

@@ -10,7 +10,7 @@ import {
   HandlerStateChangeEvent,
 } from '../handlers/gestureHandlerCommon';
 import { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
-import {
+import type {
   BaseButtonWithRefProps,
   BaseButtonProps,
   RectButtonWithRefProps,

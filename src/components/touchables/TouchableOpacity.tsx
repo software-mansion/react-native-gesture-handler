@@ -6,7 +6,7 @@ import {
   TouchableOpacityProps as RNTouchableOpacityProps,
 } from 'react-native';
 import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import { GenericTouchableProps } from './GenericTouchableProps';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 import * as React from 'react';
 import { Component } from 'react';
 

@@ -1,4 +1,4 @@
-const gestures: Record<number, any> = {};
+export const gestures: Record<number, any> = {};
 
 export function getHandler(tag: number) {
   if (tag in gestures) {

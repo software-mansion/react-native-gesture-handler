@@ -1,5 +1,5 @@
 import { TouchableNativeFeedbackProps as RNTouchableNativeFeedbackProps } from 'react-native';
-import { GenericTouchableProps } from './GenericTouchableProps';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 export type TouchableNativeFeedbackExtraProps = {
   borderless?: boolean;
