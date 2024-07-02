@@ -2,10 +2,7 @@ import React from 'react';
 import { GestureType, HandlerCallbacks } from '../gesture';
 import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import {
-  filterConfig,
-  scheduleFlushOperations,
-} from '../../gestureCommonUtils';
+import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
 import { ActionType } from '../../../ActionType';
 import { Platform } from 'react-native';

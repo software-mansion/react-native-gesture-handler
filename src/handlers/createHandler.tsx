@@ -16,11 +16,7 @@ import {
   GestureEvent,
   HandlerStateChangeEvent,
 } from './gestureHandlerCommon';
-import {
-  filterConfig,
-  findNodeHandle,
-  scheduleFlushOperations,
-} from './gestureCommonUtils';
+import { filterConfig, findNodeHandle, scheduleFlushOperations } from './utils';
 import { ValueOf } from '../typeUtils';
 import { deepEqual, isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';

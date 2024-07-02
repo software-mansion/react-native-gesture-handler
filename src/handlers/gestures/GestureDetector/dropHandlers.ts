@@ -1,6 +1,6 @@
 import { unregisterHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import { scheduleFlushOperations } from '../../gestureCommonUtils';
+import { scheduleFlushOperations } from '../../utils';
 import { AttachedGestureState } from './types';
 
 export function dropHandlers(preparedGesture: AttachedGestureState) {
