@@ -244,6 +244,7 @@ export default function Pressable(props: PressableProps) {
         <NativeButton
           ref={pressableRef}
           testID={props.testID}
+          hitSlop={appliedHitSlop}
           enabled={isPressableEnabled}
           touchSoundDisabled={props.android_disableSound ?? undefined}
           rippleColor={processColor(
