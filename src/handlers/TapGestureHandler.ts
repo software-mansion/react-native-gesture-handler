@@ -1,3 +1,4 @@
+import type { TapGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
@@ -14,12 +15,6 @@ export const tapGestureHandlerProps = [
   'minPointers',
 ] as const;
 
-export type TapGestureHandlerEventPayload = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-};
 export interface TapGestureConfig {
   /**
    * Minimum number of pointers (fingers) required to be placed before the

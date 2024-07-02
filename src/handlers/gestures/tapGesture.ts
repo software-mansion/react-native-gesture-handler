@@ -1,8 +1,6 @@
 import { BaseGestureConfig, BaseGesture } from './gesture';
-import {
-  TapGestureConfig,
-  TapGestureHandlerEventPayload,
-} from '../TapGestureHandler';
+import { TapGestureConfig } from '../TapGestureHandler';
+import type { TapGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
   public config: BaseGestureConfig & TapGestureConfig = {};

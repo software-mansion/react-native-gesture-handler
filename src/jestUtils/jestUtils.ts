@@ -3,12 +3,10 @@ import { DeviceEventEmitter } from 'react-native';
 import { ReactTestInstance } from 'react-test-renderer';
 import {
   FlingGestureHandler,
-  FlingGestureHandlerEventPayload,
   flingHandlerName,
 } from '../handlers/FlingGestureHandler';
 import {
   ForceTouchGestureHandler,
-  ForceTouchGestureHandlerEventPayload,
   forceTouchHandlerName,
 } from '../handlers/ForceTouchGestureHandler';
 import {
@@ -28,32 +26,36 @@ import { TapGesture } from '../handlers/gestures/tapGesture';
 import { findHandlerByTestID } from '../handlers/handlersRegistry';
 import {
   LongPressGestureHandler,
-  LongPressGestureHandlerEventPayload,
   longPressHandlerName,
 } from '../handlers/LongPressGestureHandler';
+import type {
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
+} from '../handlers/GestureHandlerEventPayload';
 import {
   NativeViewGestureHandler,
-  NativeViewGestureHandlerPayload,
   nativeViewHandlerName,
 } from '../handlers/NativeViewGestureHandler';
 import {
   PanGestureHandler,
-  PanGestureHandlerEventPayload,
   panHandlerName,
 } from '../handlers/PanGestureHandler';
 import {
   PinchGestureHandler,
-  PinchGestureHandlerEventPayload,
   pinchHandlerName,
 } from '../handlers/PinchGestureHandler';
 import {
   RotationGestureHandler,
-  RotationGestureHandlerEventPayload,
   rotationHandlerName,
 } from '../handlers/RotationGestureHandler';
 import {
   TapGestureHandler,
-  TapGestureHandlerEventPayload,
   tapHandlerName,
 } from '../handlers/TapGestureHandler';
 import { State } from '../State';

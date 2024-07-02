@@ -15,7 +15,8 @@
     "lint:js": "eslint --ext '.js,.ts,.tsx' src/ example/src FabricExample/src MacOSExample/src && yarn prettier --check './{src,example,FabricExample,MacOSExample}/**/*.{js,jsx,ts,tsx}'",
     "lint:js-root": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:android": "./android/gradlew -p android spotlessCheck -q",
-    "checkIntegrity": "(cd ./FabricExample/android && ./gradlew generateCodegenArtifactsFromSchema -PskipCodegenCopyTask) && (cd ./android && ./gradlew checkIntegrityBetweenArchitectures)"
+    "checkIntegrity": "(cd ./FabricExample/android && ./gradlew generateCodegenArtifactsFromSchema -PskipCodegenCopyTask) && (cd ./android && ./gradlew checkIntegrityBetweenArchitectures)",
+    "circularDependencyCheck": "yarn madge --extensions js,ts,tsx --circular src"
   },
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
