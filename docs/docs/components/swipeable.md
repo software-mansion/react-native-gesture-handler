@@ -30,7 +30,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 ### `friction`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of `1` will indicate that the swipeable panel should exactly follow the gesture, `2` means it is going to be two times "slower".
 
 ### `leftThreshold`
 
@@ -42,11 +42,11 @@ distance from the right edge at which released panel will animate to the open st
 
 ### `dragOffsetFromLeftEdge`
 
-distance that the panel must be dragged from the left edge to be considered a swipe. The default value is 10.
+distance that the panel must be dragged from the left edge to be considered a swipe. The default value is `10`.
 
 ### `dragOffsetFromRightEdge`
 
-distance that the panel must be dragged from the right edge to be considered a swipe. The default value is 10.
+distance that the panel must be dragged from the right edge to be considered a swipe. The default value is `10`.
 
 ### `overshootLeft`
 
@@ -58,7 +58,7 @@ a boolean value indicating if the swipeable panel can be pulled further than the
 
 ### `overshootFriction`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is 1, it mean no friction, for a native feel, try 8 or above.
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is `1`, it mean no friction, for a native feel, try `8` or above.
 
 ### `onSwipeableLeftOpen`
 
@@ -118,8 +118,8 @@ method that is expected to return an action panel that is going to be revealed f
 This map describes the values to use as inputRange for extra interpolation:
 AnimatedValue: [startValue, endValue]
 
-progressAnimatedValue: [0, 1]
-dragAnimatedValue: [0, +]
+progressAnimatedValue: `[0, 1]`
+dragAnimatedValue: `[0, +]`
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
@@ -129,8 +129,8 @@ method that is expected to return an action panel that is going to be revealed f
 This map describes the values to use as inputRange for extra interpolation:
 AnimatedValue: [startValue, endValue]
 
-progressAnimatedValue: [0, 1]
-dragAnimatedValue: [0, -]
+progressAnimatedValue: `[0, 1]`
+dragAnimatedValue: `[0, -]`
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
