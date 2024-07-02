@@ -11,7 +11,7 @@ import {
   processColor,
   StyleSheet,
 } from 'react-native';
-import RNButton from '../GestureHandlerButton';
+import NativeButton from '../GestureHandlerButton';
 import {
   numberAsInset,
   adaptStateChangeEvent,
@@ -241,7 +241,7 @@ export default function Pressable(props: PressableProps) {
   return (
     <View style={styleProp}>
       <GestureDetector gesture={gesture}>
-        <RNButton
+        <NativeButton
           ref={pressableRef}
           testID={props.testID}
           enabled={isPressableEnabled}
@@ -255,7 +255,7 @@ export default function Pressable(props: PressableProps) {
           {__DEV__ ? (
             <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
           ) : null}
-        </RNButton>
+        </NativeButton>
       </GestureDetector>
     </View>
   );
