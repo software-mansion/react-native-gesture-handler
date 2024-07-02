@@ -115,7 +115,7 @@ export default function Pressable(props: PressableProps) {
 
   // fix for: touch out is called before touch in due to async .measure() in onTouchesDown()
   const handlingOnTouchesDown = useRef<boolean>(false);
-  const onEndHandlingTouchesDown = useRef<() => void>(() => null);
+  const onEndHandlingTouchesDown = useRef<(() => void) | null>(null);
 
   const touchGesture = useMemo(
     () =>
@@ -148,7 +148,8 @@ export default function Pressable(props: PressableProps) {
               pressInHandler(event);
             }
 
-            onEndHandlingTouchesDown.current();
+            onEndHandlingTouchesDown.current?.();
+            onEndHandlingTouchesDown.current = null;
             handlingOnTouchesDown.current = false;
           });
         })
