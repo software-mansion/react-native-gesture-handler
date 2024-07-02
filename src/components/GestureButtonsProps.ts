@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 
 export interface RawButtonProps extends NativeViewGestureHandlerProps {
   /**

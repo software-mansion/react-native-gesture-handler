@@ -1,4 +1,4 @@
-import { NativeViewGestureHandlerPayload } from './GestureHandlerEventPayload';
+import type { NativeViewGestureHandlerPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,

@@ -31,7 +31,7 @@ import {
   MouseButton,
 } from '../handlers/gestureHandlerCommon';
 import { PanGestureHandler } from '../handlers/PanGestureHandler';
-import {
+import type {
   PanGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
 } from '../handlers/GestureHandlerEventPayload';

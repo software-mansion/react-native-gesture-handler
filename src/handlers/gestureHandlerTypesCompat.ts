@@ -21,13 +21,13 @@ import type {
   TapGestureHandlerEventPayload,
   NativeViewGestureHandlerPayload,
 } from './GestureHandlerEventPayload';
-import { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
-import { LongPressGestureHandlerProps } from './LongPressGestureHandler';
-import { PanGestureHandlerProps } from './PanGestureHandler';
-import { PinchGestureHandlerProps } from './PinchGestureHandler';
-import { RotationGestureHandlerProps } from './RotationGestureHandler';
-import { TapGestureHandlerProps } from './TapGestureHandler';
-import { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
+import type { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
+import type { LongPressGestureHandlerProps } from './LongPressGestureHandler';
+import type { PanGestureHandlerProps } from './PanGestureHandler';
+import type { PinchGestureHandlerProps } from './PinchGestureHandler';
+import type { RotationGestureHandlerProps } from './RotationGestureHandler';
+import type { TapGestureHandlerProps } from './TapGestureHandler';
+import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 
 // events
 export type GestureHandlerGestureEventNativeEvent = GestureEventPayload;
