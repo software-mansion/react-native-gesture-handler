@@ -433,9 +433,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
     registry.getHandler(handlerTag)?.let { handler ->
+      // Try to initialize the handler in case it was not yet initialized
+      handler.initialize()
+      // Try to transition to the BEGIN state (possible only from UNDETERMINED)
+      // to force the correct event flow
+      handler.begin()
+
       when (newState) {
         GestureHandler.STATE_ACTIVE -> handler.activate(force = true)
-        GestureHandler.STATE_BEGAN -> handler.begin()
+        GestureHandler.STATE_BEGAN -> {}
         GestureHandler.STATE_END -> handler.end()
         GestureHandler.STATE_FAILED -> handler.fail()
         GestureHandler.STATE_CANCELLED -> handler.cancel()

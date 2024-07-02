@@ -43,11 +43,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     }
 
     if (state == STATE_UNDETERMINED) {
-      previousTime = SystemClock.uptimeMillis()
-      startTime = previousTime
+      initialize(sourceEvent)
       begin()
-      startX = sourceEvent.rawX
-      startY = sourceEvent.rawY
       handler = Handler(Looper.getMainLooper())
       if (minDurationMs > 0) {
         handler!!.postDelayed({ activate() }, minDurationMs)
@@ -85,6 +82,13 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       it.removeCallbacksAndMessages(null)
       handler = null
     }
+  }
+
+  override fun onInitialize(event: MotionEvent) {
+    previousTime = SystemClock.uptimeMillis()
+    startTime = previousTime
+    startX = event.rawX
+    startY = event.rawY
   }
 
   override fun dispatchStateChange(newState: Int, prevState: Int) {
