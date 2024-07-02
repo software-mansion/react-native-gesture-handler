@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 
-export default function EmptyExample() {
+export default function PressableExample() {
   const pressIn = () => {
     console.log('Pressable pressed in');
   };
@@ -50,7 +50,7 @@ export default function EmptyExample() {
   );
 }
 
-const BG_COLOR = '#F5FCFF';
+const BACKGROUND_COLOR = '#F5FCFF';
 
 const styles = StyleSheet.create({
   pressRectContainer: {
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     margin: 'auto',
   },
   rectText: {
-    color: BG_COLOR,
+    color: BACKGROUND_COLOR,
     fontWeight: '700',
     position: 'absolute',
     right: 5,
@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: BG_COLOR,
+    color: BACKGROUND_COLOR,
   },
 });
