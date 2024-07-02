@@ -56,12 +56,19 @@ export default function Pressable(props: PressableProps) {
     [isPressCallbackEnabled, props.onLongPress, isPressedDown]
   );
 
+  // clear timeout on exit,
+  const hoverInTimeout = useRef<number | null>(null);
+  const hoverOutTimeout = useRef<number | null>(null);
+
   const hoverGesture = useMemo(
     () =>
       Gesture.Hover()
         .onBegin((event) => {
+          if (hoverOutTimeout.current) {
+            clearTimeout(hoverOutTimeout.current);
+          }
           if (props.delayHoverIn) {
-            setTimeout(
+            hoverInTimeout.current = setTimeout(
               () => props.onHoverIn?.(adaptStateChangeEvent(event)),
               props.delayHoverIn
             );
@@ -70,8 +77,11 @@ export default function Pressable(props: PressableProps) {
           props.onHoverIn?.(adaptStateChangeEvent(event));
         })
         .onEnd((event) => {
+          if (hoverInTimeout.current) {
+            clearTimeout(hoverInTimeout.current);
+          }
           if (props.delayHoverOut) {
-            setTimeout(
+            hoverOutTimeout.current = setTimeout(
               () => props.onHoverOut?.(adaptStateChangeEvent(event)),
               props.delayHoverOut
             );
