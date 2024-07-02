@@ -9,7 +9,7 @@ import { customDirectEventTypes } from './customDirectEventTypes';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
 import { handlerIDToTag, registerOldGestureHandler } from './handlersRegistry';
-import { getNextHandlerTag } from './handlerTag';
+import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
   BaseGestureHandlerProps,

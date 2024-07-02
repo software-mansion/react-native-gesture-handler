@@ -7,7 +7,7 @@ import {
   ActiveCursor,
   MouseButton,
 } from '../gestureHandlerCommon';
-import { getNextHandlerTag } from '../handlerTag';
+import { getNextHandlerTag } from '../getNextHandlerTag';
 import { GestureStateManagerType } from './gestureStateManager';
 import type {
   FlingGestureHandlerEventPayload,
