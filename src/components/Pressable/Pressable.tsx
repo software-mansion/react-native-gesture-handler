@@ -176,16 +176,16 @@ export default function Pressable(props: PressableProps) {
           pressOutHandler(event);
         })
         .onTouchesCancelled((event) => {
+          if (handlingOnTouchesDown.current) {
+            cancelledMidPress.current = true;
+            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
+            return;
+          }
+
           if (
             !isPressedDown.current ||
             event.allTouches.length > event.changedTouches.length
           ) {
-            return;
-          }
-
-          if (handlingOnTouchesDown.current) {
-            cancelledMidPress.current = true;
-            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
             return;
           }
 
