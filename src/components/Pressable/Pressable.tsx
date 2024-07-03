@@ -174,7 +174,6 @@ export default function Pressable(props: PressableProps) {
           pressOutHandler(event);
         })
         .onTouchesCancelled((event) => {
-          cancelledMidPress.current = true;
           if (
             !isPressedDown.current ||
             event.allTouches.length > event.changedTouches.length
@@ -182,12 +181,13 @@ export default function Pressable(props: PressableProps) {
             return;
           }
 
-          // original triggers onPressOut on cancel, but not onPress
-          props.onPressOut?.(adaptTouchEvent(event));
+          if (handlingOnTouchesDown.current) {
+            cancelledMidPress.current = true;
+            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
+            return;
+          }
 
-          isPressedDown.current = false;
-          handlingOnTouchesDown.current = false;
-          setPressedState(false);
+          pressOutHandler(event);
         }),
     [
       props.onPress,
