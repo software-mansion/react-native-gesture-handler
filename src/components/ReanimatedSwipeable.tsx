@@ -15,10 +15,8 @@ import {
   GestureStateChangeEvent,
   GestureUpdateEvent,
 } from '../handlers/gestureHandlerCommon';
-import {
-  PanGestureHandlerEventPayload,
-  PanGestureHandlerProps,
-} from '../handlers/PanGestureHandler';
+import type { PanGestureHandlerProps } from '../handlers/PanGestureHandler';
+import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 import Animated, {
   Extrapolation,
   SharedValue,

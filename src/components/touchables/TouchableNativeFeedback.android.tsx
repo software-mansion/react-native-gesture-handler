@@ -1,21 +1,11 @@
-import {
-  Platform,
-  TouchableNativeFeedbackProps as RNTouchableNativeFeedbackProps,
-  ColorValue,
-} from 'react-native';
+import { Platform, ColorValue } from 'react-native';
 import * as React from 'react';
 import { Component } from 'react';
-import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
-
-export type TouchableNativeFeedbackExtraProps = {
-  borderless?: boolean;
-  rippleColor?: number | null;
-  rippleRadius?: number | null;
-  foreground?: boolean;
-};
-
-export type TouchableNativeFeedbackProps = RNTouchableNativeFeedbackProps &
-  GenericTouchableProps;
+import GenericTouchable from './GenericTouchable';
+import {
+  TouchableNativeFeedbackProps,
+  TouchableNativeFeedbackExtraProps,
+} from './TouchableNativeFeedbackProps';
 
 /**
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.

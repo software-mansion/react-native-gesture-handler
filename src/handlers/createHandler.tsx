@@ -8,20 +8,15 @@ import {
 import { customDirectEventTypes } from './customDirectEventTypes';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
-import {
-  handlerIDToTag,
-  getNextHandlerTag,
-  registerOldGestureHandler,
-} from './handlersRegistry';
+import { handlerIDToTag, registerOldGestureHandler } from './handlersRegistry';
+import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
   BaseGestureHandlerProps,
-  filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
-  findNodeHandle,
-  scheduleFlushOperations,
 } from './gestureHandlerCommon';
+import { filterConfig, findNodeHandle, scheduleFlushOperations } from './utils';
 import { ValueOf } from '../typeUtils';
 import { deepEqual, isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';

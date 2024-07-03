@@ -7,12 +7,6 @@ const gestures = new Map<number, GestureType>();
 const oldHandlers = new Map<number, GestureHandlerCallbacks>();
 const testIDs = new Map<string, number>();
 
-let handlerTag = 1;
-
-export function getNextHandlerTag(): number {
-  return handlerTag++;
-}
-
 export function registerHandler(
   handlerTag: number,
   handler: GestureType,

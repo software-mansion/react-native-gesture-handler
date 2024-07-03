@@ -1,5 +1,5 @@
 import { Insets } from 'react-native';
-import { LongPressGestureHandlerEventPayload } from '../../handlers/LongPressGestureHandler';
+import { LongPressGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
   GestureStateChangeEvent,

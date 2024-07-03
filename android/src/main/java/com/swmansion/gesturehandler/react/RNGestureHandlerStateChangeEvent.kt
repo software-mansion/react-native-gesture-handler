@@ -9,6 +9,7 @@ package com.swmansion.gesturehandler.react
 import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
@@ -24,7 +25,8 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     oldState: Int,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
   ) {
-    super.init(handler.view!!.id)
+    val view = handler.view!!
+    super.init(UIManagerHelper.getSurfaceId(view), view.id)
     this.dataBuilder = dataBuilder
     this.newState = newState
     this.oldState = oldState

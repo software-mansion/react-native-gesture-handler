@@ -615,7 +615,7 @@ class GestureHandlerOrchestrator(
     private val matrixTransformCoords = FloatArray(2)
     private val inverseMatrix = Matrix()
     private val tempCoords = FloatArray(2)
-    private val handlersComparator = Comparator<GestureHandler<*>?> { a, b ->
+    private val handlersComparator = Comparator<GestureHandler<*>> { a, b ->
       return@Comparator if (a.isActive && b.isActive || a.isAwaiting && b.isAwaiting) {
         // both A and B are either active or awaiting activation, in which case we prefer one that
         // has activated (or turned into "awaiting" state) earlier

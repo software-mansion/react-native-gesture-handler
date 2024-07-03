@@ -30,14 +30,12 @@ import {
   ActiveCursor,
   MouseButton,
 } from '../handlers/gestureHandlerCommon';
-import {
-  PanGestureHandler,
+import { PanGestureHandler } from '../handlers/PanGestureHandler';
+import type {
   PanGestureHandlerEventPayload,
-} from '../handlers/PanGestureHandler';
-import {
-  TapGestureHandler,
   TapGestureHandlerEventPayload,
-} from '../handlers/TapGestureHandler';
+} from '../handlers/GestureHandlerEventPayload';
+import { TapGestureHandler } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
