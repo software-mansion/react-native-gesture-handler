@@ -7,7 +7,6 @@ import { HitSlopExample } from './hitSlopExample';
 import { RippleExample } from './androidRippleExample';
 import { FunctionalStyleExample } from './functionalStylesExample';
 import { DelayedPressExample } from './delayedPressExample';
-import { BordersExample } from './bordersExample';
 import { DelayHoverExample } from './hoverDelayExample';
 
 type TestingEntryProps = {
@@ -64,11 +63,6 @@ export default function Example() {
         comment="Delay set to hover in and out"
         platform="web">
         <DelayHoverExample />
-      </TestingEntry>
-      <TestingEntry
-        title="Borders"
-        comment="Behaviour of different border styles on opposite sides">
-        <BordersExample />
       </TestingEntry>
     </ScrollView>
   );
