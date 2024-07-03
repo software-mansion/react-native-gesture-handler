@@ -108,7 +108,7 @@ export default function Pressable(props: PressableProps) {
 
     if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
       // when delay is preemptively finished by lifting touches,
-      // we want to immidiately activate it's effects - pressInHandler,
+      // we want to immediately activate it's effects - pressInHandler,
       // even though we are located at the pressOutHandler      clearTimeout(pressDelayTimeoutRef.current);
       pressInHandler(event);
     }
