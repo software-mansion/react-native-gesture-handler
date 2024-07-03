@@ -45,4 +45,4 @@ jobs:
           key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'android/build.gradle') }}
 
       - name: Check old arch integrity
-        run: yarn integrity-check
+        run: yarn cross-arch-integrity-check
