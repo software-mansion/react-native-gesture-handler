@@ -117,7 +117,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   separator: {
-    // ios bug - different border styling doesn't work on just 1 side
     borderWidth: 0.6,
     borderStyle: 'dashed',
   },
