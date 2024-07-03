@@ -94,8 +94,8 @@ export default function Pressable(props: PressableProps) {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const pressInHandler = useCallback((event: GestureTouchEvent) => {
     props.onPressIn?.(adaptTouchEvent(event));
-    isPressCallbackEnabled.current = true;
     setPressedState(true);
+    isPressCallbackEnabled.current = true;
     pressDelayTimeoutRef.current = null;
   }, []);
   const pressOutHandler = useCallback((event: GestureTouchEvent) => {
@@ -109,7 +109,8 @@ export default function Pressable(props: PressableProps) {
     if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
       // when delay is preemptively finished by lifting touches,
       // we want to immediately activate it's effects - pressInHandler,
-      // even though we are located at the pressOutHandler      clearTimeout(pressDelayTimeoutRef.current);
+      // even though we are located at the pressOutHandler
+      clearTimeout(pressDelayTimeoutRef.current);
       pressInHandler(event);
     }
 
