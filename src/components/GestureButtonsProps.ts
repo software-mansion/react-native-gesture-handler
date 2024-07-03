@@ -43,6 +43,11 @@ export interface RawButtonProps extends NativeViewGestureHandlerProps {
    * Set this to true if you don't want the system to play sound when the button is pressed.
    */
   touchSoundDisabled?: boolean;
+
+  /**
+   * Style object, use it to set additional styles.
+   */
+  style?: StyleProp<ViewStyle>;
 }
 interface ButtonWithRefProps {
   innerRef?: React.ForwardedRef<React.ComponentType<any>>;
