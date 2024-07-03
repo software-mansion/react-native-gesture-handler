@@ -107,7 +107,7 @@ export default function Pressable(props: PressableProps) {
     }
 
     if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
-      // if pressDelay is set, we want to call onPressIn on touch up
+      // legacy Pressable behaviour - if pressDelay is set, we want to call onPressIn on touch up
       clearTimeout(pressDelayTimeoutRef.current);
       pressInHandler(event);
     }
