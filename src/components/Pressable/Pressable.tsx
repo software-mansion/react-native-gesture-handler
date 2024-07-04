@@ -18,6 +18,7 @@ import {
   isTouchWithinInset,
   adaptTouchEvent,
   addInsets,
+  innerStyleKeys,
   InnerStyle,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
@@ -255,12 +256,33 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
-  type Without<T, U> = {
-    [K in Exclude<keyof T, keyof U>]: T[K];
+  const extract = (from: StyleProp<ViewStyle>, keys: string[]) => {
+    const extractedData = {} as Extract<StyleProp<ViewStyle>, InnerStyle>;
+
+    for (const key of keys) {
+      extractedData[key] = from[key];
+    }
+
+    return extractedData;
   };
 
-  const innerStyles = styleProp as InnerStyle;
-  const outerStyles = styleProp as Without<typeof styleProp, InnerStyle>;
+  const exclude = (from: StyleProp<ViewStyle>, keys: string[]) => {
+    const exclusiveData = { ...from };
+
+    for (const key of keys) {
+      exclusiveData[key] = undefined;
+    }
+
+    return exclusiveData;
+  };
+
+  const innerStyles = extract(styleProp, innerStyleKeys);
+  const outerStyles = exclude(styleProp, innerStyleKeys);
+
+  console.log('---');
+  console.log('every', styleProp);
+  console.log('inner', innerStyles);
+  console.log('outer', outerStyles);
 
   return (
     <View style={outerStyles}>

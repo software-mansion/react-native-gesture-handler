@@ -162,20 +162,44 @@ interface InnerStyle {
   paddingVertical?: DimensionValue | undefined;
 
   /**
-   * unknown / check
-   */
-
-  start?: DimensionValue | undefined;
-  end?: DimensionValue | undefined;
-
-  /**
    * @platform ios
    */
   direction?: 'inherit' | 'ltr' | 'rtl' | undefined;
 }
 
+const innerStyleKeys = [
+  'alignContent',
+  'alignItems',
+  'flex',
+  'flexBasis',
+  'flexDirection',
+  'flexWrap',
+  'rowGap',
+  'gap',
+  'columnGap',
+  'justifyContent',
+  'overflow',
+  'padding',
+  'paddingBottom',
+  'paddingEnd',
+  'paddingHorizontal',
+  'paddingLeft',
+  'paddingRight',
+  'paddingStart',
+  'paddingTop',
+  'paddingVertical',
+  'start',
+  'end',
+
+  /**
+   * @platform ios
+   */
+  'direction',
+];
+
 export {
   InnerStyle,
+  innerStyleKeys,
   numberAsInset,
   addInsets,
   touchToPressEvent,
