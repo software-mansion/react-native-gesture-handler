@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 50,
   },
   inner: {
     backgroundColor: 'green',
@@ -55,6 +54,7 @@ const styles = StyleSheet.create({
     height: 150,
 
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
+    margin: 25,
   },
 });
