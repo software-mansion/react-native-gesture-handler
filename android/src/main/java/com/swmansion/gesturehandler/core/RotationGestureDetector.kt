@@ -51,8 +51,6 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
 
   private var isInProgress = false
   private val pointerIds = IntArray(2)
-  private var frozenPointerIndex = 0
-  private var activePointerCount = 0
 
   private fun updateCurrent(event: MotionEvent) {
     previousTime = currentTime
