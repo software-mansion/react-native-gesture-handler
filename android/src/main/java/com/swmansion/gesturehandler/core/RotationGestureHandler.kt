@@ -59,7 +59,8 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
       anchorY = point.y
     }
     if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
-      if (state == STATE_ACTIVE) {
+      var activePointers = sourceEvent.pointerCount
+      if (state == STATE_ACTIVE && activePointers == 0) {
         end()
       } else {
         fail()
