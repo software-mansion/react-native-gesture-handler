@@ -10,7 +10,6 @@ import {
   ViewStyle,
   processColor,
   StyleSheet,
-  FlexStyle,
 } from 'react-native';
 import NativeButton from '../GestureHandlerButton';
 import {
@@ -19,6 +18,7 @@ import {
   isTouchWithinInset,
   adaptTouchEvent,
   addInsets,
+  type InnerStyle,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
@@ -255,10 +255,11 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
-  const innerStyles = styleProp as FlexStyle;
+  const innerStyles = styleProp as InnerStyle;
+  const outerStyles = styleProp as Exclude<StyleProp<ViewStyle>, InnerStyle>;
 
   return (
-    <View style={styleProp}>
+    <View style={outerStyles}>
       <GestureDetector gesture={gesture}>
         <NativeButton
           ref={pressableRef}
