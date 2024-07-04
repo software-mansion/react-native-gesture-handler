@@ -175,7 +175,7 @@ interface InnerStyle {
 }
 
 export {
-  type InnerStyle,
+  InnerStyle,
   numberAsInset,
   addInsets,
   touchToPressEvent,

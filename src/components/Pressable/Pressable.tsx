@@ -18,7 +18,7 @@ import {
   isTouchWithinInset,
   adaptTouchEvent,
   addInsets,
-  type InnerStyle,
+  InnerStyle,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
