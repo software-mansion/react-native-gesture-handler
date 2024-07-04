@@ -138,6 +138,7 @@ interface InnerStyle {
     | 'row-reverse'
     | 'column-reverse'
     | undefined;
+  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
   rowGap?: number | undefined;
   gap?: number | undefined;
   columnGap?: number | undefined;
@@ -164,7 +165,6 @@ interface InnerStyle {
    * unknown / check
    */
 
-  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
   start?: DimensionValue | undefined;
   end?: DimensionValue | undefined;
 

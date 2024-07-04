@@ -255,8 +255,12 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
+  type Without<T, U> = {
+    [K in Exclude<keyof T, keyof U>]: T[K];
+  };
+
   const innerStyles = styleProp as InnerStyle;
-  const outerStyles = styleProp as Exclude<StyleProp<ViewStyle>, InnerStyle>;
+  const outerStyles = styleProp as Without<typeof styleProp, InnerStyle>;
 
   return (
     <View style={outerStyles}>
