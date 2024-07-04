@@ -10,6 +10,7 @@ import {
   ViewStyle,
   processColor,
   StyleSheet,
+  FlexStyle,
 } from 'react-native';
 import NativeButton from '../GestureHandlerButton';
 import {
@@ -254,6 +255,8 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
+  const innerStyles = styleProp as FlexStyle;
+
   return (
     <View style={styleProp}>
       <GestureDetector gesture={gesture}>
@@ -267,7 +270,7 @@ export default function Pressable(props: PressableProps) {
             props.android_ripple?.color ?? defaultRippleColor
           )}
           rippleRadius={props.android_ripple?.radius ?? undefined}
-          style={[StyleSheet.absoluteFill, pointerStyle]}>
+          style={[StyleSheet.absoluteFill, pointerStyle, innerStyles]}>
           {childrenProp}
           {__DEV__ ? (
             <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
