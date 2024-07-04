@@ -1,4 +1,10 @@
-import { DimensionValue, FlexAlignType, Insets } from 'react-native';
+import {
+  DimensionValue,
+  FlexAlignType,
+  Insets,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import { LongPressGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
@@ -119,53 +125,7 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
   };
 };
 
-interface InnerStyle {
-  alignContent?:
-    | 'flex-start'
-    | 'flex-end'
-    | 'center'
-    | 'stretch'
-    | 'space-between'
-    | 'space-around'
-    | 'space-evenly'
-    | undefined;
-  alignItems?: FlexAlignType | undefined;
-  flex?: number | undefined;
-  flexBasis?: DimensionValue | undefined;
-  flexDirection?:
-    | 'row'
-    | 'column'
-    | 'row-reverse'
-    | 'column-reverse'
-    | undefined;
-  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
-  rowGap?: number | undefined;
-  gap?: number | undefined;
-  columnGap?: number | undefined;
-  justifyContent?:
-    | 'flex-start'
-    | 'flex-end'
-    | 'center'
-    | 'space-between'
-    | 'space-around'
-    | 'space-evenly'
-    | undefined;
-  overflow?: 'visible' | 'hidden' | 'scroll' | undefined;
-  padding?: DimensionValue | undefined;
-  paddingBottom?: DimensionValue | undefined;
-  paddingEnd?: DimensionValue | undefined;
-  paddingHorizontal?: DimensionValue | undefined;
-  paddingLeft?: DimensionValue | undefined;
-  paddingRight?: DimensionValue | undefined;
-  paddingStart?: DimensionValue | undefined;
-  paddingTop?: DimensionValue | undefined;
-  paddingVertical?: DimensionValue | undefined;
-
-  /**
-   * @platform ios
-   */
-  direction?: 'inherit' | 'ltr' | 'rtl' | undefined;
-}
+type StylePropKeys = (keyof StyleProp<ViewStyle>)[];
 
 const innerStyleKeys = [
   'alignContent',
@@ -195,11 +155,11 @@ const innerStyleKeys = [
    * @platform ios
    */
   'direction',
-];
+] as StylePropKeys;
 
 export {
-  InnerStyle,
   innerStyleKeys,
+  StylePropKeys,
   numberAsInset,
   addInsets,
   touchToPressEvent,

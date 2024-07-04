@@ -19,7 +19,7 @@ import {
   adaptTouchEvent,
   addInsets,
   innerStyleKeys,
-  InnerStyle,
+  StylePropKeys,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
@@ -256,21 +256,33 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
-  const extract = (from: StyleProp<ViewStyle>, keys: string[]) => {
-    const extractedData = {} as Extract<StyleProp<ViewStyle>, InnerStyle>;
+  const extract = (from: StyleProp<ViewStyle>, keys: StylePropKeys) => {
+    if (!from) {
+      return;
+    }
+
+    const extractedData = {} as StyleProp<ViewStyle>;
 
     for (const key of keys) {
-      extractedData[key] = from[key];
+      if (from[key] !== undefined) {
+        extractedData[key] = from[key];
+      }
     }
 
     return extractedData;
   };
 
-  const exclude = (from: StyleProp<ViewStyle>, keys: string[]) => {
-    const exclusiveData = { ...from };
+  const exclude = (from: StyleProp<ViewStyle>, keys: StylePropKeys) => {
+    if (!from) {
+      return;
+    }
+
+    const exclusiveData = { ...(from as ViewStyle) };
 
     for (const key of keys) {
-      exclusiveData[key] = undefined;
+      if (from[key] !== undefined) {
+        exclusiveData[key] = undefined;
+      }
     }
 
     return exclusiveData;
