@@ -256,45 +256,8 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
-  const extract = (from: StyleProp<ViewStyle>, keys: StylePropKeys) => {
-    if (!from) {
-      return;
-    }
-
-    const extractedData = {} as StyleProp<ViewStyle>;
-
-    for (const key of keys) {
-      if (from[key] !== undefined) {
-        extractedData[key] = from[key];
-      }
-    }
-
-    return extractedData;
-  };
-
-  const exclude = (from: StyleProp<ViewStyle>, keys: StylePropKeys) => {
-    if (!from) {
-      return;
-    }
-
-    const exclusiveData = { ...(from as ViewStyle) };
-
-    for (const key of keys) {
-      if (from[key] !== undefined) {
-        exclusiveData[key] = undefined;
-      }
-    }
-
-    return exclusiveData;
-  };
-
-  const innerStyles = extract(styleProp, innerStyleKeys);
-  const outerStyles = exclude(styleProp, innerStyleKeys);
-
-  console.log('---');
-  console.log('every', styleProp);
-  console.log('inner', innerStyles);
-  console.log('outer', outerStyles);
+  const innerStyles = extractStyles(styleProp, innerStyleKeys);
+  const outerStyles = excludeStyles(styleProp, innerStyleKeys);
 
   return (
     <View style={outerStyles}>

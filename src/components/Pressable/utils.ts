@@ -157,6 +157,38 @@ const innerStyleKeys = [
   'direction',
 ] as StylePropKeys;
 
+const extractStyles = (from: StyleProp<ViewStyle>, keys: StylePropKeys) => {
+  if (!from) {
+    return;
+  }
+
+  const extractedData = {} as StyleProp<ViewStyle>;
+
+  for (const key of keys) {
+    if (from[key] !== undefined) {
+      extractedData[key] = from[key];
+    }
+  }
+
+  return extractedData;
+};
+
+const excludeStyles = (from: StyleProp<ViewStyle>, keys: StylePropKeys) => {
+  if (!from) {
+    return;
+  }
+
+  const exclusiveData = { ...(from as ViewStyle) };
+
+  for (const key of keys) {
+    if (from[key] !== undefined) {
+      exclusiveData[key] = undefined;
+    }
+  }
+
+  return exclusiveData;
+};
+
 export {
   innerStyleKeys,
   StylePropKeys,
@@ -167,4 +199,6 @@ export {
   isTouchWithinInset,
   adaptStateChangeEvent,
   adaptTouchEvent,
+  extractStyles,
+  excludeStyles,
 };
