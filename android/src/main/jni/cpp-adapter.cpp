@@ -19,16 +19,12 @@ void decorateRuntime(jsi::Runtime &runtime) {
                     return jsi::Value::null();
                 }
 
-                auto arg = arguments[0].asObject(runtime);
+                auto shadowNodeWrapper = arguments[0]
+                        .asObject(runtime).getNativeState<ShadowNodeWrapper>(runtime);
+                bool isFormsStackingContext = shadowNodeWrapper->shadowNode->getTraits()
+                        .check(ShadowNodeTraits::FormsStackingContext);
 
-                // TODO: this condition always fails?
-                if (arg.hasNativeState<ShadowNodeWrapper>(runtime)) {
-                  auto shadowNodeWrapper = arg.getNativeState<ShadowNodeWrapper>(runtime);
-                  bool isFormsStackingContext = shadowNodeWrapper->shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
-                  return jsi::Value(isFormsStackingContext);
-                }
-
-                return jsi::Value(true);
+                return jsi::Value(isFormsStackingContext);
             });
     runtime.global().setProperty(
             runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
