@@ -157,12 +157,9 @@ const innerStyleKeys = [
   'direction',
 ] as StylePropKeys;
 
-const extractStyles = (
-  from: StyleProp<ViewStyle>,
-  keys: StylePropKeys
-): ViewStyle | undefined => {
+const extractStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
   if (!from) {
-    return;
+    return {} as ViewStyle;
   }
 
   const extractedData = {} as ViewStyle;
@@ -176,18 +173,15 @@ const extractStyles = (
   return extractedData;
 };
 
-const excludeStyles = (
-  from: StyleProp<ViewStyle>,
-  keys: StylePropKeys
-): ViewStyle | undefined => {
+const excludeStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
   if (!from) {
-    return;
+    return {} as ViewStyle;
   }
 
-  const exclusiveData = { ...(from as ViewStyle) };
+  const exclusiveData = { ...from };
 
   for (const key of keys) {
-    if (from[key] !== undefined) {
+    if (exclusiveData[key] !== undefined) {
       exclusiveData[key] = undefined;
     }
   }

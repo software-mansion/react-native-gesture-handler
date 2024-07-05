@@ -258,8 +258,11 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
-  const innerStyles = extractStyles(styleProp, innerStyleKeys);
-  const outerStyles = excludeStyles(styleProp, innerStyleKeys);
+  // StyleProp<ViewStyle> is a broad umbrella type
+  const normalizedStyles = StyleSheet.flatten((styleProp ?? {}) as ViewStyle);
+
+  const innerStyles = extractStyles(normalizedStyles, innerStyleKeys);
+  const outerStyles = excludeStyles(normalizedStyles, innerStyleKeys);
 
   return (
     <View style={outerStyles}>
