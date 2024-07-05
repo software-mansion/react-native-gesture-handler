@@ -257,7 +257,6 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
-  // StyleProp<ViewStyle> is a broad umbrella type for objects, recursive arrays and numbers
   const flattenedStyles = StyleSheet.flatten((styleProp ?? {}) as ViewStyle);
 
   const innerStyles = extractStyles(flattenedStyles, innerStyleKeys);
