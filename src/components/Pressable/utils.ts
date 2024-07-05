@@ -127,7 +127,6 @@ type StylePropKeys = (keyof ViewStyle)[];
 const innerStyleKeys = [
   'alignContent',
   'alignItems',
-  'flex',
   'flexBasis',
   'flexDirection',
   'flexWrap',
