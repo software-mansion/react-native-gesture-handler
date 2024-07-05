@@ -125,7 +125,7 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
   };
 };
 
-type StylePropKeys = (keyof StyleProp<ViewStyle>)[];
+type StylePropKeys = (keyof ViewStyle)[];
 
 const innerStyleKeys = [
   'alignContent',

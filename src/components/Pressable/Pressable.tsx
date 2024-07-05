@@ -19,7 +19,6 @@ import {
   adaptTouchEvent,
   addInsets,
   innerStyleKeys,
-  StylePropKeys,
   excludeStyles,
   extractStyles,
 } from './utils';
