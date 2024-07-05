@@ -121,6 +121,9 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
 
 type StylePropKeys = (keyof ViewStyle)[];
 
+// Source:
+// - From ViewStyle extracted FlexStyle sub-interface which contains all of the box-model manipulating props.
+// - From FlexStyle handpicked those styles, which act on the inner part of the box-model.
 const innerStyleKeys = [
   'alignContent',
   'alignItems',
@@ -144,11 +147,7 @@ const innerStyleKeys = [
   'paddingVertical',
   'start',
   'end',
-
-  /**
-   * @platform ios
-   */
-  'direction',
+  'direction', // iOS only
 ] as StylePropKeys;
 
 const extractStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
