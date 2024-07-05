@@ -114,19 +114,19 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
       MotionEvent.ACTION_POINTER_UP -> {
         val pointerId = event.getPointerId(event.actionIndex)
 
-        if (isInProgress) {
-          if (pointerId == pointerIds[0] || pointerId == pointerIds[1]) {
-            if (pointerId == pointerIds[0]) {
-              pointerIds[0] = pointerIds[1]
-            }
-            pointerIds[1] = MotionEvent.INVALID_POINTER_ID
-            isInProgress = false
-          }
-        } else {
-          // all key pointers are up
+        // All key pointers are up
+        if (!isInProgress && pointerId == pointerIds[0]) {
+          gestureListener?.onRotationEnd(this)
+        }
+
+        // One of the key pointers is up
+        if (isInProgress && pointerIds.contains(pointerId)) {
           if (pointerId == pointerIds[0]) {
-            gestureListener?.onRotationEnd(this)
+            pointerIds[0] = pointerIds[1]
           }
+          pointerIds[1] = MotionEvent.INVALID_POINTER_ID
+          isInProgress = false
+        }
         }
       }
       MotionEvent.ACTION_UP -> finish()
