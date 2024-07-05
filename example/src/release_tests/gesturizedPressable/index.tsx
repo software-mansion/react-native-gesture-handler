@@ -8,7 +8,6 @@ import { RippleExample } from './androidRippleExample';
 import { FunctionalStyleExample } from './functionalStylesExample';
 import { DelayedPressExample } from './delayedPressExample';
 import { DelayHoverExample } from './hoverDelayExample';
-import FlexExample from './flexStyling';
 
 type TestingEntryProps = {
   title: string;
@@ -64,9 +63,6 @@ export default function Example() {
         comment="Delay set to hover in and out"
         platform="web">
         <DelayHoverExample />
-      </TestingEntry>
-      <TestingEntry title="Flex behaviour of nested pressables">
-        <FlexExample />
       </TestingEntry>
     </ScrollView>
   );
