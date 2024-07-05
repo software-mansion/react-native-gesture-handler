@@ -94,9 +94,9 @@ export default function Pressable(props: PressableProps) {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const pressInHandler = useCallback((event: GestureTouchEvent) => {
     props.onPressIn?.(adaptTouchEvent(event));
-    setPressedState(true);
     isPressCallbackEnabled.current = true;
     pressDelayTimeoutRef.current = null;
+    setPressedState(true);
   }, []);
   const pressOutHandler = useCallback((event: GestureTouchEvent) => {
     if (
