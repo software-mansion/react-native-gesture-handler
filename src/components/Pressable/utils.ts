@@ -1,10 +1,4 @@
-import {
-  DimensionValue,
-  FlexAlignType,
-  Insets,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { Insets, ViewStyle } from 'react-native';
 import { LongPressGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
@@ -162,7 +156,7 @@ const extractStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
     return {} as ViewStyle;
   }
 
-  const extractedData = {} as ViewStyle;
+  const extractedData = {} as Record<string, unknown>;
 
   for (const key of keys) {
     if (from[key] !== undefined) {
@@ -170,7 +164,7 @@ const extractStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
     }
   }
 
-  return extractedData;
+  return extractedData as ViewStyle;
 };
 
 const excludeStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
