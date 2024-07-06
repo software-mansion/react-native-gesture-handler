@@ -18,12 +18,12 @@ export default class VelocityTracker {
     this.samples.push(event);
   }
 
-  /// Returns an estimate of the velocity of the object being tracked by the
-  /// tracker given the current information available to the tracker.
-  ///
-  /// Information is added using [addPosition].
-  ///
-  /// Returns null if there is no data on which to base an estimate.
+  // Returns an estimate of the velocity of the object being tracked by the
+  // tracker given the current information available to the tracker.
+  //
+  // Information is added using [addPosition].
+  //
+  // Returns null if there is no data on which to base an estimate.
   private getVelocityEstimate(): [number, number] | null {
     const x = [];
     const y = [];
