@@ -111,7 +111,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validateDetectorChildren(ref: any) {
-  // finds the first native view under the Wrap component and traverses the fiber tree upwards
+  // Finds the first native view under the Wrap component and traverses the fiber tree upwards
   // to check whether there is more than one native view as a pseudo-direct child of GestureDetector
   // i.e. this is not ok:
   //            Wrap
