@@ -37,7 +37,7 @@ export type GestureRef =
   | number
   | GestureType
   | React.RefObject<GestureType | undefined>
-  | React.RefObject<React.ComponentType | undefined>; // allow adding a ref to a gesture handler
+  | React.RefObject<React.ComponentType | undefined>; // Allow adding a ref to a gesture handler
 export interface BaseGestureConfig
   extends CommonGestureConfig,
     Record<string, unknown> {
@@ -418,8 +418,8 @@ export abstract class BaseGesture<
   prepare() {}
 
   get shouldUseReanimated(): boolean {
-    // use Reanimated when runOnJS isn't set explicitly,
-    // and all defined callbacks are worklets,
+    // Use Reanimated when runOnJS isn't set explicitly,
+    // all defined callbacks are worklets
     // and remote debugging is disabled
     return (
       this.config.runOnJS !== true &&
