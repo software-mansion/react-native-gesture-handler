@@ -4,7 +4,7 @@ import { tagMessage } from '../../../utils';
 
 export class Wrap extends React.Component<{
   onGestureHandlerEvent?: unknown;
-  // implicit `children` prop has been removed in @types/react^18.0.0
+  // Implicit `children` prop has been removed in @types/react^18.0.0
   children?: React.ReactNode;
 }> {
   render() {

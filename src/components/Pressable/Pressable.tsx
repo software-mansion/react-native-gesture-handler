@@ -31,7 +31,7 @@ export default function Pressable(props: PressableProps) {
 
   const pressableRef = useRef<View>(null);
 
-  // disabled when onLongPress has been called
+  // Disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
   const isPressedDown = useRef<boolean>(false);
 
@@ -107,7 +107,7 @@ export default function Pressable(props: PressableProps) {
     }
 
     if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
-      // legacy Pressable behaviour - if pressDelay is set, we want to call onPressIn on touch up
+      // Legacy Pressable behaviour - if pressDelay is set, we want to call onPressIn on touch up
       clearTimeout(pressDelayTimeoutRef.current);
       pressInHandler(event);
     }
@@ -228,7 +228,7 @@ export default function Pressable(props: PressableProps) {
     }
   }
 
-  // uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
+  // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
   rippleGesture.hitSlop(normalizedHitSlop);
 
   const gesture = Gesture.Simultaneous(
