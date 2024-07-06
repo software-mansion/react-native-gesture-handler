@@ -726,15 +726,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     const offsetX: number = x - rect.pageX;
     const offsetY: number = y - rect.pageY;
 
-    if (
-      offsetX >= left &&
-      offsetX <= right &&
-      offsetY >= top &&
-      offsetY <= bottom
-    ) {
-      return true;
-    }
-    return false;
+    return (
+      offsetX >= left && offsetX <= right && offsetY >= top && offsetY <= bottom
+    );
   }
 
   public isButtonInConfig(mouseButton: MouseButton | undefined) {
