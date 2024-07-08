@@ -155,9 +155,7 @@ const extractStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
   }
 
   return Object.fromEntries(
-    keys
-      .map((key) => [key, from[key]])
-      .filter(([_key, value]) => value !== undefined)
+    keys.filter((key) => key in from).map((key) => [key, from[key]])
   ) as ViewStyle;
 };
 
@@ -169,7 +167,7 @@ const excludeStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
   const exclusiveData = { ...from };
 
   keys
-    .filter((key) => exclusiveData[key] !== undefined)
+    .filter((key) => key in exclusiveData)
     .forEach((key) => (exclusiveData[key] = undefined));
 
   return exclusiveData;
