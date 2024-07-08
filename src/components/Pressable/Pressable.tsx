@@ -108,6 +108,7 @@ export default function Pressable(props: PressableProps) {
     },
     [props]
   );
+
   const pressOutHandler = useCallback(
     (event: GestureTouchEvent) => {
       if (
@@ -144,7 +145,6 @@ export default function Pressable(props: PressableProps) {
   const touchGesture = useMemo(
     () =>
       Gesture.Manual()
-        .cancelsTouchesInView(true)
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
