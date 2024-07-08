@@ -18,9 +18,7 @@ import {
   isTouchWithinInset,
   adaptTouchEvent,
   addInsets,
-  innerStyleKeys,
-  excludeStyles,
-  extractStyles,
+  splitStyles,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
@@ -261,8 +259,7 @@ export default function Pressable(props: PressableProps) {
 
   const flattenedStyles = StyleSheet.flatten((styleProp ?? {}) as ViewStyle);
 
-  const innerStyles = extractStyles(flattenedStyles, innerStyleKeys);
-  const outerStyles = excludeStyles(flattenedStyles, innerStyleKeys);
+  const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
 
   return (
     <View style={outerStyles}>

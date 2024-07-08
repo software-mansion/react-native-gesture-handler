@@ -149,28 +149,23 @@ const innerStyleKeys = [
   'direction', // iOS only
 ] as StylePropKeys;
 
-const extractStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
+type StyleTuple = [ViewStyle, ViewStyle];
+const splitStyles = (from: ViewStyle): StyleTuple => {
   if (!from) {
-    return {} as ViewStyle;
+    return [{}, {}] as StyleTuple;
   }
 
-  return Object.fromEntries(
-    keys.filter((key) => key in from).map((key) => [key, from[key]])
+  const outerStyles = { ...from };
+
+  const innerStyles = Object.fromEntries(
+    innerStyleKeys.filter((key) => key in from).map((key) => [key, from[key]])
   ) as ViewStyle;
-};
 
-const excludeStyles = (from: ViewStyle, keys: StylePropKeys): ViewStyle => {
-  if (!from) {
-    return {} as ViewStyle;
-  }
+  innerStyleKeys
+    .filter((key) => key in outerStyles)
+    .forEach((key) => (outerStyles[key] = undefined));
 
-  const exclusiveData = { ...from };
-
-  keys
-    .filter((key) => key in exclusiveData)
-    .forEach((key) => (exclusiveData[key] = undefined));
-
-  return exclusiveData;
+  return [innerStyles, outerStyles];
 };
 
 export {
@@ -183,6 +178,5 @@ export {
   isTouchWithinInset,
   adaptStateChangeEvent,
   adaptTouchEvent,
-  extractStyles,
-  excludeStyles,
+  splitStyles,
 };
