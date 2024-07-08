@@ -124,7 +124,7 @@ type StylePropKeys = (keyof ViewStyle)[];
 // Source:
 // - From ViewStyle extracted FlexStyle sub-interface which contains all of the box-model manipulating props.
 // - From FlexStyle handpicked those styles, which act on the inner part of the box-model.
-const innerStyleKeys = [
+const innerStyleKeys = new Set([
   'alignContent',
   'alignItems',
   'flexBasis',
@@ -147,7 +147,7 @@ const innerStyleKeys = [
   'start',
   'end',
   'direction', // iOS only
-] as StylePropKeys;
+] as StylePropKeys);
 
 type StyleTuple = [ViewStyle, ViewStyle];
 const splitStyles = (from: ViewStyle): StyleTuple => {
@@ -155,16 +155,16 @@ const splitStyles = (from: ViewStyle): StyleTuple => {
     return [{}, {}] as StyleTuple;
   }
 
-  const outerStyles = { ...from };
+  const outerStyles: Record<string, unknown> = {};
+  const innerStyles: Record<string, unknown> = {};
 
-  const innerStyles = Object.fromEntries(
-    innerStyleKeys
-      .filter((key) => key in from)
-      .map((key) => {
-        outerStyles[key] = undefined;
-        return [key, from[key]];
-      })
-  ) as ViewStyle;
+  for (const key in from) {
+    if (innerStyleKeys.has(key as keyof ViewStyle)) {
+      innerStyles[key] = from[key as keyof ViewStyle];
+    } else {
+      outerStyles[key] = from[key as keyof ViewStyle];
+    }
+  }
 
   return [innerStyles, outerStyles];
 };
