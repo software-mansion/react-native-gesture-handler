@@ -97,9 +97,29 @@ export default function Pressable(props: PressableProps) {
     [props]
   );
 
+  const propagationGreenLight = useRef<boolean>(false);
+  // regular touch events propagate, which is a behaviour we want to avoid.
+  // unfortunately, only touch events have the data required for a complete event payload.
+  // as a solution, we're using both the touch events, and Native gestures.
+  const exclusiveGesture = useMemo(
+    () =>
+      Gesture.Native()
+        .onBegin(() => {
+          propagationGreenLight.current = true;
+        })
+        .onEnd(() => {
+          propagationGreenLight.current = false;
+        }),
+    []
+  );
+
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const pressInHandler = useCallback(
     (event: GestureTouchEvent) => {
+      if (propagationGreenLight.current === false) {
+        return;
+      }
+
       props.onPressIn?.(adaptTouchEvent(event));
       setPressedState(true);
       isPressCallbackEnabled.current = true;
@@ -227,7 +247,13 @@ export default function Pressable(props: PressableProps) {
 
   const isPressableEnabled = props.disabled !== true;
 
-  const gestures = [touchGesture, pressGesture, hoverGesture, rippleGesture];
+  const gestures = [
+    touchGesture,
+    pressGesture,
+    hoverGesture,
+    rippleGesture,
+    exclusiveGesture,
+  ];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
@@ -242,12 +268,7 @@ export default function Pressable(props: PressableProps) {
   // uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
   rippleGesture.hitSlop(normalizedHitSlop);
 
-  const gesture = Gesture.Simultaneous(
-    hoverGesture,
-    pressGesture,
-    touchGesture,
-    rippleGesture
-  );
+  const gesture = Gesture.Simultaneous(...gestures);
 
   const defaultRippleColor = props.android_ripple ? undefined : 'transparent';
 
