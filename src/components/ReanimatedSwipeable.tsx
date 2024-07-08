@@ -376,7 +376,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
         const progressTarget = toValue === 0 ? 0 : 1;
 
-        // velocity is in px, while progress is in %
+        // Velocity is in px, while progress is in %
         springConfig.velocity = 0;
 
         showLeftProgress.value =
@@ -510,12 +510,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           toValue = -rightWidth.value;
         }
       } else if (rowState.value === 1) {
-        // swiped to left
+        // Swiped to left
         if (translationX > -leftThreshold) {
           toValue = leftWidth.value;
         }
       } else {
-        // swiped to right
+        // Swiped to right
         if (translationX < rightThreshold) {
           toValue = -rightWidth.value;
         }

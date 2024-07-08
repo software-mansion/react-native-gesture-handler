@@ -61,7 +61,7 @@ import {
 import { State } from '../State';
 import { hasProperty, withPrevAndCurrent } from '../utils';
 
-// load fireEvent conditionally, so RNGH may be used in setups without testing-library
+// Load fireEvent conditionally, so RNGH may be used in setups without testing-library
 let fireEvent = (
   _element: ReactTestInstance,
   _name: string,
@@ -74,7 +74,7 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   fireEvent = require('@testing-library/react-native').fireEvent;
 } catch (_e) {
-  // do nothing if not available
+  // Do nothing if not available
 }
 
 type GestureHandlerTestEvent<

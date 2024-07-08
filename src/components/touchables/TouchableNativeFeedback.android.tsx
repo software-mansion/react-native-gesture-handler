@@ -23,7 +23,7 @@ export default class TouchableNativeFeedback extends Component<TouchableNativeFe
     },
   };
 
-  // could be taken as RNTouchableNativeFeedback.SelectableBackground etc. but the API may change
+  // Could be taken as RNTouchableNativeFeedback.SelectableBackground etc. but the API may change
   static SelectableBackground = (rippleRadius?: number) => ({
     type: 'ThemeAttrAndroid',
     // I added `attribute` prop to clone the implementation of RN and be able to use only 2 types
