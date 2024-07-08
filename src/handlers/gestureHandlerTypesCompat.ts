@@ -29,13 +29,13 @@ import type { RotationGestureHandlerProps } from './RotationGestureHandler';
 import type { TapGestureHandlerProps } from './TapGestureHandler';
 import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 
-// events
+// Events
 export type GestureHandlerGestureEventNativeEvent = GestureEventPayload;
 export type GestureHandlerStateChangeNativeEvent =
   HandlerStateChangeEventPayload;
 export type GestureHandlerGestureEvent = GestureEvent;
 export type GestureHandlerStateChangeEvent = HandlerStateChangeEvent;
-// gesture handlers events
+// Gesture handlers events
 export type NativeViewGestureHandlerGestureEvent =
   GestureEvent<NativeViewGestureHandlerPayload>;
 export type NativeViewGestureHandlerStateChangeEvent =
@@ -76,7 +76,7 @@ export type FlingGestureHandlerGestureEvent =
 export type FlingGestureHandlerStateChangeEvent =
   HandlerStateChangeEvent<FlingGestureHandlerEventPayload>;
 
-// handlers properties
+// Handlers properties
 export type NativeViewGestureHandlerProperties = NativeViewGestureHandlerProps;
 export type TapGestureHandlerProperties = TapGestureHandlerProps;
 export type LongPressGestureHandlerProperties = LongPressGestureHandlerProps;
@@ -85,7 +85,7 @@ export type PinchGestureHandlerProperties = PinchGestureHandlerProps;
 export type RotationGestureHandlerProperties = RotationGestureHandlerProps;
 export type FlingGestureHandlerProperties = FlingGestureHandlerProps;
 export type ForceTouchGestureHandlerProperties = ForceTouchGestureHandlerProps;
-// button props
+// Button props
 export type RawButtonProperties = RawButtonProps;
 export type BaseButtonProperties = BaseButtonProps;
 export type RectButtonProperties = RectButtonProps;

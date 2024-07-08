@@ -53,7 +53,7 @@ export default class GenericTouchable extends Component<
     },
   };
 
-  // timeout handlers
+  // Timeout handlers
   pressInTimeout: Timeout;
   pressOutTimeout: Timeout;
   longPressTimeout: Timeout;
@@ -120,7 +120,7 @@ export default class GenericTouchable extends Component<
   componentDidMount() {
     this.reset();
   }
-  // reset timeout to prevent memory leaks.
+  // Reset timeout to prevent memory leaks.
   reset() {
     this.longPressDetected = false;
     this.pointerInside = true;
@@ -202,12 +202,12 @@ export default class GenericTouchable extends Component<
 
   onLongPressDetected = () => {
     this.longPressDetected = true;
-    // checked for in the caller of `onLongPressDetected`, but better to check twice
+    // Checked for in the caller of `onLongPressDetected`, but better to check twice
     this.props.onLongPress?.();
   };
 
   componentWillUnmount() {
-    // to prevent memory leaks
+    // To prevent memory leaks
     this.reset();
   }
 
@@ -219,7 +219,7 @@ export default class GenericTouchable extends Component<
   }
 
   onMoveOut() {
-    // long press should no longer be detected
+    // Long press should no longer be detected
     clearTimeout(this.longPressTimeout!);
     this.longPressTimeout = null;
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {

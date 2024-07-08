@@ -20,7 +20,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
           x: adaptedEvent.x,
           y: adaptedEvent.y,
         }) ||
-        //@ts-ignore touchType field does exist
+        // @ts-ignore touchType field does exist
         event.changedTouches[i].touchType === 'stylus'
       ) {
         continue;
@@ -45,7 +45,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
         i,
         TouchEventType.MOVE
       );
-      //@ts-ignore touchType field does exist
+      // @ts-ignore touchType field does exist
       if (event.changedTouches[i].touchType === 'stylus') {
         continue;
       }
@@ -89,7 +89,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
         break;
       }
 
-      //@ts-ignore touchType field does exist
+      // @ts-ignore touchType field does exist
       if (event.changedTouches[i].touchType === 'stylus') {
         continue;
       }
@@ -121,7 +121,7 @@ export default class TouchEventManager extends EventManager<HTMLElement> {
         TouchEventType.CANCELLED
       );
 
-      //@ts-ignore touchType field does exist
+      // @ts-ignore touchType field does exist
       if (event.changedTouches[i].touchType === 'stylus') {
         continue;
       }

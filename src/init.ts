@@ -8,7 +8,7 @@ export function initialize() {
   startListening();
 }
 
-// since isFabric() may give wrong results before the first render, we call this
+// Since isFabric() may give wrong results before the first render, we call this
 // method during render of GestureHandlerRootView
 export function maybeInitializeFabric() {
   if (isFabric() && !fabricInitialized) {

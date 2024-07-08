@@ -73,7 +73,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
         );
       }
     } else if (
-      // cancel longpress timeout if it's set and the finger moved out of the view
+      // Cancel longpress timeout if it's set and the finger moved out of the view
       state === State.ACTIVE &&
       !pointerInside &&
       this.longPressTimeout !== undefined
@@ -81,7 +81,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
       clearTimeout(this.longPressTimeout);
       this.longPressTimeout = undefined;
     } else if (
-      // cancel longpress timeout if it's set and the gesture has finished
+      // Cancel longpress timeout if it's set and the gesture has finished
       this.longPressTimeout !== undefined &&
       (state === State.END ||
         state === State.CANCELLED ||

@@ -136,7 +136,7 @@ export type TouchAction =
   | 'revert-layer'
   | 'unset';
 
-//TODO(TS) events in handlers
+// TODO(TS) events in handlers
 
 export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
   nativeEvent: Readonly<GestureEventPayload & ExtraEventPayloadT>;
@@ -201,11 +201,11 @@ export type BaseGestureHandlerProps<
   onActivated?: (event: HandlerStateChangeEvent) => void;
   onEnded?: (event: HandlerStateChangeEvent) => void;
 
-  //TODO(TS) consider using NativeSyntheticEvent
+  // TODO(TS) consider using NativeSyntheticEvent
   onGestureEvent?: (event: GestureEvent<ExtraEventPayloadT>) => void;
   onHandlerStateChange?: (
     event: HandlerStateChangeEvent<ExtraEventPayloadT>
   ) => void;
-  // implicit `children` prop has been removed in @types/react^18.0.0
+  // Implicit `children` prop has been removed in @types/react^18.0.0
   children?: React.ReactNode;
 };
