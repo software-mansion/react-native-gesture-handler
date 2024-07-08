@@ -52,3 +52,5 @@ export function calculateViewScale(view: HTMLElement) {
 
   return resultScales;
 }
+
+//Utils
