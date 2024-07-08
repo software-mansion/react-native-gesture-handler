@@ -170,8 +170,6 @@ const splitStyles = (from: ViewStyle): StyleTuple => {
 };
 
 export {
-  innerStyleKeys,
-  StylePropKeys,
   numberAsInset,
   addInsets,
   touchToPressEvent,
