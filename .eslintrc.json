@@ -19,7 +19,7 @@
     ]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
-  "plugins": ["jest"],
+  "plugins": ["jest", "@stylistic/js"],
   "ignorePatterns": ["lib/**/*"],
   "rules": {
     // removed in new jest-eslint-plugin, referenced in satya config
@@ -65,6 +65,6 @@
       }
     ],
     "curly": "error",
-    "spaced-comment": "error"
+    "@stylistic/js/spaced-comment": "error"
   }
 }
