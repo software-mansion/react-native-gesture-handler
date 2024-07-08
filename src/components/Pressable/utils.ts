@@ -158,12 +158,13 @@ const splitStyles = (from: ViewStyle): StyleTuple => {
   const outerStyles = { ...from };
 
   const innerStyles = Object.fromEntries(
-    innerStyleKeys.filter((key) => key in from).map((key) => [key, from[key]])
+    innerStyleKeys
+      .filter((key) => key in from)
+      .map((key) => {
+        outerStyles[key] = undefined;
+        return [key, from[key]];
+      })
   ) as ViewStyle;
-
-  innerStyleKeys
-    .filter((key) => key in outerStyles)
-    .forEach((key) => (outerStyles[key] = undefined));
 
   return [innerStyles, outerStyles];
 };
