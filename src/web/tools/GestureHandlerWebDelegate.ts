@@ -41,7 +41,7 @@ export class GestureHandlerWebDelegate
     this.view.style['webkitUserSelect'] = config.userSelect ?? 'none';
 
     this.view.style['touchAction'] = config.touchAction ?? 'none';
-    //@ts-ignore This one disables default events on Safari
+    // @ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = 'none';
 
     this.eventManagers.push(new PointerEventManager(this.view));

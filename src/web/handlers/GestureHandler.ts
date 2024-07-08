@@ -843,7 +843,7 @@ function invokeNullableMethod(
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (value?.setValue) {
-      //Reanimated API
+      // Reanimated API
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       value.setValue(nativeValue);
     } else {

@@ -168,7 +168,7 @@ export abstract class BaseGesture<
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   protected isWorklet(callback: Function) {
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     return callback.__workletHash !== undefined;
   }
 
@@ -205,7 +205,7 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onEnd = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
     return this;
   }
@@ -221,7 +221,7 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onFinalize = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     this.handlers.isWorklet[CALLBACK_TYPE.FINALIZE] = this.isWorklet(callback);
     return this;
   }
