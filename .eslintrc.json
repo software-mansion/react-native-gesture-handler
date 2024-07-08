@@ -65,6 +65,6 @@
       }
     ],
     "curly": "error",
-    "@stylistic/js/spaced-comment": "error"
+    "spaced-comment": "error"
   }
 }
