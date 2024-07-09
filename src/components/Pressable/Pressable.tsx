@@ -103,7 +103,6 @@ export default function Pressable(props: PressableProps) {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const pressInHandler = useCallback(
     (event: GestureTouchEvent) => {
-      console.log('GREENLIGHT:', propagationGreenLight.current);
       if (propagationGreenLight.current === false) {
         return;
       }
@@ -134,6 +133,7 @@ export default function Pressable(props: PressableProps) {
       }
 
       props.onPressOut?.(adaptTouchEvent(event));
+      propagationGreenLight.current = false;
 
       if (isPressCallbackEnabled.current) {
         props.onPress?.(adaptTouchEvent(event));
@@ -279,12 +279,10 @@ export default function Pressable(props: PressableProps) {
         event.stopPropagation();
         propagationGreenLight.current = true;
         pressInHandler({} as GestureTouchEvent);
-        console.log('HELLO WORLD');
       }}
       onTouchEnd={() => {
         propagationGreenLight.current = false;
         pressOutHandler({} as GestureTouchEvent);
-        console.log('GOODBYE WORLD');
       }}>
       <GestureDetector gesture={gesture}>
         <NativeButton
