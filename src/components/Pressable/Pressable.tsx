@@ -266,7 +266,7 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
-  const flattenedStyles = StyleSheet.flatten((styleProp ?? {}) as ViewStyle);
+  const flattenedStyles = StyleSheet.flatten(styleProp ?? {});
 
   const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
 

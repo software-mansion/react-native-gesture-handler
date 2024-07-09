@@ -149,10 +149,9 @@ const innerStyleKeys = new Set([
   'direction', // iOS only
 ] as StylePropKeys);
 
-type StyleTuple = [ViewStyle, ViewStyle];
-const splitStyles = (from: ViewStyle): StyleTuple => {
+const splitStyles = (from: ViewStyle): [ViewStyle, ViewStyle] => {
   if (!from) {
-    return [{}, {}] as StyleTuple;
+    return [{}, {}];
   }
 
   const outerStyles: Record<string, unknown> = {};
