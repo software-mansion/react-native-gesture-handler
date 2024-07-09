@@ -150,10 +150,6 @@ const innerStyleKeys = new Set([
 ] as StylePropKeys);
 
 const splitStyles = (from: ViewStyle): [ViewStyle, ViewStyle] => {
-  if (!from) {
-    return [{}, {}];
-  }
-
   const outerStyles: Record<string, unknown> = {};
   const innerStyles: Record<string, unknown> = {};
 
