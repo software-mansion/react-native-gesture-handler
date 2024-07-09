@@ -99,24 +99,11 @@ export default function Pressable(props: PressableProps) {
   );
 
   const propagationGreenLight = useRef<boolean>(false);
-  // regular touch events propagate, which is a behaviour we want to avoid.
-  // unfortunately, only touch events have the data required for a complete event payload.
-  // as a solution, we're using both the touch events, and Native gestures.
-  const exclusiveGesture = useMemo(
-    () =>
-      Gesture.Native()
-        .onBegin(() => {
-          propagationGreenLight.current = true;
-        })
-        .onEnd(() => {
-          propagationGreenLight.current = false;
-        }),
-    []
-  );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const pressInHandler = useCallback(
     (event: GestureTouchEvent) => {
+      console.log('GREENLIGHT:', propagationGreenLight.current);
       if (propagationGreenLight.current === false) {
         return;
       }
@@ -132,8 +119,8 @@ export default function Pressable(props: PressableProps) {
   const pressOutHandler = useCallback(
     (event: GestureTouchEvent) => {
       if (
-        !isPressedDown.current ||
-        event.allTouches.length > event.changedTouches.length
+        !isPressedDown.current
+        // || event.allTouches.length > event.changedTouches.length
       ) {
         return;
       }
@@ -248,13 +235,7 @@ export default function Pressable(props: PressableProps) {
 
   const isPressableEnabled = props.disabled !== true;
 
-  const gestures = [
-    touchGesture,
-    pressGesture,
-    hoverGesture,
-    rippleGesture,
-    exclusiveGesture,
-  ];
+  const gestures = [touchGesture, pressGesture, hoverGesture, rippleGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
@@ -292,7 +273,19 @@ export default function Pressable(props: PressableProps) {
   const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
 
   return (
-    <View style={outerStyles}>
+    <View
+      style={outerStyles}
+      onTouchStart={(event) => {
+        event.stopPropagation();
+        propagationGreenLight.current = true;
+        pressInHandler({} as GestureTouchEvent);
+        console.log('HELLO WORLD');
+      }}
+      onTouchEnd={() => {
+        propagationGreenLight.current = false;
+        pressOutHandler({} as GestureTouchEvent);
+        console.log('GOODBYE WORLD');
+      }}>
       <GestureDetector gesture={gesture}>
         <NativeButton
           ref={pressableRef}
