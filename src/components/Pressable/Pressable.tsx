@@ -275,6 +275,7 @@ export default function Pressable(props: PressableProps) {
   return (
     <View
       style={outerStyles}
+      hitSlop={appliedHitSlop}
       onTouchStart={(event) => {
         event.stopPropagation();
         propagationGreenLight.current = true;
