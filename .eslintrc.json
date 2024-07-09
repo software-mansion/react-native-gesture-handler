@@ -64,6 +64,7 @@
         "ts-expect-error": "allow-with-description"
       }
     ],
-    "curly": "error"
+    "curly": "error",
+    "spaced-comment": "error"
   }
 }

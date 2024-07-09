@@ -31,7 +31,7 @@ export default function Pressable(props: PressableProps) {
 
   const pressableRef = useRef<View>(null);
 
-  // disabled when onLongPress has been called
+  // Disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
   const isPressedDown = useRef<boolean>(false);
 
@@ -121,9 +121,9 @@ export default function Pressable(props: PressableProps) {
       }
 
       props.onPressIn?.(adaptTouchEvent(event));
-      setPressedState(true);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
+      setPressedState(true);
     },
     [props]
   );
@@ -138,7 +138,7 @@ export default function Pressable(props: PressableProps) {
       }
 
       if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
-        // when delay is preemptively finished by lifting touches,
+        // When delay is preemptively finished by lifting touches,
         // we want to immediately activate it's effects - pressInHandler,
         // even though we are located at the pressOutHandler
         clearTimeout(pressDelayTimeoutRef.current);
@@ -209,16 +209,16 @@ export default function Pressable(props: PressableProps) {
           pressOutHandler(event);
         })
         .onTouchesCancelled((event) => {
+          if (handlingOnTouchesDown.current) {
+            cancelledMidPress.current = true;
+            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
+            return;
+          }
+
           if (
             !isPressedDown.current ||
             event.allTouches.length > event.changedTouches.length
           ) {
-            return;
-          }
-
-          if (handlingOnTouchesDown.current) {
-            cancelledMidPress.current = true;
-            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
             return;
           }
 
@@ -265,7 +265,7 @@ export default function Pressable(props: PressableProps) {
     }
   }
 
-  // uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
+  // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
   rippleGesture.hitSlop(normalizedHitSlop);
 
   const gesture = Gesture.Simultaneous(...gestures);

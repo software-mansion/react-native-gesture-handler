@@ -210,7 +210,7 @@ export default class PanGestureHandler extends GestureHandler {
     clearTimeout(this.activationTimeout);
   }
 
-  //EventsHandling
+  // Events Handling
   protected onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
       return;
