@@ -279,10 +279,6 @@ export default function Pressable(props: PressableProps) {
         event.stopPropagation();
         propagationGreenLight.current = true;
         pressInHandler({} as GestureTouchEvent);
-      }}
-      onTouchEnd={() => {
-        propagationGreenLight.current = false;
-        pressOutHandler({} as GestureTouchEvent);
       }}>
       <GestureDetector gesture={gesture}>
         <NativeButton
