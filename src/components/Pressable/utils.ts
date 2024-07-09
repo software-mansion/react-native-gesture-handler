@@ -1,4 +1,4 @@
-import { Insets } from 'react-native';
+import { Insets, ViewStyle } from 'react-native';
 import { LongPressGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
@@ -119,6 +119,51 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
   };
 };
 
+type StylePropKeys = (keyof ViewStyle)[];
+
+// Source:
+// - From ViewStyle extracted FlexStyle sub-interface which contains all of the box-model manipulating props.
+// - From FlexStyle handpicked those styles, which act on the inner part of the box-model.
+const innerStyleKeys = new Set([
+  'alignContent',
+  'alignItems',
+  'flexBasis',
+  'flexDirection',
+  'flexWrap',
+  'rowGap',
+  'gap',
+  'columnGap',
+  'justifyContent',
+  'overflow',
+  'padding',
+  'paddingBottom',
+  'paddingEnd',
+  'paddingHorizontal',
+  'paddingLeft',
+  'paddingRight',
+  'paddingStart',
+  'paddingTop',
+  'paddingVertical',
+  'start',
+  'end',
+  'direction', // iOS only
+] as StylePropKeys);
+
+const splitStyles = (from: ViewStyle): [ViewStyle, ViewStyle] => {
+  const outerStyles: Record<string, unknown> = {};
+  const innerStyles: Record<string, unknown> = {};
+
+  for (const key in from) {
+    if (innerStyleKeys.has(key as keyof ViewStyle)) {
+      innerStyles[key] = from[key as keyof ViewStyle];
+    } else {
+      outerStyles[key] = from[key as keyof ViewStyle];
+    }
+  }
+
+  return [innerStyles, outerStyles];
+};
+
 export {
   numberAsInset,
   addInsets,
@@ -127,4 +172,5 @@ export {
   isTouchWithinInset,
   adaptStateChangeEvent,
   adaptTouchEvent,
+  splitStyles,
 };
