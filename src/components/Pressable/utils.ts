@@ -132,14 +132,14 @@ const gestureTouchToPressableEvent = (
 
 const nativeTouchToInnerPressableEvent = (
   event: NativeTouchEvent,
-  isRecursive = true
+  isParent = true
 ): InnerPressableEvent => {
-  const touchesList = isRecursive
+  const touchesList = isParent
     ? event.touches.map((touch: NativeTouchEvent) =>
         nativeTouchToInnerPressableEvent(touch, false)
       )
     : [];
-  const changedTouchesList = isRecursive
+  const changedTouchesList = isParent
     ? event.changedTouches.map((touch: NativeTouchEvent) =>
         nativeTouchToInnerPressableEvent(touch, false)
       )
