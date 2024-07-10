@@ -119,8 +119,8 @@ export default function Pressable(props: PressableProps) {
   const pressOutHandler = useCallback(
     (event: GestureTouchEvent) => {
       if (
-        !isPressedDown.current
-        // || event.allTouches.length > event.changedTouches.length
+        !isPressedDown.current ||
+        event.allTouches.length > event.changedTouches.length
       ) {
         return;
       }
