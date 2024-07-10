@@ -130,15 +130,20 @@ const gestureTouchToPressableEvent = (
   };
 };
 
-const nativeTouchToPressInnerPressableEvent = (
-  event: NativeTouchEvent
+const nativeTouchToInnerPressableEvent = (
+  event: NativeTouchEvent,
+  isRecursive = true
 ): InnerPressableEvent => {
-  const touchesList = event.touches.map((touch: NativeTouchEvent) =>
-    nativeTouchToPressInnerPressableEvent(touch)
-  );
-  const changedTouchesList = event.changedTouches.map(
-    (touch: NativeTouchEvent) => nativeTouchToPressInnerPressableEvent(touch)
-  );
+  const touchesList = isRecursive
+    ? event.touches.map((touch: NativeTouchEvent) =>
+        nativeTouchToInnerPressableEvent(touch, false)
+      )
+    : [];
+  const changedTouchesList = isRecursive
+    ? event.changedTouches.map((touch: NativeTouchEvent) =>
+        nativeTouchToInnerPressableEvent(touch, false)
+      )
+    : [];
 
   return {
     identifier: 0,
@@ -149,15 +154,15 @@ const nativeTouchToPressInnerPressableEvent = (
     target: 0,
     timestamp: event.timestamp,
     force: undefined,
-    touches: touchesList, // Always empty - legacy compatibility
-    changedTouches: changedTouchesList, // Always empty - legacy compatibility
+    touches: touchesList,
+    changedTouches: changedTouchesList,
   };
 };
 
 const nativeTouchToPressableEvent = (
   event: GestureResponderEvent
 ): PressableEvent => ({
-  nativeEvent: nativeTouchToPressInnerPressableEvent(event.nativeEvent),
+  nativeEvent: nativeTouchToInnerPressableEvent(event.nativeEvent),
 });
 
 type StylePropKeys = (keyof ViewStyle)[];
