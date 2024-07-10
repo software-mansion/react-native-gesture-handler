@@ -11,7 +11,7 @@ import {
   GestureTouchEvent,
 } from '../../handlers/gestureHandlerCommon';
 import { HoverGestureHandlerEventPayload } from '../../handlers/gestures/hoverGesture';
-import { PressEvent, PressableEvent } from './PressableProps';
+import { InnerPressableEvent, PressableEvent } from './PressableProps';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
@@ -31,7 +31,7 @@ const touchDataToPressEvent = (
   data: TouchData,
   timestamp: number,
   targetId: number
-): PressEvent => ({
+): InnerPressableEvent => ({
   identifier: data.id,
   locationX: data.x,
   locationY: data.y,
@@ -49,7 +49,7 @@ const gestureToPressEvent = (
   >,
   timestamp: number,
   targetId: number
-): PressEvent => ({
+): InnerPressableEvent => ({
   identifier: event.handlerTag,
   locationX: event.x,
   locationY: event.y,
