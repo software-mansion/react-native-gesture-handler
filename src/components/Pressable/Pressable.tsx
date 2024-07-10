@@ -19,7 +19,6 @@ import {
   gestureTouchToPressableEvent,
   addInsets,
   splitStyles,
-  nativeTouchToPressableEvent,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 
@@ -224,7 +223,14 @@ export default function Pressable(props: PressableProps) {
   );
 
   // rippleGesture lives inside RNButton to enable android's ripple
-  const rippleGesture = useMemo(() => Gesture.Native(), []);
+  const rippleGesture = useMemo(
+    () =>
+      Gesture.Native()
+        .onBegin(() => console.log('BEGIN'))
+        .onStart(() => console.log('START'))
+        .onEnd(() => console.log('END')),
+    []
+  );
 
   pressGesture.minDuration(
     (props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
@@ -276,13 +282,7 @@ export default function Pressable(props: PressableProps) {
   const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
 
   return (
-    <View
-      style={outerStyles}
-      hitSlop={appliedHitSlop}
-      onTouchStart={(event) => {
-        propagationGreenLight.current = true;
-        pressInHandler(nativeTouchToPressableEvent(event));
-      }}>
+    <View style={outerStyles}>
       <GestureDetector gesture={gesture}>
         <NativeButton
           ref={pressableRef}
