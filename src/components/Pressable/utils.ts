@@ -1,4 +1,9 @@
-import { Insets, ViewStyle } from 'react-native';
+import {
+  GestureResponderEvent,
+  Insets,
+  NativeTouchEvent,
+  ViewStyle,
+} from 'react-native';
 import { LongPressGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
@@ -119,6 +124,47 @@ const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
   };
 };
 
+const nativeToTouchData = (event: NativeTouchEvent): TouchData => {
+  return {
+    id: 0,
+    x: event.touches.at(0)?.locationX ?? -1,
+    y: event.touches.at(0)?.locationY ?? -1,
+    absoluteX: event.touches.at(0)?.pageX ?? -1,
+    absoluteY: event.touches.at(0)?.pageY ?? -1,
+  };
+};
+
+const adaptNativeTouchEvent = (
+  event: GestureResponderEvent
+): PressableEvent => {
+  const timestamp = event.nativeEvent.timestamp;
+  const targetId = 0;
+
+  const nativeTouches = event.nativeEvent.touches.map(
+    (touch: NativeTouchEvent) =>
+      touchToPressEvent(nativeToTouchData(touch), timestamp, targetId)
+  );
+  const nativeChangedTouches = event.nativeEvent.changedTouches.map(
+    (touch: NativeTouchEvent) =>
+      touchToPressEvent(nativeToTouchData(touch), timestamp, targetId)
+  );
+
+  return {
+    nativeEvent: {
+      touches: nativeTouches,
+      changedTouches: nativeChangedTouches,
+      identifier: 0,
+      locationX: event.nativeEvent.locationX,
+      locationY: event.nativeEvent.locationY,
+      pageX: event.nativeEvent.pageX,
+      pageY: event.nativeEvent.pageX,
+      target: 0,
+      timestamp: timestamp,
+      force: undefined,
+    },
+  };
+};
+
 type StylePropKeys = (keyof ViewStyle)[];
 
 // Source:
@@ -172,5 +218,6 @@ export {
   isTouchWithinInset,
   adaptStateChangeEvent,
   adaptTouchEvent,
+  adaptNativeTouchEvent,
   splitStyles,
 };

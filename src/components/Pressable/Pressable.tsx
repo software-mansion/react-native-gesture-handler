@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
-import { PressableProps } from './PressableProps';
+import { PressableEvent, PressableProps } from './PressableProps';
 import {
   Insets,
   Platform,
@@ -19,6 +19,7 @@ import {
   adaptTouchEvent,
   addInsets,
   splitStyles,
+  adaptNativeTouchEvent,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
@@ -102,12 +103,12 @@ export default function Pressable(props: PressableProps) {
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const pressInHandler = useCallback(
-    (event: GestureTouchEvent) => {
+    (event: PressableEvent) => {
       if (propagationGreenLight.current === false) {
         return;
       }
 
-      props.onPressIn?.(adaptTouchEvent(event));
+      props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
       setPressedState(true);
@@ -129,7 +130,7 @@ export default function Pressable(props: PressableProps) {
         // we want to immediately activate it's effects - pressInHandler,
         // even though we are located at the pressOutHandler
         clearTimeout(pressDelayTimeoutRef.current);
-        pressInHandler(event);
+        pressInHandler(adaptTouchEvent(event));
       }
 
       props.onPressOut?.(adaptTouchEvent(event));
@@ -177,10 +178,10 @@ export default function Pressable(props: PressableProps) {
 
             if (props.unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
-                pressInHandler(event);
+                pressInHandler(adaptTouchEvent(event));
               }, props.unstable_pressDelay);
             } else {
-              pressInHandler(event);
+              pressInHandler(adaptTouchEvent(event));
             }
 
             onEndHandlingTouchesDown.current?.();
@@ -277,9 +278,10 @@ export default function Pressable(props: PressableProps) {
       style={outerStyles}
       hitSlop={appliedHitSlop}
       onTouchStart={(event) => {
+        console.log('touch start');
         event.stopPropagation();
         propagationGreenLight.current = true;
-        pressInHandler({} as GestureTouchEvent);
+        pressInHandler(adaptNativeTouchEvent(event));
       }}>
       <GestureDetector gesture={gesture}>
         <NativeButton
