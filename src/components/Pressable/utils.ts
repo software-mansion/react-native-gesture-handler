@@ -43,16 +43,22 @@ const touchDataToPressEvent = (
   changedTouches: [], // Always empty - legacy compatibility
 });
 
-const gestureToTouchData = (
+const gestureToPressEvent = (
   event: GestureStateChangeEvent<
     HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-  >
-): TouchData => ({
-  id: event.handlerTag,
-  x: event.x,
-  y: event.y,
-  absoluteX: event.absoluteX,
-  absoluteY: event.absoluteY,
+  >,
+  timestamp: number,
+  targetId: number
+): PressEvent => ({
+  identifier: event.handlerTag,
+  locationX: event.x,
+  locationY: event.y,
+  pageX: event.absoluteX,
+  pageY: event.absoluteY,
+  target: targetId,
+  timestamp: timestamp,
+  touches: [], // Always empty - legacy compatibility
+  changedTouches: [], // Always empty - legacy compatibility
 });
 
 const isTouchWithinInset = (
@@ -75,9 +81,7 @@ const gestureToPressableEvent = (
   // As far as I can see, there isn't a conventional way of getting targetId with the data we get
   const targetId = 0;
 
-  const touchData = gestureToTouchData(event);
-
-  const pressEvent = touchDataToPressEvent(touchData, timestamp, targetId);
+  const pressEvent = gestureToPressEvent(event, timestamp, targetId);
 
   return {
     nativeEvent: {
