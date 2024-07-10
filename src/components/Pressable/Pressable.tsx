@@ -22,7 +22,6 @@ import {
   nativeTouchToPressableEvent,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
@@ -117,10 +116,11 @@ export default function Pressable(props: PressableProps) {
   );
 
   const pressOutHandler = useCallback(
-    (event: GestureTouchEvent) => {
+    (event: PressableEvent) => {
       if (
         !isPressedDown.current ||
-        event.allTouches.length > event.changedTouches.length
+        event.nativeEvent.touches.length >
+          event.nativeEvent.changedTouches.length
       ) {
         return;
       }
@@ -130,14 +130,14 @@ export default function Pressable(props: PressableProps) {
         // we want to immediately activate it's effects - pressInHandler,
         // even though we are located at the pressOutHandler
         clearTimeout(pressDelayTimeoutRef.current);
-        pressInHandler(gestureTouchToPressableEvent(event));
+        pressInHandler(event);
       }
 
-      props.onPressOut?.(gestureTouchToPressableEvent(event));
+      props.onPressOut?.(event);
       propagationGreenLight.current = false;
 
       if (isPressCallbackEnabled.current) {
-        props.onPress?.(gestureTouchToPressableEvent(event));
+        props.onPress?.(event);
       }
 
       isPressedDown.current = false;
@@ -191,16 +191,18 @@ export default function Pressable(props: PressableProps) {
         })
         .onTouchesUp((event) => {
           if (handlingOnTouchesDown.current) {
-            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
+            onEndHandlingTouchesDown.current = () =>
+              pressOutHandler(gestureTouchToPressableEvent(event));
             return;
           }
 
-          pressOutHandler(event);
+          pressOutHandler(gestureTouchToPressableEvent(event));
         })
         .onTouchesCancelled((event) => {
           if (handlingOnTouchesDown.current) {
             cancelledMidPress.current = true;
-            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
+            onEndHandlingTouchesDown.current = () =>
+              pressOutHandler(gestureTouchToPressableEvent(event));
             return;
           }
 
@@ -211,7 +213,7 @@ export default function Pressable(props: PressableProps) {
             return;
           }
 
-          pressOutHandler(event);
+          pressOutHandler(gestureTouchToPressableEvent(event));
         }),
     [
       normalizedHitSlop,
