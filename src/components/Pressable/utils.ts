@@ -107,17 +107,17 @@ const gestureTouchToPressableEvent = (
   // As far as I can see, there isn't a conventional way of getting targetId with the data we get
   const targetId = 0;
 
-  const nativeTouches = event.allTouches.map((touch: TouchData) =>
+  const touchesList = event.allTouches.map((touch: TouchData) =>
     touchDataToPressEvent(touch, timestamp, targetId)
   );
-  const nativeChangedTouches = event.changedTouches.map((touch: TouchData) =>
+  const changedTouchesList = event.changedTouches.map((touch: TouchData) =>
     touchDataToPressEvent(touch, timestamp, targetId)
   );
 
   return {
     nativeEvent: {
-      touches: nativeTouches,
-      changedTouches: nativeChangedTouches,
+      touches: touchesList,
+      changedTouches: changedTouchesList,
       identifier: event.handlerTag,
       locationX: event.allTouches.at(0)?.x ?? -1,
       locationY: event.allTouches.at(0)?.y ?? -1,
@@ -130,7 +130,7 @@ const gestureTouchToPressableEvent = (
   };
 };
 
-const nativeToTouchData = (event: NativeTouchEvent): TouchData => {
+const nativeEventToTouchData = (event: NativeTouchEvent): TouchData => {
   return {
     id: 0,
     x: event.touches.at(0)?.locationX ?? -1,
@@ -146,19 +146,18 @@ const nativeTouchToPressableEvent = (
   const timestamp = event.nativeEvent.timestamp;
   const targetId = 0;
 
-  const nativeTouches = event.nativeEvent.touches.map(
-    (touch: NativeTouchEvent) =>
-      touchDataToPressEvent(nativeToTouchData(touch), timestamp, targetId)
+  const touchesList = event.nativeEvent.touches.map((touch: NativeTouchEvent) =>
+    touchDataToPressEvent(nativeEventToTouchData(touch), timestamp, targetId)
   );
-  const nativeChangedTouches = event.nativeEvent.changedTouches.map(
+  const changedTouchesList = event.nativeEvent.changedTouches.map(
     (touch: NativeTouchEvent) =>
-      touchDataToPressEvent(nativeToTouchData(touch), timestamp, targetId)
+      touchDataToPressEvent(nativeEventToTouchData(touch), timestamp, targetId)
   );
 
   return {
     nativeEvent: {
-      touches: nativeTouches,
-      changedTouches: nativeChangedTouches,
+      touches: touchesList,
+      changedTouches: changedTouchesList,
       identifier: 0,
       locationX: event.nativeEvent.locationX,
       locationY: event.nativeEvent.locationY,
