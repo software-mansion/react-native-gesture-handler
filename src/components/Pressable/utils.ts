@@ -130,13 +130,20 @@ const gestureTouchToPressableEvent = (
   };
 };
 
-const nativeEventToTouchData = (event: NativeTouchEvent): TouchData => {
+const nativeTouchToPressInnerPressableEvent = (
+  event: NativeTouchEvent
+): InnerPressableEvent => {
   return {
-    id: 0,
-    x: event.touches.at(0)?.locationX ?? -1,
-    y: event.touches.at(0)?.locationY ?? -1,
-    absoluteX: event.touches.at(0)?.pageX ?? -1,
-    absoluteY: event.touches.at(0)?.pageY ?? -1,
+    identifier: 0,
+    locationX: event.locationX,
+    locationY: event.locationY,
+    pageX: event.pageX,
+    pageY: event.pageY,
+    target: 0,
+    timestamp: event.timestamp,
+    force: undefined,
+    touches: [], // Always empty - legacy compatibility
+    changedTouches: [], // Always empty - legacy compatibility
   };
 };
 
@@ -144,14 +151,12 @@ const nativeTouchToPressableEvent = (
   event: GestureResponderEvent
 ): PressableEvent => {
   const timestamp = event.nativeEvent.timestamp;
-  const targetId = 0;
 
   const touchesList = event.nativeEvent.touches.map((touch: NativeTouchEvent) =>
-    touchDataToPressEvent(nativeEventToTouchData(touch), timestamp, targetId)
+    nativeTouchToPressInnerPressableEvent(touch)
   );
   const changedTouchesList = event.nativeEvent.changedTouches.map(
-    (touch: NativeTouchEvent) =>
-      touchDataToPressEvent(nativeEventToTouchData(touch), timestamp, targetId)
+    (touch: NativeTouchEvent) => nativeTouchToPressInnerPressableEvent(touch)
   );
 
   return {
