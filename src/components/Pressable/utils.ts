@@ -133,6 +133,13 @@ const gestureTouchToPressableEvent = (
 const nativeTouchToPressInnerPressableEvent = (
   event: NativeTouchEvent
 ): InnerPressableEvent => {
+  const touchesList = event.touches.map((touch: NativeTouchEvent) =>
+    nativeTouchToPressInnerPressableEvent(touch)
+  );
+  const changedTouchesList = event.changedTouches.map(
+    (touch: NativeTouchEvent) => nativeTouchToPressInnerPressableEvent(touch)
+  );
+
   return {
     identifier: 0,
     locationX: event.locationX,
@@ -142,38 +149,16 @@ const nativeTouchToPressInnerPressableEvent = (
     target: 0,
     timestamp: event.timestamp,
     force: undefined,
-    touches: [], // Always empty - legacy compatibility
-    changedTouches: [], // Always empty - legacy compatibility
+    touches: touchesList, // Always empty - legacy compatibility
+    changedTouches: changedTouchesList, // Always empty - legacy compatibility
   };
 };
 
 const nativeTouchToPressableEvent = (
   event: GestureResponderEvent
-): PressableEvent => {
-  const timestamp = event.nativeEvent.timestamp;
-
-  const touchesList = event.nativeEvent.touches.map((touch: NativeTouchEvent) =>
-    nativeTouchToPressInnerPressableEvent(touch)
-  );
-  const changedTouchesList = event.nativeEvent.changedTouches.map(
-    (touch: NativeTouchEvent) => nativeTouchToPressInnerPressableEvent(touch)
-  );
-
-  return {
-    nativeEvent: {
-      touches: touchesList,
-      changedTouches: changedTouchesList,
-      identifier: 0,
-      locationX: event.nativeEvent.locationX,
-      locationY: event.nativeEvent.locationY,
-      pageX: event.nativeEvent.pageX,
-      pageY: event.nativeEvent.pageX,
-      target: 0,
-      timestamp: timestamp,
-      force: undefined,
-    },
-  };
-};
+): PressableEvent => ({
+  nativeEvent: nativeTouchToPressInnerPressableEvent(event.nativeEvent),
+});
 
 type StylePropKeys = (keyof ViewStyle)[];
 
