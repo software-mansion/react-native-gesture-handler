@@ -14,12 +14,12 @@ import {
 import NativeButton from '../GestureHandlerButton';
 import {
   numberAsInset,
-  adaptStateChangeEvent,
+  gestureToPressableEvent,
   isTouchWithinInset,
-  adaptTouchEvent,
+  gestureTouchToPressableEvent,
   addInsets,
   splitStyles,
-  adaptNativeTouchEvent,
+  nativeTouchToPressableEvent,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
@@ -57,7 +57,7 @@ export default function Pressable(props: PressableProps) {
     () =>
       Gesture.LongPress().onStart((event) => {
         if (isPressedDown.current) {
-          props.onLongPress?.(adaptStateChangeEvent(event));
+          props.onLongPress?.(gestureToPressableEvent(event));
           isPressCallbackEnabled.current = false;
         }
       }),
@@ -76,12 +76,12 @@ export default function Pressable(props: PressableProps) {
           }
           if (props.delayHoverIn) {
             hoverInTimeout.current = setTimeout(
-              () => props.onHoverIn?.(adaptStateChangeEvent(event)),
+              () => props.onHoverIn?.(gestureToPressableEvent(event)),
               props.delayHoverIn
             );
             return;
           }
-          props.onHoverIn?.(adaptStateChangeEvent(event));
+          props.onHoverIn?.(gestureToPressableEvent(event));
         })
         .onEnd((event) => {
           if (hoverInTimeout.current) {
@@ -89,12 +89,12 @@ export default function Pressable(props: PressableProps) {
           }
           if (props.delayHoverOut) {
             hoverOutTimeout.current = setTimeout(
-              () => props.onHoverOut?.(adaptStateChangeEvent(event)),
+              () => props.onHoverOut?.(gestureToPressableEvent(event)),
               props.delayHoverOut
             );
             return;
           }
-          props.onHoverOut?.(adaptStateChangeEvent(event));
+          props.onHoverOut?.(gestureToPressableEvent(event));
         }),
     [props]
   );
@@ -130,14 +130,14 @@ export default function Pressable(props: PressableProps) {
         // we want to immediately activate it's effects - pressInHandler,
         // even though we are located at the pressOutHandler
         clearTimeout(pressDelayTimeoutRef.current);
-        pressInHandler(adaptTouchEvent(event));
+        pressInHandler(gestureTouchToPressableEvent(event));
       }
 
-      props.onPressOut?.(adaptTouchEvent(event));
+      props.onPressOut?.(gestureTouchToPressableEvent(event));
       propagationGreenLight.current = false;
 
       if (isPressCallbackEnabled.current) {
-        props.onPress?.(adaptTouchEvent(event));
+        props.onPress?.(gestureTouchToPressableEvent(event));
       }
 
       isPressedDown.current = false;
@@ -178,10 +178,10 @@ export default function Pressable(props: PressableProps) {
 
             if (props.unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
-                pressInHandler(adaptTouchEvent(event));
+                pressInHandler(gestureTouchToPressableEvent(event));
               }, props.unstable_pressDelay);
             } else {
-              pressInHandler(adaptTouchEvent(event));
+              pressInHandler(gestureTouchToPressableEvent(event));
             }
 
             onEndHandlingTouchesDown.current?.();
@@ -281,7 +281,7 @@ export default function Pressable(props: PressableProps) {
         console.log('touch start');
         event.stopPropagation();
         propagationGreenLight.current = true;
-        pressInHandler(adaptNativeTouchEvent(event));
+        pressInHandler(nativeTouchToPressableEvent(event));
       }}>
       <GestureDetector gesture={gesture}>
         <NativeButton

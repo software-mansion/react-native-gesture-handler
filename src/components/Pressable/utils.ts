@@ -27,7 +27,7 @@ const addInsets = (a: Insets, b: Insets): Insets => ({
   bottom: (a.bottom ?? 0) + (b.bottom ?? 0),
 });
 
-const touchToPressEvent = (
+const touchDataToPressEvent = (
   data: TouchData,
   timestamp: number,
   targetId: number
@@ -43,7 +43,7 @@ const touchToPressEvent = (
   changedTouches: [], // Always empty - legacy compatibility
 });
 
-const changeToTouchData = (
+const gestureToTouchData = (
   event: GestureStateChangeEvent<
     HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
   >
@@ -65,7 +65,7 @@ const isTouchWithinInset = (
   (touch?.x ?? 0) > -(inset.left ?? 0) &&
   (touch?.y ?? 0) > -(inset.top ?? 0);
 
-const adaptStateChangeEvent = (
+const gestureToPressableEvent = (
   event: GestureStateChangeEvent<
     HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
   >
@@ -75,9 +75,9 @@ const adaptStateChangeEvent = (
   // As far as I can see, there isn't a conventional way of getting targetId with the data we get
   const targetId = 0;
 
-  const touchData = changeToTouchData(event);
+  const touchData = gestureToTouchData(event);
 
-  const pressEvent = touchToPressEvent(touchData, timestamp, targetId);
+  const pressEvent = touchDataToPressEvent(touchData, timestamp, targetId);
 
   return {
     nativeEvent: {
@@ -95,17 +95,19 @@ const adaptStateChangeEvent = (
   };
 };
 
-const adaptTouchEvent = (event: GestureTouchEvent): PressableEvent => {
+const gestureTouchToPressableEvent = (
+  event: GestureTouchEvent
+): PressableEvent => {
   const timestamp = Date.now();
 
   // As far as I can see, there isn't a conventional way of getting targetId with the data we get
   const targetId = 0;
 
   const nativeTouches = event.allTouches.map((touch: TouchData) =>
-    touchToPressEvent(touch, timestamp, targetId)
+    touchDataToPressEvent(touch, timestamp, targetId)
   );
   const nativeChangedTouches = event.changedTouches.map((touch: TouchData) =>
-    touchToPressEvent(touch, timestamp, targetId)
+    touchDataToPressEvent(touch, timestamp, targetId)
   );
 
   return {
@@ -134,7 +136,7 @@ const nativeToTouchData = (event: NativeTouchEvent): TouchData => {
   };
 };
 
-const adaptNativeTouchEvent = (
+const nativeTouchToPressableEvent = (
   event: GestureResponderEvent
 ): PressableEvent => {
   const timestamp = event.nativeEvent.timestamp;
@@ -142,11 +144,11 @@ const adaptNativeTouchEvent = (
 
   const nativeTouches = event.nativeEvent.touches.map(
     (touch: NativeTouchEvent) =>
-      touchToPressEvent(nativeToTouchData(touch), timestamp, targetId)
+      touchDataToPressEvent(nativeToTouchData(touch), timestamp, targetId)
   );
   const nativeChangedTouches = event.nativeEvent.changedTouches.map(
     (touch: NativeTouchEvent) =>
-      touchToPressEvent(nativeToTouchData(touch), timestamp, targetId)
+      touchDataToPressEvent(nativeToTouchData(touch), timestamp, targetId)
   );
 
   return {
@@ -213,11 +215,9 @@ const splitStyles = (from: ViewStyle): [ViewStyle, ViewStyle] => {
 export {
   numberAsInset,
   addInsets,
-  touchToPressEvent,
-  changeToTouchData,
   isTouchWithinInset,
-  adaptStateChangeEvent,
-  adaptTouchEvent,
-  adaptNativeTouchEvent,
+  gestureToPressableEvent,
+  gestureTouchToPressableEvent,
+  nativeTouchToPressableEvent,
   splitStyles,
 };
