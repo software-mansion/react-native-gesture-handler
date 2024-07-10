@@ -226,9 +226,15 @@ export default function Pressable(props: PressableProps) {
   const rippleGesture = useMemo(
     () =>
       Gesture.Native()
-        .onBegin(() => console.log('BEGIN'))
-        .onStart(() => console.log('START'))
-        .onEnd(() => console.log('END')),
+        .onBegin(() => {
+          propagationGreenLight.current = true;
+        })
+        .onStart(() => {
+          propagationGreenLight.current = true;
+        })
+        .onEnd(() => {
+          propagationGreenLight.current = false;
+        }),
     []
   );
 
