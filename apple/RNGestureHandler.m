@@ -474,6 +474,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return YES;
   }
 
+  if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] &&
+      [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
+    return YES;
+  }
+
   RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
   if (handler != nil) {
     if ([_simultaneousHandlers count]) {

@@ -39,12 +39,14 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [self setStateIfScrollView:UIGestureRecognizerStatePossible];
   [_gestureHandler setCurrentPointerType:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [self setStateIfScrollView:UIGestureRecognizerStateChanged];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 }
 
@@ -52,7 +54,12 @@
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
   self.state = UIGestureRecognizerStateFailed;
-  [self reset];
+
+  // For now, we are handling only the scroll view case.
+  // If more views need special treatment, then we can switch to a delegate pattern
+  if (![self isScrollView]) {
+    [self reset];
+  }
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -67,6 +74,18 @@
   [_gestureHandler.pointerTracker reset];
   [super reset];
   [_gestureHandler reset];
+}
+
+- (void)setStateIfScrollView:(UIGestureRecognizerState)state
+{
+  if ([self isScrollView]) {
+    self.state = state;
+  }
+}
+
+- (BOOL)isScrollView
+{
+  return [self.view isKindOfClass:[RCTScrollView class]];
 }
 
 @end
