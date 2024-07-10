@@ -280,8 +280,6 @@ export default function Pressable(props: PressableProps) {
       style={outerStyles}
       hitSlop={appliedHitSlop}
       onTouchStart={(event) => {
-        console.log('touch start');
-        event.stopPropagation();
         propagationGreenLight.current = true;
         pressInHandler(nativeTouchToPressableEvent(event));
       }}>
