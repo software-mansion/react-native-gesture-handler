@@ -97,11 +97,19 @@ export default function Pressable(props: PressableProps) {
     [props]
   );
 
+  const pressDelayTimeoutRef = useRef<number | null>(null);
   const propagationGreenLight = useRef<boolean>(false);
 
-  const pressDelayTimeoutRef = useRef<number | null>(null);
+  // IOS only, propagationGreenLight setting occurs after it's checking
+  const awaitingEventPayload = useRef<PressableEvent | null>(null);
+
   const pressInHandler = useCallback(
     (event: PressableEvent) => {
+      if (Platform.OS === 'ios' && !awaitingEventPayload.current) {
+        awaitingEventPayload.current = event;
+        return;
+      }
+
       if (propagationGreenLight.current === false) {
         return;
       }
@@ -109,6 +117,7 @@ export default function Pressable(props: PressableProps) {
       props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
+      awaitingEventPayload.current = null;
       setPressedState(true);
     },
     [props]
@@ -151,7 +160,8 @@ export default function Pressable(props: PressableProps) {
 
   const touchGesture = useMemo(
     () =>
-      Gesture.Manual()
+      Gesture.Tap()
+        .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
@@ -222,20 +232,26 @@ export default function Pressable(props: PressableProps) {
     ]
   );
 
-  // rippleGesture lives inside RNButton to enable android's ripple
-  const rippleGesture = useMemo(
+  // buttonGesture lives inside RNButton to enable android's ripple and to capture non-propagating events
+  const buttonGesture = useMemo(
     () =>
       Gesture.Native()
         .onBegin(() => {
-          propagationGreenLight.current = true;
+          // Android sets BEGAN state on press down
+          if (Platform.OS === 'android') {
+            propagationGreenLight.current = true;
+          }
         })
         .onStart(() => {
-          propagationGreenLight.current = true;
-        })
-        .onEnd(() => {
-          propagationGreenLight.current = false;
+          // IOS sets ACTIVE state on press down
+          if (Platform.OS === 'ios') {
+            propagationGreenLight.current = true;
+            if (awaitingEventPayload.current) {
+              pressInHandler(awaitingEventPayload.current);
+            }
+          }
         }),
-    []
+    [pressInHandler]
   );
 
   pressGesture.minDuration(
@@ -250,7 +266,7 @@ export default function Pressable(props: PressableProps) {
 
   const isPressableEnabled = props.disabled !== true;
 
-  const gestures = [touchGesture, pressGesture, hoverGesture, rippleGesture];
+  const gestures = [touchGesture, pressGesture, hoverGesture, buttonGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
@@ -263,7 +279,7 @@ export default function Pressable(props: PressableProps) {
   }
 
   // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
-  rippleGesture.hitSlop(normalizedHitSlop);
+  buttonGesture.hitSlop(normalizedHitSlop);
 
   const gesture = Gesture.Simultaneous(...gestures);
 
