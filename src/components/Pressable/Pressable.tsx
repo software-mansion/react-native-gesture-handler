@@ -113,11 +113,6 @@ export default function Pressable(props: PressableProps) {
 
   const pressOutHandler = useCallback(
     (event: PressableEvent) => {
-      if (Platform.OS === 'ios' && !awaitingEventPayload.current) {
-        awaitingEventPayload.current = event;
-        return;
-      }
-
       if (
         !isPressedDown.current ||
         event.nativeEvent.touches.length >
@@ -136,7 +131,7 @@ export default function Pressable(props: PressableProps) {
 
       // Similarily to pressDelay, on IOS the flow of methods is reversed due to
       // asynchronous behaviour of Native Buttons.
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === 'ios' && awaitingEventPayload.current) {
         propagationGreenLight.current = true;
         pressInHandler(event);
         propagationGreenLight.current = false;
@@ -254,6 +249,7 @@ export default function Pressable(props: PressableProps) {
               propagationGreenLight.current = true;
               if (isPressedDown.current) {
                 pressInHandler(awaitingEventPayload.current);
+                awaitingEventPayload.current = null;
               } else {
                 pressOutHandler(awaitingEventPayload.current);
               }
