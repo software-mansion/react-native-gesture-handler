@@ -95,22 +95,17 @@ export default function Pressable(props: PressableProps) {
   const pressInHandler = useCallback(
     (event: PressableEvent) => {
       if (Platform.OS === 'ios' && !awaitingEventPayload.current) {
-        console.log('IOS_SETTING_PAYLOAD');
         awaitingEventPayload.current = event;
         return;
       }
 
       if (propagationGreenLight.current === false) {
-        console.log('PRESS_IN_HANDLER NO_GREEN_LIGHT');
         return;
       }
-
-      console.log('PRESS_IN_HANDLER SUCCESS');
 
       props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
-      console.log('PRESSED_STATE true');
       setPressedState(true);
     },
     [props]
@@ -118,9 +113,7 @@ export default function Pressable(props: PressableProps) {
 
   const pressOutHandler = useCallback(
     (event: PressableEvent) => {
-      console.log('PRESS_OUT_HANDLER');
       if (Platform.OS === 'ios' && !awaitingEventPayload.current) {
-        console.log('IOS_SETTING_PAYLOAD');
         awaitingEventPayload.current = event;
         return;
       }
@@ -144,15 +137,12 @@ export default function Pressable(props: PressableProps) {
       // Similarily to pressDelay, on IOS the flow of methods is reversed due to
       // asynchronous behaviour of Native Buttons.
       if (Platform.OS === 'ios') {
-        console.log('IOS_EXECUTING_PAYLOAD');
         propagationGreenLight.current = true;
         pressInHandler(event);
         propagationGreenLight.current = false;
-        console.log('IOS_RESETTING_PAYLOAD');
         awaitingEventPayload.current = null;
       }
 
-      console.log('PRESS_OUT_HANDLER SUCCESS');
       props.onPressOut?.(event);
       propagationGreenLight.current = false;
 
@@ -161,7 +151,6 @@ export default function Pressable(props: PressableProps) {
       }
 
       isPressedDown.current = false;
-      console.log('PRESSED_STATE false');
       setPressedState(false);
     },
     [pressInHandler, props]
@@ -176,17 +165,13 @@ export default function Pressable(props: PressableProps) {
       Gesture.LongPress()
         .onStart((event) => {
           if (isPressedDown.current) {
-            console.log('PRESS ACTIVATED');
             props.onLongPress?.(gestureToPressableEvent(event));
             isPressCallbackEnabled.current = false;
           }
         })
         .onTouchesDown((event) => {
-          console.log('TOUCHES DOWN');
           handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
-            console.log('TOUCHES DOWN (start-routine)');
-
             if (
               !isTouchWithinInset(
                 {
@@ -221,7 +206,6 @@ export default function Pressable(props: PressableProps) {
           });
         })
         .onTouchesUp((event) => {
-          console.log('TOUCHES UP');
           if (handlingOnTouchesDown.current) {
             onEndHandlingTouchesDown.current = () =>
               pressOutHandler(gestureTouchToPressableEvent(event));
@@ -231,7 +215,6 @@ export default function Pressable(props: PressableProps) {
           pressOutHandler(gestureTouchToPressableEvent(event));
         })
         .onTouchesCancelled((event) => {
-          console.log('TOUCHES CANCEL');
           if (handlingOnTouchesDown.current) {
             cancelledMidPress.current = true;
             onEndHandlingTouchesDown.current = () =>
@@ -258,22 +241,16 @@ export default function Pressable(props: PressableProps) {
         .onBegin(() => {
           // Android sets BEGAN state on press down
           if (Platform.OS === 'android') {
-            console.log('EXCLUSIVITY STATED (android)');
             propagationGreenLight.current = true;
           }
         })
         .onStart(() => {
           // IOS sets ACTIVE state on press down
           if (Platform.OS === 'ios') {
-            console.log('EXCLUSIVITY STATED (ios)');
             // While on Android, NativeButton press detection is one of the first recognized events,
             // On IOS it is one of the last if the click occurs quickly - around 200ms between press in & out.
             // Thus pressInHandler has to be invoked through a mechanism similar to that dealing with delayed presses.
             if (awaitingEventPayload.current) {
-              console.log(
-                'EXCLUSIVITY HANDLING:',
-                isPressedDown.current ? 'NORMAL' : 'REVERSED'
-              );
               propagationGreenLight.current = true;
               if (isPressedDown.current) {
                 pressInHandler(awaitingEventPayload.current);
