@@ -57,6 +57,7 @@ export default function Pressable(props: PressableProps) {
   const hoverGesture = useMemo(
     () =>
       Gesture.Hover()
+        .manualActivation(true) // stops Hover from blocking Native gesture activation on web
         .onBegin((event) => {
           if (hoverOutTimeout.current) {
             clearTimeout(hoverOutTimeout.current);
@@ -255,6 +256,9 @@ export default function Pressable(props: PressableProps) {
               }
               propagationGreenLight.current = false;
             }
+          }
+          if (Platform.OS === 'web') {
+            propagationGreenLight.current = true;
           }
         }),
     [pressInHandler, pressOutHandler]
