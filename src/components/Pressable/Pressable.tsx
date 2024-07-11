@@ -51,17 +51,6 @@ export default function Pressable(props: PressableProps) {
     [props.pressRetentionOffset]
   );
 
-  const pressGesture = useMemo(
-    () =>
-      Gesture.LongPress().onStart((event) => {
-        if (isPressedDown.current) {
-          props.onLongPress?.(gestureToPressableEvent(event));
-          isPressCallbackEnabled.current = false;
-        }
-      }),
-    [props]
-  );
-
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
 
@@ -110,6 +99,8 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
+      console.log('PRESS_IN_HANDLER', propagationGreenLight.current === false);
+
       if (propagationGreenLight.current === false) {
         return;
       }
@@ -125,6 +116,12 @@ export default function Pressable(props: PressableProps) {
 
   const pressOutHandler = useCallback(
     (event: PressableEvent) => {
+      console.log(
+        'PRESS_OUT_HANDLER',
+        !isPressedDown.current,
+        event.nativeEvent.touches.length >
+          event.nativeEvent.changedTouches.length
+      );
       if (
         !isPressedDown.current ||
         event.nativeEvent.touches.length >
@@ -158,13 +155,25 @@ export default function Pressable(props: PressableProps) {
   const onEndHandlingTouchesDown = useRef<(() => void) | null>(null);
   const cancelledMidPress = useRef<boolean>(false);
 
-  const touchGesture = useMemo(
+  const pressAndTouchGesture = useMemo(
     () =>
-      Gesture.Tap()
-        .cancelsTouchesInView(false)
+      Gesture.LongPress()
+        .onBegin(() => {
+          console.log('LONG BEGIN (nothing)');
+        })
+        .onStart((event) => {
+          console.log('LONG START (longPressCallback)');
+          if (isPressedDown.current) {
+            props.onLongPress?.(gestureToPressableEvent(event));
+            isPressCallbackEnabled.current = false;
+          }
+        })
         .onTouchesDown((event) => {
+          console.log('TOUCHES DOWN (measuring routine)');
           handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
+            console.log('TOUCHES DOWN (post-routine)');
+
             if (
               !isTouchWithinInset(
                 {
@@ -199,6 +208,7 @@ export default function Pressable(props: PressableProps) {
           });
         })
         .onTouchesUp((event) => {
+          console.log('TOUCHES UP');
           if (handlingOnTouchesDown.current) {
             onEndHandlingTouchesDown.current = () =>
               pressOutHandler(gestureTouchToPressableEvent(event));
@@ -208,6 +218,7 @@ export default function Pressable(props: PressableProps) {
           pressOutHandler(gestureTouchToPressableEvent(event));
         })
         .onTouchesCancelled((event) => {
+          console.log('TOUCHES CANCEL');
           if (handlingOnTouchesDown.current) {
             cancelledMidPress.current = true;
             onEndHandlingTouchesDown.current = () =>
@@ -224,12 +235,7 @@ export default function Pressable(props: PressableProps) {
 
           pressOutHandler(gestureTouchToPressableEvent(event));
         }),
-    [
-      normalizedHitSlop,
-      props.unstable_pressDelay,
-      pressInHandler,
-      pressOutHandler,
-    ]
+    [normalizedHitSlop, pressInHandler, pressOutHandler, props]
   );
 
   // buttonGesture lives inside RNButton to enable android's ripple and to capture non-propagating events
@@ -237,12 +243,14 @@ export default function Pressable(props: PressableProps) {
     () =>
       Gesture.Native()
         .onBegin(() => {
-          // Android sets BEGAN state on press down
-          if (Platform.OS === 'android') {
+          console.log('NATIVE BEGIN (android only)');
+          // Android & Web set BEGAN state on press down
+          if (Platform.OS !== 'ios') {
             propagationGreenLight.current = true;
           }
         })
         .onStart(() => {
+          console.log('NATIVE START (ios only)');
           // IOS sets ACTIVE state on press down
           if (Platform.OS === 'ios') {
             propagationGreenLight.current = true;
@@ -254,7 +262,7 @@ export default function Pressable(props: PressableProps) {
     [pressInHandler]
   );
 
-  pressGesture.minDuration(
+  pressAndTouchGesture.minDuration(
     (props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
       (props.unstable_pressDelay ?? 0)
   );
@@ -266,7 +274,7 @@ export default function Pressable(props: PressableProps) {
 
   const isPressableEnabled = props.disabled !== true;
 
-  const gestures = [touchGesture, pressGesture, hoverGesture, buttonGesture];
+  const gestures = [pressAndTouchGesture, hoverGesture, buttonGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
