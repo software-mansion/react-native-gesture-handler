@@ -39,14 +39,13 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [self setStateIfScrollView:UIGestureRecognizerStatePossible];
   [_gestureHandler setCurrentPointerType:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [self setStateIfScrollView:UIGestureRecognizerStateChanged];
+  [self updateStateIfScrollView];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 }
 
@@ -57,7 +56,7 @@
 
   // For now, we are handling only the scroll view case.
   // If more views need special treatment, then we can switch to a delegate pattern
-  if (![self isScrollView]) {
+  if ([_gestureHandler retrieveScrollViewFromRecognizer:self] == nil) {
     [self reset];
   }
 }
@@ -76,20 +75,16 @@
   [_gestureHandler reset];
 }
 
-- (void)setStateIfScrollView:(UIGestureRecognizerState)state
+- (void)updateStateIfScrollView
 {
-  if ([self isScrollView]) {
-    self.state = state;
+  UIScrollView *scrollView = [_gestureHandler retrieveScrollViewFromRecognizer:self];
+  if (!scrollView)
+    return;
+  for (UIGestureRecognizer *scrollViewGestureRecognizer in scrollView.gestureRecognizers) {
+    if ([_gestureHandler isUIScrollViewPanGestureRecognizer:scrollViewGestureRecognizer]) {
+      self.state = scrollViewGestureRecognizer.state;
+    }
   }
-}
-
-- (BOOL)isScrollView
-{
-#ifdef RCT_NEW_ARCH_ENABLED
-  return [self.view isKindOfClass:[RCTScrollViewComponentView class]];
-#else
-  return [self.view isKindOfClass:[RCTScrollView class]];
-#endif
 }
 
 @end

@@ -481,7 +481,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return YES;
   }
 
-  if ([self areRecognizersCompatible:gestureRecognizer otherRecognizer:otherGestureRecognizer]) {
+  if ([self areScrollViewRecognizersCompatible:gestureRecognizer otherRecognizer:otherGestureRecognizer]) {
     return YES;
   }
 
@@ -506,35 +506,45 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return NO;
 }
 
-- (BOOL)areRecognizersCompatible:(UIGestureRecognizer *)gestureRecognizer
-                 otherRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (BOOL)areScrollViewRecognizersCompatible:(UIGestureRecognizer *)gestureRecognizer
+                           otherRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-  // Check if otherGestureRecognizer is instance of UIScrollViewPanGestureRecognizer (is UIPanGestureRecognizer and has
-  // scrollView property)
-  if ([otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] &&
-      [otherGestureRecognizer respondsToSelector:@selector(scrollView)] &&
+  if ([self isUIScrollViewPanGestureRecognizer:otherGestureRecognizer] &&
       [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
-    UIView *gestureRecognizerView = gestureRecognizer.view;
-    UIView *otherGestureRecognizerView = otherGestureRecognizer.view;
-
-#ifdef RCT_NEW_ARCH_ENABLED
-    if ([gestureRecognizerView isKindOfClass:[RCTScrollViewComponentView class]]) {
-      UIScrollView *scrollView = ((RCTScrollViewComponentView *)gestureRecognizerView).scrollView;
-      if (scrollView == otherGestureRecognizerView) {
-        return YES;
-      }
+    UIScrollView *scrollView = [self retrieveScrollViewFromRecognizer:gestureRecognizer];
+    if (scrollView && scrollView == otherGestureRecognizer.view) {
+      return YES;
     }
-#else
-    if ([gestureRecognizerView isKindOfClass:[RCTScrollView class]]) {
-      UIScrollView *scrollView = [gestureRecognizerView.subviews objectAtIndex:0];
-      if (scrollView == otherGestureRecognizerView) {
-        return YES;
-      }
-    }
-#endif
   }
 
   return NO;
+}
+
+// is UIPanGestureRecognizer and has scrollView property
+- (BOOL)isUIScrollViewPanGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+{
+  if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] &&
+      [gestureRecognizer respondsToSelector:@selector(scrollView)]) {
+    return YES;
+  }
+  return NO;
+}
+
+- (UIScrollView *)retrieveScrollViewFromRecognizer:(UIGestureRecognizer *)gestureRecognizer
+{
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([gestureRecognizer.view isKindOfClass:[RCTScrollViewComponentView class]]) {
+    UIScrollView *scrollView = ((RCTScrollViewComponentView *)gestureRecognizer.view).scrollView;
+    return scrollView;
+  }
+#else
+  if ([gestureRecognizer.view isKindOfClass:[RCTScrollView class]]) {
+    UIScrollView *scrollView = [gestureRecognizer.view.subviews objectAtIndex:0];
+    return scrollView;
+  }
+#endif
+
+  return nil;
 }
 
 - (void)reset
