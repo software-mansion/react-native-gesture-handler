@@ -511,7 +511,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   if ([self isUIScrollViewPanGestureRecognizer:otherGestureRecognizer] &&
       [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
-    UIScrollView *scrollView = [self retrieveScrollViewFromRecognizer:gestureRecognizer];
+    UIScrollView *scrollView = [self retrieveScrollView:gestureRecognizer.view];
     if (scrollView && scrollView == otherGestureRecognizer.view) {
       return YES;
     }
@@ -530,16 +530,19 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return NO;
 }
 
-- (UIScrollView *)retrieveScrollViewFromRecognizer:(UIGestureRecognizer *)gestureRecognizer
+- (UIScrollView *)retrieveScrollView:(UIView *)view
 {
 #ifdef RCT_NEW_ARCH_ENABLED
-  if ([gestureRecognizer.view isKindOfClass:[RCTScrollViewComponentView class]]) {
-    UIScrollView *scrollView = ((RCTScrollViewComponentView *)gestureRecognizer.view).scrollView;
+  if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
+    UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     return scrollView;
   }
 #else
-  if ([gestureRecognizer.view isKindOfClass:[RCTScrollView class]]) {
-    UIScrollView *scrollView = [gestureRecognizer.view.subviews objectAtIndex:0];
+  if ([view isKindOfClass:[RCTScrollView class]]) {
+    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
+    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
+    // subview
+    UIScrollView *scrollView = [view.subviews objectAtIndex:0];
     return scrollView;
   }
 #endif
