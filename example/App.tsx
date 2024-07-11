@@ -132,7 +132,7 @@ const EXAMPLES: ExamplesSection[] = [
         component: NestedTouchables as React.ComponentType,
       },
       {
-        name: 'Nested Pressables',
+        name: 'Nested Pressables - issue #2980',
         component: NestedPressables as React.ComponentType,
       },
       {
