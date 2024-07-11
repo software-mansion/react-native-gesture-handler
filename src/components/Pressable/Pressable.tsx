@@ -159,6 +159,7 @@ export default function Pressable(props: PressableProps) {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
+        .maxDistance(Number.MAX_SAFE_INTEGER)
         .onStart((event) => {
           if (isPressedDown.current) {
             props.onLongPress?.(gestureToPressableEvent(event));
