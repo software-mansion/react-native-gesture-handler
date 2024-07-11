@@ -110,6 +110,7 @@ export default function Pressable(props: PressableProps) {
       props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
+      console.log('PRESSED_STATE true');
       setPressedState(true);
     },
     [props]
@@ -160,6 +161,7 @@ export default function Pressable(props: PressableProps) {
       }
 
       isPressedDown.current = false;
+      console.log('PRESSED_STATE false');
       setPressedState(false);
     },
     [pressInHandler, props]
@@ -174,6 +176,7 @@ export default function Pressable(props: PressableProps) {
       Gesture.LongPress()
         .onStart((event) => {
           if (isPressedDown.current) {
+            console.log('PRESS ACTIVATED');
             props.onLongPress?.(gestureToPressableEvent(event));
             isPressCallbackEnabled.current = false;
           }
@@ -253,7 +256,7 @@ export default function Pressable(props: PressableProps) {
     () =>
       Gesture.Native()
         .onBegin(() => {
-          // Android & Web set BEGAN state on press down
+          // Android sets BEGAN state on press down
           if (Platform.OS === 'android') {
             console.log('EXCLUSIVITY STATED (android)');
             propagationGreenLight.current = true;
@@ -264,14 +267,24 @@ export default function Pressable(props: PressableProps) {
           if (Platform.OS === 'ios') {
             console.log('EXCLUSIVITY STATED (ios)');
             // While on Android, NativeButton press detection is one of the first recognized events,
-            // On IOS it is one of the last.
+            // On IOS it is one of the last if the click occurs quickly - around 200ms between press in & out.
             // Thus pressInHandler has to be invoked through a mechanism similar to that dealing with delayed presses.
             if (awaitingEventPayload.current) {
-              pressOutHandler(awaitingEventPayload.current);
+              console.log(
+                'EXCLUSIVITY HANDLING:',
+                isPressedDown.current ? 'NORMAL' : 'REVERSED'
+              );
+              propagationGreenLight.current = true;
+              if (isPressedDown.current) {
+                pressInHandler(awaitingEventPayload.current);
+              } else {
+                pressOutHandler(awaitingEventPayload.current);
+              }
+              propagationGreenLight.current = false;
             }
           }
         }),
-    [pressOutHandler]
+    [pressInHandler, pressOutHandler]
   );
 
   pressAndTouchGesture.minDuration(
