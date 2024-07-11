@@ -5,9 +5,16 @@
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#import <UIKit/UIPanGestureRecognizer.h>
 #endif
 
 #import <React/UIView+React.h>
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTScrollViewComponentView.h>
+#else
+#import <React/RCTScrollView.h>
+#endif
 
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
@@ -205,7 +212,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (UITouchType)getPointerType
 {
-  return _pointerType;
+  return (UITouchType)_pointerType;
 }
 
 - (void)bindToView:(RNGHUIView *)view
@@ -474,8 +481,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return YES;
   }
 
-  if ([otherGestureRecognizer.view isKindOfClass:[UIScrollView class]] &&
-      [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
+  if ([self areRecognizersCompatible:gestureRecognizer otherRecognizer:otherGestureRecognizer]) {
     return YES;
   }
 
@@ -497,6 +503,37 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       }
     }
   }
+  return NO;
+}
+
+- (BOOL)areRecognizersCompatible:(UIGestureRecognizer *)gestureRecognizer
+                 otherRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  // Check if otherGestureRecognizer is instance of UIScrollViewPanGestureRecognizer (is UIPanGestureRecognizer and has
+  // scrollView property)
+  if ([otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] &&
+      [otherGestureRecognizer respondsToSelector:@selector(scrollView)] &&
+      [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
+    UIView *gestureRecognizerView = gestureRecognizer.view;
+    UIView *otherGestureRecognizerView = otherGestureRecognizer.view;
+
+#ifdef RCT_NEW_ARCH_ENABLED
+    if ([gestureRecognizerView isKindOfClass:[RCTScrollViewComponentView class]]) {
+      UIScrollView *scrollView = ((RCTScrollViewComponentView *)gestureRecognizerView).scrollView;
+      if (scrollView == otherGestureRecognizerView) {
+        return YES;
+      }
+    }
+#else
+    if ([gestureRecognizerView isKindOfClass:[RCTScrollView class]]) {
+      UIScrollView *scrollView = [gestureRecognizerView.subviews objectAtIndex:0];
+      if (scrollView == otherGestureRecognizerView) {
+        return YES;
+      }
+    }
+#endif
+  }
+
   return NO;
 }
 

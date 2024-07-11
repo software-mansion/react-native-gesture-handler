@@ -85,7 +85,11 @@
 
 - (BOOL)isScrollView
 {
+#ifdef RCT_NEW_ARCH_ENABLED
+  return [self.view isKindOfClass:[RCTScrollViewComponentView class]];
+#else
   return [self.view isKindOfClass:[RCTScrollView class]];
+#endif
 }
 
 @end
