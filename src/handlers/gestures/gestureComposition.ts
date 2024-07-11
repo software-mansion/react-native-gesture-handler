@@ -29,8 +29,8 @@ export class ComposedGesture extends Gesture {
     if (gesture instanceof BaseGesture) {
       const newConfig = { ...gesture.config };
 
-      // no need to extend `blocksHandlers` here, because it's not changed in composition
-      // the same effect is achieved by reversing the order of 2 gestures in `Exclusive`
+      // No need to extend `blocksHandlers` here, because it's not changed in composition.
+      // The same effect is achieved by reversing the order of 2 gestures in `Exclusive`
       newConfig.simultaneousWith = extendRelation(
         newConfig.simultaneousWith,
         simultaneousGestures
@@ -71,7 +71,7 @@ export class ComposedGesture extends Gesture {
 
 export class SimultaneousGesture extends ComposedGesture {
   prepare() {
-    // this piece of magic works something like this:
+    // This piece of magic works something like this:
     // for every gesture in the array
     const simultaneousArrays = this.gestures.map((gesture) =>
       // we take the array it's in
@@ -97,7 +97,7 @@ export class SimultaneousGesture extends ComposedGesture {
 
 export class ExclusiveGesture extends ComposedGesture {
   prepare() {
-    // transforms the array of gestures into array of grouped raw (not composed) gestures
+    // Transforms the array of gestures into array of grouped raw (not composed) gestures
     // i.e. [gesture1, gesture2, ComposedGesture(gesture3, gesture4)] -> [[gesture1], [gesture2], [gesture3, gesture4]]
     const gestureArrays = this.gestures.map((gesture) =>
       gesture.toGestureArray()
@@ -112,7 +112,7 @@ export class ExclusiveGesture extends ComposedGesture {
         this.requireGesturesToFail.concat(requireToFail)
       );
 
-      // every group gets to wait for all groups before it
+      // Every group gets to wait for all groups before it
       requireToFail = requireToFail.concat(gestureArrays[i]);
     }
   }

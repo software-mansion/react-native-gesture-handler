@@ -2,10 +2,7 @@ import React from 'react';
 import { GestureType, HandlerCallbacks } from '../gesture';
 import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import {
-  filterConfig,
-  scheduleFlushOperations,
-} from '../../gestureHandlerCommon';
+import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
 import { ActionType } from '../../../ActionType';
 import { Platform } from 'react-native';
@@ -35,7 +32,7 @@ export function attachHandlers({
 }: AttachHandlersConfig) {
   gestureConfig.initialize();
 
-  // use queueMicrotask to extract handlerTags, because all refs should be initialized
+  // Use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
     if (!preparedGesture.isMounted) {
@@ -55,7 +52,7 @@ export function attachHandlers({
     registerHandler(handler.handlerTag, handler, handler.config.testId);
   }
 
-  // use queueMicrotask to extract handlerTags, because all refs should be initialized
+  // Use queueMicrotask to extract handlerTags, because all refs should be initialized
   // when it's ran
   ghQueueMicrotask(() => {
     if (!preparedGesture.isMounted) {
@@ -86,7 +83,7 @@ export function attachHandlers({
       )(
         gesture.handlerTag,
         viewTag,
-        ActionType.JS_FUNCTION_OLD_API, // ignored on web
+        ActionType.JS_FUNCTION_OLD_API, // Ignored on web
         webEventHandlersRef
       );
     } else {

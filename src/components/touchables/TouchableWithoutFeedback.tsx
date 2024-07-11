@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
-import GenericTouchable, { GenericTouchableProps } from './GenericTouchable';
+import GenericTouchable from './GenericTouchable';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 export type TouchableWithoutFeedbackProps = GenericTouchableProps;
 

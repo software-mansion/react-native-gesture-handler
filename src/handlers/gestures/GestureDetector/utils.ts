@@ -73,7 +73,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   if (!__DEV__) {
     return;
   }
-  // if a gesture is explicitly marked to run on the JS thread there is no need to check
+  // If a gesture is explicitly marked to run on the JS thread there is no need to check
   // if callbacks are worklets as the user is aware they will be ran on the JS thread
   if (gesture.config.runOnJS) {
     return;
@@ -82,7 +82,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   const areSomeNotWorklets = gesture.handlers.isWorklet.includes(false);
   const areSomeWorklets = gesture.handlers.isWorklet.includes(true);
 
-  // if some of the callbacks are worklets and some are not, and the gesture is not
+  // If some of the callbacks are worklets and some are not, and the gesture is not
   // explicitly marked with `.runOnJS(true)` show an error
   if (areSomeNotWorklets && areSomeWorklets) {
     console.error(
@@ -93,12 +93,12 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   }
 
   if (Reanimated === undefined) {
-    // if Reanimated is not available, we can't run worklets, so we shouldn't show the warning
+    // If Reanimated is not available, we can't run worklets, so we shouldn't show the warning
     return;
   }
 
   const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
-  // if none of the callbacks are worklets and the gesture is not explicitly marked with
+  // If none of the callbacks are worklets and the gesture is not explicitly marked with
   // `.runOnJS(true)` show a warning
   if (areAllNotWorklets) {
     console.warn(
@@ -111,7 +111,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validateDetectorChildren(ref: any) {
-  // finds the first native view under the Wrap component and traverses the fiber tree upwards
+  // Finds the first native view under the Wrap component and traverses the fiber tree upwards
   // to check whether there is more than one native view as a pseudo-direct child of GestureDetector
   // i.e. this is not ok:
   //            Wrap

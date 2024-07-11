@@ -6,16 +6,16 @@ export { PointerType } from './PointerType';
 export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
-  // event types
+  // Event types
   GestureEvent,
   HandlerStateChangeEvent,
-  // event payloads types
+  // Event payloads types
   GestureEventPayload,
   HandlerStateChangeEventPayload,
-  // pointer events
+  // Pointer events
   GestureTouchEvent,
   TouchData,
-  // new api event types
+  // New api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
 } from './handlers/gestureHandlerCommon';
@@ -23,35 +23,24 @@ export { MouseButton } from './handlers/gestureHandlerCommon';
 export type { GestureType } from './handlers/gestures/gesture';
 export type {
   TapGestureHandlerEventPayload,
-  TapGestureHandlerProps,
-} from './handlers/TapGestureHandler';
-export type {
   ForceTouchGestureHandlerEventPayload,
-  ForceTouchGestureHandlerProps,
-} from './handlers/ForceTouchGestureHandler';
-export type { ForceTouchGestureChangeEventPayload } from './handlers/gestures/forceTouchGesture';
-export type {
   LongPressGestureHandlerEventPayload,
-  LongPressGestureHandlerProps,
-} from './handlers/LongPressGestureHandler';
-export type {
   PanGestureHandlerEventPayload,
-  PanGestureHandlerProps,
-} from './handlers/PanGestureHandler';
-export type { PanGestureChangeEventPayload } from './handlers/gestures/panGesture';
-export type {
   PinchGestureHandlerEventPayload,
-  PinchGestureHandlerProps,
-} from './handlers/PinchGestureHandler';
-export type { PinchGestureChangeEventPayload } from './handlers/gestures/pinchGesture';
-export type {
   RotationGestureHandlerEventPayload,
-  RotationGestureHandlerProps,
-} from './handlers/RotationGestureHandler';
-export type {
+  NativeViewGestureHandlerPayload,
   FlingGestureHandlerEventPayload,
-  FlingGestureHandlerProps,
-} from './handlers/FlingGestureHandler';
+} from './handlers/GestureHandlerEventPayload';
+export type { TapGestureHandlerProps } from './handlers/TapGestureHandler';
+export type { ForceTouchGestureHandlerProps } from './handlers/ForceTouchGestureHandler';
+export type { ForceTouchGestureChangeEventPayload } from './handlers/gestures/forceTouchGesture';
+export type { LongPressGestureHandlerProps } from './handlers/LongPressGestureHandler';
+export type { PanGestureHandlerProps } from './handlers/PanGestureHandler';
+export type { PanGestureChangeEventPayload } from './handlers/gestures/panGesture';
+export type { PinchGestureHandlerProps } from './handlers/PinchGestureHandler';
+export type { PinchGestureChangeEventPayload } from './handlers/gestures/pinchGesture';
+export type { RotationGestureHandlerProps } from './handlers/RotationGestureHandler';
+export type { FlingGestureHandlerProps } from './handlers/FlingGestureHandler';
 export { TapGestureHandler } from './handlers/TapGestureHandler';
 export { ForceTouchGestureHandler } from './handlers/ForceTouchGestureHandler';
 export { LongPressGestureHandler } from './handlers/LongPressGestureHandler';
@@ -60,10 +49,7 @@ export { PinchGestureHandler } from './handlers/PinchGestureHandler';
 export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
 export { default as createNativeWrapper } from './handlers/createNativeWrapper';
-export type {
-  NativeViewGestureHandlerPayload,
-  NativeViewGestureHandlerProps,
-} from './handlers/NativeViewGestureHandler';
+export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
@@ -89,7 +75,7 @@ export type {
   BaseButtonProps,
   RectButtonProps,
   BorderlessButtonProps,
-} from './components/GestureButtons';
+} from './components/GestureButtonsProps';
 export {
   RawButton,
   BaseButton,
@@ -118,10 +104,10 @@ export {
 } from './components/GestureComponents';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
-  //events
+  // Events
   GestureHandlerGestureEvent,
   GestureHandlerStateChangeEvent,
-  //event payloads
+  // Event payloads
   GestureHandlerGestureEventNativeEvent,
   GestureHandlerStateChangeNativeEvent,
   NativeViewGestureHandlerGestureEvent,
@@ -140,7 +126,7 @@ export type {
   RotationGestureHandlerStateChangeEvent,
   FlingGestureHandlerGestureEvent,
   FlingGestureHandlerStateChangeEvent,
-  // handlers props
+  // Handlers props
   NativeViewGestureHandlerProperties,
   TapGestureHandlerProperties,
   LongPressGestureHandlerProperties,
@@ -149,7 +135,7 @@ export type {
   RotationGestureHandlerProperties,
   FlingGestureHandlerProperties,
   ForceTouchGestureHandlerProperties,
-  // buttons props
+  // Buttons props
   RawButtonProperties,
   BaseButtonProperties,
   RectButtonProperties,
@@ -158,6 +144,9 @@ export type {
 
 export type { SwipeableProps } from './components/Swipeable';
 export { default as Swipeable } from './components/Swipeable';
+export type { PressableProps } from './components/Pressable';
+export { default as Pressable } from './components/Pressable';
+
 export type {
   DrawerLayoutProps,
   DrawerPosition,

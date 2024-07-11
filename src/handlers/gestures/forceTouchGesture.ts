@@ -1,8 +1,6 @@
 import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
-import {
-  ForceTouchGestureConfig,
-  ForceTouchGestureHandlerEventPayload,
-} from '../ForceTouchGestureHandler';
+import { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
+import type { ForceTouchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
 export type ForceTouchGestureChangeEventPayload = {
