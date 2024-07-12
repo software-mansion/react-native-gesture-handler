@@ -192,7 +192,7 @@ const innerStyleKeys = new Set([
   'paddingVertical',
   'start',
   'end',
-  'direction', // IOS only
+  'direction', // iOS only
 ] as StylePropKeys);
 
 const splitStyles = (from: ViewStyle): [ViewStyle, ViewStyle] => {

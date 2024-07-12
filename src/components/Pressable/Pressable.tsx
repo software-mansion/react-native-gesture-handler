@@ -90,7 +90,7 @@ export default function Pressable(props: PressableProps) {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const propagationGreenLight = useRef<boolean>(false);
 
-  // IOS only, propagationGreenLight setting occurs after other checks when in scroll-view
+  // iOS only, propagationGreenLight setting occurs after other checks when in scroll-view
   const awaitingEventPayload = useRef<PressableEvent | null>(null);
 
   const pressInHandler = useCallback(
@@ -103,7 +103,7 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      // If ios passes the propagationGreenLight by here,
+      // If iOS passes the propagationGreenLight by here,
       // awaitingEventPayload would trigger a double press-in callback when pressing out
       awaitingEventPayload.current = null;
 
@@ -134,7 +134,7 @@ export default function Pressable(props: PressableProps) {
         pressInHandler(event);
       }
 
-      // Similarily to pressDelay, on IOS the flow of methods is reversed due to
+      // Similarily to pressDelay, on iOS the flow of methods is reversed due to
       // asynchronous behaviour of Native buttons when inside Native scollable areas.
       if (Platform.OS === 'ios' && awaitingEventPayload.current) {
         propagationGreenLight.current = true;
@@ -244,7 +244,7 @@ export default function Pressable(props: PressableProps) {
           }
         })
         .onStart(() => {
-          // IOS sets ACTIVE state on press down
+          // iOS sets ACTIVE state on press down
           if (Platform.OS === 'ios') {
             if (awaitingEventPayload.current) {
               propagationGreenLight.current = true;
@@ -298,7 +298,7 @@ export default function Pressable(props: PressableProps) {
 
   const defaultRippleColor = props.android_ripple ? undefined : 'transparent';
 
-  // `cursor: 'pointer'` on `RNButton` crashes IOS
+  // `cursor: 'pointer'` on `RNButton` crashes iOS
   const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
 
