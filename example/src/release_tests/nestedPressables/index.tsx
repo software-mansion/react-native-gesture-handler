@@ -11,18 +11,14 @@ import {
   ScrollView,
   Pressable as GesturizedPressable,
 } from 'react-native-gesture-handler';
-import { LoremIpsum } from '../../common';
 
 export default function Example() {
   return (
     <ScrollView>
-      <LoremIpsum words={40} />
       <Text style={styles.text}>Gesturized Nested Pressables</Text>
       <GesturizedBoxes />
-      <LoremIpsum words={40} />
       <Text style={styles.text}>Legacy Nested Pressables</Text>
       <LegacyBoxes />
-      <LoremIpsum words={40} />
     </ScrollView>
   );
 }
