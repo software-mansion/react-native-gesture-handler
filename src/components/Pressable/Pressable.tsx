@@ -90,7 +90,7 @@ export default function Pressable(props: PressableProps) {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const propagationGreenLight = useRef<boolean>(false);
 
-  // IOS only, propagationGreenLight setting occurs after it's checking
+  // IOS only, propagationGreenLight setting occurs after other checks when in scroll-view
   const awaitingEventPayload = useRef<PressableEvent | null>(null);
 
   const pressInHandler = useCallback(
@@ -134,7 +134,7 @@ export default function Pressable(props: PressableProps) {
       }
 
       // Similarily to pressDelay, on IOS the flow of methods is reversed due to
-      // asynchronous behaviour of Native Buttons.
+      // asynchronous behaviour of Native buttons when inside Native scollable areas.
       if (Platform.OS === 'ios' && awaitingEventPayload.current) {
         propagationGreenLight.current = true;
         pressInHandler(event);
@@ -247,9 +247,6 @@ export default function Pressable(props: PressableProps) {
         .onStart(() => {
           // IOS sets ACTIVE state on press down
           if (Platform.OS === 'ios') {
-            // While on Android, NativeButton press detection is one of the first recognized events,
-            // On IOS it is one of the last if the click occurs quickly - around 200ms between press in & out.
-            // Thus pressInHandler has to be invoked through a mechanism similar to that dealing with delayed presses.
             if (awaitingEventPayload.current) {
               propagationGreenLight.current = true;
               if (isPressedDown.current) {
