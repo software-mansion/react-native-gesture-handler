@@ -18,7 +18,7 @@ export default function Example() {
     <ScrollView>
       <LoremIpsum words={40} />
       <Text style={styles.text}>Gesturized Nested Pressables</Text>
-      <ReanimatedBoxes />
+      <GesturizedBoxes />
       <LoremIpsum words={40} />
       <Text style={styles.text}>Legacy Nested Pressables</Text>
       <LegacyBoxes />
@@ -46,7 +46,7 @@ const outerStyle = ({
     ? { backgroundColor: 'yellow', width: 300, height: 300 }
     : { width: 300, height: 300, borderWidth: 1 };
 
-function ReanimatedBoxes() {
+function GesturizedBoxes() {
   return (
     <GesturizedPressable style={outerStyle}>
       <GesturizedPressable style={middleStyle}>
