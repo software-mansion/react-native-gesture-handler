@@ -31,7 +31,7 @@ The Expo SDK incorporates the latest version of react-native-gesture-handler ava
 
 ### Bare [React Native](https://reactnative.dev/)
 
-Since the library uses native support for handling gestures, it requires an extended installation to the norm. If you are starting a new project, initialize it with [`npx create-expo-app@latest`](https://docs.expo.dev/more/create-expo/) since it comes pre-installed with react-native-gesture-handler.
+Since the library uses native support for handling gestures, it requires an extended installation to the norm. If you are starting a new project, initialize it with [`npx create-expo-app@latest`](https://docs.expo.dev/get-started/create-a-project/) since it comes pre-installed with react-native-gesture-handler.
 
 ## JS
 
