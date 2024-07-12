@@ -23,24 +23,32 @@ export default function Example() {
   );
 }
 
+const BOX_SIZE_COEFFICIENT = 100;
+
+const getBoxStyle = (size: number): StyleProp<ViewStyle> => ({
+  width: size,
+  height: size,
+  borderWidth: 1,
+});
+
 const innerStyle = ({
   pressed,
-}: PressableStateCallbackType): StyleProp<ViewStyle> =>
-  pressed
-    ? { backgroundColor: 'purple', width: 100, height: 100 }
-    : { width: 100, height: 100, borderWidth: 1 };
+}: PressableStateCallbackType): StyleProp<ViewStyle> => [
+  getBoxStyle(BOX_SIZE_COEFFICIENT),
+  pressed ? { backgroundColor: 'purple' } : null,
+];
 const middleStyle = ({
   pressed,
-}: PressableStateCallbackType): StyleProp<ViewStyle> =>
-  pressed
-    ? { backgroundColor: 'green', width: 200, height: 200 }
-    : { width: 200, height: 200, borderWidth: 1 };
+}: PressableStateCallbackType): StyleProp<ViewStyle> => [
+  getBoxStyle(BOX_SIZE_COEFFICIENT * 2),
+  pressed ? { backgroundColor: 'green' } : null,
+];
 const outerStyle = ({
   pressed,
-}: PressableStateCallbackType): StyleProp<ViewStyle> =>
-  pressed
-    ? { backgroundColor: 'yellow', width: 300, height: 300 }
-    : { width: 300, height: 300, borderWidth: 1 };
+}: PressableStateCallbackType): StyleProp<ViewStyle> => [
+  getBoxStyle(BOX_SIZE_COEFFICIENT * 3),
+  pressed ? { backgroundColor: 'yellow' } : null,
+];
 
 function GesturizedBoxes() {
   return (
