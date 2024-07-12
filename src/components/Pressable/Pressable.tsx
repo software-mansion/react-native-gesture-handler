@@ -110,6 +110,7 @@ export default function Pressable(props: PressableProps) {
       props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
+      propagationGreenLight.current = false;
       setPressedState(true);
     },
     [props]
@@ -138,12 +139,10 @@ export default function Pressable(props: PressableProps) {
       if (Platform.OS === 'ios' && awaitingEventPayload.current) {
         propagationGreenLight.current = true;
         pressInHandler(event);
-        propagationGreenLight.current = false;
         awaitingEventPayload.current = null;
       }
 
       props.onPressOut?.(event);
-      propagationGreenLight.current = false;
 
       if (isPressCallbackEnabled.current) {
         props.onPress?.(event);
