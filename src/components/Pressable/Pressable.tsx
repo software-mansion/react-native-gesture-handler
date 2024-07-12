@@ -284,6 +284,7 @@ export default function Pressable(props: PressableProps) {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
+    gesture.shouldCancelWhenOutside(false);
 
     if (Platform.OS !== 'web') {
       gesture.shouldCancelWhenOutside(true);
