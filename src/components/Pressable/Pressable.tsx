@@ -71,7 +71,7 @@ export default function Pressable(props: PressableProps) {
           }
           props.onHoverIn?.(gestureToPressableEvent(event));
         })
-        .onEnd((event) => {
+        .onFinalize((event) => {
           if (hoverInTimeout.current) {
             clearTimeout(hoverInTimeout.current);
           }
