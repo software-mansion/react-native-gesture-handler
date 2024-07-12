@@ -97,12 +97,15 @@ export default function Pressable(props: PressableProps) {
     (event: PressableEvent) => {
       if (Platform.OS === 'ios' && !awaitingEventPayload.current) {
         awaitingEventPayload.current = event;
-        return;
       }
 
       if (propagationGreenLight.current === false) {
         return;
       }
+
+      // if ios passes the propagationGreenLight by here,
+      // awaitingEventPayload would trigger a double press-in callback when pressing out
+      awaitingEventPayload.current = null;
 
       props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
