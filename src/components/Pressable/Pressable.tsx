@@ -259,6 +259,8 @@ export default function Pressable(props: PressableProps) {
                 pressOutHandler(awaitingEventPayload.current);
               }
               propagationGreenLight.current = false;
+            } else {
+              propagationGreenLight.current = true;
             }
           }
           if (Platform.OS === 'web') {
