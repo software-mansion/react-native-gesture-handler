@@ -47,9 +47,9 @@ called before `onPress` when a touch is released.
 
 ### `onLongPress`
 
-called when pointer is down for over `delayLongPress` milliseconds (500ms by default).
+called immidiately after pointer has been down for at least `delayLongPress` milliseconds (500ms by default).
 
-after `onLongPress` has been called, `onPress` will no longer be called after lifting the pointer.
+after `onLongPress` has been called, `onPressOut` will be called as soon as the pointer is lifted and `onPress` will no longer be called at all.
 
 ### `cancelable`
 
