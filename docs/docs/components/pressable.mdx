@@ -21,11 +21,11 @@ import X from 'react-native-gesture-handler/X';
 
 ### `onHoverIn`
 
-Called when the hover is activated to provide visual feedback.
+Called when pointer is hovering over the element.
 
 ### `onHoverOut`
 
-Called when the hover is deactivated to undo visual feedback.
+Called when pointer stops hovering over the element.
 
 ### `onPress`
 
@@ -33,11 +33,11 @@ Called when a single tap gesture is detected.
 
 ### `onPressIn`
 
-Called when a touch is engaged before `onPress`.
+Called before `onPress` when a touch is engaged.
 
 ### `onPressOut`
 
-Called when a touch is released before `onPress`.
+Called before `onPress` when a touch is released.
 
 ### `onLongPress`
 
@@ -55,15 +55,19 @@ scroll event. Defaults to true.
 
 ### `delayHoverIn` (Web only)
 
-Duration to wait after hover in before calling `onHoverIn`.
+:::note
+This prop is not present in the original pressable's React Native documentation.
+:::
 
-- NOTE: not present in RN docs
+Duration to wait after hover in before calling `onHoverIn`.
 
 ### `delayHoverOut` (Web only)
 
-Duration to wait after hover out before calling `onHoverOut`.
+:::note
+This prop is not present in the original pressable's React Native documentation.
+:::
 
-- NOTE: not present in RN docs
+Duration to wait after hover out before calling `onHoverOut`.
 
 ### `delayLongPress`
 
