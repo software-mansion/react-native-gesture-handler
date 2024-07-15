@@ -23,13 +23,15 @@ import { Pressable } from 'react-native-gesture-handler';
 
 ## Properties
 
-### `onHoverIn`
+### `children`
 
-called when pointer is hovering over the element.
+either children or a render prop that receives a boolean reflecting whether
+the component is currently pressed.
 
-### `onHoverOut`
+### `style`
 
-called when pointer stops hovering over the element.
+either view styles or a function that receives a boolean reflecting whether
+the component is currently pressed and returns view styles.
 
 ### `onPress`
 
@@ -47,15 +49,18 @@ called before `onPress` when a touch is released.
 
 called when a long-tap gesture is detected.
 
-### `children`
-
-either children or a render prop that receives a boolean reflecting whether
-the component is currently pressed.
-
 ### `cancelable`
 
 whether a press gesture can be interrupted by a parent gesture such as a
 scroll event. Defaults to true.
+
+### `onHoverIn` (Web only)
+
+called when pointer is hovering over the element.
+
+### `onHoverOut` (Web only)
+
+called when pointer stops hovering over the element.
 
 ### `delayHoverIn` (Web only)
 
@@ -101,11 +106,6 @@ enables the Android ripple effect and configures its color, radius and other par
 ### `testOnly_pressed`
 
 used only for documentation or testing (e.g. snapshot testing).
-
-### `style`
-
-either view styles or a function that receives a boolean reflecting whether
-the component is currently pressed and returns view styles.
 
 ### `unstable_pressDelay`
 
