@@ -113,8 +113,38 @@ TODO: Example - link to src + extract (see swipeable docs page)
 
 See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/new_api/pressable/index.tsx) from GestureHandler Example App.
 
+import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
+
 ```js
 export default function Example() {
-  return <></>;
+  return (
+    <Pressable
+      style={[styles.pressable, ({ pressed }) => (pressed ? highlight : {})]}
+      hitSlop={20}
+      pressRetentionOffset={20}>
+      <View style={styles.textWrapper}>
+        <Text style={styles.text}>Pressable!</Text>
+      </View>
+    </Pressable>
+  );
 }
+
+const styles = StyleSheet.create({
+  pressable: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'mediumpurple',
+  },
+  highlight: {
+    backgroundColor: 'red',
+  },
+  textWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: 'black',
+  },
+});
 ```
