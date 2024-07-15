@@ -29,7 +29,7 @@ Called when pointer stops hovering over the element.
 
 ### `onPress`
 
-Called when a single tap gesture is detected.
+Called after `onPressOut` when a single tap gesture is detected.
 
 ### `onPressIn`
 
@@ -75,15 +75,15 @@ Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
 
 ### `disabled`
 
-Whether the press behavior is disabled.
+Whether the `Pressable` behavior is disabled.
 
 ### `hitSlop`
 
-Additional distance outside of this view in which a press is detected.
+Additional distance outside of this view in which a press is detected and `onPressIn` is triggered.
 
 ### `pressRetentionOffset`
 
-Additional distance outside of this view in which a touch is considered a
+Additional distance outside of this view (or `hitSlop` if present) in which a touch is considered a
 press before `onPressOut` is triggered.
 
 ### `android_disableSound` (Android only)
@@ -92,7 +92,7 @@ If true, doesn't play system sound on touch.
 
 ### `android_ripple` (Android only)
 
-Enables the Android ripple effect and configures its color.
+Enables the Android ripple effect and configures its color, radius and other parameters.
 
 ### `testOnly_pressed`
 
@@ -115,7 +115,7 @@ See the full [pressable example](https://github.com/software-mansion/react-nativ
 
 import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
 
-```js
+````js
 export default function Example() {
   return (
     <Pressable
@@ -147,4 +147,6 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
-```
+```import { Pressable } from 'react-native';
+
+````
