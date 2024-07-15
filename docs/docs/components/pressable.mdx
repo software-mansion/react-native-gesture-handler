@@ -47,7 +47,9 @@ called before `onPress` when a touch is released.
 
 ### `onLongPress`
 
-called when a long-tap gesture is detected.
+called when pointer is down for over `delayLongPress` milliseconds (500ms by default).
+
+after `onLongPress` has been called, `onPress` will no longer be called after lifting the pointer.
 
 ### `cancelable`
 
@@ -109,11 +111,11 @@ used only for documentation or testing (e.g. snapshot testing).
 
 ### `unstable_pressDelay`
 
-duration (in milliseconds) to wait after press down before calling onPressIn.
+duration (in milliseconds) to wait after press down before calling `onPressIn`.
 
 ### Example:
 
-See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/new_api/pressable/index.tsx) from GestureHandler Example App.
+See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/new_api/pressable/index.tsx) from `GestureHandler` Example App.
 
 import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
 
