@@ -18,6 +18,7 @@ import {
   isTouchWithinInset,
   adaptTouchEvent,
   addInsets,
+  splitStyles,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
@@ -31,19 +32,25 @@ export default function Pressable(props: PressableProps) {
 
   const pressableRef = useRef<View>(null);
 
-  // disabled when onLongPress has been called
+  // Disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
   const isPressedDown = useRef<boolean>(false);
 
-  const normalizedHitSlop: Insets =
-    typeof props.hitSlop === 'number'
-      ? numberAsInset(props.hitSlop)
-      : props.hitSlop ?? {};
+  const normalizedHitSlop: Insets = useMemo(
+    () =>
+      typeof props.hitSlop === 'number'
+        ? numberAsInset(props.hitSlop)
+        : props.hitSlop ?? {},
+    [props.hitSlop]
+  );
 
-  const normalizedPressRetentionOffset: Insets =
-    typeof props.pressRetentionOffset === 'number'
-      ? numberAsInset(props.pressRetentionOffset)
-      : props.pressRetentionOffset ?? {};
+  const normalizedPressRetentionOffset: Insets = useMemo(
+    () =>
+      typeof props.pressRetentionOffset === 'number'
+        ? numberAsInset(props.pressRetentionOffset)
+        : props.pressRetentionOffset ?? {},
+    [props.pressRetentionOffset]
+  );
 
   const pressGesture = useMemo(
     () =>
@@ -53,7 +60,7 @@ export default function Pressable(props: PressableProps) {
           isPressCallbackEnabled.current = false;
         }
       }),
-    [isPressCallbackEnabled, props.onLongPress, isPressedDown]
+    [props]
   );
 
   const hoverInTimeout = useRef<number | null>(null);
@@ -88,41 +95,48 @@ export default function Pressable(props: PressableProps) {
           }
           props.onHoverOut?.(adaptStateChangeEvent(event));
         }),
-    [props.onHoverIn, props.onHoverOut, props.delayHoverIn, props.delayHoverOut]
+    [props]
   );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
-  const pressInHandler = useCallback((event: GestureTouchEvent) => {
-    props.onPressIn?.(adaptTouchEvent(event));
-    isPressCallbackEnabled.current = true;
-    pressDelayTimeoutRef.current = null;
-    setPressedState(true);
-  }, []);
-  const pressOutHandler = useCallback((event: GestureTouchEvent) => {
-    if (
-      !isPressedDown.current ||
-      event.allTouches.length > event.changedTouches.length
-    ) {
-      return;
-    }
+  const pressInHandler = useCallback(
+    (event: GestureTouchEvent) => {
+      props.onPressIn?.(adaptTouchEvent(event));
+      isPressCallbackEnabled.current = true;
+      pressDelayTimeoutRef.current = null;
+      setPressedState(true);
+    },
+    [props]
+  );
 
-    if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
-      // when delay is preemptively finished by lifting touches,
-      // we want to immediately activate it's effects - pressInHandler,
-      // even though we are located at the pressOutHandler
-      clearTimeout(pressDelayTimeoutRef.current);
-      pressInHandler(event);
-    }
+  const pressOutHandler = useCallback(
+    (event: GestureTouchEvent) => {
+      if (
+        !isPressedDown.current ||
+        event.allTouches.length > event.changedTouches.length
+      ) {
+        return;
+      }
 
-    props.onPressOut?.(adaptTouchEvent(event));
+      if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
+        // When delay is preemptively finished by lifting touches,
+        // we want to immediately activate it's effects - pressInHandler,
+        // even though we are located at the pressOutHandler
+        clearTimeout(pressDelayTimeoutRef.current);
+        pressInHandler(event);
+      }
 
-    if (isPressCallbackEnabled.current) {
-      props.onPress?.(adaptTouchEvent(event));
-    }
+      props.onPressOut?.(adaptTouchEvent(event));
 
-    isPressedDown.current = false;
-    setPressedState(false);
-  }, []);
+      if (isPressCallbackEnabled.current) {
+        props.onPress?.(adaptTouchEvent(event));
+      }
+
+      isPressedDown.current = false;
+      setPressedState(false);
+    },
+    [pressInHandler, props]
+  );
 
   const handlingOnTouchesDown = useRef<boolean>(false);
   const onEndHandlingTouchesDown = useRef<(() => void) | null>(null);
@@ -192,14 +206,10 @@ export default function Pressable(props: PressableProps) {
           pressOutHandler(event);
         }),
     [
-      props.onPress,
-      props.onPressIn,
-      props.onPressOut,
-      setPressedState,
-      isPressedDown,
-      isPressCallbackEnabled,
       normalizedHitSlop,
-      pressDelayTimeoutRef,
+      props.unstable_pressDelay,
+      pressInHandler,
+      pressOutHandler,
     ]
   );
 
@@ -230,7 +240,7 @@ export default function Pressable(props: PressableProps) {
     }
   }
 
-  // uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
+  // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
   rippleGesture.hitSlop(normalizedHitSlop);
 
   const gesture = Gesture.Simultaneous(
@@ -256,8 +266,12 @@ export default function Pressable(props: PressableProps) {
       ? props.children({ pressed: pressedState })
       : props.children;
 
+  const flattenedStyles = StyleSheet.flatten(styleProp ?? {});
+
+  const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
+
   return (
-    <View style={styleProp}>
+    <View style={outerStyles}>
       <GestureDetector gesture={gesture}>
         <NativeButton
           ref={pressableRef}
@@ -269,7 +283,7 @@ export default function Pressable(props: PressableProps) {
             props.android_ripple?.color ?? defaultRippleColor
           )}
           rippleRadius={props.android_ripple?.radius ?? undefined}
-          style={[StyleSheet.absoluteFill, pointerStyle]}>
+          style={[StyleSheet.absoluteFill, pointerStyle, innerStyles]}>
           {childrenProp}
           {__DEV__ ? (
             <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
