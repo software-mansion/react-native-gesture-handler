@@ -25,95 +25,93 @@ import { Pressable } from 'react-native-gesture-handler';
 
 ### `onHoverIn`
 
-Called when pointer is hovering over the element.
+called when pointer is hovering over the element.
 
 ### `onHoverOut`
 
-Called when pointer stops hovering over the element.
+called when pointer stops hovering over the element.
 
 ### `onPress`
 
-Called after `onPressOut` when a single tap gesture is detected.
+called after `onPressOut` when a single tap gesture is detected.
 
 ### `onPressIn`
 
-Called before `onPress` when a touch is engaged.
+called before `onPress` when a touch is engaged.
 
 ### `onPressOut`
 
-Called before `onPress` when a touch is released.
+called before `onPress` when a touch is released.
 
 ### `onLongPress`
 
-Called when a long-tap gesture is detected.
+called when a long-tap gesture is detected.
 
 ### `children`
 
-Either children or a render prop that receives a boolean reflecting whether
+either children or a render prop that receives a boolean reflecting whether
 the component is currently pressed.
 
 ### `cancelable`
 
-Whether a press gesture can be interrupted by a parent gesture such as a
+whether a press gesture can be interrupted by a parent gesture such as a
 scroll event. Defaults to true.
 
 ### `delayHoverIn` (Web only)
 
 :::note
-This prop is not present in the original pressable's React Native documentation.
+this prop is not present in the original pressable's React Native documentation.
 :::
 
-Duration to wait after hover in before calling `onHoverIn`.
+duration to wait after hover in before calling `onHoverIn`.
 
 ### `delayHoverOut` (Web only)
 
 :::note
-This prop is not present in the original pressable's React Native documentation.
+this prop is not present in the original pressable's React Native documentation.
 :::
 
-Duration to wait after hover out before calling `onHoverOut`.
+duration to wait after hover out before calling `onHoverOut`.
 
 ### `delayLongPress`
 
-Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
+duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
 
 ### `disabled`
 
-Whether the `Pressable` behavior is disabled.
+whether the `Pressable` behavior is disabled.
 
 ### `hitSlop`
 
-Additional distance outside of this view in which a press is detected and `onPressIn` is triggered.
+additional distance outside of this view in which a press is detected and `onPressIn` is triggered.
 
 ### `pressRetentionOffset`
 
-Additional distance outside of this view (or `hitSlop` if present) in which a touch is considered a
+additional distance outside of this view (or `hitSlop` if present) in which a touch is considered a
 press before `onPressOut` is triggered.
 
 ### `android_disableSound` (Android only)
 
-If true, doesn't play system sound on touch.
+if true, doesn't play system sound on touch.
 
 ### `android_ripple` (Android only)
 
-Enables the Android ripple effect and configures its color, radius and other parameters.
+enables the Android ripple effect and configures its color, radius and other parameters.
 
 ### `testOnly_pressed`
 
-Used only for documentation or testing (e.g. snapshot testing).
+used only for documentation or testing (e.g. snapshot testing).
 
 ### `style`
 
-Either view styles or a function that receives a boolean reflecting whether
+either view styles or a function that receives a boolean reflecting whether
 the component is currently pressed and returns view styles.
 
 ### `unstable_pressDelay`
 
-Duration (in milliseconds) to wait after press down before calling onPressIn.
+duration (in milliseconds) to wait after press down before calling onPressIn.
 
 ### Example:
-
-TODO: Example - link to src + extract (see swipeable docs page)
 
 See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/new_api/pressable/index.tsx) from GestureHandler Example App.
 
