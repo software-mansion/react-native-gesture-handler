@@ -30,7 +30,9 @@ export default function PressableExample() {
     <View style={styles.pressRectContainer}>
       <View style={styles.hitRectContainer}>
         <Pressable
-          style={styles.pressable}
+          style={({ pressed }) =>
+            pressed ? styles.highlight : styles.pressable
+          }
           onPressIn={pressIn}
           onPressOut={pressOut}
           onPress={press}
@@ -78,6 +80,13 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     backgroundColor: 'mediumpurple',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  highlight: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'red',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   textWrapper: {
     flex: 1,
