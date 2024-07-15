@@ -134,14 +134,6 @@ export default function Pressable(props: PressableProps) {
         pressInHandler(event);
       }
 
-      // Similarily to pressDelay, on iOS the flow of methods is reversed due to
-      // asynchronous behaviour of Native buttons when inside Native scollable areas.
-      if (Platform.OS === 'ios' && awaitingEventPayload.current) {
-        propagationGreenLight.current = true;
-        pressInHandler(event);
-        awaitingEventPayload.current = null;
-      }
-
       props.onPressOut?.(event);
 
       if (isPressCallbackEnabled.current) {
