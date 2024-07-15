@@ -121,7 +121,7 @@ import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample'
 export default function Example() {
   return (
     <Pressable
-      style={[styles.pressable, ({ pressed }) => (pressed ? highlight : {})]}
+      style={({ pressed }) => (pressed ? styles.highlight : styles.pressable)}
       hitSlop={20}
       pressRetentionOffset={20}>
       <View style={styles.textWrapper}>
@@ -136,9 +136,13 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     backgroundColor: 'mediumpurple',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   highlight: {
+    width: 120,
+    height: 120,
     backgroundColor: 'red',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   textWrapper: {
     flex: 1,
