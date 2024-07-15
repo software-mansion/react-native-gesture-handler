@@ -19,15 +19,89 @@ import X from 'react-native-gesture-handler/X';
 
 ## Properties
 
-TODO: Props like in example:
+### `onHoverIn`
 
-### `friction`
+Called when the hover is activated to provide visual feedback.
 
-:::caution
-This callback is deprecated and will be removed in the next version. Please use `onSwipeableOpen(direction)`
-:::
+### `onHoverOut`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
+Called when the hover is deactivated to undo visual feedback.
+
+### `onPress`
+
+Called when a single tap gesture is detected.
+
+### `onPressIn`
+
+Called when a touch is engaged before `onPress`.
+
+### `onPressOut`
+
+Called when a touch is released before `onPress`.
+
+### `onLongPress`
+
+Called when a long-tap gesture is detected.
+
+### `children`
+
+Either children or a render prop that receives a boolean reflecting whether
+the component is currently pressed.
+
+### `cancelable`
+
+Whether a press gesture can be interrupted by a parent gesture such as a
+scroll event. Defaults to true.
+
+### `delayHoverIn` (Web only)
+
+Duration to wait after hover in before calling `onHoverIn`.
+
+- NOTE: not present in RN docs
+
+### `delayHoverOut` (Web only)
+
+Duration to wait after hover out before calling `onHoverOut`.
+
+- NOTE: not present in RN docs
+
+### `delayLongPress`
+
+Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
+
+### `disabled`
+
+Whether the press behavior is disabled.
+
+### `hitSlop`
+
+Additional distance outside of this view in which a press is detected.
+
+### `pressRetentionOffset`
+
+Additional distance outside of this view in which a touch is considered a
+press before `onPressOut` is triggered.
+
+### `android_disableSound` (Android only)
+
+If true, doesn't play system sound on touch.
+
+### `android_ripple` (Android only)
+
+Enables the Android ripple effect and configures its color.
+
+### `testOnly_pressed`
+
+Used only for documentation or testing (e.g. snapshot testing).
+
+### `style`
+
+Either view styles or a function that receives a boolean reflecting whether
+the component is currently pressed and returns view styles.
+
+### `unstable_pressDelay`
+
+Duration (in milliseconds) to wait after press down before calling onPressIn.
 
 ### Example:
 
