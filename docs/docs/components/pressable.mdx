@@ -11,6 +11,10 @@ import GifGallery from '@site/components/GifGallery';
   <img src={useBaseUrl('gifs/pressable.gif')} width="70%" />
 </GifGallery>
 
+:::info
+This component is a drop-in replacement for the `Pressable` component, rewritten using `Gesture Handler`.
+:::
+
 Pressable is a component that can detect various stages of tap, press and hover interactions on any of its defined children.
 
 ### Usage:
@@ -47,7 +51,7 @@ called before `onPress` when a touch is released.
 
 ### `onLongPress`
 
-called immidiately after pointer has been down for at least `delayLongPress` milliseconds (500ms by default).
+called immidiately after pointer has been down for at least `delayLongPress` milliseconds (`500` ms by default).
 
 after `onLongPress` has been called, `onPressOut` will be called as soon as the pointer is lifted and `onPress` will no longer be called at all.
 
