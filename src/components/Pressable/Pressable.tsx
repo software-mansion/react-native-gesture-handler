@@ -142,6 +142,8 @@ export default function Pressable(props: PressableProps) {
 
       propagationGreenLight.current = false;
       isPressedDown.current = false;
+      isPressCallbackEnabled.current = true;
+
       setPressedState(false);
     },
     [pressInHandler, props]
