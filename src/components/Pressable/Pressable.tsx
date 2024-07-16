@@ -142,6 +142,8 @@ export default function Pressable(props: PressableProps) {
 
       propagationGreenLight.current = false;
       isPressedDown.current = false;
+      isPressCallbackEnabled.current = true;
+
       setPressedState(false);
     },
     [pressInHandler, props]
@@ -207,6 +209,8 @@ export default function Pressable(props: PressableProps) {
           pressOutHandler(gestureTouchToPressableEvent(event));
         })
         .onTouchesCancelled((event) => {
+          isPressCallbackEnabled.current = false;
+
           if (handlingOnTouchesDown.current) {
             cancelledMidPress.current = true;
             onEndHandlingTouchesDown.current = () =>
