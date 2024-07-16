@@ -1,5 +1,14 @@
 name: Test Paper Architecture integrity
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/check-paper-integrity.yml'
+      - 'src/specs/**'
+      - 'android/paper/**'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
