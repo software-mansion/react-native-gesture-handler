@@ -95,11 +95,10 @@ export default function Pressable(props: PressableProps) {
 
   const pressInHandler = useCallback(
     (event: PressableEvent) => {
-      if (Platform.OS === 'ios' && !awaitingEventPayload.current) {
-        awaitingEventPayload.current = event;
-      }
-
       if (propagationGreenLight.current === false) {
+        if (Platform.OS === 'ios') {
+          awaitingEventPayload.current = event;
+        }
         return;
       }
 
