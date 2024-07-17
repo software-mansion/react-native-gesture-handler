@@ -21,6 +21,7 @@ import {
   splitStyles,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
@@ -158,22 +159,31 @@ export default function Pressable(props: PressableProps) {
   const onEndHandlingTouchesDown = useRef<(() => void) | null>(null);
   const cancelledMidPress = useRef<boolean>(false);
 
+  const activateLongPress = useCallback(
+    (event: GestureTouchEvent) => {
+      if (propagationGreenLight.current === false) {
+        return;
+      }
+
+      if (hasPassedBoundsChecks.current) {
+        props.onLongPress?.(gestureTouchToPressableEvent(event));
+        isPressCallbackEnabled.current = false;
+      }
+    },
+    [props]
+  );
+
+  const longPressTimeoutRef = useRef<number | null>(null);
+  const longPressMinDuration =
+    (props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
+    (props.unstable_pressDelay ?? 0);
+
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
+        .minDuration(Number.MAX_SAFE_INTEGER)
         .maxDistance(Number.MAX_SAFE_INTEGER)
         .cancelsTouchesInView(false)
-        .onStart((event) => {
-          console.log('LPS', props.testID);
-          if (propagationGreenLight.current === false) {
-            console.log('caught exception');
-          }
-
-          if (hasPassedBoundsChecks.current) {
-            props.onLongPress?.(gestureToPressableEvent(event));
-            isPressCallbackEnabled.current = false;
-          }
-        })
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
@@ -196,6 +206,15 @@ export default function Pressable(props: PressableProps) {
             }
 
             hasPassedBoundsChecks.current = true;
+
+            // in case of multiple touches, the first one starts long press gesture
+            if (longPressTimeoutRef.current === null) {
+              // start long press gesture timer
+              longPressTimeoutRef.current = setTimeout(
+                () => activateLongPress(event),
+                longPressMinDuration
+              );
+            }
 
             if (props.unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
@@ -238,7 +257,14 @@ export default function Pressable(props: PressableProps) {
 
           pressOutHandler(gestureTouchToPressableEvent(event));
         }),
-    [normalizedHitSlop, pressInHandler, pressOutHandler, props]
+    [
+      activateLongPress,
+      longPressMinDuration,
+      normalizedHitSlop,
+      pressInHandler,
+      pressOutHandler,
+      props.unstable_pressDelay,
+    ]
   );
 
   // ButtonGesture lives inside RNButton to enable android's ripple and to capture non-propagating events
@@ -274,11 +300,6 @@ export default function Pressable(props: PressableProps) {
           }
         }),
     [pressInHandler, pressOutHandler]
-  );
-
-  pressAndTouchGesture.minDuration(
-    (props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
-      (props.unstable_pressDelay ?? 0)
   );
 
   const appliedHitSlop = addInsets(
