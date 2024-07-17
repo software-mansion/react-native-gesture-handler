@@ -95,10 +95,11 @@ export default function Pressable(props: PressableProps) {
 
   const pressInHandler = useCallback(
     (event: PressableEvent) => {
+      if (handlingOnTouchesDown.current) {
+        awaitingEventPayload.current = event;
+      }
+
       if (propagationGreenLight.current === false) {
-        if (Platform.OS === 'ios') {
-          awaitingEventPayload.current = event;
-        }
         return;
       }
 
@@ -131,6 +132,11 @@ export default function Pressable(props: PressableProps) {
         // even though we are located at the pressOutHandler
         clearTimeout(pressDelayTimeoutRef.current);
         pressInHandler(event);
+      }
+
+      if (awaitingEventPayload.current) {
+        props.onPressIn?.(awaitingEventPayload.current);
+        awaitingEventPayload.current = null;
       }
 
       props.onPressOut?.(event);
