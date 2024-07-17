@@ -146,6 +146,11 @@ export default function Pressable(props: PressableProps) {
         props.onPress?.(event);
       }
 
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
+
       propagationGreenLight.current = false;
       hasPassedBoundsChecks.current = false;
       isPressCallbackEnabled.current = true;
@@ -168,6 +173,11 @@ export default function Pressable(props: PressableProps) {
       if (hasPassedBoundsChecks.current) {
         props.onLongPress?.(gestureTouchToPressableEvent(event));
         isPressCallbackEnabled.current = false;
+      }
+
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
       }
     },
     [props]
