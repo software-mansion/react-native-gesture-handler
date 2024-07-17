@@ -52,9 +52,9 @@ const outerStyle = ({
 
 function GesturizedBoxes() {
   return (
-    <GesturizedPressable style={outerStyle}>
-      <GesturizedPressable style={middleStyle}>
-        <GesturizedPressable style={innerStyle} />
+    <GesturizedPressable style={outerStyle} testID="outer">
+      <GesturizedPressable style={middleStyle} testID="middle">
+        <GesturizedPressable style={innerStyle} testID="inner" />
       </GesturizedPressable>
     </GesturizedPressable>
   );
