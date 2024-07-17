@@ -111,7 +111,6 @@ export default function Pressable(props: PressableProps) {
       props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
-      propagationGreenLight.current = false;
       setPressedState(true);
     },
     [props]
@@ -165,6 +164,11 @@ export default function Pressable(props: PressableProps) {
         .maxDistance(Number.MAX_SAFE_INTEGER)
         .cancelsTouchesInView(false)
         .onStart((event) => {
+          console.log('LPS', props.testID);
+          if (propagationGreenLight.current === false) {
+            console.log('caught exception');
+          }
+
           if (hasPassedBoundsChecks.current) {
             props.onLongPress?.(gestureToPressableEvent(event));
             isPressCallbackEnabled.current = false;
