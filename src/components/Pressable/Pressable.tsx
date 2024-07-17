@@ -152,7 +152,7 @@ export default function Pressable(props: PressableProps) {
 
       setPressedState(false);
     },
-    [pressInHandler, pressedState, props]
+    [pressInHandler, props]
   );
 
   const handlingOnTouchesDown = useRef<boolean>(false);
