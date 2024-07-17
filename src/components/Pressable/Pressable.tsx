@@ -33,7 +33,7 @@ export default function Pressable(props: PressableProps) {
 
   // Disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
-  const isPressedDown = useRef<boolean>(false);
+  const hasPassedBoundsChecks = useRef<boolean>(false);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -58,6 +58,7 @@ export default function Pressable(props: PressableProps) {
     () =>
       Gesture.Hover()
         .manualActivation(true) // Stops Hover from blocking Native gesture activation on web
+        .cancelsTouchesInView(false)
         .onBegin((event) => {
           if (hoverOutTimeout.current) {
             clearTimeout(hoverOutTimeout.current);
@@ -119,7 +120,7 @@ export default function Pressable(props: PressableProps) {
   const pressOutHandler = useCallback(
     (event: PressableEvent) => {
       if (
-        !isPressedDown.current ||
+        !hasPassedBoundsChecks.current ||
         event.nativeEvent.touches.length >
           event.nativeEvent.changedTouches.length
       ) {
@@ -146,12 +147,12 @@ export default function Pressable(props: PressableProps) {
       }
 
       propagationGreenLight.current = false;
-      isPressedDown.current = false;
+      hasPassedBoundsChecks.current = false;
       isPressCallbackEnabled.current = true;
 
       setPressedState(false);
     },
-    [pressInHandler, props]
+    [pressInHandler, pressedState, props]
   );
 
   const handlingOnTouchesDown = useRef<boolean>(false);
@@ -162,8 +163,9 @@ export default function Pressable(props: PressableProps) {
     () =>
       Gesture.LongPress()
         .maxDistance(Number.MAX_SAFE_INTEGER)
+        .cancelsTouchesInView(false)
         .onStart((event) => {
-          if (isPressedDown.current) {
+          if (hasPassedBoundsChecks.current) {
             props.onLongPress?.(gestureToPressableEvent(event));
             isPressCallbackEnabled.current = false;
           }
@@ -180,7 +182,7 @@ export default function Pressable(props: PressableProps) {
                 normalizedHitSlop,
                 event.changedTouches.at(-1)
               ) ||
-              isPressedDown.current ||
+              hasPassedBoundsChecks.current ||
               cancelledMidPress.current
             ) {
               cancelledMidPress.current = false;
@@ -189,7 +191,7 @@ export default function Pressable(props: PressableProps) {
               return;
             }
 
-            isPressedDown.current = true;
+            hasPassedBoundsChecks.current = true;
 
             if (props.unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
@@ -224,7 +226,7 @@ export default function Pressable(props: PressableProps) {
           }
 
           if (
-            !isPressedDown.current ||
+            !hasPassedBoundsChecks.current ||
             event.allTouches.length > event.changedTouches.length
           ) {
             return;
@@ -250,13 +252,17 @@ export default function Pressable(props: PressableProps) {
           if (Platform.OS === 'ios') {
             if (awaitingEventPayload.current) {
               propagationGreenLight.current = true;
-              if (isPressedDown.current) {
+              if (hasPassedBoundsChecks.current) {
                 pressInHandler(awaitingEventPayload.current);
                 awaitingEventPayload.current = null;
               } else {
                 pressOutHandler(awaitingEventPayload.current);
+                propagationGreenLight.current = false;
               }
-              propagationGreenLight.current = false;
+            } else {
+              if (hasPassedBoundsChecks.current) {
+                propagationGreenLight.current = true;
+              }
             }
           }
           if (Platform.OS === 'web') {
