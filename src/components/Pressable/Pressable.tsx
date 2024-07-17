@@ -191,8 +191,8 @@ export default function Pressable(props: PressableProps) {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(Number.MAX_SAFE_INTEGER)
-        .maxDistance(Number.MAX_SAFE_INTEGER)
+        .minDuration(Number.MAX_SAFE_INTEGER) // stops long press from blocking native gesture
+        .maxDistance(Number.MAX_SAFE_INTEGER) // stops long press from cancelling after set distance
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
