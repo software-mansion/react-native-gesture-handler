@@ -36,6 +36,7 @@ export default function Pressable(props: PressableProps) {
   const isPressCallbackEnabled = useRef<boolean>(true);
   const hasPassedBoundsChecks = useRef<boolean>(false);
   const isBoundsCheckNecessary = useRef<boolean>(true);
+  const preventNativeEffects = useRef<boolean>(false);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -192,8 +193,8 @@ export default function Pressable(props: PressableProps) {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(Number.MAX_SAFE_INTEGER) // stops long press from blocking native gesture
-        .maxDistance(Number.MAX_SAFE_INTEGER) // stops long press from cancelling after set distance
+        .minDuration(Number.MAX_SAFE_INTEGER) // Stops long press from blocking native gesture
+        .maxDistance(Number.MAX_SAFE_INTEGER) // Stops long press from cancelling after set distance
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
@@ -218,9 +219,9 @@ export default function Pressable(props: PressableProps) {
 
             hasPassedBoundsChecks.current = true;
 
-            // in case of multiple touches, the first one starts long press gesture
+            // In case of multiple touches, the first one starts long press gesture
             if (longPressTimeoutRef.current === null) {
-              // start long press gesture timer
+              // Start long press gesture timer
               longPressTimeoutRef.current = setTimeout(
                 () => activateLongPress(event),
                 longPressMinDuration
@@ -246,7 +247,11 @@ export default function Pressable(props: PressableProps) {
               pressOutHandler(gestureTouchToPressableEvent(event));
             return;
           }
-
+          // On iOS, when pressed out before Native gesture pressed in,
+          // without setting this variable Native gesture would think it's the first one to be launched
+          if (awaitingEventPayload.current !== null) {
+            preventNativeEffects.current = true;
+          }
           pressOutHandler(gestureTouchToPressableEvent(event));
         })
         .onTouchesCancelled((event) => {
@@ -304,6 +309,11 @@ export default function Pressable(props: PressableProps) {
               if (hasPassedBoundsChecks.current) {
                 propagationGreenLight.current = true;
               } else {
+                if (preventNativeEffects.current) {
+                  preventNativeEffects.current = false;
+                  return;
+                }
+
                 // In case Native Start is the very first gesture on iOS to launch
                 // that means we are in a no-scroll, no-nesting situation
                 // and native start may be trated as a replacement to the measure function.
