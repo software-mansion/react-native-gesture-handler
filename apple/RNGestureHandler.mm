@@ -16,6 +16,12 @@
 #import <React/RCTScrollView.h>
 #endif
 
+// #if TARGET_OS_OSX
+// #define TargetScrollView NSScrollView
+// #else
+// #define TargetScrollView UIScrollView
+// #endif
+
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
 @end
@@ -511,7 +517,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   if ([self isUIScrollViewPanGestureRecognizer:otherGestureRecognizer] &&
       [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
-    UIScrollView *scrollView = [self retrieveScrollView:gestureRecognizer.view];
+    TargetScrollView *scrollView = [self retrieveScrollView:gestureRecognizer.view];
     if (scrollView && scrollView == otherGestureRecognizer.view) {
       return YES;
     }
@@ -520,6 +526,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return NO;
 }
 
+#if !TARGET_OS_OSX
 // is UIPanGestureRecognizer and has scrollView property
 - (BOOL)isUIScrollViewPanGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 {
@@ -527,11 +534,20 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       [gestureRecognizer respondsToSelector:@selector(scrollView)];
 }
 
-- (UIScrollView *)retrieveScrollView:(UIView *)view
+#else
+
+- (BOOL)isUIScrollViewPanGestureRecognizer:(NSGestureRecognizer *)gestureRecognizer
+{
+  return NO;
+}
+
+#endif
+
+- (TargetScrollView *)retrieveScrollView:(RNGHUIView *)view
 {
 #ifdef RCT_NEW_ARCH_ENABLED
   if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
-    UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
+    TargetScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     return scrollView;
   }
 #else
@@ -539,7 +555,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     // This part of the code is coupled with RN implementation of ScrollView native wrapper and
     // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
     // subview
-    UIScrollView *scrollView = [view.subviews objectAtIndex:0];
+    TargetScrollView *scrollView = [view.subviews objectAtIndex:0];
     return scrollView;
   }
 #endif
