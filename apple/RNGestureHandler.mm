@@ -16,12 +16,6 @@
 #import <React/RCTScrollView.h>
 #endif
 
-// #if TARGET_OS_OSX
-// #define TargetScrollView NSScrollView
-// #else
-// #define TargetScrollView UIScrollView
-// #endif
-
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
 @end
