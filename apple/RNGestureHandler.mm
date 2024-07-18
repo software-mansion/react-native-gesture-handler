@@ -523,11 +523,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 // is UIPanGestureRecognizer and has scrollView property
 - (BOOL)isUIScrollViewPanGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 {
-  if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] &&
-      [gestureRecognizer respondsToSelector:@selector(scrollView)]) {
-    return YES;
-  }
-  return NO;
+  return [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] &&
+      [gestureRecognizer respondsToSelector:@selector(scrollView)];
 }
 
 - (UIScrollView *)retrieveScrollView:(UIView *)view
