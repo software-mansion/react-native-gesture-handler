@@ -35,6 +35,7 @@ export default function Pressable(props: PressableProps) {
   // Disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
   const hasPassedBoundsChecks = useRef<boolean>(false);
+  const isBoundsCheckNecessary = useRef<boolean>(true);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -154,7 +155,7 @@ export default function Pressable(props: PressableProps) {
       propagationGreenLight.current = false;
       hasPassedBoundsChecks.current = false;
       isPressCallbackEnabled.current = true;
-
+      isBoundsCheckNecessary.current = true;
       setPressedState(false);
     },
     [pressInHandler, props]
@@ -302,6 +303,12 @@ export default function Pressable(props: PressableProps) {
             } else {
               if (hasPassedBoundsChecks.current) {
                 propagationGreenLight.current = true;
+              } else {
+                // In case Native Start is the very first gesture on iOS to launch
+                // that means we are in a no-scroll, no-nesting situation
+                // and native start may be trated as a replacement to the measure function.
+                propagationGreenLight.current = true;
+                isBoundsCheckNecessary.current = false;
               }
             }
           }
