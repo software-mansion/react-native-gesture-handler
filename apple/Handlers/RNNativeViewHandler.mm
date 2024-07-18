@@ -78,8 +78,9 @@
 - (void)updateStateIfScrollView
 {
   UIScrollView *scrollView = [_gestureHandler retrieveScrollView:self.view];
-  if (!scrollView)
+  if (!scrollView) {
     return;
+  }
   for (UIGestureRecognizer *scrollViewGestureRecognizer in scrollView.gestureRecognizers) {
     if ([_gestureHandler isUIScrollViewPanGestureRecognizer:scrollViewGestureRecognizer]) {
       self.state = scrollViewGestureRecognizer.state;
