@@ -29,7 +29,7 @@ import { Pressable } from 'react-native-gesture-handler';
 
 ### `children`
 
-either children or a render prop that receives a boolean reflecting whether
+either children or a render function that receives a boolean reflecting whether
 the component is currently pressed.
 
 ### `style`
@@ -53,12 +53,11 @@ called before `onPress` when a touch is released.
 
 called immidiately after pointer has been down for at least `delayLongPress` milliseconds (`500` ms by default).
 
-after `onLongPress` has been called, `onPressOut` will be called as soon as the pointer is lifted and `onPress` will no longer be called at all.
+After `onLongPress` has been called, `onPressOut` will be called as soon as the pointer is lifted and `onPress` will no longer be called at all.
 
 ### `cancelable`
 
-whether a press gesture can be interrupted by a parent gesture such as a
-scroll event. Defaults to `true`.
+whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
 
 ### `onHoverIn` (Web only)
 
@@ -86,11 +85,11 @@ whether the `Pressable` behavior is disabled.
 
 ### `hitSlop`
 
-additional distance outside of this view in which a press is detected and `onPressIn` is triggered.
+additional distance outside of the view in which a press is detected and `onPressIn` is triggered.
 
 ### `pressRetentionOffset`
 
-additional distance outside of this view (or `hitSlop` if present) in which a touch is considered a
+additional distance outside of the view (or `hitSlop` if present) in which a touch is considered a
 press before `onPressOut` is triggered.
 
 ### `android_disableSound` (Android only)
@@ -111,7 +110,7 @@ duration (in milliseconds) to wait after press down before calling `onPressIn`.
 
 ### Example:
 
-See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/new_api/pressable/index.tsx) from `GestureHandler` Example App.
+See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/new_api/pressable/index.tsx) from `GestureHandler` example app.
 
 import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
 
