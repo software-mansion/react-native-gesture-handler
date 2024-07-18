@@ -27,27 +27,29 @@ export default function PressableExample() {
     console.log('Long pressed');
   };
   return (
-    <View style={styles.pressRectContainer}>
-      <View style={styles.hitRectContainer}>
-        <Pressable
-          style={({ pressed }) =>
-            pressed ? styles.highlight : styles.pressable
-          }
-          onPressIn={pressIn}
-          onPressOut={pressOut}
-          onPress={press}
-          onHoverIn={hoverIn}
-          onHoverOut={hoverOut}
-          onLongPress={longPress}
-          hitSlop={20}
-          pressRetentionOffset={20}>
-          <View style={styles.textWrapper}>
-            <Text style={styles.text}>Pressable!</Text>
-          </View>
-        </Pressable>
-        <Text style={styles.rectText}>Hit Rect</Text>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <View style={styles.pressRectContainer}>
+        <View style={styles.hitRectContainer}>
+          <Pressable
+            style={({ pressed }) =>
+              pressed ? styles.highlight : styles.pressable
+            }
+            onPressIn={pressIn}
+            onPressOut={pressOut}
+            onPress={press}
+            onHoverIn={hoverIn}
+            onHoverOut={hoverOut}
+            onLongPress={longPress}
+            hitSlop={20}
+            pressRetentionOffset={20}>
+            <View style={styles.textWrapper}>
+              <Text style={styles.text}>Pressable!</Text>
+            </View>
+          </Pressable>
+          <Text style={styles.rectText}>Hit Rect</Text>
+        </View>
+        <Text style={styles.rectText}>Press Rect</Text>
       </View>
-      <Text style={styles.rectText}>Press Rect</Text>
     </View>
   );
 }
@@ -80,13 +82,11 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     backgroundColor: 'mediumpurple',
-    borderWidth: StyleSheet.hairlineWidth,
   },
   highlight: {
     width: 120,
     height: 120,
     backgroundColor: 'red',
-    borderWidth: StyleSheet.hairlineWidth,
   },
   textWrapper: {
     flex: 1,
