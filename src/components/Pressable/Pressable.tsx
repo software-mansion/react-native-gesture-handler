@@ -93,7 +93,7 @@ export default function Pressable(props: PressableProps) {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isTouchPropagationAllowed = useRef<boolean>(false);
 
-  // iOS only, propagationGreenLight setting occurs after other checks when in scroll-view
+  // iOS only: due to varying flow of gestures, events sometimes have to be saved for later use
   const awaitingEventPayload = useRef<PressableEvent | null>(null);
 
   const pressInHandler = useCallback(
