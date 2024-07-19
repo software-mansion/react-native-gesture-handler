@@ -91,7 +91,7 @@ export default function Pressable(props: PressableProps) {
   );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
-  const propagationGreenLight = useRef<boolean>(false);
+  const isTouchPropagationAllowed = useRef<boolean>(false);
 
   // iOS only, propagationGreenLight setting occurs after other checks when in scroll-view
   const awaitingEventPayload = useRef<PressableEvent | null>(null);
@@ -102,7 +102,7 @@ export default function Pressable(props: PressableProps) {
         awaitingEventPayload.current = event;
       }
 
-      if (propagationGreenLight.current === false) {
+      if (isTouchPropagationAllowed.current === false) {
         return;
       }
 
@@ -150,7 +150,7 @@ export default function Pressable(props: PressableProps) {
         longPressTimeoutRef.current = null;
       }
 
-      propagationGreenLight.current = false;
+      isTouchPropagationAllowed.current = false;
       hasPassedBoundsChecks.current = false;
       isPressCallbackEnabled.current = true;
       setPressedState(false);
@@ -164,7 +164,7 @@ export default function Pressable(props: PressableProps) {
 
   const activateLongPress = useCallback(
     (event: GestureTouchEvent) => {
-      if (propagationGreenLight.current === false) {
+      if (isTouchPropagationAllowed.current === false) {
         return;
       }
 
@@ -286,12 +286,12 @@ export default function Pressable(props: PressableProps) {
         .onBegin(() => {
           // Android sets BEGAN state on press down
           if (Platform.OS === 'android') {
-            propagationGreenLight.current = true;
+            isTouchPropagationAllowed.current = true;
           }
         })
         .onStart(() => {
           if (Platform.OS === 'web') {
-            propagationGreenLight.current = true;
+            isTouchPropagationAllowed.current = true;
           }
 
           // iOS sets ACTIVE state on press down
@@ -300,21 +300,21 @@ export default function Pressable(props: PressableProps) {
           }
 
           if (awaitingEventPayload.current) {
-            propagationGreenLight.current = true;
+            isTouchPropagationAllowed.current = true;
 
             if (hasPassedBoundsChecks.current) {
               pressInHandler(awaitingEventPayload.current);
               awaitingEventPayload.current = null;
             } else {
               pressOutHandler(awaitingEventPayload.current);
-              propagationGreenLight.current = false;
+              isTouchPropagationAllowed.current = false;
             }
 
             return;
           }
 
           if (hasPassedBoundsChecks.current) {
-            propagationGreenLight.current = true;
+            isTouchPropagationAllowed.current = true;
             return;
           }
 
@@ -323,7 +323,7 @@ export default function Pressable(props: PressableProps) {
             return;
           }
 
-          propagationGreenLight.current = true;
+          isTouchPropagationAllowed.current = true;
         }),
     [pressInHandler, pressOutHandler]
   );
