@@ -243,8 +243,8 @@ export default function Pressable(props: PressableProps) {
               pressOutHandler(gestureTouchToPressableEvent(event));
             return;
           }
-          // On iOS, when pressed out before Native gesture pressed in,
-          // without setting this variable Native gesture would think it's the first one to be launched
+          // On iOS, short taps will make LongPress gesture call onTouchesUp before Native gesture calls onStart
+          // This variable ensures that onStart isn't detected as the first gesture since Pressable is pressed.
           if (awaitingEventPayload.current !== null) {
             preventNativeEffects.current = true;
           }
