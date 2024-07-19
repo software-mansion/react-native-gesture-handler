@@ -87,10 +87,14 @@ whether the `Pressable` behavior is disabled.
 
 additional distance outside of the view in which a press is detected and `onPressIn` is triggered.
 
+Accepts values of type `number` or [`Rect`](https://reactnative.dev/docs/rect)
+
 ### `pressRetentionOffset` (Android & iOS only)
 
 additional distance outside of the view (or `hitSlop` if present) in which a touch is considered a
 press before `onPressOut` is triggered.
+
+Accepts values of type `number` or [`Rect`](https://reactnative.dev/docs/rect)
 
 ### `android_disableSound` (Android only)
 
@@ -99,6 +103,8 @@ if `true`, doesn't play system sound on touch.
 ### `android_ripple` (Android only)
 
 enables the Android ripple effect and configures its color, radius and other parameters.
+
+Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig)
 
 ### `testOnly_pressed`
 
