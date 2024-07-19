@@ -107,8 +107,6 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      // If iOS passes the propagationGreenLight by here,
-      // awaitingEventPayload would trigger a double press-in callback when pressing out
       awaitingEventPayload.current = null;
 
       props.onPressIn?.(event);
@@ -283,7 +281,7 @@ export default function Pressable(props: PressableProps) {
     ]
   );
 
-  // ButtonGesture lives inside RNButton to enable android's ripple and to capture non-propagating events
+  // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
   const buttonGesture = useMemo(
     () =>
       Gesture.Native()
