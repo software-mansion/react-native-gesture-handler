@@ -5,7 +5,9 @@ on:
       - main
     paths: 
       - src/specs/**
-      - android/paper/src/java/com/facebook/react/viewmanagers/**
+      - android/paper/**
+      - .github/workflows/check-archs-consistency.yml
+    workflow_dispatch:
 jobs:
   check:
     runs-on: ubuntu-latest
