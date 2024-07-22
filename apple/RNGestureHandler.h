@@ -10,9 +10,9 @@
 #import <React/RCTConvert.h>
 
 #if TARGET_OS_OSX
-#define TargetScrollView NSScrollView
+#define RNGHUIScrollView NSScrollView
 #else
-#define TargetScrollView UIScrollView
+#define RNGHUIScrollView UIScrollView
 #endif
 
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
@@ -95,7 +95,7 @@
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
-- (nullable TargetScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
+- (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
 
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
