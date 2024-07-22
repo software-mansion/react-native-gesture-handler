@@ -16,7 +16,7 @@
     "lint:js-root": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:android": "./android/gradlew -p android spotlessCheck -q",
     "circular-dependency-check": "yarn madge --extensions js,ts,tsx --circular src",
-    "check-archs-consistency": "node ./scripts/codegen-check-consistency.js",
+    "architectures-consistency-check": "node ./scripts/codegen-check-consistency.js",
     "sync-archs": "node ./scripts/codegen-sync-archs.js"
   },
   "react-native": "src/index.ts",
