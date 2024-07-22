@@ -88,16 +88,14 @@ async function generateCodegenJavaOldArch() {
     );
   }
 
-  oldArchFiles.forEach(oldArchFile => {
-    if (!fs.existsSync(`${CODEGEN_FILES_DIR}/${oldArchFile}`)) {
-      console.warn(
-        `[${ERROR_PREFIX}] ${existingFile.name} file does not exist in codegen artifacts source destination. Please check if you still need this interface/delagete.`
-      );
-    }
-  });
-
   oldArchFiles.forEach(file => {
-    exec(`cp -rf ${CODEGEN_FILES_DIR}/${file} ${OLD_ARCH_FILES_DIR}/${file}`);
+    if (!fs.existsSync(`${CODEGEN_FILES_DIR}/${file}`)) {
+      console.warn(
+        `[${ERROR_PREFIX}] ${file} file does not exist in codegen artifacts source destination. Please check if you still need this interface/delagete.`
+      );
+    } else {
+      exec(`cp -rf ${CODEGEN_FILES_DIR}/${file} ${OLD_ARCH_FILES_DIR}/${file}`);
+    }
   });
 }
 
