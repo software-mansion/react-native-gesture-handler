@@ -94,19 +94,19 @@ export default function Pressable(props: PressableProps) {
   const isTouchPropagationAllowed = useRef<boolean>(false);
 
   // iOS only: due to varying flow of gestures, events sometimes have to be saved for later use
-  const awaitingEventPayload = useRef<PressableEvent | null>(null);
+  const waitingEventPayload = useRef<PressableEvent | null>(null);
 
   const pressInHandler = useCallback(
     (event: PressableEvent) => {
       if (handlingOnTouchesDown.current) {
-        awaitingEventPayload.current = event;
+        waitingEventPayload.current = event;
       }
 
       if (isTouchPropagationAllowed.current === false) {
         return;
       }
 
-      awaitingEventPayload.current = null;
+      waitingEventPayload.current = null;
 
       props.onPressIn?.(event);
       isPressCallbackEnabled.current = true;
@@ -134,9 +134,9 @@ export default function Pressable(props: PressableProps) {
         pressInHandler(event);
       }
 
-      if (awaitingEventPayload.current) {
-        props.onPressIn?.(awaitingEventPayload.current);
-        awaitingEventPayload.current = null;
+      if (waitingEventPayload.current) {
+        props.onPressIn?.(waitingEventPayload.current);
+        waitingEventPayload.current = null;
       }
 
       props.onPressOut?.(event);
@@ -245,7 +245,7 @@ export default function Pressable(props: PressableProps) {
           }
           // On iOS, short taps will make LongPress gesture call onTouchesUp before Native gesture calls onStart
           // This variable ensures that onStart isn't detected as the first gesture since Pressable is pressed.
-          if (awaitingEventPayload.current !== null) {
+          if (waitingEventPayload.current !== null) {
             preventNativeEffects.current = true;
           }
           pressOutHandler(gestureTouchToPressableEvent(event));
@@ -299,14 +299,14 @@ export default function Pressable(props: PressableProps) {
             return;
           }
 
-          if (awaitingEventPayload.current) {
+          if (waitingEventPayload.current) {
             isTouchPropagationAllowed.current = true;
 
             if (hasPassedBoundsChecks.current) {
-              pressInHandler(awaitingEventPayload.current);
-              awaitingEventPayload.current = null;
+              pressInHandler(waitingEventPayload.current);
+              waitingEventPayload.current = null;
             } else {
-              pressOutHandler(awaitingEventPayload.current);
+              pressOutHandler(waitingEventPayload.current);
               isTouchPropagationAllowed.current = false;
             }
 
