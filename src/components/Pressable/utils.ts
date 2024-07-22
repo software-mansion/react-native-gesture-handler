@@ -1,9 +1,4 @@
-import {
-  GestureResponderEvent,
-  Insets,
-  NativeTouchEvent,
-  ViewStyle,
-} from 'react-native';
+import { Insets, ViewStyle } from 'react-native';
 import { LongPressGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
@@ -130,41 +125,6 @@ const gestureTouchToPressableEvent = (
   };
 };
 
-const nativeTouchToInnerPressableEvent = (
-  event: NativeTouchEvent,
-  isParent = true
-): InnerPressableEvent => {
-  const touchesList = isParent
-    ? event.touches.map((touch: NativeTouchEvent) =>
-        nativeTouchToInnerPressableEvent(touch, false)
-      )
-    : [];
-  const changedTouchesList = isParent
-    ? event.changedTouches.map((touch: NativeTouchEvent) =>
-        nativeTouchToInnerPressableEvent(touch, false)
-      )
-    : [];
-
-  return {
-    identifier: 0,
-    locationX: event.locationX,
-    locationY: event.locationY,
-    pageX: event.pageX,
-    pageY: event.pageY,
-    target: 0,
-    timestamp: event.timestamp,
-    force: undefined,
-    touches: touchesList,
-    changedTouches: changedTouchesList,
-  };
-};
-
-const nativeTouchToPressableEvent = (
-  event: GestureResponderEvent
-): PressableEvent => ({
-  nativeEvent: nativeTouchToInnerPressableEvent(event.nativeEvent),
-});
-
 type StylePropKeys = (keyof ViewStyle)[];
 
 // Source:
@@ -216,6 +176,5 @@ export {
   isTouchWithinInset,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
-  nativeTouchToPressableEvent,
   splitStyles,
 };
