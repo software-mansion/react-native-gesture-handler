@@ -1,10 +1,12 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityManager
 import android.widget.ScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
@@ -82,6 +84,16 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
+
+    val isTouchExplorationEnabled = (view.context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager).isTouchExplorationEnabled
+
+    if (state == STATE_UNDETERMINED && isTouchExplorationEnabled) {
+      // fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
+      // when talkback is enabled, one real press invokes 2 separate yet identical press events
+      // the invalid ones only differs in that when it's sent, the current handler's state is UNDETERMINED
+      return
+    }
+
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
