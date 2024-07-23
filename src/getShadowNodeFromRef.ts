@@ -8,7 +8,7 @@ let getInternalInstanceHandleFromPublicInstance: (ref: unknown) => {
 };
 
 export function getShadowNodeFromRef(ref: unknown) {
-  // load findHostInstance_DEPRECATED lazily because it may not be available before render
+  // Load findHostInstance_DEPRECATED lazily because it may not be available before render
   if (findHostInstance_DEPRECATED === undefined) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -20,7 +20,7 @@ export function getShadowNodeFromRef(ref: unknown) {
     }
   }
 
-  // load findHostInstance_DEPRECATED lazily because it may not be available before render
+  // Load findHostInstance_DEPRECATED lazily because it may not be available before render
   if (getInternalInstanceHandleFromPublicInstance === undefined) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
