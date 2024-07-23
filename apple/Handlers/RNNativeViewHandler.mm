@@ -234,7 +234,6 @@ __weak RNGestureHandler *_gestureHandler;
 
 - (void)mouseDragged:(NSEvent *)event
 {
-  [self hasPointerInside];
   self.state = NSGestureRecognizerStateChanged;
   [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
 }
