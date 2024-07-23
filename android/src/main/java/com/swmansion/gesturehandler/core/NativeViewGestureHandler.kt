@@ -85,7 +85,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
 
-    val isTouchExplorationEnabled = (view.context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager).isTouchExplorationEnabled
+    val isTouchExplorationEnabled =
+      (view.context.getSystemService(Context.ACCESSIBILITY_SERVICE)
+          as AccessibilityManager).isTouchExplorationEnabled
 
     if (state == STATE_UNDETERMINED && isTouchExplorationEnabled) {
       // fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
