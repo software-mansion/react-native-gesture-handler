@@ -205,10 +205,39 @@
 
 @implementation RNDummyGestureRecognizer
 
+__weak RNGestureHandler *_gestureHandler;
+
+- (void)setDelegate:(id<NSGestureRecognizerDelegate>)delegate
+{
+  [super setDelegate:delegate];
+}
+
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)];
+  if (self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)]) {
+    _gestureHandler = gestureHandler;
+  };
+
   return self;
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  self.state = NSGestureRecognizerStateBegan;
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  self.state = NSGestureRecognizerStateChanged;
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+  self.state = NSGestureRecognizerStateEnded;
+  [self reset];
 }
 
 @end
@@ -219,11 +248,34 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"NativeViewGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
+    _recognizer = [[RNDummyGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
+}
+
+- (void)bindToView:(NSView *)view
+{
+  [super bindToView:view];
+
+  NSLog(@"Bound to view");
+
+  // We can restore default scrollview behaviour to delay touches to scrollview's children
+  // because gesture handler system can handle cancellation of scroll recognizer when JS responder
+  // is set
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
+    UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
+    scrollView.delaysContentTouches = YES;
+  }
+#else
+  if ([view isKindOfClass:[RCTScrollView class]]) {
+    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
+    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
+    // subview
+    NSScrollView *scrollView = [view.subviews objectAtIndex:0];
+  }
+#endif // RCT_NEW_ARCH_ENABLED
 }
 
 @end
