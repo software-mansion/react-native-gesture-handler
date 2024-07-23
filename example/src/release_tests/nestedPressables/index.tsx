@@ -5,6 +5,7 @@ import {
   StyleProp,
   StyleSheet,
   Text,
+  View,
   ViewStyle,
 } from 'react-native';
 import {
@@ -15,10 +16,12 @@ import {
 export default function Example() {
   return (
     <ScrollView>
-      <Text style={styles.text}>Gesturized Nested Pressables</Text>
-      <GesturizedBoxes />
-      <Text style={styles.text}>Legacy Nested Pressables</Text>
-      <LegacyBoxes />
+      <View style={styles.centering}>
+        <Text style={styles.text}>Gesturized Nested Pressables</Text>
+        <GesturizedBoxes />
+        <Text style={styles.text}>Legacy Nested Pressables</Text>
+        <LegacyBoxes />
+      </View>
     </ScrollView>
   );
 }
@@ -35,19 +38,22 @@ const innerStyle = ({
   pressed,
 }: PressableStateCallbackType): StyleProp<ViewStyle> => [
   getBoxStyle(BOX_SIZE_COEFFICIENT),
-  pressed ? { backgroundColor: 'purple' } : null,
+  pressed ? { backgroundColor: '#c00' } : { backgroundColor: '#c77' },
+  styles.centering,
 ];
 const middleStyle = ({
   pressed,
 }: PressableStateCallbackType): StyleProp<ViewStyle> => [
   getBoxStyle(BOX_SIZE_COEFFICIENT * 2),
-  pressed ? { backgroundColor: 'green' } : null,
+  pressed ? { backgroundColor: '#0c0' } : { backgroundColor: '#7a7' },
+  styles.centering,
 ];
 const outerStyle = ({
   pressed,
 }: PressableStateCallbackType): StyleProp<ViewStyle> => [
   getBoxStyle(BOX_SIZE_COEFFICIENT * 3),
-  pressed ? { backgroundColor: 'yellow' } : null,
+  pressed ? { backgroundColor: '#00c' } : { backgroundColor: '#88a' },
+  styles.centering,
 ];
 
 function GesturizedBoxes() {
@@ -71,5 +77,13 @@ function LegacyBoxes() {
 }
 
 const styles = StyleSheet.create({
-  text: { fontSize: 20, margin: 20 },
+  text: {
+    fontSize: 20,
+    margin: 20,
+  },
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+  },
 });
