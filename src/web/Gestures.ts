@@ -9,7 +9,7 @@ import NativeViewGestureHandler from './handlers/NativeViewGestureHandler';
 import ManualGestureHandler from './handlers/ManualGestureHandler';
 import HoverGestureHandler from './handlers/HoverGestureHandler';
 
-//Hammer Handlers
+// Hammer Handlers
 import HammerNativeViewGestureHandler from '../web_hammer/NativeViewGestureHandler';
 import HammerPanGestureHandler from '../web_hammer/PanGestureHandler';
 import HammerTapGestureHandler from '../web_hammer/TapGestureHandler';

@@ -1,3 +1,4 @@
+import type { PanGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
@@ -30,64 +31,6 @@ export const panGestureHandlerCustomNativeProps = [
   'failOffsetXStart',
   'failOffsetXEnd',
 ] as const;
-
-export type PanGestureHandlerEventPayload = {
-  /**
-   * X coordinate of the current position of the pointer (finger or a leading
-   * pointer when there are multiple fingers placed) relative to the view
-   * attached to the handler. Expressed in point units.
-   */
-  x: number;
-
-  /**
-   * Y coordinate of the current position of the pointer (finger or a leading
-   * pointer when there are multiple fingers placed) relative to the view
-   * attached to the handler. Expressed in point units.
-   */
-  y: number;
-
-  /**
-   * X coordinate of the current position of the pointer (finger or a leading
-   * pointer when there are multiple fingers placed) relative to the window.
-   * The value is expressed in point units. It is recommended to use it instead
-   * of `x` in cases when the original view can be transformed as an effect of
-   * the gesture.
-   */
-  absoluteX: number;
-
-  /**
-   * Y coordinate of the current position of the pointer (finger or a leading
-   * pointer when there are multiple fingers placed) relative to the window.
-   * The value is expressed in point units. It is recommended to use it instead
-   * of `y` in cases when the original view can be transformed as an
-   * effect of the gesture.
-   */
-  absoluteY: number;
-
-  /**
-   * Translation of the pan gesture along X axis accumulated over the time of
-   * the gesture. The value is expressed in the point units.
-   */
-  translationX: number;
-
-  /**
-   * Translation of the pan gesture along Y axis accumulated over the time of
-   * the gesture. The value is expressed in the point units.
-   */
-  translationY: number;
-
-  /**
-   * Velocity of the pan gesture along the X axis in the current moment. The
-   * value is expressed in point units per second.
-   */
-  velocityX: number;
-
-  /**
-   * Velocity of the pan gesture along the Y axis in the current moment. The
-   * value is expressed in point units per second.
-   */
-  velocityY: number;
-};
 
 interface CommonPanProperties {
   /**

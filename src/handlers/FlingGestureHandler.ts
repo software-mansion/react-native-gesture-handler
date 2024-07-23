@@ -1,3 +1,4 @@
+import type { FlingGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
@@ -9,12 +10,6 @@ export const flingGestureHandlerProps = [
   'direction',
 ] as const;
 
-export type FlingGestureHandlerEventPayload = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-};
 export interface FlingGestureConfig {
   /**
    * Expressed allowed direction of movement. It's possible to pass one or many

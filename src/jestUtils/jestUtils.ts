@@ -3,12 +3,10 @@ import { DeviceEventEmitter } from 'react-native';
 import { ReactTestInstance } from 'react-test-renderer';
 import {
   FlingGestureHandler,
-  FlingGestureHandlerEventPayload,
   flingHandlerName,
 } from '../handlers/FlingGestureHandler';
 import {
   ForceTouchGestureHandler,
-  ForceTouchGestureHandlerEventPayload,
   forceTouchHandlerName,
 } from '../handlers/ForceTouchGestureHandler';
 import {
@@ -28,38 +26,42 @@ import { TapGesture } from '../handlers/gestures/tapGesture';
 import { findHandlerByTestID } from '../handlers/handlersRegistry';
 import {
   LongPressGestureHandler,
-  LongPressGestureHandlerEventPayload,
   longPressHandlerName,
 } from '../handlers/LongPressGestureHandler';
+import type {
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
+} from '../handlers/GestureHandlerEventPayload';
 import {
   NativeViewGestureHandler,
-  NativeViewGestureHandlerPayload,
   nativeViewHandlerName,
 } from '../handlers/NativeViewGestureHandler';
 import {
   PanGestureHandler,
-  PanGestureHandlerEventPayload,
   panHandlerName,
 } from '../handlers/PanGestureHandler';
 import {
   PinchGestureHandler,
-  PinchGestureHandlerEventPayload,
   pinchHandlerName,
 } from '../handlers/PinchGestureHandler';
 import {
   RotationGestureHandler,
-  RotationGestureHandlerEventPayload,
   rotationHandlerName,
 } from '../handlers/RotationGestureHandler';
 import {
   TapGestureHandler,
-  TapGestureHandlerEventPayload,
   tapHandlerName,
 } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 import { hasProperty, withPrevAndCurrent } from '../utils';
 
-// load fireEvent conditionally, so RNGH may be used in setups without testing-library
+// Load fireEvent conditionally, so RNGH may be used in setups without testing-library
 let fireEvent = (
   _element: ReactTestInstance,
   _name: string,
@@ -72,7 +74,7 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   fireEvent = require('@testing-library/react-native').fireEvent;
 } catch (_e) {
-  // do nothing if not available
+  // Do nothing if not available
 }
 
 type GestureHandlerTestEvent<

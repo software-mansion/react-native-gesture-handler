@@ -197,8 +197,8 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.CANCEL);
 
     if (this.trackedPointers.has(adaptedEvent.pointerId)) {
-      // in some cases the `pointerup` event is not fired, but `lostpointercapture` is
-      // we simulate the `pointercancel` event here to make sure the gesture handler stops tracking it
+      // In some cases the `pointerup` event is not fired, but `lostpointercapture` is.
+      // Here we simulate the `pointercancel` event to make sure the gesture handler stops tracking it.
       this.onPointerCancel(adaptedEvent);
 
       this.activePointersCounter = 0;

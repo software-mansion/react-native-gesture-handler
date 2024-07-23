@@ -67,10 +67,10 @@ export default {
     }
 
     if (isNewWebImplementationEnabled()) {
-      //@ts-ignore Types should be HTMLElement or React.Component
+      // @ts-ignore Types should be HTMLElement or React.Component
       NodeManager.getHandler(handlerTag).init(newView, propsRef);
     } else {
-      //@ts-ignore Types should be HTMLElement or React.Component
+      // @ts-ignore Types should be HTMLElement or React.Component
       HammerNodeManager.getHandler(handlerTag).setView(newView, propsRef);
     }
   },

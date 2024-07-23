@@ -1,13 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import {
-  Animated,
-  Platform,
-  StyleProp,
-  ViewStyle,
-  TouchableWithoutFeedbackProps,
-  Insets,
-} from 'react-native';
+import { Animated, Platform } from 'react-native';
 
 import { State } from '../../State';
 import { BaseButton } from '../GestureButtons';
@@ -15,10 +8,10 @@ import { BaseButton } from '../GestureButtons';
 import {
   GestureEvent,
   HandlerStateChangeEvent,
-  UserSelect,
 } from '../../handlers/gestureHandlerCommon';
-import { NativeViewGestureHandlerPayload } from '../../handlers/NativeViewGestureHandler';
-import { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedback.android';
+import type { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
+import type { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedbackProps';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -34,26 +27,6 @@ export const TOUCHABLE_STATE = {
 } as const;
 
 type TouchableState = typeof TOUCHABLE_STATE[keyof typeof TOUCHABLE_STATE];
-
-export interface GenericTouchableProps
-  extends Omit<TouchableWithoutFeedbackProps, 'hitSlop'> {
-  // Decided to drop not used fields from RN's implementation.
-  // e.g. onBlur and onFocus as well as deprecated props. - TODO: this comment may be unuseful in this moment
-
-  // TODO: in RN these events get native event parameter, which prolly could be used in our implementation too
-  onPress?: () => void;
-  onPressIn?: () => void;
-  onPressOut?: () => void;
-  onLongPress?: () => void;
-
-  nativeID?: string;
-  shouldActivateOnStart?: boolean;
-  disallowInterruption?: boolean;
-
-  containerStyle?: StyleProp<ViewStyle>;
-  hitSlop?: Insets | number;
-  userSelect?: UserSelect;
-}
 
 interface InternalProps {
   extraButtonProps: TouchableNativeFeedbackExtraProps;
@@ -80,7 +53,7 @@ export default class GenericTouchable extends Component<
     },
   };
 
-  // timeout handlers
+  // Timeout handlers
   pressInTimeout: Timeout;
   pressOutTimeout: Timeout;
   longPressTimeout: Timeout;
@@ -147,7 +120,7 @@ export default class GenericTouchable extends Component<
   componentDidMount() {
     this.reset();
   }
-  // reset timeout to prevent memory leaks.
+  // Reset timeout to prevent memory leaks.
   reset() {
     this.longPressDetected = false;
     this.pointerInside = true;
@@ -229,12 +202,12 @@ export default class GenericTouchable extends Component<
 
   onLongPressDetected = () => {
     this.longPressDetected = true;
-    // checked for in the caller of `onLongPressDetected`, but better to check twice
+    // Checked for in the caller of `onLongPressDetected`, but better to check twice
     this.props.onLongPress?.();
   };
 
   componentWillUnmount() {
-    // to prevent memory leaks
+    // To prevent memory leaks
     this.reset();
   }
 
@@ -246,7 +219,7 @@ export default class GenericTouchable extends Component<
   }
 
   onMoveOut() {
-    // long press should no longer be detected
+    // Long press should no longer be detected
     clearTimeout(this.longPressTimeout!);
     this.longPressTimeout = null;
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {

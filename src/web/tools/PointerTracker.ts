@@ -86,7 +86,7 @@ export default class PointerTracker {
     this.cachedRelativeAverages = this.getRelativeCoordsAverage();
   }
 
-  //Mapping TouchEvents ID
+  // Mapping TouchEvents ID
   private mapTouchEventId(id: number): void {
     for (const [mappedId, touchId] of this.touchEventsIds) {
       if (isNaN(touchId)) {
@@ -156,6 +156,7 @@ export default class PointerTracker {
   // This may happen when pointers have already been removed from tracker (i.e. pointerup event).
   // In situation when NaN would be sent as a response, we return cached value.
   // That prevents handlers from crashing
+
   public getAbsoluteCoordsAverage() {
     const coordsSum = this.getAbsoluteCoordsSum();
 
