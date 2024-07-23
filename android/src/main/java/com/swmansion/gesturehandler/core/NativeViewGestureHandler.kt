@@ -90,9 +90,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           as AccessibilityManager).isTouchExplorationEnabled
 
     if (state == STATE_UNDETERMINED && isTouchExplorationEnabled) {
-      // fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
-      // when talkback is enabled, one real press invokes 2 separate yet identical press events
-      // the invalid ones only differs in that when it's sent, the current handler's state is UNDETERMINED
+      // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
+      // When TalkBack is enabled, two identical press events are sent, while only one is expected. 
+      // The unexpected one is caught by looking at the state of the current handler,
+      // which is UNDETERMINED when receiving the invalid event, and BEGAN when receiving the valid one.
       return
     }
 
