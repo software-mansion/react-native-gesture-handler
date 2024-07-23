@@ -7,6 +7,9 @@ on:
       - src/specs/**
       - android/paper/**
       - .github/workflows/check-archs-consistency.yml
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
