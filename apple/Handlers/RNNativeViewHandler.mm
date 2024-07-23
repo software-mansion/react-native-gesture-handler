@@ -212,6 +212,11 @@ __weak RNGestureHandler *_gestureHandler;
   [super setDelegate:delegate];
 }
 
+- (BOOL)hasPointerInside
+{
+  return NSPointInRect([self locationInView:self.view], self.view.bounds);
+}
+
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if (self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)]) {
@@ -229,6 +234,7 @@ __weak RNGestureHandler *_gestureHandler;
 
 - (void)mouseDragged:(NSEvent *)event
 {
+  [self hasPointerInside];
   self.state = NSGestureRecognizerStateChanged;
   [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
 }
@@ -276,6 +282,12 @@ __weak RNGestureHandler *_gestureHandler;
     NSScrollView *scrollView = [view.subviews objectAtIndex:0];
   }
 #endif // RCT_NEW_ARCH_ENABLED
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer
+{
+  return [RNGestureHandlerEventExtraData forPointerInside:[recognizer hasPointerInside]
+                                          withPointerType:RNGestureHandlerMouse];
 }
 
 @end
