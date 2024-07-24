@@ -224,18 +224,15 @@ __weak RNGestureHandler *_gestureHandler;
 - (void)mouseDown:(NSEvent *)event
 {
   self.state = NSGestureRecognizerStateBegan;
-  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event
 {
   self.state = NSGestureRecognizerStateChanged;
-  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
-  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
   self.state = NSGestureRecognizerStateEnded;
   [self reset];
 }
