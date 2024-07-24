@@ -70,16 +70,19 @@
 - (void)mouseDown:(NSEvent *)event
 {
   self.state = NSGestureRecognizerStateBegan;
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event
 {
   self.state = NSGestureRecognizerStateChanged;
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
   self.state = NSGestureRecognizerStateEnded;
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
   [self reset];
 }
 
