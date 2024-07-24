@@ -207,11 +207,6 @@
 
 __weak RNGestureHandler *_gestureHandler;
 
-- (void)setDelegate:(id<NSGestureRecognizerDelegate>)delegate
-{
-  [super setDelegate:delegate];
-}
-
 - (BOOL)hasPointerInside
 {
   return NSPointInRect([self locationInView:self.view], self.view.bounds);
