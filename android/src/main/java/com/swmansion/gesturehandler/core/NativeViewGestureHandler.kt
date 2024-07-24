@@ -89,9 +89,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
     if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup && isTouchExplorationEnabled) {
       // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
-      // When TalkBack is enabled, two identical press events are sent, while only one is expected.
-      // The unexpected one is caught by looking at the state of the current handler,
-      // which is UNDETERMINED when receiving the invalid event, and BEGAN when receiving the valid one.
+      // When TalkBack is enabled, events are often not being sent to the orchestrator for processing.
+      // Instead, states will be changed directly by an alternative mechanism added in this PR:
+      // https://github.com/software-mansion/react-native-gesture-handler/pull/2234
       return
     }
 
