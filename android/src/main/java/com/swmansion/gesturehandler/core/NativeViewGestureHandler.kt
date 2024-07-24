@@ -9,6 +9,8 @@ import android.widget.ScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.textinput.ReactEditText
+import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+import com.swmansion.gesturehandler.react.isScreenReaderOn
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
@@ -82,6 +84,17 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
+
+    val isTouchExplorationEnabled = view.context.isScreenReaderOn()
+
+    if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup && isTouchExplorationEnabled) {
+      // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
+      // When TalkBack is enabled, events are often not being sent to the orchestrator for processing.
+      // Instead, states will be changed directly by an alternative mechanism added in this PR:
+      // https://github.com/software-mansion/react-native-gesture-handler/pull/2234
+      return
+    }
+
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
@@ -106,13 +119,16 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           view.onTouchEvent(event)
           activate()
         }
+
         tryIntercept(view, event) -> {
           view.onTouchEvent(event)
           activate()
         }
+
         hook.wantsToHandleEventBeforeActivation() -> {
           hook.handleEventBeforeActivation(event)
         }
+
         state != STATE_BEGAN -> {
           if (hook.canBegin(event)) {
             begin()
