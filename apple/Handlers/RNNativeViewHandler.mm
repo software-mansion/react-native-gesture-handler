@@ -251,30 +251,6 @@ __weak RNGestureHandler *_gestureHandler;
   return self;
 }
 
-- (void)bindToView:(NSView *)view
-{
-  [super bindToView:view];
-
-  NSLog(@"Bound to view");
-
-  // We can restore default scrollview behaviour to delay touches to scrollview's children
-  // because gesture handler system can handle cancellation of scroll recognizer when JS responder
-  // is set
-#ifdef RCT_NEW_ARCH_ENABLED
-  if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
-    UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
-    scrollView.delaysContentTouches = YES;
-  }
-#else
-  if ([view isKindOfClass:[RCTScrollView class]]) {
-    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
-    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
-    // subview
-    NSScrollView *scrollView = [view.subviews objectAtIndex:0];
-  }
-#endif // RCT_NEW_ARCH_ENABLED
-}
-
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPointerInside:[recognizer hasPointerInside]
