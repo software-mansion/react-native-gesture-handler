@@ -69,6 +69,8 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
+  [_gestureHandler setCurrentPointerTypeToMouse];
+
   self.state = NSGestureRecognizerStateBegan;
   [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
 }
