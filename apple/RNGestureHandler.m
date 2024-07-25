@@ -501,7 +501,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // might be called after some pointers are down, and after state manipulation by the user.
   // Pointer tracker calls this method when it resets, and in that case it no longer tracks
   // any pointers, thus entering this if
-  if (YES) {
+  if (!_needsPointerData || _pointerTracker.trackedPointersCount == 0) {
     _lastState = RNGestureHandlerStateUndetermined;
     _state = RNGestureHandlerStateBegan;
   }
