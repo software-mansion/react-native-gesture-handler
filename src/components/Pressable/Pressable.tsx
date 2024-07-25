@@ -35,7 +35,7 @@ export default function Pressable(props: PressableProps) {
   // Disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
   const hasPassedBoundsChecks = useRef<boolean>(false);
-  const preventNativeEffects = useRef<boolean>(false);
+  const shouldPreventNativeEffects = useRef<boolean>(false);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -246,7 +246,7 @@ export default function Pressable(props: PressableProps) {
           // On iOS, short taps will make LongPress gesture call onTouchesUp before Native gesture calls onStart
           // This variable ensures that onStart isn't detected as the first gesture since Pressable is pressed.
           if (deferredEventPayload.current !== null) {
-            preventNativeEffects.current = true;
+            shouldPreventNativeEffects.current = true;
           }
           pressOutHandler(gestureTouchToPressableEvent(event));
         })
@@ -318,8 +318,8 @@ export default function Pressable(props: PressableProps) {
             return;
           }
 
-          if (preventNativeEffects.current) {
-            preventNativeEffects.current = false;
+          if (shouldPreventNativeEffects.current) {
+            shouldPreventNativeEffects.current = false;
             return;
           }
 
