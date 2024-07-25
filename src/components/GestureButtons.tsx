@@ -56,7 +56,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
       this.lastActive &&
       this.props.onPress
     ) {
-      this.props.onPress(active);
+      this.props.onPress(pointerInside);
     }
 
     if (
