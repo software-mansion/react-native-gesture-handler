@@ -62,7 +62,6 @@
 - (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-  [self reset];
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
