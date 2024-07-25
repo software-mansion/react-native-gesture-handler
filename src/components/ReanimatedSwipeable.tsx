@@ -6,18 +6,17 @@ import React, {
   ForwardedRef,
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useRef,
 } from 'react';
+import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
-  Gesture,
-  GestureDetector,
   GestureStateChangeEvent,
   GestureUpdateEvent,
-  PanGestureHandlerEventPayload,
-  PanGestureHandlerProps,
-} from 'react-native-gesture-handler';
+} from '../handlers/gestureHandlerCommon';
+import type { PanGestureHandlerProps } from '../handlers/PanGestureHandler';
+import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 import Animated, {
   Extrapolation,
   SharedValue,
@@ -173,8 +172,6 @@ export interface SwipeableProps
     swipeable: SwipeableMethods
   ) => React.ReactNode;
 
-  useNativeAnimations?: boolean;
-
   animationOptions?: Record<string, unknown>;
 
   /**
@@ -243,6 +240,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
+    const overshootLeftProp = props.overshootLeft;
+    const overshootRightProp = props.overshootRight;
+
     const calculateCurrentOffset = useCallback(() => {
       'worklet';
       if (rowState.value === 1) {
@@ -257,10 +257,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       'worklet';
       rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
 
-      const {
-        overshootLeft = leftWidth.value > 0,
-        overshootRight = rightWidth.value > 0,
-      } = props;
+      const overshootLeft = overshootLeftProp ?? leftWidth.value > 0;
+      const overshootRight = overshootRightProp ?? rightWidth.value > 0;
 
       const startOffset =
         rowState.value === 1
@@ -317,54 +315,85 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
     };
 
+    const dispatchImmediateEvents = useCallback(
+      (fromValue: number, toValue: number) => {
+        if (toValue > 0 && props.onSwipeableWillOpen) {
+          props.onSwipeableWillOpen('left');
+        } else if (toValue < 0 && props.onSwipeableWillOpen) {
+          props.onSwipeableWillOpen('right');
+        } else if (props.onSwipeableWillClose) {
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          props.onSwipeableWillClose(closingDirection);
+        }
+      },
+      [
+        props,
+        props.onSwipeableWillClose,
+        props.onSwipeableWillOpen,
+        swipeableMethods,
+      ]
+    );
+
+    const dispatchEndEvents = useCallback(
+      (fromValue: number, toValue: number) => {
+        if (toValue > 0 && props.onSwipeableOpen) {
+          props.onSwipeableOpen('left', swipeableMethods.current);
+        } else if (toValue < 0 && props.onSwipeableOpen) {
+          props.onSwipeableOpen('right', swipeableMethods.current);
+        } else if (props.onSwipeableClose) {
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          props.onSwipeableClose(closingDirection, swipeableMethods.current);
+        }
+      },
+      [props, props.onSwipeableClose, props.onSwipeableOpen, swipeableMethods]
+    );
+
+    const animationOptionsProp = props.animationOptions;
+
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
-
         rowState.value = Math.sign(toValue);
+
+        const springConfig = {
+          duration: 1000,
+          dampingRatio: 0.9,
+          stiffness: 500,
+          velocity: velocityX,
+          overshootClamping: true,
+          ...animationOptionsProp,
+        };
 
         appliedTranslation.value = withSpring(
           toValue,
-          {
-            duration: 1000,
-            dampingRatio: 1.2,
-            stiffness: 500,
-            velocity: velocityX,
-            ...props.animationOptions,
-          },
+          springConfig,
           (isFinished) => {
             if (isFinished) {
-              if (toValue > 0 && props.onSwipeableOpen) {
-                runOnJS(props.onSwipeableOpen)(
-                  'left',
-                  swipeableMethods.current
-                );
-              } else if (toValue < 0 && props.onSwipeableOpen) {
-                runOnJS(props.onSwipeableOpen)(
-                  'right',
-                  swipeableMethods.current
-                );
-              } else if (props.onSwipeableClose) {
-                const closingDirection = fromValue > 0 ? 'left' : 'right';
-                runOnJS(props.onSwipeableClose)(
-                  closingDirection,
-                  swipeableMethods.current
-                );
-              }
+              runOnJS(dispatchEndEvents)(fromValue, toValue);
             }
           }
         );
 
-        if (toValue > 0 && props.onSwipeableWillOpen) {
-          runOnJS(props.onSwipeableWillOpen)('left');
-        } else if (toValue < 0 && props.onSwipeableWillOpen) {
-          runOnJS(props.onSwipeableWillOpen)('right');
-        } else if (props.onSwipeableWillClose) {
-          const closingDirection = fromValue > 0 ? 'left' : 'right';
-          runOnJS(props.onSwipeableWillClose)(closingDirection);
-        }
+        const progressTarget = toValue === 0 ? 0 : 1;
+
+        // Velocity is in px, while progress is in %
+        springConfig.velocity = 0;
+
+        showLeftProgress.value =
+          leftWidth.value > 0 ? withSpring(progressTarget, springConfig) : 0;
+        showRightProgress.value =
+          rightWidth.value > 0 ? withSpring(progressTarget, springConfig) : 0;
+
+        runOnJS(dispatchImmediateEvents)(fromValue, toValue);
       },
-      [appliedTranslation, props, rowState, swipeableMethods]
+      [
+        showLeftProgress,
+        appliedTranslation,
+        dispatchEndEvents,
+        dispatchImmediateEvents,
+        animationOptionsProp,
+        rowState,
+      ]
     );
 
     const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
@@ -379,47 +408,39 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       dragOffsetFromRightEdge = 10,
     } = props;
 
-    useEffect(() => {
-      swipeableMethods.current = {
-        close() {
-          'worklet';
-          animateRow(calculateCurrentOffset(), 0);
-        },
-        openLeft() {
-          'worklet';
-          animateRow(calculateCurrentOffset(), leftWidth.value);
-        },
-        openRight() {
-          'worklet';
-          rightWidth.value = rowWidth.value - rightOffset.value;
-          animateRow(calculateCurrentOffset(), -rightWidth.value);
-        },
-        reset() {
-          'worklet';
-          userDrag.value = 0;
-          appliedTranslation.value = 0;
-          rowState.value = 0;
-        },
-      };
-    }, [
-      animateRow,
-      calculateCurrentOffset,
-      appliedTranslation,
-      leftWidth,
-      rightOffset,
-      rightWidth,
-      rowState,
-      rowWidth,
-      userDrag,
-    ]);
+    swipeableMethods.current = {
+      close() {
+        'worklet';
+        animateRow(calculateCurrentOffset(), 0);
+      },
+      openLeft() {
+        'worklet';
+        animateRow(calculateCurrentOffset(), leftWidth.value);
+      },
+      openRight() {
+        'worklet';
+        rightWidth.value = rowWidth.value - rightOffset.value;
+        animateRow(calculateCurrentOffset(), -rightWidth.value);
+      },
+      reset() {
+        'worklet';
+        userDrag.value = 0;
+        showLeftProgress.value = 0;
+        appliedTranslation.value = 0;
+        rowState.value = 0;
+      },
+    };
 
-    const leftAnimatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateX: leftActionTranslate.value,
-        },
-      ],
-    }));
+    const leftAnimatedStyle = useAnimatedStyle(
+      () => ({
+        transform: [
+          {
+            translateX: leftActionTranslate.value,
+          },
+        ],
+      }),
+      [leftActionTranslate]
+    );
 
     const leftElement = renderLeftActions && (
       <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
@@ -436,13 +457,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
-    const rightAnimatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateX: rightActionTranslate.value,
-        },
-      ],
-    }));
+    const rightAnimatedStyle = useAnimatedStyle(
+      () => ({
+        transform: [
+          {
+            translateX: rightActionTranslate.value,
+          },
+        ],
+      }),
+      [rightActionTranslate]
+    );
 
     const rightElement = renderRightActions && (
       <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
@@ -459,6 +483,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
+    const leftThresholdProp = props.leftThreshold;
+    const rightThresholdProp = props.rightThreshold;
+
     const handleRelease = (
       event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
     ) => {
@@ -468,10 +495,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
       rightWidth.value = rowWidth.value - rightOffset.value;
 
-      const {
-        leftThreshold = leftWidth.value / 2,
-        rightThreshold = rightWidth.value / 2,
-      } = props;
+      const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
+      const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
 
       const startOffsetX = calculateCurrentOffset() + userDrag.value / friction;
       const translationX = (userDrag.value + DRAG_TOSS * velocityX) / friction;
@@ -485,12 +510,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           toValue = -rightWidth.value;
         }
       } else if (rowState.value === 1) {
-        // swiped to left
+        // Swiped to left
         if (translationX > -leftThreshold) {
           toValue = leftWidth.value;
         }
       } else {
-        // swiped to right
+        // Swiped to right
         if (translationX < rightThreshold) {
           toValue = -rightWidth.value;
         }
@@ -510,6 +535,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     });
 
+    const onSwipeableOpenStartDrag = props.onSwipeableOpenStartDrag;
+    const onSwipeableCloseStartDrag = props.onSwipeableCloseStartDrag;
+
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
         userDrag.value = event.translationX;
@@ -523,16 +551,24 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? 'left'
             : 'right';
 
-        if (rowState.value === 0 && props.onSwipeableOpenStartDrag) {
-          runOnJS(props.onSwipeableOpenStartDrag)(direction);
-        } else if (props.onSwipeableCloseStartDrag) {
-          runOnJS(props.onSwipeableCloseStartDrag)(direction);
+        if (rowState.value === 0 && onSwipeableOpenStartDrag) {
+          runOnJS(onSwipeableOpenStartDrag)(direction);
+        } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
+          runOnJS(onSwipeableCloseStartDrag)(direction);
         }
         updateAnimatedEvent();
       })
-      .onEnd((event) => {
-        handleRelease(event);
-      });
+      .onEnd(
+        (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+          handleRelease(event);
+        }
+      );
+
+    if (props.enableTrackpadTwoFingerGesture) {
+      panGesture.enableTrackpadTwoFingerGesture(
+        props.enableTrackpadTwoFingerGesture
+      );
+    }
 
     panGesture.activeOffsetX([
       -dragOffsetFromRightEdge,
@@ -544,27 +580,31 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       swipeableMethods,
     ]);
 
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: appliedTranslation.value }],
-      pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
-    }));
+    const animatedStyle = useAnimatedStyle(
+      () => ({
+        transform: [{ translateX: appliedTranslation.value }],
+        pointerEvents: rowState.value === 0 ? 'auto' : 'box-only',
+      }),
+      [appliedTranslation, rowState]
+    );
 
-    const composedGesture = Gesture.Race(panGesture, tapGesture);
+    const containerStyle = props.containerStyle;
+    const childrenContainerStyle = props.childrenContainerStyle;
+
     return (
-      <Animated.View
-        onLayout={onRowLayout}
-        style={[styles.container, props.containerStyle]}>
-        {leftElement}
-        {rightElement}
-        <GestureDetector
-          gesture={composedGesture}
-          touchAction="pan-y"
-          {...props}>
-          <Animated.View style={[animatedStyle, props.childrenContainerStyle]}>
-            {children}
-          </Animated.View>
-        </GestureDetector>
-      </Animated.View>
+      <GestureDetector gesture={panGesture} touchAction="pan-y">
+        <Animated.View
+          onLayout={onRowLayout}
+          style={[styles.container, containerStyle]}>
+          {leftElement}
+          {rightElement}
+          <GestureDetector gesture={tapGesture} touchAction="pan-y">
+            <Animated.View style={[animatedStyle, childrenContainerStyle]}>
+              {children}
+            </Animated.View>
+          </GestureDetector>
+        </Animated.View>
+      </GestureDetector>
     );
   }
 );

@@ -8,20 +8,15 @@ import {
 import { customDirectEventTypes } from './customDirectEventTypes';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
-import {
-  handlerIDToTag,
-  getNextHandlerTag,
-  registerOldGestureHandler,
-} from './handlersRegistry';
+import { handlerIDToTag, registerOldGestureHandler } from './handlersRegistry';
+import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
   BaseGestureHandlerProps,
-  filterConfig,
   GestureEvent,
   HandlerStateChangeEvent,
-  findNodeHandle,
-  scheduleFlushOperations,
 } from './gestureHandlerCommon';
+import { filterConfig, findNodeHandle, scheduleFlushOperations } from './utils';
 import { ValueOf } from '../typeUtils';
 import { deepEqual, isFabric, isJestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
@@ -86,10 +81,10 @@ if (UIManagerConstants) {
 // Wrap JS responder calls and notify gesture handler manager
 const {
   setJSResponder: oldSetJSResponder = () => {
-    //no operation
+    // no-op
   },
   clearJSResponder: oldClearJSResponder = () => {
-    //no operation
+    // no-op
   },
 } = UIManagerAny;
 UIManagerAny.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
@@ -323,7 +318,7 @@ export default function createHandler<
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
+        // Typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
           RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
         )(

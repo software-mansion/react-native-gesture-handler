@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './src/release_tests/doubleDraggable';
+import GesturizedPressable from './src/release_tests/gesturizedPressable';
 import { ComboWithGHScroll } from './src/release_tests/combo';
 import {
   TouchablesIndex,
@@ -35,6 +36,7 @@ import ContextMenu from './src/release_tests/contextMenu';
 import NestedTouchables from './src/release_tests/nestedTouchables';
 import NestedButtons from './src/release_tests/nestedButtons';
 import PointerType from './src/release_tests/pointerType';
+import SwipeableReanimation from './src/release_tests/swipeableReanimation';
 import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
@@ -63,6 +65,7 @@ import Hover from './src/new_api/hover';
 import HoverableIcons from './src/new_api/hoverable_icons';
 import VelocityTest from './src/new_api/velocityTest';
 import Swipeable from 'src/new_api/swipeable';
+import Pressable from 'src/new_api/pressable';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
@@ -163,7 +166,9 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'MouseButtons', component: MouseButtons },
       { name: 'ContextMenu (web only)', component: ContextMenu },
       { name: 'PointerType', component: PointerType },
+      { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
+      { name: 'Gesturized pressable', component: GesturizedPressable },
     ],
   },
 ];

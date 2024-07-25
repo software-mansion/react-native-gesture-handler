@@ -12,7 +12,7 @@ import FunctionalComponents from './\_shared/gesture-detector-functional1.md';
 ## Reference
 
 ```javascript
-import { GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 function App() {
   const tap = Gesture.Tap();

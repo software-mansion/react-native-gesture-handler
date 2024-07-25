@@ -3204,10 +3204,10 @@
     "@svgr/plugin-jsx" "^6.5.1"
     "@svgr/plugin-svgo" "^6.5.1"
 
-"@swmansion/t-rex-ui@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.npmjs.org/@swmansion/t-rex-ui/-/t-rex-ui-0.0.9.tgz#192c8e6beabcbb885b37e485157b610e2b8599b9"
-  integrity sha512-4FoJP/7RFeDB36YEvRd0dvqZ7jbq9xipbyOFk0uM7Dpc9xgkO3ZVhPuS6lbHOvN3L8/rvBE/d6nDRZH3yd8Y9g==
+"@swmansion/t-rex-ui@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.npmjs.org/@swmansion/t-rex-ui/-/t-rex-ui-0.0.13.tgz#9602168498ce1b6e74dad855982c719676828e79"
+  integrity sha512-PLUkfb8bN/wu8I/rY8KKb9xztxjPnNf9O8Ash40dKIkN0lcGERIgOb6HrVv9I5uyeszxHhVOS0S2tu/seVbO+w==
   dependencies:
     "@docsearch/react" "^3.6.0"
     "@docusaurus/core" "^2.4.3"
@@ -6565,9 +6565,9 @@ fast-json-stable-stringify@^2.0.0:
   integrity sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==
 
 fast-loops@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/fast-loops/-/fast-loops-1.1.3.tgz#ce96adb86d07e7bf9b4822ab9c6fac9964981f75"
-  integrity sha512-8EZzEP0eKkEEVX+drtd9mtuQ+/QrlfW/5MlwcwK5Nds6EkZ/tRzEexkzUY2mIssnAyVLT+TKHuRXmFNNXYUd6g==
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/fast-loops/-/fast-loops-1.1.4.tgz#61bc77d518c0af5073a638c6d9d5c7683f069ce2"
+  integrity sha512-8dbd3XWoKCTms18ize6JmQF1SFnnfj5s0B7rRry22EofgMu7B6LKHVh+XfFqFGsqnbH54xgeO83PzpKI+ODhlg==
 
 fast-url-parser@1.1.3:
   version "1.1.3"

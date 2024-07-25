@@ -333,10 +333,10 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.tryToSendMoveEvent(true, event);
   }
   protected onPointerMoveOver(_event: AdaptedEvent): void {
-    // used only by hover gesture handler atm
+    // Used only by hover gesture handler atm
   }
   protected onPointerMoveOut(_event: AdaptedEvent): void {
-    // used only by hover gesture handler atm
+    // Used only by hover gesture handler atm
   }
   private tryToSendMoveEvent(out: boolean, event: AdaptedEvent): void {
     if ((out && this.shouldCancelWhenOutside) || !this.enabled) {
@@ -569,7 +569,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected transformNativeEvent(): Record<string, unknown> {
-    // those properties are shared by most handlers and if not this method will be overriden
+    // Those properties are shared by most handlers and if not this method will be overriden
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
     const lastRelativeCoords = this.tracker.getRelativeCoordsAverage();
 
@@ -726,15 +726,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     const offsetX: number = x - rect.pageX;
     const offsetY: number = y - rect.pageY;
 
-    if (
-      offsetX >= left &&
-      offsetX <= right &&
-      offsetY >= top &&
-      offsetY <= bottom
-    ) {
-      return true;
-    }
-    return false;
+    return (
+      offsetX >= left && offsetX <= right && offsetY >= top && offsetY <= bottom
+    );
   }
 
   public isButtonInConfig(mouseButton: MouseButton | undefined) {
@@ -849,11 +843,11 @@ function invokeNullableMethod(
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (value?.setValue) {
-      //Reanimated API
+      // Reanimated API
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       value.setValue(nativeValue);
     } else {
-      //RN Animated API
+      // RN Animated API
       method.__nodeConfig.argMapping[index] = [key, nativeValue];
     }
   }

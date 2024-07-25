@@ -17,6 +17,12 @@ const root = path.resolve(__dirname, '..');
 
 const modules = Object.keys(pack.peerDependencies);
 
+// Gesture handler tries to require 'react-native-reanimated' inside a try...catch
+// block. In root directory, we have reanimated installed but FabricExample doesn't.
+// We need to blacklist reanimated to prevent its JS code from bein in the bundle
+// without the native code or the babel plugin.
+modules.push('react-native-reanimated');
+
 const config = {
   projectRoot: __dirname,
   watchFolders: [root],

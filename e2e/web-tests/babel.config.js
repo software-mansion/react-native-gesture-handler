@@ -14,6 +14,8 @@ module.exports = function (api) {
               '../../src/components/DrawerLayout',
             'react-native-gesture-handler/Swipeable':
               '../../src/components/Swipeable',
+            'react-native-gesture-handler/ReanimatedSwipeable':
+              '../../src/components/ReanimatedSwipeable',
             'react-native-gesture-handler': '../../src/index',
           },
         },

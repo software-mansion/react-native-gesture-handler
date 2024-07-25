@@ -9,6 +9,7 @@ package com.swmansion.gesturehandler.react
 import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
@@ -29,7 +30,8 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     useNativeAnimatedName: Boolean
   ) {
-    super.init(handler.view!!.id)
+    val view = handler.view!!
+    super.init(UIManagerHelper.getSurfaceId(view), view.id)
     this.dataBuilder = dataBuilder
     this.useTopPrefixedName = useNativeAnimatedName
     coalescingKey = handler.eventCoalescingKey

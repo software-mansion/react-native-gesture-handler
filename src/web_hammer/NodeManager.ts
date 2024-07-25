@@ -1,10 +1,4 @@
-import { ValueOf } from '../typeUtils';
-import { HammerGestures } from '../web/Gestures';
-
-const gestures: Record<
-  number,
-  InstanceType<ValueOf<typeof HammerGestures>>
-> = {};
+export const gestures: Record<number, any> = {};
 
 export function getHandler(tag: number) {
   if (tag in gestures) {
@@ -14,10 +8,7 @@ export function getHandler(tag: number) {
   throw new Error(`No handler for tag ${tag}`);
 }
 
-export function createGestureHandler(
-  handlerTag: number,
-  handler: InstanceType<ValueOf<typeof HammerGestures>>
-) {
+export function createGestureHandler(handlerTag: number, handler: any) {
   if (handlerTag in gestures) {
     throw new Error(`Handler with tag ${handlerTag} already exists`);
   }

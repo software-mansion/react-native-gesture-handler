@@ -1,10 +1,7 @@
 import { GestureType, HandlerCallbacks } from '../gesture';
 import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import {
-  filterConfig,
-  scheduleFlushOperations,
-} from '../../gestureHandlerCommon';
+import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { AttachedGestureState } from './types';
@@ -25,7 +22,7 @@ export function updateHandlers(
     const handler = preparedGesture.attachedGestures[i];
     checkGestureCallbacksForWorklets(handler);
 
-    // only update handlerTag when it's actually different, it may be the same
+    // Only update handlerTag when it's actually different, it may be the same
     // if gesture config object is wrapped with useMemo
     if (newGestures[i].handlerTag !== handler.handlerTag) {
       newGestures[i].handlerTag = handler.handlerTag;
@@ -33,15 +30,29 @@ export function updateHandlers(
     }
   }
 
-  // use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
+  // Use queueMicrotask to extract handlerTags, because when it's ran, all refs should be updated
   // and handlerTags in BaseGesture references should be updated in the loop above (we need to wait
   // in case of external relations)
   ghQueueMicrotask(() => {
     if (!preparedGesture.isMounted) {
       return;
     }
+
+    // If amount of gesture configs changes, we need to update the callbacks in shared value
+    let shouldUpdateSharedValueIfUsed =
+      preparedGesture.attachedGestures.length !== newGestures.length;
+
     for (let i = 0; i < newGestures.length; i++) {
       const handler = preparedGesture.attachedGestures[i];
+
+      // If the gestureId is different (gesture isn't wrapped with useMemo or its dependencies changed),
+      // we need to update the shared value, assuming the gesture runs on UI thread or the thread changed
+      if (
+        handler.handlers.gestureId !== newGestures[i].handlers.gestureId &&
+        (newGestures[i].shouldUseReanimated || handler.shouldUseReanimated)
+      ) {
+        shouldUpdateSharedValueIfUsed = true;
+      }
 
       handler.config = newGestures[i].config;
       handler.handlers = newGestures[i].handlers;
@@ -58,35 +69,14 @@ export function updateHandlers(
       registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
 
-    if (preparedGesture.animatedHandlers) {
-      const previousHandlersValue =
-        preparedGesture.animatedHandlers.value ?? [];
+    if (preparedGesture.animatedHandlers && shouldUpdateSharedValueIfUsed) {
       const newHandlersValue = preparedGesture.attachedGestures
-        .filter((g) => g.shouldUseReanimated) // ignore gestures that shouldn't run on UI
+        .filter((g) => g.shouldUseReanimated) // Ignore gestures that shouldn't run on UI
         .map((g) => g.handlers) as unknown as HandlerCallbacks<
         Record<string, unknown>
       >[];
 
-      // if amount of gesture configs changes, we need to update the callbacks in shared value
-      let shouldUpdateSharedValue =
-        previousHandlersValue.length !== newHandlersValue.length;
-
-      if (!shouldUpdateSharedValue) {
-        // if the amount is the same, we need to check if any of the configs inside has changed
-        for (let i = 0; i < newHandlersValue.length; i++) {
-          if (
-            // we can use the `gestureId` prop as it's unique for every config instance
-            newHandlersValue[i].gestureId !== previousHandlersValue[i].gestureId
-          ) {
-            shouldUpdateSharedValue = true;
-            break;
-          }
-        }
-      }
-
-      if (shouldUpdateSharedValue) {
-        preparedGesture.animatedHandlers.value = newHandlersValue;
-      }
+      preparedGesture.animatedHandlers.value = newHandlersValue;
     }
 
     scheduleFlushOperations();
