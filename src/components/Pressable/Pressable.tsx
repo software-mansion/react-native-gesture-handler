@@ -102,7 +102,7 @@ export default function Pressable(props: PressableProps) {
         deferredEventPayload.current = event;
       }
 
-      if (isTouchPropagationAllowed.current === false) {
+      if (!isTouchPropagationAllowed.current) {
         return;
       }
 
@@ -164,7 +164,7 @@ export default function Pressable(props: PressableProps) {
 
   const activateLongPress = useCallback(
     (event: GestureTouchEvent) => {
-      if (isTouchPropagationAllowed.current === false) {
+      if (!isTouchPropagationAllowed.current) {
         return;
       }
 
