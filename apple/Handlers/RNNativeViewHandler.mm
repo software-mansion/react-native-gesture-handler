@@ -21,8 +21,6 @@
 #import <React/RCTScrollView.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
-#if !TARGET_OS_OSX
-
 #pragma mark RNDummyGestureRecognizer
 
 @implementation RNDummyGestureRecognizer {
@@ -37,6 +35,7 @@
   return self;
 }
 
+#if !TARGET_OS_OSX
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerType:event];
@@ -61,6 +60,35 @@
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
 }
+
+#else
+- (BOOL)hasPointerInside
+{
+  return NSPointInRect([self locationInView:self.view], self.view.bounds);
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  [_gestureHandler setCurrentPointerTypeToMouse];
+
+  self.state = NSGestureRecognizerStateBegan;
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  self.state = NSGestureRecognizerStateChanged;
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  self.state = NSGestureRecognizerStateEnded;
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+  [self reset];
+}
+
+#endif
 
 - (void)reset
 {
@@ -92,6 +120,8 @@
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
 }
+
+#if !TARGET_OS_OSX
 
 - (void)bindToView:(UIView *)view
 {
@@ -197,35 +227,14 @@
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
 }
 
-@end
-
 #else
 
-#pragma mark RNDummyGestureRecognizer
-
-@implementation RNDummyGestureRecognizer
-
-- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
+- (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer
 {
-  self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)];
-  return self;
+  return [RNGestureHandlerEventExtraData forPointerInside:[recognizer hasPointerInside]
+                                          withPointerType:RNGestureHandlerMouse];
 }
-
-@end
-
-#pragma mark RNNativeViewGestureHandler
-
-@implementation RNNativeViewGestureHandler
-
-- (instancetype)initWithTag:(NSNumber *)tag
-{
-  RCTLogWarn(@"NativeViewGestureHandler is not supported on macOS");
-  if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
-  }
-  return self;
-}
-
-@end
 
 #endif
+
+@end

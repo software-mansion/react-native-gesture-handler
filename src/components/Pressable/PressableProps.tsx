@@ -18,8 +18,8 @@ export interface PressableAndroidRippleConfig {
   foreground?: null | boolean | undefined;
 }
 
-export type PressEvent = {
-  changedTouches: PressEvent[];
+export type InnerPressableEvent = {
+  changedTouches: InnerPressableEvent[];
   identifier: number;
   locationX: number;
   locationY: number;
@@ -27,11 +27,11 @@ export type PressEvent = {
   pageY: number;
   target: number;
   timestamp: number;
-  touches: PressEvent[];
+  touches: InnerPressableEvent[];
   force?: number;
 };
 
-export type PressableEvent = { nativeEvent: PressEvent };
+export type PressableEvent = { nativeEvent: InnerPressableEvent };
 
 export interface PressableProps
   extends AccessibilityProps,
