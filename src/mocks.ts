@@ -14,7 +14,7 @@ import { State } from './State';
 import { Directions } from './Directions';
 
 const NOOP = () => {
-  // do nothing
+  // Do nothing
 };
 const PanGestureHandler = View;
 const attachGestureHandler = NOOP;
@@ -63,7 +63,7 @@ export default {
   updateGestureHandler,
   flushOperations,
   install,
-  // probably can be removed
+  // Probably can be removed
   Directions,
   State,
 } as const;

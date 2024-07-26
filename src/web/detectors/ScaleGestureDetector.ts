@@ -72,7 +72,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
       ? event.pointerId
       : undefined;
 
-    //Determine focal point
+    // Determine focal point
 
     const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
@@ -81,7 +81,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     const focusX = coordsSum.x / div;
     const focusY = coordsSum.y / div;
 
-    //Determine average deviation from focal point
+    // Determine average deviation from focal point
 
     let devSumX = 0;
     let devSumY = 0;
@@ -103,7 +103,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     const span = Math.hypot(spanX, spanY);
 
-    //Begin/end events
+    // Begin/end events
     const wasInProgress: boolean = this.inProgress;
     this.focusX = focusX;
     this.focusY = focusY;
@@ -128,7 +128,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
       this.inProgress = this.onScaleBegin(this);
     }
 
-    //Handle motion
+    // Handle motion
     if (action !== EventTypes.MOVE) {
       return true;
     }

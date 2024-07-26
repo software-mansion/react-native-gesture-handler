@@ -34,6 +34,7 @@ import NestedFling from './src/release_tests/nestedFling';
 import MouseButtons from './src/release_tests/mouseButtons';
 import ContextMenu from './src/release_tests/contextMenu';
 import NestedTouchables from './src/release_tests/nestedTouchables';
+import NestedPressables from './src/release_tests/nestedPressables';
 import NestedButtons from './src/release_tests/nestedButtons';
 import PointerType from './src/release_tests/pointerType';
 import SwipeableReanimation from './src/release_tests/swipeableReanimation';
@@ -129,6 +130,10 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Nested Touchables - issue #784',
         component: NestedTouchables as React.ComponentType,
+      },
+      {
+        name: 'Nested Pressables - issue #2980',
+        component: NestedPressables as React.ComponentType,
       },
       {
         name: 'Nested buttons (sound & ripple on Android)',

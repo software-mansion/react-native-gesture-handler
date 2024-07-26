@@ -13,7 +13,7 @@ const warningMessage = tagMessage(
   'react-native-reanimated is required in order to use synchronous state management'
 );
 
-// check if reanimated module is available, but look for useSharedValue as conditional
+// Check if reanimated module is available, but look for useSharedValue as conditional
 // require of reanimated can sometimes return content of `utils.ts` file (?)
 const REANIMATED_AVAILABLE = Reanimated?.useSharedValue !== undefined;
 const setGestureState = Reanimated?.setGestureState;

@@ -43,7 +43,7 @@ export function tagMessage(msg: string) {
   return `[react-native-gesture-handler] ${msg}`;
 }
 
-// helper method to check whether Fabric is enabled, however global.nativeFabricUIManager
+// Helper method to check whether Fabric is enabled, however global.nativeFabricUIManager
 // may not be initialized before the first render
 export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types

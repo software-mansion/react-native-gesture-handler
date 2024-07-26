@@ -11,7 +11,7 @@ export default function GestureHandlerRootView({
   style,
   ...rest
 }: GestureHandlerRootViewProps) {
-  // try initialize fabric on the first render, at this point we can
+  // Try initialize fabric on the first render, at this point we can
   // reliably check if fabric is enabled (the function contains a flag
   // to make sure it's called only once)
   maybeInitializeFabric();

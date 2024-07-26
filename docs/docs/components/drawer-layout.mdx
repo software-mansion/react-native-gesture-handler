@@ -77,7 +77,13 @@ function. This function is called as a drawer sliding open from touch events. Th
 
 ### `onDrawerStateChanged`
 
-function. This function is called when the status of the drawer changes. Possible values that can be passed back are: 'Idle', 'Dragging', and 'Settling'.
+function. This function is called when the status of the drawer changes. It takes two arguments:
+
+- `newState: DrawerState` - state of the `Drawer`. It can be one of the following:
+  - `Idle`
+  - `Dragging`
+  - `Settling`
+- `drawerWillShow: boolean` - if `true`, `Drawer` is about to open.
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 

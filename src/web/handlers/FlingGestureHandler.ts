@@ -69,7 +69,7 @@ export default class FlingGestureHandler extends GestureHandler {
     const axialDirectionsList = Object.values(Directions);
     const diagonalDirectionsList = Object.values(DiagonalDirections);
 
-    // list of alignments to all activated directions
+    // List of alignments to all activated directions
     const axialAlignmentList = axialDirectionsList.map((direction) =>
       getAlignment(direction, AXIAL_DEVIATION_COSINE)
     );

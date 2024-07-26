@@ -6,16 +6,16 @@ export { PointerType } from './PointerType';
 export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
-  // event types
+  // Event types
   GestureEvent,
   HandlerStateChangeEvent,
-  // event payloads types
+  // Event payloads types
   GestureEventPayload,
   HandlerStateChangeEventPayload,
-  // pointer events
+  // Pointer events
   GestureTouchEvent,
   TouchData,
-  // new api event types
+  // New api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
 } from './handlers/gestureHandlerCommon';
@@ -104,10 +104,10 @@ export {
 } from './components/GestureComponents';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
-  //events
+  // Events
   GestureHandlerGestureEvent,
   GestureHandlerStateChangeEvent,
-  //event payloads
+  // Event payloads
   GestureHandlerGestureEventNativeEvent,
   GestureHandlerStateChangeNativeEvent,
   NativeViewGestureHandlerGestureEvent,
@@ -126,7 +126,7 @@ export type {
   RotationGestureHandlerStateChangeEvent,
   FlingGestureHandlerGestureEvent,
   FlingGestureHandlerStateChangeEvent,
-  // handlers props
+  // Handlers props
   NativeViewGestureHandlerProperties,
   TapGestureHandlerProperties,
   LongPressGestureHandlerProperties,
@@ -135,7 +135,7 @@ export type {
   RotationGestureHandlerProperties,
   FlingGestureHandlerProperties,
   ForceTouchGestureHandlerProperties,
-  // buttons props
+  // Buttons props
   RawButtonProperties,
   BaseButtonProperties,
   RectButtonProperties,

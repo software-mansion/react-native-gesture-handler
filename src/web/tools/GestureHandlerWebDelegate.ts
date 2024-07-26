@@ -37,16 +37,11 @@ export class GestureHandlerWebDelegate
 
     this.addContextMenuListeners(config);
 
-    if (!config.userSelect) {
-      this.view.style['webkitUserSelect'] = 'none';
-      this.view.style['userSelect'] = 'none';
-    } else {
-      this.view.style['webkitUserSelect'] = config.userSelect;
-      this.view.style['userSelect'] = config.userSelect;
-    }
+    this.view.style['userSelect'] = config.userSelect ?? 'none';
+    this.view.style['webkitUserSelect'] = config.userSelect ?? 'none';
 
     this.view.style['touchAction'] = config.touchAction ?? 'none';
-    //@ts-ignore This one disables default events on Safari
+    // @ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = 'none';
 
     this.eventManagers.push(new PointerEventManager(this.view));

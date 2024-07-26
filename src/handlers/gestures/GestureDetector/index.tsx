@@ -111,7 +111,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   );
 
   const webEventHandlersRef = useWebEventHandlers();
-  // store state in ref to prevent unnecessary renders
+  // Store state in ref to prevent unnecessary renders
   const state = useRef<GestureDetectorState>({
     firstRender: true,
     viewRef: null,

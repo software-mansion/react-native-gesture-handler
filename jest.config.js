@@ -5,5 +5,8 @@ module.exports = {
     "node_modules/?!(react-native-reanimated)",
     "node_modules/?!(react-native)"
   ],
+  modulePathIgnorePatterns: [
+    "<rootDir>/lib/"
+  ],
   roots: ["<rootDir>/src/"]
 };

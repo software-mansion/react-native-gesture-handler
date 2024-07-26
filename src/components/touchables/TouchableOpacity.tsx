@@ -24,7 +24,7 @@ export default class TouchableOpacity extends Component<TouchableOpacityProps> {
     activeOpacity: 0.2,
   };
 
-  // opacity is 1 one by default but could be overwritten
+  // Opacity is 1 one by default but could be overwritten
   getChildStyleOpacityWithDefault = () => {
     const childStyle = StyleSheet.flatten(this.props.style) || {};
     return childStyle.opacity == null

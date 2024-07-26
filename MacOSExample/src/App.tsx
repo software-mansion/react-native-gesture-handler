@@ -12,7 +12,10 @@ import {
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  RectButton,
+} from 'react-native-gesture-handler';
 
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
@@ -100,9 +103,9 @@ interface MainScreenItemProps {
 
 function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
-    <Pressable style={[styles.button]} onPress={() => onPressItem(name)}>
+    <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
-    </Pressable>
+    </RectButton>
   );
 }
 

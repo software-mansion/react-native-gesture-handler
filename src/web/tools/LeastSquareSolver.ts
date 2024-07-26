@@ -69,17 +69,17 @@ class Matrix {
   }
 }
 
-/// An nth degree polynomial fit to a dataset.
+// An nth degree polynomial fit to a dataset.
 class PolynomialFit {
-  /// The polynomial coefficients of the fit.
-  ///
-  /// For each `i`, the element `coefficients[i]` is the coefficient of
-  /// the `i`-th power of the variable.
+  // The polynomial coefficients of the fit.
+  //
+  // For each `i`, the element `coefficients[i]` is the coefficient of
+  // the `i`-th power of the variable.
   public coefficients: number[];
 
-  /// Creates a polynomial fit of the given degree.
-  ///
-  /// There are n + 1 coefficients in a fit of degree n.
+  // Creates a polynomial fit of the given degree.
+  //
+  // There are n + 1 coefficients in a fit of degree n.
   constructor(degree: number) {
     this.coefficients = new Array<number>(degree + 1);
   }
@@ -87,27 +87,27 @@ class PolynomialFit {
 
 const precisionErrorTolerance = 1e-10;
 
-/// Uses the least-squares algorithm to fit a polynomial to a set of data.
+// Uses the least-squares algorithm to fit a polynomial to a set of data.
 export default class LeastSquareSolver {
-  /// The x-coordinates of each data point.
+  // The x-coordinates of each data point.
   private x: number[];
-  /// The y-coordinates of each data point.
+  // The y-coordinates of each data point.
   private y: number[];
-  /// The weight to use for each data point.
+  // The weight to use for each data point.
   private w: number[];
 
-  /// Creates a least-squares solver.
-  ///
-  /// The [x], [y], and [w] arguments must not be null.
+  // Creates a least-squares solver.
+  //
+  // The [x], [y], and [w] arguments must not be null.
   constructor(x: number[], y: number[], w: number[]) {
     this.x = x;
     this.y = y;
     this.w = w;
   }
 
-  /// Fits a polynomial of the given degree to the data points.
-  ///
-  /// When there is not enough data to fit a curve null is returned.
+  // Fits a polynomial of the given degree to the data points.
+  //
+  // When there is not enough data to fit a curve null is returned.
   public solve(degree: number): PolynomialFit | null {
     if (degree > this.x.length) {
       // Not enough data to fit a curve.

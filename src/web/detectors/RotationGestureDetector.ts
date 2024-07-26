@@ -48,7 +48,7 @@ export default class RotationGestureDetector
     this.anchorX = (firstPointerCoords.x + secondPointerCoords.x) / 2;
     this.anchorY = (firstPointerCoords.y + secondPointerCoords.y) / 2;
 
-    //Angle diff should be positive when rotating in clockwise direction
+    // Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
 
     this.rotation = Number.isNaN(this.previousAngle)

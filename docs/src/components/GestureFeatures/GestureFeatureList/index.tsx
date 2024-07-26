@@ -9,7 +9,7 @@ const items = [
   },
   {
     title: 'native components',
-    body: 'Gesture Handler library ships with a set of components that aims to provide best possible interations such as SwipeableRow or Drawer.',
+    body: 'Gesture Handler library ships with a set of components that aim to provide best possible interations such as SwipeableRow or Drawer.',
   },
   {
     title: '120 FPS',

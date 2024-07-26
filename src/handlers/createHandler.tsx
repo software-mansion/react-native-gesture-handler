@@ -81,10 +81,10 @@ if (UIManagerConstants) {
 // Wrap JS responder calls and notify gesture handler manager
 const {
   setJSResponder: oldSetJSResponder = () => {
-    //no operation
+    // no-op
   },
   clearJSResponder: oldClearJSResponder = () => {
-    //no operation
+    // no-op
   },
 } = UIManagerAny;
 UIManagerAny.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
@@ -318,7 +318,7 @@ export default function createHandler<
       this.viewTag = newViewTag;
 
       if (Platform.OS === 'web') {
-        // typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
+        // Typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
         (
           RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
         )(
