@@ -113,6 +113,11 @@
 {
   [super rightMouseDown:event];
   [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
+
+  // This line fixes issue in which handlers couldn't react to mouse clicks after right click.
+  // Right click opens context menu, which prevents RootView from receiving rightMouseUp. This leads
+  // to a situation where RootView is left in Possible state, instead of Failed, thus blocking other handlers.
+  self.state = NSGestureRecognizerStateFailed;
 }
 
 - (void)mouseDragged:(NSEvent *)event
