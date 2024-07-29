@@ -10,7 +10,6 @@ import {
   RectButton,
 } from 'react-native-gesture-handler';
 
-import Empty from '../../example/src/empty/EmptyExample';
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
 import Tap from './basic/tap';
@@ -30,7 +29,6 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Examples',
     data: [
-      { name: 'Empty', component: Empty },
       { name: 'Draggable', component: Draggable },
       { name: 'Pinch & rotate', component: PinchableBox },
       { name: 'Tap', component: Tap },
