@@ -75,7 +75,7 @@
   CGPoint trans = [self translationInView];
   if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
       (TEST_MAX_IF_NOT_NAN(
-          fabs(trans.y * trans.y + trans.x + trans.x), self.allowableMovement * self.allowableMovement))) {
+          fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement))) {
     self.enabled = NO;
     self.enabled = YES;
   }
