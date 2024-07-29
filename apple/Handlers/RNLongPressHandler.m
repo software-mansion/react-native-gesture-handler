@@ -185,6 +185,9 @@
 @interface RNBetterLongPressGestureRecognizer : NSGestureRecognizer {
   dispatch_block_t block;
 
+  CFTimeInterval startTime;
+  CFTimeInterval previousTime;
+
   double minDuration;
   double maxDistance;
 }
@@ -227,23 +230,24 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
+  self.state = NSGestureRecognizerStateBegan;
+  startTime = CACurrentMediaTime();
+
   [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
 
   _initPosition = [self locationInView:self.view];
 
-  self.state = NSGestureRecognizerStateBegan;
-
   __weak typeof(self) weakSelf = self;
+
   block = dispatch_block_create(0, ^{
     __strong typeof(self) strongSelf = weakSelf;
+
     if (strongSelf) {
       strongSelf.state = NSGestureRecognizerStateChanged;
-      [strongSelf->_gestureHandler handleGesture:strongSelf];
-
       strongSelf.state = NSGestureRecognizerStateEnded;
-      [strongSelf->_gestureHandler handleGesture:strongSelf];
     }
   });
+
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
 }
@@ -252,13 +256,17 @@
 {
   [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
 
+  if (block == nil) {
+    return;
+  }
+
   CGPoint trans = [self translationInView];
+
   if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
       (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), maxDistance * maxDistance))) {
-    if (block) {
-      dispatch_block_cancel(block); // Cancels the block if the mouse was released before LONG_PRESS_DURATION
-      block = nil;
-    }
+    dispatch_block_cancel(block);
+    block = nil;
+    self.state = NSGestureRecognizerStateFailed;
   }
 }
 
@@ -267,7 +275,7 @@
   [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
 
   if (block) {
-    dispatch_block_cancel(block); // Cancels the block if the mouse was released before LONG_PRESS_DURATION
+    dispatch_block_cancel(block);
     block = nil;
   }
 
@@ -276,6 +284,7 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
+  previousTime = CACurrentMediaTime();
   [_gestureHandler handleGesture:recognizer];
 }
 
@@ -286,7 +295,7 @@
 
 - (void)reset
 {
-  if (self.state == UIGestureRecognizerStateFailed) {
+  if (self.state == NSGestureRecognizerStateFailed) {
     [self triggerAction];
   }
 
@@ -294,6 +303,11 @@
 
   [super reset];
   [_gestureHandler reset];
+}
+
+- (NSUInteger)getDuration
+{
+  return (previousTime - startTime) * 1000;
 }
 
 @end
@@ -332,6 +346,15 @@
   if (prop != nil) {
     [recognizer setMaxDist:[RCTConvert CGFloat:prop]];
   }
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
+{
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+                                 withNumberOfTouches:1
+                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
+                                     withPointerType:_pointerType];
 }
 
 @end
