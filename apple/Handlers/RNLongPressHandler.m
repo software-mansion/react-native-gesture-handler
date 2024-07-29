@@ -182,15 +182,151 @@
 
 #else
 
+@interface RNBetterLongPressGestureRecognizer : NSGestureRecognizer {
+  dispatch_block_t block;
+
+  double minDuration;
+  double maxDistance;
+}
+
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
+- (void)handleGesture:(UIGestureRecognizer *)recognizer;
+- (NSUInteger)getDuration;
+
+@end
+
+@implementation RNBetterLongPressGestureRecognizer {
+  __weak RNGestureHandler *_gestureHandler;
+  CGPoint _initPosition;
+}
+
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
+{
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
+    _gestureHandler = gestureHandler;
+    minDuration = 0.5;
+  }
+  return self;
+}
+
+- (void)setMinDuration:(double)minDuration
+{
+  self->minDuration = minDuration;
+}
+
+- (void)setMaxDist:(double)maxDist
+{
+  maxDistance = maxDist;
+}
+
+- (CGPoint)translationInView
+{
+  CGPoint currentPosition = [self locationInView:self.view];
+  return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+
+  _initPosition = [self locationInView:self.view];
+
+  self.state = NSGestureRecognizerStateBegan;
+
+  __weak typeof(self) weakSelf = self; // create a weak reference to self to avoid retain cycles inside the block
+  block = dispatch_block_create(0, ^{
+    self.state = NSGestureRecognizerStateChanged;
+    [self->_gestureHandler handleGesture:self];
+
+    self.state = NSGestureRecognizerStateEnded;
+    [self->_gestureHandler handleGesture:self];
+  });
+
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+
+  CGPoint trans = [self translationInView];
+  if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
+      (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), maxDistance * maxDistance))) {
+    if (block) {
+      dispatch_block_cancel(block); // Cancels the block if the mouse was released before LONG_PRESS_DURATION
+      block = nil;
+    }
+  }
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+
+  if (block) {
+    dispatch_block_cancel(block); // Cancels the block if the mouse was released before LONG_PRESS_DURATION
+    block = nil;
+  }
+
+  self.state = NSGestureRecognizerStateFailed;
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  [_gestureHandler handleGesture:recognizer];
+}
+
+- (void)triggerAction
+{
+  [self handleGesture:self];
+}
+
+- (void)reset
+{
+  if (self.state == UIGestureRecognizerStateFailed) {
+    [self triggerAction];
+  }
+
+  [_gestureHandler.pointerTracker reset];
+
+  [super reset];
+  [_gestureHandler reset];
+}
+
+- (NSUInteger)getDuration
+{
+  //  return (previousTime - startTime) * 1000;
+  return 0;
+}
+
+@end
+
 @implementation RNLongPressGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"LongPressGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
+    _recognizer = [[RNBetterLongPressGestureRecognizer alloc] initWithGestureHandler:self];
+    [self setCurrentPointerTypeToMouse];
   }
   return self;
+}
+
+- (void)configure:(NSDictionary *)config
+{
+  [super configure:config];
+  RNBetterLongPressGestureRecognizer *recognizer = (RNBetterLongPressGestureRecognizer *)_recognizer;
+
+  id prop = config[@"minDurationMs"];
+  if (prop != nil) {
+    [recognizer setMinDuration:[RCTConvert CGFloat:prop] / 1000.0];
+  }
+
+  prop = config[@"maxDist"];
+  if (prop != nil) {
+    [recognizer setMaxDist:[RCTConvert CGFloat:prop]];
+  }
 }
 
 @end
