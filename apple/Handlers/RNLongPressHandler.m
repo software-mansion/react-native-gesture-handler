@@ -7,12 +7,11 @@
 //
 
 #import "RNLongPressHandler.h"
+#import <React/RCTConvert.h>
 
 #if !TARGET_OS_OSX
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-
-#import <React/RCTConvert.h>
 
 @interface RNBetterLongPressGestureRecognizer : UILongPressGestureRecognizer {
 #else
@@ -89,10 +88,7 @@
   [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
-  CGPoint trans = [self translationInView];
-  if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
-      (TEST_MAX_IF_NOT_NAN(
-          fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement))) {
+  if ([self shouldCancelGesture]) {
     self.enabled = NO;
     self.enabled = YES;
   }
@@ -146,11 +142,7 @@
     return;
   }
 
-  CGPoint trans = [self translationInView];
-
-  if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
-      (TEST_MAX_IF_NOT_NAN(
-          fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement))) {
+  if ([self shouldCancelGesture]) {
     dispatch_block_cancel(block);
     block = nil;
 
@@ -180,6 +172,15 @@
 }
 
 #endif
+
+- (BOOL)shouldCancelGesture
+{
+  CGPoint trans = [self translationInView];
+
+  return (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
+      (TEST_MAX_IF_NOT_NAN(
+          fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement));
+}
 
 - (void)reset
 {
