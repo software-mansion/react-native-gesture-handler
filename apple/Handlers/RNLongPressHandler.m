@@ -113,73 +113,6 @@
 
 @end
 
-@implementation RNLongPressGestureHandler
-
-- (instancetype)initWithTag:(NSNumber *)tag
-{
-  if ((self = [super initWithTag:tag])) {
-    _recognizer = [[RNBetterLongPressGestureRecognizer alloc] initWithGestureHandler:self];
-  }
-  return self;
-}
-
-- (void)resetConfig
-{
-  [super resetConfig];
-  UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
-
-  recognizer.minimumPressDuration = 0.5;
-  recognizer.allowableMovement = 10;
-}
-
-- (void)configure:(NSDictionary *)config
-{
-  [super configure:config];
-  UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
-
-  id prop = config[@"minDurationMs"];
-  if (prop != nil) {
-    recognizer.minimumPressDuration = [RCTConvert CGFloat:prop] / 1000.0;
-  }
-
-  prop = config[@"maxDist"];
-  if (prop != nil) {
-    recognizer.allowableMovement = [RCTConvert CGFloat:prop];
-  }
-}
-
-- (RNGestureHandlerState)state
-{
-  // For long press recognizer we treat "Began" state as "active"
-  // as it changes its state to "Began" as soon as the the minimum
-  // hold duration timeout is reached, whereas state "Changed" is
-  // only set after "Began" phase if there is some movement.
-  if (_recognizer.state == UIGestureRecognizerStateBegan) {
-    return RNGestureHandlerStateActive;
-  }
-  return [super state];
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  // same as TapGH, this needs to be unified when all handlers are updated
-  RNGestureHandlerState savedState = _lastState;
-  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
-  _lastState = savedState;
-
-  return shouldBegin;
-}
-
-- (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
-{
-  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
-                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                 withNumberOfTouches:recognizer.numberOfTouches
-                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
-                                     withPointerType:_pointerType];
-}
-@end
-
 #else
 
 @interface RNBetterLongPressGestureRecognizer : NSGestureRecognizer {
@@ -187,10 +120,10 @@
 
   CFTimeInterval startTime;
   CFTimeInterval previousTime;
-
-  double minDuration;
-  double maxDistance;
 }
+
+@property (nonatomic, assign) double minimumPressDuration;
+@property (nonatomic, assign) double allowableMovement;
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 - (void)handleGesture:(NSGestureRecognizer *)recognizer;
@@ -206,20 +139,11 @@
 {
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
-    minDuration = 0.5;
-    maxDistance = 10;
+
+    self.minimumPressDuration = 0.5;
+    self.allowableMovement = 10;
   }
   return self;
-}
-
-- (void)setMinDuration:(double)minDuration
-{
-  self->minDuration = minDuration;
-}
-
-- (void)setMaxDist:(double)maxDist
-{
-  maxDistance = maxDist;
 }
 
 - (CGPoint)translationInView
@@ -249,7 +173,9 @@
   });
 
   dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.minimumPressDuration * NSEC_PER_SEC)),
+      dispatch_get_main_queue(),
+      block);
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -263,7 +189,8 @@
   CGPoint trans = [self translationInView];
 
   if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
-      (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), maxDistance * maxDistance))) {
+      (TEST_MAX_IF_NOT_NAN(
+          fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement))) {
     dispatch_block_cancel(block);
     block = nil;
 
@@ -322,13 +249,14 @@
 
 @end
 
+#endif
+
 @implementation RNLongPressGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
     _recognizer = [[RNBetterLongPressGestureRecognizer alloc] initWithGestureHandler:self];
-    [self setCurrentPointerTypeToMouse];
   }
   return self;
 }
@@ -338,8 +266,8 @@
   [super resetConfig];
   RNBetterLongPressGestureRecognizer *recognizer = (RNBetterLongPressGestureRecognizer *)_recognizer;
 
-  [recognizer setMinDuration:0.5];
-  [recognizer setMaxDist:10];
+  recognizer.minimumPressDuration = 0.5;
+  recognizer.allowableMovement = 10;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -349,24 +277,58 @@
 
   id prop = config[@"minDurationMs"];
   if (prop != nil) {
-    [recognizer setMinDuration:[RCTConvert CGFloat:prop] / 1000.0];
+    recognizer.minimumPressDuration = [RCTConvert CGFloat:prop] / 1000.0;
   }
 
   prop = config[@"maxDist"];
   if (prop != nil) {
-    [recognizer setMaxDist:[RCTConvert CGFloat:prop]];
+    recognizer.allowableMovement = [RCTConvert CGFloat:prop];
   }
+}
+
+#if !TARGET_OS_OSX
+
+- (RNGestureHandlerState)state
+{
+  // For long press recognizer we treat "Began" state as "active"
+  // as it changes its state to "Began" as soon as the the minimum
+  // hold duration timeout is reached, whereas state "Changed" is
+  // only set after "Began" phase if there is some movement.
+  if (_recognizer.state == UIGestureRecognizerStateBegan) {
+    return RNGestureHandlerStateActive;
+  }
+  return [super state];
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  // same as TapGH, this needs to be unified when all handlers are updated
+  RNGestureHandlerState savedState = _lastState;
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  _lastState = savedState;
+
+  return shouldBegin;
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
-                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
-                                 withNumberOfTouches:1
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+                                 withNumberOfTouches:recognizer.numberOfTouches
                                         withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
                                      withPointerType:_pointerType];
 }
 
-@end
+#else
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(NSGestureRecognizer *)recognizer
+{
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+                                 withNumberOfTouches:1
+                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
+                                     withPointerType:RNGestureHandlerMouse];
+}
 
 #endif
+@end
