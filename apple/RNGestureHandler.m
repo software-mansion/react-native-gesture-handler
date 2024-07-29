@@ -509,13 +509,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)containsPointInView
 {
-#if !TARGET_OS_OSX
   CGPoint pt = [_recognizer locationInView:_recognizer.view];
   CGRect hitFrame = RNGHHitSlopInsetRect(_recognizer.view.bounds, _hitSlop);
   return CGRectContainsPoint(hitFrame, pt);
-#else
-  return NSPointInRect([_recognizer locationInView:_recognizer.view], _recognizer.view.bounds);
-#endif
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
