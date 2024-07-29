@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  SectionList,
-  Platform,
-  Pressable,
-} from 'react-native';
+import { Text, View, StyleSheet, SectionList, Platform } from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
@@ -17,9 +10,11 @@ import {
   RectButton,
 } from 'react-native-gesture-handler';
 
+import Empty from '../../example/src/empty/EmptyExample';
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
 import Tap from './basic/tap';
+import LongPressExample from './basic/longPress';
 
 interface Example {
   name: string;
@@ -35,9 +30,11 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Examples',
     data: [
+      { name: 'Empty', component: Empty },
       { name: 'Draggable', component: Draggable },
       { name: 'Pinch & rotate', component: PinchableBox },
       { name: 'Tap', component: Tap },
+      { name: 'LongPress', component: LongPressExample },
     ],
   },
 ];
