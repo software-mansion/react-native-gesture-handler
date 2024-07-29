@@ -15,13 +15,28 @@
 #import <React/RCTConvert.h>
 
 @interface RNBetterLongPressGestureRecognizer : UILongPressGestureRecognizer {
+#else
+@interface RNBetterLongPressGestureRecognizer : NSGestureRecognizer {
+  dispatch_block_t block;
+#endif
+
   CFTimeInterval startTime;
   CFTimeInterval previousTime;
 }
 
+#if TARGET_OS_OSX
+@property (nonatomic, assign) double minimumPressDuration;
+@property (nonatomic, assign) double allowableMovement;
+#endif
+
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
-- (void)handleGesture:(UIGestureRecognizer *)recognizer;
 - (NSUInteger)getDuration;
+
+#if !TARGET_OS_OSX
+- (void)handleGesture:(UIGestureRecognizer *)recognizer;
+#else
+- (void)handleGesture:(NSGestureRecognizer *)recognizer;
+#endif
 
 @end
 
@@ -54,6 +69,8 @@
   CGPoint currentPosition = [self locationInView:self.view];
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
+
+#if !TARGET_OS_OSX
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
@@ -94,64 +111,7 @@
   [self reset];
 }
 
-- (void)reset
-{
-  if (self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
-
-  [_gestureHandler.pointerTracker reset];
-
-  [super reset];
-  [_gestureHandler reset];
-}
-
-- (NSUInteger)getDuration
-{
-  return (previousTime - startTime) * 1000;
-}
-
-@end
-
 #else
-
-@interface RNBetterLongPressGestureRecognizer : NSGestureRecognizer {
-  dispatch_block_t block;
-
-  CFTimeInterval startTime;
-  CFTimeInterval previousTime;
-}
-
-@property (nonatomic, assign) double minimumPressDuration;
-@property (nonatomic, assign) double allowableMovement;
-
-- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
-- (void)handleGesture:(NSGestureRecognizer *)recognizer;
-
-@end
-
-@implementation RNBetterLongPressGestureRecognizer {
-  __weak RNGestureHandler *_gestureHandler;
-  CGPoint _initPosition;
-}
-
-- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
-{
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
-    _gestureHandler = gestureHandler;
-
-    self.minimumPressDuration = 0.5;
-    self.allowableMovement = 10;
-  }
-  return self;
-}
-
-- (CGPoint)translationInView
-{
-  CGPoint currentPosition = [self locationInView:self.view];
-  return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
-}
-
 - (void)mouseDown:(NSEvent *)event
 {
   self.state = NSGestureRecognizerStateBegan;
@@ -219,20 +179,11 @@
   }
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer
-{
-  previousTime = CACurrentMediaTime();
-  [_gestureHandler handleGesture:recognizer];
-}
-
-- (void)triggerAction
-{
-  [self handleGesture:self];
-}
+#endif
 
 - (void)reset
 {
-  if (self.state == NSGestureRecognizerStateFailed) {
+  if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
 
@@ -248,8 +199,6 @@
 }
 
 @end
-
-#endif
 
 @implementation RNLongPressGestureHandler
 
