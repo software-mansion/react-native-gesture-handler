@@ -177,9 +177,11 @@
 {
   CGPoint trans = [self translationInView];
 
-  return (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
-      (TEST_MAX_IF_NOT_NAN(
-          fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement));
+  BOOL shouldBeCancelledOutside = _gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView];
+  BOOL distanceExceeded =
+      TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement);
+
+  return shouldBeCancelledOutside || distanceExceeded;
 }
 
 - (void)reset
