@@ -62,11 +62,6 @@
 }
 
 #else
-- (BOOL)hasPointerInside
-{
-  return NSPointInRect([self locationInView:self.view], self.view.bounds);
-}
-
 - (void)mouseDown:(NSEvent *)event
 {
   [_gestureHandler setCurrentPointerTypeToMouse];
@@ -231,7 +226,7 @@
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPointerInside:[recognizer hasPointerInside]
+  return [RNGestureHandlerEventExtraData forPointerInside:[self containsPointInView]
                                           withPointerType:RNGestureHandlerMouse];
 }
 
