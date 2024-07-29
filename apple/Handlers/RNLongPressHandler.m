@@ -190,8 +190,7 @@
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
-- (void)handleGesture:(UIGestureRecognizer *)recognizer;
-- (NSUInteger)getDuration;
+- (void)handleGesture:(NSGestureRecognizer *)recognizer;
 
 @end
 
@@ -205,6 +204,7 @@
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     minDuration = 0.5;
+    maxDistance = 10;
   }
   return self;
 }
@@ -233,15 +233,17 @@
 
   self.state = NSGestureRecognizerStateBegan;
 
-  __weak typeof(self) weakSelf = self; // create a weak reference to self to avoid retain cycles inside the block
+  __weak typeof(self) weakSelf = self;
   block = dispatch_block_create(0, ^{
-    self.state = NSGestureRecognizerStateChanged;
-    [self->_gestureHandler handleGesture:self];
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      strongSelf.state = NSGestureRecognizerStateChanged;
+      [strongSelf->_gestureHandler handleGesture:strongSelf];
 
-    self.state = NSGestureRecognizerStateEnded;
-    [self->_gestureHandler handleGesture:self];
+      strongSelf.state = NSGestureRecognizerStateEnded;
+      [strongSelf->_gestureHandler handleGesture:strongSelf];
+    }
   });
-
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(minDuration * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
 }
@@ -294,12 +296,6 @@
   [_gestureHandler reset];
 }
 
-- (NSUInteger)getDuration
-{
-  //  return (previousTime - startTime) * 1000;
-  return 0;
-}
-
 @end
 
 @implementation RNLongPressGestureHandler
@@ -311,6 +307,15 @@
     [self setCurrentPointerTypeToMouse];
   }
   return self;
+}
+
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNBetterLongPressGestureRecognizer *recognizer = (RNBetterLongPressGestureRecognizer *)_recognizer;
+
+  [recognizer setMinDuration:0.5];
+  [recognizer setMaxDist:10];
 }
 
 - (void)configure:(NSDictionary *)config
