@@ -266,7 +266,8 @@
       (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), maxDistance * maxDistance))) {
     dispatch_block_cancel(block);
     block = nil;
-    self.state = NSGestureRecognizerStateFailed;
+
+    [self failOrCancelGesture];
   }
 }
 
@@ -279,7 +280,16 @@
     block = nil;
   }
 
-  self.state = NSGestureRecognizerStateFailed;
+  [self failOrCancelGesture];
+}
+
+- (void)failOrCancelGesture
+{
+  if (self.state == NSGestureRecognizerStateChanged) {
+    self.state = NSGestureRecognizerStateCancelled;
+  } else {
+    self.state = NSGestureRecognizerStateFailed;
+  }
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
