@@ -1,7 +1,9 @@
+/* eslint-disable no-alert */
 import React from 'react';
-import { Text, Animated, StyleSheet, View } from 'react-native';
+import { Text, Animated, StyleSheet, View, Pressable } from 'react-native';
 
 import {
+  Pressable as GHPressable,
   Swipeable,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
@@ -101,10 +103,27 @@ export default function Example() {
         friction={2}
         leftThreshold={80}
         enableTrackpadTwoFingerGesture
-        rightThreshold={40}
+        rightThreshold={56}
         renderLeftActions={LeftAction}
         renderRightActions={RightAction}>
-        <Text>[Reanimated] Swipe me!</Text>
+        <Pressable onPress={() => alert('pressed!')} style={styles.pressable}>
+          <Text>[new] with RN pressable</Text>
+        </Pressable>
+      </ReanimatedSwipeable>
+
+      <View style={styles.separator} />
+
+      <ReanimatedSwipeable
+        containerStyle={styles.swipeable}
+        friction={2}
+        leftThreshold={80}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={56}
+        renderLeftActions={LeftAction}
+        renderRightActions={RightAction}>
+        <GHPressable onPress={() => alert('pressed!')} style={styles.pressable}>
+          <Text>[new] with GH pressable</Text>
+        </GHPressable>
       </ReanimatedSwipeable>
 
       <View style={styles.separator} />
@@ -114,10 +133,27 @@ export default function Example() {
         friction={2}
         leftThreshold={80}
         enableTrackpadTwoFingerGesture
-        rightThreshold={40}
+        rightThreshold={56}
         renderLeftActions={LegacyLeftAction}
         renderRightActions={LegacyRightAction}>
-        <Text>[Legacy] Swipe me!</Text>
+        <Pressable onPress={() => alert('pressed!')} style={styles.pressable}>
+          <Text>[Legacy] with RN pressable</Text>
+        </Pressable>
+      </Swipeable>
+
+      <View style={styles.separator} />
+
+      <Swipeable
+        containerStyle={styles.swipeable}
+        friction={2}
+        leftThreshold={80}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={56}
+        renderLeftActions={LegacyLeftAction}
+        renderRightActions={LegacyRightAction}>
+        <GHPressable onPress={() => alert('pressed!')} style={styles.pressable}>
+          <Text>[Legacy] with GH pressable</Text>
+        </GHPressable>
       </Swipeable>
 
       <View style={styles.separator} />
@@ -126,15 +162,22 @@ export default function Example() {
 }
 
 const styles = StyleSheet.create({
-  leftAction: { width: 50, height: 50, backgroundColor: 'crimson' },
-  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  leftAction: { width: 46, height: 56, backgroundColor: 'crimson' },
+  rightAction: { width: 46, height: 56, backgroundColor: 'purple' },
   separator: {
     width: '100%',
     borderTopWidth: 1,
   },
   swipeable: {
-    height: 50,
+    height: 56,
     backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+  pressable: {
+    padding: 20,
+    width: 200,
+    height: 56,
+    backgroundColor: 'pink',
     alignItems: 'center',
   },
 });
