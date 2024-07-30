@@ -386,11 +386,7 @@ export default function Pressable(props: PressableProps) {
             props.android_ripple?.color ?? defaultRippleColor
           )}
           rippleRadius={props.android_ripple?.radius ?? undefined}
-          style={[
-            { width: '100%', height: '100%' },
-            pointerStyle,
-            innerStyles,
-          ]}>
+          style={[{ width: '100%' }, pointerStyle, innerStyles]}>
           {childrenProp}
           {__DEV__ ? (
             <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
