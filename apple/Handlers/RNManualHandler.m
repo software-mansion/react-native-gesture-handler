@@ -24,23 +24,23 @@
   return self;
 }
 
-#if !TARGET_OS_OSX
-- (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
+- (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
-  [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   if (_shouldSendBeginEvent) {
     [_gestureHandler handleGesture:self];
+#if TARGET_OS_OSX
+    self.state = NSGestureRecognizerStateBegan;
+#endif
     _shouldSendBeginEvent = NO;
   }
 }
 
-- (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
+- (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  [_gestureHandler handleGesture:self];
 
   if ([self shouldFail]) {
     self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
@@ -50,10 +50,31 @@
   }
 }
 
+- (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+  [_gestureHandler handleGesture:self];
+}
+
+#if !TARGET_OS_OSX
+- (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [_gestureHandler setCurrentPointerType:event];
+  [super touchesBegan:touches withEvent:event];
+
+  [self interactionsBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesMoved:touches withEvent:event];
+  [self interactionsMoved:touches withEvent:event];
+}
+
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
-  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+  [self interactionsEnded:touches withEvent:event];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -68,32 +89,17 @@
 - (void)mouseDown:(NSEvent *)event
 {
   [_gestureHandler setCurrentPointerTypeToMouse];
-  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
-
-  if (_shouldSendBeginEvent) {
-    [_gestureHandler handleGesture:self];
-    self.state = NSGestureRecognizerStateBegan;
-    _shouldSendBeginEvent = NO;
-  }
+  [self interactionsBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event
 {
-  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
-  [_gestureHandler handleGesture:self];
-
-  if ([self shouldFail]) {
-    self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
-                                                                  : UIGestureRecognizerStateCancelled;
-
-    [self reset];
-  }
+  [self interactionsMoved:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
-  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
-  [_gestureHandler handleGesture:self];
+  [self interactionsEnded:[NSSet setWithObject:event] withEvent:event];
 }
 
 #endif
