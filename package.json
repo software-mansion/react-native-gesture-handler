@@ -68,21 +68,15 @@
     "invariant": "^2.2.4",
     "prop-types": "^15.7.2"
   },
-  "jest": {
-    "preset": "react-native",
-    "modulePathIgnorePatterns": [
-      "<rootDir>/lib/"
-    ]
-  },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
     "@babel/runtime": "^7.12.5",
-    "@react-native/babel-preset": "^0.73.19",
-    "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^9.0.0",
+    "@react-native/babel-preset": "^0.74.85",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.5.1",
     "@types/hammerjs": "^2.0.38",
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/jest": "^27.0.3",
@@ -109,7 +103,7 @@
     "react-native-builder-bob": "^0.17.1",
     "react-native-reanimated": "^3.12.0",
     "react-native-web": "^0.11.7",
-    "react-test-renderer": "17.0.2",
+    "react-test-renderer": "18.2.0",
     "release-it": "^13.6.5",
     "typescript": "5.0.4"
   },
