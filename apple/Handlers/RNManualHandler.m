@@ -1,9 +1,10 @@
 #import "RNManualHandler.h"
 
 #if !TARGET_OS_OSX
-
 @interface RNManualRecognizer : UIGestureRecognizer
-
+#else
+@interface RNManualRecognizer : NSGestureRecognizer
+#endif
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
@@ -19,9 +20,11 @@
     _gestureHandler = gestureHandler;
     _shouldSendBeginEvent = YES;
   }
+
   return self;
 }
 
+#if !TARGET_OS_OSX
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerType:event];
@@ -60,6 +63,41 @@
   [self reset];
 }
 
+#else
+
+- (void)mouseDown:(NSEvent *)event
+{
+  [_gestureHandler setCurrentPointerTypeToMouse];
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+
+  if (_shouldSendBeginEvent) {
+    [_gestureHandler handleGesture:self];
+    self.state = NSGestureRecognizerStateBegan;
+    _shouldSendBeginEvent = NO;
+  }
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+  [_gestureHandler handleGesture:self];
+
+  if ([self shouldFail]) {
+    self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
+                                                                  : UIGestureRecognizerStateCancelled;
+
+    [self reset];
+  }
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+  [_gestureHandler handleGesture:self];
+}
+
+#endif
+
 - (void)reset
 {
   [_gestureHandler.pointerTracker reset];
@@ -71,11 +109,7 @@
 
 - (BOOL)shouldFail
 {
-  if (_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) {
-    return YES;
-  } else {
-    return NO;
-  }
+  return _gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView];
 }
 
 @end
@@ -87,24 +121,8 @@
   if ((self = [super initWithTag:tag])) {
     _recognizer = [[RNManualRecognizer alloc] initWithGestureHandler:self];
   }
+
   return self;
 }
 
 @end
-
-#else
-
-@implementation RNManualGestureHandler
-
-- (instancetype)initWithTag:(NSNumber *)tag
-{
-  RCTLogWarn(@"ManualGestureHandler is not supported on macOS");
-  if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
-  }
-  return self;
-}
-
-@end
-
-#endif
