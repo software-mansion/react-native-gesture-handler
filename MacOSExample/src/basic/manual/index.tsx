@@ -1,11 +1,47 @@
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 export default function ManualExample() {
+  const isPressed = useSharedValue(false);
+  const colorProgress = useSharedValue(0);
+
+  const animatedStyles = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      colorProgress.value,
+      [0, 1],
+      ['#0a2688', '#6fcef5']
+    );
+
+    return {
+      transform: [
+        { scale: withTiming(isPressed.value ? 1.2 : 1, { duration: 100 }) },
+      ],
+      backgroundColor,
+    };
+  });
+
   const g = Gesture.Manual()
     .onBegin(() => console.log('onBegin'))
-    .onStart(() => console.log('onStart'))
-    .onFinalize((_, success) => console.log('onFinalize', success))
+    .onStart(() => {
+      console.log('onStart');
+      isPressed.value = true;
+      colorProgress.value = withTiming(1, {
+        duration: 100,
+      });
+    })
+    .onFinalize(() => {
+      console.log('onFinalize');
+      isPressed.value = false;
+      colorProgress.value = withTiming(0, {
+        duration: 100,
+      });
+    })
     .onTouchesDown((e, stateManager) => {
       console.log('onTouchesDown', e);
       stateManager.activate();
@@ -19,7 +55,7 @@ export default function ManualExample() {
   return (
     <View style={styles.container}>
       <GestureDetector gesture={g}>
-        <View style={styles.pressBox} />
+        <Animated.View style={[animatedStyles, styles.pressBox]} />
       </GestureDetector>
     </View>
   );
@@ -36,6 +72,5 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 20,
-    backgroundColor: 'plum',
   },
 });
