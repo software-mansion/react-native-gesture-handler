@@ -124,7 +124,6 @@
 
     if (strongSelf) {
       strongSelf.state = NSGestureRecognizerStateChanged;
-      strongSelf.state = NSGestureRecognizerStateEnded;
     }
   });
 
