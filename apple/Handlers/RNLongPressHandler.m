@@ -158,7 +158,11 @@
     block = nil;
   }
 
-  [self failOrCancelGesture];
+  if (self.state == NSGestureRecognizerStateChanged) {
+    self.state = NSGestureRecognizerStateEnded;
+  } else {
+    self.state = NSGestureRecognizerStateFailed;
+  }
 }
 
 - (void)failOrCancelGesture
