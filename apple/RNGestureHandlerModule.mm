@@ -99,8 +99,8 @@ void decorateRuntime(jsi::Runtime &runtime)
         if (!arguments[0].isObject()) {
           return jsi::Value::null();
         }
-        auto shadowNodeWrapper = shadowNodeFromValue(runtime, arguments[0]);
-        bool isFormsStackingContext = shadowNodeWrapper->getTraits().check(ShadowNodeTraits::FormsStackingContext);
+        auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
         return jsi::Value(isFormsStackingContext);
       });
   runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
