@@ -17,15 +17,11 @@
   defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_##__VERSION__) && \
       __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_##__VERSION__ && !TARGET_OS_TV
 
-#endif
-
 typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
   RNGestureHandlerHoverEffectNone = 0,
   RNGestureHandlerHoverEffectLift,
   RNGestureHandlerHoverEffectHightlight,
 };
-
-#if !TARGET_OS_OSX
 
 #if CHECK_TARGET(13_4)
 
