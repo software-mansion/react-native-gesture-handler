@@ -6,6 +6,7 @@
 //
 
 #import "RNHoverHandler.h"
+#import <React/UIView+React.h>
 
 #if !TARGET_OS_OSX
 
@@ -16,11 +17,15 @@
   defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_##__VERSION__) && \
       __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_##__VERSION__ && !TARGET_OS_TV
 
+#endif
+
 typedef NS_ENUM(NSInteger, RNGestureHandlerHoverEffect) {
   RNGestureHandlerHoverEffectNone = 0,
   RNGestureHandlerHoverEffectLift,
   RNGestureHandlerHoverEffectHightlight,
 };
+
+#if !TARGET_OS_OSX
 
 #if CHECK_TARGET(13_4)
 
@@ -167,11 +172,49 @@ API_AVAILABLE(ios(13.4))
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"HoverGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }
+
   return self;
+}
+
+- (void)bindToView:(RNGHUIView *)view
+{
+  for (NSTrackingArea *trackingArea in view.trackingAreas) {
+    [view removeTrackingArea:trackingArea];
+  }
+
+  // Create a new tracking area
+  NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingInVisibleRect;
+  NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:view.bounds
+                                                              options:options
+                                                                owner:self
+                                                             userInfo:nil];
+  [view addTrackingArea:trackingArea];
+
+  self.view = view;
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+  [self sendEventsInState:RNGestureHandlerStateBegan
+           forViewWithTag:self.view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:self.view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent
+{
+  [self sendEventsInState:RNGestureHandlerStateEnd
+           forViewWithTag:self.view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
+
+  [self sendEventsInState:RNGestureHandlerStateUndetermined
+           forViewWithTag:self.view.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
 }
 
 @end
