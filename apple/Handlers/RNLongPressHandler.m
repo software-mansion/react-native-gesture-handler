@@ -145,7 +145,8 @@
     dispatch_block_cancel(block);
     block = nil;
 
-    [self failOrCancelGesture];
+    self.state = self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateCancelled
+                                                               : NSGestureRecognizerStateFailed;
   }
 }
 
@@ -158,20 +159,8 @@
     block = nil;
   }
 
-  if (self.state == NSGestureRecognizerStateChanged) {
-    self.state = NSGestureRecognizerStateEnded;
-  } else {
-    self.state = NSGestureRecognizerStateFailed;
-  }
-}
-
-- (void)failOrCancelGesture
-{
-  if (self.state == NSGestureRecognizerStateChanged) {
-    self.state = NSGestureRecognizerStateCancelled;
-  } else {
-    self.state = NSGestureRecognizerStateFailed;
-  }
+  self.state =
+      self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
 }
 
 #endif
