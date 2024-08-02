@@ -185,8 +185,8 @@ API_AVAILABLE(ios(13.4))
     [view removeTrackingArea:trackingArea];
   }
 
-  // Create a new tracking area
-  NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingInVisibleRect;
+  NSTrackingAreaOptions options =
+      NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp | NSTrackingInVisibleRect;
   NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:view.bounds
                                                               options:options
                                                                 owner:self
