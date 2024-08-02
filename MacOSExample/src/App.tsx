@@ -13,6 +13,7 @@ import {
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
 import Tap from './basic/tap';
+import LongPressExample from './basic/longPress';
 import ManualExample from './basic/manual';
 
 interface Example {
@@ -32,6 +33,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Draggable', component: Draggable },
       { name: 'Pinch & rotate', component: PinchableBox },
       { name: 'Tap', component: Tap },
+      { name: 'LongPress', component: LongPressExample },
       { name: 'Manual', component: ManualExample },
     ],
   },
