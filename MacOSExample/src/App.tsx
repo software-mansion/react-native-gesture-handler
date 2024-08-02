@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  SectionList,
-  Platform,
-  Pressable,
-} from 'react-native';
+import { Text, View, StyleSheet, SectionList, Platform } from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
@@ -20,6 +13,7 @@ import {
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
 import Tap from './basic/tap';
+import ManualExample from './basic/manual';
 
 interface Example {
   name: string;
@@ -38,6 +32,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Draggable', component: Draggable },
       { name: 'Pinch & rotate', component: PinchableBox },
       { name: 'Tap', component: Tap },
+      { name: 'Manual', component: ManualExample },
     ],
   },
 ];
