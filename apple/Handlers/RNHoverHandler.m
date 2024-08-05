@@ -192,6 +192,7 @@ API_AVAILABLE(ios(13.4))
 - (void)unbindFromView
 {
   [_view removeTrackingArea:trackingArea];
+  _view = nil;
 }
 
 - (void)mouseEntered:(NSEvent *)event
