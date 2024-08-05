@@ -91,6 +91,12 @@ export const DrawerLayoutAndroid = createNativeWrapper<
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
+interface FlatListProps {
+  // since we are using `renderScrollComponent` to wrap the ScrollView,
+  // we need to remove the `refreshing` prop from the FlatList API
+  renderScrollComponent?: never;
+}
+
 export const FlatList = React.forwardRef((props, ref) => {
   const refreshControlGestureRef = React.useRef<RefreshControl>(null);
 
@@ -140,7 +146,8 @@ export const FlatList = React.forwardRef((props, ref) => {
   props: PropsWithChildren<
     RNFlatListProps<ItemT> &
       RefAttributes<FlatList<ItemT>> &
-      NativeViewGestureHandlerProps
+      NativeViewGestureHandlerProps &
+      FlatListProps
   >,
   ref: ForwardedRef<FlatList<ItemT>>
 ) => ReactElement | null;
