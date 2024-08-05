@@ -182,13 +182,15 @@
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
 
-    maxDuration = 0.8;
+    //    maxDuration = 0.8;
+    maxDuration = 1.5;
   }
   return self;
 }
 
 - (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
 {
+  [_gestureHandler handleGesture:self];
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -198,7 +200,6 @@
   lastTime = CACurrentMediaTime();
 
   self.state = NSGestureRecognizerStateBegan;
-  self.state = NSGestureRecognizerStateChanged;
 
   __weak typeof(self) weakSelf = self;
 
@@ -220,6 +221,8 @@
 - (void)mouseDragged:(NSEvent *)event
 {
   [super mouseDragged:event];
+  self.state = NSGestureRecognizerStatePossible;
+
   NSPoint currentPosition = [self locationInView:self.view];
   double currentTime = CACurrentMediaTime();
 
@@ -227,16 +230,34 @@
   distance.x = fabs(currentPosition.x - lastPosition.x);
   distance.y = fabs(currentPosition.y - lastPosition.y);
 
+  NSLog(@"Dist: {x: %f, y: %f}", distance.x, distance.y);
+
   double timeDelta = currentTime - lastTime;
 
-  NSPoint velocity;
-  velocity.x = distance.x / timeDelta;
-  velocity.y = distance.y / timeDelta;
+  NSPoint velocityVector;
+  velocityVector.x = distance.x / timeDelta;
+  velocityVector.y = distance.y / timeDelta;
 
-  NSLog(@"x: %f, y: %f", velocity.x, velocity.y);
+  NSLog(@"x: %f, y: %f", velocityVector.x, velocityVector.y);
+
+  double velocity = hypot(velocityVector.x, velocityVector.y);
+
+  [self tryActivate:velocity];
 
   lastPosition = currentPosition;
   lastTime = currentTime;
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+}
+
+- (void)tryActivate:(double)velocity
+{
+  if (velocity > 1000) {
+    self.state = NSGestureRecognizerStateChanged;
+  }
 }
 
 @end
