@@ -191,7 +191,6 @@ API_AVAILABLE(ios(13.4))
 
 - (void)unbindFromView
 {
-  [super unbindFromView];
   [_view removeTrackingArea:trackingArea];
 }
 
