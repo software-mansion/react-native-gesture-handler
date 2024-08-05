@@ -1,0 +1,67 @@
+//
+//  RNGHVector.m
+//  DoubleConversion
+//
+//  Created by Michał Bert on 05/08/2024.
+//
+
+#import "RNGHVector.h"
+#import <Foundation/Foundation.h>
+
+@implementation Vector
+
+- (id)initWithX:(double)x withY:(double)y
+{
+  if (self = [super init]) {
+    self.x = x;
+    self.y = y;
+
+    self.magnitude = hypot(x, y);
+
+    self.unitX = x / self.magnitude;
+    self.unitY = y / self.magnitude;
+  }
+
+  return self;
+}
+
++ (Vector *)fromDirection:(RNGestureHandlerDirection)direction
+{
+  switch (direction) {
+    case RNGestureHandlerDirectionRight:
+      return [[Vector alloc] initWithX:1 withY:0];
+    case RNGestureHandlerDirectionLeft:
+      return [[Vector alloc] initWithX:-1 withY:0];
+    case RNGestureHandlerDirectionUp:
+      return [[Vector alloc] initWithX:0 withY:1];
+    case RNGestureHandlerDirectionDown:
+      return [[Vector alloc] initWithX:0 withY:-1];
+    case RNGestureHandlerDirectionUpLeft:
+      return [[Vector alloc] initWithX:-1 withY:1];
+    case RNGestureHandlerDirectionUpRight:
+      return [[Vector alloc] initWithX:1 withY:1];
+    case RNGestureHandlerDirectionDownLeft:
+      return [[Vector alloc] initWithX:-1 withY:-1];
+    case RNGestureHandlerDirectionDownRight:
+      return [[Vector alloc] initWithX:1 withY:-1];
+    default:
+      return [[Vector alloc] initWithX:0 withY:0];
+  }
+}
+
++ (Vector *)fromVelocity:(NSPoint)velocity
+{
+  return [[Vector alloc] initWithX:velocity.x withY:velocity.y];
+}
+
+- (double)computeSimilarity:(Vector *)other
+{
+  return self.unitX * other.unitX + self.unitY * other.unitY;
+}
+
+- (BOOL)isSimilar:(Vector *)other withThreshold:(double)threshold
+{
+  return [self computeSimilarity:other] > threshold;
+}
+
+@end
