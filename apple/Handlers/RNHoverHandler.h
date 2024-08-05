@@ -9,5 +9,4 @@
 
 API_AVAILABLE(ios(13.4))
 @interface RNHoverGestureHandler : RNGestureHandler
-@property (nonatomic, assign) RNGHUIView *view;
 @end
