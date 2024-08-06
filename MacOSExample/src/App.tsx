@@ -15,6 +15,7 @@ import PinchableBox from './recipes/scaleAndRotate';
 import Tap from './basic/tap';
 import LongPressExample from './basic/longPress';
 import ManualExample from './basic/manual';
+import HoverExample from './basic/hover';
 
 interface Example {
   name: string;
@@ -35,6 +36,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Tap', component: Tap },
       { name: 'LongPress', component: LongPressExample },
       { name: 'Manual', component: ManualExample },
+      { name: 'Hover', component: HoverExample },
     ],
   },
 ];
