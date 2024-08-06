@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTConvert.h>
 
+#if TARGET_OS_OSX
+#define RNGHUIScrollView NSScrollView
+#else
+#define RNGHUIScrollView UIScrollView
+#endif
+
 #define VEC_LEN_SQ(pt) (pt.x * pt.x + pt.y * pt.y)
 #define TEST_MIN_IF_NOT_NAN(value, limit) \
   (!isnan(limit) && ((limit < 0 && value <= limit) || (limit >= 0 && value >= limit)))
@@ -89,6 +95,13 @@
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
+- (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
+
+#if !TARGET_OS_OSX
+- (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
+#else
+- (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull NSGestureRecognizer *)gestureRecognizer;
+#endif
 
 #if !TARGET_OS_OSX
 - (void)setCurrentPointerType:(nonnull UIEvent *)event;
