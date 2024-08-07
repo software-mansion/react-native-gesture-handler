@@ -4,10 +4,11 @@ import { PointerType } from '../../PointerType';
 import { View } from 'react-native';
 
 export default class KeyEventManager extends EventManager<HTMLElement> {
-  private activationKeys = ['Enter', 'Space'];
+  private activationKeys = ['Enter', 'Space', 'NumpadEnter'];
   private cancelationKeys = ['Tab'];
 
   private keyDownCallback = (event: KeyboardEvent): void => {
+    console.log(event.code);
     if (this.cancelationKeys.indexOf(event.code) !== -1) {
       this.dispatchEvent(event, EventTypes.CANCEL);
     }
