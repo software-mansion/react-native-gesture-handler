@@ -9,7 +9,7 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
 
   private keyDownCallback = (event: KeyboardEvent): void => {
     if (this.cancelationKeys.indexOf(event.code) !== -1) {
-      (event.target as unknown as View)?.measure(
+      (event.target as unknown as View)?.measure?.(
         (_x, _y, w, h, pageX, pageY) => {
           this.onPointerCancel(
             this.adaptEvent(event, EventTypes.DOWN, pageX, pageY, w, h)
@@ -22,11 +22,13 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
       return;
     }
 
-    (event.target as unknown as View)?.measure((_x, _y, w, h, pageX, pageY) => {
-      this.onPointerDown(
-        this.adaptEvent(event, EventTypes.DOWN, pageX, pageY, w, h)
-      );
-    });
+    (event.target as unknown as View)?.measure?.(
+      (_x, _y, w, h, pageX, pageY) => {
+        this.onPointerDown(
+          this.adaptEvent(event, EventTypes.DOWN, pageX, pageY, w, h)
+        );
+      }
+    );
   };
 
   private keyUpCallback = (event: KeyboardEvent): void => {
@@ -34,11 +36,13 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
       return;
     }
 
-    (event.target as unknown as View)?.measure((_x, _y, w, h, pageX, pageY) => {
-      this.onPointerUp(
-        this.adaptEvent(event, EventTypes.UP, pageX, pageY, w, h)
-      );
-    });
+    (event.target as unknown as View)?.measure?.(
+      (_x, _y, w, h, pageX, pageY) => {
+        this.onPointerUp(
+          this.adaptEvent(event, EventTypes.UP, pageX, pageY, w, h)
+        );
+      }
+    );
   };
 
   public registerListeners(): void {
