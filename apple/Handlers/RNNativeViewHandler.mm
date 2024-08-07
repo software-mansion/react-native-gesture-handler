@@ -100,7 +100,7 @@
 
 - (void)updateStateIfScrollView
 {
-  UIScrollView *scrollView = [_gestureHandler retrieveScrollView:self.view];
+  RNGHUIScrollView *scrollView = [_gestureHandler retrieveScrollView:self.view];
   if (!scrollView) {
     return;
   }
