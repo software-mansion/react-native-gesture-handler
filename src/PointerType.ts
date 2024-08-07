@@ -3,4 +3,5 @@ export enum PointerType {
   STYLUS,
   MOUSE,
   OTHER,
+  KEY,
 }
