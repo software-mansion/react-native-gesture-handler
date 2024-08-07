@@ -3,11 +3,22 @@ import EventManager from './EventManager';
 import { PointerType } from '../../PointerType';
 
 export default class KeyEventManager extends EventManager<HTMLElement> {
-  private keyDownCallback = (event: unknown): void => {
+  private activationKeys = ['Enter', 'Space'];
+
+  private keyDownCallback = (event: KeyboardEvent): void => {
+    if (this.activationKeys.indexOf(event.code) === -1) {
+      return;
+    }
+
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
     this.onPointerDown(adaptedEvent);
   };
-  private keyUpCallback = (event: unknown): void => {
+
+  private keyUpCallback = (event: KeyboardEvent): void => {
+    if (this.activationKeys.indexOf(event.code) === -1) {
+      return;
+    }
+
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
     this.onPointerUp(adaptedEvent);
   };
@@ -22,17 +33,24 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
     this.view.addEventListener('keyup', this.keyUpCallback);
   }
 
-  protected mapEvent(event: unknown, eventType: EventTypes): AdaptedEvent {
-    console.log(event);
+  protected mapEvent(
+    event: KeyboardEvent,
+    eventType: EventTypes
+  ): AdaptedEvent {
+    const relativeX = this.view.offsetLeft + this.view.offsetWidth / 2;
+    const relativeY = this.view.offsetTop + this.view.offsetHeight / 2;
+    const viewportX = (event.view?.screenX ?? 0) + this.view.offsetWidth / 2;
+    const viewportY = (event.view?.screenY ?? 0) + this.view.offsetHeight / 2;
+
     return {
-      x: 0,
-      y: 0,
-      offsetX: 0,
-      offsetY: 0,
+      x: viewportX,
+      y: viewportY,
+      offsetX: relativeX,
+      offsetY: relativeY,
       pointerId: 0,
       eventType: eventType,
       pointerType: PointerType.KEY,
-      time: 0,
+      time: event.timeStamp,
     };
   }
 }
