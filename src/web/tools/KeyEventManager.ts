@@ -12,7 +12,7 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
       (event.target as unknown as View)?.measure?.(
         (_x, _y, w, h, pageX, pageY) => {
           this.onPointerCancel(
-            this.adaptEvent(event, EventTypes.DOWN, pageX, pageY, w, h)
+            this.adaptEvent(event, EventTypes.CANCEL, pageX, pageY, w, h)
           );
         }
       );
