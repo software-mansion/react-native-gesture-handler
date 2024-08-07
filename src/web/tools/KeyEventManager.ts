@@ -11,10 +11,11 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
       return;
     }
 
-    this.adaptEvent(event, EventTypes.DOWN).then(
-      (event) => this.onPointerDown(event),
-      () => null
-    );
+    (event.target as unknown as View)?.measure((_x, _y, w, h, pageX, pageY) => {
+      this.onPointerDown(
+        this.adaptEvent(event, EventTypes.DOWN, pageX, pageY, w, h)
+      );
+    });
   };
 
   private keyUpCallback = (event: KeyboardEvent): void => {
@@ -22,10 +23,11 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
       return;
     }
 
-    this.adaptEvent(event, EventTypes.UP).then(
-      (event) => this.onPointerUp(event),
-      () => null
-    );
+    (event.target as unknown as View)?.measure((_x, _y, w, h, pageX, pageY) => {
+      this.onPointerUp(
+        this.adaptEvent(event, EventTypes.UP, pageX, pageY, w, h)
+      );
+    });
   };
 
   public registerListeners(): void {
@@ -40,40 +42,34 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
 
   private adaptEvent(
     event: KeyboardEvent,
-    eventType: EventTypes
-  ): Promise<AdaptedEvent> {
-    return new Promise<AdaptedEvent>((resolve, _reject) => {
-      (event.target as unknown as View)?.measure(
-        (_x, _y, w, h, pageX, pageY) => {
-          resolve({
-            x: pageX + w / 2,
-            y: pageY + h / 2,
-            offsetX: pageX + w / 2,
-            offsetY: pageY + h / 2,
-            pointerId: 0,
-            eventType: eventType,
-            pointerType: PointerType.KEY,
-            time: event.timeStamp,
-          });
-        }
-      );
-    });
+    eventType: EventTypes,
+    pageX: number,
+    pageY: number,
+    elementWidth: number,
+    elementHeight: number
+  ): AdaptedEvent {
+    return {
+      x: pageX + elementWidth / 2,
+      y: pageY + elementHeight / 2,
+      offsetX: pageX + elementWidth / 2,
+      offsetY: pageY + elementHeight / 2,
+      pointerId: 0,
+      eventType: eventType,
+      pointerType: PointerType.KEY,
+      time: event.timeStamp,
+    };
   }
 
   protected mapEvent(
     event: KeyboardEvent,
     eventType: EventTypes
   ): AdaptedEvent {
-    const relativeX = this.view.offsetLeft + this.view.offsetWidth / 2;
-    const relativeY = this.view.offsetTop + this.view.offsetHeight / 2;
-    const viewportX = (event.view?.screenX ?? 0) + this.view.offsetWidth / 2;
-    const viewportY = (event.view?.screenY ?? 0) + this.view.offsetHeight / 2;
-
+    // unused and disfunctional but has to be present
     return {
-      x: viewportX,
-      y: viewportY,
-      offsetX: relativeX,
-      offsetY: relativeY,
+      x: 0,
+      y: 0,
+      offsetX: 0,
+      offsetY: 0,
       pointerId: 0,
       eventType: eventType,
       pointerType: PointerType.KEY,
