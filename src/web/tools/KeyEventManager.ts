@@ -1,6 +1,7 @@
 import { AdaptedEvent, EventTypes } from '../interfaces';
 import EventManager from './EventManager';
 import { PointerType } from '../../PointerType';
+import { View } from 'react-native';
 
 export default class KeyEventManager extends EventManager<HTMLElement> {
   private activationKeys = ['Enter', 'Space'];
@@ -10,8 +11,10 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
       return;
     }
 
-    const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.DOWN);
-    this.onPointerDown(adaptedEvent);
+    this.adaptEvent(event, EventTypes.DOWN).then(
+      (event) => this.onPointerDown(event),
+      () => null
+    );
   };
 
   private keyUpCallback = (event: KeyboardEvent): void => {
@@ -19,8 +22,10 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
       return;
     }
 
-    const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
-    this.onPointerUp(adaptedEvent);
+    this.adaptEvent(event, EventTypes.UP).then(
+      (event) => this.onPointerUp(event),
+      () => null
+    );
   };
 
   public registerListeners(): void {
@@ -31,6 +36,28 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
   public unregisterListeners(): void {
     this.view.addEventListener('keydown', this.keyDownCallback);
     this.view.addEventListener('keyup', this.keyUpCallback);
+  }
+
+  private adaptEvent(
+    event: KeyboardEvent,
+    eventType: EventTypes
+  ): Promise<AdaptedEvent> {
+    return new Promise<AdaptedEvent>((resolve, _reject) => {
+      (event.target as unknown as View)?.measure(
+        (_x, _y, w, h, pageX, pageY) => {
+          resolve({
+            x: pageX + w / 2,
+            y: pageY + h / 2,
+            offsetX: pageX + w / 2,
+            offsetY: pageY + h / 2,
+            pointerId: 0,
+            eventType: eventType,
+            pointerType: PointerType.KEY,
+            time: event.timeStamp,
+          });
+        }
+      );
+    });
   }
 
   protected mapEvent(
