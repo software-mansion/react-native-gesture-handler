@@ -222,6 +222,12 @@ type SwipeableState = {
   rowWidth?: number;
 };
 
+/**
+ * @deprecated use Reanimated version of Swipeable instead
+ *
+ * This component allows for implementing swipeable rows or similar interaction.
+ */
+
 export default class Swipeable extends Component<
   SwipeableProps,
   SwipeableState
