@@ -19,10 +19,8 @@ void decorateRuntime(jsi::Runtime &runtime) {
                     return jsi::Value::null();
                 }
 
-                auto shadowNodeWrapper = arguments[0]
-                        .asObject(runtime).getNativeState<ShadowNodeWrapper>(runtime);
-                bool isFormsStackingContext = shadowNodeWrapper->shadowNode->getTraits()
-                        .check(ShadowNodeTraits::FormsStackingContext);
+                auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+                bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
                 return jsi::Value(isFormsStackingContext);
             });
