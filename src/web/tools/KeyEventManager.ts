@@ -5,8 +5,19 @@ import { View } from 'react-native';
 
 export default class KeyEventManager extends EventManager<HTMLElement> {
   private activationKeys = ['Enter', 'Space'];
+  private cancelationKeys = ['Tab'];
 
   private keyDownCallback = (event: KeyboardEvent): void => {
+    if (this.cancelationKeys.indexOf(event.code) !== -1) {
+      (event.target as unknown as View)?.measure(
+        (_x, _y, w, h, pageX, pageY) => {
+          this.onPointerCancel(
+            this.adaptEvent(event, EventTypes.DOWN, pageX, pageY, w, h)
+          );
+        }
+      );
+    }
+
     if (this.activationKeys.indexOf(event.code) === -1) {
       return;
     }
