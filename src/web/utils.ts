@@ -11,7 +11,6 @@ export const PointerTypeMapping = new Map<string, PointerType>([
   ['mouse', PointerType.MOUSE],
   ['touch', PointerType.TOUCH],
   ['pen', PointerType.STYLUS],
-  ['key', PointerType.KEY],
   ['none', PointerType.OTHER],
 ]);
 
