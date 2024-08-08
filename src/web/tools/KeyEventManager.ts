@@ -5,10 +5,12 @@ import { PointerType } from '../../PointerType';
 export default class KeyEventManager extends EventManager<HTMLElement> {
   private activationKeys = ['Enter', ' '];
   private cancelationKeys = ['Tab'];
+  private isPressed = false;
 
   private keyDownCallback = (event: KeyboardEvent): void => {
-    if (this.cancelationKeys.indexOf(event.key) !== -1) {
+    if (this.cancelationKeys.indexOf(event.key) !== -1 && this.isPressed) {
       this.dispatchEvent(event, EventTypes.CANCEL);
+      return;
     }
 
     if (this.activationKeys.indexOf(event.key) === -1) {
@@ -19,7 +21,7 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
   };
 
   private keyUpCallback = (event: KeyboardEvent): void => {
-    if (this.activationKeys.indexOf(event.key) === -1) {
+    if (this.activationKeys.indexOf(event.key) === -1 || !this.isPressed) {
       return;
     }
 
@@ -31,12 +33,15 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
     const adaptedEvent = this.mapEvent(event, eventType);
     switch (eventType) {
       case EventTypes.UP:
+        this.isPressed = false;
         this.onPointerUp(adaptedEvent);
         break;
       case EventTypes.DOWN:
+        this.isPressed = true;
         this.onPointerDown(adaptedEvent);
         break;
       case EventTypes.CANCEL:
+        this.isPressed = false;
         this.onPointerCancel(adaptedEvent);
         break;
     }
