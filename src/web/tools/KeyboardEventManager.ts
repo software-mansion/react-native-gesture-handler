@@ -31,7 +31,7 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private dispatchEvent(event: KeyboardEvent, eventType: EventTypes) {
     const adaptedEvent = this.mapEvent(event, eventType);
 
-    if (adaptedEvent.x === undefined) {
+    if (isNaN(adaptedEvent.x)) {
       // in rare cases when event.target is not a HTMLElement
       // we want to return before sending out an event
       return;
