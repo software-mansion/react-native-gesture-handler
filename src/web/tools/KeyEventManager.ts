@@ -30,6 +30,7 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
 
   private dispatchEvent(event: KeyboardEvent, eventType: EventTypes) {
     const adaptedEvent = this.mapEvent(event, eventType);
+
     switch (eventType) {
       case EventTypes.UP:
         this.isPressed = false;
@@ -62,16 +63,21 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
   ): AdaptedEvent {
     const viewRect = (event.target as HTMLElement)?.getBoundingClientRect?.();
 
-    const pointerPosition = {
+    const viewportPosition = {
       x: viewRect.x + viewRect.width / 2,
       y: viewRect.y + viewRect.height / 2,
     };
 
+    const relativePosition = {
+      x: viewRect.width / 2,
+      y: viewRect.height / 2,
+    };
+
     return {
-      x: pointerPosition.x,
-      y: pointerPosition.y,
-      offsetX: pointerPosition.x,
-      offsetY: pointerPosition.y,
+      x: viewportPosition.x,
+      y: viewportPosition.y,
+      offsetX: relativePosition.x,
+      offsetY: relativePosition.y,
       pointerId: 0,
       eventType: eventType,
       pointerType: PointerType.KEY,
