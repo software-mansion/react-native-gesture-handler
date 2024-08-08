@@ -179,7 +179,7 @@ class ManagedProps<T> {
   }
 
   public get<K extends keyof T>(prop: K): T[K] {
-    this.usedProps.push();
+    this.usedProps.push(prop);
     return this.rawProps[prop];
   }
 
