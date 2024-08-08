@@ -11,7 +11,7 @@ import { isPointerInBounds } from '../utils';
 import EventManager from './EventManager';
 import { Config } from '../interfaces';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
-import KeyEventManager from './KeyEventManager';
+import KeyboardEventManager from './KeyboardEventManager';
 
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
@@ -47,7 +47,7 @@ export class GestureHandlerWebDelegate
 
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new TouchEventManager(this.view));
-    this.eventManagers.push(new KeyEventManager(this.view));
+    this.eventManagers.push(new KeyboardEventManager(this.view));
 
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)

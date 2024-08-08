@@ -2,7 +2,7 @@ import { AdaptedEvent, EventTypes } from '../interfaces';
 import EventManager from './EventManager';
 import { PointerType } from '../../PointerType';
 
-export default class KeyEventManager extends EventManager<HTMLElement> {
+export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private activationKeys = ['Enter', ' '];
   private cancelationKeys = ['Tab'];
   private isPressed = false;
