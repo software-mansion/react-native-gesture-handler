@@ -184,11 +184,11 @@ class ManagedProps<T> {
   }
 
   get remainingProps(): T {
-    const mRemainingProps: Record<string, unknown> = {};
+    const mRemainingProps: Record<string | number | symbol, unknown> = {};
 
     for (const key of this.usedProps) {
       if (this.rawProps[key]) {
-        mRemainingProps[key as string] = this.rawProps[key];
+        mRemainingProps[key] = this.rawProps[key];
       }
     }
 
