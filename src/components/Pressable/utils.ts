@@ -6,11 +6,7 @@ import {
   GestureTouchEvent,
 } from '../../handlers/gestureHandlerCommon';
 import { HoverGestureHandlerEventPayload } from '../../handlers/gestures/hoverGesture';
-import {
-  InnerPressableEvent,
-  PressableEvent,
-  PressableProps,
-} from './PressableProps';
+import { InnerPressableEvent, PressableEvent } from './PressableProps';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
@@ -174,29 +170,29 @@ const splitStyles = (from: ViewStyle): [ViewStyle, ViewStyle] => {
   return [innerStyles, outerStyles];
 };
 
-class ManagedProps {
-  private usedProps: (keyof PressableProps)[] = [];
-  private rawProps: PressableProps;
+class ManagedProps<T> {
+  private usedProps: (keyof T)[] = [];
+  private rawProps: T;
 
-  constructor(props: PressableProps) {
+  constructor(props: T) {
     this.rawProps = props;
   }
 
-  public get<K extends keyof PressableProps>(prop: K): PressableProps[K] {
+  public get<K extends keyof T>(prop: K): T[K] {
     this.usedProps.push();
     return this.rawProps[prop];
   }
 
-  get remainingProps(): PressableProps {
+  get remainingProps(): T {
     const mRemainingProps: Record<string, unknown> = {};
 
     for (const key of this.usedProps) {
       if (this.rawProps[key]) {
-        mRemainingProps[key] = this.rawProps[key];
+        mRemainingProps[key as string] = this.rawProps[key];
       }
     }
 
-    return mRemainingProps;
+    return mRemainingProps as T;
   }
 }
 
