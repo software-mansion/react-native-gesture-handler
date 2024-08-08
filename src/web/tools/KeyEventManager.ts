@@ -29,7 +29,6 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
   };
 
   private dispatchEvent(event: KeyboardEvent, eventType: EventTypes) {
-    this.view.getBoundingClientRect();
     const adaptedEvent = this.mapEvent(event, eventType);
     switch (eventType) {
       case EventTypes.UP:
