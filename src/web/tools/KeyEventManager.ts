@@ -3,15 +3,15 @@ import EventManager from './EventManager';
 import { PointerType } from '../../PointerType';
 
 export default class KeyEventManager extends EventManager<HTMLElement> {
-  private activationKeys = ['Enter', 'Space', 'NumpadEnter'];
+  private activationKeys = ['Enter', ' '];
   private cancelationKeys = ['Tab'];
 
   private keyDownCallback = (event: KeyboardEvent): void => {
-    if (this.cancelationKeys.indexOf(event.code) !== -1) {
+    if (this.cancelationKeys.indexOf(event.key) !== -1) {
       this.dispatchEvent(event, EventTypes.CANCEL);
     }
 
-    if (this.activationKeys.indexOf(event.code) === -1) {
+    if (this.activationKeys.indexOf(event.key) === -1) {
       return;
     }
 
@@ -19,7 +19,7 @@ export default class KeyEventManager extends EventManager<HTMLElement> {
   };
 
   private keyUpCallback = (event: KeyboardEvent): void => {
-    if (this.activationKeys.indexOf(event.code) === -1) {
+    if (this.activationKeys.indexOf(event.key) === -1) {
       return;
     }
 
