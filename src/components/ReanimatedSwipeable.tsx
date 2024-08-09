@@ -618,13 +618,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </GestureDetector>
     );
 
-    const finalRendered = managedProps.testID ? (
+    return managedProps.testID ? (
       <View testID={managedProps.testID}>{swipeableComponent}</View>
     ) : (
       swipeableComponent
     );
-
-    return finalRendered;
   }
 );
 
