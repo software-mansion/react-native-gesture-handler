@@ -65,7 +65,7 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     event: KeyboardEvent,
     eventType: EventTypes
   ): AdaptedEvent {
-    const viewRect = (event.target as HTMLElement)?.getBoundingClientRect?.();
+    const viewRect = (event.target as HTMLElement).getBoundingClientRect();
 
     const viewportPosition = {
       x: viewRect?.x + viewRect?.width / 2,
