@@ -29,29 +29,28 @@ const DEFAULT_LONG_PRESS_DURATION = 500;
 export default function Pressable(props: PressableProps) {
   const managedProps = new ManagedProps(props);
 
-  // partial run, might stay this way or be moved once confirmed working
-  managedProps.get('android_ripple');
-  managedProps.get('android_disableSound');
-  managedProps.get('testID');
-  managedProps.get('children');
-  managedProps.get('style');
-  managedProps.get('android_ripple');
-  managedProps.get('disabled');
-  managedProps.get('unstable_pressDelay');
-  managedProps.get('delayLongPress');
-  managedProps.get('onLongPress');
-  managedProps.get('onPressIn');
-  managedProps.get('onPressOut');
-  managedProps.get('onPress');
-  managedProps.get('onHoverOut');
-  managedProps.get('delayHoverOut');
-  managedProps.get('onHoverIn');
-  managedProps.get('delayHoverIn');
-  managedProps.get('pressRetentionOffset');
-  managedProps.get('hitSlop');
-  managedProps.get('testOnly_pressed');
-
-  const remainingProps = managedProps.remainingProps;
+  managedProps.reserveProps([
+    'android_ripple',
+    'android_disableSound',
+    'testID',
+    'children',
+    'style',
+    'android_ripple',
+    'disabled',
+    'unstable_pressDelay',
+    'delayLongPress',
+    'onLongPress',
+    'onPressIn',
+    'onPressOut',
+    'onPress',
+    'onHoverOut',
+    'delayHoverOut',
+    'onHoverIn',
+    'delayHoverIn',
+    'pressRetentionOffset',
+    'hitSlop',
+    'testOnly_pressed',
+  ]);
 
   const [pressedState, setPressedState] = useState(
     props.testOnly_pressed ?? false
@@ -401,7 +400,7 @@ export default function Pressable(props: PressableProps) {
   const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
 
   return (
-    <View {...remainingProps} style={outerStyles}>
+    <View {...managedProps.remainingProps} style={outerStyles}>
       <GestureDetector gesture={gesture}>
         <NativeButton
           ref={pressableRef}

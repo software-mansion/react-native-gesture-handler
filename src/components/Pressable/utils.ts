@@ -178,17 +178,17 @@ class ManagedProps<T> {
     this.rawProps = props;
   }
 
-  public get<K extends keyof T>(prop: K): T[K] {
-    this.usedProps.push(prop);
-    return this.rawProps[prop];
+  public reserveProps(props: (keyof T)[]) {
+    this.usedProps = this.usedProps.concat(props);
   }
 
   get remainingProps(): T {
     const mRemainingProps: Record<string | number | symbol, unknown> = {};
 
-    for (const key of this.usedProps) {
-      if (this.rawProps[key]) {
+    for (const key in this.rawProps) {
+      if (this.usedProps.indexOf(key) === -1) {
         mRemainingProps[key] = this.rawProps[key];
+        console.log('passing', key);
       }
     }
 
