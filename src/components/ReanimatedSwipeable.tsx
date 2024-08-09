@@ -601,7 +601,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const containerStyle = managedProps.containerStyle;
     const childrenContainerStyle = managedProps.childrenContainerStyle;
 
-    return (
+    const swipeableComponent = (
       <GestureDetector gesture={panGesture} touchAction="pan-y">
         <Animated.View
           {...managedProps.remainingProps}
@@ -617,6 +617,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         </Animated.View>
       </GestureDetector>
     );
+
+    const finalRendered = managedProps.testID ? (
+      <View testID={managedProps.testID}>{swipeableComponent}</View>
+    ) : (
+      swipeableComponent
+    );
+
+    return finalRendered;
   }
 );
 
