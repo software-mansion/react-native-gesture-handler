@@ -6,7 +6,9 @@ import React, {
   ForwardedRef,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
@@ -34,6 +36,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { ManagedProps } from './utils';
 
 const DRAG_TOSS = 0.05;
 
@@ -199,6 +202,30 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     props: SwipeableProps,
     ref: ForwardedRef<SwipeableMethods>
   ) {
+    const managedProps = useMemo(() => new ManagedProps(props), [props]);
+
+    useEffect(() => {
+      managedProps.reserveProps([
+        'friction',
+        'overshootFriction',
+        'overshootLeft',
+        'overshootRight',
+        'onSwipeableWillClose',
+        'onSwipeableWillOpen',
+        'onSwipeableClose',
+        'onSwipeableOpen',
+        'animationOptions',
+        'leftThreshold',
+        'rightThreshold',
+        'onSwipeableOpenStartDrag',
+        'onSwipeableCloseStartDrag',
+        'enableTrackpadTwoFingerGesture',
+        'enabled',
+        'containerStyle',
+        'childrenContainerStyle',
+      ]);
+    }, [managedProps]);
+
     const rowState = useSharedValue<number>(0);
 
     const userDrag = useSharedValue<number>(0);
@@ -596,6 +623,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     return (
       <GestureDetector gesture={panGesture} touchAction="pan-y">
         <Animated.View
+          {...managedProps.remainingProps}
           onLayout={onRowLayout}
           style={[styles.container, containerStyle]}>
           {leftElement}
