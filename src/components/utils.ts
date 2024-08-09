@@ -4,10 +4,17 @@ class ManagedProps<T> {
 
   constructor(props: T) {
     this.rawProps = props;
-  }
 
-  public reserveProps(props: (keyof T)[]) {
-    this.usedProps = this.usedProps.concat(props);
+    for (const key in props) {
+      // Define getters and setters dynamically
+      Object.defineProperty(this, key, {
+        get: () => {
+          this.usedProps.push(key);
+          return this.rawProps[key];
+        },
+        enumerable: true,
+      });
+    }
   }
 
   get remainingProps(): T {

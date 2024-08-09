@@ -6,7 +6,6 @@ import React, {
   ForwardedRef,
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -202,29 +201,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     props: SwipeableProps,
     ref: ForwardedRef<SwipeableMethods>
   ) {
-    const managedProps = useMemo(() => new ManagedProps(props), [props]);
-
-    useEffect(() => {
-      managedProps.reserveProps([
-        'friction',
-        'overshootFriction',
-        'overshootLeft',
-        'overshootRight',
-        'onSwipeableWillClose',
-        'onSwipeableWillOpen',
-        'onSwipeableClose',
-        'onSwipeableOpen',
-        'animationOptions',
-        'leftThreshold',
-        'rightThreshold',
-        'onSwipeableOpenStartDrag',
-        'onSwipeableCloseStartDrag',
-        'enableTrackpadTwoFingerGesture',
-        'enabled',
-        'containerStyle',
-        'childrenContainerStyle',
-      ]);
-    }, [managedProps]);
+    const managedProps = useMemo(
+      () => new ManagedProps<SwipeableProps>(props),
+      [props]
+    ) as SwipeableProps & ManagedProps<SwipeableProps>;
 
     const rowState = useSharedValue<number>(0);
 
@@ -267,8 +247,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
-    const overshootLeftProp = props.overshootLeft;
-    const overshootRightProp = props.overshootRight;
+    const overshootLeftProp = managedProps.overshootLeft;
+    const overshootRightProp = managedProps.overshootRight;
 
     const calculateCurrentOffset = useCallback(() => {
       'worklet';
@@ -344,38 +324,46 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
-        if (toValue > 0 && props.onSwipeableWillOpen) {
-          props.onSwipeableWillOpen('left');
-        } else if (toValue < 0 && props.onSwipeableWillOpen) {
-          props.onSwipeableWillOpen('right');
-        } else if (props.onSwipeableWillClose) {
+        if (toValue > 0 && managedProps.onSwipeableWillOpen) {
+          managedProps.onSwipeableWillOpen('left');
+        } else if (toValue < 0 && managedProps.onSwipeableWillOpen) {
+          managedProps.onSwipeableWillOpen('right');
+        } else if (managedProps.onSwipeableWillClose) {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          props.onSwipeableWillClose(closingDirection);
+          managedProps.onSwipeableWillClose(closingDirection);
         }
       },
       [
         props,
-        props.onSwipeableWillClose,
-        props.onSwipeableWillOpen,
+        managedProps.onSwipeableWillClose,
+        managedProps.onSwipeableWillOpen,
         swipeableMethods,
       ]
     );
 
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
-        if (toValue > 0 && props.onSwipeableOpen) {
-          props.onSwipeableOpen('left', swipeableMethods.current);
-        } else if (toValue < 0 && props.onSwipeableOpen) {
-          props.onSwipeableOpen('right', swipeableMethods.current);
-        } else if (props.onSwipeableClose) {
+        if (toValue > 0 && managedProps.onSwipeableOpen) {
+          managedProps.onSwipeableOpen('left', swipeableMethods.current);
+        } else if (toValue < 0 && managedProps.onSwipeableOpen) {
+          managedProps.onSwipeableOpen('right', swipeableMethods.current);
+        } else if (managedProps.onSwipeableClose) {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          props.onSwipeableClose(closingDirection, swipeableMethods.current);
+          managedProps.onSwipeableClose(
+            closingDirection,
+            swipeableMethods.current
+          );
         }
       },
-      [props, props.onSwipeableClose, props.onSwipeableOpen, swipeableMethods]
+      [
+        props,
+        managedProps.onSwipeableClose,
+        managedProps.onSwipeableOpen,
+        swipeableMethods,
+      ]
     );
 
-    const animationOptionsProp = props.animationOptions;
+    const animationOptionsProp = managedProps.animationOptions;
 
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
@@ -510,8 +498,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
-    const leftThresholdProp = props.leftThreshold;
-    const rightThresholdProp = props.rightThreshold;
+    const leftThresholdProp = managedProps.leftThreshold;
+    const rightThresholdProp = managedProps.rightThreshold;
 
     const handleRelease = (
       event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
@@ -562,8 +550,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     });
 
-    const onSwipeableOpenStartDrag = props.onSwipeableOpenStartDrag;
-    const onSwipeableCloseStartDrag = props.onSwipeableCloseStartDrag;
+    const onSwipeableOpenStartDrag = managedProps.onSwipeableOpenStartDrag;
+    const onSwipeableCloseStartDrag = managedProps.onSwipeableCloseStartDrag;
 
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
@@ -591,9 +579,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
       );
 
-    if (props.enableTrackpadTwoFingerGesture) {
+    if (managedProps.enableTrackpadTwoFingerGesture) {
       panGesture.enableTrackpadTwoFingerGesture(
-        props.enableTrackpadTwoFingerGesture
+        managedProps.enableTrackpadTwoFingerGesture
       );
     }
 
@@ -607,7 +595,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       swipeableMethods,
     ]);
 
-    panGesture.enabled(props.enabled !== false);
+    panGesture.enabled(managedProps.enabled !== false);
 
     const animatedStyle = useAnimatedStyle(
       () => ({
@@ -617,8 +605,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [appliedTranslation, rowState]
     );
 
-    const containerStyle = props.containerStyle;
-    const childrenContainerStyle = props.childrenContainerStyle;
+    const containerStyle = managedProps.containerStyle;
+    const childrenContainerStyle = managedProps.childrenContainerStyle;
 
     return (
       <GestureDetector gesture={panGesture} touchAction="pan-y">
