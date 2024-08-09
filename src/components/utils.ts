@@ -23,7 +23,6 @@ class ManagedProps<T> {
     for (const key in this.rawProps) {
       if (this.usedProps.indexOf(key) === -1) {
         mRemainingProps[key] = this.rawProps[key];
-        console.log('passing', key);
       }
     }
 
