@@ -333,12 +333,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           managedProps.onSwipeableWillClose(closingDirection);
         }
       },
-      [
-        props,
-        managedProps.onSwipeableWillClose,
-        managedProps.onSwipeableWillOpen,
-        swipeableMethods,
-      ]
+      [managedProps]
     );
 
     const dispatchEndEvents = useCallback(
@@ -355,12 +350,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           );
         }
       },
-      [
-        props,
-        managedProps.onSwipeableClose,
-        managedProps.onSwipeableOpen,
-        swipeableMethods,
-      ]
+      [managedProps]
     );
 
     const animationOptionsProp = managedProps.animationOptions;
@@ -402,12 +392,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         runOnJS(dispatchImmediateEvents)(fromValue, toValue);
       },
       [
-        showLeftProgress,
-        appliedTranslation,
-        dispatchEndEvents,
-        dispatchImmediateEvents,
-        animationOptionsProp,
         rowState,
+        animationOptionsProp,
+        appliedTranslation,
+        showLeftProgress,
+        leftWidth.value,
+        showRightProgress,
+        rightWidth.value,
+        dispatchImmediateEvents,
+        dispatchEndEvents,
       ]
     );
 
