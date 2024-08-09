@@ -158,15 +158,130 @@
 
 #else
 
+@interface RNBetterFlingGestureRecognizer : NSGestureRecognizer {
+  dispatch_block_t failFlingAction;
+  int maxDuration;
+}
+
+@property (atomic, assign) RNGestureHandlerDirection direction;
+@property (atomic, assign) int numberOfTouchesRequired;
+
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
+
+@end
+
+@implementation RNBetterFlingGestureRecognizer {
+  __weak RNGestureHandler *_gestureHandler;
+
+  NSPoint lastPosition;
+  double lastTime;
+}
+
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
+{
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
+    _gestureHandler = gestureHandler;
+
+    //    maxDuration = 0.8;
+    maxDuration = 1.5;
+  }
+  return self;
+}
+
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
+{
+  [_gestureHandler handleGesture:self];
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  [super mouseDown:event];
+  lastPosition = [self locationInView:self.view];
+  lastTime = CACurrentMediaTime();
+
+  self.state = NSGestureRecognizerStateBegan;
+
+  __weak typeof(self) weakSelf = self;
+
+  failFlingAction = dispatch_block_create(0, ^{
+    __strong typeof(self) strongSelf = weakSelf;
+
+    if (strongSelf) {
+      NSLog(@"Max duration fail");
+      strongSelf.state = NSGestureRecognizerStateFailed;
+    }
+  });
+
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(maxDuration * NSEC_PER_SEC)),
+      dispatch_get_main_queue(),
+      failFlingAction);
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [super mouseDragged:event];
+  self.state = NSGestureRecognizerStatePossible;
+
+  NSPoint currentPosition = [self locationInView:self.view];
+  double currentTime = CACurrentMediaTime();
+
+  NSPoint distance;
+  distance.x = fabs(currentPosition.x - lastPosition.x);
+  distance.y = fabs(currentPosition.y - lastPosition.y);
+
+  NSLog(@"Dist: {x: %f, y: %f}", distance.x, distance.y);
+
+  double timeDelta = currentTime - lastTime;
+
+  NSPoint velocityVector;
+  velocityVector.x = distance.x / timeDelta;
+  velocityVector.y = distance.y / timeDelta;
+
+  NSLog(@"x: %f, y: %f", velocityVector.x, velocityVector.y);
+
+  double velocity = hypot(velocityVector.x, velocityVector.y);
+
+  [self tryActivate:velocity];
+
+  lastPosition = currentPosition;
+  lastTime = currentTime;
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+}
+
+- (void)tryActivate:(double)velocity
+{
+  if (velocity > 1000) {
+    self.state = NSGestureRecognizerStateChanged;
+  }
+}
+
+@end
+
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-  RCTLogWarn(@"FlingGestureHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
+    _recognizer = [[RNBetterFlingGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
+}
+
+- (void)configure:(NSDictionary *)config
+{
+  [super configure:config];
+  RNBetterFlingGestureRecognizer *recognizer = (RNBetterFlingGestureRecognizer *)_recognizer;
+
+  id prop = config[@"direction"];
+  recognizer.direction = prop != nil ? [RCTConvert NSInteger:prop] : RNGestureHandlerDirectionRight;
+
+  prop = config[@"numberOfPointers"];
+  recognizer.numberOfTouchesRequired = prop != nil ? [RCTConvert NSInteger:prop] : 1;
 }
 
 @end
