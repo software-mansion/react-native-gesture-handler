@@ -54,7 +54,6 @@ export default function Pressable(props: PressableProps) {
       'delayHoverOut',
       'hitSlop',
       'pressRetentionOffset',
-      'testID',
       'testOnly_pressed',
     ]);
   }, [managedProps]);
@@ -411,7 +410,6 @@ export default function Pressable(props: PressableProps) {
       <GestureDetector gesture={gesture}>
         <NativeButton
           ref={pressableRef}
-          testID={props.testID}
           hitSlop={appliedHitSlop}
           enabled={isPressableEnabled}
           touchSoundDisabled={props.android_disableSound ?? undefined}
