@@ -25,10 +25,10 @@ import {
   gestureTouchToPressableEvent,
   addInsets,
   splitStyles,
-  ManagedProps,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
+import { ManagedProps } from '../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
