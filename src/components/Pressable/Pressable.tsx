@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableEvent, PressableProps } from './PressableProps';
@@ -27,30 +33,32 @@ import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
 export default function Pressable(props: PressableProps) {
-  const managedProps = new ManagedProps(props);
+  const managedProps = useMemo(() => new ManagedProps(props), [props]);
 
-  managedProps.reserveProps([
-    'android_ripple',
-    'android_disableSound',
-    'testID',
-    'children',
-    'style',
-    'android_ripple',
-    'disabled',
-    'unstable_pressDelay',
-    'delayLongPress',
-    'onLongPress',
-    'onPressIn',
-    'onPressOut',
-    'onPress',
-    'onHoverOut',
-    'delayHoverOut',
-    'onHoverIn',
-    'delayHoverIn',
-    'pressRetentionOffset',
-    'hitSlop',
-    'testOnly_pressed',
-  ]);
+  useEffect(() => {
+    managedProps.reserveProps([
+      'android_ripple',
+      'android_disableSound',
+      'testID',
+      'children',
+      'style',
+      'android_ripple',
+      'disabled',
+      'unstable_pressDelay',
+      'delayLongPress',
+      'onLongPress',
+      'onPressIn',
+      'onPressOut',
+      'onPress',
+      'onHoverOut',
+      'delayHoverOut',
+      'onHoverIn',
+      'delayHoverIn',
+      'pressRetentionOffset',
+      'hitSlop',
+      'testOnly_pressed',
+    ]);
+  }, [managedProps]);
 
   const [pressedState, setPressedState] = useState(
     props.testOnly_pressed ?? false
