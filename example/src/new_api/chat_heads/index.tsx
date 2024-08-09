@@ -200,7 +200,6 @@ const IMAGE_SIZE = 80;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
   },
   box: {
     position: 'absolute',
