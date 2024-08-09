@@ -93,7 +93,7 @@ export default function Pressable(props: PressableProps) {
           }
           managedProps.onHoverOut?.(gestureToPressableEvent(event));
         }),
-    [props]
+    [managedProps]
   );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
@@ -119,7 +119,7 @@ export default function Pressable(props: PressableProps) {
       pressDelayTimeoutRef.current = null;
       setPressedState(true);
     },
-    [props]
+    [managedProps]
   );
 
   const pressOutHandler = useCallback(
@@ -164,7 +164,7 @@ export default function Pressable(props: PressableProps) {
       isPressCallbackEnabled.current = true;
       setPressedState(false);
     },
-    [pressInHandler, props]
+    [managedProps, pressInHandler]
   );
 
   const handlingOnTouchesDown = useRef<boolean>(false);
@@ -187,7 +187,7 @@ export default function Pressable(props: PressableProps) {
         longPressTimeoutRef.current = null;
       }
     },
-    [props]
+    [managedProps]
   );
 
   const longPressTimeoutRef = useRef<number | null>(null);
