@@ -69,7 +69,7 @@ const implicitActiveState = [
   { state: State.ACTIVE },
   { x: 5 },
   { state: State.END },
-]; // 4 events, including two ACTIVE events (second one has overriden additional data).
+]; // 4 events, including two ACTIVE events (second one has overridden additional data).
 
 const implicitBegin = [
   { x: 1, y: 11 },
