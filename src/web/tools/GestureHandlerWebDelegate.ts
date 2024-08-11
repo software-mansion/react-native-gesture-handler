@@ -16,6 +16,7 @@ import KeyboardEventManager from './KeyboardEventManager';
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
+  private ready = false;
   private view!: HTMLElement;
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
@@ -31,19 +32,16 @@ export class GestureHandlerWebDelegate
       );
     }
 
+    this.ready = true;
+
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
     const config = handler.getConfig();
 
-    this.addContextMenuListeners(config);
-
-    this.view.style['userSelect'] = config.userSelect ?? 'none';
-    this.view.style['webkitUserSelect'] = config.userSelect ?? 'none';
-
-    this.view.style['touchAction'] = config.touchAction ?? 'none';
-    // @ts-ignore This one disables default events on Safari
-    this.view.style['WebkitTouchCallout'] = 'none';
+    this.setUserSelect(config.enabled!); // `enabled` has default value of true if it was not provided
+    this.setTouchAction(config.enabled!);
+    this.setContextMenu(config.enabled!);
 
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new TouchEventManager(this.view));
@@ -119,6 +117,47 @@ export class GestureHandlerWebDelegate
     e.stopPropagation();
   }
 
+  private setUserSelect(isHandlerEnabled: boolean) {
+    const { userSelect } = this.gestureHandler.getConfig();
+
+    this.view.style['userSelect'] = isHandlerEnabled
+      ? userSelect ?? 'none'
+      : 'auto';
+
+    this.view.style['webkitUserSelect'] = isHandlerEnabled
+      ? userSelect ?? 'none'
+      : 'auto';
+  }
+
+  private setTouchAction(isHandlerEnabled: boolean) {
+    const { touchAction } = this.gestureHandler.getConfig();
+
+    this.view.style['touchAction'] = isHandlerEnabled
+      ? touchAction ?? 'none'
+      : 'auto';
+
+    // @ts-ignore This one disables default events on Safari
+    this.view.style['WebkitTouchCallout'] = isHandlerEnabled
+      ? touchAction ?? 'none'
+      : 'auto';
+  }
+
+  private setContextMenu(isHandlerEnabled: boolean) {
+    const config = this.gestureHandler.getConfig();
+
+    if (isHandlerEnabled) {
+      this.addContextMenuListeners(config);
+    } else {
+      this.removeContextMenuListeners(config);
+    }
+  }
+
+  onEnabledChange(enabled: boolean): void {
+    this.setUserSelect(enabled);
+    this.setTouchAction(enabled);
+    this.setContextMenu(enabled);
+  }
+
   onBegin(): void {
     // no-op for now
   }
@@ -152,5 +191,9 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
+  }
+
+  public wasInitialized() {
+    return this.ready;
   }
 }

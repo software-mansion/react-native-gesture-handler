@@ -14,10 +14,10 @@ import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import IGestureHandler from './IGestureHandler';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
+import { GestureHandlerWebDelegate } from '../tools/GestureHandlerWebDelegate';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -41,11 +41,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected shouldResetProgress = false;
   protected pointerType: PointerType = PointerType.MOUSE;
 
-  protected delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
+  protected delegate: GestureHandlerWebDelegate;
 
-  public constructor(
-    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
-  ) {
+  public constructor(delegate: GestureHandlerWebDelegate) {
     this.delegate = delegate;
   }
 
@@ -589,6 +587,10 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.config = { enabled: enabled, ...props };
     this.enabled = enabled;
 
+    if (this.delegate.wasInitialized()) {
+      this.delegate.onEnabledChange(enabled);
+    }
+
     if (this.config.shouldCancelWhenOutside !== undefined) {
       this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
     }
@@ -761,7 +763,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     return this.config;
   }
 
-  public getDelegate(): GestureHandlerDelegate<unknown, IGestureHandler> {
+  public getDelegate(): GestureHandlerWebDelegate {
     return this.delegate;
   }
 
