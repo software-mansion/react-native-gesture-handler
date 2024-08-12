@@ -8,7 +8,7 @@ sidebar_position: 11
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
-import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callbacks.md';
+import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
 A gesture that allows other touch handling components to participate in RNGH's gesture system. When used, the other component should be the direct child of a `GestureDetector`.
 
