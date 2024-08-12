@@ -22,19 +22,33 @@ import {
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { ManagedProps } from '../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
 export default function Pressable(props: PressableProps) {
-  const managedProps = useMemo(
-    () => new ManagedProps(props),
-    [props]
-  ) as PressableProps & ManagedProps<PressableProps>;
+  const {
+    testOnly_pressed,
+    hitSlop,
+    pressRetentionOffset,
+    delayHoverIn,
+    onHoverIn,
+    delayHoverOut,
+    onHoverOut,
+    delayLongPress,
+    unstable_pressDelay,
+    onPress,
+    onPressIn,
+    onPressOut,
+    onLongPress,
+    style,
+    children,
+    android_disableSound,
+    android_ripple,
+    disabled,
+    ...remainingProps
+  } = useMemo(() => props, [props]);
 
-  const [pressedState, setPressedState] = useState(
-    managedProps.testOnly_pressed ?? false
-  );
+  const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
   const pressableRef = useRef<View>(null);
 
@@ -45,18 +59,16 @@ export default function Pressable(props: PressableProps) {
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
-      typeof managedProps.hitSlop === 'number'
-        ? numberAsInset(managedProps.hitSlop)
-        : managedProps.hitSlop ?? {},
-    [managedProps.hitSlop]
+      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : hitSlop ?? {},
+    [hitSlop]
   );
 
   const normalizedPressRetentionOffset: Insets = useMemo(
     () =>
-      typeof managedProps.pressRetentionOffset === 'number'
-        ? numberAsInset(managedProps.pressRetentionOffset)
-        : managedProps.pressRetentionOffset ?? {},
-    [managedProps.pressRetentionOffset]
+      typeof pressRetentionOffset === 'number'
+        ? numberAsInset(pressRetentionOffset)
+        : pressRetentionOffset ?? {},
+    [pressRetentionOffset]
   );
 
   const hoverInTimeout = useRef<number | null>(null);
@@ -71,29 +83,29 @@ export default function Pressable(props: PressableProps) {
           if (hoverOutTimeout.current) {
             clearTimeout(hoverOutTimeout.current);
           }
-          if (managedProps.delayHoverIn) {
+          if (delayHoverIn) {
             hoverInTimeout.current = setTimeout(
-              () => managedProps.onHoverIn?.(gestureToPressableEvent(event)),
-              managedProps.delayHoverIn
+              () => onHoverIn?.(gestureToPressableEvent(event)),
+              delayHoverIn
             );
             return;
           }
-          managedProps.onHoverIn?.(gestureToPressableEvent(event));
+          onHoverIn?.(gestureToPressableEvent(event));
         })
         .onFinalize((event) => {
           if (hoverInTimeout.current) {
             clearTimeout(hoverInTimeout.current);
           }
-          if (managedProps.delayHoverOut) {
+          if (delayHoverOut) {
             hoverOutTimeout.current = setTimeout(
-              () => managedProps.onHoverOut?.(gestureToPressableEvent(event)),
-              managedProps.delayHoverOut
+              () => onHoverOut?.(gestureToPressableEvent(event)),
+              delayHoverOut
             );
             return;
           }
-          managedProps.onHoverOut?.(gestureToPressableEvent(event));
+          onHoverOut?.(gestureToPressableEvent(event));
         }),
-    [managedProps]
+    [delayHoverIn, delayHoverOut, onHoverIn, onHoverOut]
   );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
@@ -114,12 +126,12 @@ export default function Pressable(props: PressableProps) {
 
       deferredEventPayload.current = null;
 
-      managedProps.onPressIn?.(event);
+      onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
       setPressedState(true);
     },
-    [managedProps]
+    [onPressIn]
   );
 
   const pressOutHandler = useCallback(
@@ -132,10 +144,7 @@ export default function Pressable(props: PressableProps) {
         return;
       }
 
-      if (
-        managedProps.unstable_pressDelay &&
-        pressDelayTimeoutRef.current !== null
-      ) {
+      if (unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
         // When delay is preemptively finished by lifting touches,
         // we want to immediately activate it's effects - pressInHandler,
         // even though we are located at the pressOutHandler
@@ -144,14 +153,14 @@ export default function Pressable(props: PressableProps) {
       }
 
       if (deferredEventPayload.current) {
-        managedProps.onPressIn?.(deferredEventPayload.current);
+        onPressIn?.(deferredEventPayload.current);
         deferredEventPayload.current = null;
       }
 
-      managedProps.onPressOut?.(event);
+      onPressOut?.(event);
 
       if (isPressCallbackEnabled.current) {
-        managedProps.onPress?.(event);
+        onPress?.(event);
       }
 
       if (longPressTimeoutRef.current) {
@@ -164,7 +173,7 @@ export default function Pressable(props: PressableProps) {
       isPressCallbackEnabled.current = true;
       setPressedState(false);
     },
-    [managedProps, pressInHandler]
+    [onPress, onPressIn, onPressOut, pressInHandler, unstable_pressDelay]
   );
 
   const handlingOnTouchesDown = useRef<boolean>(false);
@@ -178,7 +187,7 @@ export default function Pressable(props: PressableProps) {
       }
 
       if (hasPassedBoundsChecks.current) {
-        managedProps.onLongPress?.(gestureTouchToPressableEvent(event));
+        onLongPress?.(gestureTouchToPressableEvent(event));
         isPressCallbackEnabled.current = false;
       }
 
@@ -187,13 +196,13 @@ export default function Pressable(props: PressableProps) {
         longPressTimeoutRef.current = null;
       }
     },
-    [managedProps]
+    [onLongPress]
   );
 
   const longPressTimeoutRef = useRef<number | null>(null);
   const longPressMinDuration =
-    (managedProps.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
-    (managedProps.unstable_pressDelay ?? 0);
+    (delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
+    (unstable_pressDelay ?? 0);
 
   const pressAndTouchGesture = useMemo(
     () =>
@@ -233,10 +242,10 @@ export default function Pressable(props: PressableProps) {
               );
             }
 
-            if (managedProps.unstable_pressDelay) {
+            if (unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
                 pressInHandler(gestureTouchToPressableEvent(event));
-              }, managedProps.unstable_pressDelay);
+              }, unstable_pressDelay);
             } else {
               pressInHandler(gestureTouchToPressableEvent(event));
             }
@@ -284,7 +293,7 @@ export default function Pressable(props: PressableProps) {
       normalizedHitSlop,
       pressInHandler,
       pressOutHandler,
-      managedProps.unstable_pressDelay,
+      unstable_pressDelay,
     ]
   );
 
@@ -342,7 +351,7 @@ export default function Pressable(props: PressableProps) {
     normalizedPressRetentionOffset
   );
 
-  const isPressableEnabled = managedProps.disabled !== true;
+  const isPressableEnabled = disabled !== true;
 
   const gestures = [pressAndTouchGesture, hoverGesture, buttonGesture];
 
@@ -362,40 +371,36 @@ export default function Pressable(props: PressableProps) {
 
   const gesture = Gesture.Simultaneous(...gestures);
 
-  const defaultRippleColor = managedProps.android_ripple
-    ? undefined
-    : 'transparent';
+  const defaultRippleColor = android_ripple ? undefined : 'transparent';
 
   // `cursor: 'pointer'` on `RNButton` crashes iOS
   const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
 
   const styleProp =
-    typeof managedProps.style === 'function'
-      ? managedProps.style({ pressed: pressedState })
-      : managedProps.style;
+    typeof style === 'function' ? style({ pressed: pressedState }) : style;
 
   const childrenProp =
-    typeof managedProps.children === 'function'
-      ? managedProps.children({ pressed: pressedState })
-      : managedProps.children;
+    typeof children === 'function'
+      ? children({ pressed: pressedState })
+      : children;
 
   const flattenedStyles = StyleSheet.flatten(styleProp ?? {});
 
   const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
 
   return (
-    <View {...managedProps.remainingProps} style={outerStyles}>
+    <View {...remainingProps} style={outerStyles}>
       <GestureDetector gesture={gesture}>
         <NativeButton
           ref={pressableRef}
           hitSlop={appliedHitSlop}
           enabled={isPressableEnabled}
-          touchSoundDisabled={managedProps.android_disableSound ?? undefined}
+          touchSoundDisabled={android_disableSound ?? undefined}
           rippleColor={processColor(
-            managedProps.android_ripple?.color ?? defaultRippleColor
+            android_ripple?.color ?? defaultRippleColor
           )}
-          rippleRadius={managedProps.android_ripple?.radius ?? undefined}
+          rippleRadius={android_ripple?.radius ?? undefined}
           style={[
             { width: '100%', height: '100%' },
             pointerStyle,
