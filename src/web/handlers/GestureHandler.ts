@@ -17,7 +17,7 @@ import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import IGestureHandler from './IGestureHandler';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
-import { GestureHandlerWebDelegate } from '../tools/GestureHandlerWebDelegate';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -41,9 +41,11 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected shouldResetProgress = false;
   protected pointerType: PointerType = PointerType.MOUSE;
 
-  protected delegate: GestureHandlerWebDelegate;
+  protected delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
 
-  public constructor(delegate: GestureHandlerWebDelegate) {
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
     this.delegate = delegate;
   }
 
@@ -761,7 +763,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     return this.config;
   }
 
-  public getDelegate(): GestureHandlerWebDelegate {
+  public getDelegate(): GestureHandlerDelegate<unknown, IGestureHandler> {
     return this.delegate;
   }
 
