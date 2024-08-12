@@ -14,10 +14,10 @@ import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import IGestureHandler from './IGestureHandler';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -588,6 +588,8 @@ export default abstract class GestureHandler implements IGestureHandler {
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.config = { enabled: enabled, ...props };
     this.enabled = enabled;
+
+    this.delegate.onEnabledChange(enabled);
 
     if (this.config.shouldCancelWhenOutside !== undefined) {
       this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
