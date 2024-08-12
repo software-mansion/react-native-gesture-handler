@@ -98,3 +98,5 @@ export function deepEqual(obj1: any, obj2: any) {
 
   return true;
 }
+
+export const maxSafeTimeout = 2 ** 31 - 1;
