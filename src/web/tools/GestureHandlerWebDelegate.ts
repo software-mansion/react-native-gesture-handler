@@ -16,7 +16,7 @@ import KeyboardEventManager from './KeyboardEventManager';
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
-  private ready = false;
+  private isInitialized = false;
   private view!: HTMLElement;
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
@@ -32,7 +32,7 @@ export class GestureHandlerWebDelegate
       );
     }
 
-    this.ready = true;
+    this.isInitialized = true;
 
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
@@ -153,6 +153,10 @@ export class GestureHandlerWebDelegate
   }
 
   onEnabledChange(enabled: boolean): void {
+    if (!this.isInitialized) {
+      return;
+    }
+
     this.setUserSelect(enabled);
     this.setTouchAction(enabled);
     this.setContextMenu(enabled);
@@ -191,9 +195,5 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
-  }
-
-  public wasInitialized() {
-    return this.ready;
   }
 }
