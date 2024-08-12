@@ -7,21 +7,35 @@
 //
 
 #import "RNLongPressHandler.h"
+#import <React/RCTConvert.h>
 
 #if !TARGET_OS_OSX
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
-#import <React/RCTConvert.h>
-
 @interface RNBetterLongPressGestureRecognizer : UILongPressGestureRecognizer {
+#else
+@interface RNBetterLongPressGestureRecognizer : NSGestureRecognizer {
+  dispatch_block_t block;
+#endif
+
   CFTimeInterval startTime;
   CFTimeInterval previousTime;
 }
 
+#if TARGET_OS_OSX
+@property (nonatomic, assign) double minimumPressDuration;
+@property (nonatomic, assign) double allowableMovement;
+#endif
+
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
-- (void)handleGesture:(UIGestureRecognizer *)recognizer;
 - (NSUInteger)getDuration;
+
+#if !TARGET_OS_OSX
+- (void)handleGesture:(UIGestureRecognizer *)recognizer;
+#else
+- (void)handleGesture:(NSGestureRecognizer *)recognizer;
+#endif
 
 @end
 
@@ -55,6 +69,8 @@
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
 
+#if !TARGET_OS_OSX
+
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerType:event];
@@ -72,10 +88,7 @@
   [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
-  CGPoint trans = [self translationInView];
-  if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
-      (TEST_MAX_IF_NOT_NAN(
-          fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement))) {
+  if ([self shouldCancelGesture]) {
     self.enabled = NO;
     self.enabled = YES;
   }
@@ -92,6 +105,75 @@
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   [self reset];
+}
+
+#else
+- (void)mouseDown:(NSEvent *)event
+{
+  self.state = NSGestureRecognizerStateBegan;
+  startTime = CACurrentMediaTime();
+
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+
+  _initPosition = [self locationInView:self.view];
+
+  __weak typeof(self) weakSelf = self;
+
+  block = dispatch_block_create(0, ^{
+    __strong typeof(self) strongSelf = weakSelf;
+
+    if (strongSelf) {
+      strongSelf.state = NSGestureRecognizerStateChanged;
+    }
+  });
+
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.minimumPressDuration * NSEC_PER_SEC)),
+      dispatch_get_main_queue(),
+      block);
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesMoved:[NSSet setWithObject:event] withEvent:event];
+
+  if (block == nil) {
+    return;
+  }
+
+  if ([self shouldCancelGesture]) {
+    dispatch_block_cancel(block);
+    block = nil;
+
+    self.state = self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateCancelled
+                                                               : NSGestureRecognizerStateFailed;
+  }
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [_gestureHandler.pointerTracker touchesEnded:[NSSet setWithObject:event] withEvent:event];
+
+  if (block) {
+    dispatch_block_cancel(block);
+    block = nil;
+  }
+
+  self.state =
+      self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
+}
+
+#endif
+
+- (BOOL)shouldCancelGesture
+{
+  CGPoint trans = [self translationInView];
+
+  BOOL shouldBeCancelledOutside = _gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView];
+  BOOL distanceExceeded =
+      TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), self.allowableMovement * self.allowableMovement);
+
+  return shouldBeCancelledOutside || distanceExceeded;
 }
 
 - (void)reset
@@ -126,7 +208,7 @@
 - (void)resetConfig
 {
   [super resetConfig];
-  UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
+  RNBetterLongPressGestureRecognizer *recognizer = (RNBetterLongPressGestureRecognizer *)_recognizer;
 
   recognizer.minimumPressDuration = 0.5;
   recognizer.allowableMovement = 10;
@@ -135,7 +217,7 @@
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
-  UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
+  RNBetterLongPressGestureRecognizer *recognizer = (RNBetterLongPressGestureRecognizer *)_recognizer;
 
   id prop = config[@"minDurationMs"];
   if (prop != nil) {
@@ -147,6 +229,8 @@
     recognizer.allowableMovement = [RCTConvert CGFloat:prop];
   }
 }
+
+#if !TARGET_OS_OSX
 
 - (RNGestureHandlerState)state
 {
@@ -178,21 +262,17 @@
                                         withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
                                      withPointerType:_pointerType];
 }
-@end
 
 #else
 
-@implementation RNLongPressGestureHandler
-
-- (instancetype)initWithTag:(NSNumber *)tag
+- (RNGestureHandlerEventExtraData *)eventExtraData:(NSGestureRecognizer *)recognizer
 {
-  RCTLogWarn(@"LongPressGestureHandler is not supported on macOS");
-  if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
-  }
-  return self;
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
+                                 withNumberOfTouches:1
+                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]
+                                     withPointerType:RNGestureHandlerMouse];
 }
 
-@end
-
 #endif
+@end

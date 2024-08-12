@@ -44,6 +44,7 @@
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
+  [self updateStateIfScrollView];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 }
 
@@ -51,7 +52,12 @@
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
   self.state = UIGestureRecognizerStateFailed;
-  [self reset];
+
+  // For now, we are handling only the scroll view case.
+  // If more views need special treatment, then we can switch to a delegate pattern
+  if ([_gestureHandler retrieveScrollView:self.view] == nil) {
+    [self reset];
+  }
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -90,6 +96,19 @@
   [_gestureHandler.pointerTracker reset];
   [super reset];
   [_gestureHandler reset];
+}
+
+- (void)updateStateIfScrollView
+{
+  RNGHUIScrollView *scrollView = [_gestureHandler retrieveScrollView:self.view];
+  if (!scrollView) {
+    return;
+  }
+  for (UIGestureRecognizer *scrollViewGestureRecognizer in scrollView.gestureRecognizers) {
+    if ([_gestureHandler isUIScrollViewPanGestureRecognizer:scrollViewGestureRecognizer]) {
+      self.state = scrollViewGestureRecognizer.state;
+    }
+  }
 }
 
 @end
@@ -141,20 +160,8 @@
   // We can restore default scrollview behaviour to delay touches to scrollview's children
   // because gesture handler system can handle cancellation of scroll recognizer when JS responder
   // is set
-#ifdef RCT_NEW_ARCH_ENABLED
-  if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
-    UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
-    scrollView.delaysContentTouches = YES;
-  }
-#else
-  if ([view isKindOfClass:[RCTScrollView class]]) {
-    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
-    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
-    // subview
-    UIScrollView *scrollView = [view.subviews objectAtIndex:0];
-    scrollView.delaysContentTouches = YES;
-  }
-#endif // RCT_NEW_ARCH_ENABLED
+  UIScrollView *scrollView = [self retrieveScrollView:view];
+  scrollView.delaysContentTouches = YES;
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event

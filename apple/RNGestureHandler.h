@@ -89,6 +89,13 @@
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
+- (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
+
+#if !TARGET_OS_OSX
+- (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
+#else
+- (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull NSGestureRecognizer *)gestureRecognizer;
+#endif
 
 #if !TARGET_OS_OSX
 - (void)setCurrentPointerType:(nonnull UIEvent *)event;
