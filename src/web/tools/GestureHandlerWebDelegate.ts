@@ -13,6 +13,11 @@ import { Config } from '../interfaces';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
 
+interface DefaultViewStyles {
+  userSelect: string;
+  touchAction: string;
+}
+
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
@@ -20,6 +25,10 @@ export class GestureHandlerWebDelegate
   private view!: HTMLElement;
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
+  private defaultViewStyles: DefaultViewStyles = {
+    userSelect: '',
+    touchAction: '',
+  };
 
   getView(): HTMLElement {
     return this.view;
@@ -36,6 +45,11 @@ export class GestureHandlerWebDelegate
 
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
+
+    this.defaultViewStyles = {
+      userSelect: this.view.style.userSelect,
+      touchAction: this.view.style.touchAction,
+    };
 
     const config = handler.getConfig();
 
@@ -122,11 +136,11 @@ export class GestureHandlerWebDelegate
 
     this.view.style['userSelect'] = isHandlerEnabled
       ? userSelect ?? 'none'
-      : 'auto';
+      : this.defaultViewStyles.userSelect;
 
     this.view.style['webkitUserSelect'] = isHandlerEnabled
       ? userSelect ?? 'none'
-      : 'auto';
+      : this.defaultViewStyles.userSelect;
   }
 
   private setTouchAction(isHandlerEnabled: boolean) {
@@ -134,12 +148,12 @@ export class GestureHandlerWebDelegate
 
     this.view.style['touchAction'] = isHandlerEnabled
       ? touchAction ?? 'none'
-      : 'auto';
+      : this.defaultViewStyles.touchAction;
 
     // @ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = isHandlerEnabled
       ? touchAction ?? 'none'
-      : 'auto';
+      : this.defaultViewStyles.touchAction;
   }
 
   private setContextMenu(isHandlerEnabled: boolean) {
