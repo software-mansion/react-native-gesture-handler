@@ -39,9 +39,9 @@ export class GestureHandlerWebDelegate
 
     const config = handler.getConfig();
 
-    this.setUserSelect(config.enabled!); // `enabled` has default value of true if it was not provided
-    this.setTouchAction(config.enabled!);
-    this.setContextMenu(config.enabled!);
+    this.setUserSelect(config.enabled);
+    this.setTouchAction(config.enabled);
+    this.setContextMenu(config.enabled);
 
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new TouchEventManager(this.view));
