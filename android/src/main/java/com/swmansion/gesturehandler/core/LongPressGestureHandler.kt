@@ -12,6 +12,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     get() = (previousTime - startTime).toInt()
   private val defaultMaxDistSq: Float
   private var maxDistSq: Float
+  private var numberOfPointersRequired: Int
   private var startX = 0f
   private var startY = 0f
   private var startTime: Long = 0
@@ -24,6 +25,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     val defaultMaxDist = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
     defaultMaxDistSq = defaultMaxDist * defaultMaxDist
     maxDistSq = defaultMaxDistSq
+    numberOfPointersRequired = 1
   }
 
   override fun resetConfig() {
@@ -34,6 +36,11 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
 
   fun setMaxDist(maxDist: Float): LongPressGestureHandler {
     maxDistSq = maxDist * maxDist
+    return this
+  }
+
+  fun setNumberOfPointers(numberOfPointers: Int): LongPressGestureHandler {
+    numberOfPointersRequired = numberOfPointers
     return this
   }
 
@@ -48,6 +55,9 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       begin()
       startX = sourceEvent.rawX
       startY = sourceEvent.rawY
+    }
+
+    if (state == STATE_BEGAN && sourceEvent.pointerCount == numberOfPointersRequired) {
       handler = Handler(Looper.getMainLooper())
       if (minDurationMs > 0) {
         handler!!.postDelayed({ activate() }, minDurationMs)
@@ -65,6 +75,10 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       } else {
         fail()
       }
+    }
+    // Even though action suggests that pointer was lifted, it is still counted in pointerCount. That's why we subtract 1
+    else if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP && sourceEvent.pointerCount - 1 < numberOfPointersRequired && state != STATE_ACTIVE) {
+      fail()
     } else {
       // calculate distance from start
       val deltaX = sourceEvent.rawX - startX
