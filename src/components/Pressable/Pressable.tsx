@@ -46,7 +46,7 @@ export default function Pressable(props: PressableProps) {
     android_ripple,
     disabled,
     ...remainingProps
-  } = useMemo(() => props, [props]);
+  } = props;
 
   const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 

@@ -7,7 +7,6 @@ import React, {
   forwardRef,
   useCallback,
   useImperativeHandle,
-  useMemo,
   useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
@@ -218,7 +217,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       onSwipeableClose,
       testID,
       ...remainingProps
-    } = useMemo(() => props, [props]);
+    } = props;
 
     const rowState = useSharedValue<number>(0);
 
