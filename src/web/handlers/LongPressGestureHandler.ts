@@ -87,11 +87,6 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.startX = absoluteCoordsAverage.x;
     this.startY = absoluteCoordsAverage.y;
 
-    if (this.tracker.getTrackedPointersCount() > this.numberOfPointers) {
-      this.fail();
-      return;
-    }
-
     this.tryActivate();
   }
 
