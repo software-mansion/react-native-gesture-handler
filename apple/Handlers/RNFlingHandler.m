@@ -251,6 +251,11 @@
 - (void)mouseUp:(NSEvent *)event
 {
   [super mouseUp:event];
+
+  dispatch_block_cancel(failFlingAction);
+
+  self.state =
+      self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
 }
 
 - (void)tryActivate:(double)velocity
