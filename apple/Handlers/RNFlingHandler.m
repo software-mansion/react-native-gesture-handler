@@ -182,8 +182,7 @@
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
 
-    //    maxDuration = 0.8;
-    maxDuration = 1.5;
+    maxDuration = 1.0;
   }
   return self;
 }
