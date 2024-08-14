@@ -19,7 +19,7 @@
 @property (atomic, assign) double magnitude;
 
 + (Vector *)fromDirection:(RNGestureHandlerDirection)direction;
-+ (Vector *)fromVelocity:(NSPoint)velocity;
++ (Vector *)fromVelocityX:(double)vx withVelocityY:(double)vy;
 - initWithX:(double)x withY:(double)y;
 - (double)computeSimilarity:(Vector *)other;
 - (BOOL)isSimilar:(Vector *)other withThreshold:(double)threshold;

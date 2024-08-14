@@ -158,7 +158,7 @@
 
 #else
 
-@interface RNBetterFlingGestureRecognizer : NSGestureRecognizer {
+@interface RNBetterSwipeGestureRecognizer : NSGestureRecognizer {
   dispatch_block_t failFlingAction;
   int maxDuration;
   int minVelocity;
@@ -174,7 +174,7 @@
 
 @end
 
-@implementation RNBetterFlingGestureRecognizer {
+@implementation RNBetterSwipeGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
 
   NSPoint lastPosition;
@@ -204,6 +204,7 @@
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];
+
   lastPosition = [self locationInView:self.view];
   lastTime = CACurrentMediaTime();
 
@@ -215,7 +216,6 @@
     __strong typeof(self) strongSelf = weakSelf;
 
     if (strongSelf) {
-      NSLog(@"Max duration fail");
       strongSelf.state = NSGestureRecognizerStateFailed;
     }
   });
@@ -229,6 +229,7 @@
 - (void)mouseDragged:(NSEvent *)event
 {
   [super mouseDragged:event];
+
   self.state = NSGestureRecognizerStatePossible;
 
   NSPoint currentPosition = [self locationInView:self.view];
@@ -240,11 +241,7 @@
 
   double timeDelta = currentTime - lastTime;
 
-  NSPoint v;
-  v.x = distance.x / timeDelta;
-  v.y = distance.y / timeDelta;
-
-  Vector *velocityVector = [Vector fromVelocity:v];
+  Vector *velocityVector = [Vector fromVelocityX:(distance.x / timeDelta) withVelocityY:(distance.y / timeDelta)];
 
   [self tryActivate:velocityVector];
 
@@ -310,28 +307,76 @@
 
 @end
 
+#endif
+
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
   if ((self = [super initWithTag:tag])) {
-    _recognizer = [[RNBetterFlingGestureRecognizer alloc] initWithGestureHandler:self];
+    _recognizer = [[RNBetterSwipeGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
+}
+
+- (void)resetConfig
+{
+  [super resetConfig];
+  RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
+  recognizer.direction = RNGestureHandlerDirectionRight;
+#if !TARGET_OS_TV
+  recognizer.numberOfTouchesRequired = 1;
+#endif
 }
 
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
-  RNBetterFlingGestureRecognizer *recognizer = (RNBetterFlingGestureRecognizer *)_recognizer;
+  RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
 
   id prop = config[@"direction"];
-  recognizer.direction = prop != nil ? [RCTConvert NSInteger:prop] : RNGestureHandlerDirectionRight;
+  if (prop != nil) {
+    recognizer.direction = [RCTConvert NSInteger:prop];
+  }
 
+#if !TARGET_OS_TV
   prop = config[@"numberOfPointers"];
-  recognizer.numberOfTouchesRequired = prop != nil ? [RCTConvert NSInteger:prop] : 1;
+  if (prop != nil) {
+    recognizer.numberOfTouchesRequired = [RCTConvert NSInteger:prop];
+  }
+#endif
 }
 
-@end
+#if !TARGET_OS_OSX
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  RNGestureHandlerState savedState = _lastState;
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  _lastState = savedState;
 
+  return shouldBegin;
+}
+
+- (RNGestureHandlerEventExtraData *)eventExtraData:(id)_recognizer
+{
+  // For some weird reason [recognizer locationInView:recognizer.view.window] returns (0, 0).
+  // To calculate the correct absolute position, first calculate the absolute position of the
+  // view inside the root view controller (https://stackoverflow.com/a/7448573) and then
+  // add the relative touch position to it.
+
+  RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
+
+  CGPoint viewAbsolutePosition = [recognizer.view convertPoint:recognizer.view.bounds.origin
+                                                        toView:RCTKeyWindow().rootViewController.view];
+  CGPoint locationInView = [recognizer getLastLocation];
+
+  return [RNGestureHandlerEventExtraData
+               forPosition:locationInView
+      withAbsolutePosition:CGPointMake(
+                               viewAbsolutePosition.x + locationInView.x, viewAbsolutePosition.y + locationInView.y)
+       withNumberOfTouches:recognizer.numberOfTouches
+           withPointerType:_pointerType];
+}
 #endif
+
+@end

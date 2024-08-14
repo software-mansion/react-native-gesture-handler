@@ -49,9 +49,9 @@
   }
 }
 
-+ (Vector *)fromVelocity:(NSPoint)velocity
++ (Vector *)fromVelocityX:(double)vx withVelocityY:(double)vy;
 {
-  return [[Vector alloc] initWithX:velocity.x withY:velocity.y];
+  return [[Vector alloc] initWithX:vx withY:vy];
 }
 
 - (double)computeSimilarity:(Vector *)other
