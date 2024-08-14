@@ -161,6 +161,10 @@
 @interface RNBetterFlingGestureRecognizer : NSGestureRecognizer {
   dispatch_block_t failFlingAction;
   int maxDuration;
+  int minVelocity;
+  double defaultAlignmentCone;
+  double axialDeviationCosine;
+  double diagonalDeviationCosine;
 }
 
 @property (atomic, assign) RNGestureHandlerDirection direction;
@@ -183,6 +187,11 @@
     _gestureHandler = gestureHandler;
 
     maxDuration = 1.0;
+    minVelocity = 700;
+
+    defaultAlignmentCone = 30;
+    axialDeviationCosine = [self coneToDeviation:defaultAlignmentCone];
+    diagonalDeviationCosine = [self coneToDeviation:(90 - defaultAlignmentCone)];
   }
   return self;
 }
@@ -226,22 +235,18 @@
   double currentTime = CACurrentMediaTime();
 
   NSPoint distance;
-  distance.x = fabs(currentPosition.x - lastPosition.x);
-  distance.y = fabs(currentPosition.y - lastPosition.y);
-
-  NSLog(@"Dist: {x: %f, y: %f}", distance.x, distance.y);
+  distance.x = currentPosition.x - lastPosition.x;
+  distance.y = lastPosition.y - currentPosition.y;
 
   double timeDelta = currentTime - lastTime;
 
-  NSPoint velocityVector;
-  velocityVector.x = distance.x / timeDelta;
-  velocityVector.y = distance.y / timeDelta;
+  NSPoint v;
+  v.x = distance.x / timeDelta;
+  v.y = distance.y / timeDelta;
 
-  NSLog(@"x: %f, y: %f", velocityVector.x, velocityVector.y);
+  Vector *velocityVector = [Vector fromVelocity:v];
 
-  double velocity = hypot(velocityVector.x, velocityVector.y);
-
-  [self tryActivate:velocity];
+  [self tryActivate:velocityVector];
 
   lastPosition = currentPosition;
   lastTime = currentTime;
@@ -257,11 +262,50 @@
       self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
 }
 
-- (void)tryActivate:(double)velocity
+- (void)tryActivate:(Vector *)velocityVector
 {
-  if (velocity > 1000) {
+  bool isAligned = NO;
+
+  for (int i = 0; i < directionsSize; ++i) {
+    if ([self getAlignment:diagonalDirections[i]
+            withMinimalAlignmentCosine:diagonalDeviationCosine
+                    withVelocityVector:velocityVector]) {
+      isAligned = YES;
+      break;
+    }
+  }
+
+  if (!isAligned) {
+    for (int i = 0; i < directionsSize; ++i) {
+      if ([self getAlignment:axialDirections[i]
+              withMinimalAlignmentCosine:axialDeviationCosine
+                      withVelocityVector:velocityVector]) {
+        isAligned = YES;
+        break;
+      }
+    }
+  }
+
+  bool isFastEnough = velocityVector.magnitude >= minVelocity;
+
+  if (isAligned && isFastEnough) {
     self.state = NSGestureRecognizerStateChanged;
   }
+}
+
+- (BOOL)getAlignment:(RNGestureHandlerDirection)direction
+    withMinimalAlignmentCosine:(double)minimalAlignmentCosine
+            withVelocityVector:(Vector *)velocityVector
+{
+  Vector *directionVector = [Vector fromDirection:direction];
+  return ((self.direction & direction) == direction) &&
+      [velocityVector isSimilar:directionVector withThreshold:minimalAlignmentCosine];
+}
+
+- (double)coneToDeviation:(double)degrees
+{
+  double radians = (degrees * M_PI) / 180;
+  return cos(radians / 2);
 }
 
 @end

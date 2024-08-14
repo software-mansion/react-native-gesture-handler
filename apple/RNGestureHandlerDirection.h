@@ -1,5 +1,8 @@
 #import <Foundation/Foundation.h>
 
+#ifndef RNGestureHandlerDirection_h
+#define RNGestureHandlerDirection_h
+
 typedef NS_ENUM(NSInteger, RNGestureHandlerDirection) {
   RNGestureHandlerDirectionRight = 1,
   RNGestureHandlerDirectionLeft = 2,
@@ -10,3 +13,21 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerDirection) {
   RNGestureHandlerDirectionDownLeft = 64,
   RNGestureHandlerDirectionDownRight = 128,
 };
+
+static NSInteger diagonalDirections[] = {
+    RNGestureHandlerDirectionRight,
+    RNGestureHandlerDirectionLeft,
+    RNGestureHandlerDirectionUp,
+    RNGestureHandlerDirectionDown,
+};
+
+static NSInteger axialDirections[] = {
+    RNGestureHandlerDirectionUpLeft,
+    RNGestureHandlerDirectionUpRight,
+    RNGestureHandlerDirectionDownLeft,
+    RNGestureHandlerDirectionDownRight,
+};
+
+static NSInteger directionsSize = 4;
+
+#endif
