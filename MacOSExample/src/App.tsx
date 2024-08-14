@@ -16,6 +16,7 @@ import Tap from './basic/tap';
 import LongPressExample from './basic/longPress';
 import ManualExample from './basic/manual';
 import HoverExample from './basic/hover';
+import FlingExample from './basic/fling';
 
 interface Example {
   name: string;
@@ -37,6 +38,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'LongPress', component: LongPressExample },
       { name: 'Manual', component: ManualExample },
       { name: 'Hover', component: HoverExample },
+      { name: 'Fling', component: FlingExample },
     ],
   },
 ];
