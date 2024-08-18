@@ -580,6 +580,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       swipeableMethods,
     ]);
 
+    panGesture.enabled(props.enabled !== false);
+
     const animatedStyle = useAnimatedStyle(
       () => ({
         transform: [{ translateX: appliedTranslation.value }],

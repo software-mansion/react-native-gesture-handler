@@ -27,28 +27,30 @@ export function calculateViewScale(view: HTMLElement) {
     scaleY: 1,
   };
 
-  const scales = styles.scale.split(' ');
+  // Get scales from scale property
+  if (styles.scale !== undefined && styles.scale !== 'none') {
+    const scales = styles.scale.split(' ');
 
-  if (scales[0] !== 'none') {
-    resultScales.scaleX = parseFloat(scales[0]);
+    if (scales[0]) {
+      resultScales.scaleX = parseFloat(scales[0]);
+    }
+
+    resultScales.scaleY = scales[1]
+      ? parseFloat(scales[1])
+      : parseFloat(scales[0]);
   }
 
-  if (scales[1]) {
-    resultScales.scaleY = parseFloat(scales[1]);
-  }
-
+  // Get scales from transform property
   const matrixElements = new RegExp(/matrix\((.+)\)/).exec(
     styles.transform
   )?.[1];
 
-  if (!matrixElements) {
-    return resultScales;
+  if (matrixElements) {
+    const matrixElementsArray = matrixElements.split(', ');
+
+    resultScales.scaleX *= parseFloat(matrixElementsArray[0]);
+    resultScales.scaleY *= parseFloat(matrixElementsArray[3]);
   }
-
-  const matrixElementsArray = matrixElements.split(', ');
-
-  resultScales.scaleX *= parseFloat(matrixElementsArray[0]);
-  resultScales.scaleY *= parseFloat(matrixElementsArray[3]);
 
   return resultScales;
 }

@@ -5,9 +5,16 @@
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#import <UIKit/UIPanGestureRecognizer.h>
 #endif
 
 #import <React/UIView+React.h>
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTScrollViewComponentView.h>
+#else
+#import <React/RCTScrollView.h>
+#endif
 
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
@@ -205,7 +212,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (UITouchType)getPointerType
 {
-  return _pointerType;
+  return (UITouchType)_pointerType;
 }
 
 - (void)bindToView:(RNGHUIView *)view
@@ -474,6 +481,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return YES;
   }
 
+  if ([self areScrollViewRecognizersCompatible:gestureRecognizer otherRecognizer:otherGestureRecognizer]) {
+    return YES;
+  }
+
   RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
   if (handler != nil) {
     if ([_simultaneousHandlers count]) {
@@ -493,6 +504,57 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
   }
   return NO;
+}
+
+- (BOOL)areScrollViewRecognizersCompatible:(UIGestureRecognizer *)gestureRecognizer
+                           otherRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  if ([self isUIScrollViewPanGestureRecognizer:otherGestureRecognizer] &&
+      [gestureRecognizer isKindOfClass:[RNDummyGestureRecognizer class]]) {
+    RNGHUIScrollView *scrollView = [self retrieveScrollView:gestureRecognizer.view];
+    if (scrollView && scrollView == otherGestureRecognizer.view) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
+#if !TARGET_OS_OSX
+// is UIPanGestureRecognizer and has scrollView property
+- (BOOL)isUIScrollViewPanGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+{
+  return [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] &&
+      [gestureRecognizer respondsToSelector:@selector(scrollView)];
+}
+
+#else
+
+- (BOOL)isUIScrollViewPanGestureRecognizer:(NSGestureRecognizer *)gestureRecognizer
+{
+  return NO;
+}
+
+#endif
+
+- (RNGHUIScrollView *)retrieveScrollView:(RNGHUIView *)view
+{
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
+    RNGHUIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
+    return scrollView;
+  }
+#else
+  if ([view isKindOfClass:[RCTScrollView class]]) {
+    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
+    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
+    // subview
+    RNGHUIScrollView *scrollView = [view.subviews objectAtIndex:0];
+    return scrollView;
+  }
+#endif
+
+  return nil;
 }
 
 - (void)reset

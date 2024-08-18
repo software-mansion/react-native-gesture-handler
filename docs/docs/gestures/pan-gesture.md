@@ -27,9 +27,9 @@ import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBas
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
-import BaseContinousEventConfig from './\_shared/base-continous-gesture-config.md';
+import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
-import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callbacks.md';
+import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
 A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
 
@@ -146,12 +146,12 @@ Allows users to choose which mouse button should handler respond to. The enum `M
 Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
 <BaseEventConfig />
-<BaseContinousEventConfig />
+<BaseContinuousEventConfig />
 
 ## Callbacks
 
 <BaseEventCallbacks />
-<BaseContinousEventCallbacks />
+<BaseContinuousEventCallbacks />
 
 ## Event data
 

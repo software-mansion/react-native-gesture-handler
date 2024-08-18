@@ -22,6 +22,7 @@ import {
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
+import { INT32_MAX } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
@@ -189,8 +190,8 @@ export default function Pressable(props: PressableProps) {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(Number.MAX_SAFE_INTEGER) // Stops long press from blocking native gesture
-        .maxDistance(Number.MAX_SAFE_INTEGER) // Stops long press from cancelling after set distance
+        .minDuration(INT32_MAX) // Stops long press from blocking native gesture
+        .maxDistance(INT32_MAX) // Stops long press from cancelling after set distance
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
@@ -386,7 +387,11 @@ export default function Pressable(props: PressableProps) {
             props.android_ripple?.color ?? defaultRippleColor
           )}
           rippleRadius={props.android_ripple?.radius ?? undefined}
-          style={[StyleSheet.absoluteFill, pointerStyle, innerStyles]}>
+          style={[
+            { width: '100%', height: '100%' },
+            pointerStyle,
+            innerStyles,
+          ]}>
           {childrenProp}
           {__DEV__ ? (
             <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />

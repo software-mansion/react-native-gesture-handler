@@ -27,9 +27,9 @@ import RotationGestureBasicSrc from '!!raw-loader!@site/static/examples/Rotation
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
-import BaseContinousEventConfig from './\_shared/base-continous-gesture-config.md';
+import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
-import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callbacks.md';
+import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
 A continuous gesture that can recognize a rotation gesture and track its movement.
 
@@ -65,12 +65,12 @@ function App() {
 ## Config
 
 <BaseEventConfig />
-<BaseContinousEventConfig />
+<BaseContinuousEventConfig />
 
 ## Callbacks
 
 <BaseEventCallbacks />
-<BaseContinousEventCallbacks />
+<BaseContinuousEventCallbacks />
 
 ## Event data
 

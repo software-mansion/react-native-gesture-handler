@@ -20,6 +20,7 @@ export interface GestureHandlerDelegate<TComponent, THandler> {
   onEnd(): void;
   onCancel(): void;
   onFail(): void;
+  onEnabledChange(enabled: boolean): void;
 
   destroy(config: Config): void;
 }

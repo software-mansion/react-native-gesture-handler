@@ -30,7 +30,7 @@ As you can see, there are no `onGestureEvent` and `onHandlerStateChange` callbac
 - `onUpdate` - replaces `onGestureEvent`, called every time the gesture sends a new event while it's in the `ACTIVE` state
 - `onChange` - if defined, called just after `onUpdate`, the events passed to it are the same as the ones passed to `onUpdate` but they also contain `change` values which hold the change in value they represent since the last event (i.e. in case of the `Pan` gesture, the event will also contain `changeX` and `changeY` properties)
 - `onEnd` - called when the gesture transitions from the `ACTIVE` state to either of `END`, `FAILED` or `CANCELLED` - you can tell whether the gesture finished due to user interaction or because of other reason (like getting cancelled by the system, or failure criteria) using the second value passed to the `onEnd` callback alongside the event
-- `onFinalize` called when the gesture transitions into either of `END`, `FAILED` or `CANCELLED` state, if the gesture was `ACTIVE`, `onEnd` will be called first (similarily to `onEnd` you can determine the reason for finishing using the second argument)
+- `onFinalize` called when the gesture transitions into either of `END`, `FAILED` or `CANCELLED` state, if the gesture was `ACTIVE`, `onEnd` will be called first (similarly to `onEnd` you can determine the reason for finishing using the second argument)
 
 The difference between `onEnd` and `onFinalize` is that the `onEnd` will be called only if the gesture was `ACTIVE`, while `onFinalize` will be called if the gesture has `BEGAN`. This means that you can use `onEnd` to clean up after `onStart`, and `onFinalize` to clean up after `onBegin` (or both `onBegin` and `onStart`).
 
@@ -110,7 +110,7 @@ return (
 );
 ```
 
-Similarily, you can use [`Gesture.Simultaneous`](/docs/fundamentals/gesture-composition#simultaneous) to replace stacked gesture handlers that should be able to recognize gestures simultaneously, and [`Gesture.Exclusive`](/docs/fundamentals/gesture-composition#exclusive) to replace stacked gesture handlers that require failure of others.
+Similarly, you can use [`Gesture.Simultaneous`](/docs/fundamentals/gesture-composition#simultaneous) to replace stacked gesture handlers that should be able to recognize gestures simultaneously, and [`Gesture.Exclusive`](/docs/fundamentals/gesture-composition#exclusive) to replace stacked gesture handlers that require failure of others.
 
 ### Replacing `waitFor` and `simultaneousHandlers`
 

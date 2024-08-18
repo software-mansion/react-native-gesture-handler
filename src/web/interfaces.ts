@@ -36,7 +36,7 @@ type ConfigArgs =
   | undefined;
 
 export interface Config extends Record<string, ConfigArgs> {
-  enabled?: boolean;
+  enabled: boolean;
   simultaneousHandlers?: Handler[] | null;
   waitFor?: Handler[] | null;
   blocksHandlers?: Handler[] | null;
