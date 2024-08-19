@@ -45,29 +45,15 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     return this
   }
 
-  private fun getAverageX(ev: MotionEvent, excludePointer: Boolean = false): Float {
+  private fun getAverageCoords(ev: MotionEvent, excludePointer: Boolean = false): Pair<Float, Float> {
     if (!excludePointer) {
-      return (0 until ev.pointerCount).map { ev.getX(it) }.average().toFloat()
+      val x = (0 until ev.pointerCount).map { ev.getX(it) }.average().toFloat()
+      val y = (0 until ev.pointerCount).map { ev.getY(it) }.average().toFloat()
+
+      return Pair(x, y)
     }
 
     var sumX = 0f
-
-    for (i in 0 until ev.pointerCount) {
-      if (i == ev.actionIndex) {
-        continue
-      }
-
-      sumX += ev.getX(i)
-    }
-
-    return sumX / (ev.pointerCount - 1)
-  }
-
-  private fun getAverageY(ev: MotionEvent, excludePointer: Boolean = false): Float {
-    if (!excludePointer) {
-      return (0 until ev.pointerCount).map { ev.getY(it) }.average().toFloat()
-    }
-
     var sumY = 0f
 
     for (i in 0 until ev.pointerCount) {
@@ -75,10 +61,14 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         continue
       }
 
+      sumX += ev.getX(i)
       sumY += ev.getY(i)
     }
 
-    return sumY / (ev.pointerCount - 1)
+    val x = sumX / (ev.pointerCount - 1)
+    val y = sumY / (ev.pointerCount - 1)
+
+    return Pair(x, y)
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
@@ -90,8 +80,10 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       previousTime = SystemClock.uptimeMillis()
       startTime = previousTime
       begin()
-      startX = getAverageX(sourceEvent)
-      startY = getAverageY(sourceEvent)
+
+      val (x, y) = getAverageCoords(sourceEvent)
+      startX = x
+      startY = y
 
       currentPointers++
     }
@@ -99,8 +91,9 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
       currentPointers++
 
-      startX = getAverageX(sourceEvent)
-      startY = getAverageY(sourceEvent)
+      val (x, y) = getAverageCoords(sourceEvent)
+      startX = x
+      startY = y
 
       if (currentPointers > numberOfPointersRequired) {
         fail()
@@ -136,13 +129,13 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         fail()
         currentPointers = 0
       } else {
-        startX = getAverageX(sourceEvent, true)
-        startY = getAverageY(sourceEvent, true)
+        val (x, y) = getAverageCoords(sourceEvent, true)
+        startX = x
+        startY = y
       }
     } else {
       // calculate distance from start
-      val x = getAverageX(sourceEvent)
-      val y = getAverageY(sourceEvent)
+      val (x, y) = getAverageCoords(sourceEvent)
 
       val deltaX = x - startX
       val deltaY = y - startY
