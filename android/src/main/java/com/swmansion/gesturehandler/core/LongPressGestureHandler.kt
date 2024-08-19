@@ -93,14 +93,16 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       startX = getAverageX(sourceEvent)
       startY = getAverageY(sourceEvent)
 
-      ++currentPointers
+      currentPointers++
     }
 
     if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+      currentPointers++
+
       startX = getAverageX(sourceEvent)
       startY = getAverageY(sourceEvent)
 
-      if (++currentPointers > numberOfPointersRequired) {
+      if (currentPointers > numberOfPointersRequired) {
         fail()
         currentPointers = 0
       }
@@ -115,7 +117,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       }
     }
     if (sourceEvent.actionMasked == MotionEvent.ACTION_UP || sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_RELEASE) {
-      --currentPointers
+      currentPointers--
 
       handler?.let {
         it.removeCallbacksAndMessages(null)
@@ -128,7 +130,9 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         fail()
       }
     } else if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      if (--currentPointers < numberOfPointersRequired && state != STATE_ACTIVE) {
+      currentPointers--
+
+      if (currentPointers < numberOfPointersRequired && state != STATE_ACTIVE) {
         fail()
         currentPointers = 0
       } else {
