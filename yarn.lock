@@ -6885,6 +6885,13 @@ expo-font@~7.0.0:
   dependencies:
     fontfaceobserver "^2.1.0"
 
+expo-gl@^14.0.2:
+  version "14.0.2"
+  resolved "https://registry.yarnpkg.com/expo-gl/-/expo-gl-14.0.2.tgz#e9ea2ddf8d0f5671ca8e435b16d86908e46e8964"
+  integrity sha512-XqTg8NMJAHsMiDeyVrUjR4efC/FPz2hQ0BdfnuEk+TNdxsgKy+KHsAkjGrqEWum+DtEQl1uAODUXCPC6lEqoDQ==
+  dependencies:
+    invariant "^2.2.4"
+
 expo-keep-awake@~7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-7.0.0.tgz#131f56bc1ed8dd66e64a159afd7eaef26939d929"
