@@ -229,12 +229,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       lastY = getLastPointerY(sourceEvent, averageTouches)
     }
     if (state == STATE_UNDETERMINED && sourceEvent.pointerCount >= minPointers) {
-      resetProgress()
-      offsetX = 0f
-      offsetY = 0f
-      velocityX = 0f
-      velocityY = 0f
-      velocityTracker = VelocityTracker.obtain()
+      initialize(sourceEvent)
       addVelocityMovement(velocityTracker, sourceEvent)
       begin()
 
@@ -287,6 +282,15 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
   override fun onCancel() {
     handler?.removeCallbacksAndMessages(null)
+  }
+
+  override fun onInitialize(event: MotionEvent) {
+    resetProgress()
+    offsetX = 0f
+    offsetY = 0f
+    velocityX = 0f
+    velocityY = 0f
+    velocityTracker = VelocityTracker.obtain()
   }
 
   override fun onReset() {
