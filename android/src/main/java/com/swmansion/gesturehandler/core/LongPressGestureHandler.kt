@@ -18,6 +18,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   private var startTime: Long = 0
   private var previousTime: Long = 0
   private var handler: Handler? = null
+  private var hasScheduledActivation = false
+  private var currentPointers = 0
 
   init {
     setShouldCancelWhenOutside(true)
@@ -44,6 +46,42 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     return this
   }
 
+  private fun getAverageX(ev: MotionEvent, excludePointer: Boolean = false): Float {
+    if (!excludePointer) {
+      return (0 until ev.pointerCount).map { ev.getX(it) }.average().toFloat()
+    }
+
+    var sumX = 0f
+
+    for (i in 0 until ev.pointerCount) {
+      if (i == ev.actionIndex) {
+        continue
+      }
+
+      sumX += ev.getX(i)
+    }
+
+    return sumX / (ev.pointerCount - 1)
+  }
+
+  private fun getAverageY(ev: MotionEvent, excludePointer: Boolean = false): Float {
+    if (!excludePointer) {
+      return (0 until ev.pointerCount).map { ev.getY(it) }.average().toFloat()
+    }
+
+    var sumY = 0f
+
+    for (i in 0 until ev.pointerCount) {
+      if (i == ev.actionIndex) {
+        continue
+      }
+
+      sumY += ev.getY(i)
+    }
+
+    return sumY / (ev.pointerCount - 1)
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
@@ -53,43 +91,72 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       previousTime = SystemClock.uptimeMillis()
       startTime = previousTime
       begin()
-      startX = sourceEvent.rawX
-      startY = sourceEvent.rawY
+      startX = getAverageX(sourceEvent)
+      startY = getAverageY(sourceEvent)
+
+      ++currentPointers
     }
 
-    if (state == STATE_BEGAN && sourceEvent.pointerCount == numberOfPointersRequired) {
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+      startX = getAverageX(sourceEvent)
+      startY = getAverageY(sourceEvent)
+
+      if (++currentPointers > numberOfPointersRequired) {
+        fail()
+        currentPointers = 0
+      }
+    }
+    if (state == STATE_BEGAN && currentPointers == numberOfPointersRequired && !hasScheduledActivation) {
       handler = Handler(Looper.getMainLooper())
       if (minDurationMs > 0) {
         handler!!.postDelayed({ activate() }, minDurationMs)
       } else if (minDurationMs == 0L) {
         activate()
       }
+
+      hasScheduledActivation = true
     }
     if (sourceEvent.actionMasked == MotionEvent.ACTION_UP || sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_RELEASE) {
+      --currentPointers
+
       handler?.let {
         it.removeCallbacksAndMessages(null)
         handler = null
       }
+
       if (state == STATE_ACTIVE) {
         end()
       } else {
         fail()
       }
-    }
-    // Even though action suggests that pointer was lifted, it is still counted in pointerCount. That's why we subtract 1
-    else if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP && sourceEvent.pointerCount - 1 < numberOfPointersRequired && state != STATE_ACTIVE) {
-      fail()
+
+      hasScheduledActivation = false
+    } else if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+      if (--currentPointers < numberOfPointersRequired && state != STATE_ACTIVE) {
+        fail()
+        currentPointers = 0
+        hasScheduledActivation = false
+      } else {
+        startX = getAverageX(sourceEvent, true)
+        startY = getAverageY(sourceEvent, true)
+      }
     } else {
       // calculate distance from start
-      val deltaX = sourceEvent.rawX - startX
-      val deltaY = sourceEvent.rawY - startY
+      val x = getAverageX(sourceEvent)
+      val y = getAverageY(sourceEvent)
+
+      val deltaX = x - startX
+      val deltaY = y - startY
       val distSq = deltaX * deltaX + deltaY * deltaY
+
       if (distSq > maxDistSq) {
         if (state == STATE_ACTIVE) {
           cancel()
         } else {
           fail()
         }
+
+        hasScheduledActivation = false
       }
     }
   }
