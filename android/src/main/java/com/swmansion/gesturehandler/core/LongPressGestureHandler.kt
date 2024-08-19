@@ -85,7 +85,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       startX = x
       startY = y
 
-      currentPointers++
+      currentPointers = 1
     }
 
     if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
