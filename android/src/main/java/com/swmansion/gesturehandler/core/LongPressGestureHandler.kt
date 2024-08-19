@@ -18,7 +18,6 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   private var startTime: Long = 0
   private var previousTime: Long = 0
   private var handler: Handler? = null
-  private var hasScheduledActivation = false
   private var currentPointers = 0
 
   init {
@@ -106,15 +105,14 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         currentPointers = 0
       }
     }
-    if (state == STATE_BEGAN && currentPointers == numberOfPointersRequired && !hasScheduledActivation) {
+
+    if (state == STATE_BEGAN && currentPointers == numberOfPointersRequired && (sourceEvent.actionMasked == MotionEvent.ACTION_DOWN || sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN)) {
       handler = Handler(Looper.getMainLooper())
       if (minDurationMs > 0) {
         handler!!.postDelayed({ activate() }, minDurationMs)
       } else if (minDurationMs == 0L) {
         activate()
       }
-
-      hasScheduledActivation = true
     }
     if (sourceEvent.actionMasked == MotionEvent.ACTION_UP || sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_RELEASE) {
       --currentPointers
@@ -129,13 +127,10 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       } else {
         fail()
       }
-
-      hasScheduledActivation = false
     } else if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       if (--currentPointers < numberOfPointersRequired && state != STATE_ACTIVE) {
         fail()
         currentPointers = 0
-        hasScheduledActivation = false
       } else {
         startX = getAverageX(sourceEvent, true)
         startY = getAverageY(sourceEvent, true)
@@ -155,8 +150,6 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         } else {
           fail()
         }
-
-        hasScheduledActivation = false
       }
     }
   }
