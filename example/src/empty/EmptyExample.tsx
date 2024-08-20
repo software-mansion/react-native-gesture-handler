@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Canvas } from '@react-three/fiber/native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { Euler } from 'three';
 
 export default function App() {
   const [beginCount, setBeginCount] = useState(0);
   const [startCount, setStartCount] = useState(0);
   const [endCount, setEndCount] = useState(0);
+  const [downCount, setDownCount] = useState(0);
+  const [upCount, setUpCount] = useState(0);
+  const [rotation, _setRotation] = useState({ x: 0, y: 1, z: 2 });
+
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onBegin(() => {
@@ -20,7 +25,16 @@ export default function App() {
     .onEnd(() => {
       console.log('end');
       setEndCount(endCount + 1);
+    })
+    .onTouchesDown(() => {
+      console.log('down');
+      setDownCount(downCount + 1);
+    })
+    .onTouchesUp(() => {
+      console.log('up');
+      setUpCount(upCount + 1);
     });
+
   return (
     <View style={styles.container}>
       <GestureDetector gesture={tap}>
@@ -29,12 +43,15 @@ export default function App() {
             style={{
               flex: 1,
             }}>
-            <ambientLight intensity={1} />
-            <directionalLight color="red" position={[0, 0, 5]} />
+            <directionalLight
+              position={[0, 0, 5]}
+              rotation={new Euler(0.2, 0.2, 0)}
+            />
             <mesh
               onClick={() => {
                 console.log('mesh click');
-              }}>
+              }}
+              rotation={new Euler(rotation.y, rotation.x, rotation.z)}>
               <boxGeometry />
               <meshStandardMaterial color={'#ff0000'} />
             </mesh>
@@ -45,6 +62,8 @@ export default function App() {
         <Text>Begin count: {beginCount}</Text>
         <Text>Start count: {startCount}</Text>
         <Text>End count: {endCount}</Text>
+        <Text>Down count: {downCount}</Text>
+        <Text>Up count: {upCount}</Text>
       </View>
     </View>
   );
