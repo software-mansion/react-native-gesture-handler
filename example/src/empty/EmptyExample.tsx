@@ -41,7 +41,7 @@ export default function App() {
     })
     .onTouchesCancelled(() => {
       console.log('cancelled');
-      setCanceledCount(upCount + 1);
+      setCanceledCount(canceledCount + 1);
     });
 
   return (
