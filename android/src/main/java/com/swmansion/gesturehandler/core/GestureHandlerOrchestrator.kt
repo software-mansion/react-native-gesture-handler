@@ -40,16 +40,32 @@ class GestureHandlerOrchestrator(
    * Should be called from the view wrapper
    */
   fun onTouchEvent(event: MotionEvent): Boolean {
+    if (event.actionMasked == 2) {
+      // return false
+    }
+
+    println("--- motion event ---")
+    println(event.actionMasked)
+    println(event.getPointerId(0))
+    println(event.pointerCount)
+
     isHandlingTouch = true
+    println("! start handling")
     val action = event.actionMasked
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_HOVER_MOVE) {
+      println("> pointer down")
       extractGestureHandlers(event)
     } else if (action == MotionEvent.ACTION_CANCEL) {
+      println("> pointer cancel")
       cancelAll()
     }
+
+    println(" -- delivering --")
     deliverEventToGestureHandlers(event)
     isHandlingTouch = false
+    println("! end handling")
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
+      println("> cleanup")
       cleanupFinishedHandlers()
     }
     return true

@@ -652,7 +652,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun cancel() {
+    // state is not the issue, always == 2 so far
+    // instead, 'TapGestureHandler' gets called
+    // instead of the usual 'RNGestureHandlerRootHelper`
     if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN || this.isAwaiting) {
+      println("state: $state (expecting 2)")
       onCancel()
       moveToState(STATE_CANCELLED)
     }

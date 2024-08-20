@@ -34,8 +34,13 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
   override fun dispatchTouchEvent(ev: MotionEvent) =
     if (_enabled && rootHelper!!.dispatchTouchEvent(ev)) {
+      println("dispatchTouchEvent via local")
       true
-    } else super.dispatchTouchEvent(ev)
+    } else {
+      println("dispatchTouchEvent via super")
+      super.dispatchTouchEvent(ev)
+    }
+
 
   override fun dispatchGenericMotionEvent(event: MotionEvent) =
     if (_enabled && rootHelper!!.dispatchTouchEvent(event)) {

@@ -64,6 +64,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       // adding a new pointer to the screen after a handler activates
       if (currentState == STATE_UNDETERMINED && (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)) {
         begin()
+        println("shouldIntercept = false | AAA")
         shouldIntercept = false
       }
       if (event.actionMasked == MotionEvent.ACTION_UP) {
@@ -72,6 +73,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
 
     override fun onCancel() {
+      println("shouldIntercept = true | BBB")
       shouldIntercept = true
       val time = SystemClock.uptimeMillis()
       val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
@@ -101,6 +103,12 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     passingTouch = true
     orchestrator!!.onTouchEvent(ev)
     passingTouch = false
+    println("shouldIntercept: $shouldIntercept")
+
+    if (ev.actionMasked == 1) {
+      // return true
+    }
+
     return shouldIntercept
   }
 
