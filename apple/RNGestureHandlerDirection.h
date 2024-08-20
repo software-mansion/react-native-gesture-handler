@@ -14,14 +14,14 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerDirection) {
   RNGestureHandlerDirectionDownRight = 128,
 };
 
-static NSInteger diagonalDirections[] = {
+static NSInteger axialDirections[] = {
     RNGestureHandlerDirectionRight,
     RNGestureHandlerDirectionLeft,
     RNGestureHandlerDirectionUp,
     RNGestureHandlerDirectionDown,
 };
 
-static NSInteger axialDirections[] = {
+static NSInteger diagonalDirections[] = {
     RNGestureHandlerDirectionUpLeft,
     RNGestureHandlerDirectionUpRight,
     RNGestureHandlerDirectionDownLeft,
