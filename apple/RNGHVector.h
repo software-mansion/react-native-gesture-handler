@@ -18,11 +18,11 @@
 @property (atomic, assign) double unitY;
 @property (atomic, assign) double magnitude;
 
-+ (Vector *)fromDirection:(RNGestureHandlerDirection)direction;
-+ (Vector *)fromVelocityX:(double)vx withVelocityY:(double)vy;
-- initWithX:(double)x withY:(double)y;
-- (double)computeSimilarity:(Vector *)other;
-- (BOOL)isSimilar:(Vector *)other withThreshold:(double)threshold;
++ (Vector *_Nonnull)fromDirection:(RNGestureHandlerDirection)direction;
++ (Vector *_Nonnull)fromVelocityX:(double)vx withVelocityY:(double)vy;
+- (nonnull instancetype)initWithX:(double)x withY:(double)y;
+- (double)computeSimilarity:(Vector *_Nonnull)other;
+- (BOOL)isSimilar:(Vector *_Nonnull)other withThreshold:(double)threshold;
 
 @end
 
