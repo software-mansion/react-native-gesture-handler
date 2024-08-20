@@ -208,7 +208,7 @@
   lastPosition = [self locationInView:self.view];
   lastTime = CACurrentMediaTime();
 
-  self.state = NSGestureRecognizerStateBegan;
+  self.state = NSGestureRecognizerStatePossible;
 
   __weak typeof(self) weakSelf = self;
 
@@ -229,8 +229,6 @@
 - (void)mouseDragged:(NSEvent *)event
 {
   [super mouseDragged:event];
-
-  self.state = NSGestureRecognizerStatePossible;
 
   NSPoint currentPosition = [self locationInView:self.view];
   double currentTime = CACurrentMediaTime();
