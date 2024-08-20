@@ -87,75 +87,6 @@
 
 @end
 
-@implementation RNFlingGestureHandler
-
-- (instancetype)initWithTag:(NSNumber *)tag
-{
-  if ((self = [super initWithTag:tag])) {
-    _recognizer = [[RNBetterSwipeGestureRecognizer alloc] initWithGestureHandler:self];
-  }
-  return self;
-}
-
-- (void)resetConfig
-{
-  [super resetConfig];
-  UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
-  recognizer.direction = UISwipeGestureRecognizerDirectionRight;
-#if !TARGET_OS_TV
-  recognizer.numberOfTouchesRequired = 1;
-#endif
-}
-
-- (void)configure:(NSDictionary *)config
-{
-  [super configure:config];
-  UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
-
-  id prop = config[@"direction"];
-  if (prop != nil) {
-    recognizer.direction = [RCTConvert NSInteger:prop];
-  }
-
-#if !TARGET_OS_TV
-  prop = config[@"numberOfPointers"];
-  if (prop != nil) {
-    recognizer.numberOfTouchesRequired = [RCTConvert NSInteger:prop];
-  }
-#endif
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  RNGestureHandlerState savedState = _lastState;
-  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
-  _lastState = savedState;
-
-  return shouldBegin;
-}
-
-- (RNGestureHandlerEventExtraData *)eventExtraData:(id)_recognizer
-{
-  // For some weird reason [recognizer locationInView:recognizer.view.window] returns (0, 0).
-  // To calculate the correct absolute position, first calculate the absolute position of the
-  // view inside the root view controller (https://stackoverflow.com/a/7448573) and then
-  // add the relative touch position to it.
-
-  RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
-
-  CGPoint viewAbsolutePosition = [recognizer.view convertPoint:recognizer.view.bounds.origin
-                                                        toView:RCTKeyWindow().rootViewController.view];
-  CGPoint locationInView = [recognizer getLastLocation];
-
-  return [RNGestureHandlerEventExtraData
-               forPosition:locationInView
-      withAbsolutePosition:CGPointMake(
-                               viewAbsolutePosition.x + locationInView.x, viewAbsolutePosition.y + locationInView.y)
-       withNumberOfTouches:recognizer.numberOfTouches
-           withPointerType:_pointerType];
-}
-@end
-
 #else
 
 @interface RNBetterSwipeGestureRecognizer : NSGestureRecognizer {
@@ -239,7 +170,7 @@
 
   double timeDelta = currentTime - lastTime;
 
-  Vector *velocityVector = [Vector fromVelocityX:(distance.x / timeDelta) withVelocityY:(distance.y / timeDelta)];
+  Vector *velocityVector = [Vector fromVelocityX:(event.deltaX / timeDelta) withVelocityY:(-event.deltaY / timeDelta)];
 
   [self tryActivate:velocityVector];
 
