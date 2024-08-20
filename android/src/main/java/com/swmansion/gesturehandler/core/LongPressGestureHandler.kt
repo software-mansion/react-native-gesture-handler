@@ -85,7 +85,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       startX = x
       startY = y
 
-      currentPointers = 1
+      currentPointers++
     }
 
     if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
@@ -166,6 +166,11 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   override fun dispatchHandlerUpdate(event: MotionEvent) {
     previousTime = SystemClock.uptimeMillis()
     super.dispatchHandlerUpdate(event)
+  }
+
+  override fun onReset() {
+    super.onReset()
+    currentPointers = 0
   }
 
   companion object {
