@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { tagMessage } from '../../../utils';
+import { isJestEnv, tagMessage } from '../../../utils';
 import { GestureRef, BaseGesture, GestureType } from '../gesture';
 
 import { flingGestureHandlerProps } from '../../FlingGestureHandler';
@@ -100,7 +100,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
   // If none of the callbacks are worklets and the gesture is not explicitly marked with
   // `.runOnJS(true)` show a warning
-  if (areAllNotWorklets) {
+  if (areAllNotWorklets && !isJestEnv()) {
     console.warn(
       tagMessage(
         `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`
