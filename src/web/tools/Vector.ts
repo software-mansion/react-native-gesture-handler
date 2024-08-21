@@ -1,5 +1,5 @@
 import { DiagonalDirections, Directions } from '../../Directions';
-import { DIVISION_EPSILON } from '../constants';
+import { MINIMAL_RECOGNIZABLE_MAGNITUDE } from '../constants';
 import PointerTracker from './PointerTracker';
 
 export default class Vector {
@@ -14,7 +14,8 @@ export default class Vector {
     this.y = y;
 
     this._magnitude = Math.hypot(this.x, this.y);
-    const isMagnitudeSufficient = this._magnitude > DIVISION_EPSILON;
+    const isMagnitudeSufficient =
+      this._magnitude > MINIMAL_RECOGNIZABLE_MAGNITUDE;
 
     this.unitX = isMagnitudeSufficient ? this.x / this._magnitude : 0;
     this.unitY = isMagnitudeSufficient ? this.y / this._magnitude : 0;
