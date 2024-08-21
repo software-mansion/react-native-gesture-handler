@@ -201,7 +201,9 @@ class GestureHandlerOrchestrator(
 
     for (otherHandler in gestureHandlers.asReversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler.cancel()
+        println("ORCHESTRATOR cancels conflicting handler")
+        // disabling this mechanic fixes our issue, but is not a good answer
+        // otherHandler.cancel()
       }
     }
 

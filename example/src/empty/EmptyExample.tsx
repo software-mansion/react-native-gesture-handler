@@ -12,13 +12,16 @@ export default function App() {
   const [upCount, setUpCount] = useState(0);
   const [canceledCount, setCanceledCount] = useState(0);
   const [rotation, _setRotation] = useState({
-    x: 0,
-    y: (45 / 180) * Math.PI,
+    x: (0 / 180) * Math.PI,
+    y: (55 / 180) * Math.PI,
     z: (45 / 180) * Math.PI,
   });
 
   const tap = Gesture.Tap()
     .runOnJS(true)
+    .maxDistance(99999)
+    .maxDuration(99999)
+    .maxDelay(99999)
     .onBegin(() => {
       //console.log('begin');
       setBeginCount(beginCount + 1);
@@ -44,15 +47,16 @@ export default function App() {
       setCanceledCount(canceledCount + 1);
     });
 
+  // const native = Gesture.Native();
+  // native.simultaneousWithExternalGesture(tap);
+
   return (
     <View style={styles.container}>
       <GestureDetector gesture={tap}>
         <View style={styles.background}>
           <Canvas>
-            <directionalLight
-              position={[0, 0, 5]}
-              rotation={new Euler(0.2, 0.2, 0)}
-            />
+            <directionalLight position={[-0.5, 0.5, 0.8]} />
+            <ambientLight intensity={0.5} />
             <mesh rotation={new Euler(rotation.y, rotation.x, rotation.z)}>
               <mesh
                 onClick={() => {
@@ -60,7 +64,7 @@ export default function App() {
                 }}
                 position={new Vector3(0, 0, 1)}>
                 <boxGeometry />
-                <meshStandardMaterial color={'#ff0000'} />
+                <meshStandardMaterial color={'#f00'} />
               </mesh>
               <mesh
                 onClick={() => {
@@ -68,7 +72,7 @@ export default function App() {
                 }}
                 position={new Vector3(1, 0, 0)}>
                 <boxGeometry />
-                <meshStandardMaterial color={'#0000ff'} />
+                <meshStandardMaterial color={'#00f'} />
               </mesh>
               <mesh
                 onClick={() => {
@@ -76,7 +80,16 @@ export default function App() {
                 }}
                 position={new Vector3(0, 1, 0)}>
                 <boxGeometry />
-                <meshStandardMaterial color={'#00ff00'} />
+                <meshStandardMaterial color={'#0f0'} />
+              </mesh>
+              <mesh
+                onClick={() => {
+                  console.log('white click');
+                }}
+                position={new Vector3(0, 0, 0)}
+                scale={2}>
+                <boxGeometry />
+                <meshStandardMaterial color={'#fff'} />
               </mesh>
             </mesh>
           </Canvas>
