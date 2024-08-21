@@ -16,6 +16,11 @@ module.exports = {
           fbjs: './node_modules/fbjs',
           'hoist-non-react-statics': './node_modules/hoist-non-react-statics',
           invariant: './node_modules/invariant',
+          'react-native-gesture-handler/ReanimatedSwipeable':
+            '../src/components/ReanimatedSwipeable',
+          'react-native-gesture-handler/Swipeable':
+            '../src/components/Swipeable',
+          'react-native-gesture-handler': '../src/index',
         },
       },
     ],
