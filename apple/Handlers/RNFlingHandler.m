@@ -193,8 +193,8 @@
   bool isAligned = NO;
 
   for (int i = 0; i < directionsSize; ++i) {
-    if ([self getAlignment:diagonalDirections[i]
-            withMinimalAlignmentCosine:diagonalDeviationCosine
+    if ([self getAlignment:axialDirections[i]
+            withMinimalAlignmentCosine:axialDeviationCosine
                     withVelocityVector:velocityVector]) {
       isAligned = YES;
       break;
@@ -203,8 +203,8 @@
 
   if (!isAligned) {
     for (int i = 0; i < directionsSize; ++i) {
-      if ([self getAlignment:axialDirections[i]
-              withMinimalAlignmentCosine:axialDeviationCosine
+      if ([self getAlignment:diagonalDirections[i]
+              withMinimalAlignmentCosine:diagonalDeviationCosine
                       withVelocityVector:velocityVector]) {
         isAligned = YES;
         break;
