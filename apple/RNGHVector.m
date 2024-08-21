@@ -18,8 +18,8 @@
 
     self.magnitude = hypot(x, y);
 
-    self.unitX = x / self.magnitude;
-    self.unitY = y / self.magnitude;
+    self.unitX = self.magnitude > EPS ? x / self.magnitude : 0;
+    self.unitY = self.magnitude > EPS ? y / self.magnitude : 0;
   }
 
   return self;

@@ -26,4 +26,6 @@
 
 @end
 
+static double EPS = 0.1;
+
 #endif /* RNGHVector_h */
