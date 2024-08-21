@@ -22,7 +22,7 @@ Reanimated `Swipeable` allows for implementing swipeable rows or similar interac
 To use it, import it in the following way:
 
 ```js
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Swipeable from "react-native-gesture-handler/Swipeable";
 ```
 
 ## Properties
@@ -164,7 +164,7 @@ See the [swipeable example](https://github.com/software-mansion/react-native-ges
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Swipeable from "react-native-gesture-handler/Swipeable";
 
 const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
   const animatedStyle = useAnimatedStyle(() => ({
