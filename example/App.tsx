@@ -68,8 +68,8 @@ import ManualGestures from './src/new_api/manualGestures/index';
 import Hover from './src/new_api/hover';
 import HoverableIcons from './src/new_api/hoverable_icons';
 import VelocityTest from './src/new_api/velocityTest';
-import Swipeable from 'src/new_api/swipeable';
-import Pressable from 'src/new_api/pressable';
+import Swipeable from './src/new_api/swipeable';
+import Pressable from './src/new_api/pressable';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
