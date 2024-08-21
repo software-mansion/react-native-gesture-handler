@@ -26,6 +26,6 @@
 
 @end
 
-static double EPS = 0.1;
+static double MINIMAL_RECOGNIZABLE_MAGNITUDE = 0.1;
 
 #endif /* RNGHVector_h */
