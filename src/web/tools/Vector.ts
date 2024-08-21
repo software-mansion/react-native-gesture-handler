@@ -21,7 +21,7 @@ export default class Vector {
   }
 
   static fromDirection(direction: Directions | DiagonalDirections): Vector {
-    return DirectionToVectorMappings.get(direction)!;
+    return DirectionToVectorMappings.get(direction) ?? new Vector(0, 0);
   }
 
   static fromVelocity(tracker: PointerTracker, pointerId: number) {
