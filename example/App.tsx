@@ -322,7 +322,7 @@ interface MainScreenItemProps {
 function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
-      <Text>{name}</Text>
+      <Text style={styles.text}>{name}</Text>
     </RectButton>
   );
 }
@@ -345,6 +345,10 @@ const styles = StyleSheet.create({
     }),
     padding: 16,
     backgroundColor: '#f8f9ff',
+    color: 'black',
+  },
+  text: {
+    color: 'black',
   },
   list: {},
   separator: {
@@ -369,7 +373,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'space-between',
     elevation: 8,
-    ...(Platform.OS != 'macos'
+    ...(Platform.OS !== 'macos'
       ? {
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
