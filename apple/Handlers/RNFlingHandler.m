@@ -108,8 +108,8 @@
 @implementation RNBetterSwipeGestureRecognizer {
   __weak RNGestureHandler *_gestureHandler;
 
-  NSPoint lastPosition;
-  double lastTime;
+  NSPoint startPosition;
+  double startTime;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
@@ -136,8 +136,8 @@
 {
   [super mouseDown:event];
 
-  lastPosition = [self locationInView:self.view];
-  lastTime = CACurrentMediaTime();
+  startPosition = [self locationInView:self.view];
+  startTime = CACurrentMediaTime();
 
   self.state = NSGestureRecognizerStatePossible;
 
@@ -165,17 +165,14 @@
   double currentTime = CACurrentMediaTime();
 
   NSPoint distance;
-  distance.x = currentPosition.x - lastPosition.x;
-  distance.y = lastPosition.y - currentPosition.y;
+  distance.x = currentPosition.x - startPosition.x;
+  distance.y = startPosition.y - currentPosition.y;
 
-  double timeDelta = currentTime - lastTime;
+  double timeDelta = currentTime - startTime;
 
-  Vector *velocityVector = [Vector fromVelocityX:(event.deltaX / timeDelta) withVelocityY:(-event.deltaY / timeDelta)];
+  Vector *velocityVector = [Vector fromVelocityX:(distance.x / timeDelta) withVelocityY:(distance.y / timeDelta)];
 
   [self tryActivate:velocityVector];
-
-  lastPosition = currentPosition;
-  lastTime = currentTime;
 }
 
 - (void)mouseUp:(NSEvent *)event
