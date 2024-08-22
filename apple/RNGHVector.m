@@ -13,13 +13,13 @@
 - (id)initWithX:(double)x withY:(double)y
 {
   if (self = [super init]) {
-    self.x = x;
-    self.y = y;
+    _x = x;
+    _y = y;
 
-    self.magnitude = hypot(x, y);
+    _magnitude = hypot(x, y);
 
-    self.unitX = self.magnitude > MINIMAL_RECOGNIZABLE_MAGNITUDE ? x / self.magnitude : 0;
-    self.unitY = self.magnitude > MINIMAL_RECOGNIZABLE_MAGNITUDE ? y / self.magnitude : 0;
+    _unitX = self.magnitude > MINIMAL_RECOGNIZABLE_MAGNITUDE ? x / self.magnitude : 0;
+    _unitY = self.magnitude > MINIMAL_RECOGNIZABLE_MAGNITUDE ? y / self.magnitude : 0;
   }
 
   return self;

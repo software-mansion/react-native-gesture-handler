@@ -12,11 +12,11 @@
 
 @interface Vector : NSObject
 
-@property (atomic, assign) double x;
-@property (atomic, assign) double y;
-@property (atomic, assign) double unitX;
-@property (atomic, assign) double unitY;
-@property (atomic, assign) double magnitude;
+@property (atomic, readonly, assign) double x;
+@property (atomic, readonly, assign) double y;
+@property (atomic, readonly, assign) double unitX;
+@property (atomic, readonly, assign) double unitY;
+@property (atomic, readonly, assign) double magnitude;
 
 + (Vector *_Nonnull)fromDirection:(RNGestureHandlerDirection)direction;
 + (Vector *_Nonnull)fromVelocityX:(double)vx withVelocityY:(double)vy;
