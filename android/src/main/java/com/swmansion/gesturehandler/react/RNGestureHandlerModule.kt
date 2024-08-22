@@ -281,6 +281,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       return RotationGestureHandler()
     }
 
+    override fun configure(handler: RotationGestureHandler, config: ReadableMap) {
+      super.configure(handler, config)
+      if (config.hasKey(KEY_SECOND_POINTER_LIFT_FINISHES_GESTURE)) {
+        handler.secondPointerLiftFinishesGesture = config.getBoolean(KEY_SECOND_POINTER_LIFT_FINISHES_GESTURE)
+      }
+    }
+
     override fun createEventBuilder(handler: RotationGestureHandler) = RotationGestureHandlerEventDataBuilder(handler)
   }
 
@@ -691,6 +698,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     private const val KEY_PAN_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
     private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
     private const val KEY_DIRECTION = "direction"
+    private const val KEY_SECOND_POINTER_LIFT_FINISHES_GESTURE = "secondPointerLiftFinishesGesture"
 
     private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
       if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {

@@ -1,11 +1,14 @@
 package com.swmansion.gesturehandler.core
 
 import android.graphics.PointF
+import android.util.Log
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.core.RotationGestureDetector.OnRotationGestureListener
 import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
+  var secondPointerLiftFinishesGesture = RotationGestureDetector.DEFAULT_SECOND_POINTER_LIFT_FINISHES_GESTURE
+
   private var rotationGestureDetector: RotationGestureDetector? = null
   var rotation = 0.0
     private set
@@ -16,12 +19,18 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   var anchorY: Float = Float.NaN
     private set
 
+  override fun resetConfig() {
+    super.resetConfig()
+    secondPointerLiftFinishesGesture = RotationGestureDetector.DEFAULT_SECOND_POINTER_LIFT_FINISHES_GESTURE
+  }
+
   init {
     setShouldCancelWhenOutside(false)
   }
 
   private val gestureListener: OnRotationGestureListener = object : OnRotationGestureListener {
     override fun onRotation(detector: RotationGestureDetector): Boolean {
+      Log.d("RotationGestureHandler | FREQUENT", "onRotation")
       val prevRotation: Double = rotation
       rotation += detector.rotation
       val delta = detector.timeDelta
@@ -44,7 +53,10 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       resetProgress()
-      rotationGestureDetector = RotationGestureDetector(gestureListener)
+      rotationGestureDetector = RotationGestureDetector(
+        gestureListener,
+        secondPointerLiftFinishesGesture
+      )
 
       // set the anchor to the position of the first pointer as NaN causes the event not to arrive
       this.anchorX = event.x

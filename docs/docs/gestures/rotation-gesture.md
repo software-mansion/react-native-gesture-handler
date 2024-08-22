@@ -64,6 +64,12 @@ function App() {
 
 ## Config
 
+### Proprties specific to `RotationGesture`:
+
+### `secondPointerLiftFinishesGesture(value: boolean)` **(Android only)**
+
+Accepts a boolean value. When `true`, the gesture will finish when one of two required pointers lifts. When `false`, instead the gesture will pause and wait for a new second pointer to arrive to continue the gesture (on iOS works like that by default). Default value is `true`
+
 <BaseEventConfig />
 <BaseContinuousEventConfig />
 

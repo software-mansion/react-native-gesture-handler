@@ -1,6 +1,7 @@
-import { ContinousBaseGesture } from './gesture';
+import { ContinousBaseGesture, BaseGestureConfig } from './gesture';
 import type { RotationGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { RotationGestureConfig } from '../RotationGestureHandler';
 
 type RotationGestureChangeEventPayload = {
   rotationChange: number;
@@ -29,10 +30,25 @@ export class RotationGesture extends ContinousBaseGesture<
   RotationGestureHandlerEventPayload,
   RotationGestureChangeEventPayload
 > {
+  public config: BaseGestureConfig & RotationGestureConfig = {};
+
   constructor() {
     super();
 
     this.handlerName = 'RotationGestureHandler';
+  }
+
+  /**
+   * @Platform Android
+   * When `false`, the Handler will not finish when second Pointer Lifts,
+   * allowing Gesture to continue when a new second Pointer arrives
+   * (on iOS it's the default Behaviour)
+   *
+   * @param {boolean} value
+   */
+  secondPointerLiftFinishesGesture(value: boolean) {
+    this.config.secondPointerLiftFinishesGesture = value;
+    return this;
   }
 
   onChange(
