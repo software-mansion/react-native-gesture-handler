@@ -114,7 +114,7 @@
   "lint-staged": {
     "./{src,example,FabricExample,MacOSExample}/**/*.{ts,tsx}": "yarn format:js",
     "android/**/*.kt": "yarn format:android",
-    "apple/**/*.{h,m,mm,cpp}": "yarn format:ios",
+    "apple/**/*.{h,m,mm,cpp}": "yarn format:apple",
     "src/specs/*.ts": "yarn sync-architectures"
   },
   "release-it": {
