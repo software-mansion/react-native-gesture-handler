@@ -13,7 +13,7 @@ class Vector(val x: Double, val y: Double) {
   val magnitude = hypot(x, y)
 
   init {
-    val isMagnitudeSufficient = magnitude > MINIMAL_MAGNITUDE
+    val isMagnitudeSufficient = magnitude > MINIMAL_RECOGNIZABLE_MAGNITUDE
 
     unitX = if (isMagnitudeSufficient) x / magnitude else 0.0
     unitY = if (isMagnitudeSufficient) y / magnitude else 0.0
@@ -39,7 +39,7 @@ class Vector(val x: Double, val y: Double) {
     private val VECTOR_LEFT_DOWN: Vector = Vector(-1.0, 1.0)
 
     private val VECTOR_ZERO: Vector = Vector(0.0, 0.0)
-    private const val MINIMAL_MAGNITUDE = 0.1
+    private const val MINIMAL_RECOGNIZABLE_MAGNITUDE = 0.1
 
     fun fromDirection(direction: Int): Vector =
       when (direction) {
