@@ -10,12 +10,12 @@ import {
   RectButton,
 } from 'react-native-gesture-handler';
 
-import Draggable from './basic/draggable';
+import Draggable from './simple/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
-import Tap from './basic/tap';
-import LongPressExample from './basic/longPress';
-import ManualExample from './basic/manual';
-import HoverExample from './basic/hover';
+import Tap from './simple/tap';
+import LongPressExample from './simple/longPress';
+import ManualExample from './simple/manual';
+import HoverExample from './simple/hover';
 
 interface Example {
   name: string;
