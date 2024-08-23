@@ -3,11 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "macos": "react-native run-macos",
+    "macos": "react-native-macos run-macos",
     "lint": "eslint .",
-    "start": "react-native start",
+    "start": "react-native-macos start",
     "test": "jest"
   },
   "dependencies": {
