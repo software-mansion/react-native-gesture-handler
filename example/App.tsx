@@ -75,6 +75,13 @@ import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 
+import MacosDraggable from '../MacOSExample/src/basic/draggable';
+import MacosPinchableBox from '../MacOSExample/src/recipes/scaleAndRotate';
+import Tap from '../MacOSExample/src/basic/tap';
+import LongPressExample from '../MacOSExample/src/basic/longPress';
+import ManualExample from '../MacOSExample/src/basic/manual';
+import HoverExample from '../MacOSExample/src/basic/hover';
+
 interface Example {
   name: string;
   component: React.ComponentType;
@@ -183,6 +190,17 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Manual gestures',
         component: ManualGestures,
       },
+    ],
+  },
+  {
+    sectionTitle: 'MacOS compatibility examples',
+    data: [
+      { name: '[MacOS] Draggable', component: MacosDraggable },
+      { name: '[MacOS] Pinch & rotate', component: MacosPinchableBox },
+      { name: '[MacOS] Tap', component: Tap },
+      { name: '[MacOS] LongPress', component: LongPressExample },
+      { name: '[MacOS] Manual', component: ManualExample },
+      { name: '[MacOS] Hover', component: HoverExample },
     ],
   },
 ];
