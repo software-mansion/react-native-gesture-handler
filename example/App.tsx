@@ -302,7 +302,7 @@ function OpenLastExampleSetting() {
       <View
         style={styles.buttonContent}
         pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
-        <Text>Open last example on launch</Text>
+        <Text style={styles.text}>Open last example on launch</Text>
         <Switch
           value={openLastExample}
           onValueChange={() => {
@@ -333,6 +333,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9ff',
   },
   sectionTitle: {
+    ...(Platform.OS !== 'macos' ? { backgroundColor: '#f8f9ff' } : {}),
     ...Platform.select({
       ios: {
         fontSize: 17,
@@ -344,7 +345,6 @@ const styles = StyleSheet.create({
       },
     }),
     padding: 16,
-    backgroundColor: '#f8f9ff',
     color: 'black',
   },
   text: {
