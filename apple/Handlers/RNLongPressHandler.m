@@ -26,6 +26,7 @@
 #if TARGET_OS_OSX
 @property (nonatomic, assign) double minimumPressDuration;
 @property (nonatomic, assign) double allowableMovement;
+@property (nonatomic, assign) double numberOfTouchesRequired;
 #endif
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
@@ -77,6 +78,8 @@
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
+  self.state = UIGestureRecognizerStatePossible;
+
   _initPosition = [self locationInView:self.view];
   startTime = CACurrentMediaTime();
   [_gestureHandler reset];
@@ -89,6 +92,7 @@
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
 
   if ([self shouldCancelGesture]) {
+    self.state = UIGestureRecognizerStateFailed;
     self.enabled = NO;
     self.enabled = YES;
   }
@@ -227,6 +231,11 @@
   prop = config[@"maxDist"];
   if (prop != nil) {
     recognizer.allowableMovement = [RCTConvert CGFloat:prop];
+  }
+
+  prop = config[@"numberOfPointers"];
+  if (prop != nil) {
+    recognizer.numberOfTouchesRequired = [RCTConvert CGFloat:prop];
   }
 }
 
