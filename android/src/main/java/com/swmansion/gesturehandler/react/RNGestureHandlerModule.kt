@@ -154,6 +154,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       if (config.hasKey(KEY_LONG_PRESS_MAX_DIST)) {
         handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)))
       }
+      if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
+        handler.setNumberOfPointers(config.getInt(KEY_NUMBER_OF_POINTERS))
+      }
     }
 
     override fun createEventBuilder(handler: LongPressGestureHandler) = LongPressGestureHandlerEventDataBuilder(handler)
