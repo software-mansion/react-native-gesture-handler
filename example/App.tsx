@@ -75,12 +75,11 @@ import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 
-import MacosDraggable from '../MacOSExample/src/simple/draggable';
-import MacosPinchableBox from '../MacOSExample/src/recipes/scaleAndRotate';
-import Tap from '../MacOSExample/src/simple/tap';
-import LongPressExample from '../MacOSExample/src/simple/longPress';
-import ManualExample from '../MacOSExample/src/simple/manual';
-import HoverExample from '../MacOSExample/src/simple/hover';
+import MacosDraggable from './src/simple/draggable';
+import MacosPinchableBox from './src/recipes/simpleRotate';
+import Tap from './src/simple/tap';
+import LongPressExample from './src/simple/longPress';
+import ManualExample from './src/simple/manual';
 
 interface Example {
   name: string;
@@ -193,14 +192,13 @@ const EXAMPLES: ExamplesSection[] = [
     ],
   },
   {
-    sectionTitle: 'MacOS compatibility examples',
+    sectionTitle: 'Simple',
     data: [
-      { name: '[MacOS] Draggable', component: MacosDraggable },
-      { name: '[MacOS] Pinch & rotate', component: MacosPinchableBox },
-      { name: '[MacOS] Tap', component: Tap },
-      { name: '[MacOS] LongPress', component: LongPressExample },
-      { name: '[MacOS] Manual', component: ManualExample },
-      { name: '[MacOS] Hover', component: HoverExample },
+      { name: 'Simple Draggable', component: MacosDraggable },
+      { name: 'Rotate', component: MacosPinchableBox },
+      { name: 'Tap', component: Tap },
+      { name: 'LongPress', component: LongPressExample },
+      { name: 'Manual', component: ManualExample },
     ],
   },
 ];
