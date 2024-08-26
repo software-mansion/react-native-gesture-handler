@@ -23,7 +23,6 @@ const config = {
   resolver: {
     resolveRequest: (context, moduleName, platform) => {
       if (platform === 'macos') {
-        console.log('RESOLVING FOR MACOS');
         if (moduleName.startsWith('react-native')) {
           const resolvedFilepath = moduleName.replace(
             'react-native',
