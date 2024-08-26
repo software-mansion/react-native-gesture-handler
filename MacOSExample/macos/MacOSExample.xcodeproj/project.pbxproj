@@ -55,7 +55,6 @@
 				B1A07878CDB4485F4E59BD97 /* Pods-MacOSExample-macOS.debug.xcconfig */,
 				FB5BD31982645C52E80AA876 /* Pods-MacOSExample-macOS.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -390,6 +389,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = MacOSExample;
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native-macos";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -411,6 +411,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = MacOSExample;
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native-macos";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -433,6 +434,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = MacOSExample;
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native-macos";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -453,6 +455,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = MacOSExample;
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native-macos";
 				SDKROOT = macosx;
 			};
 			name = Release;
