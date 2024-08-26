@@ -9,7 +9,6 @@ module.exports = {
         extensions: ['.js', '.ts', '.tsx'],
         alias: {
           react: './node_modules/react',
-          'react-native': './node_modules/react-native-macos',
           'react-native-reanimated': './node_modules/react-native-reanimated',
           '@babel': './node_modules/@babel',
           '@egjs/hammerjs': './node_modules/@egjs/hammerjs',

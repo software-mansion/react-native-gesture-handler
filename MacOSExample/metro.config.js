@@ -21,6 +21,23 @@ const config = {
   // We need to make sure that only one version is loaded for peerDependencies
   // So we exclude them at the root, and alias them to the versions in example's node_modules
   resolver: {
+    resolveRequest: (context, moduleName, platform) => {
+      if (platform === 'macos') {
+        console.log('RESOLVING FOR MACOS');
+        if (moduleName.startsWith('react-native')) {
+          const resolvedFilepath = moduleName.replace(
+            'react-native',
+            'react-native-macos'
+          );
+          return {
+            filePath: require.resolve(resolvedFilepath),
+            type: 'sourceFile',
+          };
+        }
+      }
+      return context.resolveRequest(context, moduleName, platform);
+    },
+
     blacklistRE: exclusionList(
       modules.map(
         (m) =>
