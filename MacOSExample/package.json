@@ -5,7 +5,7 @@
   "scripts": {
     "macos": "react-native-macos run-macos",
     "lint": "eslint .",
-    "start": "react-native-macos start",
+    "start": "expo start --dev-client",
     "test": "jest"
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@react-navigation/stack": "^6.3.17",
+    "expo": "^51.0.31",
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "patch-package": "^8.0.0",

@@ -1,6 +1,7 @@
 PODS:
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
+  - Expo (51.0.31)
   - FBLazyVector (0.73.35)
   - FBReactNativeSpec (0.73.35):
     - RCT-Folly (= 2022.05.16.00)
@@ -1082,6 +1083,7 @@ PODS:
 DEPENDENCIES:
   - boost (from `../node_modules/react-native-macos/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec`)
+  - Expo (from `../node_modules/expo`)
   - FBLazyVector (from `../node_modules/react-native-macos/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native-macos/React/FBReactNativeSpec`)
   - fmt (from `../node_modules/react-native-macos/third-party-podspecs/fmt.podspec`)
@@ -1146,6 +1148,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec"
+  Expo:
+    :path: "../node_modules/expo"
   FBLazyVector:
     :path: "../node_modules/react-native-macos/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -1253,6 +1257,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 0686b6af8cbd638c784fea5afb789be66699823c
   DoubleConversion: ca54355f8932558971f6643521d62b9bc8231cee
+  Expo: feed68a708162ec9711778d9089dad9892aa8167
   FBLazyVector: 6b5639f7d70150fe6a91cfbdcbbfee7930799d82
   FBReactNativeSpec: 956febc0d5ab01f66e9add48644d30aa9f9fbfcf
   fmt: 03574da4b7ba40de39da59677ca66610ce8c4a02
