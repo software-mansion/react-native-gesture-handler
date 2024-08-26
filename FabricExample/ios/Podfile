@@ -15,6 +15,7 @@ if linkage != nil
 end
 
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+ENV['GH_EXAMPLE_APP_NAME'] = 'FabricExample'
 
 target 'FabricExample' do
   config = use_native_modules!

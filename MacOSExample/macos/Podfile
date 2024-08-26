@@ -3,6 +3,8 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 prepare_react_native_project!
 
+ENV['GH_EXAMPLE_APP_NAME'] = 'MacOSExample'
+
 target 'MacOSExample-macOS' do
   platform :macos, '10.15'
   use_native_modules!
