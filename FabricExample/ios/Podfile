@@ -5,6 +5,8 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+require_relative '../../scripts/clangd-add-xcode-step.rb'
+
 platform :ios, '14.0'
 prepare_react_native_project!
 
