@@ -43,4 +43,6 @@ target 'FabricExample' do
       # :ccache_enabled => true
     )
   end
+
+  add_clangd_generation_step()
 end
