@@ -547,6 +547,10 @@ public class ScaleGestureDetector {
         return mCurrTime - mPrevTime;
     }
 
+    public double getTimeDeltaSeconds() {
+        return (double)this.getTimeDelta() / 1000;
+    }
+
     /**
      * Return the event time of the current event being processed.
      *
