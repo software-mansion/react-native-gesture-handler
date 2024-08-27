@@ -2,10 +2,7 @@ require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 # expo autolinking init
-# TODO: react-native-macos is not yet compatible with expo
-# this repo is promising, but i couldn't reproduce it's functionality yet: https://github.com/tsapeta/expo-macos-example
-# require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
-
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require File.join(File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`), "scripts/react_native_pods")
 
 # set expo env vars
@@ -46,8 +43,8 @@ target 'MacOSExample-macOS' do
   # Override default react-native path for MacOS building
   config[:reactNativePath] = react_native_path
 
-  # TODO: uncomment when expo autolinker loads successfully 
-  # use_expo_modules!
+  use_modular_headers!
+  use_expo_modules!
 
   use_react_native!(
     :path => react_native_path,
