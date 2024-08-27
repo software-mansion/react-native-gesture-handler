@@ -1,6 +1,38 @@
 require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+# expo autolinking init
+# FIXME: [!] Unable to find a specification for `ExpoModulesCore` depended upon by `Expo`
+# require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+
+require File.join(File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`), "scripts/react_native_pods")
+
+# set expo env vars
+ENV['RCT_NEW_ARCH_ENABLED'] = '0' # '0' for paper, '1' for fabric
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = "true"
+
+# expo sources linking
+use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
+origin_autolinking_method = self.method(use_autolinking_method_symbol)
+self.define_singleton_method(use_autolinking_method_symbol) do |*args|
+  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
+    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
+    config_command = [
+      'node',
+      '--no-warnings',
+      '--eval',
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+    origin_autolinking_method.call(config_command)
+  else
+    origin_autolinking_method.call()
+  end
+end
+
 prepare_react_native_project!
 
 target 'MacOSExample-macOS' do
@@ -17,13 +49,19 @@ target 'MacOSExample-macOS' do
     :path => react_native_path,
     :hermes_enabled => true,
     :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
-    # Flipper is not compatible w/ macOS
-    :flipper_configuration => FlipperConfiguration.disabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   post_install do |installer|
     react_native_post_install(installer)
+  end
+  
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
   end
 end
