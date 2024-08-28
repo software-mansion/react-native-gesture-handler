@@ -15,6 +15,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import java.lang.IllegalStateException
 import java.util.*
@@ -595,6 +596,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   open fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     if (handler === this) {
+      return true
+    }
+
+    if (handler is RNGestureHandlerRootHelper.RootViewGestureHandler) {
       return true
     }
 
