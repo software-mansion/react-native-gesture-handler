@@ -1,21 +1,15 @@
 require 'pathname'
 require 'json'
 
-podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
-showDevWindow = podfile_properties['showDevWindow'] == 'true'
-showDockIcon = podfile_properties['showDockIcon'] == 'true'
-other_cflags = "$(inherited) "+ (showDevWindow ? " -D"+"SHOW_DEV_WINDOW" : "") + (showDockIcon ? " -D"+"SHOW_DOCK_ICON" : "")
+absolute_rn_path = File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`)
 
-rn_macos_path = File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`)
-require File.join(rn_macos_path, "scripts/react_native_pods")
+require File.join(absolute_rn_path, "scripts/react_native_pods")
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
-pod 'React-jsinspector', :path => '../node_modules/react-native-macos/ReactCommon/jsinspector-modern', :modular_headers => true
-
 base_path = Dir.pwd
 # use_react_native does not support relative absolute paths
-relative_rn_macos_path = Pathname.new(rn_macos_path).relative_path_from(Pathname.new(base_path)).to_s
+relative_rn_path = Pathname.new(absolute_rn_path).relative_path_from(Pathname.new(base_path)).to_s
 
 # Delete the codegen build folder
 FileUtils.remove_dir("./build", true)
@@ -27,32 +21,15 @@ target 'MacOSExample-macOS' do
   use_expo_modules!
   use_native_modules!
 
-  # Flags change depending on the env values.
-  flags = get_default_flags()
-
   use_react_native!(
-    :path => relative_rn_macos_path,
-    # to enable hermes on macOS, change `false` to `true` and then install pods
-    :hermes_enabled => true
+    :path => relative_rn_path,
+    :hermes_enabled => true,
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
-  # Pods specifically for macOS target
-  pod 'Swifter', '~> 1.5.0'
 end
 
 use_frameworks! :linkage => :static
 
 post_install do |installer|
-  react_native_post_install(installer, relative_rn_macos_path)
-
-  project = installer.generated_aggregate_targets.first.user_project
-  project.targets.each do |target|
-    if target.name == 'MacOSExample-macOS'  # Replace with your actual target name
-      target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = other_cflags
-      end
-    end
-  end
-
-  project.save
+  react_native_post_install(installer, relative_rn_path)
 end

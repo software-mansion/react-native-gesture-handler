@@ -1094,7 +1094,6 @@ PODS:
     - React-Core
     - ReactCommon/turbomodule/core
   - SocketRocket (0.7.0)
-  - Swifter (1.5.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1157,7 +1156,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
-  - Swifter (~> 1.5.0)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1165,7 +1163,6 @@ SPEC REPOS:
     - fmt
     - libevent
     - SocketRocket
-    - Swifter
 
 EXTERNAL SOURCES:
   boost:
@@ -1344,9 +1341,8 @@ SPEC CHECKSUMS:
   RNGestureHandler: 644fac271b233d59fe6e910ebc377d3fd066a57c
   RNReanimated: 98ed8b33f88a749dc2fd2433a03ca4f4a9d2b690
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Swifter: e71dd674404923d7f03ebb03f3f222d1c570bc8e
   Yoga: 88c1183f66254fdae21331e195458e5b57514832
 
-PODFILE CHECKSUM: 7cd747c9ab1c98fad0689cd618e5689394a6a528
+PODFILE CHECKSUM: 7db513f33a2ffe4db304b1e826f3e813c3420e96
 
 COCOAPODS: 1.15.2
