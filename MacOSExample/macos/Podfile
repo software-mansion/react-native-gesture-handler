@@ -32,4 +32,14 @@ use_frameworks! :linkage => :static
 
 post_install do |installer|
   react_native_post_install(installer, relative_rn_path)
+
+  installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+    target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+      resource_bundle_target.build_configurations.each do |config|  
+        # it's standard to log build setting changes
+        puts "Setting REACT_NATIVE_PATH build settings"        
+        config.build_settings["REACT_NATIVE_PATH"] = "${PODS_ROOT}/../" + relative_rn_path
+      end
+    end
+  end
 end
