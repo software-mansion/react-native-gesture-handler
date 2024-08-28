@@ -64,7 +64,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       // adding a new pointer to the screen after a handler activates
       if (currentState == STATE_UNDETERMINED && (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)) {
         begin()
-        println("shouldIntercept = false")
+//        println("shouldIntercept = false")
         shouldIntercept = false
       }
       if (event.actionMasked == MotionEvent.ACTION_UP) {
@@ -102,7 +102,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     passingTouch = true
     orchestrator!!.onTouchEvent(ev)
     passingTouch = false
-    println("shouldIntercept: $shouldIntercept")
+//    println("shouldIntercept: $shouldIntercept")
 
     if (ev.actionMasked == 1) {
       // return true
@@ -127,7 +127,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   // We want to keep order of parameters, so instead of removing viewTag we suppress the warning
   fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
     if (blockNativeResponder) {
-      UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
+      println("Ignored JS responder")
+      // UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
     }
   }
 

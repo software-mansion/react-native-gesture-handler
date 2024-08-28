@@ -15,7 +15,6 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
-import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import java.lang.IllegalStateException
 import java.util.*
@@ -599,10 +598,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       return true
     }
 
-    if (handler is RNGestureHandlerRootHelper.RootViewGestureHandler) {
-      return true
-    }
-
     return interactionController?.shouldRecognizeSimultaneously(this, handler) ?: false
   }
 
@@ -661,7 +656,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     // instead, 'TapGestureHandler' gets called
     // instead of the usual 'RNGestureHandlerRootHelper`
     if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN || this.isAwaiting) {
-      println("state: $state (expecting 2)")
+//      println("state: $state (expecting 2)")
       onCancel()
       moveToState(STATE_CANCELLED)
     }
