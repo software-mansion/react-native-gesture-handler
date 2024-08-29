@@ -207,11 +207,13 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   private clearActivationTimeout(): void {
+    console.log('[] clear timeout');
     clearTimeout(this.activationTimeout);
   }
 
   // Events Handling
   protected onPointerDown(event: AdaptedEvent): void {
+    console.log('[] pointer down');
     if (!this.isButtonInConfig(event.button)) {
       return;
     }
@@ -259,6 +261,8 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    console.log('[] pointer up');
+
     super.onPointerUp(event);
     if (this.currentState === State.ACTIVE) {
       const lastCoords = this.tracker.getAbsoluteCoordsAverage();
@@ -413,6 +417,7 @@ export default class PanGestureHandler extends GestureHandler {
     const distanceSq = dx * dx + dy * dy;
 
     if (this.activateAfterLongPress > 0 && distanceSq > DEFAULT_MIN_DIST_SQ) {
+      console.log('oob');
       this.clearActivationTimeout();
       return true;
     }
@@ -458,6 +463,7 @@ export default class PanGestureHandler extends GestureHandler {
       this.begin();
 
       if (this.activateAfterLongPress > 0) {
+        console.log('[] add timeout');
         this.activationTimeout = setTimeout(() => {
           this.activate();
         }, this.activateAfterLongPress);
@@ -488,10 +494,12 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onCancel(): void {
+    console.log('cancel');
     this.clearActivationTimeout();
   }
 
   protected onReset(): void {
+    console.log('reset');
     this.clearActivationTimeout();
   }
 
