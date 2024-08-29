@@ -99,7 +99,7 @@ android {
     namespace "com.swmansion.gesturehandler"
     buildFeatures {
         buildConfig = true
-        prefab true
+        prefab = true
     }
 
     // Used to override the NDK path/version on internal CI or by allowing
