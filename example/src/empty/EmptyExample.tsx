@@ -1,19 +1,47 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-export default function EmptyExample() {
+export default function HomeScreen() {
+  const [enabled, setEnabled] = React.useState(true);
+  const data = [0];
+
+  const panGesture = Gesture.Pan()
+    .enabled(enabled)
+    .activateAfterLongPress(1000)
+    .onBegin(() => {
+      console.log('pan touched');
+    })
+    .onStart(() => {
+      console.warn('pan triggered');
+    })
+    .onTouchesDown(() => console.log('touch down'))
+    .onTouchesUp(() => console.log('touch up'));
+
   return (
-    <View style={styles.container}>
-      <Text>Hello World!</Text>
-    </View>
+    <GestureDetector gesture={panGesture}>
+      <FlashList
+        data={data}
+        ListHeaderComponent={
+          <Button
+            title={enabled ? 'Disable Gestures' : 'Enable Gestures'}
+            onPress={() => {
+              setEnabled((prev) => !prev);
+            }}
+          />
+        }
+        renderItem={() => {
+          return (
+            <View
+              style={{
+                height: 70,
+                backgroundColor: 'tomato',
+              }}
+            />
+          );
+        }}
+      />
+    </GestureDetector>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-});
