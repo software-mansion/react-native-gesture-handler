@@ -268,6 +268,10 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.tracker.removeFromTracker(event.pointerId);
 
+    if (this.tracker.getTrackedPointersCount() === 0) {
+      this.clearActivationTimeout();
+    }
+
     if (this.currentState === State.ACTIVE) {
       this.end();
     } else {
