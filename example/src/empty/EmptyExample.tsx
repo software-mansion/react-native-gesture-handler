@@ -8,23 +8,60 @@ import Animated, {
 } from 'react-native-reanimated';
 
 export default function EmptyExample() {
-  const position = useSharedValue({ x: 0, y: 0 });
+  const panActive = useSharedValue(false);
+  const position = useSharedValue(0);
+  const panPreviousPosition = useSharedValue(0);
+  const scrollPreviousPosition = useSharedValue(-1);
 
-  const gesture = Gesture.Pan()
-    .activateAfterLongPress(250)
-    .onUpdate((e) => {
-      position.value = {
-        x: e.translationX,
-        y: e.translationY,
-      };
+  const scroll = Gesture.Native()
+    .onTouchesMove((event) => {
+      'worklet';
+      if (!panActive.value) {
+        return;
+      }
+
+      const scrollPosition = event.allTouches[0].absoluteY;
+
+      if (scrollPreviousPosition.value === -1) {
+        scrollPreviousPosition.value = scrollPosition;
+        return;
+      }
+
+      const delta = scrollPosition - scrollPreviousPosition.value;
+      scrollPreviousPosition.value = scrollPosition;
+
+      console.log('pre position', position.value);
+      console.log('delta', delta);
+
+      position.value = position.value - delta;
+
+      console.log('post position', position.value);
     })
     .onFinalize(() => {
-      position.value = {
-        x: withSpring(0),
-        y: withSpring(0),
-      };
+      scrollPreviousPosition.value = -1;
     });
-  const elementPadding = 7;
+
+  const pan = Gesture.Pan()
+    .activateAfterLongPress(250)
+    .onStart(() => {
+      panActive.value = true;
+      position.value = 0;
+    })
+    .onUpdate((e) => {
+      const delta = e.translationY - panPreviousPosition.value;
+
+      position.value += delta;
+
+      panPreviousPosition.value = e.translationY;
+    })
+    .onFinalize(() => {
+      position.value = withSpring(0);
+      panActive.value = false;
+      panPreviousPosition.value = 0;
+      scrollPreviousPosition.value = -1;
+    });
+
+  const elementPadding = 21;
   const elementFiller = (
     <>
       {new Array(elementPadding).fill(1).map(() => (
@@ -39,26 +76,23 @@ export default function EmptyExample() {
     ...styles.highlight,
     transform: [
       {
-        translateX: position.value.x ?? 0,
-      },
-      {
-        translateY: position.value.y ?? 0,
+        translateY: position.value ?? 0,
       },
     ],
   }));
 
-  console.log('rendering');
-
   return (
-    <ScrollView style={styles.container}>
-      {elementFiller}
-      <GestureDetector gesture={gesture}>
-        <Animated.View style={animation}>
-          <Text>Hello World!</Text>
-        </Animated.View>
-      </GestureDetector>
-      {elementFiller}
-    </ScrollView>
+    <GestureDetector gesture={scroll}>
+      <ScrollView style={styles.container}>
+        {elementFiller}
+        <GestureDetector gesture={pan}>
+          <Animated.View style={animation}>
+            <Text>Hello World!</Text>
+          </Animated.View>
+        </GestureDetector>
+        {elementFiller}
+      </ScrollView>
+    </GestureDetector>
   );
 }
 
