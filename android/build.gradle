@@ -1,8 +1,5 @@
 import groovy.json.JsonSlurper
 
-import javax.inject.Inject
-import java.nio.file.Files
-
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
@@ -98,15 +95,11 @@ repositories {
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 33)
-    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
-        namespace "com.swmansion.gesturehandler"
-    }
 
-    if (agpVersion.tokenize('.')[0].toInteger() >= 8) {
-        buildFeatures {
-            buildConfig = true
-        }
+    namespace "com.swmansion.gesturehandler"
+    buildFeatures {
+        buildConfig = true
+        prefab = true
     }
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -116,12 +109,6 @@ android {
     }
     if (rootProject.hasProperty("ndkVersion")) {
         ndkVersion rootProject.ext.ndkVersion
-    }
-
-    if (REACT_NATIVE_MINOR_VERSION >= 71) {
-        buildFeatures {
-            prefab true
-        }
     }
 
     defaultConfig {
