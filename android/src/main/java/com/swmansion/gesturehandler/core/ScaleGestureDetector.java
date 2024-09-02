@@ -548,6 +548,16 @@ public class ScaleGestureDetector {
     }
 
     /**
+     * Return the time difference in seconds between the previous
+     * accepted scaling event and the current scaling event.
+     *
+     * @return Time difference since the last scaling event in seconds.
+     */
+    public double getTimeDeltaSeconds() {
+        return (double)this.getTimeDelta() / 1000;
+    }
+
+    /**
      * Return the event time of the current event being processed.
      *
      * @return Current event time in milliseconds.
