@@ -196,16 +196,14 @@ android {
     tasks.withType(ExternalNativeBuildJsonTask) {
         compileTask ->
             compileTask.doLast {
-                if (!isGHExampleApp()) {
-                    return
+                if (isGHExampleApp()) {
+                    def rootDir = new File("${project.projectDir}/..")
+                    def generated = new File("${compileTask.abi.getCxxBuildFolder()}/compile_commands.json")
+                    def output = new File("${rootDir}/compile_commands.json")
+                    output.text = generated.text
+
+                    println("Generated clangd metadata.")
                 }
-
-                def rootDir = new File("${project.projectDir}/..")
-                def generated = new File("${compileTask.abi.getCxxBuildFolder()}/compile_commands.json")
-                def output = new File("${rootDir}/compile_commands.json")
-                output.text = generated.text
-
-                println("Generated clangd metadata.")
             }
     }
 }
