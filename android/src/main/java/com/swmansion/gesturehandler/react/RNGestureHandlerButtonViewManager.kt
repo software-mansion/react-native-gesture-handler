@@ -242,6 +242,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+
       if (super.onInterceptTouchEvent(ev)) {
         return true
       }
@@ -274,6 +275,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       val action = event.action
 
       if (event.action == MotionEvent.ACTION_CANCEL) {
+        // Normal OOB flow frees touch responder here
         tryFreeingResponder()
       }
 
@@ -389,6 +391,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         return false
       }
 
+      // note: check if maybe other places set responder, or if it is blocked
       val isResponder = tryGrabbingResponder()
       if (isResponder) {
         isTouched = true
@@ -397,14 +400,18 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     override fun afterGestureEnd(event: MotionEvent) {
+      // Normal tap flow frees responder here
       tryFreeingResponder()
       isTouched = false
     }
 
     private fun tryFreeingResponder() {
       if (touchResponder === this) {
+        println("() Freed touch responder ")
         touchResponder = null
         soundResponder = this
+      } else {
+        println("() Can't free touch responder as it's not owned by this manager")
       }
     }
 
@@ -413,11 +420,19 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         return false
       }
 
+      if (touchResponder != null && touchResponder != this) {
+        println("() FAIL Touch responder hasn't been freed from previous touch [${this}] & [${touchResponder}]")
+        return false
+      }
+
       if (touchResponder == null) {
+        println("() Setting touch responder to self")
         touchResponder = this
         return true
       }
+
       return if (exclusive) {
+        // println("// Checking if touchResponder === this: ${touchResponder === this}")
         touchResponder === this
       } else {
         !(touchResponder?.exclusive ?: false)

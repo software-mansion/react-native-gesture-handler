@@ -125,6 +125,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     if (view != null && isEnabled != enabled) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
+      println("UiThreadUtil cancel")
       UiThreadUtil.runOnUiThread { cancel() }
     }
     isEnabled = enabled
@@ -565,6 +566,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       // generated faster than they can be treated by JS thread
       eventCoalescingKey = nextEventCoalescingKey++
     }
+
+    // println("TAG ${this.tag} GOT ${this.state}")
+    // valid flow: 0 -> 2 -> 4 -> 5
+    // hit to rect: 0 -> 2 -> 3
+    // cause flow: 0 -> 2 -> 1
+    // error flow: 0 -> 3
+
+    // UNDETERMINED = 0
+    // FAILED = 1
+    // BEGAN = 2
+    // CANCELLED = 3
+    // ACTIVE = 4
+    // END = 5
     orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
   }

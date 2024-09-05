@@ -47,6 +47,7 @@ class GestureHandlerOrchestrator(
     } else if (action == MotionEvent.ACTION_CANCEL) {
       cancelAll()
     }
+    println("delivering")
     deliverEventToGestureHandlers(event)
     isHandlingTouch = false
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
@@ -223,6 +224,16 @@ class GestureHandlerOrchestrator(
     // as a result of state updates
     preparedHandlers.clear()
     preparedHandlers.addAll(gestureHandlers)
+
+    // valid
+    // size: 4
+    // pressable has 3: hover, longPress, native
+    // we're looking for what's happening with native
+
+    // invalid
+    // size: 2
+    // only has 2 handlers: root view and hover
+    // event never gets delivered to native or longpress
 
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
@@ -419,7 +430,7 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    gestureHandlers.add(handler)
+    gestureHandlers.add(handler) // check when this executes
     handler.isActive = false
     handler.isAwaiting = false
     handler.activationIndex = Int.MAX_VALUE

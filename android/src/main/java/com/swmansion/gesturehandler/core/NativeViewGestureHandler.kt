@@ -84,8 +84,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
-
     val isTouchExplorationEnabled = view.context.isScreenReaderOn()
+
+    println("<> received event: ${event.actionMasked}")
 
     if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup && isTouchExplorationEnabled) {
       // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
@@ -96,7 +97,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
 
     if (event.actionMasked == MotionEvent.ACTION_UP) {
+      println("--- [${this.tag}] action UP ---")
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
+        // end of the scroll
         cancel()
       } else {
         view.onTouchEvent(event)
@@ -113,6 +116,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
       hook.afterGestureEnd(event)
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+      println("--- [${this.tag}] action ${if (state == STATE_UNDETERMINED) "DOWN" else "MOVE"} ---")
       when {
         shouldActivateOnStart -> {
           tryIntercept(view, event)
