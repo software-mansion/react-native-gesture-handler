@@ -235,7 +235,9 @@
 
   prop = config[@"numberOfPointers"];
   if (prop != nil) {
+#if !TARGET_OS_TV
     recognizer.numberOfTouchesRequired = [RCTConvert CGFloat:prop];
+#endif
   }
 }
 
