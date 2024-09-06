@@ -1,45 +1,29 @@
-require 'pathname'
-require 'json'
-
-absolute_rn_path = File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`)
-
-require File.join(absolute_rn_path, "scripts/react_native_pods")
-require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
-require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
-
-base_path = Dir.pwd
-# use_react_native does not support relative absolute paths
-relative_rn_path = Pathname.new(absolute_rn_path).relative_path_from(Pathname.new(base_path)).to_s
-
-# Delete the codegen build folder
-FileUtils.remove_dir("./build", true)
+require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 prepare_react_native_project!
 
 target 'MacOSExample-macOS' do
   platform :macos, '10.15'
-  use_expo_modules!
-  use_native_modules!
+  
+  react_native_path = "../node_modules/react-native-macos"
+  
+  config = use_native_modules!
+
+  # Override default react-native path for MacOS building
+  config[:reactNativePath] = react_native_path
 
   use_react_native!(
-    :path => relative_rn_path,
+    :path => react_native_path,
     :hermes_enabled => true,
+    :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
+    # Flipper is not compatible w/ macOS
+    :flipper_configuration => FlipperConfiguration.disabled,
+    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-end
 
-use_frameworks! :linkage => :static
-
-post_install do |installer|
-  react_native_post_install(installer, relative_rn_path)
-
-  installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-    target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
-      resource_bundle_target.build_configurations.each do |config|  
-        # it's standard to log build setting changes
-        puts "Setting REACT_NATIVE_PATH build settings"        
-        config.build_settings["REACT_NATIVE_PATH"] = "${PODS_ROOT}/../" + relative_rn_path
-      end
-    end
+  post_install do |installer|
+    react_native_post_install(installer)
   end
 end

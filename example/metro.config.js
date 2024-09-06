@@ -4,22 +4,6 @@ const path = require('path');
 
 const config = getDefaultConfig(__dirname);
 
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (platform === 'macos') {
-    if (moduleName.startsWith('react-native')) {
-      const resolvedFilepath = moduleName.replace(
-        'react-native',
-        'react-native-macos'
-      );
-      return {
-        filePath: require.resolve(resolvedFilepath),
-        type: 'sourceFile',
-      };
-    }
-  }
-  return context.resolveRequest(context, moduleName, platform);
-};
-
 // npm v7+ will install ../node_modules/react-native because of peerDependencies.
 // To prevent the incompatible react-native bewtween ./node_modules/react-native and ../node_modules/react-native,
 // excludes the one from the parent folder when bundling.

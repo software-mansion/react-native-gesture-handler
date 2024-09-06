@@ -1,23 +1,6 @@
 PODS:
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
-  - EXConstants (15.4.6):
-    - ExpoModulesCore
-  - EXFont (11.10.3):
-    - ExpoModulesCore
-  - Expo (50.0.20):
-    - ExpoModulesCore
-  - ExpoFileSystem (16.0.9):
-    - ExpoModulesCore
-  - ExpoKeepAwake (12.8.2):
-    - ExpoModulesCore
-  - ExpoModulesCore (1.11.13):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
-    - React-NativeModulesApple
-    - React-RCTAppDelegate
-    - ReactCommon/turbomodule/core
   - FBLazyVector (0.73.35)
   - FBReactNativeSpec (0.73.35):
     - RCT-Folly (= 2022.05.16.00)
@@ -1099,12 +1082,6 @@ PODS:
 DEPENDENCIES:
   - boost (from `../node_modules/react-native-macos/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec`)
-  - EXConstants (from `../node_modules/expo-constants/ios`)
-  - EXFont (from `../node_modules/expo-font/ios`)
-  - Expo (from `../node_modules/expo`)
-  - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
-  - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
-  - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - FBLazyVector (from `../node_modules/react-native-macos/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native-macos/React/FBReactNativeSpec`)
   - fmt (from `../node_modules/react-native-macos/third-party-podspecs/fmt.podspec`)
@@ -1169,18 +1146,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec"
-  EXConstants:
-    :path: "../node_modules/expo-constants/ios"
-  EXFont:
-    :path: "../node_modules/expo-font/ios"
-  Expo:
-    :path: "../node_modules/expo"
-  ExpoFileSystem:
-    :path: "../node_modules/expo-file-system/ios"
-  ExpoKeepAwake:
-    :path: "../node_modules/expo-keep-awake/ios"
-  ExpoModulesCore:
-    :path: "../node_modules/expo-modules-core"
   FBLazyVector:
     :path: "../node_modules/react-native-macos/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -1288,12 +1253,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 0686b6af8cbd638c784fea5afb789be66699823c
   DoubleConversion: ca54355f8932558971f6643521d62b9bc8231cee
-  EXConstants: a5f6276e565d98f9eb4280f81241fc342d641590
-  EXFont: f20669cb266ef48b004f1eb1f2b20db96cd1df9f
-  Expo: d86f597bbab83615207499c5b3bfd80992e2bbd3
-  ExpoFileSystem: 74cc0fae916f9f044248433971dcfc8c3befd057
-  ExpoKeepAwake: 0f5cad99603a3268e50af9a6eb8b76d0d9ac956c
-  ExpoModulesCore: 370096473359f5f6aade0871400d063333747719
   FBLazyVector: 6b5639f7d70150fe6a91cfbdcbbfee7930799d82
   FBReactNativeSpec: 956febc0d5ab01f66e9add48644d30aa9f9fbfcf
   fmt: 03574da4b7ba40de39da59677ca66610ce8c4a02
@@ -1305,48 +1264,48 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 84dde8c83ecfb87e5b7a601191c0a606435aaa37
   React: c05c8ec2d476327c4c75dff743b030d0767ba21e
   React-callinvoker: b50ce3644f20cbe0b45f685757c7418267e3e14f
-  React-Codegen: eb1d286a7a451992d73ff1e4bebddf1d821ece31
+  React-Codegen: 96b54e7eff2cdff898d340925dd18f95fe514652
   React-Core: ba5678063f7e645e87145d9a44a47098388fa1cc
   React-CoreModules: 80525284bdbd7e1bc4b5f89caf81c57610c50042
   React-cxxreact: 852eb6e9cc546afa028b445f9c9dea944594729b
-  React-debug: 27dd000a30d87877bead92b733495c064202b3ac
-  React-Fabric: ba97a0bb04d6ef5470ef77a657ccf5dea556dd88
-  React-FabricImage: bb120b753d1d959c7375810ced2b5f699292f9ef
-  React-graphics: 8585b20fbbc53b25085a16fbf1a0dc964177d3fb
+  React-debug: 2be2fd874d0f739448ee2905cfa4e2337e367e72
+  React-Fabric: 7e2d1a4fc0a127664b54c7718882046cd47c7275
+  React-FabricImage: 6b2f08cf8338e077132f4acfee4365d95b204e15
+  React-graphics: 16972b158452eb4b212b9990567dcabb95ff53d0
   React-hermes: eca99b64470bbedbc3177ac58234f442a9caec5d
-  React-ImageManager: a9263cdce83e29fe059d76dea3c6ba71e81e4ce4
-  React-jserrorhandler: d7c3c9f64dde5b57842fb7642183bc28e5dfee99
+  React-ImageManager: 689feb17e4d49a798f626563a97670ee5c334bd2
+  React-jserrorhandler: ec0adcd3c531a4e471af22ec4e82902569c23b07
   React-jsi: 955499ad28f129d0d3f8935f374231d20c128ac1
   React-jsiexecutor: db842fceb05fa380f960c6e2843a9f2e994d4ae5
   React-jsinspector: 97952ba8fb28b6c526254c128b5abd8c73fe8230
   React-logger: 15bf963eae8d4344edcb06be23316953b12947d3
-  React-Mapbuffer: a57f7f3d42178eb9526143a5eb606fa419ee9446
-  React-nativeconfig: 741b9b1c580ae774e253c26a486db9087341d864
-  React-NativeModulesApple: de68303112d426484ca668f250543084fbd980e5
+  React-Mapbuffer: 12b2ea64baf5664b22a689e8d3d2a993aff0160e
+  React-nativeconfig: a299bdba36363c4808dd8836f3cc24d4cd9c15ab
+  React-NativeModulesApple: ece6a348eaedcd8f2f2e858ae0806c0cd14cef7e
   React-perflogger: ce7b312ef0f3c85ec6c16f1cc0e81b7be0a7177b
   React-RCTActionSheet: 093ece9d490c913bd8e5786fe4e40f74dbde1b30
   React-RCTAnimation: d94ba02d80a216d3ecda183dc864795daebd0d18
   React-RCTAppDelegate: b4df3eda500bf57ac248901e26504f4a0ac83faa
   React-RCTBlob: 9265957af35a40ad34bd9327ff15a6035923c668
-  React-RCTFabric: 0834ee3031beead348534769a1ad227062a17014
+  React-RCTFabric: d9c599294486ae0808db1214f01bdbe87aa00b10
   React-RCTImage: b6720e64fa01572227c674ee19313b33f40b99a8
   React-RCTLinking: 5ae999b6cf09f18c0c40dc6b580d25f50f74b599
   React-RCTNetwork: 00706549e4947cbcb07a8b835214e10d78cc1a62
   React-RCTSettings: 6a546358b2bdf69d5dcf30c0e523d59827ca6590
   React-RCTText: 6747d6e99b2d553586842b04348ea326a0a98804
   React-RCTVibration: 897638f2c2ad76943088962820ae7c3be394ad5d
-  React-rendererdebug: 0dd75fbd157dc058c17eccb11b346ee802924d1c
-  React-rncore: 5b01ac6eb23462796d07967558376b6b7618a95b
+  React-rendererdebug: 5c9319bc9c02971accc1748c440182ee549bbb26
+  React-rncore: 171269b02e0b83c87db5e2f5682fb38ce15d6b5c
   React-runtimeexecutor: 87ebf764ed46cca54c0ab761f6b247317124ac05
-  React-runtimescheduler: 7b4aa7c6168b56bf9c79e59c0bf41009ac343f8b
-  React-utils: 4c1720bb62f0c58998aeef85624188826ea0ea47
-  ReactCommon: 8ea2d958c287378ff961f37787afd48137bd0db5
+  React-runtimescheduler: 4397ac3def69ecfa98328d99d987651ed34879c2
+  React-utils: 8d6c62fdc5015557002b108cacc534662ca04e9f
+  ReactCommon: 26d0f2009cf43c27dc0aecd605bba60775f2f316
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
-  RNGestureHandler: 9a413b04f827e0169f0f9f97a845c266da61f87c
-  RNReanimated: 0c9c058e98f74ba2dccfe99f94900d03e6289008
+  RNGestureHandler: 1155b1898ceddefeebf77792927360d44fe11e77
+  RNReanimated: ac98e182826aac0ea997f230f07c9eab63805747
   SocketRocket: f6c6249082c011e6de2de60ed641ef8bbe0cfac9
-  Yoga: 515c3a27bd76989e15994034bf8be49434f0e72a
+  Yoga: 0639c9c8a20ae8043b0b64e2ef6d7a2cd5806aac
 
-PODFILE CHECKSUM: 4410512881ad331e2f56ab8b099d39fa0c666d06
+PODFILE CHECKSUM: ccec41d23eeb444b5b95b117a33489b17d7cd6e2
 
 COCOAPODS: 1.15.2
