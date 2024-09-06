@@ -80,7 +80,7 @@ import MacosPinchableBox from './src/recipes/simpleRotate';
 import Tap from './src/simple/tap';
 import LongPressExample from './src/simple/longPress';
 import ManualExample from './src/simple/manual';
-import FlingExample from 'src/simple/fling';
+import FlingExample from './src/simple/fling';
 
 interface Example {
   name: string;
