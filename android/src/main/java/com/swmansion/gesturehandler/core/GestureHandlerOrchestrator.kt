@@ -50,6 +50,7 @@ class GestureHandlerOrchestrator(
     println("delivering")
     deliverEventToGestureHandlers(event)
     isHandlingTouch = false
+
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
       cleanupFinishedHandlers()
     }
@@ -78,7 +79,13 @@ class GestureHandlerOrchestrator(
       }
     }
 
+
+    println("PRE-REMOVAL: ${gestureHandlers.size}")
+
+    gestureHandlers.forEach { println("${if (isFinished(it.state) && !it.isAwaiting) "REMOVED" else "STAYING"} REASON: finished(${isFinished(it.state)}), awaiting(${it.isAwaiting})") }
     gestureHandlers.removeAll { isFinished(it.state) && !it.isAwaiting }
+
+    println("POST-REMOVAL: ${gestureHandlers.size}")
 
     finishedHandlersCleanupScheduled = false
   }
@@ -233,7 +240,7 @@ class GestureHandlerOrchestrator(
     // invalid
     // size: 2
     // only has 2 handlers: root view and hover
-    // event never gets delivered to native or longpress
+    // event never gets delivered to native gesture
 
     // We want to deliver events to active handlers first in order of their activation (handlers
     // that activated first will first get event delivered). Otherwise we deliver events in the
@@ -461,6 +468,8 @@ class GestureHandlerOrchestrator(
         handlerRegistry.getHandlersForView(parent)?.let {
           synchronized(it) {
             for (handler in it) {
+              val evaluatedTag = handler.tag
+
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
                 recordHandlerIfNotPresent(handler, parentViewGroup)
@@ -482,6 +491,8 @@ class GestureHandlerOrchestrator(
     handlerRegistry.getHandlersForView(view)?.let {
       synchronized(it) {
         for (handler in it) {
+          val evaluatedTag = handler.tag
+
           // skip disabled and out-of-bounds handlers
           if (!handler.isEnabled || !handler.isWithinBounds(view, coords[0], coords[1])) {
             continue

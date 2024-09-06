@@ -352,7 +352,7 @@ export default function Pressable(props: PressableProps) {
 
   const isPressableEnabled = disabled !== true;
 
-  const gestures = [pressAndTouchGesture, hoverGesture, buttonGesture];
+  const gestures = [pressAndTouchGesture, buttonGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
