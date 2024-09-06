@@ -80,6 +80,7 @@ import MacosPinchableBox from './src/recipes/simpleRotate';
 import Tap from './src/simple/tap';
 import LongPressExample from './src/simple/longPress';
 import ManualExample from './src/simple/manual';
+import FlingExample from 'src/simple/fling';
 
 interface Example {
   name: string;
@@ -197,6 +198,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Simple Draggable', component: MacosDraggable },
       { name: 'Rotate', component: MacosPinchableBox },
       { name: 'Tap', component: Tap },
+      { name: 'Fling', component: FlingExample },
       { name: 'LongPress', component: LongPressExample },
       { name: 'Manual', component: ManualExample },
     ],
