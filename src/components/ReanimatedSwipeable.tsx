@@ -199,6 +199,26 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     props: SwipeableProps,
     ref: ForwardedRef<SwipeableMethods>
   ) {
+    const {
+      leftThreshold,
+      rightThreshold,
+      onSwipeableOpenStartDrag,
+      onSwipeableCloseStartDrag,
+      enableTrackpadTwoFingerGesture,
+      enabled,
+      containerStyle,
+      childrenContainerStyle,
+      animationOptions,
+      overshootLeft,
+      overshootRight,
+      onSwipeableWillOpen,
+      onSwipeableWillClose,
+      onSwipeableOpen,
+      onSwipeableClose,
+      testID,
+      ...remainingProps
+    } = props;
+
     const rowState = useSharedValue<number>(0);
 
     const userDrag = useSharedValue<number>(0);
@@ -240,8 +260,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootFriction = defaultProps.overshootFriction,
     } = props;
 
-    const overshootLeftProp = props.overshootLeft;
-    const overshootRightProp = props.overshootRight;
+    const overshootLeftProp = overshootLeft;
+    const overshootRightProp = overshootRight;
 
     const calculateCurrentOffset = useCallback(() => {
       'worklet';
@@ -317,38 +337,33 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
-        if (toValue > 0 && props.onSwipeableWillOpen) {
-          props.onSwipeableWillOpen('left');
-        } else if (toValue < 0 && props.onSwipeableWillOpen) {
-          props.onSwipeableWillOpen('right');
-        } else if (props.onSwipeableWillClose) {
+        if (toValue > 0 && onSwipeableWillOpen) {
+          onSwipeableWillOpen('left');
+        } else if (toValue < 0 && onSwipeableWillOpen) {
+          onSwipeableWillOpen('right');
+        } else if (onSwipeableWillClose) {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          props.onSwipeableWillClose(closingDirection);
+          onSwipeableWillClose(closingDirection);
         }
       },
-      [
-        props,
-        props.onSwipeableWillClose,
-        props.onSwipeableWillOpen,
-        swipeableMethods,
-      ]
+      [onSwipeableWillClose, onSwipeableWillOpen]
     );
 
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
-        if (toValue > 0 && props.onSwipeableOpen) {
-          props.onSwipeableOpen('left', swipeableMethods.current);
-        } else if (toValue < 0 && props.onSwipeableOpen) {
-          props.onSwipeableOpen('right', swipeableMethods.current);
-        } else if (props.onSwipeableClose) {
+        if (toValue > 0 && onSwipeableOpen) {
+          onSwipeableOpen('left', swipeableMethods.current);
+        } else if (toValue < 0 && onSwipeableOpen) {
+          onSwipeableOpen('right', swipeableMethods.current);
+        } else if (onSwipeableClose) {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          props.onSwipeableClose(closingDirection, swipeableMethods.current);
+          onSwipeableClose(closingDirection, swipeableMethods.current);
         }
       },
-      [props, props.onSwipeableClose, props.onSwipeableOpen, swipeableMethods]
+      [onSwipeableClose, onSwipeableOpen]
     );
 
-    const animationOptionsProp = props.animationOptions;
+    const animationOptionsProp = animationOptions;
 
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
@@ -393,12 +408,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         runOnJS(dispatchImmediateEvents)(fromValue, toValue);
       },
       [
-        showLeftProgress,
-        appliedTranslation,
-        dispatchEndEvents,
-        dispatchImmediateEvents,
-        animationOptionsProp,
         rowState,
+        animationOptionsProp,
+        appliedTranslation,
+        showLeftProgress,
+        leftWidth.value,
+        showRightProgress,
+        rightWidth.value,
+        dispatchImmediateEvents,
+        dispatchEndEvents,
       ]
     );
 
@@ -489,8 +507,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
-    const leftThresholdProp = props.leftThreshold;
-    const rightThresholdProp = props.rightThreshold;
+    const leftThresholdProp = leftThreshold;
+    const rightThresholdProp = rightThreshold;
 
     const handleRelease = (
       event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
@@ -541,9 +559,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     });
 
-    const onSwipeableOpenStartDrag = props.onSwipeableOpenStartDrag;
-    const onSwipeableCloseStartDrag = props.onSwipeableCloseStartDrag;
-
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
         userDrag.value = event.translationX;
@@ -570,10 +585,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
       );
 
-    if (props.enableTrackpadTwoFingerGesture) {
-      panGesture.enableTrackpadTwoFingerGesture(
-        props.enableTrackpadTwoFingerGesture
-      );
+    if (enableTrackpadTwoFingerGesture) {
+      panGesture.enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture);
     }
 
     panGesture.activeOffsetX([
@@ -586,7 +599,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       swipeableMethods,
     ]);
 
-    panGesture.enabled(props.enabled !== false);
+    panGesture.enabled(enabled !== false);
 
     const animatedStyle = useAnimatedStyle(
       () => ({
@@ -596,12 +609,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [appliedTranslation, rowState]
     );
 
-    const containerStyle = props.containerStyle;
-    const childrenContainerStyle = props.childrenContainerStyle;
-
-    return (
+    const swipeableComponent = (
       <GestureDetector gesture={panGesture} touchAction="pan-y">
         <Animated.View
+          {...remainingProps}
           onLayout={onRowLayout}
           style={[styles.container, containerStyle]}>
           {leftElement}
@@ -613,6 +624,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           </GestureDetector>
         </Animated.View>
       </GestureDetector>
+    );
+
+    return testID ? (
+      <View testID={testID}>{swipeableComponent}</View>
+    ) : (
+      swipeableComponent
     );
   }
 );
