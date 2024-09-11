@@ -19,6 +19,9 @@ import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
+// values related to pointer tracking will be moved to `PointerTracker.ts`
+const MAX_POINTERS = 12;
+
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
   protected currentState: State = State.UNDETERMINED;
@@ -33,6 +36,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected config: Config = { enabled: false };
 
   protected tracker: PointerTracker = new PointerTracker();
+
+  // Multi-touch multi-gesture handling
+  private trackedPointerIDs = Array(MAX_POINTERS).fill(-1);
+  private trackedPointersIDsCount = 0;
 
   // Orchestrator properties
   protected activationIndex = 0;
@@ -92,6 +99,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.resetProgress();
     this.delegate.reset();
     this.currentState = State.UNDETERMINED;
+
+    this.trackedPointerIDs = Array(MAX_POINTERS).fill(-1);
+    this.trackedPointersIDsCount = 0;
   }
 
   //
@@ -173,6 +183,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.delegate.onCancel();
 
       this.moveToState(State.CANCELLED, sendIfDisabled);
+
+      this.trackedPointerIDs = Array(MAX_POINTERS).fill(-1);
+      this.trackedPointersIDsCount = 0;
     }
   }
 
@@ -369,6 +382,52 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (touchEvent) {
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+    }
+  }
+
+  // Multi-touch multi-gesture handling
+
+  public hasCommonPointers(other: GestureHandler): boolean {
+    for (const i of Array(this.trackedPointersIDsCount).keys()) {
+      if (
+        this.trackedPointerIDs[i] !== -1 &&
+        other.trackedPointerIDs[i] !== -1
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private findNextLocalPointerId(): number {
+    let localPointerId = 0;
+    while (localPointerId < this.trackedPointersIDsCount) {
+      let i = 0;
+      while (i < this.trackedPointerIDs.length) {
+        if (this.trackedPointerIDs[i] === localPointerId) {
+          break;
+        }
+        i++;
+      }
+      if (i === this.trackedPointerIDs.length) {
+        return localPointerId;
+      }
+      localPointerId++;
+    }
+    return localPointerId;
+  }
+
+  public startTrackingPointer(pointerId: number) {
+    if (this.trackedPointerIDs[pointerId] === -1) {
+      this.trackedPointerIDs[pointerId] = this.findNextLocalPointerId();
+      this.trackedPointersIDsCount++;
+    }
+  }
+
+  public stopTrackingPointer(pointerId: number) {
+    if (this.trackedPointerIDs[pointerId] !== -1) {
+      this.trackedPointerIDs[pointerId] = -1;
+      this.trackedPointersIDsCount--;
     }
   }
 
