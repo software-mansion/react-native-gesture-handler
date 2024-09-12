@@ -89,7 +89,7 @@ class GestureHandlerOrchestrator(
     gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
 
   private fun handlersWithinHandlerBounds(handler: GestureHandler<*>) =
-    gestureHandlers.filter { it.isWithinBounds(wrapperView, handler.x, handler.y) && it.tag != handler.tag }
+    gestureHandlers.filter { it.isWithinBounds(wrapperView, handler.x, handler.y) }
 
   private fun shouldBeCancelledByActiveHandler(handler: GestureHandler<*>) =
     handlersWithinHandlerBounds(handler).any { isActive(it.state) && !canRunSimultaneously(handler, it) }
