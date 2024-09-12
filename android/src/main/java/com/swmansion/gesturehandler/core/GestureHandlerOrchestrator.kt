@@ -85,11 +85,18 @@ class GestureHandlerOrchestrator(
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>) =
     gestureHandlers.any { !isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
 
-  private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) = gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
+  private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) =
+    gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
+
+  private fun handlersWithinHandlerBounds(handler: GestureHandler<*>) =
+    gestureHandlers.filter { it.isWithinBounds(wrapperView, handler.x, handler.y) && it.tag != handler.tag }
+
+  private fun shouldBeCancelledByActiveHandler(handler: GestureHandler<*>) =
+    handlersWithinHandlerBounds(handler).any { isActive(it.state) && it.tag > 0 }
 
   private fun tryActivate(handler: GestureHandler<*>) {
     // If we are waiting for a gesture that has successfully finished, we should cancel handler
-    if (shouldBeCancelledByFinishedHandler(handler)) {
+    if (shouldBeCancelledByFinishedHandler(handler) || shouldBeCancelledByActiveHandler(handler)) {
       handler.cancel()
       return
     }
@@ -702,5 +709,8 @@ class GestureHandlerOrchestrator(
       state == GestureHandler.STATE_CANCELLED ||
         state == GestureHandler.STATE_FAILED ||
         state == GestureHandler.STATE_END
+
+    private fun isActive(state: Int) =
+      state == GestureHandler.STATE_ACTIVE
   }
 }
