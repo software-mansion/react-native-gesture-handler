@@ -335,7 +335,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     private fun createBorderDrawable(): Drawable {
       val borderDrawable = PaintDrawable(Color.TRANSPARENT)
-      
+
       if (hasBorderRadii) {
         borderDrawable.setCornerRadii(buildBorderRadii())
       }
