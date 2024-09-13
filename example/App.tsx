@@ -106,6 +106,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Horizontal drawer', component: HorizontalDrawer },
       { name: 'Pager & drawer', component: PagerAndDrawer },
       { name: 'Force touch', component: ForceTouch },
+      { name: 'Fling', component: Fling },
     ],
   },
   {
@@ -199,7 +200,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Tap', component: Tap },
       { name: 'LongPress', component: LongPressExample },
       { name: 'Manual', component: ManualExample },
-      { name: 'Simple Fling', component: Fling },
+      { name: 'Simple Fling', component: SimpleFling },
     ],
   },
 ];
