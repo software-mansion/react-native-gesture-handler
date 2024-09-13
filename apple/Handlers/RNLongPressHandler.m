@@ -233,10 +233,12 @@
     recognizer.allowableMovement = [RCTConvert CGFloat:prop];
   }
 
+#if !TARGET_OS_TV
   prop = config[@"numberOfPointers"];
   if (prop != nil) {
     recognizer.numberOfTouchesRequired = [RCTConvert CGFloat:prop];
   }
+#endif
 }
 
 #if !TARGET_OS_OSX
