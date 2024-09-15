@@ -132,6 +132,14 @@ export interface PropsRef {
   onGestureHandlerStateChange: () => void;
 }
 
+export interface StylusData {
+  tiltX: number;
+  tiltY: number;
+  azimuthAngle: number;
+  altitudeAngle: number;
+  pressure: number;
+}
+
 export interface AdaptedEvent {
   x: number;
   y: number;
@@ -145,6 +153,7 @@ export interface AdaptedEvent {
   allTouches?: TouchList;
   changedTouches?: TouchList;
   touchEventType?: TouchEventType;
+  stylusData?: StylusData;
 }
 
 export enum EventTypes {

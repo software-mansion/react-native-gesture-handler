@@ -4,6 +4,7 @@ import { AdaptedEvent, EventTypes, Point } from '../interfaces';
 import {
   PointerTypeMapping,
   calculateViewScale,
+  tryExtractStylusData,
   isPointerInBounds,
 } from '../utils';
 import { PointerType } from '../../PointerType';
@@ -252,6 +253,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
         PointerTypeMapping.get(event.pointerType) ?? PointerType.OTHER,
       button: this.mouseButtonsMapper.get(event.button),
       time: event.timeStamp,
+      stylusData: tryExtractStylusData(event),
     };
   }
 
