@@ -150,9 +150,6 @@ export interface AdaptedEvent {
   pointerType: PointerType;
   time: number;
   button?: MouseButton;
-  allTouches?: TouchList;
-  changedTouches?: TouchList;
-  touchEventType?: TouchEventType;
   stylusData?: StylusData;
 }
 

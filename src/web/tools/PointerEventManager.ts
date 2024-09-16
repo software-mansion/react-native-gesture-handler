@@ -36,9 +36,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   private pointerDownCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
     if (!isPointerInBounds(this.view, { x: event.clientX, y: event.clientY })) {
       return;
     }
@@ -62,10 +59,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerUpCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     // When we call reset on gesture handlers, it also resets their event managers
     // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
     // This means, that activePointersCounter will be set to 0, while there are still remaining pointers on view
@@ -93,10 +86,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerMoveCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     // Stylus triggers `pointermove` event when it detects changes in pressure. Since it is very sensitive to those changes,
     // it constantly sends events, even though there was no change in position. To fix that we check whether
     // pointer has actually moved and if not, we do not send event.
@@ -162,10 +151,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerCancelCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.CANCEL);
 
     this.onPointerCancel(adaptedEvent);
@@ -175,20 +160,12 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerEnterCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.ENTER);
 
     this.onPointerMoveOver(adaptedEvent);
   };
 
   private pointerLeaveCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.LEAVE);
 
     this.onPointerMoveOut(adaptedEvent);
