@@ -191,9 +191,32 @@ export type RotationGestureHandlerEventPayload = {
 };
 
 export type HoverGestureHandlerEventPayload = {
+  /**
+   * X coordinate of the current position of the pointer relative to the view
+   * attached to the handler. Expressed in point units.
+   */
   x: number;
+
+  /**
+   * Y coordinate of the current position of the pointer relative to the view
+   * attached to the handler. Expressed in point units.
+   */
   y: number;
+
+  /**
+   * X coordinate of the current position of the pointer relative to the window.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `x` in cases when the original view can be transformed as an
+   * effect of the gesture.
+   */
   absoluteX: number;
+
+  /**
+   * Y coordinate of the current position of the pointer relative to the window.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `y` in cases when the original view can be transformed as an
+   * effect of the gesture.
+   */
   absoluteY: number;
 
   /**
