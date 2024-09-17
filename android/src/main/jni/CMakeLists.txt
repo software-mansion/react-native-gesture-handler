@@ -42,5 +42,5 @@ elseif (ReactAndroid_VERSION_MINOR GREATER_EQUAL 75)
     ReactAndroid::react_nativemodule_core
   )
 else ()
-  message(FATAL_ERROR "react-native-gesture-handler requires react-native 0.75 or newer.")
+  message(FATAL_ERROR "react-native-gesture-handler on the New Architecture requires react-native 0.75 or newer.")
 endif ()
