@@ -1,2 +1,4 @@
 # CocoaPods
 Pods/
+
+*.local
