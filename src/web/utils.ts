@@ -64,6 +64,28 @@ export function tryExtractStylusData(
     return;
   }
 
+  if (event.tiltX === 0 && event.tiltY === 0) {
+    // If we are in this branch, it means that either tilt properties are not supported and we have to calculate them from altitude and azimuth angles,
+    // or stylus is perpendicular to the screen and we can use altitude / azimuth instead of tilt
+
+    const { tiltX, tiltY } = spherical2tilt(
+      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
+      event.altitudeAngle,
+      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
+      event.azimuthAngle
+    );
+
+    return {
+      tiltX,
+      tiltY,
+      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
+      azimuthAngle: event.azimuthAngle,
+      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
+      altitudeAngle: event.altitudeAngle,
+      pressure: event.pressure,
+    };
+  }
+
   const { altitudeAngle, azimuthAngle } = tilt2spherical(
     event.tiltX,
     event.tiltY
@@ -72,8 +94,8 @@ export function tryExtractStylusData(
   return {
     tiltX: event.tiltX,
     tiltY: event.tiltY,
-    azimuthAngle: azimuthAngle,
-    altitudeAngle: altitudeAngle,
+    azimuthAngle,
+    altitudeAngle,
     pressure: event.pressure,
   };
 }
@@ -133,4 +155,62 @@ function tilt2spherical(tiltX: number, tiltY: number) {
   }
 
   return { altitudeAngle: altitudeAngle, azimuthAngle: azimuthAngle };
+}
+
+// If we are on a platform that doesn't support `tiltX` and `tiltY`, we have to calculate them from `altitude` and `azimuth` angles.
+//
+// Source: https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
+function spherical2tilt(altitudeAngle: number, azimuthAngle: number) {
+  const radToDeg = 180 / Math.PI;
+
+  let tiltXrad = 0;
+  let tiltYrad = 0;
+
+  if (altitudeAngle == 0) {
+    // the pen is in the X-Y plane
+    if (azimuthAngle == 0 || azimuthAngle == 2 * Math.PI) {
+      // pen is on positive X axis
+      tiltXrad = Math.PI / 2;
+    }
+    if (azimuthAngle == Math.PI / 2) {
+      // pen is on positive Y axis
+      tiltYrad = Math.PI / 2;
+    }
+    if (azimuthAngle == Math.PI) {
+      // pen is on negative X axis
+      tiltXrad = -Math.PI / 2;
+    }
+    if (azimuthAngle == (3 * Math.PI) / 2) {
+      // pen is on negative Y axis
+      tiltYrad = -Math.PI / 2;
+    }
+    if (azimuthAngle > 0 && azimuthAngle < Math.PI / 2) {
+      tiltXrad = Math.PI / 2;
+      tiltYrad = Math.PI / 2;
+    }
+    if (azimuthAngle > Math.PI / 2 && azimuthAngle < Math.PI) {
+      tiltXrad = -Math.PI / 2;
+      tiltYrad = Math.PI / 2;
+    }
+    if (azimuthAngle > Math.PI && azimuthAngle < (3 * Math.PI) / 2) {
+      tiltXrad = -Math.PI / 2;
+      tiltYrad = -Math.PI / 2;
+    }
+    if (azimuthAngle > (3 * Math.PI) / 2 && azimuthAngle < 2 * Math.PI) {
+      tiltXrad = Math.PI / 2;
+      tiltYrad = -Math.PI / 2;
+    }
+  }
+
+  if (altitudeAngle != 0) {
+    const tanAlt = Math.tan(altitudeAngle);
+
+    tiltXrad = Math.atan(Math.cos(azimuthAngle) / tanAlt);
+    tiltYrad = Math.atan(Math.sin(azimuthAngle) / tanAlt);
+  }
+
+  const tiltX = Math.round(tiltXrad * radToDeg);
+  const tiltY = Math.round(tiltYrad * radToDeg);
+
+  return { tiltX, tiltY };
 }

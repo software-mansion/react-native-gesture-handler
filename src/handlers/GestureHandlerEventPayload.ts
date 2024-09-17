@@ -1,3 +1,5 @@
+import { StylusData } from '../web/interfaces';
+
 export type FlingGestureHandlerEventPayload = {
   x: number;
   y: number;
@@ -120,6 +122,11 @@ export type PanGestureHandlerEventPayload = {
    * value is expressed in point units per second.
    */
   velocityY: number;
+
+  /**
+   * Object containing additional stylus data.
+   */
+  stylusData: StylusData | undefined;
 };
 
 export type PinchGestureHandlerEventPayload = {
