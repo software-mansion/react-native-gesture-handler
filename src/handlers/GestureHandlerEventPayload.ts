@@ -189,3 +189,15 @@ export type RotationGestureHandlerEventPayload = {
    */
   velocity: number;
 };
+
+export type HoverGestureHandlerEventPayload = {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+
+  /**
+   * Object containing additional stylus data.
+   */
+  stylusData: StylusData | undefined;
+};

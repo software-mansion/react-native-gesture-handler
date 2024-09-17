@@ -18,6 +18,7 @@ import type {
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
   NativeViewGestureHandlerPayload,
+  HoverGestureHandlerEventPayload,
 } from '../GestureHandlerEventPayload';
 import { isRemoteDebuggingEnabled } from '../../utils';
 
@@ -31,7 +32,8 @@ export type GestureType =
   | BaseGesture<PinchGestureHandlerEventPayload>
   | BaseGesture<FlingGestureHandlerEventPayload>
   | BaseGesture<ForceTouchGestureHandlerEventPayload>
-  | BaseGesture<NativeViewGestureHandlerPayload>;
+  | BaseGesture<NativeViewGestureHandlerPayload>
+  | BaseGesture<HoverGestureHandlerEventPayload>;
 
 export type GestureRef =
   | number
