@@ -50,6 +50,41 @@ using namespace facebook::react;
   [_buttonView unmountChildComponentView:childComponentView index:index];
 }
 
+- (LayoutMetrics)buildWrapperMetrics:(const LayoutMetrics &)metrics
+{
+  LayoutMetrics result = metrics;
+  result.borderWidth = EdgeInsets::ZERO;
+  result.contentInsets = EdgeInsets::ZERO;
+  return result;
+}
+
+- (LayoutMetrics)buildButtonMetrics:(const LayoutMetrics &)metrics
+{
+  LayoutMetrics result = metrics;
+  result.frame.origin = {0, 0};
+  return result;
+}
+
+- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics
+{
+  // due to nested structure of Button and ComponentView, layout metrics for both
+  // need to be modified:
+  // - wrapper shouldn't have any insets as they should be applied to the button
+  //   so that it can intercept touches on padding and borders, applying them
+  //   twice breaks expected layout
+  // - frame origin needs to be zeroes on metrics of the button as it should fill
+  //   the entirety of the wrapper component
+  const LayoutMetrics wrapperMetrics = [self buildWrapperMetrics:layoutMetrics];
+  const LayoutMetrics oldWrapperMetrics = [self buildWrapperMetrics:oldLayoutMetrics];
+
+  const LayoutMetrics buttonMetrics = [self buildButtonMetrics:layoutMetrics];
+  const LayoutMetrics oldbuttonMetrics = [self buildButtonMetrics:oldLayoutMetrics];
+
+  [super updateLayoutMetrics:wrapperMetrics oldLayoutMetrics:oldWrapperMetrics];
+  [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
