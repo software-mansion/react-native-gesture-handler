@@ -68,6 +68,20 @@ export function tryExtractStylusData(
     // If we are in this branch, it means that either tilt properties are not supported and we have to calculate them from altitude and azimuth angles,
     // or stylus is perpendicular to the screen and we can use altitude / azimuth instead of tilt
 
+    // If azimuth and altitude are undefined in this branch, it means that we are either perpendicular to the screen,
+    // or that none of the position sets is supported. In that case, we can treat stylus as perpendicular
+    //
+    // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
+    if (event.azimuthAngle === undefined || event.altitudeAngle === undefined) {
+      return {
+        tiltX: 0,
+        tiltY: 0,
+        azimuthAngle: Math.PI / 2,
+        altitudeAngle: Math.PI / 2,
+        pressure: event.pressure,
+      };
+    }
+
     const { tiltX, tiltY } = spherical2tilt(
       // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
       event.altitudeAngle,
