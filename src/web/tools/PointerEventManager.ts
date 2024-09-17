@@ -10,10 +10,6 @@ import {
 import { PointerType } from '../../PointerType';
 
 const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
-const PointerTypes = {
-  Touch: 'touch',
-  Stylus: 'pen',
-};
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
@@ -89,13 +85,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     // Stylus triggers `pointermove` event when it detects changes in pressure. Since it is very sensitive to those changes,
     // it constantly sends events, even though there was no change in position. To fix that we check whether
     // pointer has actually moved and if not, we do not send event.
-    if (
-      event.pointerType === PointerTypes.Stylus &&
-      event.x === this.lastPosition.x &&
-      event.y === this.lastPosition.y
-    ) {
-      return;
-    }
 
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
     const target = event.target as HTMLElement;
