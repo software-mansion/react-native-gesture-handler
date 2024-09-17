@@ -26,12 +26,21 @@ target_include_directories(
 )
 
 find_package(ReactAndroid REQUIRED CONFIG)
-
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
 target_link_libraries(
-  gesturehandler
-  ReactAndroid::react_render_core
-  ReactAndroid::react_render_uimanager
-  ReactAndroid::react_render_graphics
+  ${PACKAGE_NAME}
+  ReactAndroid::reactnative
   ReactAndroid::jsi
-  ReactAndroid::react_nativemodule_core
 )
+elseif (ReactAndroid_VERSION_MINOR GREATER_EQUAL 75)
+  target_link_libraries(
+    ${PACKAGE_NAME}
+    ReactAndroid::react_render_core
+    ReactAndroid::react_render_uimanager
+    ReactAndroid::react_render_graphics
+    ReactAndroid::jsi
+    ReactAndroid::react_nativemodule_core
+  )
+else ()
+  message(FATAL_ERROR "react-native-gesture-handler requires react-native 0.75 or newer.")
+endif ()
