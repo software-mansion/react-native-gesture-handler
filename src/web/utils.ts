@@ -111,17 +111,17 @@ function tilt2spherical(tiltX: number, tiltY: number) {
   // calculate azimuth angle
   let azimuthAngle = 0;
 
-  if (tiltX == 0) {
+  if (tiltX === 0) {
     if (tiltY > 0) {
       azimuthAngle = Math.PI / 2;
     } else if (tiltY < 0) {
       azimuthAngle = (3 * Math.PI) / 2;
     }
-  } else if (tiltY == 0) {
+  } else if (tiltY === 0) {
     if (tiltX < 0) {
       azimuthAngle = Math.PI;
     }
-  } else if (Math.abs(tiltX) == 90 || Math.abs(tiltY) == 90) {
+  } else if (Math.abs(tiltX) === 90 || Math.abs(tiltY) === 90) {
     // not enough information to calculate azimuth
     azimuthAngle = 0;
   } else {
@@ -138,11 +138,11 @@ function tilt2spherical(tiltX: number, tiltY: number) {
   // calculate altitude angle
   let altitudeAngle = 0;
 
-  if (Math.abs(tiltX) == 90 || Math.abs(tiltY) == 90) {
+  if (Math.abs(tiltX) === 90 || Math.abs(tiltY) === 90) {
     altitudeAngle = 0;
-  } else if (tiltX == 0) {
+  } else if (tiltX === 0) {
     altitudeAngle = Math.PI / 2 - Math.abs(tiltYrad);
-  } else if (tiltY == 0) {
+  } else if (tiltY === 0) {
     altitudeAngle = Math.PI / 2 - Math.abs(tiltXrad);
   } else {
     // Non-boundary case: neither tiltX nor tiltY is equal to 0 or +-90
@@ -166,21 +166,21 @@ function spherical2tilt(altitudeAngle: number, azimuthAngle: number) {
   let tiltXrad = 0;
   let tiltYrad = 0;
 
-  if (altitudeAngle == 0) {
+  if (altitudeAngle === 0) {
     // the pen is in the X-Y plane
-    if (azimuthAngle == 0 || azimuthAngle == 2 * Math.PI) {
+    if (azimuthAngle === 0 || azimuthAngle === 2 * Math.PI) {
       // pen is on positive X axis
       tiltXrad = Math.PI / 2;
     }
-    if (azimuthAngle == Math.PI / 2) {
+    if (azimuthAngle === Math.PI / 2) {
       // pen is on positive Y axis
       tiltYrad = Math.PI / 2;
     }
-    if (azimuthAngle == Math.PI) {
+    if (azimuthAngle === Math.PI) {
       // pen is on negative X axis
       tiltXrad = -Math.PI / 2;
     }
-    if (azimuthAngle == (3 * Math.PI) / 2) {
+    if (azimuthAngle === (3 * Math.PI) / 2) {
       // pen is on negative Y axis
       tiltYrad = -Math.PI / 2;
     }
@@ -202,7 +202,7 @@ function spherical2tilt(altitudeAngle: number, azimuthAngle: number) {
     }
   }
 
-  if (altitudeAngle != 0) {
+  if (altitudeAngle !== 0) {
     const tanAlt = Math.tan(altitudeAngle);
 
     tiltXrad = Math.atan(Math.cos(azimuthAngle) / tanAlt);
