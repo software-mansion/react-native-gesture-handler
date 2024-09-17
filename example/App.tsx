@@ -14,7 +14,6 @@ import {
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
-import Entypo from '@expo/vector-icons/Entypo';
 import {
   GestureHandlerRootView,
   RectButton,
@@ -75,6 +74,9 @@ import Pressable from 'src/new_api/pressable';
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
+
+// @ts-ignore
+import * as Icons from 'react-swm-icon-pack';
 
 interface Example {
   name: string;
@@ -324,7 +326,7 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text>{name}</Text>
-      <Entypo name="chevron-right" size={24} color="#bbb" />
+      <Icons.SWMIcon name="ChevronRight" size={24} color="#bbb" />
     </RectButton>
   );
 }

@@ -7174,6 +7174,11 @@ react-shallow-renderer@^16.15.0:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
 
+react-swm-icon-pack@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/react-swm-icon-pack/-/react-swm-icon-pack-1.0.14.tgz#a3d0ae6e52fdababe991fbebb2bf93665c072b2e"
+  integrity sha512-IFmc4rjXdna4sa3QwlMJzotWQZVErr4gIjq4hrsoP3AvFRPq5AjBJWera9E2C/2pzmAAxNNs7kqiIhNT9xsi0g==
+
 react-test-renderer@18.3.1:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-18.3.1.tgz#e693608a1f96283400d4a3afead6893f958b80b4"
