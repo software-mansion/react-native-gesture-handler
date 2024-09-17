@@ -14,6 +14,7 @@ import {
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
+import Entypo from '@expo/vector-icons/Entypo';
 import {
   GestureHandlerRootView,
   RectButton,
@@ -341,6 +342,7 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
+      <Entypo name="chevron-right" size={24} color="#bbb" />
     </RectButton>
   );
 }
@@ -376,7 +378,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     padding: 10,
+    flexDirection: 'row',
     backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   buttonContent: {
     flex: 1,

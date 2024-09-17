@@ -9,7 +9,6 @@ import {
   View,
   ViewStyle,
   processColor,
-  StyleSheet,
 } from 'react-native';
 import NativeButton from '../GestureHandlerButton';
 import {
@@ -18,7 +17,6 @@ import {
   isTouchWithinInset,
   gestureTouchToPressableEvent,
   addInsets,
-  splitStyles,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
@@ -386,33 +384,22 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
-  const flattenedStyles = StyleSheet.flatten(styleProp ?? {});
-
-  const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
-
   return (
-    <View {...remainingProps} style={outerStyles}>
-      <GestureDetector gesture={gesture}>
-        <NativeButton
-          ref={pressableRef}
-          hitSlop={appliedHitSlop}
-          enabled={isPressableEnabled}
-          touchSoundDisabled={android_disableSound ?? undefined}
-          rippleColor={processColor(
-            android_ripple?.color ?? defaultRippleColor
-          )}
-          rippleRadius={android_ripple?.radius ?? undefined}
-          style={[
-            { width: '100%', height: '100%' },
-            pointerStyle,
-            innerStyles,
-          ]}>
-          {childrenProp}
-          {__DEV__ ? (
-            <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
-          ) : null}
-        </NativeButton>
-      </GestureDetector>
-    </View>
+    <GestureDetector gesture={gesture}>
+      <NativeButton
+        {...remainingProps}
+        ref={pressableRef}
+        hitSlop={appliedHitSlop}
+        enabled={isPressableEnabled}
+        touchSoundDisabled={android_disableSound ?? undefined}
+        rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
+        rippleRadius={android_ripple?.radius ?? undefined}
+        style={[pointerStyle, styleProp]}>
+        {childrenProp}
+        {__DEV__ ? (
+          <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
+        ) : null}
+      </NativeButton>
+    </GestureDetector>
   );
 }
