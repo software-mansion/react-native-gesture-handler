@@ -9,4 +9,18 @@
 #import <Foundation/Foundation.h>
 
 @implementation StylusData
+
+- (NSDictionary *)toDictionary
+{
+  NSDictionary *stylusDataObject = @{
+    @"tiltX" : @(_tiltX),
+    @"tiltY" : @(_tiltY),
+    @"altitudeAngle" : @(_altitudeAngle),
+    @"azimuthAngle" : @(_azimuthAngle),
+    @"pressure" : @(_pressure),
+  };
+
+  return stylusDataObject;
+}
+
 @end

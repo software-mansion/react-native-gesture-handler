@@ -95,7 +95,7 @@
 
   _stylusData.altitudeAngle = touch.altitudeAngle;
   _stylusData.azimuthAngle = [touch azimuthAngleInView:nil];
-  _stylusData.pressure = touch.force;
+  _stylusData.pressure = touch.force / touch.maximumPossibleForce;
 
   Tilt tilts = spherical2tilt(_stylusData.altitudeAngle, _stylusData.azimuthAngle);
 
@@ -460,7 +460,7 @@
                                    withVelocity:[recognizer velocityInView:recognizer.view.window]
                             withNumberOfTouches:recognizer.numberOfTouches
                                 withPointerType:_pointerType
-                                 withStylusData:_stylusData];
+                                 withStylusData:[_stylusData toDictionary]];
 }
 #endif
 

@@ -31,7 +31,7 @@
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
                            withPointerType:(NSInteger)pointerType
-                            withStylusData:(StylusData *)stylusData;
+                            withStylusData:(NSDictionary *)stylusData;
 + (RNGestureHandlerEventExtraData *)forForce:(CGFloat)force
                                  forPosition:(CGPoint)position
                         withAbsolutePosition:(CGPoint)absolutePosition

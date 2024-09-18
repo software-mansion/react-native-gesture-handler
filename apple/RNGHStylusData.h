@@ -16,6 +16,8 @@
 @property (atomic, assign) double azimuthAngle;
 @property (atomic, assign) double pressure;
 
+- (NSDictionary *)toDictionary;
+
 @end
 
 typedef struct {
