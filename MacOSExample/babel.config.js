@@ -3,7 +3,6 @@ module.exports = {
   plugins: [
     '@babel/plugin-transform-modules-commonjs',
     'react-native-reanimated/plugin',
-    ['@babel/plugin-transform-private-methods', { loose: true }],
     [
       'module-resolver',
       {
