@@ -76,7 +76,7 @@ import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 
 // @ts-ignore
-import * as Icons from 'react-swm-icon-pack';
+import { SWMIcon } from 'react-swm-icon-pack';
 
 interface Example {
   name: string;
@@ -326,7 +326,7 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text>{name}</Text>
-      <Icons.SWMIcon name="ChevronRight" size={24} color="#bbb" />
+      <SWMIcon name="ChevronRight" size={24} color="#bbb" />
     </RectButton>
   );
 }
