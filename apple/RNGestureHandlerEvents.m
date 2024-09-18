@@ -63,6 +63,7 @@
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
                            withPointerType:(NSInteger)pointerType
+                            withStylusData:(StylusData *)stylusData
 {
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
@@ -74,7 +75,8 @@
     @"velocityX" : SAFE_VELOCITY(velocity.x),
     @"velocityY" : SAFE_VELOCITY(velocity.y),
     @"numberOfPointers" : @(numberOfTouches),
-    @"pointerType" : @(pointerType)
+    @"pointerType" : @(pointerType),
+    @"stylusData" : stylusData
   }];
 }
 

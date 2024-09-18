@@ -7,6 +7,7 @@
 //
 
 #import "RNPanHandler.h"
+#import "RNGHStylusData.h"
 
 #if TARGET_OS_OSX
 
@@ -31,19 +32,23 @@
 @property (nonatomic) CGFloat failOffsetYEnd;
 @property (nonatomic) CGFloat activateAfterLongPress;
 
+#if !TARGET_OS_OSX && !TARGET_OS_TV
+@property (nonatomic) StylusData *stylusData;
+#endif
+
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
 
 @implementation RNBetterPanGestureRecognizer {
-  __weak RNGestureHandler *_gestureHandler;
+  __weak RNPanGestureHandler *_gestureHandler;
 #if !TARGET_OS_OSX
   NSUInteger _realMinimumNumberOfTouches;
 #endif
   BOOL _hasCustomActivationCriteria;
 }
 
-- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
+- (id)initWithGestureHandler:(RNPanGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
@@ -63,6 +68,7 @@
     _hasCustomActivationCriteria = NO;
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
+    _stylusData = [StylusData alloc];
 #endif
   }
   return self;
@@ -77,6 +83,26 @@
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
+}
+
+- (void)tryUpdateStylusData:(UIEvent *)event
+{
+  UITouch *touch = [[event allTouches] anyObject];
+
+  if (touch.type != UITouchTypePencil) {
+    return;
+  }
+
+  _stylusData.altitudeAngle = touch.altitudeAngle;
+  _stylusData.azimuthAngle = [touch azimuthAngleInView:nil];
+  _stylusData.pressure = touch.force;
+
+  Tilt tilts = spherical2tilt(_stylusData.altitudeAngle, _stylusData.azimuthAngle);
+
+  _stylusData.tiltX = tilts.tiltX;
+  _stylusData.tiltY = tilts.tiltY;
+
+  [_gestureHandler setStylusData:_stylusData];
 }
 #endif
 
@@ -102,6 +128,8 @@
   } else {
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
   }
+
+  [self tryUpdateStylusData:event];
 #endif
 
 #if TARGET_OS_OSX
@@ -150,17 +178,28 @@
       [self setTranslation:CGPointMake(0, 0) inView:self.view];
     }
   }
+
+  [self tryUpdateStylusData:event];
 #endif
 }
 
 - (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  [self tryUpdateStylusData:event];
+#endif
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  [self tryUpdateStylusData:event];
+#endif
+
   [self reset];
 }
 
@@ -311,6 +350,11 @@
   return self;
 }
 
+- (void)setStylusData:(StylusData *)data
+{
+  _stylusData = data;
+}
+
 - (void)resetConfig
 {
   [super resetConfig];
@@ -415,7 +459,8 @@
                                 withTranslation:[recognizer translationInView:recognizer.view.window]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window]
                             withNumberOfTouches:recognizer.numberOfTouches
-                                withPointerType:_pointerType];
+                                withPointerType:_pointerType
+                                 withStylusData:_stylusData];
 }
 #endif
 

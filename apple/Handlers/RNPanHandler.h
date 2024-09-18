@@ -9,4 +9,5 @@
 #import "RNGestureHandler.h"
 
 @interface RNPanGestureHandler : RNGestureHandler
+@property (nonatomic, assign) StylusData *stylusData;
 @end
