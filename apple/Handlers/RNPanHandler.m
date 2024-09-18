@@ -33,7 +33,7 @@
 @property (nonatomic) CGFloat activateAfterLongPress;
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV
-@property (atomic, assign) StylusData *stylusData;
+@property (atomic, strong) StylusData *stylusData;
 #endif
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
