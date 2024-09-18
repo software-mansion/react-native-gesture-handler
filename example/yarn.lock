@@ -4443,14 +4443,7 @@ fast-loops@^1.1.3:
   resolved "https://registry.yarnpkg.com/fast-loops/-/fast-loops-1.1.4.tgz#61bc77d518c0af5073a638c6d9d5c7683f069ce2"
   integrity sha512-8dbd3XWoKCTms18ize6JmQF1SFnnfj5s0B7rRry22EofgMu7B6LKHVh+XfFqFGsqnbH54xgeO83PzpKI+ODhlg==
 
-fast-xml-parser@^4.0.12, fast-xml-parser@^4.2.4:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.4.1.tgz#86dbf3f18edf8739326447bcaac31b4ae7f6514f"
-  integrity sha512-xkjOecfnKGkSsOwtZ5Pz7Us/T6mrbPQrq0nh+aCO5V9nk5NLWmasAHumTKjiPJPWANe+kAZ84Jc8ooJkzZ88Sw==
-  dependencies:
-    strnum "^1.0.5"
-
-fast-xml-parser@^4.4.1:
+fast-xml-parser@^4.0.12, fast-xml-parser@^4.2.4, fast-xml-parser@^4.4.1:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.4.1.tgz#86dbf3f18edf8739326447bcaac31b4ae7f6514f"
   integrity sha512-xkjOecfnKGkSsOwtZ5Pz7Us/T6mrbPQrq0nh+aCO5V9nk5NLWmasAHumTKjiPJPWANe+kAZ84Jc8ooJkzZ88Sw==
@@ -7419,7 +7412,13 @@ react-is@^17.0.1:
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
 "react-native-gesture-handler@link:..":
-  version "2.19.0"
+  version "0.0.0"
+  uid ""
+
+react-native-macos@^0.73.35:
+  version "0.73.35"
+  resolved "https://registry.yarnpkg.com/react-native-macos/-/react-native-macos-0.73.35.tgz#e36f14cce35882748aefee2a88e15f92bfd42d44"
+  integrity sha512-WNrmIzHUOOPm2XjHS/sfGJX78oRTYKnhw4CLfboMdf6rqE59+pFIzMXjwCKOvmnvG/RlosrUFRYjH4NzpFfgpQ==
   dependencies:
     "@jest/create-cache-key-function" "^29.6.3"
     "@react-native-community/cli" "12.3.6"
