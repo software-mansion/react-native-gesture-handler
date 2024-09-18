@@ -1,6 +1,8 @@
 package com.swmansion.gesturehandler.core
 
 import android.view.MotionEvent
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
 import kotlin.math.PI
 import kotlin.math.atan
 import kotlin.math.cos
@@ -54,7 +56,34 @@ object GestureUtils {
   fun coneToDeviation(angle: Double): Double =
     cos(Math.toRadians(angle / 2.0))
 
-  fun spherical2tilt(altitudeAngle: Double, azimuthAngle: Double): Pair<Double, Double> {
+  fun getStylusData(event: MotionEvent): StylusData {
+    // On web 0 degrees means that stylus is perpendicular to the surface. On android this value will be PI / 2.
+    val altitudeAngle = (PI / 2) - event.getAxisValue(MotionEvent.AXIS_TILT).toDouble()
+    val pressure = event.getPressure(0).toDouble()
+
+    var orientation = event.getOrientation(0).toDouble()
+
+    // To get azimuth angle, we need to use orientation property. Orientation value range is [-PI, PI] (https://developer.android.com/develop/ui/compose/touch-input/stylus-input/advanced-stylus-features#orientation)
+    // To shift range into [0, 2PI], we add 2PI if orientation is less than 0.
+    if (orientation < 0) {
+      orientation += 2 * PI
+    }
+
+    // To get azimuth angle, that we get on web, we have to perform shift by PI/2.
+    // However, there's and edge case when orientation is greater than 3PI/2 - we would have angles greater than 2PI, therefor we simply subtract 3PI/2 in that case.
+    val azimuthAngle = if (orientation >= 3 * PI / 2) {
+      orientation - 3 * PI / 2
+    } else {
+      orientation + PI / 2
+    }
+
+    val tilts = spherical2tilt(altitudeAngle, azimuthAngle)
+
+    return StylusData(tilts.first, tilts.second, altitudeAngle, azimuthAngle, pressure)
+  }
+
+  // Source: https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
+  private fun spherical2tilt(altitudeAngle: Double, azimuthAngle: Double): Pair<Double, Double> {
     val eps = 0.000000001
     val radToDeg = 180 / PI
 
@@ -108,5 +137,17 @@ object GestureUtils {
     val tiltY = round(tiltYrad * radToDeg)
 
     return Pair(tiltX, tiltY)
+  }
+
+  fun createStylusDataObject(stylusData: StylusData): WritableMap {
+    val stylusDataObject = Arguments.createMap()
+
+    stylusDataObject.putDouble("tiltX", stylusData.tiltX)
+    stylusDataObject.putDouble("tiltY", stylusData.tiltY)
+    stylusDataObject.putDouble("altitudeAngle", stylusData.altitudeAngle)
+    stylusDataObject.putDouble("azimuthAngle", stylusData.azimuthAngle)
+    stylusDataObject.putDouble("pressure", stylusData.pressure)
+
+    return stylusDataObject
   }
 }

@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
+import kotlin.math.PI
 
 class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   private var handler: Handler? = null
   private var finishRunnable = Runnable { finish() }
+  var stylusData: StylusData = StylusData(0.0, 0.0, PI / 2, PI / 2, 0.0)
 
   private infix fun isAncestorOf(other: GestureHandler<*>): Boolean {
     var current: View? = other.view
@@ -101,6 +103,10 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
 
       !isWithinBounds -> {
         finish()
+      }
+
+      this.state == STATE_ACTIVE -> {
+        stylusData = GestureUtils.getStylusData(event)
       }
 
       this.state == STATE_UNDETERMINED &&

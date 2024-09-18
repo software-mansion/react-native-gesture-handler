@@ -1,8 +1,8 @@
 package com.swmansion.gesturehandler.react.eventbuilders
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
+import com.swmansion.gesturehandler.core.GestureUtils
 import com.swmansion.gesturehandler.core.PanGestureHandler
 import com.swmansion.gesturehandler.core.StylusData
 
@@ -32,13 +32,6 @@ class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHan
   override fun buildEventData(eventData: WritableMap) {
     super.buildEventData(eventData)
 
-    val stylusDataObject = Arguments.createMap()
-    stylusDataObject.putDouble("tiltX", stylusData.tiltX)
-    stylusDataObject.putDouble("tiltY", stylusData.tiltY)
-    stylusDataObject.putDouble("altitudeAngle", stylusData.altitudeAngle)
-    stylusDataObject.putDouble("azimuthAngle", stylusData.azimuthAngle)
-    stylusDataObject.putDouble("pressure", stylusData.pressure)
-
     with(eventData) {
       putDouble("x", PixelUtil.toDIPFromPixel(x).toDouble())
       putDouble("y", PixelUtil.toDIPFromPixel(y).toDouble())
@@ -48,7 +41,7 @@ class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHan
       putDouble("translationY", PixelUtil.toDIPFromPixel(translationY).toDouble())
       putDouble("velocityX", PixelUtil.toDIPFromPixel(velocityX).toDouble())
       putDouble("velocityY", PixelUtil.toDIPFromPixel(velocityY).toDouble())
-      putMap("stylusData", stylusDataObject)
+      putMap("stylusData", GestureUtils.createStylusDataObject(stylusData))
     }
   }
 }

@@ -46,7 +46,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
   private val activateDelayed = Runnable { activate() }
   private var handler: Handler? = null
-  val stylusData: StylusData = StylusData(0.0, 0.0, PI / 2, PI / 2, 0.0)
+  var stylusData: StylusData = StylusData(0.0, 0.0, PI / 2, PI / 2, 0.0)
 
   /**
    * On Android when there are multiple pointers on the screen pan gestures most often just consider
@@ -214,28 +214,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return
     }
 
-    val isStylus = event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS
-
-    if (isStylus) {
-      stylusData.altitudeAngle = (PI / 2) - event.getAxisValue(MotionEvent.AXIS_TILT).toDouble()
-      stylusData.pressure = event.getPressure(0).toDouble()
-
-      var orientation = event.getOrientation(0).toDouble()
-
-      if (orientation < 0) {
-        orientation += 2 * PI
-      }
-
-      stylusData.azimuthAngle = if (orientation >= 3 * PI / 2) {
-        orientation - 3 * PI / 2
-      } else {
-        orientation + PI / 2
-      }
-
-      val tilts = GestureUtils.spherical2tilt(stylusData.altitudeAngle, stylusData.azimuthAngle)
-
-      stylusData.tiltX = tilts.first
-      stylusData.tiltY = tilts.second
+    if (event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS) {
+      stylusData = GestureUtils.getStylusData(event)
     }
 
     val state = state
