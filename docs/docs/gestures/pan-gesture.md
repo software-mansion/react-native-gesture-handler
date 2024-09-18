@@ -189,16 +189,6 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 
 Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
 
-### `stylusData`
-
-Object that contains additional information about `stylus`. It consists of the following fields:
-
-- `tiltX` - angle in degrees between the Y-Z plane of the stylus and the screen.
-- `tiltY` - angle in degrees between the X-Z plane of the stylus and the screen.
-- `altitudeAngle` - angle between stylus axis and the X-Y plane of a device screen.
-- `azimuthAngle` - angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis.
-- `pressure` - indicates the normalized pressure of the stylus.
-
 <BaseEventData />
 
 ## Example
