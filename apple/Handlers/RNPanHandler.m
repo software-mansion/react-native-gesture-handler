@@ -69,6 +69,8 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
     _stylusData = [StylusData alloc];
+
+    [_gestureHandler setStylusData:_stylusData];
 #endif
   }
   return self;
@@ -101,8 +103,6 @@
 
   _stylusData.tiltX = tilts.tiltX;
   _stylusData.tiltY = tilts.tiltY;
-
-  [_gestureHandler setStylusData:_stylusData];
 }
 #endif
 
