@@ -9,5 +9,7 @@
 #import "RNGestureHandler.h"
 
 @interface RNPanGestureHandler : RNGestureHandler
-@property (nonatomic, assign) StylusData *stylusData;
+#if !TARGET_OS_OSX && !TARGET_OS_TV
+@property (atomic, assign) StylusData *stylusData;
+#endif
 @end
