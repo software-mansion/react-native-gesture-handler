@@ -4,6 +4,7 @@ import android.view.MotionEvent
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.cos
 import kotlin.math.round
@@ -11,7 +12,6 @@ import kotlin.math.sin
 import kotlin.math.tan
 
 object GestureUtils {
-
   fun getLastPointerX(event: MotionEvent, averageTouches: Boolean): Float {
     val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) event.actionIndex else -1
     return if (averageTouches) {
@@ -92,35 +92,35 @@ object GestureUtils {
 
     if (altitudeAngle < eps) {
       // the pen is in the X-Y plane
-      if (azimuthAngle < eps || (azimuthAngle - 2 * PI) < eps) {
+      if (azimuthAngle < eps || abs(azimuthAngle - 2 * PI) < eps) {
         // pen is on positive X axis
         tiltXrad = PI / 2
       }
-      if (azimuthAngle - PI / 2 < eps) {
+      if (abs(azimuthAngle - PI / 2) < eps) {
         // pen is on positive Y axis
         tiltYrad = PI / 2
       }
-      if (azimuthAngle - PI < eps) {
+      if (abs(azimuthAngle - PI) < eps) {
         // pen is on negative X axis
         tiltXrad = -PI / 2
       }
-      if (azimuthAngle - (3 * PI) / 2 < eps) {
+      if (abs(azimuthAngle - (3 * PI) / 2) < eps) {
         // pen is on negative Y axis
         tiltYrad = -PI / 2
       }
-      if (azimuthAngle > eps && azimuthAngle - PI / 2 < eps) {
+      if (azimuthAngle > eps && abs(azimuthAngle - PI / 2) < eps) {
         tiltXrad = PI / 2
         tiltYrad = PI / 2
       }
-      if (azimuthAngle - PI / 2 > eps && azimuthAngle - PI < eps) {
+      if (abs(azimuthAngle - PI / 2) > eps && abs(azimuthAngle - PI) < eps) {
         tiltXrad = -PI / 2
         tiltYrad = PI / 2
       }
-      if (azimuthAngle - PI > eps && azimuthAngle - (3 * PI) / 2 < eps) {
+      if (abs(azimuthAngle - PI) > eps && abs(azimuthAngle - (3 * PI) / 2) < eps) {
         tiltXrad = -PI / 2
         tiltYrad = -PI / 2
       }
-      if (azimuthAngle - (3 * PI) / 2 > eps && azimuthAngle - 2 * PI < eps) {
+      if (abs(azimuthAngle - (3 * PI) / 2) > eps && abs(azimuthAngle - 2 * PI) < eps) {
         tiltXrad = PI / 2
         tiltYrad = -PI / 2
       }
