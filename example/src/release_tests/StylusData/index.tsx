@@ -13,18 +13,27 @@ export default function StylusData() {
   const rotationXFactor = useSharedValue(0);
   const rotationYFactor = useSharedValue(0);
 
-  const pan = Gesture.Pan().onChange((e) => {
-    if (!e.stylusData) {
-      return;
-    }
+  const isPanActive = useSharedValue(false);
 
-    scaleFactor.value = e.stylusData.pressure;
-    rotationYFactor.value = e.stylusData.tiltX;
-    rotationXFactor.value = e.stylusData.tiltY;
-  });
+  const pan = Gesture.Pan()
+    .onStart(() => {
+      isPanActive.value = true;
+    })
+    .onChange((e) => {
+      if (!e.stylusData) {
+        return;
+      }
+
+      scaleFactor.value = e.stylusData.pressure;
+      rotationYFactor.value = e.stylusData.tiltX;
+      rotationXFactor.value = e.stylusData.tiltY;
+    })
+    .onFinalize(() => {
+      isPanActive.value = false;
+    });
 
   const hover = Gesture.Hover().onChange((e) => {
-    if (!e.stylusData) {
+    if (!e.stylusData || isPanActive.value) {
       return;
     }
 
