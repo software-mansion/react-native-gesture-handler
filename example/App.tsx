@@ -75,7 +75,6 @@ import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 
-// @ts-ignore
 import { SWMIcon } from 'react-swm-icon-pack';
 
 interface Example {
