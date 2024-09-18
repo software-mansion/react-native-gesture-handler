@@ -57,7 +57,7 @@ object GestureUtils {
     cos(Math.toRadians(angle / 2.0))
 
   fun getStylusData(event: MotionEvent): StylusData {
-    // On web 0 degrees means that stylus is perpendicular to the surface. On android this value will be PI / 2.
+    // On web 0 degrees means that stylus is parallel to the surface. On android this value will be PI / 2.
     val altitudeAngle = (PI / 2) - event.getAxisValue(MotionEvent.AXIS_TILT).toDouble()
     val pressure = event.getPressure(0).toDouble()
 
