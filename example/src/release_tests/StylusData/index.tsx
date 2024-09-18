@@ -4,6 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 
 const GH = require('../../new_api/hoverable_icons/gh.png');
@@ -13,12 +14,17 @@ export default function StylusData() {
   const rotationXFactor = useSharedValue(0);
   const rotationYFactor = useSharedValue(0);
 
-  const isPanActive = useSharedValue(false);
-
   const pan = Gesture.Pan()
-    .onStart(() => {
-      isPanActive.value = true;
+    .onBegin((e) => {
+      if (!e.stylusData) {
+        return;
+      }
+
+      scaleFactor.value = e.stylusData.pressure;
+      rotationYFactor.value = e.stylusData.tiltX;
+      rotationXFactor.value = e.stylusData.tiltY;
     })
+    .onStart(() => {})
     .onChange((e) => {
       if (!e.stylusData) {
         return;
@@ -28,18 +34,16 @@ export default function StylusData() {
       rotationYFactor.value = e.stylusData.tiltX;
       rotationXFactor.value = e.stylusData.tiltY;
     })
-    .onFinalize(() => {
-      isPanActive.value = false;
-    });
+    .onFinalize((e) => {
+      if (!e.stylusData) {
+        return;
+      }
 
-  const hover = Gesture.Hover().onChange((e) => {
-    if (!e.stylusData || isPanActive.value) {
-      return;
-    }
-
-    rotationYFactor.value = e.stylusData.tiltX;
-    rotationXFactor.value = e.stylusData.tiltY;
-  });
+      scaleFactor.value = withTiming(0, { duration: 250 });
+      rotationXFactor.value = withTiming(0, { duration: 250 });
+      rotationYFactor.value = withTiming(0, { duration: 250 });
+    })
+    .minDistance(0);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -51,11 +55,9 @@ export default function StylusData() {
     };
   });
 
-  const g = Gesture.Simultaneous(hover, pan);
-
   return (
     <View style={styles.container}>
-      <GestureDetector gesture={g}>
+      <GestureDetector gesture={pan}>
         <Animated.View style={[styles.ball, animatedStyle]}>
           <Image
             source={GH}
