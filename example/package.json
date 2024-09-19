@@ -25,6 +25,7 @@
     "@react-navigation/stack": "^6.3.29",
     "@swmansion/icons": "^0.0.1",
     "expo": "^51.0.0",
+    "expo-font": "~12.0.10",
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "patch-package": "^6.5.1",
