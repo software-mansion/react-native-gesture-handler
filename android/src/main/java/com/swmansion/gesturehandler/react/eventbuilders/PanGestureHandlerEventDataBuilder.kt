@@ -41,7 +41,10 @@ class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHan
       putDouble("translationY", PixelUtil.toDIPFromPixel(translationY).toDouble())
       putDouble("velocityX", PixelUtil.toDIPFromPixel(velocityX).toDouble())
       putDouble("velocityY", PixelUtil.toDIPFromPixel(velocityY).toDouble())
-      putMap("stylusData", GestureUtils.createStylusDataObject(stylusData))
+
+      if(stylusData.pressure != -1.0){
+        putMap("stylusData", GestureUtils.createStylusDataObject(stylusData))
+      }
     }
   }
 }

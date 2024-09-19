@@ -214,6 +214,10 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return
     }
 
+    if (state == STATE_UNDETERMINED) {
+      stylusData.pressure = -1.0
+    }
+
     if (event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS) {
       stylusData = GestureUtils.getStylusData(event)
     }
