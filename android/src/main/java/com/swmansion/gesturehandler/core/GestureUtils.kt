@@ -63,19 +63,8 @@ object GestureUtils {
 
     var orientation = event.getOrientation(0).toDouble()
 
-    // To get azimuth angle, we need to use orientation property. Orientation value range is [-PI, PI] (https://developer.android.com/develop/ui/compose/touch-input/stylus-input/advanced-stylus-features#orientation)
-    // To shift range into [0, 2PI], we add 2PI if orientation is less than 0.
-    if (orientation < 0) {
-      orientation += 2 * PI
-    }
-
-    // To get the same value that we get on web, we have to perform shift by PI/2.
-    // However, if orientation is greater than 3PI/2 we would get angles greater than 2PI. Therefore we simply subtract 3PI/2 in that case.
-    val azimuthAngle = if (orientation >= 3 * PI / 2) {
-      orientation - 3 * PI / 2
-    } else {
-      orientation + PI / 2
-    }
+    // To get azimuth angle, we need to use orientation property (https://developer.android.com/develop/ui/compose/touch-input/stylus-input/advanced-stylus-features#orientation).
+    val azimuthAngle = (orientation + PI / 2).mod(2 * PI)
 
     val tilts = spherical2tilt(altitudeAngle, azimuthAngle)
 
