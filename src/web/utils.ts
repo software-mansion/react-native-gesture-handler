@@ -64,15 +64,18 @@ export function tryExtractStylusData(
     return;
   }
 
+  // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
+  const eventAzimuthAngle: number | undefined = event.azimuthAngle;
+  // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
+  const eventAltitudeAngle: number | undefined = event.altitudeAngle;
+
   if (event.tiltX === 0 && event.tiltY === 0) {
     // If we are in this branch, it means that either tilt properties are not supported and we have to calculate them from altitude and azimuth angles,
     // or stylus is perpendicular to the screen and we can use altitude / azimuth instead of tilt
 
     // If azimuth and altitude are undefined in this branch, it means that we are either perpendicular to the screen,
     // or that none of the position sets is supported. In that case, we can treat stylus as perpendicular
-    //
-    // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
-    if (event.azimuthAngle === undefined || event.altitudeAngle === undefined) {
+    if (eventAzimuthAngle === undefined || eventAltitudeAngle === undefined) {
       return {
         tiltX: 0,
         tiltY: 0,
@@ -83,19 +86,15 @@ export function tryExtractStylusData(
     }
 
     const { tiltX, tiltY } = spherical2tilt(
-      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
-      event.altitudeAngle,
-      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
-      event.azimuthAngle
+      eventAltitudeAngle,
+      eventAzimuthAngle
     );
 
     return {
       tiltX,
       tiltY,
-      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
-      azimuthAngle: event.azimuthAngle,
-      // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
-      altitudeAngle: event.altitudeAngle,
+      azimuthAngle: eventAzimuthAngle,
+      altitudeAngle: eventAltitudeAngle,
       pressure: event.pressure,
     };
   }
