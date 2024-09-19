@@ -70,7 +70,7 @@
     _hasCustomActivationCriteria = NO;
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
-    _stylusData = [StylusData alloc];
+    _stylusData = [[StylusData alloc] init];
 #endif
   }
   return self;
@@ -136,9 +136,6 @@
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
   }
 
-  // We don't want to send stylusData object if stylus is not used. Therefore we set pressure to -1.
-  // If it stays at this value, it means that stylus was not used and we can omit sending stylus data.
-  _stylusData.pressure = -1;
   [self tryUpdateStylusData:event];
 #endif
 
@@ -273,6 +270,10 @@
   self.enabled = YES;
   [super reset];
   [_gestureHandler reset];
+
+  // We don't want to send stylusData object if stylus is not used. Therefore we set pressure to -1.
+  // If it stays at this value, it means that stylus was not used and we can omit sending stylus data.
+  _stylusData.pressure = -1;
 }
 
 - (void)updateHasCustomActivationCriteria
