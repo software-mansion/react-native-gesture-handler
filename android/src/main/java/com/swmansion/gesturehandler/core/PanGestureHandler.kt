@@ -214,10 +214,6 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return
     }
 
-    if (state == STATE_UNDETERMINED) {
-      stylusData.pressure = -1.0
-    }
-
     if (event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS) {
       stylusData = GestureUtils.updateStylusData(event)
     }
@@ -305,6 +301,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       it.recycle()
       velocityTracker = null
     }
+
+    stylusData = StylusData()
   }
 
   override fun resetProgress() {
