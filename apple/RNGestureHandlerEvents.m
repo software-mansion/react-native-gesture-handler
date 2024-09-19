@@ -67,6 +67,21 @@
                             withStylusData:(NSDictionary *)stylusData
 #endif
 {
+  if ([stylusData[@"pressure"] intValue] == -1) {
+    return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
+      @"x" : @(position.x),
+      @"y" : @(position.y),
+      @"absoluteX" : @(absolutePosition.x),
+      @"absoluteY" : @(absolutePosition.y),
+      @"translationX" : @(translation.x),
+      @"translationY" : @(translation.y),
+      @"velocityX" : SAFE_VELOCITY(velocity.x),
+      @"velocityY" : SAFE_VELOCITY(velocity.y),
+      @"numberOfPointers" : @(numberOfTouches),
+      @"pointerType" : @(pointerType),
+    }];
+  }
+
   return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
     @"x" : @(position.x),
     @"y" : @(position.y),

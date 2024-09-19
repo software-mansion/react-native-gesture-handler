@@ -129,6 +129,9 @@
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
   }
 
+  // We don't want to send stylusData object if stylus is not used. Therefore we set pressure to -1.
+  // If it stays at this value, it means that stylus was not used and we can omit sending stylus data.
+  _stylusData.pressure = -1;
   [self tryUpdateStylusData:event];
 #endif
 
