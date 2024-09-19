@@ -6,8 +6,7 @@
     "paths": {
       "react-native-gesture-handler": ["../src/index.ts"],
       "react-native-gesture-handler/jest-utils": ["../src/jestUtils/index.ts"]
-    },
-    "typeRoots": ["@types", "node_modules/@types"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "App.tsx"]
 }
