@@ -350,10 +350,12 @@
   return self;
 }
 
+#if !TARGET_OS_OSX && !TARGET_OS_TV
 - (void)setStylusData:(StylusData *)data
 {
   _stylusData = data;
 }
+#endif
 
 - (void)resetConfig
 {

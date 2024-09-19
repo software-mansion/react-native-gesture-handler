@@ -25,6 +25,7 @@
                             withNumberOfTouches:(NSUInteger)numberOfTouches
                                    withDuration:(NSUInteger)duration
                                 withPointerType:(NSInteger)pointerType;
+#if !TARGET_OS_OSX && !TARGET_OS_TV
 + (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
@@ -32,6 +33,14 @@
                        withNumberOfTouches:(NSUInteger)numberOfTouches
                            withPointerType:(NSInteger)pointerType
                             withStylusData:(NSDictionary *)stylusData;
+#else
++ (RNGestureHandlerEventExtraData *)forPan:(CGPoint)position
+                      withAbsolutePosition:(CGPoint)absolutePosition
+                           withTranslation:(CGPoint)translation
+                              withVelocity:(CGPoint)velocity
+                       withNumberOfTouches:(NSUInteger)numberOfTouches
+                           withPointerType:(NSInteger)pointerType;
+#endif
 + (RNGestureHandlerEventExtraData *)forForce:(CGFloat)force
                                  forPosition:(CGPoint)position
                         withAbsolutePosition:(CGPoint)absolutePosition
