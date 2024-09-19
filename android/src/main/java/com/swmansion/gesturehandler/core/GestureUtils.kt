@@ -56,7 +56,7 @@ object GestureUtils {
   fun coneToDeviation(angle: Double): Double =
     cos(Math.toRadians(angle / 2.0))
 
-  fun getStylusData(event: MotionEvent): StylusData {
+  fun updateStylusData(stylusData: StylusData, event: MotionEvent) {
     // On web and iOS 0 degrees means that stylus is parallel to the surface. On android this value will be PI / 2.
     val altitudeAngle = (PI / 2) - event.getAxisValue(MotionEvent.AXIS_TILT).toDouble()
     val pressure = event.getPressure(0).toDouble()
@@ -79,7 +79,11 @@ object GestureUtils {
 
     val tilts = spherical2tilt(altitudeAngle, azimuthAngle)
 
-    return StylusData(tilts.first, tilts.second, altitudeAngle, azimuthAngle, pressure)
+    stylusData.tiltX = tilts.first
+    stylusData.tiltY = tilts.second
+    stylusData.altitudeAngle = altitudeAngle
+    stylusData.azimuthAngle = azimuthAngle
+    stylusData.pressure = pressure
   }
 
   // Source: https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle

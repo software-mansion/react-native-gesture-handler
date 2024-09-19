@@ -106,7 +106,7 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
       }
 
       this.state == STATE_ACTIVE -> {
-        stylusData = GestureUtils.getStylusData(event)
+        GestureUtils.updateStylusData(stylusData, event)
       }
 
       this.state == STATE_UNDETERMINED &&
