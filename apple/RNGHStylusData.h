@@ -8,7 +8,7 @@
 #ifndef RNGHStylusData_h
 #define RNGHStylusData_h
 
-@interface StylusData : NSObject
+@interface RNGHStylusData : NSObject
 
 @property (atomic, assign) double tiltX;
 @property (atomic, assign) double tiltY;

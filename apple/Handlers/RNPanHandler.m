@@ -33,9 +33,9 @@
 @property (nonatomic) CGFloat activateAfterLongPress;
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV
-@property (atomic, strong) StylusData *stylusData;
+@property (atomic, strong) RNGHStylusData *stylusData;
 
-- (StylusData *)getStylusData;
+- (RNGHStylusData *)getStylusData;
 #endif
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
@@ -70,7 +70,7 @@
     _hasCustomActivationCriteria = NO;
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
-    _stylusData = [[StylusData alloc] init];
+    _stylusData = [[RNGHStylusData alloc] init];
 #endif
   }
   return self;
@@ -107,7 +107,7 @@
   _stylusData.tiltY = tilts.tiltY;
 }
 
-- (StylusData *)getStylusData
+- (RNGHStylusData *)getStylusData
 {
   return _stylusData;
 }

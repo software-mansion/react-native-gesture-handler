@@ -8,7 +8,7 @@
 #import "RNGHStylusData.h"
 #import <Foundation/Foundation.h>
 
-@implementation StylusData
+@implementation RNGHStylusData
 
 - (instancetype)init
 {
