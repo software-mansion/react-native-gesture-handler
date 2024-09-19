@@ -104,7 +104,7 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
         finish()
       }
 
-      this.state == STATE_ACTIVE -> {
+      this.state == STATE_ACTIVE && event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS -> {
         GestureUtils.updateStylusData(stylusData, event)
       }
 
