@@ -1,11 +1,13 @@
 import { Insets } from 'react-native';
-import { LongPressGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
+import {
+  HoverGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
+} from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
   GestureStateChangeEvent,
   GestureTouchEvent,
 } from '../../handlers/gestureHandlerCommon';
-import { HoverGestureHandlerEventPayload } from '../../handlers/gestures/hoverGesture';
 import { InnerPressableEvent, PressableEvent } from './PressableProps';
 
 const numberAsInset = (value: number): Insets => ({

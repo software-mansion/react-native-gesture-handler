@@ -1,12 +1,6 @@
 import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
 import { GestureUpdateEvent } from '../gestureHandlerCommon';
-
-export type HoverGestureHandlerEventPayload = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-};
+import type { HoverGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export type HoverGestureChangeEventPayload = {
   changeX: number;
