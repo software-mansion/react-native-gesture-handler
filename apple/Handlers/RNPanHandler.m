@@ -34,6 +34,8 @@
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV
 @property (atomic, strong) StylusData *stylusData;
+
+- (StylusData *)getStylusData;
 #endif
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
@@ -41,14 +43,14 @@
 @end
 
 @implementation RNBetterPanGestureRecognizer {
-  __weak RNPanGestureHandler *_gestureHandler;
+  __weak RNGestureHandler *_gestureHandler;
 #if !TARGET_OS_OSX
   NSUInteger _realMinimumNumberOfTouches;
 #endif
   BOOL _hasCustomActivationCriteria;
 }
 
-- (id)initWithGestureHandler:(RNPanGestureHandler *)gestureHandler
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
@@ -69,8 +71,6 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
     _stylusData = [StylusData alloc];
-
-    [_gestureHandler setStylusData:_stylusData];
 #endif
   }
   return self;
@@ -86,7 +86,9 @@
 {
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
 }
+#endif
 
+#if !TARGET_OS_OSX && !TARGET_OS_TV
 - (void)tryUpdateStylusData:(UIEvent *)event
 {
   UITouch *touch = [[event allTouches] anyObject];
@@ -103,6 +105,11 @@
 
   _stylusData.tiltX = tilts.tiltX;
   _stylusData.tiltY = tilts.tiltY;
+}
+
+- (StylusData *)getStylusData
+{
+  return _stylusData;
 }
 #endif
 
@@ -353,13 +360,6 @@
   return self;
 }
 
-#if !TARGET_OS_OSX && !TARGET_OS_TV
-- (void)setStylusData:(StylusData *)data
-{
-  _stylusData = data;
-}
-#endif
-
 - (void)resetConfig
 {
   [super resetConfig];
@@ -459,13 +459,15 @@
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
+  RNBetterPanGestureRecognizer *panRecognizer = (RNBetterPanGestureRecognizer *)recognizer;
+
   return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                                 withTranslation:[recognizer translationInView:recognizer.view.window]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window]
                             withNumberOfTouches:recognizer.numberOfTouches
                                 withPointerType:_pointerType
-                                 withStylusData:[_stylusData toDictionary]];
+                                 withStylusData:[[panRecognizer getStylusData] toDictionary]];
 }
 #endif
 
