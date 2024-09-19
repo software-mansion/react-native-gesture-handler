@@ -1,8 +1,6 @@
 package com.swmansion.gesturehandler.core
 
 import android.view.MotionEvent
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.WritableMap
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan
@@ -56,23 +54,19 @@ object GestureUtils {
   fun coneToDeviation(angle: Double): Double =
     cos(Math.toRadians(angle / 2.0))
 
-  fun updateStylusData(stylusData: StylusData, event: MotionEvent) {
+  fun updateStylusData(event: MotionEvent): StylusData {
     // On web and iOS 0 degrees means that stylus is parallel to the surface. On android this value will be PI / 2.
     val altitudeAngle = (PI / 2) - event.getAxisValue(MotionEvent.AXIS_TILT).toDouble()
     val pressure = event.getPressure(0).toDouble()
 
-    var orientation = event.getOrientation(0).toDouble()
+    val orientation = event.getOrientation(0).toDouble()
 
     // To get azimuth angle, we need to use orientation property (https://developer.android.com/develop/ui/compose/touch-input/stylus-input/advanced-stylus-features#orientation).
     val azimuthAngle = (orientation + PI / 2).mod(2 * PI)
 
     val tilts = spherical2tilt(altitudeAngle, azimuthAngle)
 
-    stylusData.tiltX = tilts.first
-    stylusData.tiltY = tilts.second
-    stylusData.altitudeAngle = altitudeAngle
-    stylusData.azimuthAngle = azimuthAngle
-    stylusData.pressure = pressure
+    return StylusData(tilts.first, tilts.second, altitudeAngle, azimuthAngle, pressure)
   }
 
   // Source: https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
@@ -128,17 +122,5 @@ object GestureUtils {
     val tiltY = round(tiltYrad * radToDeg)
 
     return Pair(tiltX, tiltY)
-  }
-
-  fun createStylusDataObject(stylusData: StylusData): WritableMap {
-    val stylusDataObject = Arguments.createMap()
-
-    stylusDataObject.putDouble("tiltX", stylusData.tiltX)
-    stylusDataObject.putDouble("tiltY", stylusData.tiltY)
-    stylusDataObject.putDouble("altitudeAngle", stylusData.altitudeAngle)
-    stylusDataObject.putDouble("azimuthAngle", stylusData.azimuthAngle)
-    stylusDataObject.putDouble("pressure", stylusData.pressure)
-
-    return stylusDataObject
   }
 }

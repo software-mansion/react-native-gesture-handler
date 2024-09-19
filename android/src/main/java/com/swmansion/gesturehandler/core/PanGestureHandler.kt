@@ -218,7 +218,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     }
 
     if (event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS) {
-      GestureUtils.updateStylusData(stylusData, event)
+      stylusData = GestureUtils.updateStylusData(event)
     }
 
     val state = state
