@@ -2024,6 +2024,11 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
+"@swmansion/icons@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@swmansion/icons/-/icons-0.0.1.tgz#8171b857be9885e1565138bf358b073f6585ca43"
+  integrity sha512-MjqBDtxzMRa++iPT0RkBPPOV+wIGvzVMGKQTw9thk8GKt+UAhT9NKkfK4BhiKKvKnKkCHfYCvdidNlN+jpHLrQ==
+
 "@tsconfig/react-native@^3.0.5":
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/@tsconfig/react-native/-/react-native-3.0.5.tgz#c4971b1eca2e8cdf7b0d25f40193a782039c1abd"
@@ -7070,12 +7075,8 @@ react-is@^17.0.1:
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
 "react-native-gesture-handler@link:..":
-  version "2.19.0"
-  dependencies:
-    "@egjs/hammerjs" "^2.0.17"
-    hoist-non-react-statics "^3.3.0"
-    invariant "^2.2.4"
-    prop-types "^15.7.2"
+  version "0.0.0"
+  uid ""
 
 react-native-reanimated@3.10.0:
   version "3.10.0"
