@@ -23,11 +23,11 @@
 typedef struct {
   double tiltX;
   double tiltY;
-} Tilt;
+} RNGHTilt;
 
-static Tilt spherical2tilt(double altitudeAngle, double azimuthAngle)
+static RNGHTilt ghSpherical2tilt(double altitudeAngle, double azimuthAngle)
 {
-  Tilt tilts = {.tiltX = 0.0, .tiltY = 0.0};
+  RNGHTilt tilts = {.tiltX = 0.0, .tiltY = 0.0};
 
   const double radToDeg = 180 / M_PI;
   const double eps = 0.000000001;

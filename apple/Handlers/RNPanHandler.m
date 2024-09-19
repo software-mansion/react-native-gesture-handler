@@ -101,7 +101,7 @@
   _stylusData.azimuthAngle = [touch azimuthAngleInView:nil];
   _stylusData.pressure = touch.force / touch.maximumPossibleForce;
 
-  Tilt tilts = spherical2tilt(_stylusData.altitudeAngle, _stylusData.azimuthAngle);
+  RNGHTilt tilts = ghSpherical2tilt(_stylusData.altitudeAngle, _stylusData.azimuthAngle);
 
   _stylusData.tiltX = tilts.tiltX;
   _stylusData.tiltY = tilts.tiltY;
