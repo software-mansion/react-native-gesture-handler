@@ -45,7 +45,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
   private val activateDelayed = Runnable { activate() }
   private var handler: Handler? = null
-  var stylusData: StylusData = StylusData(0.0, 0.0, 0.0, 0.0, -1.0)
+  var stylusData: StylusData = StylusData()
 
   /**
    * On Android when there are multiple pointers on the screen pan gestures most often just consider

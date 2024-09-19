@@ -11,7 +11,7 @@ import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
 class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   private var handler: Handler? = null
   private var finishRunnable = Runnable { finish() }
-  var stylusData: StylusData = StylusData(0.0, 0.0, 0.0, 0.0, -1.0)
+  var stylusData: StylusData = StylusData()
 
   private infix fun isAncestorOf(other: GestureHandler<*>): Boolean {
     var current: View? = other.view

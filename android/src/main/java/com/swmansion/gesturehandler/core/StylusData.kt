@@ -4,11 +4,11 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 
 data class StylusData(
-  var tiltX: Double,
-  var tiltY: Double,
-  var altitudeAngle: Double,
-  var azimuthAngle: Double,
-  var pressure: Double
+  var tiltX: Double = 0.0,
+  var tiltY: Double = 0.0,
+  var altitudeAngle: Double = 0.0,
+  var azimuthAngle: Double = 0.0,
+  var pressure: Double = -1.0
 ) {
   fun toReadableMap(): ReadableMap {
     val stylusDataObject = Arguments.createMap()
