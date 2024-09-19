@@ -124,9 +124,7 @@ object GestureUtils {
         tiltXrad = PI / 2
         tiltYrad = -PI / 2
       }
-    }
-
-    if (altitudeAngle > 0) {
+    } else {
       val tanAlt = tan(altitudeAngle)
 
       tiltXrad = atan(cos(azimuthAngle) / tanAlt)
