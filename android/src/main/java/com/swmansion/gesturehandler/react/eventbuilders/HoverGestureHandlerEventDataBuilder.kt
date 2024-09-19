@@ -29,7 +29,10 @@ class HoverGestureHandlerEventDataBuilder(handler: HoverGestureHandler) : Gestur
       putDouble("y", PixelUtil.toDIPFromPixel(y).toDouble())
       putDouble("absoluteX", PixelUtil.toDIPFromPixel(absoluteX).toDouble())
       putDouble("absoluteY", PixelUtil.toDIPFromPixel(absoluteY).toDouble())
-      putMap("stylusData", GestureUtils.createStylusDataObject(stylusData))
+
+      if (stylusData.pressure != -1.0) {
+        putMap("stylusData", GestureUtils.createStylusDataObject(stylusData))
+      }
     }
   }
 }
