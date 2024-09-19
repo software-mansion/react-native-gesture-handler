@@ -2,7 +2,7 @@
 //  RNGHStylusData.h
 //  Pods
 //
-//  Created by michal on 18/09/2024.
+//  Created by Michał Bert on 18/09/2024.
 //
 
 #ifndef RNGHStylusData_h
