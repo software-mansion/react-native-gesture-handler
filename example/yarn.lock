@@ -7082,8 +7082,12 @@ react-is@^17.0.1:
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
 "react-native-gesture-handler@link:..":
-  version "0.0.0"
-  uid ""
+  version "2.19.0"
+  dependencies:
+    "@egjs/hammerjs" "^2.0.17"	
+    hoist-non-react-statics "^3.3.0"	
+    invariant "^2.2.4"	
+    prop-types "^15.7.2"	
 
 react-native-reanimated@3.10.0:
   version "3.10.0"
