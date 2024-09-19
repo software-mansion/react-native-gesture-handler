@@ -7084,10 +7084,10 @@ react-is@^17.0.1:
 "react-native-gesture-handler@link:..":
   version "2.19.0"
   dependencies:
-    "@egjs/hammerjs" "^2.0.17"	
-    hoist-non-react-statics "^3.3.0"	
-    invariant "^2.2.4"	
-    prop-types "^15.7.2"	
+    "@egjs/hammerjs" "^2.0.17"
+    hoist-non-react-statics "^3.3.0"
+    invariant "^2.2.4"
+    prop-types "^15.7.2"
 
 react-native-reanimated@3.10.0:
   version "3.10.0"
