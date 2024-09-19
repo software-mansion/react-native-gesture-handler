@@ -65,9 +65,9 @@ export function tryExtractStylusData(
   }
 
   // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
-  const eventAzimuthAngle = event.azimuthAngle;
+  const eventAzimuthAngle: number | undefined = event.azimuthAngle;
   // @ts-ignore This property exists (https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent#instance_properties)
-  const eventAltitudeAngle = event.altitudeAngle;
+  const eventAltitudeAngle: number | undefined = event.altitudeAngle;
 
   if (event.tiltX === 0 && event.tiltY === 0) {
     // If we are in this branch, it means that either tilt properties are not supported and we have to calculate them from altitude and azimuth angles,
