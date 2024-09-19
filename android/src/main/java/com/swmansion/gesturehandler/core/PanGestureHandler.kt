@@ -8,7 +8,6 @@ import android.view.VelocityTracker
 import android.view.ViewConfiguration
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
-import kotlin.math.PI
 
 class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
   var velocityX = 0f
@@ -46,7 +45,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
   private val activateDelayed = Runnable { activate() }
   private var handler: Handler? = null
-  var stylusData: StylusData = StylusData(0.0, 0.0, PI / 2, PI / 2, 0.0)
+  var stylusData: StylusData = StylusData(0.0, 0.0, 0.0, 0.0, 0.0)
 
   /**
    * On Android when there are multiple pointers on the screen pan gestures most often just consider
