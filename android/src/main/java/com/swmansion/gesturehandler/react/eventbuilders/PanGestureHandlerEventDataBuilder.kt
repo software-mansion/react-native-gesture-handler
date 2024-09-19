@@ -2,7 +2,6 @@ package com.swmansion.gesturehandler.react.eventbuilders
 
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
-import com.swmansion.gesturehandler.core.GestureUtils
 import com.swmansion.gesturehandler.core.PanGestureHandler
 import com.swmansion.gesturehandler.core.StylusData
 

@@ -12,6 +12,7 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   private var handler: Handler? = null
   private var finishRunnable = Runnable { finish() }
   var stylusData: StylusData = StylusData()
+    private set
 
   private infix fun isAncestorOf(other: GestureHandler<*>): Boolean {
     var current: View? = other.view
