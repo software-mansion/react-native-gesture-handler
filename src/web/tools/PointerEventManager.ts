@@ -82,10 +82,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerMoveCallback = (event: PointerEvent) => {
-    // Stylus triggers `pointermove` event when it detects changes in pressure. Since it is very sensitive to those changes,
-    // it constantly sends events, even though there was no change in position. To fix that we check whether
-    // pointer has actually moved and if not, we do not send event.
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
     const target = event.target as HTMLElement;
 
