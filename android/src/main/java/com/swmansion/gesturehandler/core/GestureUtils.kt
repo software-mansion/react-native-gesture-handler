@@ -69,8 +69,8 @@ object GestureUtils {
       orientation += 2 * PI
     }
 
-    // To get azimuth angle, that we get on web, we have to perform shift by PI/2.
-    // However, there's and edge case when orientation is greater than 3PI/2 - we would have angles greater than 2PI, therefor we simply subtract 3PI/2 in that case.
+    // To get the same value that we get on web, we have to perform shift by PI/2.
+    // However, if orientation is greater than 3PI/2 we would get angles greater than 2PI. Therefore we simply subtract 3PI/2 in that case.
     val azimuthAngle = if (orientation >= 3 * PI / 2) {
       orientation - 3 * PI / 2
     } else {
