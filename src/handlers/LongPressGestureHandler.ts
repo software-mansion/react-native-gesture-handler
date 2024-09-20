@@ -8,6 +8,7 @@ import {
 export const longPressGestureHandlerProps = [
   'minDurationMs',
   'maxDist',
+  'numberOfPointers',
 ] as const;
 
 export interface LongPressGestureConfig {
@@ -24,6 +25,11 @@ export interface LongPressGestureConfig {
    * will fail to recognize the gesture. The default value is 10.
    */
   maxDist?: number;
+
+  /**
+   * Determine exact number of points required to handle the long press gesture.
+   */
+  numberOfPointers?: number;
 }
 
 export interface LongPressGestureHandlerProps

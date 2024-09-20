@@ -1,5 +1,5 @@
 import { DiagonalDirections, Directions } from '../../Directions';
-import { MINIMAL_FLING_VELOCITY } from '../constants';
+import { MINIMAL_RECOGNIZABLE_MAGNITUDE } from '../constants';
 import PointerTracker from './PointerTracker';
 
 export default class Vector {
@@ -14,14 +14,15 @@ export default class Vector {
     this.y = y;
 
     this._magnitude = Math.hypot(this.x, this.y);
-    const isMagnitudeSufficient = this._magnitude > MINIMAL_FLING_VELOCITY;
+    const isMagnitudeSufficient =
+      this._magnitude > MINIMAL_RECOGNIZABLE_MAGNITUDE;
 
     this.unitX = isMagnitudeSufficient ? this.x / this._magnitude : 0;
     this.unitY = isMagnitudeSufficient ? this.y / this._magnitude : 0;
   }
 
   static fromDirection(direction: Directions | DiagonalDirections): Vector {
-    return DirectionToVectorMappings.get(direction)!;
+    return DirectionToVectorMappings.get(direction) ?? new Vector(0, 0);
   }
 
   static fromVelocity(tracker: PointerTracker, pointerId: number) {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { AdaptedEvent, EventTypes, TouchEventType } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
 type PointerEventCallback = (event: AdaptedEvent) => void;
 
@@ -18,9 +18,7 @@ export default abstract class EventManager<T> {
 
   protected abstract mapEvent(
     event: Event,
-    eventType: EventTypes,
-    index?: number,
-    touchEventType?: TouchEventType
+    eventType: EventTypes
   ): AdaptedEvent;
 
   protected onPointerDown(_event: AdaptedEvent): void {}

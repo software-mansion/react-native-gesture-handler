@@ -5,6 +5,7 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
 
 class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
@@ -67,6 +68,10 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     if (handler is HoverGestureHandler && (this isAncestorOf handler || handler isAncestorOf this)) {
+      return true
+    }
+
+    if (handler is RNGestureHandlerRootHelper.RootViewGestureHandler) {
       return true
     }
 

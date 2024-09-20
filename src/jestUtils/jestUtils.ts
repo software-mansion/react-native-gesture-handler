@@ -138,6 +138,7 @@ const handlersDefaultEvents: DefaultEventsMapping = {
     velocityX: 3,
     velocityY: 0,
     numberOfPointers: 1,
+    stylusData: undefined,
   },
   [pinchHandlerName]: {
     focalX: 0,

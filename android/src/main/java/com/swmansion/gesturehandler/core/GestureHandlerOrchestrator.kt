@@ -270,7 +270,7 @@ class GestureHandlerOrchestrator(
     // the first `onTouchesDown` event after the handler processes it and changes state
     // to `BEGAN`.
     if (handler.needsPointerData && handler.state != 0) {
-      handler.updatePointerData(event)
+      handler.updatePointerData(event, sourceEvent)
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
@@ -292,7 +292,7 @@ class GestureHandlerOrchestrator(
       }
 
       if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event)
+        handler.updatePointerData(event, sourceEvent)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that

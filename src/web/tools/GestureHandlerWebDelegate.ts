@@ -5,7 +5,6 @@ import {
   MeasureResult,
 } from './GestureHandlerDelegate';
 import PointerEventManager from './PointerEventManager';
-import TouchEventManager from './TouchEventManager';
 import { State } from '../../State';
 import { isPointerInBounds } from '../utils';
 import EventManager from './EventManager';
@@ -58,7 +57,6 @@ export class GestureHandlerWebDelegate
     this.setContextMenu(config.enabled);
 
     this.eventManagers.push(new PointerEventManager(this.view));
-    this.eventManagers.push(new TouchEventManager(this.view));
     this.eventManagers.push(new KeyboardEventManager(this.view));
 
     this.eventManagers.forEach((manager) =>

@@ -23,7 +23,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     override fun onScale(detector: ScaleGestureDetector): Boolean {
       val prevScaleFactor: Double = scale
       scale *= detector.scaleFactor.toDouble()
-      val delta = detector.timeDelta
+      val delta = detector.timeDeltaSeconds
+
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }

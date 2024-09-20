@@ -507,7 +507,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.currentState,
-        eventType: event.touchEventType ?? eventType,
+        eventType: eventType,
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: numberOfTouches,

@@ -31,6 +31,15 @@ export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPa
     this.config.maxDist = distance;
     return this;
   }
+
+  /**
+   * Determine exact number of points required to handle the long press gesture.
+   * @param pointers
+   */
+  numberOfPointers(pointers: number) {
+    this.config.numberOfPointers = pointers;
+    return this;
+  }
 }
 
 export type LongPressGestureType = InstanceType<typeof LongPressGesture>;
