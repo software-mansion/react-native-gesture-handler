@@ -14,13 +14,13 @@ data class StylusData(
   val pressure: Double = -1.0
 ) {
   fun toReadableMap(): ReadableMap {
-    val stylusDataObject = Arguments.createMap()
-
-    stylusDataObject.putDouble("tiltX", tiltX)
-    stylusDataObject.putDouble("tiltY", tiltY)
-    stylusDataObject.putDouble("altitudeAngle", altitudeAngle)
-    stylusDataObject.putDouble("azimuthAngle", azimuthAngle)
-    stylusDataObject.putDouble("pressure", pressure)
+    val stylusDataObject = Arguments.createMap().apply {
+      putDouble("tiltX", tiltX)
+      putDouble("tiltY", tiltY)
+      putDouble("altitudeAngle", altitudeAngle)
+      putDouble("azimuthAngle", azimuthAngle)
+      putDouble("pressure", pressure)
+    }
 
     val readableStylusData: ReadableMap = stylusDataObject
 
