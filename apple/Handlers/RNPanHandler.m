@@ -33,7 +33,7 @@
 @property (nonatomic) CGFloat activateAfterLongPress;
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV
-@property (atomic, strong) RNGHStylusData *stylusData;
+@property (atomic, readonly, strong) RNGHStylusData *stylusData;
 
 - (RNGHStylusData *)getStylusData;
 #endif
@@ -101,15 +101,10 @@
   _stylusData.azimuthAngle = [touch azimuthAngleInView:nil];
   _stylusData.pressure = touch.force / touch.maximumPossibleForce;
 
-  RNGHTilt tilts = ghSpherical2tilt(_stylusData.altitudeAngle, _stylusData.azimuthAngle);
+  CGPoint tilts = ghSpherical2tilt(_stylusData.altitudeAngle, _stylusData.azimuthAngle);
 
-  _stylusData.tiltX = tilts.tiltX;
-  _stylusData.tiltY = tilts.tiltY;
-}
-
-- (RNGHStylusData *)getStylusData
-{
-  return _stylusData;
+  _stylusData.tiltX = tilts.x;
+  _stylusData.tiltY = tilts.y;
 }
 #endif
 
@@ -470,7 +465,7 @@
                                    withVelocity:[recognizer velocityInView:recognizer.view.window]
                             withNumberOfTouches:recognizer.numberOfTouches
                                 withPointerType:_pointerType
-                                 withStylusData:[[panRecognizer getStylusData] toDictionary]];
+                                 withStylusData:[panRecognizer.stylusData toDictionary]];
 }
 #endif
 
