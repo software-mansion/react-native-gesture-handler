@@ -111,11 +111,15 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
 
       this.state == STATE_UNDETERMINED &&
         (event.action == MotionEvent.ACTION_HOVER_MOVE || event.action == MotionEvent.ACTION_HOVER_ENTER) -> {
-        stylusData = StylusData()
         begin()
         activate()
       }
     }
+  }
+
+  override fun onReset() {
+    super.onReset()
+    stylusData = StylusData()
   }
 
   private fun finish() {
