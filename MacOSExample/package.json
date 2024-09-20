@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-community/slider": "^4.5.3",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@react-navigation/stack": "^6.3.17",
+    "@swmansion/icons": "^0.0.1",
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "patch-package": "^8.0.0",
