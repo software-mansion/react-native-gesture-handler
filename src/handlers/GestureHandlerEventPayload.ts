@@ -1,3 +1,5 @@
+import { StylusData } from '../web/interfaces';
+
 export type FlingGestureHandlerEventPayload = {
   x: number;
   y: number;
@@ -120,6 +122,11 @@ export type PanGestureHandlerEventPayload = {
    * value is expressed in point units per second.
    */
   velocityY: number;
+
+  /**
+   * Object containing additional stylus data.
+   */
+  stylusData: StylusData | undefined;
 };
 
 export type PinchGestureHandlerEventPayload = {
@@ -181,4 +188,39 @@ export type RotationGestureHandlerEventPayload = {
    * gesture.
    */
   velocity: number;
+};
+
+export type HoverGestureHandlerEventPayload = {
+  /**
+   * X coordinate of the current position of the pointer relative to the view
+   * attached to the handler. Expressed in point units.
+   */
+  x: number;
+
+  /**
+   * Y coordinate of the current position of the pointer relative to the view
+   * attached to the handler. Expressed in point units.
+   */
+  y: number;
+
+  /**
+   * X coordinate of the current position of the pointer relative to the window.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `x` in cases when the original view can be transformed as an
+   * effect of the gesture.
+   */
+  absoluteX: number;
+
+  /**
+   * Y coordinate of the current position of the pointer relative to the window.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `y` in cases when the original view can be transformed as an
+   * effect of the gesture.
+   */
+  absoluteY: number;
+
+  /**
+   * Object containing additional stylus data.
+   */
+  stylusData: StylusData | undefined;
 };
