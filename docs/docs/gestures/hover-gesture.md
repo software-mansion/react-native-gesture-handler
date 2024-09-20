@@ -28,7 +28,7 @@ import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestur
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
-import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callbacks.md';
+import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
 A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
@@ -82,7 +82,7 @@ Defaults to `HoverEffect.None`
 ## Callbacks
 
 <BaseEventCallbacks />
-<BaseContinousEventCallbacks />
+<BaseContinuousEventCallbacks />
 
 ## Event data
 

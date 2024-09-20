@@ -4,6 +4,7 @@
 
 typedef UIView RNGHUIView;
 typedef UITouch RNGHUITouch;
+typedef UIScrollView RNGHUIScrollView;
 
 #define RNGHGestureRecognizerStateFailed UIGestureRecognizerStateFailed;
 #define RNGHGestureRecognizerStatePossible UIGestureRecognizerStatePossible;
@@ -17,6 +18,7 @@ typedef UITouch RNGHUITouch;
 
 typedef RCTUIView RNGHUIView;
 typedef RCTUITouch RNGHUITouch;
+typedef NSScrollView RNGHUIScrollView;
 
 #define RNGHGestureRecognizerStateFailed NSGestureRecognizerStateFailed;
 #define RNGHGestureRecognizerStatePossible NSGestureRecognizerStatePossible;

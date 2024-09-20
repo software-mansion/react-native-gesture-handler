@@ -138,7 +138,7 @@ export const FlatList = React.forwardRef((props, ref) => {
   );
 }) as <ItemT = any>(
   props: PropsWithChildren<
-    RNFlatListProps<ItemT> &
+    Omit<RNFlatListProps<ItemT>, 'renderScrollComponent'> &
       RefAttributes<FlatList<ItemT>> &
       NativeViewGestureHandlerProps
   >,

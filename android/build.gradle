@@ -1,8 +1,5 @@
 import groovy.json.JsonSlurper
 
-import javax.inject.Inject
-import java.nio.file.Files
-
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
@@ -36,16 +33,10 @@ def resolveReactNativeDirectory() {
         return file(reactNativeLocation)
     }
 
-    // monorepo workaround
-    // react-native can be hoisted or in project's own node_modules
-    def reactNativeFromProjectNodeModules = file("${rootProject.projectDir}/../node_modules/react-native")
-    if (reactNativeFromProjectNodeModules.exists()) {
-        return reactNativeFromProjectNodeModules
-    }
-
-    def reactNativeFromNodeModulesWithReanimated = file("${projectDir}/../../react-native")
-    if (reactNativeFromNodeModulesWithReanimated.exists()) {
-        return reactNativeFromNodeModulesWithReanimated
+    // Fallback to node resolver for custom directory structures like monorepos.
+    def reactNativePackage = file(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim())
+    if (reactNativePackage.exists()) {
+        return reactNativePackage.parentFile
     }
 
     throw new Exception(
@@ -98,15 +89,11 @@ repositories {
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 33)
-    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
-        namespace "com.swmansion.gesturehandler"
-    }
 
-    if (agpVersion.tokenize('.')[0].toInteger() >= 8) {
-        buildFeatures {
-            buildConfig = true
-        }
+    namespace "com.swmansion.gesturehandler"
+    buildFeatures {
+        buildConfig = true
+        prefab = true
     }
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -116,12 +103,6 @@ android {
     }
     if (rootProject.hasProperty("ndkVersion")) {
         ndkVersion rootProject.ext.ndkVersion
-    }
-
-    if (REACT_NATIVE_MINOR_VERSION >= 71) {
-        buildFeatures {
-            prefab true
-        }
     }
 
     defaultConfig {
@@ -137,8 +118,7 @@ android {
             externalNativeBuild {
                 cmake {
                     cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
-                    arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
-                        "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                    arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                         "-DANDROID_STL=c++_shared"
                     abiFilters (*reactNativeArchitectures())
@@ -206,107 +186,4 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-
-def isGHExampleApp() {
-    return project.hasProperty('isGHExampleApp') && project.property('isGHExampleApp') == "true"
-}
-
-def getAbsoluteCodegenArtifactsPaperDestination() {
-    if (!project.hasProperty('codegenArtifactsPaperDestination')) {
-        throw new Exception('[react-native-gesture-handler] Please fill codegenArtifactsPaperDestination variable in android/gradle.properties to point to the correct path to generated specs for paper')
-    }
-
-    return "${project.rootDir}/../../${project.property('codegenArtifactsPaperDestination')}"
-}
-
-def getAbsoluteCodegenArtifactsSource() {
-    if (!project.hasProperty('codegenArtifactsSource')) {
-        throw new Exception('[react-native-gesture-handler] Please fill codegenArtifactsSource variable in android/gradle.properties to point to the correct path to codegenerated artifacts')
-    }
-
-    return "${project.rootDir}/../../${project.property('codegenArtifactsSource')}"
-}
-
-
-tasks.register('copyCodegenArtifacts') {
-    group 'After build tasks'
-    description 'Task which copies codegen artifacts to paper architecture'
-    
-    if (!isGHExampleApp() || !isNewArchitectureEnabled()) {
-        return
-    }
-
-    dependsOn tasks.generateCodegenArtifactsFromSchema
-
-    doLast {
-
-        def absoluteCodegenArtifactsPaperDestination = getAbsoluteCodegenArtifactsPaperDestination()
-        def absoluteCodegenArtifactsSource = getAbsoluteCodegenArtifactsSource()
-
-        def existingFiles = fileTree(absoluteCodegenArtifactsPaperDestination).matching {
-            include '**/*.java'
-        }
-
-        def generatedFiles = fileTree(absoluteCodegenArtifactsSource).matching {
-            include '**/*.java'
-        }
-
-        def existingFilesMap = [:]
-
-        existingFiles.forEach { existingFile ->
-            println existingFile
-            existingFilesMap[existingFile.name] = 1
-        }
-
-        generatedFiles.forEach { generatedFile -> 
-            if (!existingFilesMap.containsKey(generatedFile.name)) {
-                logger.warn("[react-native-gesture-handler] ${generatedFile.name} not found in paper dir, if it's used on Android you need to copy it manually and implement yourself before using auto-copy feature.")
-            }
-        }
-
-        if (existingFiles.size() == 0) {
-            logger.warn("[react-native-gesture-handler] Paper destination with codegen interfaces is empty. This might be okay if you don't have any interfaces/delegates used on Android, but if that's not the case please check if codegenArtifactsPaperDestination property in android/gradle.properties is correct.")
-        }
-
-        existingFiles.forEach { existingFile -> 
-            def generatedFile = new File("${absoluteCodegenArtifactsSource}/${existingFile.name}")
-
-            if (!generatedFile.exists()) {
-                logger.warn("[react-native-gesture-handler] ${existingFile.name} file does not exist in codegen artifacts source destination. Please check if you still need this interface/delagete.")
-            }
-        }
-
-        copy {
-            from absoluteCodegenArtifactsSource
-            include existingFiles.collect { it.name }
-            into absoluteCodegenArtifactsPaperDestination
-        }
-    }
-}
-
-if (isGHExampleApp() && isNewArchitectureEnabled() && !project.hasProperty('skipCodegenCopyTask')) {
-    tasks.generateCodegenArtifactsFromSchema.finalizedBy('copyCodegenArtifacts')
-}
-
-if (project == rootProject) {
-    tasks.register('checkIntegrityBetweenArchitectures') {
-        group 'Verification tasks'
-        description 'Task to check integrity between fabric and paper architecture in terms of codegen generated interfaces/delegates'
-
-        def absoluteCodegenArtifactsPaperDestination = "../${project.property('codegenArtifactsPaperDestination')}"
-        def absoluteCodegenArtifactsSource = "../${project.property('codegenArtifactsSource')}"
-
-        def existingFiles = fileTree(absoluteCodegenArtifactsPaperDestination).matching {
-            include '**/*.java'
-        }
-
-        existingFiles.forEach { existingFile -> 
-            def generatedFile = new File("${absoluteCodegenArtifactsSource}/${existingFile.name}")
-
-            if (existingFile.text != generatedFile.text) {
-                throw new RuntimeException("[react-native-gesture-handler] The source of ${existingFile.name} does not match with the one generated by codegen. Please check if you commited changes produced by copyCodegenArtifacts task.")
-            }
-        }
-    }
 }

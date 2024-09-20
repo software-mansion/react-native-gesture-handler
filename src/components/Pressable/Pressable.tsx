@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
-import { PressableProps } from './PressableProps';
+import { PressableEvent, PressableProps } from './PressableProps';
 import {
   Insets,
   Platform,
@@ -9,58 +9,65 @@ import {
   View,
   ViewStyle,
   processColor,
-  StyleSheet,
 } from 'react-native';
 import NativeButton from '../GestureHandlerButton';
 import {
   numberAsInset,
-  adaptStateChangeEvent,
+  gestureToPressableEvent,
   isTouchWithinInset,
-  adaptTouchEvent,
+  gestureTouchToPressableEvent,
   addInsets,
-  splitStyles,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
+import { INT32_MAX } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
 export default function Pressable(props: PressableProps) {
-  const [pressedState, setPressedState] = useState(
-    props.testOnly_pressed ?? false
-  );
+  const {
+    testOnly_pressed,
+    hitSlop,
+    pressRetentionOffset,
+    delayHoverIn,
+    onHoverIn,
+    delayHoverOut,
+    onHoverOut,
+    delayLongPress,
+    unstable_pressDelay,
+    onPress,
+    onPressIn,
+    onPressOut,
+    onLongPress,
+    style,
+    children,
+    android_disableSound,
+    android_ripple,
+    disabled,
+    ...remainingProps
+  } = props;
+
+  const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
   const pressableRef = useRef<View>(null);
 
   // Disabled when onLongPress has been called
   const isPressCallbackEnabled = useRef<boolean>(true);
-  const isPressedDown = useRef<boolean>(false);
+  const hasPassedBoundsChecks = useRef<boolean>(false);
+  const shouldPreventNativeEffects = useRef<boolean>(false);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
-      typeof props.hitSlop === 'number'
-        ? numberAsInset(props.hitSlop)
-        : props.hitSlop ?? {},
-    [props.hitSlop]
+      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : hitSlop ?? {},
+    [hitSlop]
   );
 
   const normalizedPressRetentionOffset: Insets = useMemo(
     () =>
-      typeof props.pressRetentionOffset === 'number'
-        ? numberAsInset(props.pressRetentionOffset)
-        : props.pressRetentionOffset ?? {},
-    [props.pressRetentionOffset]
-  );
-
-  const pressGesture = useMemo(
-    () =>
-      Gesture.LongPress().onStart((event) => {
-        if (isPressedDown.current) {
-          props.onLongPress?.(adaptStateChangeEvent(event));
-          isPressCallbackEnabled.current = false;
-        }
-      }),
-    [props]
+      typeof pressRetentionOffset === 'number'
+        ? numberAsInset(pressRetentionOffset)
+        : pressRetentionOffset ?? {},
+    [pressRetentionOffset]
   );
 
   const hoverInTimeout = useRef<number | null>(null);
@@ -69,56 +76,74 @@ export default function Pressable(props: PressableProps) {
   const hoverGesture = useMemo(
     () =>
       Gesture.Hover()
+        .manualActivation(true) // Stops Hover from blocking Native gesture activation on web
+        .cancelsTouchesInView(false)
         .onBegin((event) => {
           if (hoverOutTimeout.current) {
             clearTimeout(hoverOutTimeout.current);
           }
-          if (props.delayHoverIn) {
+          if (delayHoverIn) {
             hoverInTimeout.current = setTimeout(
-              () => props.onHoverIn?.(adaptStateChangeEvent(event)),
-              props.delayHoverIn
+              () => onHoverIn?.(gestureToPressableEvent(event)),
+              delayHoverIn
             );
             return;
           }
-          props.onHoverIn?.(adaptStateChangeEvent(event));
+          onHoverIn?.(gestureToPressableEvent(event));
         })
-        .onEnd((event) => {
+        .onFinalize((event) => {
           if (hoverInTimeout.current) {
             clearTimeout(hoverInTimeout.current);
           }
-          if (props.delayHoverOut) {
+          if (delayHoverOut) {
             hoverOutTimeout.current = setTimeout(
-              () => props.onHoverOut?.(adaptStateChangeEvent(event)),
-              props.delayHoverOut
+              () => onHoverOut?.(gestureToPressableEvent(event)),
+              delayHoverOut
             );
             return;
           }
-          props.onHoverOut?.(adaptStateChangeEvent(event));
+          onHoverOut?.(gestureToPressableEvent(event));
         }),
-    [props]
+    [delayHoverIn, delayHoverOut, onHoverIn, onHoverOut]
   );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);
+  const isTouchPropagationAllowed = useRef<boolean>(false);
+
+  // iOS only: due to varying flow of gestures, events sometimes have to be saved for later use
+  const deferredEventPayload = useRef<PressableEvent | null>(null);
+
   const pressInHandler = useCallback(
-    (event: GestureTouchEvent) => {
-      props.onPressIn?.(adaptTouchEvent(event));
+    (event: PressableEvent) => {
+      if (handlingOnTouchesDown.current) {
+        deferredEventPayload.current = event;
+      }
+
+      if (!isTouchPropagationAllowed.current) {
+        return;
+      }
+
+      deferredEventPayload.current = null;
+
+      onPressIn?.(event);
       isPressCallbackEnabled.current = true;
       pressDelayTimeoutRef.current = null;
       setPressedState(true);
     },
-    [props]
+    [onPressIn]
   );
 
   const pressOutHandler = useCallback(
-    (event: GestureTouchEvent) => {
+    (event: PressableEvent) => {
       if (
-        !isPressedDown.current ||
-        event.allTouches.length > event.changedTouches.length
+        !hasPassedBoundsChecks.current ||
+        event.nativeEvent.touches.length >
+          event.nativeEvent.changedTouches.length
       ) {
         return;
       }
 
-      if (props.unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
+      if (unstable_pressDelay && pressDelayTimeoutRef.current !== null) {
         // When delay is preemptively finished by lifting touches,
         // we want to immediately activate it's effects - pressInHandler,
         // even though we are located at the pressOutHandler
@@ -126,25 +151,64 @@ export default function Pressable(props: PressableProps) {
         pressInHandler(event);
       }
 
-      props.onPressOut?.(adaptTouchEvent(event));
-
-      if (isPressCallbackEnabled.current) {
-        props.onPress?.(adaptTouchEvent(event));
+      if (deferredEventPayload.current) {
+        onPressIn?.(deferredEventPayload.current);
+        deferredEventPayload.current = null;
       }
 
-      isPressedDown.current = false;
+      onPressOut?.(event);
+
+      if (isPressCallbackEnabled.current) {
+        onPress?.(event);
+      }
+
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
+
+      isTouchPropagationAllowed.current = false;
+      hasPassedBoundsChecks.current = false;
+      isPressCallbackEnabled.current = true;
       setPressedState(false);
     },
-    [pressInHandler, props]
+    [onPress, onPressIn, onPressOut, pressInHandler, unstable_pressDelay]
   );
 
   const handlingOnTouchesDown = useRef<boolean>(false);
   const onEndHandlingTouchesDown = useRef<(() => void) | null>(null);
   const cancelledMidPress = useRef<boolean>(false);
 
-  const touchGesture = useMemo(
+  const activateLongPress = useCallback(
+    (event: GestureTouchEvent) => {
+      if (!isTouchPropagationAllowed.current) {
+        return;
+      }
+
+      if (hasPassedBoundsChecks.current) {
+        onLongPress?.(gestureTouchToPressableEvent(event));
+        isPressCallbackEnabled.current = false;
+      }
+
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
+    },
+    [onLongPress]
+  );
+
+  const longPressTimeoutRef = useRef<number | null>(null);
+  const longPressMinDuration =
+    (delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
+    (unstable_pressDelay ?? 0);
+
+  const pressAndTouchGesture = useMemo(
     () =>
-      Gesture.Manual()
+      Gesture.LongPress()
+        .minDuration(INT32_MAX) // Stops long press from blocking native gesture
+        .maxDistance(INT32_MAX) // Stops long press from cancelling after set distance
+        .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           handlingOnTouchesDown.current = true;
           pressableRef.current?.measure((_x, _y, width, height) => {
@@ -157,7 +221,7 @@ export default function Pressable(props: PressableProps) {
                 normalizedHitSlop,
                 event.changedTouches.at(-1)
               ) ||
-              isPressedDown.current ||
+              hasPassedBoundsChecks.current ||
               cancelledMidPress.current
             ) {
               cancelledMidPress.current = false;
@@ -166,14 +230,23 @@ export default function Pressable(props: PressableProps) {
               return;
             }
 
-            isPressedDown.current = true;
+            hasPassedBoundsChecks.current = true;
 
-            if (props.unstable_pressDelay) {
+            // In case of multiple touches, the first one starts long press gesture
+            if (longPressTimeoutRef.current === null) {
+              // Start long press gesture timer
+              longPressTimeoutRef.current = setTimeout(
+                () => activateLongPress(event),
+                longPressMinDuration
+              );
+            }
+
+            if (unstable_pressDelay) {
               pressDelayTimeoutRef.current = setTimeout(() => {
-                pressInHandler(event);
-              }, props.unstable_pressDelay);
+                pressInHandler(gestureTouchToPressableEvent(event));
+              }, unstable_pressDelay);
             } else {
-              pressInHandler(event);
+              pressInHandler(gestureTouchToPressableEvent(event));
             }
 
             onEndHandlingTouchesDown.current?.();
@@ -183,42 +256,93 @@ export default function Pressable(props: PressableProps) {
         })
         .onTouchesUp((event) => {
           if (handlingOnTouchesDown.current) {
-            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
+            onEndHandlingTouchesDown.current = () =>
+              pressOutHandler(gestureTouchToPressableEvent(event));
             return;
           }
-
-          pressOutHandler(event);
+          // On iOS, short taps will make LongPress gesture call onTouchesUp before Native gesture calls onStart
+          // This variable ensures that onStart isn't detected as the first gesture since Pressable is pressed.
+          if (deferredEventPayload.current !== null) {
+            shouldPreventNativeEffects.current = true;
+          }
+          pressOutHandler(gestureTouchToPressableEvent(event));
         })
         .onTouchesCancelled((event) => {
+          isPressCallbackEnabled.current = false;
+
           if (handlingOnTouchesDown.current) {
             cancelledMidPress.current = true;
-            onEndHandlingTouchesDown.current = () => pressOutHandler(event);
+            onEndHandlingTouchesDown.current = () =>
+              pressOutHandler(gestureTouchToPressableEvent(event));
             return;
           }
 
           if (
-            !isPressedDown.current ||
+            !hasPassedBoundsChecks.current ||
             event.allTouches.length > event.changedTouches.length
           ) {
             return;
           }
 
-          pressOutHandler(event);
+          pressOutHandler(gestureTouchToPressableEvent(event));
         }),
     [
+      activateLongPress,
+      longPressMinDuration,
       normalizedHitSlop,
-      props.unstable_pressDelay,
       pressInHandler,
       pressOutHandler,
+      unstable_pressDelay,
     ]
   );
 
-  // rippleGesture lives inside RNButton to enable android's ripple
-  const rippleGesture = useMemo(() => Gesture.Native(), []);
+  // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
+  const buttonGesture = useMemo(
+    () =>
+      Gesture.Native()
+        .onBegin(() => {
+          // Android sets BEGAN state on press down
+          if (Platform.OS === 'android') {
+            isTouchPropagationAllowed.current = true;
+          }
+        })
+        .onStart(() => {
+          if (Platform.OS === 'web') {
+            isTouchPropagationAllowed.current = true;
+          }
 
-  pressGesture.minDuration(
-    (props.delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
-      (props.unstable_pressDelay ?? 0)
+          // iOS sets ACTIVE state on press down
+          if (Platform.OS !== 'ios') {
+            return;
+          }
+
+          if (deferredEventPayload.current) {
+            isTouchPropagationAllowed.current = true;
+
+            if (hasPassedBoundsChecks.current) {
+              pressInHandler(deferredEventPayload.current);
+              deferredEventPayload.current = null;
+            } else {
+              pressOutHandler(deferredEventPayload.current);
+              isTouchPropagationAllowed.current = false;
+            }
+
+            return;
+          }
+
+          if (hasPassedBoundsChecks.current) {
+            isTouchPropagationAllowed.current = true;
+            return;
+          }
+
+          if (shouldPreventNativeEffects.current) {
+            shouldPreventNativeEffects.current = false;
+            return;
+          }
+
+          isTouchPropagationAllowed.current = true;
+        }),
+    [pressInHandler, pressOutHandler]
   );
 
   const appliedHitSlop = addInsets(
@@ -226,14 +350,15 @@ export default function Pressable(props: PressableProps) {
     normalizedPressRetentionOffset
   );
 
-  const isPressableEnabled = props.disabled !== true;
+  const isPressableEnabled = disabled !== true;
 
-  const gestures = [touchGesture, pressGesture, hoverGesture, rippleGesture];
+  const gestures = [pressAndTouchGesture, hoverGesture, buttonGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
+    gesture.shouldCancelWhenOutside(false);
 
     if (Platform.OS !== 'web') {
       gesture.shouldCancelWhenOutside(true);
@@ -241,55 +366,40 @@ export default function Pressable(props: PressableProps) {
   }
 
   // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
-  rippleGesture.hitSlop(normalizedHitSlop);
+  buttonGesture.hitSlop(normalizedHitSlop);
 
-  const gesture = Gesture.Simultaneous(
-    hoverGesture,
-    pressGesture,
-    touchGesture,
-    rippleGesture
-  );
+  const gesture = Gesture.Simultaneous(...gestures);
 
-  const defaultRippleColor = props.android_ripple ? undefined : 'transparent';
+  const defaultRippleColor = android_ripple ? undefined : 'transparent';
 
-  // `cursor: 'pointer'` on `RNButton` crashes IOS
+  // `cursor: 'pointer'` on `RNButton` crashes iOS
   const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
 
   const styleProp =
-    typeof props.style === 'function'
-      ? props.style({ pressed: pressedState })
-      : props.style;
+    typeof style === 'function' ? style({ pressed: pressedState }) : style;
 
   const childrenProp =
-    typeof props.children === 'function'
-      ? props.children({ pressed: pressedState })
-      : props.children;
-
-  const flattenedStyles = StyleSheet.flatten(styleProp ?? {});
-
-  const [innerStyles, outerStyles] = splitStyles(flattenedStyles);
+    typeof children === 'function'
+      ? children({ pressed: pressedState })
+      : children;
 
   return (
-    <View style={outerStyles}>
-      <GestureDetector gesture={gesture}>
-        <NativeButton
-          ref={pressableRef}
-          testID={props.testID}
-          hitSlop={appliedHitSlop}
-          enabled={isPressableEnabled}
-          touchSoundDisabled={props.android_disableSound ?? undefined}
-          rippleColor={processColor(
-            props.android_ripple?.color ?? defaultRippleColor
-          )}
-          rippleRadius={props.android_ripple?.radius ?? undefined}
-          style={[StyleSheet.absoluteFill, pointerStyle, innerStyles]}>
-          {childrenProp}
-          {__DEV__ ? (
-            <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
-          ) : null}
-        </NativeButton>
-      </GestureDetector>
-    </View>
+    <GestureDetector gesture={gesture}>
+      <NativeButton
+        {...remainingProps}
+        ref={pressableRef}
+        hitSlop={appliedHitSlop}
+        enabled={isPressableEnabled}
+        touchSoundDisabled={android_disableSound ?? undefined}
+        rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
+        rippleRadius={android_ripple?.radius ?? undefined}
+        style={[pointerStyle, styleProp]}>
+        {childrenProp}
+        {__DEV__ ? (
+          <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
+        ) : null}
+      </NativeButton>
+    </GestureDetector>
   );
 }

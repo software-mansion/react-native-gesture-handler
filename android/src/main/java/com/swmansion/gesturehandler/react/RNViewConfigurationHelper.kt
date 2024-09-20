@@ -4,6 +4,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
+import com.facebook.react.views.scroll.ReactHorizontalScrollView
+import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.PointerEventsConfig
 import com.swmansion.gesturehandler.core.ViewConfigurationHelper
@@ -40,12 +42,11 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
     } else parent.getChildAt(index)
   }
 
-  override fun isViewClippingChildren(view: ViewGroup): Boolean {
-    if (view.clipChildren) {
-      return true
-    }
-    return if (view is ReactViewGroup) {
-      "hidden" == view.overflow
-    } else false
+  override fun isViewClippingChildren(view: ViewGroup) = when {
+    view.clipChildren -> true
+    view is ReactScrollView -> view.overflow != "visible"
+    view is ReactHorizontalScrollView -> view.overflow != "visible"
+    view is ReactViewGroup -> view.overflow == "hidden"
+    else -> false
   }
 }

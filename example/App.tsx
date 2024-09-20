@@ -14,6 +14,7 @@ import {
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
+import Entypo from '@expo/vector-icons/Entypo';
 import {
   GestureHandlerRootView,
   RectButton,
@@ -34,6 +35,7 @@ import NestedFling from './src/release_tests/nestedFling';
 import MouseButtons from './src/release_tests/mouseButtons';
 import ContextMenu from './src/release_tests/contextMenu';
 import NestedTouchables from './src/release_tests/nestedTouchables';
+import NestedPressables from './src/release_tests/nestedPressables';
 import NestedButtons from './src/release_tests/nestedButtons';
 import PointerType from './src/release_tests/pointerType';
 import SwipeableReanimation from './src/release_tests/swipeableReanimation';
@@ -51,6 +53,8 @@ import HorizontalDrawer from './src/basic/horizontalDrawer';
 import PagerAndDrawer from './src/basic/pagerAndDrawer';
 import ForceTouch from './src/basic/forcetouch';
 import Fling from './src/basic/fling';
+import WebStylesResetExample from './src/release_tests/webStylesReset';
+import StylusData from './src/release_tests/StylusData';
 
 import ReanimatedSimple from './src/new_api/reanimated';
 import Camera from './src/new_api/camera';
@@ -131,6 +135,10 @@ const EXAMPLES: ExamplesSection[] = [
         component: NestedTouchables as React.ComponentType,
       },
       {
+        name: 'Nested Pressables - issue #2980',
+        component: NestedPressables as React.ComponentType,
+      },
+      {
         name: 'Nested buttons (sound & ripple on Android)',
         component: NestedButtons,
       },
@@ -146,6 +154,8 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
+      { name: 'Web styles reset', component: WebStylesResetExample },
+      { name: 'Stylus data', component: StylusData },
     ],
   },
   {
@@ -316,6 +326,7 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text>{name}</Text>
+      <Entypo name="chevron-right" size={24} color="#bbb" />
     </RectButton>
   );
 }
@@ -347,7 +358,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     padding: 10,
+    flexDirection: 'row',
     backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   buttonContent: {
     flex: 1,
