@@ -35,7 +35,7 @@ export default class HoverGestureHandler extends GestureHandler {
   }
 
   protected onPointerMoveOut(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.tracker.removeFromTracker(event.pointerId);
     this.stylusData = event.stylusData;
 
     super.onPointerMoveOut(event);
