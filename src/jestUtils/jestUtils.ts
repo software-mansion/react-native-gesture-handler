@@ -405,7 +405,7 @@ interface HandlerData {
   emitEvent: EventEmitter;
   handlerType: HandlerNames;
   handlerTag: number;
-  enabled?: boolean;
+  enabled: boolean | undefined;
 }
 function getHandlerData(
   componentOrGesture: ReactTestInstance | GestureType
@@ -428,6 +428,7 @@ function getHandlerData(
     },
     handlerType: gestureHandlerComponent.props.handlerType as HandlerNames,
     handlerTag: gestureHandlerComponent.props.handlerTag as number,
+    enabled: gestureHandlerComponent.props.enabled,
   };
 }
 type AllGestures =
