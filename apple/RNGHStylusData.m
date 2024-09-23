@@ -17,7 +17,7 @@
     self.tiltY = 0;
     self.altitudeAngle = M_PI_2;
     self.azimuthAngle = 0;
-    self.pressure = -1;
+    self.pressure = 0;
   }
 
   return self;

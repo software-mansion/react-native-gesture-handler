@@ -63,9 +63,7 @@
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
                            withPointerType:(NSInteger)pointerType
-#if !TARGET_OS_OSX && !TARGET_OS_TV
                             withStylusData:(NSDictionary *)stylusData
-#endif
 {
   NSMutableDictionary *data = [@{
     @"x" : @(position.x),
@@ -80,12 +78,10 @@
     @"pointerType" : @(pointerType),
   } mutableCopy];
 
-#if !TARGET_OS_OSX && !TARGET_OS_TV
-  // Add the stylusData to the dictionary only if the pressure isn't -1
-  if ([stylusData[@"pressure"] intValue] != -1) {
+  // Add the stylusData to the dictionary only if necessary
+  if (stylusData != nil) {
     data[@"stylusData"] = stylusData;
   }
-#endif
 
   return [[RNGestureHandlerEventExtraData alloc] initWithData:data];
 }
