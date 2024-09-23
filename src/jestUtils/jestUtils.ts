@@ -405,6 +405,7 @@ interface HandlerData {
   emitEvent: EventEmitter;
   handlerType: HandlerNames;
   handlerTag: number;
+  enabled?: boolean;
 }
 function getHandlerData(
   componentOrGesture: ReactTestInstance | GestureType
@@ -417,6 +418,7 @@ function getHandlerData(
       },
       handlerType: gesture.handlerName as HandlerNames,
       handlerTag: gesture.handlerTag,
+      enabled: gesture.config.enabled,
     };
   }
   const gestureHandlerComponent = componentOrGesture;
@@ -467,8 +469,12 @@ export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   componentOrGesture: ReactTestInstance | GestureType,
   eventList: Partial<GestureHandlerTestEvent<ExtractConfig<THandler>>>[] = []
 ): void {
-  const { emitEvent, handlerType, handlerTag } =
+  const { emitEvent, handlerType, handlerTag, enabled } =
     getHandlerData(componentOrGesture);
+
+  if (enabled === false) {
+    return;
+  }
 
   let _ = fillMissingStatesTransitions(
     eventList,
