@@ -158,62 +158,61 @@ Unlike method `close`, this method does not trigger any animation.
 
 ### Example:
 
-See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
+For a more in-depth presentation of differences between the new and the legacy implementations, see [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
 
 ```jsx
-import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import React from 'react';
+import { Text, StyleSheet } from 'react-native';
 
-const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: interpolate(
-          dragX.value,
-          [0, 50, 100, 101],
-          [-20, 0, 0, 1],
-          Extrapolation.CLAMP
-        ),
-      },
-    ],
-  }));
-  return (
-    <RectButton
-      style={{
-        flex: 1,
-        backgroundColor: '#497AFC',
-        justifyContent: 'center',
-      }}
-      onPress={() => swipeableRef.current!.close()}>
-      <Animated.Text>
-        Archive
-      </Animated.Text>
-    </RectButton>
-  );
-};
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, {
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
-const renderLeftActions = (
-  _progress: any,
-  translation: SharedValue<number>,
-  swipeableRef: React.RefObject<SwipeableMethods>
-) => <LeftAction dragX={translation} swipeableRef={swipeableRef} />;
+function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('showRightProgress:', prog.value);
+    console.log('appliedTranslation:', drag.value);
 
-function AppleStyleSwipeableRow({ children }: AppleStyleSwipeableRowProps) {
-  const swipeableRow = useRef<SwipeableMethods>(null);
+    return {
+      transform: [{ translateX: drag.value + 50 }],
+    };
+  });
 
   return (
-    <Swipeable
-      ref={swipeableRow}
-      friction={2}
-      enableTrackpadTwoFingerGesture
-      leftThreshold={30}
-      renderLeftActions={(_, progress) =>
-        renderLeftActions(_, progress, swipeableRow)
-      }>
-      <Text>Apple style swipeable</Text>
-    </Swipeable>
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.rightAction}>Text</Text>
+    </Reanimated.View>
   );
 }
+
+export default function Example() {
+  return (
+    <GestureHandlerRootView>
+      <ReanimatedSwipeable
+        containerStyle={styles.swipeable}
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderRightActions={RightAction}>
+        <Text>Swipe me!</Text>
+      </ReanimatedSwipeable>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  separator: {
+    width: '100%',
+    borderTopWidth: 1,
+  },
+  swipeable: {
+    height: 50,
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+});
 ```
