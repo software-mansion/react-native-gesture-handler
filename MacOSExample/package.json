@@ -15,6 +15,7 @@
     "@react-navigation/native-stack": "^6.9.12",
     "@react-navigation/stack": "^6.3.17",
     "@swmansion/icons": "^0.0.1",
+    "babel-plugin-module-resolver": "^5.0.2",
     "hoist-non-react-statics": "^3.3.2",
     "invariant": "^2.2.4",
     "patch-package": "^8.0.0",
