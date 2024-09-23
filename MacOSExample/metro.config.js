@@ -33,7 +33,7 @@ const config = {
       return acc;
     }, {}),
 
-    nodeModulesPaths: [path.resolve(__dirname, './node_modules')],
+    nodeModulesPaths: [path.resolve(__dirname, 'node_modules')],
   },
 
   transformer: {
