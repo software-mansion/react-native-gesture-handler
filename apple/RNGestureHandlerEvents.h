@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RNGHStylusData.h"
 #import "RNGHTouchEventType.h"
 #import "RNGHUIKit.h"
 #import "RNGestureHandlerState.h"
@@ -29,7 +30,8 @@
                            withTranslation:(CGPoint)translation
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
-                           withPointerType:(NSInteger)pointerType;
+                           withPointerType:(NSInteger)pointerType
+                            withStylusData:(NSDictionary *)stylusData;
 + (RNGestureHandlerEventExtraData *)forForce:(CGFloat)force
                                  forPosition:(CGPoint)position
                         withAbsolutePosition:(CGPoint)absolutePosition
