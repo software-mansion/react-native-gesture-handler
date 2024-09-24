@@ -34,8 +34,6 @@
 
 #if !TARGET_OS_OSX && !TARGET_OS_TV
 @property (atomic, readonly, strong) RNGHStylusData *stylusData;
-
-- (RNGHStylusData *)getStylusData;
 #endif
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
@@ -267,7 +265,9 @@
   [super reset];
   [_gestureHandler reset];
 
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   _stylusData = nil;
+#endif
 }
 
 - (void)updateHasCustomActivationCriteria
@@ -449,7 +449,8 @@
                                 withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
                             withNumberOfTouches:1
-                                withPointerType:RNGestureHandlerMouse];
+                                withPointerType:RNGestureHandlerMouse
+                                 withStylusData:nil];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
