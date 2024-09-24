@@ -57,7 +57,7 @@ function HeaderNative(props: HeaderProps) {
   });
 
   const collapsedCoefficient = 0.7;
-  const openCoefficient = 1;
+  const openCoefficient = Platform.OS === 'macos' ? 1 : 0.5;
   const padding = Platform.OS === 'macos' ? 10 : 0;
   const horizontalOffset = Platform.OS === 'macos' ? 50 : 0; // todo: relative to width
 
