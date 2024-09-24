@@ -457,13 +457,15 @@
 {
   RNBetterPanGestureRecognizer *panRecognizer = (RNBetterPanGestureRecognizer *)recognizer;
 
-  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
-                           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                withTranslation:[recognizer translationInView:recognizer.view.window]
-                                   withVelocity:[recognizer velocityInView:recognizer.view.window]
-                            withNumberOfTouches:recognizer.numberOfTouches
-                                withPointerType:_pointerType
-                                 withStylusData:[panRecognizer.stylusData toDictionary]];
+  return [RNGestureHandlerEventExtraData
+                    forPan:[recognizer locationInView:recognizer.view]
+      withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+           withTranslation:[recognizer translationInView:recognizer.view.window]
+              withVelocity:[recognizer velocityInView:recognizer.view.window]
+       withNumberOfTouches:recognizer.numberOfTouches
+           withPointerType:_pointerType
+            withStylusData:[panRecognizer.stylusData toDictionary]]; // In Objective-C calling method on nil returns
+                                                                     // nil, therefore this line does not crash.
 }
 #endif
 
