@@ -149,7 +149,7 @@
 #if TARGET_OS_OSX
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSRotationGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
+  return [RNGestureHandlerEventExtraData forRotation:-recognizer.rotation
                                      withAnchorPoint:[recognizer locationInView:recognizer.view]
                                         withVelocity:((RNBetterRotationRecognizer *)recognizer).velocity
                                  withNumberOfTouches:2
