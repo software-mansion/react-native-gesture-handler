@@ -73,7 +73,7 @@ function HeaderNative(props: HeaderProps) {
     );
     const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
 
-    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.16 : 0.5;
+    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.21 : 0.5;
 
     const signetCollapsedOffset = COLLAPSED_HEADER_HEIGHT * 0.25;
     const signetOpenOffset =
@@ -110,18 +110,25 @@ function HeaderNative(props: HeaderProps) {
       ]
     );
 
-    const widthCoefficient = Platform.OS === 'macos' ? 0.1 : 0.2;
+    const widthCoefficient = 0.2;
+    const widthBias = Platform.OS === 'macos' ? 0.2 : 0.4;
 
-    const width =
-      (size?.width ?? 0) * (expandFactor.value * widthCoefficient + 0.4);
+    const textOpenWidth =
+      (size?.width ?? 0) * (expandFactor.value * widthCoefficient + widthBias);
+    const textCollapsedWidth =
+      (size?.width ?? 0) * (expandFactor.value * widthCoefficient + widthBias);
 
-    const textCollapsedOffset = ((size?.width ?? 0) - width) * 0.5;
+    const textCollapsedOffset = ((size?.width ?? 0) - textCollapsedWidth) * 0.5;
     const textOpenOffset =
-      ((size?.width ?? 0) - width) * 0.5 + horizontalOffset;
+      ((size?.width ?? 0) - textOpenWidth) * 0.5 + horizontalOffset;
 
     return {
       position: 'absolute',
-      width: width,
+      width: interpolate(
+        expandFactor.value,
+        [0, 1],
+        [textCollapsedWidth, textOpenWidth]
+      ),
       height: height,
       bottom: interpolate(
         expandFactor.value,
