@@ -529,6 +529,7 @@ export default function createHandler<
             ? {
                 handlerType: name,
                 handlerTag: this.handlerTag,
+                enabled: this.props.enabled,
               }
             : {}),
           testID: this.props.testID ?? child.props.testID,
