@@ -6,11 +6,13 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { Platform, findNodeHandle } from 'react-native';
+import { Platform } from 'react-native';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
 import { isJestEnv } from '../../../utils';
+
+import findNodeHandle from '../../../findNodeHandle';
 
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
 import { AttachedGestureState, GestureDetectorState } from './types';
@@ -19,7 +21,7 @@ import { attachHandlers } from './attachHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
 import { useWebEventHandlers } from './utils';
-import { Wrap, AnimatedWrap } from './Wrap';
+import { Wrap, AnimatedWrap, MyWrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
 
@@ -135,6 +137,9 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     webEventHandlersRef
   );
 
+  const myRef = useRef(3);
+  setTimeout(() => console.log(myRef), 3000);
+
   const refHandler = useViewRefHandler(state, updateAttachedGestures);
 
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
@@ -182,6 +187,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       </AnimatedWrap>
     );
   } else {
-    return <Wrap ref={refHandler}>{props.children}</Wrap>;
+    return <MyWrap ref={refHandler}>{props.children}</MyWrap>;
   }
 };
