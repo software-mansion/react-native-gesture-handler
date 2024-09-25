@@ -102,8 +102,8 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Calculator', component: Calculator },
       { name: 'Chat Heads', component: ChatHeadsNewApi },
       { name: 'Drag and drop', component: DragNDrop },
-      { name: 'Swipeable', component: Swipeable },
-      { name: 'Pressable', component: Pressable },
+      { name: 'New Swipeable', component: Swipeable },
+      { name: 'New Pressable', component: Pressable },
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
       {
