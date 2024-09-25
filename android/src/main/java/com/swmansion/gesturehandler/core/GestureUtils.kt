@@ -45,6 +45,7 @@ object GestureUtils {
       event.getY(lastPointerIdx)
     }
   }
+
   fun coneToDeviation(angle: Double): Double =
     cos(Math.toRadians(angle / 2.0))
 }
