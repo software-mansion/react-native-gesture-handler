@@ -709,8 +709,5 @@ class GestureHandlerOrchestrator(
       state == GestureHandler.STATE_CANCELLED ||
         state == GestureHandler.STATE_FAILED ||
         state == GestureHandler.STATE_END
-
-    private fun isActive(state: Int) =
-      state == GestureHandler.STATE_ACTIVE
   }
 }
