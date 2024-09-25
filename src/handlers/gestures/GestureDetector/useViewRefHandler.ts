@@ -3,6 +3,7 @@ import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
 
 import { GestureDetectorState } from './types';
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 import findNodeHandle from '../../../findNodeHandle';
 
 declare const global: {
@@ -26,7 +27,9 @@ export function useViewRefHandler(
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
       if (state.previousViewTag === -1) {
-        state.previousViewTag = findNodeHandle(state.viewRef) as number;
+        state.previousViewTag = findNodeHandle(
+          Platform.OS === 'web' ? state.webRef : state.viewRef
+        ) as number;
       }
 
       // Pass true as `skipConfigUpdate`. Here we only want to trigger the eventual reattaching of handlers

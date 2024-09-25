@@ -5,7 +5,11 @@ export default function findNodeHandle(viewRef: Ref<any>) {
     return findNodeHandle(viewRef.viewTag);
   }
 
-  let element = viewRef;
+  if (viewRef instanceof HTMLElement) {
+    return viewRef;
+  }
+
+  let element = viewRef.current;
 
   while (element && element.style.display === 'contents') {
     element = element.firstChild as HTMLElement;

@@ -21,7 +21,7 @@ import { attachHandlers } from './attachHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
 import { useWebEventHandlers } from './utils';
-import { Wrap, AnimatedWrap, MyWrap } from './Wrap';
+import { Wrap, AnimatedWrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
 
@@ -117,6 +117,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   const state = useRef<GestureDetectorState>({
     firstRender: true,
     viewRef: null,
+    webRef: useRef(null),
     previousViewTag: -1,
     forceRebuildReanimatedEvent: false,
   }).current;
@@ -137,9 +138,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     webEventHandlersRef
   );
 
-  const myRef = useRef(3);
-  setTimeout(() => console.log(myRef), 3000);
-
   const refHandler = useViewRefHandler(state, updateAttachedGestures);
 
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
@@ -153,7 +151,9 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   useLayoutEffect(() => {
-    const viewTag = findNodeHandle(state.viewRef) as number;
+    const viewTag = findNodeHandle(
+      Platform.OS === 'web' ? state.webRef : state.viewRef
+    ) as number;
     preparedGesture.isMounted = true;
 
     attachHandlers({
@@ -182,11 +182,16 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     return (
       <AnimatedWrap
         ref={refHandler}
+        forwardedRef={state.webRef}
         onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
         {props.children}
       </AnimatedWrap>
     );
   } else {
-    return <MyWrap ref={refHandler}>{props.children}</MyWrap>;
+    return (
+      <Wrap ref={refHandler} forwardedRef={state.webRef}>
+        {props.children}
+      </Wrap>
+    );
   }
 };

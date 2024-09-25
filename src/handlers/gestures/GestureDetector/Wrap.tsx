@@ -1,9 +1,11 @@
 import React from 'react';
+import type { Ref } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
 import { tagMessage } from '../../../utils';
 import { Platform } from 'react-native';
 
 export class Wrap extends React.Component<{
+  forwardedRef: Ref<any>;
   onGestureHandlerEvent?: unknown;
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?: React.ReactNode;
@@ -25,7 +27,11 @@ export class Wrap extends React.Component<{
       );
 
       if (Platform.OS === 'web') {
-        return <div style={{ display: 'contents' }}>{clone}</div>;
+        return (
+          <div ref={this.props.forwardedRef} style={{ display: 'contents' }}>
+            {clone}
+          </div>
+        );
       }
       return clone;
     } catch (e) {
@@ -40,31 +46,3 @@ export class Wrap extends React.Component<{
 
 export const AnimatedWrap =
   Reanimated?.default?.createAnimatedComponent(Wrap) ?? Wrap;
-
-export const MyWrap = React.forwardRef(
-  (
-    props: {
-      onGestureHandlerEvent?: unknown;
-      // Implicit `children` prop has been removed in @types/react^18.0.0
-      children?: React.ReactNode;
-    },
-    ref
-  ) => {
-    const child: any = React.Children.only(props.children);
-
-    const clone = React.cloneElement(
-      child,
-      { collapsable: false, ref: ref },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      child.props.children
-    );
-
-    return Platform.OS === 'web' ? (
-      <div ref={ref} style={{ display: 'contents' }}>
-        {clone}
-      </div>
-    ) : (
-      clone
-    );
-  }
-);
