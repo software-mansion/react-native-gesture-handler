@@ -57,8 +57,8 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   }
 
   public unregisterListeners(): void {
-    this.view.addEventListener('keydown', this.keyDownCallback);
-    this.view.addEventListener('keyup', this.keyUpCallback);
+    this.view.removeEventListener('keydown', this.keyDownCallback);
+    this.view.removeEventListener('keyup', this.keyUpCallback);
   }
 
   protected mapEvent(
