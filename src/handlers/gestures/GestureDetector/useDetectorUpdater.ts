@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Platform } from 'react-native';
 import { GestureType } from '../gesture';
 import { ComposedGesture } from '../gestureComposition';
 
@@ -29,7 +30,9 @@ export function useDetectorUpdater(
     // skipConfigUpdate is used to prevent unnecessary updates when only checking if the view has changed
     (skipConfigUpdate?: boolean) => {
       // If the underlying view has changed we need to reattach handlers to the new view
-      const viewTag = findNodeHandle(state.viewRef) as number;
+      const viewTag = findNodeHandle(
+        Platform.OS === 'web' ? state.webRef : state.viewRef
+      ) as number;
       const didUnderlyingViewChange = viewTag !== state.previousViewTag;
 
       if (
