@@ -77,7 +77,6 @@ import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 
 import MacosDraggable from './src/simple/draggable';
-import MacosPinchableBox from './src/recipes/simpleRotate';
 import Tap from './src/simple/tap';
 import LongPressExample from './src/simple/longPress';
 import ManualExample from './src/simple/manual';
@@ -200,7 +199,6 @@ const EXAMPLES: ExamplesSection[] = [
     sectionTitle: 'Simple',
     data: [
       { name: 'Simple Draggable', component: MacosDraggable },
-      { name: 'Rotate', component: MacosPinchableBox },
       { name: 'Tap', component: Tap },
       { name: 'LongPress', component: LongPressExample },
       { name: 'Manual', component: ManualExample },
