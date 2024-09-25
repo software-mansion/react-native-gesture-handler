@@ -100,7 +100,7 @@ export class GestureHandlerWebDelegate
   private shouldDisableContextMenu(config: Config) {
     return (
       (config.enableContextMenu === undefined &&
-        this.gestureHandler.isButtonInConfig(MouseButton.RIGHT)) ||
+        this.gestureHandler?.isButtonInConfig(MouseButton.RIGHT)) ||
       config.enableContextMenu === false
     );
   }
