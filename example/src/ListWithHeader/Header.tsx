@@ -61,44 +61,6 @@ function HeaderNative(props: HeaderProps) {
   const padding = Platform.OS === 'macos' ? 10 : 0;
   const horizontalOffset = Platform.OS === 'macos' ? 50 : 0; // todo: relative to width
 
-  const signetStyle = useAnimatedStyle(() => {
-    const size = isMounted.value ? measure(containerRef) : undefined;
-    const imageSize = interpolate(
-      expandFactor.value,
-      [0, 1],
-      [
-        headerHeight.value * collapsedCoefficient,
-        headerHeight.value * openCoefficient - padding,
-      ]
-    );
-    const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
-
-    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.21 : 0.5;
-
-    const signetCollapsedOffset = COLLAPSED_HEADER_HEIGHT * 0.25;
-    const signetOpenOffset =
-      ((size?.width ?? 0) - imageSize) * signetOpenOffsetCoefficient +
-      horizontalOffset;
-
-    return {
-      position: 'absolute',
-      width: imageSize,
-      height: imageSize,
-      top: interpolate(
-        Math.sqrt(expandFactor.value),
-        [0, 1],
-        [clampedHeight * 0.1, 0 + padding / 2]
-      ),
-      left: interpolate(
-        expandFactor.value,
-        [0, 1],
-        [signetCollapsedOffset, signetOpenOffset]
-      ),
-      opacity: opacity.value,
-      transform: [{ translateY: (1 - opacity.value) * 20 }],
-    };
-  });
-
   const textStyle = useAnimatedStyle(() => {
     const size = isMounted.value ? measure(containerRef) : undefined;
     const height = interpolate(
@@ -139,6 +101,44 @@ function HeaderNative(props: HeaderProps) {
         expandFactor.value,
         [0, 1],
         [textCollapsedOffset, textOpenOffset]
+      ),
+      opacity: opacity.value,
+      transform: [{ translateY: (1 - opacity.value) * 20 }],
+    };
+  });
+
+  const signetStyle = useAnimatedStyle(() => {
+    const size = isMounted.value ? measure(containerRef) : undefined;
+    const imageSize = interpolate(
+      expandFactor.value,
+      [0, 1],
+      [
+        headerHeight.value * collapsedCoefficient,
+        headerHeight.value * openCoefficient - padding,
+      ]
+    );
+    const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
+
+    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.21 : 0.5;
+
+    const signetCollapsedOffset = COLLAPSED_HEADER_HEIGHT * 0.25;
+    const signetOpenOffset =
+      ((size?.width ?? 0) - imageSize) * signetOpenOffsetCoefficient +
+      horizontalOffset;
+
+    return {
+      position: 'absolute',
+      width: imageSize,
+      height: imageSize,
+      top: interpolate(
+        Math.sqrt(expandFactor.value),
+        [0, 1],
+        [clampedHeight * 0.1, 0 + padding / 2]
+      ),
+      left: interpolate(
+        expandFactor.value,
+        [0, 1],
+        [signetCollapsedOffset, signetOpenOffset]
       ),
       opacity: opacity.value,
       transform: [{ translateY: (1 - opacity.value) * 20 }],
