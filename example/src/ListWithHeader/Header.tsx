@@ -73,11 +73,14 @@ function HeaderNative(props: HeaderProps) {
     );
     const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
 
-    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.21 : 0.5;
+    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.32 : 0.5;
+    const signetOpenOffsetBias =
+      Platform.OS === 'macos' ? 15 - (size?.height ?? 0) : 0;
 
     const signetCollapsedOffset = COLLAPSED_HEADER_HEIGHT * 0.25;
     const signetOpenOffset =
       ((size?.width ?? 0) - imageSize) * signetOpenOffsetCoefficient +
+      signetOpenOffsetBias +
       horizontalOffset;
 
     return {
