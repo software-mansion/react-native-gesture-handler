@@ -3,7 +3,7 @@ const LEFT = 2;
 const UP = 4;
 const DOWN = 8;
 
-// public interface
+// Public interface
 export const Directions = {
   RIGHT: RIGHT,
   LEFT: LEFT,
@@ -11,7 +11,7 @@ export const Directions = {
   DOWN: DOWN,
 } as const;
 
-// internal interface
+// Internal interface
 export const DiagonalDirections = {
   UP_RIGHT: UP | RIGHT,
   DOWN_RIGHT: DOWN | RIGHT,

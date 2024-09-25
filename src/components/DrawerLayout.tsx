@@ -30,14 +30,12 @@ import {
   ActiveCursor,
   MouseButton,
 } from '../handlers/gestureHandlerCommon';
-import {
-  PanGestureHandler,
+import { PanGestureHandler } from '../handlers/PanGestureHandler';
+import type {
   PanGestureHandlerEventPayload,
-} from '../handlers/PanGestureHandler';
-import {
-  TapGestureHandler,
   TapGestureHandlerEventPayload,
-} from '../handlers/TapGestureHandler';
+} from '../handlers/GestureHandlerEventPayload';
+import { TapGestureHandler } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
@@ -156,7 +154,7 @@ export interface DrawerLayoutProps {
 
   onGestureRef?: (ref: PanGestureHandler) => void;
 
-  // implicit `children` prop has been removed in @types/react^18.0.0
+  // Implicit `children` prop has been removed in @types/react^18.0.0
   children?:
     | React.ReactNode
     | ((openValue?: AnimatedInterpolation) => React.ReactNode);
@@ -521,7 +519,7 @@ export default class DrawerLayout extends Component<
         this.emitStateChanged(IDLE, willShow);
         this.setState({ drawerOpened: willShow });
         if (this.state.drawerState !== DRAGGING) {
-          // it's possilbe that user started drag while the drawer
+          // It's possilbe that user started drag while the drawer
           // was settling, don't override state in this case
           this.setState({ drawerState: IDLE });
         }
@@ -603,7 +601,7 @@ export default class DrawerLayout extends Component<
     const drawerSlide = drawerType !== 'back';
     const containerSlide = drawerType !== 'front';
 
-    // we rely on row and row-reverse flex directions to position the drawer
+    // We rely on row and row-reverse flex directions to position the drawer
     // properly. Apparently for RTL these are flipped which requires us to use
     // the opposite setting for the drawer to appear from left or right
     // according to the drawerPosition prop

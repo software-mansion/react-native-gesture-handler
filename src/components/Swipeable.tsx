@@ -20,13 +20,13 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureHandler,
-  PanGestureHandlerEventPayload,
   PanGestureHandlerProps,
 } from '../handlers/PanGestureHandler';
 import {
-  TapGestureHandler,
+  PanGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
-} from '../handlers/TapGestureHandler';
+} from '../handlers/GestureHandlerEventPayload';
+import { TapGestureHandler } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 
 const DRAG_TOSS = 0.05;
@@ -222,6 +222,12 @@ type SwipeableState = {
   rowWidth?: number;
 };
 
+/**
+ * @deprecated use Reanimated version of Swipeable instead
+ *
+ * This component allows for implementing swipeable rows or similar interaction.
+ */
+
 export default class Swipeable extends Component<
   SwipeableProps,
   SwipeableState
@@ -393,12 +399,12 @@ export default class Swipeable extends Component<
         toValue = -rightWidth;
       }
     } else if (rowState === 1) {
-      // swiped to left
+      // Swiped to left
       if (translationX > -leftThreshold) {
         toValue = leftWidth;
       }
     } else {
-      // swiped to right
+      // Swiped to right
       if (translationX < rightThreshold) {
         toValue = -rightWidth;
       }
@@ -509,7 +515,7 @@ export default class Swipeable extends Component<
       <Animated.View
         style={[
           styles.leftActions,
-          // all those and below parameters can have ! since they are all
+          // All those and below parameters can have ! since they are all
           // asigned in constructor in `updateAnimatedEvent` but TS cannot spot
           // it for some reason
           { transform: [{ translateX: this.leftActionTranslate! }] },

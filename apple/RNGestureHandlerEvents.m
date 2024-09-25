@@ -63,8 +63,9 @@
                               withVelocity:(CGPoint)velocity
                        withNumberOfTouches:(NSUInteger)numberOfTouches
                            withPointerType:(NSInteger)pointerType
+                            withStylusData:(NSDictionary *)stylusData
 {
-  return [[RNGestureHandlerEventExtraData alloc] initWithData:@{
+  NSMutableDictionary *data = [@{
     @"x" : @(position.x),
     @"y" : @(position.y),
     @"absoluteX" : @(absolutePosition.x),
@@ -74,8 +75,15 @@
     @"velocityX" : SAFE_VELOCITY(velocity.x),
     @"velocityY" : SAFE_VELOCITY(velocity.y),
     @"numberOfPointers" : @(numberOfTouches),
-    @"pointerType" : @(pointerType)
-  }];
+    @"pointerType" : @(pointerType),
+  } mutableCopy];
+
+  // Add the stylusData to the dictionary only if necessary
+  if (stylusData != nil) {
+    data[@"stylusData"] = stylusData;
+  }
+
+  return [[RNGestureHandlerEventExtraData alloc] initWithData:data];
 }
 
 + (RNGestureHandlerEventExtraData *)forForce:(CGFloat)force

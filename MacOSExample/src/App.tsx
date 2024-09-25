@@ -1,22 +1,22 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  SectionList,
-  Platform,
-  Pressable,
-} from 'react-native';
+import { Text, View, StyleSheet, SectionList, Platform } from 'react-native';
 import {
   createStackNavigator,
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  RectButton,
+} from 'react-native-gesture-handler';
 
 import Draggable from './basic/draggable';
 import PinchableBox from './recipes/scaleAndRotate';
 import Tap from './basic/tap';
+import LongPressExample from './basic/longPress';
+import ManualExample from './basic/manual';
+import HoverExample from './basic/hover';
+import FlingExample from './basic/fling';
 
 interface Example {
   name: string;
@@ -35,6 +35,10 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Draggable', component: Draggable },
       { name: 'Pinch & rotate', component: PinchableBox },
       { name: 'Tap', component: Tap },
+      { name: 'LongPress', component: LongPressExample },
+      { name: 'Manual', component: ManualExample },
+      { name: 'Hover', component: HoverExample },
+      { name: 'Fling', component: FlingExample },
     ],
   },
 ];
@@ -100,9 +104,9 @@ interface MainScreenItemProps {
 
 function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
-    <Pressable style={[styles.button]} onPress={() => onPressItem(name)}>
+    <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
-    </Pressable>
+    </RectButton>
   );
 }
 

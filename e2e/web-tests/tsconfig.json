@@ -1,7 +1,7 @@
 {
   // "extends": "expo/tsconfig.base",
   "extends": "../../tsconfig.json",
-  "compilerOptions": {    
+  "compilerOptions": {
     // "strict": true,
     "baseUrl": ".",
     "paths": {
@@ -15,7 +15,7 @@
       "react-native-gesture-handler/jest-utils": [
         "../../src/jestUtils/index.ts"
       ],
-      "react": ["./node_modules/@types/react"],
+      "react": ["./node_modules/@types/react"]
     }
   },
   "include": ["./tests/*.ts", "./components/*.tsx", "./App.tsx"]

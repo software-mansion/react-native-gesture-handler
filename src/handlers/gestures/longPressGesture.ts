@@ -1,8 +1,6 @@
 import { BaseGesture, BaseGestureConfig } from './gesture';
-import {
-  LongPressGestureConfig,
-  LongPressGestureHandlerEventPayload,
-} from '../LongPressGestureHandler';
+import { LongPressGestureConfig } from '../LongPressGestureHandler';
+import type { LongPressGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPayload> {
   public config: BaseGestureConfig & LongPressGestureConfig = {};
@@ -31,6 +29,15 @@ export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPa
    */
   maxDistance(distance: number) {
     this.config.maxDist = distance;
+    return this;
+  }
+
+  /**
+   * Determine exact number of points required to handle the long press gesture.
+   * @param pointers
+   */
+  numberOfPointers(pointers: number) {
+    this.config.numberOfPointers = pointers;
     return this;
   }
 }

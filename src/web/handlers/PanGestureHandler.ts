@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent, Config, StylusData } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -51,6 +51,8 @@ export default class PanGestureHandler extends GestureHandler {
   private offsetY = 0;
   private lastX = 0;
   private lastY = 0;
+
+  private stylusData: StylusData | undefined;
 
   private activateAfterLongPress = 0;
   private activationTimeout = 0;
@@ -196,6 +198,7 @@ export default class PanGestureHandler extends GestureHandler {
       translationY: isNaN(translationY) ? 0 : translationY,
       velocityX: this.velocityX,
       velocityY: this.velocityY,
+      stylusData: this.stylusData,
     };
   }
 
@@ -210,13 +213,15 @@ export default class PanGestureHandler extends GestureHandler {
     clearTimeout(this.activationTimeout);
   }
 
-  //EventsHandling
+  // Events Handling
   protected onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
       return;
     }
 
     this.tracker.addToTracker(event);
+    this.stylusData = event.stylusData;
+
     super.onPointerDown(event);
 
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
@@ -259,6 +264,8 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
+    this.stylusData = event.stylusData;
+
     super.onPointerUp(event);
     if (this.currentState === State.ACTIVE) {
       const lastCoords = this.tracker.getAbsoluteCoordsAverage();
@@ -267,6 +274,10 @@ export default class PanGestureHandler extends GestureHandler {
     }
 
     this.tracker.removeFromTracker(event.pointerId);
+
+    if (this.tracker.getTrackedPointersCount() === 0) {
+      this.clearActivationTimeout();
+    }
 
     if (this.currentState === State.ACTIVE) {
       this.end();
@@ -302,6 +313,7 @@ export default class PanGestureHandler extends GestureHandler {
 
   protected onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
+    this.stylusData = event.stylusData;
 
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
     this.lastX = lastCoords.x;
@@ -322,6 +334,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
 
     this.tracker.track(event);
+    this.stylusData = event.stylusData;
 
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
     this.lastX = lastCoords.x;

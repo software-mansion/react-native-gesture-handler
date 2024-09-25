@@ -23,7 +23,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     override fun onScale(detector: ScaleGestureDetector): Boolean {
       val prevScaleFactor: Double = scale
       scale *= detector.scaleFactor.toDouble()
-      val delta = detector.timeDelta
+      val delta = detector.timeDeltaSeconds
+
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }
@@ -70,14 +71,13 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       this.focalPointX = point.x
       this.focalPointY = point.y
     }
-    var activePointers = sourceEvent.pointerCount
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      activePointers -= 1
-    }
-    if (state == STATE_ACTIVE && activePointers < 2) {
-      end()
-    } else if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
-      fail()
+
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+      if (state == STATE_ACTIVE) {
+        end()
+      } else {
+        fail()
+      }
     }
   }
 

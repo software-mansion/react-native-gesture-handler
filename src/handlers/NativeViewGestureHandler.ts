@@ -1,3 +1,4 @@
+import type { NativeViewGestureHandlerPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
@@ -28,13 +29,6 @@ export interface NativeViewGestureConfig {
 export interface NativeViewGestureHandlerProps
   extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload>,
     NativeViewGestureConfig {}
-
-export type NativeViewGestureHandlerPayload = {
-  /**
-   * True if gesture was performed inside of containing view, false otherwise.
-   */
-  pointerInside: boolean;
-};
 
 export const nativeViewProps = [
   ...baseGestureHandlerProps,

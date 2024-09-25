@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './src/release_tests/doubleDraggable';
+import GesturizedPressable from './src/release_tests/gesturizedPressable';
 import { ComboWithGHScroll } from './src/release_tests/combo';
 import {
   TouchablesIndex,
@@ -33,8 +34,10 @@ import NestedFling from './src/release_tests/nestedFling';
 import MouseButtons from './src/release_tests/mouseButtons';
 import ContextMenu from './src/release_tests/contextMenu';
 import NestedTouchables from './src/release_tests/nestedTouchables';
+import NestedPressables from './src/release_tests/nestedPressables';
 import NestedButtons from './src/release_tests/nestedButtons';
 import PointerType from './src/release_tests/pointerType';
+import SwipeableReanimation from './src/release_tests/swipeableReanimation';
 import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
 import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
@@ -49,6 +52,8 @@ import HorizontalDrawer from './src/basic/horizontalDrawer';
 import PagerAndDrawer from './src/basic/pagerAndDrawer';
 import ForceTouch from './src/basic/forcetouch';
 import Fling from './src/basic/fling';
+import WebStylesResetExample from './src/release_tests/webStylesReset';
+import StylusData from './src/release_tests/StylusData';
 
 import Camera from './src/new_api/camera';
 import Transformations from './src/new_api/transformations';
@@ -63,11 +68,14 @@ import Hover from './src/new_api/hover';
 import HoverableIcons from './src/new_api/hoverable_icons';
 import VelocityTest from './src/new_api/velocityTest';
 import Swipeable from 'src/new_api/swipeable';
+import Pressable from 'src/new_api/pressable';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 import { COLORS } from './src/common';
+
+import { Icon } from '@swmansion/icons';
 
 interface Example {
   name: string;
@@ -95,6 +103,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Chat Heads', component: ChatHeadsNewApi },
       { name: 'Drag and drop', component: DragNDrop },
       { name: 'Swipeable', component: Swipeable },
+      { name: 'Pressable', component: Pressable },
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
       {
@@ -151,6 +160,10 @@ const EXAMPLES: ExamplesSection[] = [
         component: NestedTouchables as React.ComponentType,
       },
       {
+        name: 'Nested Pressables - issue #2980',
+        component: NestedPressables as React.ComponentType,
+      },
+      {
         name: 'Nested buttons (sound & ripple on Android)',
         component: NestedButtons,
       },
@@ -163,7 +176,11 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'MouseButtons', component: MouseButtons },
       { name: 'ContextMenu (web only)', component: ContextMenu },
       { name: 'PointerType', component: PointerType },
+      { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
+      { name: 'Gesturized pressable', component: GesturizedPressable },
+      { name: 'Web styles reset', component: WebStylesResetExample },
+      { name: 'Stylus data', component: StylusData },
     ],
   },
 ];
@@ -305,6 +322,7 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text>{name}</Text>
+      <Icon name="chevron-small-right" size={24} color="#bbb" />
     </RectButton>
   );
 }
@@ -338,8 +356,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   buttonContent: {
     flex: 1,

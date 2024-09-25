@@ -67,6 +67,7 @@
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  [self reset];
 }
 
 #if TARGET_OS_OSX
@@ -148,7 +149,7 @@
 #if TARGET_OS_OSX
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSRotationGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forRotation:recognizer.rotation
+  return [RNGestureHandlerEventExtraData forRotation:-recognizer.rotation
                                      withAnchorPoint:[recognizer locationInView:recognizer.view]
                                         withVelocity:((RNBetterRotationRecognizer *)recognizer).velocity
                                  withNumberOfTouches:2

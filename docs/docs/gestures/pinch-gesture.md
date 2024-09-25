@@ -27,9 +27,9 @@ import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestur
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
-import BaseContinousEventConfig from './\_shared/base-continous-gesture-config.md';
+import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
-import BaseContinousEventCallbacks from './\_shared/base-continous-gesture-callbacks.md';
+import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
 A continuous gesture that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
 The gesture [activates](/docs/fundamentals/states-events#active) when fingers are placed on the screen and change their position.
@@ -68,12 +68,12 @@ function App() {
 ## Config
 
 <BaseEventConfig />
-<BaseContinousEventConfig />
+<BaseContinuousEventConfig />
 
 ## Callbacks
 
 <BaseEventCallbacks />
-<BaseContinousEventCallbacks />
+<BaseContinuousEventCallbacks />
 
 ## Event data
 
@@ -85,7 +85,7 @@ The scale factor relative to the points of the two touches in screen coordinates
 
 ### `velocity`
 
-Velocity of the pan gesture the current moment. The value is expressed in point units per second.
+Velocity of the pan gesture the current moment. The value is expressed in scale factor per second.
 
 ### `focalX`
 

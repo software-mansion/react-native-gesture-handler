@@ -4,15 +4,12 @@ import { AdaptedEvent, EventTypes, Point } from '../interfaces';
 import {
   PointerTypeMapping,
   calculateViewScale,
+  tryExtractStylusData,
   isPointerInBounds,
 } from '../utils';
 import { PointerType } from '../../PointerType';
 
 const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
-const PointerTypes = {
-  Touch: 'touch',
-  Stylus: 'pen',
-};
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
@@ -35,9 +32,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   private pointerDownCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
     if (!isPointerInBounds(this.view, { x: event.clientX, y: event.clientY })) {
       return;
     }
@@ -61,10 +55,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerUpCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     // When we call reset on gesture handlers, it also resets their event managers
     // In some handlers (like RotationGestureHandler) reset is called before all pointers leave view
     // This means, that activePointersCounter will be set to 0, while there are still remaining pointers on view
@@ -92,21 +82,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerMoveCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
-    // Stylus triggers `pointermove` event when it detects changes in pressure. Since it is very sensitive to those changes,
-    // it constantly sends events, even though there was no change in position. To fix that we check whether
-    // pointer has actually moved and if not, we do not send event.
-    if (
-      event.pointerType === PointerTypes.Stylus &&
-      event.x === this.lastPosition.x &&
-      event.y === this.lastPosition.y
-    ) {
-      return;
-    }
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
     const target = event.target as HTMLElement;
 
@@ -161,10 +136,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerCancelCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.CANCEL);
 
     this.onPointerCancel(adaptedEvent);
@@ -174,20 +145,12 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerEnterCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.ENTER);
 
     this.onPointerMoveOver(adaptedEvent);
   };
 
   private pointerLeaveCallback = (event: PointerEvent) => {
-    if (event.pointerType === PointerTypes.Touch) {
-      return;
-    }
-
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.LEAVE);
 
     this.onPointerMoveOut(adaptedEvent);
@@ -197,8 +160,8 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.CANCEL);
 
     if (this.trackedPointers.has(adaptedEvent.pointerId)) {
-      // in some cases the `pointerup` event is not fired, but `lostpointercapture` is
-      // we simulate the `pointercancel` event here to make sure the gesture handler stops tracking it
+      // In some cases the `pointerup` event is not fired, but `lostpointercapture` is.
+      // Here we simulate the `pointercancel` event to make sure the gesture handler stops tracking it.
       this.onPointerCancel(adaptedEvent);
 
       this.activePointersCounter = 0;
@@ -252,6 +215,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
         PointerTypeMapping.get(event.pointerType) ?? PointerType.OTHER,
       button: this.mouseButtonsMapper.get(event.button),
       time: event.timeStamp,
+      stylusData: tryExtractStylusData(event),
     };
   }
 

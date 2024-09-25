@@ -5,11 +5,14 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
 
 class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   private var handler: Handler? = null
   private var finishRunnable = Runnable { finish() }
+  var stylusData: StylusData = StylusData()
+    private set
 
   private infix fun isAncestorOf(other: GestureHandler<*>): Boolean {
     var current: View? = other.view
@@ -70,6 +73,10 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
       return true
     }
 
+    if (handler is RNGestureHandlerRootHelper.RootViewGestureHandler) {
+      return true
+    }
+
     return super.shouldRecognizeSimultaneously(handler)
   }
 
@@ -98,12 +105,21 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
         finish()
       }
 
+      this.state == STATE_ACTIVE && event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS -> {
+        stylusData = StylusData.fromEvent(event)
+      }
+
       this.state == STATE_UNDETERMINED &&
         (event.action == MotionEvent.ACTION_HOVER_MOVE || event.action == MotionEvent.ACTION_HOVER_ENTER) -> {
         begin()
         activate()
       }
     }
+  }
+
+  override fun onReset() {
+    super.onReset()
+    stylusData = StylusData()
   }
 
   private fun finish() {

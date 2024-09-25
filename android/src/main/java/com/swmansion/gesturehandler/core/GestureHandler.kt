@@ -397,19 +397,19 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  private fun dispatchTouchDownEvent(event: MotionEvent) {
+  private fun dispatchTouchDownEvent(event: MotionEvent, sourceEvent: MotionEvent) {
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_DOWN
     val pointerId = event.getPointerId(event.actionIndex)
-    val offsetX = event.rawX - event.x
-    val offsetY = event.rawY - event.y
+    val offsetX = sourceEvent.rawX - sourceEvent.x
+    val offsetY = sourceEvent.rawY - sourceEvent.y
 
     trackedPointers[pointerId] = PointerData(
       pointerId,
       event.getX(event.actionIndex),
       event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX - windowOffset[0],
-      event.getY(event.actionIndex) + offsetY - windowOffset[1],
+      sourceEvent.getX(event.actionIndex) + offsetX - windowOffset[0],
+      sourceEvent.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     trackedPointersCount++
     addChangedPointer(trackedPointers[pointerId]!!)
@@ -418,20 +418,20 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     dispatchTouchEvent()
   }
 
-  private fun dispatchTouchUpEvent(event: MotionEvent) {
+  private fun dispatchTouchUpEvent(event: MotionEvent, sourceEvent: MotionEvent) {
     extractAllPointersData()
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_UP
     val pointerId = event.getPointerId(event.actionIndex)
-    val offsetX = event.rawX - event.x
-    val offsetY = event.rawY - event.y
+    val offsetX = sourceEvent.rawX - sourceEvent.x
+    val offsetY = sourceEvent.rawY - sourceEvent.y
 
     trackedPointers[pointerId] = PointerData(
       pointerId,
       event.getX(event.actionIndex),
       event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX - windowOffset[0],
-      event.getY(event.actionIndex) + offsetY - windowOffset[1],
+      sourceEvent.getX(event.actionIndex) + offsetX - windowOffset[0],
+      sourceEvent.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null
@@ -440,11 +440,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     dispatchTouchEvent()
   }
 
-  private fun dispatchTouchMoveEvent(event: MotionEvent) {
+  private fun dispatchTouchMoveEvent(event: MotionEvent, sourceEvent: MotionEvent) {
     changedTouchesPayload = null
     touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_MOVE
-    val offsetX = event.rawX - event.x
-    val offsetY = event.rawY - event.y
+    val offsetX = sourceEvent.rawX - sourceEvent.x
+    val offsetY = sourceEvent.rawY - sourceEvent.y
     var pointersAdded = 0
 
     for (i in 0 until event.pointerCount) {
@@ -454,8 +454,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
         pointer.x = event.getX(i)
         pointer.y = event.getY(i)
-        pointer.absoluteX = event.getX(i) + offsetX - windowOffset[0]
-        pointer.absoluteY = event.getY(i) + offsetY - windowOffset[1]
+        pointer.absoluteX = sourceEvent.getX(i) + offsetX - windowOffset[0]
+        pointer.absoluteY = sourceEvent.getY(i) + offsetY - windowOffset[1]
 
         addChangedPointer(pointer)
         pointersAdded++
@@ -471,15 +471,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  fun updatePointerData(event: MotionEvent) {
+  fun updatePointerData(event: MotionEvent, sourceEvent: MotionEvent) {
     if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-      dispatchTouchDownEvent(event)
-      dispatchTouchMoveEvent(event)
+      dispatchTouchDownEvent(event, sourceEvent)
+      dispatchTouchMoveEvent(event, sourceEvent)
     } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-      dispatchTouchMoveEvent(event)
-      dispatchTouchUpEvent(event)
+      dispatchTouchMoveEvent(event, sourceEvent)
+      dispatchTouchUpEvent(event, sourceEvent)
     } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-      dispatchTouchMoveEvent(event)
+      dispatchTouchMoveEvent(event, sourceEvent)
     }
   }
 

@@ -1,5 +1,3 @@
-import { FlingGestureHandlerEventPayload } from '../FlingGestureHandler';
-import { ForceTouchGestureHandlerEventPayload } from '../ForceTouchGestureHandler';
 import {
   HitSlop,
   CommonGestureConfig,
@@ -9,14 +7,19 @@ import {
   ActiveCursor,
   MouseButton,
 } from '../gestureHandlerCommon';
-import { getNextHandlerTag } from '../handlersRegistry';
+import { getNextHandlerTag } from '../getNextHandlerTag';
 import { GestureStateManagerType } from './gestureStateManager';
-import { LongPressGestureHandlerEventPayload } from '../LongPressGestureHandler';
-import { PanGestureHandlerEventPayload } from '../PanGestureHandler';
-import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
-import { RotationGestureHandlerEventPayload } from '../RotationGestureHandler';
-import { TapGestureHandlerEventPayload } from '../TapGestureHandler';
-import { NativeViewGestureHandlerPayload } from '../NativeViewGestureHandler';
+import type {
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
+  HoverGestureHandlerEventPayload,
+} from '../GestureHandlerEventPayload';
 import { isRemoteDebuggingEnabled } from '../../utils';
 
 export type GestureType =
@@ -29,13 +32,14 @@ export type GestureType =
   | BaseGesture<PinchGestureHandlerEventPayload>
   | BaseGesture<FlingGestureHandlerEventPayload>
   | BaseGesture<ForceTouchGestureHandlerEventPayload>
-  | BaseGesture<NativeViewGestureHandlerPayload>;
+  | BaseGesture<NativeViewGestureHandlerPayload>
+  | BaseGesture<HoverGestureHandlerEventPayload>;
 
 export type GestureRef =
   | number
   | GestureType
   | React.RefObject<GestureType | undefined>
-  | React.RefObject<React.ComponentType | undefined>; // allow adding a ref to a gesture handler
+  | React.RefObject<React.ComponentType | undefined>; // Allow adding a ref to a gesture handler
 export interface BaseGestureConfig
   extends CommonGestureConfig,
     Record<string, unknown> {
@@ -166,7 +170,7 @@ export abstract class BaseGesture<
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   protected isWorklet(callback: Function) {
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     return callback.__workletHash !== undefined;
   }
 
@@ -203,7 +207,7 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onEnd = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
     return this;
   }
@@ -219,7 +223,7 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onFinalize = callback;
-    //@ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
+    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
     this.handlers.isWorklet[CALLBACK_TYPE.FINALIZE] = this.isWorklet(callback);
     return this;
   }
@@ -416,8 +420,8 @@ export abstract class BaseGesture<
   prepare() {}
 
   get shouldUseReanimated(): boolean {
-    // use Reanimated when runOnJS isn't set explicitly,
-    // and all defined callbacks are worklets,
+    // Use Reanimated when runOnJS isn't set explicitly,
+    // all defined callbacks are worklets
     // and remote debugging is disabled
     return (
       this.config.runOnJS !== true &&

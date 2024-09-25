@@ -1,3 +1,4 @@
+import { LongPressGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
@@ -7,47 +8,8 @@ import {
 export const longPressGestureHandlerProps = [
   'minDurationMs',
   'maxDist',
+  'numberOfPointers',
 ] as const;
-
-export type LongPressGestureHandlerEventPayload = {
-  /**
-   * X coordinate, expressed in points, of the current position of the pointer
-   * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the view attached to the handler.
-   */
-  x: number;
-
-  /**
-   * Y coordinate, expressed in points, of the current position of the pointer
-   * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the view attached to the handler.
-   */
-  y: number;
-
-  /**
-   * X coordinate, expressed in points, of the current position of the pointer
-   * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the window. It is recommended to use `absoluteX` instead of
-   * `x` in cases when the view attached to the handler can be transformed as an
-   * effect of the gesture.
-   */
-  absoluteX: number;
-
-  /**
-   * Y coordinate, expressed in points, of the current position of the pointer
-   * (finger or a leading pointer when there are multiple fingers placed)
-   * relative to the window. It is recommended to use `absoluteY` instead of
-   * `y` in cases when the view attached to the handler can be transformed as an
-   * effect of the gesture.
-   */
-  absoluteY: number;
-
-  /**
-   * Duration of the long press (time since the start of the event), expressed
-   * in milliseconds.
-   */
-  duration: number;
-};
 
 export interface LongPressGestureConfig {
   /**
@@ -63,6 +25,11 @@ export interface LongPressGestureConfig {
    * will fail to recognize the gesture. The default value is 10.
    */
   maxDist?: number;
+
+  /**
+   * Determine exact number of points required to handle the long press gesture.
+   */
+  numberOfPointers?: number;
 }
 
 export interface LongPressGestureHandlerProps

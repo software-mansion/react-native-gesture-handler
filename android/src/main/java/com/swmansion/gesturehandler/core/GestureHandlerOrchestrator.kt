@@ -270,7 +270,7 @@ class GestureHandlerOrchestrator(
     // the first `onTouchesDown` event after the handler processes it and changes state
     // to `BEGAN`.
     if (handler.needsPointerData && handler.state != 0) {
-      handler.updatePointerData(event)
+      handler.updatePointerData(event, sourceEvent)
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
@@ -292,7 +292,7 @@ class GestureHandlerOrchestrator(
       }
 
       if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event)
+        handler.updatePointerData(event, sourceEvent)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
@@ -615,7 +615,7 @@ class GestureHandlerOrchestrator(
     private val matrixTransformCoords = FloatArray(2)
     private val inverseMatrix = Matrix()
     private val tempCoords = FloatArray(2)
-    private val handlersComparator = Comparator<GestureHandler<*>?> { a, b ->
+    private val handlersComparator = Comparator<GestureHandler<*>> { a, b ->
       return@Comparator if (a.isActive && b.isActive || a.isAwaiting && b.isAwaiting) {
         // both A and B are either active or awaiting activation, in which case we prefer one that
         // has activated (or turned into "awaiting" state) earlier

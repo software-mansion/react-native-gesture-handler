@@ -115,6 +115,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 {
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  [self reset];
 }
 
 - (void)handleForceWithTouches:(NSSet<RNGHUITouch *> *)touches
@@ -184,6 +185,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
+  RCTLogWarn(@"ForceTouchHandler is not supported on macOS");
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
   }

@@ -60,6 +60,7 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  [self reset];
 }
 
 - (void)triggerAction
@@ -86,6 +87,154 @@
 
 @end
 
+#else
+
+@interface RNBetterSwipeGestureRecognizer : NSGestureRecognizer {
+  dispatch_block_t failFlingAction;
+  int maxDuration;
+  int minVelocity;
+  double defaultAlignmentCone;
+  double axialDeviationCosine;
+  double diagonalDeviationCosine;
+}
+
+@property (atomic, assign) RNGestureHandlerDirection direction;
+@property (atomic, assign) int numberOfTouchesRequired;
+
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
+
+@end
+
+@implementation RNBetterSwipeGestureRecognizer {
+  __weak RNGestureHandler *_gestureHandler;
+
+  NSPoint startPosition;
+  double startTime;
+}
+
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
+{
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
+    _gestureHandler = gestureHandler;
+
+    maxDuration = 1.0;
+    minVelocity = 700;
+
+    defaultAlignmentCone = 30;
+    axialDeviationCosine = [self coneToDeviation:defaultAlignmentCone];
+    diagonalDeviationCosine = [self coneToDeviation:(90 - defaultAlignmentCone)];
+  }
+  return self;
+}
+
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
+{
+  [_gestureHandler handleGesture:self];
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  [super mouseDown:event];
+
+  startPosition = [self locationInView:self.view];
+  startTime = CACurrentMediaTime();
+
+  self.state = NSGestureRecognizerStatePossible;
+
+  __weak typeof(self) weakSelf = self;
+
+  failFlingAction = dispatch_block_create(0, ^{
+    __strong typeof(self) strongSelf = weakSelf;
+
+    if (strongSelf) {
+      strongSelf.state = NSGestureRecognizerStateFailed;
+    }
+  });
+
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(maxDuration * NSEC_PER_SEC)),
+      dispatch_get_main_queue(),
+      failFlingAction);
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  [super mouseDragged:event];
+
+  NSPoint currentPosition = [self locationInView:self.view];
+  double currentTime = CACurrentMediaTime();
+
+  NSPoint distance;
+  distance.x = currentPosition.x - startPosition.x;
+  distance.y = startPosition.y - currentPosition.y;
+
+  double timeDelta = currentTime - startTime;
+
+  Vector *velocityVector = [Vector fromVelocityX:(distance.x / timeDelta) withVelocityY:(distance.y / timeDelta)];
+
+  [self tryActivate:velocityVector];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+
+  dispatch_block_cancel(failFlingAction);
+
+  self.state =
+      self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
+}
+
+- (void)tryActivate:(Vector *)velocityVector
+{
+  bool isAligned = NO;
+
+  for (int i = 0; i < directionsSize; ++i) {
+    if ([self getAlignment:axialDirections[i]
+            withMinimalAlignmentCosine:axialDeviationCosine
+                    withVelocityVector:velocityVector]) {
+      isAligned = YES;
+      break;
+    }
+  }
+
+  if (!isAligned) {
+    for (int i = 0; i < directionsSize; ++i) {
+      if ([self getAlignment:diagonalDirections[i]
+              withMinimalAlignmentCosine:diagonalDeviationCosine
+                      withVelocityVector:velocityVector]) {
+        isAligned = YES;
+        break;
+      }
+    }
+  }
+
+  bool isFastEnough = velocityVector.magnitude >= minVelocity;
+
+  if (isAligned && isFastEnough) {
+    self.state = NSGestureRecognizerStateChanged;
+  }
+}
+
+- (BOOL)getAlignment:(RNGestureHandlerDirection)direction
+    withMinimalAlignmentCosine:(double)minimalAlignmentCosine
+            withVelocityVector:(Vector *)velocityVector
+{
+  Vector *directionVector = [Vector fromDirection:direction];
+  return ((self.direction & direction) == direction) &&
+      [velocityVector isSimilar:directionVector withThreshold:minimalAlignmentCosine];
+}
+
+- (double)coneToDeviation:(double)degrees
+{
+  double radians = (degrees * M_PI) / 180;
+  return cos(radians / 2);
+}
+
+@end
+
+#endif
+
 @implementation RNFlingGestureHandler
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -99,8 +248,8 @@
 - (void)resetConfig
 {
   [super resetConfig];
-  UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
-  recognizer.direction = UISwipeGestureRecognizerDirectionRight;
+  RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
+  recognizer.direction = RNGestureHandlerDirectionRight;
 #if !TARGET_OS_TV
   recognizer.numberOfTouchesRequired = 1;
 #endif
@@ -109,7 +258,7 @@
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
-  UISwipeGestureRecognizer *recognizer = (UISwipeGestureRecognizer *)_recognizer;
+  RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
 
   id prop = config[@"direction"];
   if (prop != nil) {
@@ -124,6 +273,7 @@
 #endif
 }
 
+#if !TARGET_OS_OSX
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
   RNGestureHandlerState savedState = _lastState;
@@ -153,21 +303,6 @@
        withNumberOfTouches:recognizer.numberOfTouches
            withPointerType:_pointerType];
 }
-@end
-
-#else
-
-@implementation RNFlingGestureHandler
-
-- (instancetype)initWithTag:(NSNumber *)tag
-{
-  RCTLogWarn(@"FlingGestureHandler is not supported on macOS");
-  if ((self = [super initWithTag:tag])) {
-    _recognizer = [NSGestureRecognizer alloc];
-  }
-  return self;
-}
-
-@end
-
 #endif
+
+@end

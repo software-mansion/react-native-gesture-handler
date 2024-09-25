@@ -7,6 +7,7 @@
 //
 
 #import "RNPanHandler.h"
+#import "RNGHStylusData.h"
 
 #if TARGET_OS_OSX
 
@@ -30,6 +31,10 @@
 @property (nonatomic) CGFloat failOffsetYStart;
 @property (nonatomic) CGFloat failOffsetYEnd;
 @property (nonatomic) CGFloat activateAfterLongPress;
+
+#if !TARGET_OS_OSX && !TARGET_OS_TV
+@property (atomic, readonly, strong) RNGHStylusData *stylusData;
+#endif
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
@@ -80,6 +85,28 @@
 }
 #endif
 
+#if !TARGET_OS_OSX && !TARGET_OS_TV
+- (void)tryUpdateStylusData:(UIEvent *)event
+{
+  UITouch *touch = [[event allTouches] anyObject];
+
+  if (touch.type != UITouchTypePencil) {
+    return;
+  } else if (_stylusData == nil) {
+    _stylusData = [[RNGHStylusData alloc] init];
+  }
+
+  _stylusData.altitudeAngle = touch.altitudeAngle;
+  _stylusData.azimuthAngle = [touch azimuthAngleInView:nil];
+  _stylusData.pressure = touch.force / touch.maximumPossibleForce;
+
+  CGPoint tilts = ghSpherical2tilt(_stylusData.altitudeAngle, _stylusData.azimuthAngle);
+
+  _stylusData.tiltX = tilts.x;
+  _stylusData.tiltY = tilts.y;
+}
+#endif
+
 - (void)activateAfterLongPress
 {
   self.state = UIGestureRecognizerStateBegan;
@@ -102,6 +129,8 @@
   } else {
     super.minimumNumberOfTouches = _realMinimumNumberOfTouches;
   }
+
+  [self tryUpdateStylusData:event];
 #endif
 
 #if TARGET_OS_OSX
@@ -150,17 +179,29 @@
       [self setTranslation:CGPointMake(0, 0) inView:self.view];
     }
   }
+
+  [self tryUpdateStylusData:event];
 #endif
 }
 
 - (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  [self tryUpdateStylusData:event];
+#endif
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  [self tryUpdateStylusData:event];
+#endif
+
+  [self reset];
 }
 
 #if TARGET_OS_OSX
@@ -223,6 +264,10 @@
   self.enabled = YES;
   [super reset];
   [_gestureHandler reset];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  _stylusData = nil;
+#endif
 }
 
 - (void)updateHasCustomActivationCriteria
@@ -404,17 +449,23 @@
                                 withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
                             withNumberOfTouches:1
-                                withPointerType:RNGestureHandlerMouse];
+                                withPointerType:RNGestureHandlerMouse
+                                 withStylusData:nil];
 }
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
-                           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                withTranslation:[recognizer translationInView:recognizer.view.window]
-                                   withVelocity:[recognizer velocityInView:recognizer.view.window]
-                            withNumberOfTouches:recognizer.numberOfTouches
-                                withPointerType:_pointerType];
+  RNBetterPanGestureRecognizer *panRecognizer = (RNBetterPanGestureRecognizer *)recognizer;
+
+  return [RNGestureHandlerEventExtraData
+                    forPan:[recognizer locationInView:recognizer.view]
+      withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+           withTranslation:[recognizer translationInView:recognizer.view.window]
+              withVelocity:[recognizer velocityInView:recognizer.view.window]
+       withNumberOfTouches:recognizer.numberOfTouches
+           withPointerType:_pointerType
+            withStylusData:[panRecognizer.stylusData toDictionary]]; // In Objective-C calling method on nil returns
+                                                                     // nil, therefore this line does not crash.
 }
 #endif
 

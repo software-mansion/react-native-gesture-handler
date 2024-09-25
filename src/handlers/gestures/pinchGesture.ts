@@ -1,5 +1,5 @@
 import { ContinousBaseGesture } from './gesture';
-import { PinchGestureHandlerEventPayload } from '../PinchGestureHandler';
+import type { PinchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
 export type PinchGestureChangeEventPayload = {

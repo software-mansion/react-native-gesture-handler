@@ -5,19 +5,29 @@ import {
   MeasureResult,
 } from './GestureHandlerDelegate';
 import PointerEventManager from './PointerEventManager';
-import TouchEventManager from './TouchEventManager';
 import { State } from '../../State';
 import { isPointerInBounds } from '../utils';
 import EventManager from './EventManager';
 import { Config } from '../interfaces';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import KeyboardEventManager from './KeyboardEventManager';
+
+interface DefaultViewStyles {
+  userSelect: string;
+  touchAction: string;
+}
 
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
+  private isInitialized = false;
   private view!: HTMLElement;
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
+  private defaultViewStyles: DefaultViewStyles = {
+    userSelect: '',
+    touchAction: '',
+  };
 
   getView(): HTMLElement {
     return this.view;
@@ -30,27 +40,24 @@ export class GestureHandlerWebDelegate
       );
     }
 
+    this.isInitialized = true;
+
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
+    this.defaultViewStyles = {
+      userSelect: this.view.style.userSelect,
+      touchAction: this.view.style.touchAction,
+    };
+
     const config = handler.getConfig();
 
-    this.addContextMenuListeners(config);
-
-    if (!config.userSelect) {
-      this.view.style['webkitUserSelect'] = 'none';
-      this.view.style['userSelect'] = 'none';
-    } else {
-      this.view.style['webkitUserSelect'] = config.userSelect;
-      this.view.style['userSelect'] = config.userSelect;
-    }
-
-    this.view.style['touchAction'] = config.touchAction ?? 'none';
-    //@ts-ignore This one disables default events on Safari
-    this.view.style['WebkitTouchCallout'] = 'none';
+    this.setUserSelect(config.enabled);
+    this.setTouchAction(config.enabled);
+    this.setContextMenu(config.enabled);
 
     this.eventManagers.push(new PointerEventManager(this.view));
-    this.eventManagers.push(new TouchEventManager(this.view));
+    this.eventManagers.push(new KeyboardEventManager(this.view));
 
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)
@@ -120,6 +127,51 @@ export class GestureHandlerWebDelegate
 
   private enableContextMenu(this: void, e: MouseEvent): void {
     e.stopPropagation();
+  }
+
+  private setUserSelect(isHandlerEnabled: boolean) {
+    const { userSelect } = this.gestureHandler.getConfig();
+
+    this.view.style['userSelect'] = isHandlerEnabled
+      ? userSelect ?? 'none'
+      : this.defaultViewStyles.userSelect;
+
+    this.view.style['webkitUserSelect'] = isHandlerEnabled
+      ? userSelect ?? 'none'
+      : this.defaultViewStyles.userSelect;
+  }
+
+  private setTouchAction(isHandlerEnabled: boolean) {
+    const { touchAction } = this.gestureHandler.getConfig();
+
+    this.view.style['touchAction'] = isHandlerEnabled
+      ? touchAction ?? 'none'
+      : this.defaultViewStyles.touchAction;
+
+    // @ts-ignore This one disables default events on Safari
+    this.view.style['WebkitTouchCallout'] = isHandlerEnabled
+      ? touchAction ?? 'none'
+      : this.defaultViewStyles.touchAction;
+  }
+
+  private setContextMenu(isHandlerEnabled: boolean) {
+    const config = this.gestureHandler.getConfig();
+
+    if (isHandlerEnabled) {
+      this.addContextMenuListeners(config);
+    } else {
+      this.removeContextMenuListeners(config);
+    }
+  }
+
+  onEnabledChange(enabled: boolean): void {
+    if (!this.isInitialized) {
+      return;
+    }
+
+    this.setUserSelect(enabled);
+    this.setTouchAction(enabled);
+    this.setContextMenu(enabled);
   }
 
   onBegin(): void {
