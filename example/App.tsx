@@ -207,10 +207,12 @@ export default function App() {
             cardStyle: {
               // It's important to set height for the screen, without it scroll doesn't work on web platform.
               height: Dimensions.get('window').height,
-              backgroundColor: '#fff',
+              backgroundColor: COLORS.offWhite,
             },
             headerStyle: {
               backgroundColor: COLORS.offWhite,
+              borderBottomColor: COLORS.headerSeparator,
+              borderBottomWidth: 1,
             },
           }}>
           <Stack.Screen

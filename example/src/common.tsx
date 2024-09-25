@@ -27,6 +27,7 @@ export class LoremIpsum extends React.Component<Props> {
 
 export const COLORS = {
   offWhite: '#f8f9ff',
+  headerSeparator: '#eef0ff',
 };
 
 const LOREM_IPSUM = `
