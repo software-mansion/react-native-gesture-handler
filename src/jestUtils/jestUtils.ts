@@ -138,6 +138,7 @@ const handlersDefaultEvents: DefaultEventsMapping = {
     velocityX: 3,
     velocityY: 0,
     numberOfPointers: 1,
+    stylusData: undefined,
   },
   [pinchHandlerName]: {
     focalX: 0,
@@ -404,6 +405,7 @@ interface HandlerData {
   emitEvent: EventEmitter;
   handlerType: HandlerNames;
   handlerTag: number;
+  enabled: boolean | undefined;
 }
 function getHandlerData(
   componentOrGesture: ReactTestInstance | GestureType
@@ -416,6 +418,7 @@ function getHandlerData(
       },
       handlerType: gesture.handlerName as HandlerNames,
       handlerTag: gesture.handlerTag,
+      enabled: gesture.config.enabled,
     };
   }
   const gestureHandlerComponent = componentOrGesture;
@@ -425,6 +428,7 @@ function getHandlerData(
     },
     handlerType: gestureHandlerComponent.props.handlerType as HandlerNames,
     handlerTag: gestureHandlerComponent.props.handlerTag as number,
+    enabled: gestureHandlerComponent.props.enabled,
   };
 }
 type AllGestures =
@@ -466,8 +470,12 @@ export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   componentOrGesture: ReactTestInstance | GestureType,
   eventList: Partial<GestureHandlerTestEvent<ExtractConfig<THandler>>>[] = []
 ): void {
-  const { emitEvent, handlerType, handlerTag } =
+  const { emitEvent, handlerType, handlerTag, enabled } =
     getHandlerData(componentOrGesture);
+
+  if (enabled === false) {
+    return;
+  }
 
   let _ = fillMissingStatesTransitions(
     eventList,

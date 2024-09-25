@@ -14,7 +14,6 @@ import {
   StackScreenProps,
 } from '@react-navigation/stack';
 import { NavigationContainer, ParamListBase } from '@react-navigation/native';
-import Entypo from '@expo/vector-icons/Entypo';
 import {
   GestureHandlerRootView,
   RectButton,
@@ -54,6 +53,7 @@ import PagerAndDrawer from './src/basic/pagerAndDrawer';
 import ForceTouch from './src/basic/forcetouch';
 import Fling from './src/basic/fling';
 import WebStylesResetExample from './src/release_tests/webStylesReset';
+import StylusData from './src/release_tests/StylusData';
 
 import ReanimatedSimple from './src/new_api/reanimated';
 import Camera from './src/new_api/camera';
@@ -75,6 +75,8 @@ import Pressable from 'src/new_api/pressable';
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
+
+import { Icon } from '@swmansion/icons';
 
 interface Example {
   name: string;
@@ -154,6 +156,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
       { name: 'Web styles reset', component: WebStylesResetExample },
+      { name: 'Stylus data', component: StylusData },
     ],
   },
   {
@@ -324,7 +327,7 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text>{name}</Text>
-      <Entypo name="chevron-right" size={24} color="#bbb" />
+      <Icon name="chevron-small-right" size={24} color="#bbb" />
     </RectButton>
   );
 }
