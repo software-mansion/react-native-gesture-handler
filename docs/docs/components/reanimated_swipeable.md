@@ -81,27 +81,29 @@ an argument.
 
 ### `renderLeftActions`
 
-method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
-This map describes the values to use as inputRange for extra interpolation:
+accepts a function which receives the following arguments:
 
-SharedValue: [startValue, endValue]
+- `progress` value representing swiping progress relative to the width of the returned element.  
+  Equals `0` when `swipeable` is closed, `1` when left action is open.  
+  Linearly increases to `Infinity` as left action overshoots it's open position.
+- `translation` horizontal translation of `swipeable` in pixels.
+- `swipeable` provides an object exposing the methods listed [here](#methods)
 
-progress: [0, 1]
-
-drag: [0, +]
+This function must return a `ReactNode`.
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ### `renderRightActions`
 
-method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
-This map describes the values to use as inputRange for extra interpolation:
+accepts a function which receives the following arguments:
 
-SharedValue: [startValue, endValue]
+- `progress` value representing swiping progress relative to the width of the returned element.  
+  Equals `0` when `swipeable` is closed, `1` when right action is open.  
+  Linearly increases to `Infinity` as right action overshoots it's open position.
+- `translation` horizontal translation of `swipeable` in pixels.
+- `swipeable` provides an object exposing the methods listed [here](#methods)
 
-progress: [0, 1]
-
-drag: [0, -]
+This function must return a `ReactNode`.
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
