@@ -28,7 +28,9 @@ export function useViewRefHandler(
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
       if (state.previousViewTag === -1) {
         state.previousViewTag = findNodeHandle(
-          Platform.OS === 'web' ? state.webRef : state.viewRef
+          (Platform.OS === 'web'
+            ? state.webRef
+            : state.viewRef) as React.Component
         ) as number;
       }
 

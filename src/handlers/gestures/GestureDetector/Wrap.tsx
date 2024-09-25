@@ -5,7 +5,7 @@ import { tagMessage } from '../../../utils';
 import { Platform } from 'react-native';
 
 export class Wrap extends React.Component<{
-  forwardedRef: Ref<any>;
+  forwardedRef: Ref<HTMLDivElement>;
   onGestureHandlerEvent?: unknown;
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?: React.ReactNode;

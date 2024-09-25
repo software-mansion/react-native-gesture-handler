@@ -31,7 +31,9 @@ export function useDetectorUpdater(
     (skipConfigUpdate?: boolean) => {
       // If the underlying view has changed we need to reattach handlers to the new view
       const viewTag = findNodeHandle(
-        Platform.OS === 'web' ? state.webRef : state.viewRef
+        (Platform.OS === 'web'
+          ? state.webRef
+          : state.viewRef) as React.Component
       ) as number;
       const didUnderlyingViewChange = viewTag !== state.previousViewTag;
 

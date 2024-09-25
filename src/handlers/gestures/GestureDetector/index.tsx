@@ -152,7 +152,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useLayoutEffect(() => {
     const viewTag = findNodeHandle(
-      Platform.OS === 'web' ? state.webRef : state.viewRef
+      (Platform.OS === 'web' ? state.webRef : state.viewRef) as React.Component
     ) as number;
     preparedGesture.isMounted = true;
 

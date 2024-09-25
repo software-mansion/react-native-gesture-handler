@@ -21,7 +21,7 @@ export interface AttachedGestureState {
 export interface GestureDetectorState {
   firstRender: boolean;
   viewRef: React.Component | null;
-  webRef: Ref<any>;
+  webRef: Ref<HTMLDivElement>;
   previousViewTag: number;
   forceRebuildReanimatedEvent: boolean;
 }
