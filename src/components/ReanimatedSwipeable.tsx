@@ -144,31 +144,26 @@ export interface SwipeableProps
   onSwipeableCloseStartDrag?: (direction: 'left' | 'right') => void;
 
   /**
-   *
-   * This map describes the values to use as inputRange for extra interpolation:
-   * AnimatedValue: [startValue, endValue]
-   *
-   * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, +]
+   * `progress`: Equals `0` when action is closed, `1` when action is open, linearly increases to `Infinity` as action overshoots it's open position.\
+   * `translation`: translation of swipeable in pixels.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue: SharedValue<number>,
-    dragAnimatedValue: SharedValue<number>,
+    progress: SharedValue<number>,
+    translation: SharedValue<number>,
     swipeable: SwipeableMethods
   ) => React.ReactNode;
+
   /**
-   *
-   * This map describes the values to use as inputRange for extra interpolation:
-   * AnimatedValue: [startValue, endValue]
-   *
-   * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, -]
+   * `progress`: Equals `0` when action is closed, `1` when action is open, linearly increases to `Infinity` as action overshoots it's open position.\
+   * `translation`: translation of swipeable in pixels.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue: SharedValue<number>,
-    dragAnimatedValue: SharedValue<number>,
+    progress: SharedValue<number>,
+    translation: SharedValue<number>,
     swipeable: SwipeableMethods
   ) => React.ReactNode;
 
