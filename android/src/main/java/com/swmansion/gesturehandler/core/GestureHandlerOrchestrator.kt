@@ -88,11 +88,8 @@ class GestureHandlerOrchestrator(
   private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) =
     gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
 
-  private fun handlersWithinHandlerBounds(handler: GestureHandler<*>) =
-    gestureHandlers.filter { handler.hasCommonPointers(it) }
-
   private fun shouldBeCancelledByActiveHandler(handler: GestureHandler<*>) =
-    handlersWithinHandlerBounds(handler).any { it.state == GestureHandler.STATE_ACTIVE && !canRunSimultaneously(handler, it) }
+    gestureHandlers.any { handler.hasCommonPointers(it) && it.state == GestureHandler.STATE_ACTIVE && !canRunSimultaneously(handler, it) }
 
   private fun tryActivate(handler: GestureHandler<*>) {
     // If we are waiting for a gesture that has successfully finished, we should cancel handler
