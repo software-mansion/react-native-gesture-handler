@@ -31,9 +31,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow RNGH example to access your camera",
-          "microphonePermission": "Allow RNGH example to access your microphone",
-          "recordAudioAndroid": true
+          "cameraPermission": "Allow RNGH example to access your camera"
         }
       ],
       [
