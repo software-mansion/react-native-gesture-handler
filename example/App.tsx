@@ -343,7 +343,9 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
-      <Icon name="chevron-small-right" size={24} color="#bbb" />
+      {Platform.OS !== 'macos' && (
+        <Icon name="chevron-small-right" size={24} color="#bbb" />
+      )}
     </RectButton>
   );
 }
