@@ -43,11 +43,22 @@ class GestureHandlerOrchestrator(
     isHandlingTouch = true
     val action = event.actionMasked
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_HOVER_MOVE) {
+      println("--- EXTRACTING GESTURE HANDLERS ---")
       extractGestureHandlers(event)
+      println("extracted: $gestureHandlers")
     } else if (action == MotionEvent.ACTION_CANCEL) {
+      println("!!! top level action cancel")
       cancelAll()
     }
-    println("delivering")
+
+    val eventName = when (event.actionMasked) {
+      0 -> "DOWN"
+      1 -> "UP"
+      2 -> "MOVE"
+      else -> "OTHER"
+    }
+
+    println("--- try deliver $eventName ---")
     deliverEventToGestureHandlers(event)
     isHandlingTouch = false
 
@@ -79,13 +90,12 @@ class GestureHandlerOrchestrator(
       }
     }
 
+    // println("PRE-REMOVAL: ${gestureHandlers.size}")
 
-    println("PRE-REMOVAL: ${gestureHandlers.size}")
-
-    gestureHandlers.forEach { println("${if (isFinished(it.state) && !it.isAwaiting) "REMOVED" else "STAYING"} REASON: finished(${isFinished(it.state)}), awaiting(${it.isAwaiting})") }
+    // gestureHandlers.forEach { println("${if (isFinished(it.state) && !it.isAwaiting) "REMOVED" else "STAYING"} REASON: finished(${isFinished(it.state)}), awaiting(${it.isAwaiting})") }
     gestureHandlers.removeAll { isFinished(it.state) && !it.isAwaiting }
 
-    println("POST-REMOVAL: ${gestureHandlers.size}")
+    // println("POST-REMOVAL: ${gestureHandlers.size}")
 
     finishedHandlersCleanupScheduled = false
   }
@@ -268,6 +278,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandler(handler: GestureHandler<*>, sourceEvent: MotionEvent) {
+
     if (!isViewAttachedUnderWrapper(handler.view)) {
       handler.cancel()
       return
@@ -436,6 +447,8 @@ class GestureHandlerOrchestrator(
     if (gestureHandlers.contains(handler)) {
       return
     }
+
+    println("adding new handler")
 
     gestureHandlers.add(handler) // check when this executes
     handler.isActive = false

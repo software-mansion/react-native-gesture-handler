@@ -86,7 +86,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val view = view!!
     val isTouchExplorationEnabled = view.context.isScreenReaderOn()
 
-    println("<> received event: ${event.actionMasked}")
+    // println("<> received event: ${event.actionMasked}")
 
     if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup && isTouchExplorationEnabled) {
       // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808

@@ -125,7 +125,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     if (view != null && isEnabled != enabled) {
       // If view is set then handler is in "active" state. In that case we want to "cancel" handler
       // when it changes enabled state so that it gets cleared from the orchestrator
-      println("UiThreadUtil cancel")
+      // println("UiThreadUtil cancel")
       UiThreadUtil.runOnUiThread { cancel() }
     }
     isEnabled = enabled

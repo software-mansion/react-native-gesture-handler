@@ -99,7 +99,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     // if `requestDisallow` has been called as a result of a normal gesture handling process or
     // as a result of one of the gesture handlers activating
     passingTouch = true
-    println("I: $shouldIntercept O: $orchestrator")
+    // println("shouldIntercept: $shouldIntercept, orchestrator: $orchestrator")
     orchestrator!!.onTouchEvent(ev)
     passingTouch = false
     return shouldIntercept

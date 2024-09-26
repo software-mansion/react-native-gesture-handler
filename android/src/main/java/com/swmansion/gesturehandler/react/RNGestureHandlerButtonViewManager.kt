@@ -407,11 +407,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     private fun tryFreeingResponder() {
       if (touchResponder === this) {
-        println("() Freed touch responder ")
+        // println("() Freed touch responder ")
         touchResponder = null
         soundResponder = this
       } else {
-        println("() Can't free touch responder as it's not owned by this manager")
+        // println("() Can't free touch responder as it's not owned by this manager")
       }
     }
 
@@ -421,12 +421,12 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
 
       if (touchResponder != null && touchResponder != this) {
-        println("() FAIL Touch responder hasn't been freed from previous touch [${this}] & [${touchResponder}]")
+        // println("() FAIL Touch responder hasn't been freed from previous touch [${this}] & [${touchResponder}]")
         return false
       }
 
       if (touchResponder == null) {
-        println("() Setting touch responder to self")
+        // println("() Setting touch responder to self")
         touchResponder = this
         return true
       }
