@@ -86,7 +86,7 @@ accepts a function which receives the following arguments:
 - `progress` value representing swiping progress relative to the width of the returned element.  
   Equals `0` when `swipeable` is closed, `1` when left action is open.  
   Linearly increases to `Infinity` as left action overshoots it's open position.
-- `translation` horizontal translation of `swipeable` in pixels.
+- `translation` horizontal translation of the `swipeable` in pixels.
 - `swipeable` provides an object exposing the methods listed [here](#methods)
 
 This function must return a `ReactNode`.
@@ -100,7 +100,7 @@ accepts a function which receives the following arguments:
 - `progress` value representing swiping progress relative to the width of the returned element.  
   Equals `0` when `swipeable` is closed, `1` when right action is open.  
   Linearly increases to `Infinity` as right action overshoots it's open position.
-- `translation` horizontal translation of `swipeable` in pixels.
+- `translation` horizontal translation of the `swipeable` in pixels.
 - `swipeable` provides an object exposing the methods listed [here](#methods)
 
 This function must return a `ReactNode`.

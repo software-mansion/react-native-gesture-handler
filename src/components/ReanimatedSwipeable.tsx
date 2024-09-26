@@ -145,7 +145,7 @@ export interface SwipeableProps
 
   /**
    * `progress`: Equals `0` when action is closed, `1` when action is open, linearly increases to `Infinity` as action overshoots it's open position.\
-   * `translation`: translation of swipeable in pixels.
+   * `translation`: translation of the `swipeable` in pixels.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
@@ -157,7 +157,7 @@ export interface SwipeableProps
 
   /**
    * `progress`: Equals `0` when action is closed, `1` when action is open, linearly increases to `Infinity` as action overshoots it's open position.\
-   * `translation`: translation of swipeable in pixels.
+   * `translation`: translation of the `swipeable` in pixels.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
