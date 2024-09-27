@@ -1,15 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
-  Animated,
-  StyleSheet,
-  View,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
-import {
-  State,
-  PanGestureHandlerStateChangeEvent,
-  PanGestureHandlerGestureEvent,
   Gesture,
   GestureDetector,
   GestureStateChangeEvent,
@@ -17,7 +8,13 @@ import {
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../../common';
-import { USE_NATIVE_DRIVER } from '../../config';
+import Animated, {
+  clamp,
+  runOnJS,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 const HEADER_HEIGHT = 50;
 
@@ -31,40 +28,24 @@ export function BottomSheet() {
 
   const [lastSnap, setLastSnap] = useState(endSnapPoint);
 
-  let lastScrollYValue = 0;
-  let lastScrollY = new Animated.Value(0);
-  let onRegisterLastScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { y: lastScrollY } } }],
-    { useNativeDriver: USE_NATIVE_DRIVER }
+  const lastScrollY = useSharedValue(0);
+  const dragY = useSharedValue(0);
+  const reversedLastScrollY = useDerivedValue(() => lastScrollY.value * -1);
+
+  const translateYOffset = useSharedValue(endSnapPoint);
+  const translateYSource = useDerivedValue(
+    () => translateYOffset.value + dragY.value + reversedLastScrollY.value
   );
-  lastScrollY.addListener(({ value }) => {
-    lastScrollYValue = value;
-  });
-
-  let dragY = new Animated.Value(0);
-
-  let reverseLastScrollY = Animated.multiply(
-    new Animated.Value(-1),
-    lastScrollY
-  );
-
-  let translateYOffset = new Animated.Value(endSnapPoint);
-  let translateY = Animated.add(
-    translateYOffset,
-    Animated.add(dragY, reverseLastScrollY)
-  ).interpolate({
-    inputRange: [startSnapPoint, endSnapPoint],
-    outputRange: [startSnapPoint, endSnapPoint],
-    extrapolate: 'clamp',
-  });
 
   const onHandlerStateChange = (
     event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
   ) => {
-    let { velocityY, translationY } = event;
-    translationY -= lastScrollYValue;
+    'worklet';
+    const { velocityY, translationY } = event;
+
     const dragToss = 0.05;
-    const endOffsetY = lastSnap + translationY + dragToss * velocityY;
+    const endOffsetY =
+      lastSnap + translationY - lastScrollY.value + dragToss * velocityY;
 
     let destSnapPoint = snapPoints[0];
     for (const snapPoint of snapPoints) {
@@ -73,18 +54,12 @@ export function BottomSheet() {
         destSnapPoint = snapPoint;
       }
     }
-    setLastSnap(destSnapPoint);
-    translateYOffset.extractOffset();
-    translateYOffset.setValue(translationY);
-    translateYOffset.flattenOffset();
-    dragY.setValue(0);
-    Animated.spring(translateYOffset, {
-      velocity: velocityY,
-      tension: 68,
-      friction: 12,
-      toValue: destSnapPoint,
-      useNativeDriver: USE_NATIVE_DRIVER,
-    }).start();
+
+    dragY.value = 0;
+
+    translateYOffset.value = withSpring(destSnapPoint);
+
+    runOnJS(setLastSnap)(destSnapPoint);
   };
 
   const mainViewRef = useRef<View>(null);
@@ -105,30 +80,34 @@ export function BottomSheet() {
     .simultaneousWithExternalGesture(tapGesture)
     .shouldCancelWhenOutside(false)
     .enableTrackpadTwoFingerGesture(true)
-    .runOnJS(true)
     .onUpdate((event) => {
-      dragY.setValue(event.translationY);
+      'worklet';
+      dragY.value = event.translationY;
     })
     .onBegin(() => {
-      lastScrollY.setValue(0);
+      'worklet';
+      lastScrollY.value = 0;
     })
     .onStart(onHandlerStateChange);
   const panBodyGesture = Gesture.Pan()
     .simultaneousWithExternalGesture(tapGesture)
     .shouldCancelWhenOutside(false)
     .enableTrackpadTwoFingerGesture(true)
-    .runOnJS(true)
     .onUpdate((event) => {
-      dragY.setValue(event.translationY);
+      'worklet';
+      dragY.value = event.translationY;
     })
     .onStart(onHandlerStateChange);
   const scrollGesture = Gesture.Native()
     .simultaneousWithExternalGesture(panBodyGesture, panHeaderGesture)
     .requireExternalGestureToFail(tapGesture);
 
+  const translateY = useDerivedValue(() =>
+    clamp(translateYSource.value, startSnapPoint, endSnapPoint)
+  );
   return (
     <GestureDetector gesture={tapGesture}>
-      <View
+      <Animated.View
         style={StyleSheet.absoluteFillObject}
         pointerEvents="box-none"
         ref={mainViewRef}>
@@ -140,25 +119,20 @@ export function BottomSheet() {
             },
           ]}>
           <GestureDetector gesture={panHeaderGesture}>
-            <Animated.View style={styles.header} />
+            <View style={styles.header} />
           </GestureDetector>
           <GestureDetector gesture={panBodyGesture}>
             <Animated.View style={styles.container}>
               <GestureDetector gesture={scrollGesture}>
-                <Animated.ScrollView
-                  style={{ marginBottom: HEADER_HEIGHT }}
-                  bounces={false}
-                  onScrollBeginDrag={onRegisterLastScroll}
-                  scrollEventThrottle={1}>
-                  <LoremIpsum />
-                  <LoremIpsum />
-                  <LoremIpsum />
+                <Animated.ScrollView style={{ marginBottom: HEADER_HEIGHT }}>
+                  <LoremIpsum words={500} />
+                  <LoremIpsum words={500} />
                 </Animated.ScrollView>
               </GestureDetector>
             </Animated.View>
           </GestureDetector>
         </Animated.View>
-      </View>
+      </Animated.View>
     </GestureDetector>
   );
 }
