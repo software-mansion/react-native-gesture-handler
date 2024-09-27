@@ -3,6 +3,7 @@ package com.swmansion.gesturehandler.react.eventbuilders
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.PanGestureHandler
+import com.swmansion.gesturehandler.core.StylusData
 
 class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHandlerEventDataBuilder<PanGestureHandler>(handler) {
   private val x: Float
@@ -13,6 +14,7 @@ class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHan
   private val translationY: Float
   private val velocityX: Float
   private val velocityY: Float
+  private val stylusData: StylusData
 
   init {
     x = handler.lastRelativePositionX
@@ -23,6 +25,7 @@ class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHan
     translationY = handler.translationY
     velocityX = handler.velocityX
     velocityY = handler.velocityY
+    stylusData = handler.stylusData
   }
 
   override fun buildEventData(eventData: WritableMap) {
@@ -37,6 +40,10 @@ class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHan
       putDouble("translationY", PixelUtil.toDIPFromPixel(translationY).toDouble())
       putDouble("velocityX", PixelUtil.toDIPFromPixel(velocityX).toDouble())
       putDouble("velocityY", PixelUtil.toDIPFromPixel(velocityY).toDouble())
+
+      if (stylusData.pressure != -1.0) {
+        putMap("stylusData", stylusData.toReadableMap())
+      }
     }
   }
 }
