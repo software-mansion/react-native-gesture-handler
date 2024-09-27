@@ -1,10 +1,4 @@
-import React, {
-  Component,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -13,13 +7,13 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import {
-  PanGestureHandler,
-  NativeViewGestureHandler,
   State,
-  TapGestureHandler,
   PanGestureHandlerStateChangeEvent,
   PanGestureHandlerGestureEvent,
   Gesture,
+  GestureDetector,
+  GestureStateChangeEvent,
+  PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../../common';
@@ -28,36 +22,18 @@ import { USE_NATIVE_DRIVER } from '../../config';
 const HEADER_HEIGHT = 50;
 
 export function BottomSheet() {
-  let lastScrollYValue: number;
-  let lastScrollY: Animated.Value;
-  let dragY: Animated.Value;
-  let reverseLastScrollY: Animated.AnimatedMultiplication<number>;
-  let translateYOffset: Animated.Value;
-  let translateY: Animated.AnimatedInterpolation<number>;
-
   const [screenHeight, setScreenHeight] = useState(HEADER_HEIGHT / 0.4 + 1);
 
-  let onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
-  let onRegisterLastScroll: (
-    event: NativeSyntheticEvent<NativeScrollEvent>
-  ) => void;
-
-  console.log('screenHeight:', screenHeight);
   const snapPoints = [HEADER_HEIGHT, screenHeight * 0.4, screenHeight * 0.8];
-
-  const masterdrawer = useRef<TapGestureHandler>(null);
-  const drawer = useRef<PanGestureHandler>(null);
-  const drawerheader = useRef<PanGestureHandler>(null);
-  const scroll = useRef<NativeViewGestureHandler>(null);
 
   const startSnapPoint = snapPoints[0];
   const endSnapPoint = snapPoints[snapPoints.length - 1];
 
   const [lastSnap, setLastSnap] = useState(endSnapPoint);
 
-  lastScrollYValue = 0;
-  lastScrollY = new Animated.Value(0);
-  onRegisterLastScroll = Animated.event(
+  let lastScrollYValue = 0;
+  let lastScrollY = new Animated.Value(0);
+  let onRegisterLastScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { y: lastScrollY } } }],
     { useNativeDriver: USE_NATIVE_DRIVER }
   );
@@ -65,15 +41,15 @@ export function BottomSheet() {
     lastScrollYValue = value;
   });
 
-  dragY = new Animated.Value(0);
-  onGestureEvent = Animated.event([{ nativeEvent: { translationY: dragY } }], {
-    useNativeDriver: USE_NATIVE_DRIVER,
-  });
+  let dragY = new Animated.Value(0);
 
-  reverseLastScrollY = Animated.multiply(new Animated.Value(-1), lastScrollY);
+  let reverseLastScrollY = Animated.multiply(
+    new Animated.Value(-1),
+    lastScrollY
+  );
 
-  translateYOffset = new Animated.Value(endSnapPoint);
-  translateY = Animated.add(
+  let translateYOffset = new Animated.Value(endSnapPoint);
+  let translateY = Animated.add(
     translateYOffset,
     Animated.add(dragY, reverseLastScrollY)
   ).interpolate({
@@ -82,43 +58,33 @@ export function BottomSheet() {
     extrapolate: 'clamp',
   });
 
-  const onHeaderHandlerStateChange = ({
-    nativeEvent,
-  }: PanGestureHandlerStateChangeEvent) => {
-    if (nativeEvent.oldState === State.BEGAN) {
-      lastScrollY.setValue(0);
-    }
-    onHandlerStateChange({ nativeEvent });
-  };
-  const onHandlerStateChange = ({
-    nativeEvent,
-  }: PanGestureHandlerStateChangeEvent) => {
-    if (nativeEvent.oldState === State.ACTIVE) {
-      let { velocityY, translationY } = nativeEvent;
-      translationY -= lastScrollYValue;
-      const dragToss = 0.05;
-      const endOffsetY = lastSnap + translationY + dragToss * velocityY;
+  const onHandlerStateChange = (
+    event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
+  ) => {
+    let { velocityY, translationY } = event;
+    translationY -= lastScrollYValue;
+    const dragToss = 0.05;
+    const endOffsetY = lastSnap + translationY + dragToss * velocityY;
 
-      let destSnapPoint = snapPoints[0];
-      for (const snapPoint of snapPoints) {
-        const distFromSnap = Math.abs(snapPoint - endOffsetY);
-        if (distFromSnap < Math.abs(destSnapPoint - endOffsetY)) {
-          destSnapPoint = snapPoint;
-        }
+    let destSnapPoint = snapPoints[0];
+    for (const snapPoint of snapPoints) {
+      const distFromSnap = Math.abs(snapPoint - endOffsetY);
+      if (distFromSnap < Math.abs(destSnapPoint - endOffsetY)) {
+        destSnapPoint = snapPoint;
       }
-      setLastSnap(destSnapPoint);
-      translateYOffset.extractOffset();
-      translateYOffset.setValue(translationY);
-      translateYOffset.flattenOffset();
-      dragY.setValue(0);
-      Animated.spring(translateYOffset, {
-        velocity: velocityY,
-        tension: 68,
-        friction: 12,
-        toValue: destSnapPoint,
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }).start();
     }
+    setLastSnap(destSnapPoint);
+    translateYOffset.extractOffset();
+    translateYOffset.setValue(translationY);
+    translateYOffset.flattenOffset();
+    dragY.setValue(0);
+    Animated.spring(translateYOffset, {
+      velocity: velocityY,
+      tension: 68,
+      friction: 12,
+      toValue: destSnapPoint,
+      useNativeDriver: USE_NATIVE_DRIVER,
+    }).start();
   };
 
   const mainViewRef = useRef<View>(null);
@@ -132,11 +98,36 @@ export function BottomSheet() {
     });
   }, [mainViewRef]);
 
+  const tapGesture = Gesture.Tap()
+    .maxDuration(99999)
+    .maxDeltaY(lastSnap - HEADER_HEIGHT);
+  const panHeaderGesture = Gesture.Pan()
+    .simultaneousWithExternalGesture(tapGesture)
+    .shouldCancelWhenOutside(false)
+    .enableTrackpadTwoFingerGesture(true)
+    .runOnJS(true)
+    .onUpdate((event) => {
+      dragY.setValue(event.translationY);
+    })
+    .onBegin(() => {
+      lastScrollY.setValue(0);
+    })
+    .onStart(onHandlerStateChange);
+  const panBodyGesture = Gesture.Pan()
+    .simultaneousWithExternalGesture(tapGesture)
+    .shouldCancelWhenOutside(false)
+    .enableTrackpadTwoFingerGesture(true)
+    .runOnJS(true)
+    .onUpdate((event) => {
+      dragY.setValue(event.translationY);
+    })
+    .onStart(onHandlerStateChange);
+  const scrollGesture = Gesture.Native()
+    .simultaneousWithExternalGesture(panBodyGesture, panHeaderGesture)
+    .requireExternalGestureToFail(tapGesture);
+
   return (
-    <TapGestureHandler
-      maxDurationMs={100000}
-      ref={masterdrawer}
-      maxDeltaY={lastSnap - snapPoints[0]}>
+    <GestureDetector gesture={tapGesture}>
       <View
         style={StyleSheet.absoluteFillObject}
         pointerEvents="box-none"
@@ -148,29 +139,14 @@ export function BottomSheet() {
               transform: [{ translateY: translateY }],
             },
           ]}>
-          <PanGestureHandler
-            ref={drawerheader}
-            simultaneousHandlers={[scroll, masterdrawer]}
-            shouldCancelWhenOutside={false}
-            enableTrackpadTwoFingerGesture
-            onGestureEvent={onGestureEvent}
-            onHandlerStateChange={onHeaderHandlerStateChange}>
+          <GestureDetector gesture={panHeaderGesture}>
             <Animated.View style={styles.header} />
-          </PanGestureHandler>
-          <PanGestureHandler
-            ref={drawer}
-            simultaneousHandlers={[scroll, masterdrawer]}
-            shouldCancelWhenOutside={false}
-            onGestureEvent={onGestureEvent}
-            enableTrackpadTwoFingerGesture
-            onHandlerStateChange={onHandlerStateChange}>
+          </GestureDetector>
+          <GestureDetector gesture={panBodyGesture}>
             <Animated.View style={styles.container}>
-              <NativeViewGestureHandler
-                ref={scroll}
-                waitFor={masterdrawer}
-                simultaneousHandlers={drawer}>
+              <GestureDetector gesture={scrollGesture}>
                 <Animated.ScrollView
-                  style={{ marginBottom: snapPoints[0] }}
+                  style={{ marginBottom: HEADER_HEIGHT }}
                   bounces={false}
                   onScrollBeginDrag={onRegisterLastScroll}
                   scrollEventThrottle={1}>
@@ -178,12 +154,12 @@ export function BottomSheet() {
                   <LoremIpsum />
                   <LoremIpsum />
                 </Animated.ScrollView>
-              </NativeViewGestureHandler>
+              </GestureDetector>
             </Animated.View>
-          </PanGestureHandler>
+          </GestureDetector>
         </Animated.View>
       </View>
-    </TapGestureHandler>
+    </GestureDetector>
   );
 }
 export default function Example() {
