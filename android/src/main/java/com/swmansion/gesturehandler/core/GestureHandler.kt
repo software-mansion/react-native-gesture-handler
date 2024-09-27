@@ -172,6 +172,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     check(!(this.view != null || this.orchestrator != null)) { "Already prepared or hasn't been reset" }
     Arrays.fill(trackedPointerIDs, -1)
     trackedPointersIDsCount = 0
+    println("preparing ${this.tag}")
     state = STATE_UNDETERMINED
     this.view = view
     this.orchestrator = orchestrator
@@ -340,6 +341,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   )
 
   fun handle(transformedEvent: MotionEvent, sourceEvent: MotionEvent) {
+    println("handling @ [${this.tag}]")
     if (!isEnabled ||
       state == STATE_CANCELLED ||
       state == STATE_FAILED ||
@@ -559,6 +561,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     val oldState = state
+    println("Setting handler @ [${this.tag}] state: $newState")
     state = newState
     if (state == STATE_ACTIVE) {
       // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have

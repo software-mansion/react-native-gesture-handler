@@ -407,7 +407,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     private fun tryFreeingResponder() {
       if (touchResponder === this) {
-        // println("() Freed touch responder ")
+        println("Freed touch responder @[${this.tag}]")
         touchResponder = null
         soundResponder = this
       } else {

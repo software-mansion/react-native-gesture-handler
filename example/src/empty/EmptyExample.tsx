@@ -1,6 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Pressable } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View, processColor } from 'react-native';
+import {
+  BaseButton,
+  Pressable,
+  RawButton,
+  RectButton,
+} from 'react-native-gesture-handler';
 
 const BACKGROUND_COLOR = '#F5FCFF';
 
@@ -9,14 +14,21 @@ const PRESS_RETENTION_OFFSET = HIT_SLOP;
 const BOX_SIZE = 100;
 
 export default function Example() {
+  // const nativeGesture = Gesture.Native();
+
   return (
     <View style={styles.container}>
-      <View style={styles.retentionIndicator}>
+      {/* <View style={styles.retentionIndicator}>
         <View style={styles.slopIndicator}>
           <View style={styles.container}>
             <Pressable
               style={styles.pressable}
               hitSlop={HIT_SLOP}
+              android_ripple={{
+                color: 'green',
+                borderless: false,
+                foreground: false,
+              }}
               // pressRetentionOffset={PRESS_RETENTION_OFFSET}
             >
               <Text style={styles.text}>Pressable</Text>
@@ -25,7 +37,7 @@ export default function Example() {
           <Text style={styles.text}>Hit Slop</Text>
         </View>
         <Text style={styles.text}>Retention Offset</Text>
-      </View>
+      </View> */}
       <Pressable
         style={[styles.pressable]}
         android_ripple={{
@@ -35,6 +47,46 @@ export default function Example() {
         }}>
         <Text style={styles.text}>Function indicator</Text>
       </Pressable>
+      <RectButton
+        onBegan={() => console.log('[]Began')}
+        onActivated={() => console.log('[]Activated')}
+        onEnded={() => console.log('[]Ended')}
+        style={[styles.pressable]}
+        rippleColor={'green'}>
+        <Text style={styles.text}>Rect button</Text>
+      </RectButton>
+      <BaseButton
+        // onBegan={() => console.log('Began')}
+        // onActivated={() => console.log('Activated')}
+        // onEnded={() => console.log('Ended')}
+        style={[styles.pressable]}
+        rippleColor={'green'}>
+        <Text style={styles.text}>Base button</Text>
+      </BaseButton>
+      <RawButton
+        // onBegan={() => console.log('Began')}
+        // onActivated={() => console.log('Activated')}
+        // onEnded={() => console.log('Ended')}
+        style={[styles.pressable]}
+        rippleColor={processColor('green')}>
+        <Text style={styles.text}>Raw button</Text>
+      </RawButton>
+      {/* <NativeButton
+        style={[styles.pressable]}
+        rippleColor={processColor('green')}
+        rippleRadius={undefined}>
+        <Text style={styles.text}>
+          Standalone RNGestureHandlerButton button
+        </Text>
+      </NativeButton> */}
+      {/* <GestureDetector gesture={nativeGesture}>
+        <NativeButton
+          style={[styles.pressable]}
+          rippleColor={processColor('green')}
+          rippleRadius={undefined}>
+          <Text style={styles.text}>Wrapped RNGestureHandlerButton button</Text>
+        </NativeButton>
+      </GestureDetector> */}
     </View>
   );
 }

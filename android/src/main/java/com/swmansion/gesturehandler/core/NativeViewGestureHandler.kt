@@ -86,8 +86,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val view = view!!
     val isTouchExplorationEnabled = view.context.isScreenReaderOn()
 
-    // println("<> received event: ${event.actionMasked}")
-
     if (view is RNGestureHandlerButtonViewManager.ButtonViewGroup && isTouchExplorationEnabled) {
       // Fix for: https://github.com/software-mansion/react-native-gesture-handler/issues/2808
       // When TalkBack is enabled, events are often not being sent to the orchestrator for processing.
@@ -96,20 +94,25 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       return
     }
 
+    println("--- [${this.tag}] action ${sourceEvent.actionMasked} ---")
+
     if (event.actionMasked == MotionEvent.ACTION_UP) {
       println("--- [${this.tag}] action UP ---")
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
-        // end of the scroll
+        println("onHandling cancel 0 @ [${this.tag}]")
         cancel()
       } else {
+        println("onHandling dispatching @ [${this.tag}]")
         view.onTouchEvent(event)
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
           activate()
         }
 
         if (state == STATE_UNDETERMINED) {
+          println("onHandling cancel 1 @ [${this.tag}]")
           cancel()
         } else {
+          println("onHandling end @ [${this.tag}]")
           end()
         }
       }

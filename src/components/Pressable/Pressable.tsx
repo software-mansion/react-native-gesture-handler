@@ -13,7 +13,6 @@ import {
 import NativeButton from '../GestureHandlerButton';
 import {
   numberAsInset,
-  gestureToPressableEvent,
   isTouchWithinInset,
   gestureTouchToPressableEvent,
   addInsets,
@@ -29,10 +28,6 @@ export default function Pressable(props: PressableProps) {
     testOnly_pressed,
     hitSlop,
     pressRetentionOffset,
-    delayHoverIn,
-    onHoverIn,
-    delayHoverOut,
-    onHoverOut,
     delayLongPress,
     unstable_pressDelay,
     onPress,
@@ -68,43 +63,6 @@ export default function Pressable(props: PressableProps) {
         ? numberAsInset(pressRetentionOffset)
         : pressRetentionOffset ?? {},
     [pressRetentionOffset]
-  );
-
-  const hoverInTimeout = useRef<number | null>(null);
-  const hoverOutTimeout = useRef<number | null>(null);
-
-  const hoverGesture = useMemo(
-    () =>
-      Gesture.Hover()
-        .manualActivation(true) // Stops Hover from blocking Native gesture activation on web
-        .cancelsTouchesInView(false)
-        .onBegin((event) => {
-          if (hoverOutTimeout.current) {
-            clearTimeout(hoverOutTimeout.current);
-          }
-          if (delayHoverIn) {
-            hoverInTimeout.current = setTimeout(
-              () => onHoverIn?.(gestureToPressableEvent(event)),
-              delayHoverIn
-            );
-            return;
-          }
-          onHoverIn?.(gestureToPressableEvent(event));
-        })
-        .onFinalize((event) => {
-          if (hoverInTimeout.current) {
-            clearTimeout(hoverInTimeout.current);
-          }
-          if (delayHoverOut) {
-            hoverOutTimeout.current = setTimeout(
-              () => onHoverOut?.(gestureToPressableEvent(event)),
-              delayHoverOut
-            );
-            return;
-          }
-          onHoverOut?.(gestureToPressableEvent(event));
-        }),
-    [delayHoverIn, delayHoverOut, onHoverIn, onHoverOut]
   );
 
   const pressDelayTimeoutRef = useRef<number | null>(null);

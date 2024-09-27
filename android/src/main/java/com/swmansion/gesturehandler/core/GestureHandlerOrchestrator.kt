@@ -45,7 +45,7 @@ class GestureHandlerOrchestrator(
     if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_HOVER_MOVE) {
       println("--- EXTRACTING GESTURE HANDLERS ---")
       extractGestureHandlers(event)
-      println("extracted: $gestureHandlers")
+      println("extracted: [${gestureHandlers.size}]$gestureHandlers")
     } else if (action == MotionEvent.ACTION_CANCEL) {
       println("!!! top level action cancel")
       cancelAll()
@@ -90,12 +90,12 @@ class GestureHandlerOrchestrator(
       }
     }
 
-    // println("PRE-REMOVAL: ${gestureHandlers.size}")
+//    println("PRE-REMOVAL: ${gestureHandlers.size}")
 
-    // gestureHandlers.forEach { println("${if (isFinished(it.state) && !it.isAwaiting) "REMOVED" else "STAYING"} REASON: finished(${isFinished(it.state)}), awaiting(${it.isAwaiting})") }
+//    gestureHandlers.forEach { println("${if (isFinished(it.state) && !it.isAwaiting) "REMOVED" else "STAYING"} REASON: finished(${isFinished(it.state)}), awaiting(${it.isAwaiting})") }
     gestureHandlers.removeAll { isFinished(it.state) && !it.isAwaiting }
 
-    // println("POST-REMOVAL: ${gestureHandlers.size}")
+//    println("POST-REMOVAL: ${gestureHandlers.size}")
 
     finishedHandlersCleanupScheduled = false
   }
@@ -242,6 +242,8 @@ class GestureHandlerOrchestrator(
     preparedHandlers.clear()
     preparedHandlers.addAll(gestureHandlers)
 
+    println("gestureHandlers: [${gestureHandlers.size}]$gestureHandlers")
+
     // valid
     // size: 4
     // pressable has 3: hover, longPress, native
@@ -278,7 +280,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandler(handler: GestureHandler<*>, sourceEvent: MotionEvent) {
-
+    println("delivering to ${handler.tag} action: ${sourceEvent.actionMasked}")
     if (!isViewAttachedUnderWrapper(handler.view)) {
       handler.cancel()
       return
@@ -327,6 +329,7 @@ class GestureHandlerOrchestrator(
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
       // the event has been dispatched
       if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_HOVER_EXIT) {
+        // What if OOB?
         val pointerId = event.getPointerId(event.actionIndex)
         handler.stopTrackingPointer(pointerId)
       }

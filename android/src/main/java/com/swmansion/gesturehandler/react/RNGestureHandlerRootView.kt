@@ -34,10 +34,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
   override fun dispatchTouchEvent(ev: MotionEvent) =
     if (_enabled && rootHelper!!.dispatchTouchEvent(ev)) {
-      println("#L ${ev.actionMasked}")
+      // println("#L ${ev.actionMasked}")
       true
     } else {
-      println("#R ${ev.actionMasked} $_enabled $rootHelper")
+      // println("#R ${ev.actionMasked} $_enabled $rootHelper")
       super.dispatchTouchEvent(ev)
     }
 
