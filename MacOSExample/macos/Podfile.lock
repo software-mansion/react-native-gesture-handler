@@ -1166,7 +1166,7 @@ PODS:
     - React-utils (= 0.74.6)
   - RNCAsyncStorage (1.24.0):
     - React-Core
-  - RNGestureHandler (2.19.0):
+  - RNGestureHandler (2.20.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1252,6 +1252,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNSVG (15.7.1):
+    - React-Core
   - SocketRocket (0.7.0)
   - Yoga (0.0.0)
 
@@ -1314,6 +1316,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - SocketRocket (from `../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec`)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
 
@@ -1431,6 +1434,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   SocketRocket:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec"
   Yoga:
@@ -1438,10 +1443,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 0686b6af8cbd638c784fea5afb789be66699823c
-  DoubleConversion: ca54355f8932558971f6643521d62b9bc8231cee
+  DoubleConversion: 5b92c4507c560bb62e7aa1acdf2785ea3ff08b3b
   FBLazyVector: 8f41053475f558b29633b434bd62929813a38560
   fmt: 03574da4b7ba40de39da59677ca66610ce8c4a02
-  glog: 3a72874c0322c7caf24931d3a2777cb7a3090529
+  glog: ba31c1afa7dcf1915a109861bccdb4421be6175b
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
   RCT-Folly: 2edbb9597acadc2312235c7ad6243d49852047a3
   RCTDeprecation: 5f1d7e1f8ef6c53f0207e3ac0d0ca23575e8a6ab
@@ -1491,8 +1496,9 @@ SPEC CHECKSUMS:
   React-utils: d1f30e28b14bea6aa6b009be03ab502bbf2cf5c6
   ReactCommon: 68cae4af53cf2d34e6a26c0099f434f170495dd1
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
-  RNGestureHandler: 67e78f16895947f7e57ab91e75e914d3e9ef7239
+  RNGestureHandler: 28078232f2868d3dcb4d4b6c8ab8691700187664
   RNReanimated: 8526ed6af5d81dfe9ad1a2b065b3694859a00903
+  RNSVG: 4590aa95758149fa27c5c83e54a6a466349a1688
   SocketRocket: f6c6249082c011e6de2de60ed641ef8bbe0cfac9
   Yoga: 2b5a8ace4c52fd28c52de828b9a66aede21c3a9c
 
