@@ -19,6 +19,7 @@ import {
   TapGestureHandler,
   PanGestureHandlerStateChangeEvent,
   PanGestureHandlerGestureEvent,
+  Gesture,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../../common';
@@ -34,13 +35,14 @@ export function BottomSheet() {
   let translateYOffset: Animated.Value;
   let translateY: Animated.AnimatedInterpolation<number>;
 
-  const [screenHeight, setScreenHeight] = useState(HEADER_HEIGHT + 1);
+  const [screenHeight, setScreenHeight] = useState(HEADER_HEIGHT / 0.4 + 1);
 
   let onGestureEvent: (event: PanGestureHandlerGestureEvent) => void;
   let onRegisterLastScroll: (
     event: NativeSyntheticEvent<NativeScrollEvent>
   ) => void;
 
+  console.log('screenHeight:', screenHeight);
   const snapPoints = [HEADER_HEIGHT, screenHeight * 0.4, screenHeight * 0.8];
 
   const masterdrawer = useRef<TapGestureHandler>(null);
@@ -123,9 +125,12 @@ export function BottomSheet() {
 
   useEffect(() => {
     mainViewRef.current?.measure((_x, _y, _w, height) => {
-      setScreenHeight(height - HEADER_HEIGHT);
+      console.log('height:', height);
+      if (height) {
+        setScreenHeight(height - HEADER_HEIGHT);
+      }
     });
-  }, []);
+  }, [mainViewRef]);
 
   return (
     <TapGestureHandler
