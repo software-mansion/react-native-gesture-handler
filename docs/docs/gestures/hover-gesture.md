@@ -104,6 +104,16 @@ X coordinate of the current position of the pointer relative to the window. The 
 
 Y coordinate of the current position of the pointer relative to the window. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
 
+### `stylusData`
+
+Object that contains additional information about `stylus`. It consists of the following fields:
+
+- [`tiltX`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltX) - angle in degrees between the Y-Z plane of the stylus and the screen.
+- [`tiltY`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltY) - angle in degrees between the X-Z plane of the stylus and the screen.
+- [`altitudeAngle`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/altitudeAngle) - angle between stylus axis and the X-Y plane of a device screen.
+- [`azimuthAngle`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/azimuthAngle) - angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis.
+- [`pressure`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pressure) - indicates the normalized pressure of the stylus.
+
 <BaseEventData />
 
 ## Remarks

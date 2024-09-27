@@ -55,11 +55,9 @@ import Fling from './src/basic/fling';
 import WebStylesResetExample from './src/release_tests/webStylesReset';
 import StylusData from './src/release_tests/StylusData';
 
-import ReanimatedSimple from './src/new_api/reanimated';
 import Camera from './src/new_api/camera';
 import Transformations from './src/new_api/transformations';
-import OverlapParents from './src/new_api/overlap_parent';
-import OverlapSiblings from './src/new_api/overlap_siblings';
+import Overlap from './src/new_api/overlap';
 import Calculator from './src/new_api/calculator';
 import BottomSheetNewApi from './src/new_api/bottom_sheet';
 import ChatHeadsNewApi from './src/new_api/chat_heads';
@@ -75,6 +73,7 @@ import Pressable from './src/new_api/pressable';
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
+import { COLORS } from './src/common';
 
 import MacosDraggable from './src/simple/draggable';
 import Tap from './src/simple/tap';
@@ -97,6 +96,32 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',
     data: [{ name: 'Empty Example', component: EmptyExample }],
+  },
+  {
+    sectionTitle: 'New api',
+    data: [
+      { name: 'Ball with velocity', component: VelocityTest },
+      { name: 'Camera', component: Camera },
+      { name: 'Transformations', component: Transformations },
+      { name: 'Overlap', component: Overlap },
+      { name: 'Bottom Sheet', component: BottomSheetNewApi },
+      { name: 'Calculator', component: Calculator },
+      { name: 'Chat Heads', component: ChatHeadsNewApi },
+      { name: 'Drag and drop', component: DragNDrop },
+      { name: 'New Swipeable', component: Swipeable },
+      { name: 'New Pressable', component: Pressable },
+      { name: 'Hover', component: Hover },
+      { name: 'Hoverable icons', component: HoverableIcons },
+      {
+        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
+        component: BetterHorizontalDrawer,
+      },
+      {
+        name: 'Manual gestures',
+        component: ManualGestures,
+      },
+      { name: 'Pressable', component: Pressable },
+    ],
   },
   {
     sectionTitle: 'Basic examples',
@@ -166,36 +191,6 @@ const EXAMPLES: ExamplesSection[] = [
     ],
   },
   {
-    sectionTitle: 'New api',
-    data: [
-      {
-        name: 'Simple interaction with Reanimated',
-        component: ReanimatedSimple,
-      },
-      { name: 'Hover', component: Hover },
-      { name: 'Hoverable icons', component: HoverableIcons },
-      { name: 'Camera', component: Camera },
-      { name: 'Velocity test', component: VelocityTest },
-      { name: 'Transformations', component: Transformations },
-      { name: 'Overlap parents', component: OverlapParents },
-      { name: 'Overlap siblings', component: OverlapSiblings },
-      { name: 'Calculator', component: Calculator },
-      { name: 'Bottom Sheet', component: BottomSheetNewApi },
-      { name: 'Chat Heads', component: ChatHeadsNewApi },
-      { name: 'Drag and drop', component: DragNDrop },
-      { name: 'Swipeable', component: Swipeable },
-      { name: 'Pressable', component: Pressable },
-      {
-        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
-        component: BetterHorizontalDrawer,
-      },
-      {
-        name: 'Manual gestures',
-        component: ManualGestures,
-      },
-    ],
-  },
-  {
     sectionTitle: 'Simple',
     data: [
       { name: 'Simple Draggable', component: MacosDraggable },
@@ -229,9 +224,12 @@ export default function App() {
             cardStyle: {
               // It's important to set height for the screen, without it scroll doesn't work on web platform.
               height: Dimensions.get('window').height,
+              backgroundColor: COLORS.offWhite,
             },
             headerStyle: {
-              backgroundColor: '#f8f9ff',
+              backgroundColor: COLORS.offWhite,
+              borderBottomColor: COLORS.headerSeparator,
+              borderBottomWidth: 1,
             },
           }}>
           <Stack.Screen
@@ -353,7 +351,7 @@ function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9ff',
+    backgroundColor: COLORS.offWhite,
   },
   sectionTitle: {
     ...(Platform.OS !== 'macos' ? { backgroundColor: '#f8f9ff' } : {}),
@@ -368,6 +366,7 @@ const styles = StyleSheet.create({
       },
     }),
     padding: 16,
+    backgroundColor: COLORS.offWhite,
     color: 'black',
   },
   text: {
@@ -380,7 +379,8 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     height: 50,
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     backgroundColor: '#fff',
     alignItems: 'center',
