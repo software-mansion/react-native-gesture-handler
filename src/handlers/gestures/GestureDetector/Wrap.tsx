@@ -15,7 +15,6 @@ export class Wrap extends React.Component<{
       // correct viewTag to attach to.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const child: any = React.Children.only(this.props.children);
-
       return React.cloneElement(
         child,
         { collapsable: false },
