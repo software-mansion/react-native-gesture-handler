@@ -29,6 +29,12 @@
     },
     "plugins": [
       [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow RNGH example to access your camera"
+        }
+      ],
+      [
         "expo-font",
         {
           "fonts": [
