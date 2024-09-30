@@ -1,5 +1,5 @@
-import React from 'react';
-import { forwardRef, LegacyRef } from 'react';
+import React, { forwardRef } from 'react';
+import type { LegacyRef } from 'react';
 import { tagMessage } from '../../../utils';
 
 let wrapID = 0;
