@@ -22,7 +22,7 @@ export default function findNodeHandle(
   }
 
   // In new API, we receive ref object which `current` field points to  wrapper `div` with `display: contents;`.
-  // We want to return first child that doesn't have this property.
+  // We want to return the first descendant (in DFS order) that doesn't have this property.
   let element = viewRef?.current;
 
   while (element && element.style.display === 'contents') {
