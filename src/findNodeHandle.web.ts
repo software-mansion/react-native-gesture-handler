@@ -4,16 +4,20 @@ type GestureHandlerRef = {
 };
 
 export default function findNodeHandle(
-  viewRef: GestureHandlerRef
+  viewRef: GestureHandlerRef | HTMLElement
 ): HTMLElement | number | undefined {
   // Old API assumes that child handler is HTMLElement.
   // However, if we nest handlers, we will get ref to another handler.
   // In that case, we want to recursively call findNodeHandle with new handler viewTag (which can also be ref to another handler).
-  if (viewRef?.viewTag !== undefined) {
-    return findNodeHandle(viewRef.viewTag);
+  if ((viewRef as GestureHandlerRef)?.viewTag !== undefined) {
+    return findNodeHandle((viewRef as GestureHandlerRef).viewTag);
   }
 
   if (viewRef instanceof HTMLElement) {
+    if (viewRef.id.indexOf('RNGHWrapper') >= 0) {
+      return findNodeHandle(viewRef.firstChild as HTMLElement);
+    }
+
     return viewRef;
   }
 

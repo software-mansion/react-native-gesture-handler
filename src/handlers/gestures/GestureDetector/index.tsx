@@ -151,9 +151,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   useLayoutEffect(() => {
-    const viewTag = findNodeHandle(
-      (Platform.OS === 'web' ? state.webRef : state.viewRef) as React.Component
-    ) as number;
+    const viewTag = findNodeHandle(state.viewRef as React.Component) as number;
     preparedGesture.isMounted = true;
 
     attachHandlers({
@@ -182,16 +180,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     return (
       <AnimatedWrap
         ref={refHandler}
-        forwardedRef={state.webRef}
         onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
         {props.children}
       </AnimatedWrap>
     );
   } else {
-    return (
-      <Wrap ref={refHandler} forwardedRef={state.webRef}>
-        {props.children}
-      </Wrap>
-    );
+    return <Wrap ref={refHandler}>{props.children}</Wrap>;
   }
 };

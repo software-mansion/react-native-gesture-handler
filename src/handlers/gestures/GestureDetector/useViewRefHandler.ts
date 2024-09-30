@@ -3,7 +3,6 @@ import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
 
 import { GestureDetectorState } from './types';
 import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
 import findNodeHandle from '../../../findNodeHandle';
 
 declare const global: {
@@ -28,9 +27,7 @@ export function useViewRefHandler(
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
       if (state.previousViewTag === -1) {
         state.previousViewTag = findNodeHandle(
-          (Platform.OS === 'web'
-            ? state.webRef
-            : state.viewRef) as React.Component
+          state.viewRef as React.Component
         ) as number;
       }
 

@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
 import { GestureType } from '../gesture';
 import { ComposedGesture } from '../gestureComposition';
 
@@ -31,9 +30,7 @@ export function useDetectorUpdater(
     (skipConfigUpdate?: boolean) => {
       // If the underlying view has changed we need to reattach handlers to the new view
       const viewTag = findNodeHandle(
-        (Platform.OS === 'web'
-          ? state.webRef
-          : state.viewRef) as React.Component
+        state.viewRef as React.Component
       ) as number;
       const didUnderlyingViewChange = viewTag !== state.previousViewTag;
 
