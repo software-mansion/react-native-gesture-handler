@@ -7,12 +7,11 @@ import React, {
   useRef,
 } from 'react';
 import { Platform } from 'react-native';
+import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
 import { isJestEnv } from '../../../utils';
-
-import findNodeHandle from '../../../findNodeHandle';
 
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
 import { AttachedGestureState, GestureDetectorState } from './types';
@@ -117,7 +116,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   const state = useRef<GestureDetectorState>({
     firstRender: true,
     viewRef: null,
-    webRef: useRef(null),
     previousViewTag: -1,
     forceRebuildReanimatedEvent: false,
   }).current;
@@ -151,7 +149,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   useLayoutEffect(() => {
-    const viewTag = findNodeHandle(state.viewRef as React.Component) as number;
+    const viewTag = findNodeHandle(state.viewRef) as number;
     preparedGesture.isMounted = true;
 
     attachHandlers({

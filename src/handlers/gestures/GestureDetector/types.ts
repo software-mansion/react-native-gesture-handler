@@ -1,4 +1,3 @@
-import { Ref } from 'react';
 import { GestureType, HandlerCallbacks } from '../gesture';
 import { SharedValue } from '../reanimatedWrapper';
 import { HandlerStateChangeEvent } from '../../gestureHandlerCommon';
@@ -21,7 +20,6 @@ export interface AttachedGestureState {
 export interface GestureDetectorState {
   firstRender: boolean;
   viewRef: React.Component | null;
-  webRef: Ref<HTMLDivElement>;
   previousViewTag: number;
   forceRebuildReanimatedEvent: boolean;
 }
