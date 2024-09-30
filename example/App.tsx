@@ -366,7 +366,6 @@ const styles = StyleSheet.create({
       },
     }),
     padding: 16,
-    // backgroundColor: COLORS.offWhite,
     color: 'black',
   },
   text: {
