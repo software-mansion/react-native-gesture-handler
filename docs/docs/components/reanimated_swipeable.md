@@ -50,11 +50,11 @@ distance that the panel must be dragged from the right edge to be considered a s
 
 ### `overshootLeft`
 
-a boolean value indicating if the swipeable panel can be pulled further than the left actions panel's width. It is set to `true` by default as long as the left panel render method is present.
+a boolean value indicating if the swipeable panel can be pulled further than the left actions panel's width. It is set to `true` by default as long as the left panel render function is present.
 
 ### `overshootRight`
 
-a boolean value indicating if the swipeable panel can be pulled further than the right actions panel's width. It is set to `true` by default as long as the right panel render method is present.
+a boolean value indicating if the swipeable panel can be pulled further than the right actions panel's width. It is set to `true` by default as long as the right panel render function is present.
 
 ### `overshootFriction`
 
@@ -62,19 +62,23 @@ a number that specifies how much the visual interaction will be delayed compared
 
 ### `onSwipeableOpen`
 
-method that is called when action panel gets open (either right or left). Takes swipe direction as an argument.
+a function that is called when `swipeable` is opened (either right or left).
+Receives swipe direction as an argument.
 
 ### `onSwipeableClose`
 
-method that is called when action panel is closed. Takes swipe direction as an argument.
+a function that is called when `swipeable` is closed.
+Receives swipe direction as an argument.
 
 ### `onSwipeableWillOpen`
 
-method that is called when action panel starts animating on open (either right or left). Takes swipe direction as an argument.
+a function that is called when `swipeable` starts animating on open (either right or left).
+Receives swipe direction as an argument.
 
 ### `onSwipeableWillClose`
 
-method that is called when action panel starts animating on close. Takes swipe direction as an argument.
+a function that is called when `swipeable` starts animating on close.
+Receives swipe direction as an argument.
 
 ### `renderLeftActions`
 
@@ -142,19 +146,19 @@ Using reference to `Swipeable` it's possible to trigger some actions on it
 
 ### `close`
 
-method that closes component.
+a method that closes component.
 
 ### `openLeft`
 
-method that opens component on left side.
+a method that opens component on left side.
 
 ### `openRight`
 
-method that opens component on right side.
+a method that opens component on right side.
 
 ### `reset`
 
-method that resets the swiping states of this `Swipeable` component.
+a method that resets the swiping states of this `Swipeable` component.
 
 Unlike method `close`, this method does not trigger any animation.
 
