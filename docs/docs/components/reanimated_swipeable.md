@@ -85,10 +85,10 @@ a function that returns a component which will be rendered under the swipeable a
 The function receives the following arguments:
 
 - `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
-  - Equals `0` when `swipeable` is closed, `1` when left action is open.
-  - Linearly increases to `Infinity` as left action overshoots it's open position.
-- `translation` - a horizontal offset of the `swipeable` relative to its closed position
-- `swipeableMethods` - provides an object exposing the methods listed [here](#methods)
+  - Equals `0` when `swipeable` is closed, `1` when `swipeable` is open.
+  - Linearly increases to `Infinity` as `swipeable` overshoots it's open position.
+- `translation` - a horizontal offset of the `swipeable` relative to its closed position.
+- `swipeableMethods` - provides an object exposing the methods listed [here](#methods).
 
 This function must return a `ReactNode`.
 
@@ -100,10 +100,10 @@ a function that returns a component which will be rendered under the swipeable a
 The function receives the following arguments:
 
 - `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
-  - Equals `0` when `swipeable` is closed, `1` when right action is open.
-  - Linearly increases to `Infinity` as right action overshoots it's open position.
-- `translation` - a horizontal offset of the `swipeable` relative to its closed position
-- `swipeableMethods` - provides an object exposing the methods listed [here](#methods)
+  - Equals `0` when `swipeable` is closed, `1` when `swipeable` is open.
+  - Linearly increases to `Infinity` as `swipeable` overshoots it's open position.
+- `translation` - a horizontal offset of the `swipeable` relative to its closed position.
+- `swipeableMethods` - provides an object exposing the methods listed [here](#methods).
 
 This function must return a `ReactNode`.
 
