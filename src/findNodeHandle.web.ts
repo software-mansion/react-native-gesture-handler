@@ -5,7 +5,7 @@ type GestureHandlerRef = {
 
 export default function findNodeHandle(
   viewRef: GestureHandlerRef | HTMLElement
-): HTMLElement | number | undefined {
+): HTMLElement | number {
   // Old API assumes that child handler is HTMLElement.
   // However, if we nest handlers, we will get ref to another handler.
   // In that case, we want to recursively call findNodeHandle with new handler viewTag (which can also be ref to another handler).
