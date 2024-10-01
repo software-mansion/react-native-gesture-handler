@@ -145,28 +145,28 @@ export interface SwipeableProps
 
   /**
    * `progress`: Equals `0` when action is closed, `1` when action is open, linearly increases to `Infinity` as action overshoots it's open position.\
-   * `translation`: translation of the `swipeable` in pixels.
-   * `swipeable` provides an object exposing methods for controlling the `swipeable`
+   * `translation`: translation of the `swipeable` in pixels.\
+   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`\
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
     progress: SharedValue<number>,
     translation: SharedValue<number>,
-    swipeable: SwipeableMethods
+    swipeableMethods: SwipeableMethods
   ) => React.ReactNode;
 
   /**
    * `progress`: Equals `0` when action is closed, `1` when action is open, linearly increases to `Infinity` as action overshoots it's open position.\
-   * `translation`: translation of the `swipeable` in pixels.
-   * `swipeable` provides an object exposing methods for controlling the `swipeable`
+   * `translation`: translation of the `swipeable` in pixels.\
+   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`\
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
     progress: SharedValue<number>,
     translation: SharedValue<number>,
-    swipeable: SwipeableMethods
+    swipeableMethods: SwipeableMethods
   ) => React.ReactNode;
 
   animationOptions?: Record<string, unknown>;
