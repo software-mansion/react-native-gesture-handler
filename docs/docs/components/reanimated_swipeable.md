@@ -81,7 +81,8 @@ an argument.
 
 ### `renderLeftActions`
 
-accepts a function which receives the following arguments:
+a function that returns a component which will be rendered under the swipeable after swiping it to the right.
+The function receives the following arguments:
 
 - `progress` value representing swiping progress relative to the width of the returned element.  
   Equals `0` when `swipeable` is closed, `1` when left action is open.  
@@ -95,7 +96,8 @@ To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ### `renderRightActions`
 
-accepts a function which receives the following arguments:
+a function that returns a component which will be rendered under the swipeable after swiping it to the right.
+The function receives the following arguments:
 
 - `progress` value representing swiping progress relative to the width of the returned element.  
   Equals `0` when `swipeable` is closed, `1` when right action is open.  
