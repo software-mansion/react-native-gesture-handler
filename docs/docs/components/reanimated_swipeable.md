@@ -84,8 +84,7 @@ an argument.
 a function that returns a component which will be rendered under the swipeable after swiping it to the right.
 The function receives the following arguments:
 
-- `progress`
-  - A `SharedValue` representing swiping progress relative to the width of the returned element.
+- `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
   - Equals `0` when `swipeable` is closed, `1` when left action is open.
   - Linearly increases to `Infinity` as left action overshoots it's open position.
 - `translation` - a horizontal offset of the `swipeable` relative to its closed position
@@ -97,13 +96,12 @@ To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ### `renderRightActions`
 
-a function that returns a component which will be rendered under the swipeable after swiping it to the right.
+a function that returns a component which will be rendered under the swipeable after swiping it to the left.
 The function receives the following arguments:
 
-- `progress`
-  - A `SharedValue` representing swiping progress relative to the width of the returned element.
-  - Equals `0` when `swipeable` is closed, `1` when left action is open.
-  - Linearly increases to `Infinity` as left action overshoots it's open position.
+- `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
+  - Equals `0` when `swipeable` is closed, `1` when right action is open.
+  - Linearly increases to `Infinity` as right action overshoots it's open position.
 - `translation` - a horizontal offset of the `swipeable` relative to its closed position
 - `swipeableMethods` - provides an object exposing the methods listed [here](#methods)
 
