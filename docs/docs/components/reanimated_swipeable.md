@@ -29,7 +29,8 @@ import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 ### `friction`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance.
+e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
 
 ### `leftThreshold`
 
@@ -61,23 +62,19 @@ a number that specifies how much the visual interaction will be delayed compared
 
 ### `onSwipeableOpen`
 
-method that is called when action panel gets open (either right or left). Takes swipe direction as
-an argument.
+method that is called when action panel gets open (either right or left). Takes swipe direction as an argument.
 
 ### `onSwipeableClose`
 
-method that is called when action panel is closed. Takes swipe direction as
-an argument.
+method that is called when action panel is closed. Takes swipe direction as an argument.
 
 ### `onSwipeableWillOpen`
 
-method that is called when action panel starts animating on open (either right or left). Takes swipe direction as
-an argument.
+method that is called when action panel starts animating on open (either right or left). Takes swipe direction as an argument.
 
 ### `onSwipeableWillClose`
 
-method that is called when action panel starts animating on close. Takes swipe direction as
-an argument.
+method that is called when action panel starts animating on close. Takes swipe direction as an argument.
 
 ### `renderLeftActions`
 
@@ -119,7 +116,8 @@ style object for the children container (Animated.View), for example to apply `f
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
-Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+Enables two-finger gestures on supported devices, for example iPads with trackpads.
+If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
@@ -162,7 +160,8 @@ Unlike method `close`, this method does not trigger any animation.
 
 ### Example:
 
-For a more in-depth presentation of differences between the new and the legacy implementations, see [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
+For a more in-depth presentation of differences between the new and the legacy implementations,
+see [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
 
 ```jsx
 import React from 'react';
