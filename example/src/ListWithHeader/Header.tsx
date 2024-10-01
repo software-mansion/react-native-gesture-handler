@@ -117,22 +117,16 @@ function HeaderNative(props: HeaderProps) {
     const widthCoefficient = 0.2;
     const widthBias = Platform.OS === 'macos' ? 0.2 : 0.4;
 
-    const textOpenWidth =
-      (size?.width ?? 0) * (expandFactor.value * widthCoefficient + widthBias);
-    const textCollapsedWidth =
+    const textWidth =
       (size?.width ?? 0) * (expandFactor.value * widthCoefficient + widthBias);
 
-    const textCollapsedOffset = ((size?.width ?? 0) - textCollapsedWidth) * 0.5;
+    const textCollapsedOffset = ((size?.width ?? 0) - textWidth) * 0.5;
     const textOpenOffset =
-      ((size?.width ?? 0) - textOpenWidth) * 0.5 + horizontalOffset;
+      ((size?.width ?? 0) - textWidth) * 0.5 + horizontalOffset;
 
     return {
       position: 'absolute',
-      width: interpolate(
-        expandFactor.value,
-        [0, 1],
-        [textCollapsedWidth, textOpenWidth]
-      ),
+      width: textWidth,
       height: height,
       bottom: interpolate(
         expandFactor.value,
