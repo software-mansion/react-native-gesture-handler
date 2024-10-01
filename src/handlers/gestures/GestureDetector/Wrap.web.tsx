@@ -1,11 +1,11 @@
 import React, { forwardRef } from 'react';
-import type { LegacyRef } from 'react';
+import type { LegacyRef, PropsWithChildren } from 'react';
 import { tagMessage } from '../../../utils';
 
 let wrapID = 0;
 
-export const Wrap = forwardRef(
-  ({ children }: { children?: React.ReactNode }, ref) => {
+export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
+  ({ children }, ref) => {
     try {
       // I don't think that fighting with types over such a simple function is worth it
       // The only thing it does is add 'collapsable: false' to the child component
