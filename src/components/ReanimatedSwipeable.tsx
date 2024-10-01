@@ -146,7 +146,7 @@ export interface SwipeableProps
   /**
    * `progress`: Equals `0` when action is closed, `1` when action is opened, linearly increases to `Infinity` as `swipeable` overshoots it's open position.\
    * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
-   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.\
+   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
@@ -159,7 +159,7 @@ export interface SwipeableProps
   /**
    * `progress`: Equals `0` when action is closed, `1` when action is opened, linearly increases to `Infinity` as `swipeable` overshoots it's open position.\
    * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
-   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.\
+   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
