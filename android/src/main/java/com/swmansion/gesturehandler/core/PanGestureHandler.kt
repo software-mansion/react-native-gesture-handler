@@ -45,6 +45,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
   private val activateDelayed = Runnable { activate() }
   private var handler: Handler? = null
+  var stylusData: StylusData = StylusData()
+    private set
 
   /**
    * On Android when there are multiple pointers on the screen pan gestures most often just consider
@@ -212,6 +214,10 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return
     }
 
+    if (event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS) {
+      stylusData = StylusData.fromEvent(event)
+    }
+
     val state = state
     val action = sourceEvent.actionMasked
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
@@ -295,6 +301,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       it.recycle()
       velocityTracker = null
     }
+
+    stylusData = StylusData()
   }
 
   override fun resetProgress() {

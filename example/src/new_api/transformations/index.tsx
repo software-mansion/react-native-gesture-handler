@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+// @ts-ignore it's an image
+import SIGNET from '../../ListWithHeader/signet.png';
 
 function Photo() {
   const translationX = useSharedValue(0);
@@ -59,7 +62,9 @@ function Photo() {
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.button, style]} />
+      <Animated.View style={[styles.container, style]}>
+        <Image source={SIGNET} style={styles.image} resizeMode="contain" />
+      </Animated.View>
     </GestureDetector>
   );
 }
@@ -74,15 +79,24 @@ export default function Example() {
 
 const styles = StyleSheet.create({
   home: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
-    backgroundColor: 'plum',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  button: {
-    width: 200,
-    height: 200,
-    backgroundColor: 'green',
-    alignSelf: 'center',
+  container: {
+    width: 240,
+    height: 240,
+    backgroundColor: '#eef0ff',
+    padding: 16,
+    elevation: 8,
+    borderRadius: 48,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  image: {
+    width: 208,
+    height: 208,
   },
 });

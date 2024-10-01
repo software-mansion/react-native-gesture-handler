@@ -16,7 +16,7 @@
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
     "react": "18.3.1",
-    "react-native": "0.76.0-rc.1",
+    "react-native": "0.76.0-rc.2",
     "react-native-gesture-handler": "link:../"
   },
   "devDependencies": {
@@ -26,10 +26,10 @@
     "@react-native-community/cli": "15.0.0-alpha.2",
     "@react-native-community/cli-platform-android": "15.0.0-alpha.2",
     "@react-native-community/cli-platform-ios": "15.0.0-alpha.2",
-    "@react-native/babel-preset": "0.76.0-rc.1",
-    "@react-native/eslint-config": "0.76.0-rc.1",
-    "@react-native/metro-config": "0.76.0-rc.1",
-    "@react-native/typescript-config": "0.76.0-rc.1",
+    "@react-native/babel-preset": "0.76.0-rc.2",
+    "@react-native/eslint-config": "0.76.0-rc.2",
+    "@react-native/metro-config": "0.76.0-rc.2",
+    "@react-native/typescript-config": "0.76.0-rc.2",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",
