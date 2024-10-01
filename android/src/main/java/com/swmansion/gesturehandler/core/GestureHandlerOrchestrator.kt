@@ -85,11 +85,15 @@ class GestureHandlerOrchestrator(
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>) =
     gestureHandlers.any { !isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
 
-  private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) = gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
+  private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) =
+    gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
+
+  private fun shouldBeCancelledByActiveHandler(handler: GestureHandler<*>) =
+    gestureHandlers.any { handler.hasCommonPointers(it) && it.state == GestureHandler.STATE_ACTIVE && !canRunSimultaneously(handler, it) }
 
   private fun tryActivate(handler: GestureHandler<*>) {
     // If we are waiting for a gesture that has successfully finished, we should cancel handler
-    if (shouldBeCancelledByFinishedHandler(handler)) {
+    if (shouldBeCancelledByFinishedHandler(handler) || shouldBeCancelledByActiveHandler(handler)) {
       handler.cancel()
       return
     }
@@ -270,7 +274,7 @@ class GestureHandlerOrchestrator(
     // the first `onTouchesDown` event after the handler processes it and changes state
     // to `BEGAN`.
     if (handler.needsPointerData && handler.state != 0) {
-      handler.updatePointerData(event)
+      handler.updatePointerData(event, sourceEvent)
     }
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
@@ -292,7 +296,7 @@ class GestureHandlerOrchestrator(
       }
 
       if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event)
+        handler.updatePointerData(event, sourceEvent)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that

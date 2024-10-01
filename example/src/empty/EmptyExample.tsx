@@ -4,7 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function EmptyExample() {
   return (
     <View style={styles.container}>
-      <Text>Hello World!</Text>
+      <Text style={{ fontSize: 64, opacity: 0.25 }}>😞</Text>
+      <Text style={{ fontSize: 24, opacity: 0.25 }}>It's so empty here</Text>
     </View>
   );
 }
@@ -14,6 +15,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
 });

@@ -7,7 +7,7 @@ require Pod::Executable.execute_command('node', ['-p',
 
 require_relative '../../scripts/clangd-add-xcode-step.rb'
 
-platform :ios, '14.0'
+platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -24,7 +24,6 @@ target 'FabricExample' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

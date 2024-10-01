@@ -286,22 +286,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       return false
     }
 
-    private fun updateBackgroundColor(backgroundColor: Int, selectable: Drawable?) {
+    private fun updateBackgroundColor(backgroundColor: Int, borderDrawable: Drawable, selectable: Drawable?) {
       val colorDrawable = PaintDrawable(backgroundColor)
-      val borderDrawable = PaintDrawable(Color.TRANSPARENT)
 
       if (hasBorderRadii) {
         colorDrawable.setCornerRadii(buildBorderRadii())
-        borderDrawable.setCornerRadii(buildBorderRadii())
-      }
-
-      if (borderWidth > 0f) {
-        borderDrawable.paint.apply {
-          style = Paint.Style.STROKE
-          strokeWidth = borderWidth
-          color = borderColor ?: Color.BLACK
-          pathEffect = buildBorderStyle()
-        }
       }
 
       val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable, borderDrawable) else arrayOf(colorDrawable, borderDrawable))
@@ -324,6 +313,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
 
       val selectable = createSelectableDrawable()
+      val borderDrawable = createBorderDrawable()
 
       if (hasBorderRadii && selectable is RippleDrawable) {
         val mask = PaintDrawable(Color.WHITE)
@@ -334,13 +324,32 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         foreground = selectable
         if (_backgroundColor != Color.TRANSPARENT) {
-          updateBackgroundColor(_backgroundColor, null)
+          updateBackgroundColor(_backgroundColor, borderDrawable, null)
         }
       } else if (_backgroundColor == Color.TRANSPARENT && rippleColor == null) {
-        background = selectable
+        background = LayerDrawable(arrayOf(selectable, borderDrawable))
       } else {
-        updateBackgroundColor(_backgroundColor, selectable)
+        updateBackgroundColor(_backgroundColor, borderDrawable, selectable)
       }
+    }
+
+    private fun createBorderDrawable(): Drawable {
+      val borderDrawable = PaintDrawable(Color.TRANSPARENT)
+
+      if (hasBorderRadii) {
+        borderDrawable.setCornerRadii(buildBorderRadii())
+      }
+
+      if (borderWidth > 0f) {
+        borderDrawable.paint.apply {
+          style = Paint.Style.STROKE
+          strokeWidth = borderWidth
+          color = borderColor ?: Color.BLACK
+          pathEffect = buildBorderStyle()
+        }
+      }
+
+      return borderDrawable
     }
 
     private fun createSelectableDrawable(): Drawable? {

@@ -1,9 +1,5 @@
 import groovy.json.JsonSlurper
 
-import javax.inject.Inject
-import java.nio.file.Files
-import com.android.build.gradle.tasks.ExternalNativeBuildJsonTask
-
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
@@ -41,16 +37,10 @@ def resolveReactNativeDirectory() {
         return file(reactNativeLocation)
     }
 
-    // monorepo workaround
-    // react-native can be hoisted or in project's own node_modules
-    def reactNativeFromProjectNodeModules = file("${rootProject.projectDir}/../node_modules/react-native")
-    if (reactNativeFromProjectNodeModules.exists()) {
-        return reactNativeFromProjectNodeModules
-    }
-
-    def reactNativeFromNodeModulesWithReanimated = file("${projectDir}/../../react-native")
-    if (reactNativeFromNodeModulesWithReanimated.exists()) {
-        return reactNativeFromNodeModulesWithReanimated
+    // Fallback to node resolver for custom directory structures like monorepos.
+    def reactNativePackage = file(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim())
+    if (reactNativePackage.exists()) {
+        return reactNativePackage.parentFile
     }
 
     throw new Exception(
@@ -103,15 +93,11 @@ repositories {
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 33)
-    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
-        namespace "com.swmansion.gesturehandler"
-    }
 
-    if (agpVersion.tokenize('.')[0].toInteger() >= 8) {
-        buildFeatures {
-            buildConfig = true
-        }
+    namespace "com.swmansion.gesturehandler"
+    buildFeatures {
+        buildConfig = true
+        prefab = true
     }
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -121,12 +107,6 @@ android {
     }
     if (rootProject.hasProperty("ndkVersion")) {
         ndkVersion rootProject.ext.ndkVersion
-    }
-
-    if (REACT_NATIVE_MINOR_VERSION >= 71) {
-        buildFeatures {
-            prefab true
-        }
     }
 
     defaultConfig {
@@ -142,8 +122,7 @@ android {
             externalNativeBuild {
                 cmake {
                     cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
-                    arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
-                        "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                    arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                         "-DANDROID_STL=c++_shared"
                     abiFilters (*reactNativeArchitectures())
@@ -171,6 +150,8 @@ android {
         // only the ones that make the build fail (ideally we should only include libgesturehandler but we
         // are only allowed to specify exclude patterns)
         exclude "**/libreact_render*.so"
+        exclude "**/libreactnative.so"
+        exclude "**/libjsi.so"
     }
 
     sourceSets.main {
