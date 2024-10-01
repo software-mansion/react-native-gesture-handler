@@ -84,11 +84,12 @@ an argument.
 a function that returns a component which will be rendered under the swipeable after swiping it to the right.
 The function receives the following arguments:
 
-- `progress` value representing swiping progress relative to the width of the returned element.  
-  Equals `0` when `swipeable` is closed, `1` when left action is open.  
-  Linearly increases to `Infinity` as left action overshoots it's open position.
-- `translation` horizontal translation of the `swipeable` in pixels.
-- `swipeable` provides an object exposing the methods listed [here](#methods)
+- `progress`
+  - A `SharedValue` representing swiping progress relative to the width of the returned element.
+  - Equals `0` when `swipeable` is closed, `1` when left action is open.
+  - Linearly increases to `Infinity` as left action overshoots it's open position.
+- `translation` - a horizontal offset of the `swipeable` relative to its closed position
+- `swipeableMethods` - provides an object exposing the methods listed [here](#methods)
 
 This function must return a `ReactNode`.
 
@@ -99,11 +100,12 @@ To support `rtl` flexbox layouts use `flexDirection` styling.
 a function that returns a component which will be rendered under the swipeable after swiping it to the right.
 The function receives the following arguments:
 
-- `progress` value representing swiping progress relative to the width of the returned element.  
-  Equals `0` when `swipeable` is closed, `1` when right action is open.  
-  Linearly increases to `Infinity` as right action overshoots it's open position.
-- `translation` horizontal translation of the `swipeable` in pixels.
-- `swipeable` provides an object exposing the methods listed [here](#methods)
+- `progress`
+  - A `SharedValue` representing swiping progress relative to the width of the returned element.
+  - Equals `0` when `swipeable` is closed, `1` when left action is open.
+  - Linearly increases to `Infinity` as left action overshoots it's open position.
+- `translation` - a horizontal offset of the `swipeable` relative to its closed position
+- `swipeableMethods` - provides an object exposing the methods listed [here](#methods)
 
 This function must return a `ReactNode`.
 
