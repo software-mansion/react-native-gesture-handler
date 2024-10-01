@@ -87,7 +87,7 @@ The function receives the following arguments:
 
 - `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
   - Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
-  - Linearly increases to `Infinity` as `swipeable` overshoots it's open position.
+  - When the element overshoots it's opened position the value tends towards `Infinity`.
 - `translation` - a horizontal offset of the `swipeable` relative to its closed position.
 - `swipeableMethods` - provides an object exposing the methods listed [here](#methods).
 
@@ -102,7 +102,7 @@ The function receives the following arguments:
 
 - `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
   - Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
-  - Linearly increases to `Infinity` as `swipeable` overshoots it's open position.
+  - When the element overshoots it's opened position the value tends towards `Infinity`.
 - `translation` - a horizontal offset of the `swipeable` relative to its closed position.
 - `swipeableMethods` - provides an object exposing the methods listed [here](#methods).
 

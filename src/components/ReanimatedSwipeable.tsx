@@ -144,7 +144,10 @@ export interface SwipeableProps
   onSwipeableCloseStartDrag?: (direction: 'left' | 'right') => void;
 
   /**
-   * `progress`: Equals `0` when action is closed, `1` when action is opened, linearly increases to `Infinity` as `swipeable` overshoots it's open position.\
+   * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
+   *  - When the element overshoots it's opened position the value tends towards `Infinity`.
+   *  - Goes back to `1` when `swipeable` is released.
+   *
    * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
    * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
    *
@@ -157,7 +160,10 @@ export interface SwipeableProps
   ) => React.ReactNode;
 
   /**
-   * `progress`: Equals `0` when action is closed, `1` when action is opened, linearly increases to `Infinity` as `swipeable` overshoots it's open position.\
+   * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
+   *  - When the element overshoots it's opened position the value tends towards `Infinity`.
+   *  - Goes back to `1` when `swipeable` is released.
+   *
    * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
    * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
    *
