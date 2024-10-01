@@ -16,7 +16,8 @@ import { COLORS } from '../common';
 const SIGNET = require('./signet.png');
 const TEXT = require('./text.png');
 
-export const HEADER_HEIGHT = Platform.OS === 'web' ? 64 : 192;
+export const HEADER_HEIGHT =
+  Platform.OS === 'web' ? 64 : Platform.OS === 'macos' ? 128 : 192;
 export const COLLAPSED_HEADER_HEIGHT = 64;
 
 export interface HeaderProps {
@@ -56,14 +57,32 @@ function HeaderNative(props: HeaderProps) {
     };
   });
 
+  const collapsedCoefficient = 0.7;
+  const openCoefficient = Platform.OS === 'macos' ? 1 : 0.5;
+  const padding = Platform.OS === 'macos' ? 10 : 0;
+  const horizontalOffset = Platform.OS === 'macos' ? 50 : 0;
+
   const signetStyle = useAnimatedStyle(() => {
     const size = isMounted.value ? measure(containerRef) : undefined;
     const imageSize = interpolate(
       expandFactor.value,
       [0, 1],
-      [headerHeight.value * 0.7, headerHeight.value * 0.5]
+      [
+        headerHeight.value * collapsedCoefficient,
+        headerHeight.value * openCoefficient - padding,
+      ]
     );
     const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
+
+    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.32 : 0.5;
+    const signetOpenOffsetBias =
+      Platform.OS === 'macos' ? 15 - (size?.height ?? 0) : 0;
+
+    const signetCollapsedOffset = COLLAPSED_HEADER_HEIGHT * 0.25;
+    const signetOpenOffset =
+      ((size?.width ?? 0) - imageSize) * signetOpenOffsetCoefficient +
+      signetOpenOffsetBias +
+      horizontalOffset;
 
     return {
       position: 'absolute',
@@ -72,12 +91,12 @@ function HeaderNative(props: HeaderProps) {
       top: interpolate(
         Math.sqrt(expandFactor.value),
         [0, 1],
-        [clampedHeight * 0.1, 0]
+        [clampedHeight * 0.1, 0 + padding / 2]
       ),
       left: interpolate(
         expandFactor.value,
         [0, 1],
-        [COLLAPSED_HEADER_HEIGHT * 0.25, ((size?.width ?? 0) - imageSize) * 0.5]
+        [signetCollapsedOffset, signetOpenOffset]
       ),
       opacity: opacity.value,
       transform: [{ translateY: (1 - opacity.value) * 20 }],
@@ -89,20 +108,36 @@ function HeaderNative(props: HeaderProps) {
     const height = interpolate(
       expandFactor.value,
       [0, 1],
-      [headerHeight.value * 0.7, headerHeight.value * 0.5]
+      [
+        headerHeight.value * collapsedCoefficient,
+        headerHeight.value * openCoefficient - padding,
+      ]
     );
-    const width = (size?.width ?? 0) * (expandFactor.value * 0.2 + 0.4);
+
+    const widthCoefficient = 0.2;
+    const widthBias = Platform.OS === 'macos' ? 0.2 : 0.4;
+
+    const textWidth =
+      (size?.width ?? 0) * (expandFactor.value * widthCoefficient + widthBias);
+
+    const textCollapsedOffset = ((size?.width ?? 0) - textWidth) * 0.5;
+    const textOpenOffset =
+      ((size?.width ?? 0) - textWidth) * 0.5 + horizontalOffset;
 
     return {
       position: 'absolute',
-      width: width,
+      width: textWidth,
       height: height,
       bottom: interpolate(
         expandFactor.value,
         [0, 1],
-        [COLLAPSED_HEADER_HEIGHT * 0.2, 0]
+        [COLLAPSED_HEADER_HEIGHT * 0.2, 0 + padding / 2]
       ),
-      left: ((size?.width ?? 0) - width) * 0.5,
+      left: interpolate(
+        expandFactor.value,
+        [0, 1],
+        [textCollapsedOffset, textOpenOffset]
+      ),
       opacity: opacity.value,
       transform: [{ translateY: (1 - opacity.value) * 20 }],
     };

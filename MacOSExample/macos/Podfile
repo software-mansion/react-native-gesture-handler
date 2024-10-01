@@ -5,23 +5,33 @@ prepare_react_native_project!
 
 target 'MacOSExample-macOS' do
   platform :macos, '10.15'
-  use_native_modules!
+  
+  react_native_path = "../node_modules/react-native-macos"
+  
+  config = use_native_modules!
 
-  # Flags change depending on the env values.
-  flags = get_default_flags()
+  # Override default react-native path for MacOS building
+  config[:reactNativePath] = react_native_path
 
   use_react_native!(
-    :path => '../node_modules/react-native-macos',
-    :hermes_enabled => false,
+    :path => react_native_path,
+    :hermes_enabled => true,
     :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
-    # Flipper is not compatible w/ macOS
-    :flipper_configuration => FlipperConfiguration.disabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   post_install do |installer|
-    react_native_post_install(installer)
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    react_native_post_install(installer, react_native_path)
+
+    installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+        resource_bundle_target.build_configurations.each do |config|  
+          # it's standard to log build setting changes
+          puts "Setting REACT_NATIVE_PATH build settings"        
+          config.build_settings["REACT_NATIVE_PATH"] = "${PODS_ROOT}/../" + react_native_path
+        end
+      end
+    end
   end
 end
