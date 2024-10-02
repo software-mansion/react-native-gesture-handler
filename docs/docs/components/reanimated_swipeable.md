@@ -30,7 +30,7 @@ import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 ### `friction`
 
 a number that specifies how much the visual interaction will be delayed compared to the gesture distance.
-e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
+e.g. value of `1` will indicate that the swipeable panel should exactly follow the gesture, `2` means it is going to be two times "slower".
 
 ### `leftThreshold`
 
@@ -42,11 +42,11 @@ distance from the right edge at which released panel will animate to the open st
 
 ### `dragOffsetFromLeftEdge`
 
-distance that the panel must be dragged from the left edge to be considered a swipe. The default value is 10.
+distance that the panel must be dragged from the left edge to be considered a swipe. The default value is `10`.
 
 ### `dragOffsetFromRightEdge`
 
-distance that the panel must be dragged from the right edge to be considered a swipe. The default value is 10.
+distance that the panel must be dragged from the right edge to be considered a swipe. The default value is `10`.
 
 ### `overshootLeft`
 
@@ -58,7 +58,7 @@ a boolean value indicating if the swipeable panel can be pulled further than the
 
 ### `overshootFriction`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is 1, it mean no friction, for a native feel, try 8 or above.
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is `1`, it mean no friction, for a native feel, try `8` or above.
 
 ### `onSwipeableOpen`
 
@@ -112,16 +112,16 @@ To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ### `containerStyle`
 
-style object for the container (Animated.View), for example to override `overflow: 'hidden'`.
+style object for the container (`Animated.View`), for example to override `overflow: 'hidden'`.
 
 ### `childrenContainerStyle`
 
-style object for the children container (Animated.View), for example to apply `flex: 1`.
+style object for the children container (`Animated.View`), for example to apply `flex: 1`.
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads.
-If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
