@@ -25,7 +25,10 @@ export interface HeaderProps {
 }
 
 export default function Header(props: HeaderProps) {
-  if (Platform.OS === 'web' || Platform.OS === 'macos') {
+  if (Platform.OS === 'macos') {
+    return <HeaderMacOS {...props} />;
+  }
+  if (Platform.OS === 'web') {
     return <HeaderWeb {...props} />;
   }
   return <HeaderNative {...props} />;
@@ -178,6 +181,15 @@ function HeaderWeb(_props: HeaderProps) {
   );
 }
 
+function HeaderMacOS(_props: HeaderProps) {
+  return (
+    <Animated.View collapsable={false} style={styles.webHeader}>
+      <Animated.Image source={SIGNET} style={styles.macosSignet} />
+      <Animated.Image source={TEXT} style={styles.macosText} />
+    </Animated.View>
+  );
+}
+
 const styles = StyleSheet.create({
   nativeHeader: {
     width: '100%',
@@ -197,29 +209,22 @@ const styles = StyleSheet.create({
     height: HEADER_HEIGHT,
   },
   webSignet: {
-    ...(Platform.OS === 'macos'
-      ? {
-          // macos stretches the images to fill the available space
-          width: 31, // 65:100 ratio applied to 48px
-          height: 48,
-          marginHorizontal: 8.5,
-        }
-      : {
-          // web doesn't stretch images to fill the available space
-          width: 48,
-          height: 48,
-        }),
+    width: 48,
+    height: 48,
   },
   webText: {
-    ...(Platform.OS === 'macos'
-      ? {
-          width: 142, // 1439:323 ratio applied to 32px
-          height: 32,
-          marginHorizontal: 14,
-        }
-      : {
-          width: 170,
-          height: 32,
-        }),
+    width: 170,
+    height: 32,
+  },
+  macosSignet: {
+    // macos stretches the images to fill the available space
+    width: 31, // 65:100 ratio applied to 48px
+    height: 48,
+    marginHorizontal: 8.5,
+  },
+  macosText: {
+    width: 142, // 1439:323 ratio applied to 32px
+    height: 32,
+    marginHorizontal: 14,
   },
 });
