@@ -197,9 +197,18 @@ const styles = StyleSheet.create({
     height: HEADER_HEIGHT,
   },
   webSignet: {
-    width: 48,
-    height: 48,
-    backgroundColor: 'orange',
+    ...(Platform.OS === 'macos'
+      ? {
+          // macos stretches the images to fill the available space
+          width: 31, // 65:100 ratio applied to 48px,
+          height: 48,
+          marginHorizontal: 8.5,
+        }
+      : {
+          // web doesn't stretch images to fill the available space
+          width: 48,
+          height: 48,
+        }),
   },
   webText: {
     width: 170,
