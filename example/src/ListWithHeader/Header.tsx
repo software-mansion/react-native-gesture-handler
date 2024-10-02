@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'macos'
       ? {
           // macos stretches the images to fill the available space
-          width: 31, // 65:100 ratio applied to 48px,
+          width: 31, // 65:100 ratio applied to 48px
           height: 48,
           marginHorizontal: 8.5,
         }
@@ -211,7 +211,15 @@ const styles = StyleSheet.create({
         }),
   },
   webText: {
-    width: 170,
-    height: 32,
+    ...(Platform.OS === 'macos'
+      ? {
+          width: 142, // 1439:323 ratio applied to 32px
+          height: 32,
+          marginHorizontal: 14,
+        }
+      : {
+          width: 170,
+          height: 32,
+        }),
   },
 });
