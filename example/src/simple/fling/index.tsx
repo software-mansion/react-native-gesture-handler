@@ -1,5 +1,10 @@
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  Directions,
+  Gesture,
+  GestureDetector,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -7,18 +12,18 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-const AnimationDuration = 250;
+const AnimationDuration = 100;
 
 const Colors = {
   Initial: '#0a2688',
-  Hovered: '#6fcef5',
+  Active: '#6fcef5',
 };
 
-export default function HoverExample() {
-  const isHovered = useSharedValue(false);
+export default function FlingExample() {
+  const isActive = useSharedValue(false);
   const colorProgress = useSharedValue(0);
   const color1 = useSharedValue(Colors.Initial);
-  const color2 = useSharedValue(Colors.Hovered);
+  const color2 = useSharedValue(Colors.Active);
 
   const animatedStyles = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
@@ -30,7 +35,7 @@ export default function HoverExample() {
     return {
       transform: [
         {
-          scale: withTiming(isHovered.value ? 1.2 : 1, {
+          scale: withTiming(isActive.value ? 1.2 : 1, {
             duration: AnimationDuration,
           }),
         },
@@ -39,21 +44,24 @@ export default function HoverExample() {
     };
   });
 
-  const g = Gesture.Hover()
+  const g = Gesture.Fling()
+    // eslint-disable-next-line no-bitwise
+    .direction(Directions.LEFT | Directions.UP)
     .onBegin(() => {
       console.log('onBegin');
-
-      isHovered.value = true;
+    })
+    .onStart(() => {
+      console.log('onStart');
+      isActive.value = true;
       colorProgress.value = withTiming(1, {
         duration: AnimationDuration,
       });
     })
-    .onStart(() => console.log('onStart'))
     .onEnd(() => console.log('onEnd'))
     .onFinalize((_, success) => {
       console.log('onFinalize', success);
 
-      isHovered.value = false;
+      isActive.value = false;
 
       colorProgress.value = withTiming(0, {
         duration: AnimationDuration,
@@ -63,7 +71,7 @@ export default function HoverExample() {
   return (
     <View style={styles.container}>
       <GestureDetector gesture={g}>
-        <Animated.View style={[styles.pressBox, animatedStyles]} />
+        <Animated.View style={[styles.box, animatedStyles]} />
       </GestureDetector>
     </View>
   );
@@ -76,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  pressBox: {
+  box: {
     width: 100,
     height: 100,
     borderRadius: 20,
