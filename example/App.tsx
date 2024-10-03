@@ -86,7 +86,7 @@ import { Icon } from '@swmansion/icons';
 interface Example {
   name: string;
   component: React.ComponentType;
-  disabledOn?: Set<String>;
+  unsupportedPlatforms?: Set<String>;
 }
 interface ExamplesSection {
   sectionTitle: string;
@@ -135,12 +135,12 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Pager & drawer',
         component: PagerAndDrawer,
-        disabledOn: new Set(['web', 'ios', 'macos']),
+        unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
       },
       {
         name: 'Force touch',
         component: ForceTouch,
-        disabledOn: new Set(['web', 'android']),
+        unsupportedPlatforms: new Set(['web', 'android']),
       },
       { name: 'Fling', component: Fling },
     ],
@@ -182,7 +182,7 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Nested buttons (sound & ripple)',
         component: NestedButtons,
-        disabledOn: new Set(['web', 'ios', 'macos']),
+        unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
@@ -194,7 +194,7 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'ContextMenu',
         component: ContextMenu,
-        disabledOn: new Set(['android', 'ios', 'macos']),
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
       },
       { name: 'PointerType', component: PointerType },
       { name: 'Swipeable Reanimation', component: SwipeableReanimation },
@@ -203,7 +203,7 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Web styles reset',
         component: WebStylesResetExample,
-        disabledOn: new Set(['android', 'ios', 'macos']),
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
       },
       { name: 'Stylus data', component: StylusData },
     ],
@@ -304,7 +304,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
           <MainScreenItem
             name={item.name}
             onPressItem={(name) => navigate(navigation, name)}
-            enabled={!item.disabledOn?.has(Platform.OS)}
+            enabled={!item.unsupportedPlatforms?.has(Platform.OS)}
           />
         )}
         renderSectionHeader={({ section: { sectionTitle } }) => (
