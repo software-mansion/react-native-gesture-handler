@@ -17,7 +17,7 @@ const SIGNET = require('./signet.png');
 const TEXT = require('./text.png');
 
 export const HEADER_HEIGHT =
-  Platform.OS === 'web' ? 64 : Platform.OS === 'macos' ? 128 : 192;
+  Platform.OS === 'web' || Platform.OS === 'macos' ? 64 : 192;
 export const COLLAPSED_HEADER_HEIGHT = 64;
 
 export interface HeaderProps {
@@ -25,6 +25,9 @@ export interface HeaderProps {
 }
 
 export default function Header(props: HeaderProps) {
+  if (Platform.OS === 'macos') {
+    return <HeaderMacOS {...props} />;
+  }
   if (Platform.OS === 'web') {
     return <HeaderWeb {...props} />;
   }
@@ -58,9 +61,7 @@ function HeaderNative(props: HeaderProps) {
   });
 
   const collapsedCoefficient = 0.7;
-  const openCoefficient = Platform.OS === 'macos' ? 1 : 0.5;
-  const padding = Platform.OS === 'macos' ? 10 : 0;
-  const horizontalOffset = Platform.OS === 'macos' ? 50 : 0;
+  const openCoefficient = 0.5;
 
   const signetStyle = useAnimatedStyle(() => {
     const size = isMounted.value ? measure(containerRef) : undefined;
@@ -69,20 +70,16 @@ function HeaderNative(props: HeaderProps) {
       [0, 1],
       [
         headerHeight.value * collapsedCoefficient,
-        headerHeight.value * openCoefficient - padding,
+        headerHeight.value * openCoefficient,
       ]
     );
     const clampedHeight = Math.min(headerHeight.value, HEADER_HEIGHT);
 
-    const signetOpenOffsetCoefficient = Platform.OS === 'macos' ? 0.32 : 0.5;
-    const signetOpenOffsetBias =
-      Platform.OS === 'macos' ? 15 - (size?.height ?? 0) : 0;
+    const signetOpenOffsetCoefficient = 0.5;
 
     const signetCollapsedOffset = COLLAPSED_HEADER_HEIGHT * 0.25;
     const signetOpenOffset =
-      ((size?.width ?? 0) - imageSize) * signetOpenOffsetCoefficient +
-      signetOpenOffsetBias +
-      horizontalOffset;
+      ((size?.width ?? 0) - imageSize) * signetOpenOffsetCoefficient;
 
     return {
       position: 'absolute',
@@ -91,7 +88,7 @@ function HeaderNative(props: HeaderProps) {
       top: interpolate(
         Math.sqrt(expandFactor.value),
         [0, 1],
-        [clampedHeight * 0.1, 0 + padding / 2]
+        [clampedHeight * 0.1, 0]
       ),
       left: interpolate(
         expandFactor.value,
@@ -110,19 +107,18 @@ function HeaderNative(props: HeaderProps) {
       [0, 1],
       [
         headerHeight.value * collapsedCoefficient,
-        headerHeight.value * openCoefficient - padding,
+        headerHeight.value * openCoefficient,
       ]
     );
 
     const widthCoefficient = 0.2;
-    const widthBias = Platform.OS === 'macos' ? 0.2 : 0.4;
+    const widthBias = 0.4;
 
     const textWidth =
       (size?.width ?? 0) * (expandFactor.value * widthCoefficient + widthBias);
 
     const textCollapsedOffset = ((size?.width ?? 0) - textWidth) * 0.5;
-    const textOpenOffset =
-      ((size?.width ?? 0) - textWidth) * 0.5 + horizontalOffset;
+    const textOpenOffset = ((size?.width ?? 0) - textWidth) * 0.5;
 
     return {
       position: 'absolute',
@@ -131,7 +127,7 @@ function HeaderNative(props: HeaderProps) {
       bottom: interpolate(
         expandFactor.value,
         [0, 1],
-        [COLLAPSED_HEADER_HEIGHT * 0.2, 0 + padding / 2]
+        [COLLAPSED_HEADER_HEIGHT * 0.2, 0]
       ),
       left: interpolate(
         expandFactor.value,
@@ -185,6 +181,15 @@ function HeaderWeb(_props: HeaderProps) {
   );
 }
 
+function HeaderMacOS(_props: HeaderProps) {
+  return (
+    <Animated.View collapsable={false} style={styles.webHeader}>
+      <Animated.Image source={SIGNET} style={styles.macosSignet} />
+      <Animated.Image source={TEXT} style={styles.macosText} />
+    </Animated.View>
+  );
+}
+
 const styles = StyleSheet.create({
   nativeHeader: {
     width: '100%',
@@ -210,5 +215,16 @@ const styles = StyleSheet.create({
   webText: {
     width: 170,
     height: 32,
+  },
+  macosSignet: {
+    // macos stretches the images to fill the available space
+    width: 31, // 65:100 ratio applied to 48px
+    height: 48,
+    marginHorizontal: 8.5,
+  },
+  macosText: {
+    width: 142, // 1439:323 ratio applied to 32px
+    height: 32,
+    marginHorizontal: 14,
   },
 });
