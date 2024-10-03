@@ -67,13 +67,19 @@ import ManualGestures from './src/new_api/manualGestures/index';
 import Hover from './src/new_api/hover';
 import HoverableIcons from './src/new_api/hoverable_icons';
 import VelocityTest from './src/new_api/velocityTest';
-import Swipeable from 'src/new_api/swipeable';
-import Pressable from 'src/new_api/pressable';
+import Swipeable from './src/new_api/swipeable';
+import Pressable from './src/new_api/pressable';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 import { COLORS } from './src/common';
+
+import MacosDraggable from './src/simple/draggable';
+import Tap from './src/simple/tap';
+import LongPressExample from './src/simple/longPress';
+import ManualExample from './src/simple/manual';
+import SimpleFling from './src/simple/fling';
 
 import { Icon } from '@swmansion/icons';
 
@@ -182,6 +188,16 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Gesturized pressable', component: GesturizedPressable },
       { name: 'Web styles reset', component: WebStylesResetExample },
       { name: 'Stylus data', component: StylusData },
+    ],
+  },
+  {
+    sectionTitle: 'Simple',
+    data: [
+      { name: 'Simple Draggable', component: MacosDraggable },
+      { name: 'Tap', component: Tap },
+      { name: 'LongPress', component: LongPressExample },
+      { name: 'Manual', component: ManualExample },
+      { name: 'Simple Fling', component: SimpleFling },
     ],
   },
 ];
@@ -304,7 +320,7 @@ function OpenLastExampleSetting() {
       <View
         style={styles.buttonContent}
         pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
-        <Text>Open last example on launch</Text>
+        <Text style={styles.text}>Open last example on launch</Text>
         <Switch
           value={openLastExample}
           onValueChange={() => {
@@ -324,8 +340,10 @@ interface MainScreenItemProps {
 function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
   return (
     <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
-      <Text>{name}</Text>
-      <Icon name="chevron-small-right" size={24} color="#bbb" />
+      <Text style={styles.text}>{name}</Text>
+      {Platform.OS !== 'macos' && (
+        <Icon name="chevron-small-right" size={24} color="#bbb" />
+      )}
     </RectButton>
   );
 }
@@ -336,6 +354,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.offWhite,
   },
   sectionTitle: {
+    ...(Platform.OS !== 'macos' ? { backgroundColor: '#f8f9ff' } : {}),
     ...Platform.select({
       ios: {
         fontSize: 17,
@@ -347,7 +366,10 @@ const styles = StyleSheet.create({
       },
     }),
     padding: 16,
-    backgroundColor: COLORS.offWhite,
+    color: 'black',
+  },
+  text: {
+    color: 'black',
   },
   list: {},
   separator: {
@@ -376,9 +398,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'space-between',
     elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    ...(Platform.OS !== 'macos'
+      ? {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+        }
+      : {}),
   },
 });
