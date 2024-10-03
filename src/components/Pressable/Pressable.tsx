@@ -363,7 +363,7 @@ export default function Pressable(props: PressableProps) {
     gesture.hitSlop(appliedHitSlop);
     gesture.shouldCancelWhenOutside(true);
 
-    if (Platform.OS == 'web' || Platform.OS == 'macos') {
+    if (Platform.OS == 'web') {
       gesture.shouldCancelWhenOutside(false);
     }
   }
