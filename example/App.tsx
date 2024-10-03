@@ -86,6 +86,7 @@ import { Icon } from '@swmansion/icons';
 interface Example {
   name: string;
   component: React.ComponentType;
+  disabledOn?: Set<String>;
 }
 interface ExamplesSection {
   sectionTitle: string;
@@ -131,8 +132,16 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Bouncing box', component: BouncingBox },
       { name: 'Pan responder', component: PanResponder },
       { name: 'Horizontal drawer', component: HorizontalDrawer },
-      { name: 'Pager & drawer', component: PagerAndDrawer },
-      { name: 'Force touch', component: ForceTouch },
+      {
+        name: 'Pager & drawer',
+        component: PagerAndDrawer,
+        disabledOn: new Set(['web', 'ios', 'macos']),
+      },
+      {
+        name: 'Force touch',
+        component: ForceTouch,
+        disabledOn: new Set(['web', 'android']),
+      },
       { name: 'Fling', component: Fling },
     ],
   },
@@ -171,8 +180,9 @@ const EXAMPLES: ExamplesSection[] = [
         component: NestedPressables as React.ComponentType,
       },
       {
-        name: 'Nested buttons (sound & ripple on Android)',
+        name: 'Nested buttons (sound & ripple)',
         component: NestedButtons,
+        disabledOn: new Set(['web', 'ios', 'macos']),
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
@@ -181,12 +191,20 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
       { name: 'MouseButtons', component: MouseButtons },
-      { name: 'ContextMenu (web only)', component: ContextMenu },
+      {
+        name: 'ContextMenu',
+        component: ContextMenu,
+        disabledOn: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'PointerType', component: PointerType },
       { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
-      { name: 'Web styles reset', component: WebStylesResetExample },
+      {
+        name: 'Web styles reset',
+        component: WebStylesResetExample,
+        disabledOn: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'Stylus data', component: StylusData },
     ],
   },
@@ -286,6 +304,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
           <MainScreenItem
             name={item.name}
             onPressItem={(name) => navigate(navigation, name)}
+            enabled={!item.disabledOn?.has(Platform.OS)}
           />
         )}
         renderSectionHeader={({ section: { sectionTitle } }) => (
@@ -335,13 +354,20 @@ function OpenLastExampleSetting() {
 interface MainScreenItemProps {
   name: string;
   onPressItem: (name: string) => void;
+  enabled: boolean;
 }
 
-function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
+function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
   return (
-    <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
+    <RectButton
+      enabled={enabled}
+      style={[
+        styles.button,
+        !enabled && { backgroundColor: 'rgba(220, 220, 220, 0.8)' },
+      ]}
+      onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
-      {Platform.OS !== 'macos' && (
+      {Platform.OS !== 'macos' && enabled && (
         <Icon name="chevron-small-right" size={24} color="#bbb" />
       )}
     </RectButton>
