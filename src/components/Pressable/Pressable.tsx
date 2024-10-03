@@ -305,6 +305,9 @@ export default function Pressable(props: PressableProps) {
           if (Platform.OS === 'android') {
             isTouchPropagationAllowed.current = true;
           }
+          if (Platform.OS === 'macos') {
+            isTouchPropagationAllowed.current = true;
+          }
         })
         .onStart(() => {
           if (Platform.OS === 'web') {
@@ -358,10 +361,10 @@ export default function Pressable(props: PressableProps) {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(false);
+    gesture.shouldCancelWhenOutside(true);
 
-    if (Platform.OS !== 'web') {
-      gesture.shouldCancelWhenOutside(true);
+    if (Platform.OS == 'web' || Platform.OS == 'macos') {
+      gesture.shouldCancelWhenOutside(false);
     }
   }
 
