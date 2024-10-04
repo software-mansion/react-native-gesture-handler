@@ -120,7 +120,6 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Manual gestures',
         component: ManualGestures,
       },
-      { name: 'Pressable', component: Pressable },
     ],
   },
   {
