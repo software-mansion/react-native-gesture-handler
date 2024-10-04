@@ -121,35 +121,13 @@ export default class PointerTracker {
   }
 
   public getLastAbsoluteCoords(pointerId?: number) {
-    if (pointerId !== undefined) {
-      return {
-        x: this.trackedPointers.get(pointerId)?.abosoluteCoords.x as number,
-        y: this.trackedPointers.get(pointerId)?.abosoluteCoords.y as number,
-      };
-    } else {
-      return {
-        x: this.trackedPointers.get(this.lastMovedPointerId)?.abosoluteCoords
-          .x as number,
-        y: this.trackedPointers.get(this.lastMovedPointerId)?.abosoluteCoords
-          .y as number,
-      };
-    }
+    return this.trackedPointers.get(pointerId ?? this.lastMovedPointerId)
+      ?.abosoluteCoords as Point;
   }
 
   public getLastRelativeCoords(pointerId?: number) {
-    if (pointerId !== undefined) {
-      return {
-        x: this.trackedPointers.get(pointerId)?.relativeCoords.x as number,
-        y: this.trackedPointers.get(pointerId)?.relativeCoords.y as number,
-      };
-    } else {
-      return {
-        x: this.trackedPointers.get(this.lastMovedPointerId)?.relativeCoords
-          .x as number,
-        y: this.trackedPointers.get(this.lastMovedPointerId)?.relativeCoords
-          .y as number,
-      };
-    }
+    return this.trackedPointers.get(pointerId ?? this.lastMovedPointerId)
+      ?.relativeCoords as Point;
   }
 
   // Some handlers use these methods to send average values in native event.
