@@ -144,32 +144,35 @@ export interface SwipeableProps
   onSwipeableCloseStartDrag?: (direction: 'left' | 'right') => void;
 
   /**
+   * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
+   *  - When the element overshoots it's opened position the value tends towards `Infinity`.
+   *  - Goes back to `1` when `swipeable` is released.
    *
-   * This map describes the values to use as inputRange for extra interpolation:
-   * AnimatedValue: [startValue, endValue]
-   *
-   * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, +]
+   * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
+   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderLeftActions?: (
-    progressAnimatedValue: SharedValue<number>,
-    dragAnimatedValue: SharedValue<number>,
-    swipeable: SwipeableMethods
+    progress: SharedValue<number>,
+    translation: SharedValue<number>,
+    swipeableMethods: SwipeableMethods
   ) => React.ReactNode;
+
   /**
+   * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
+   *  - When the element overshoots it's opened position the value tends towards `Infinity`.
+   *  - Goes back to `1` when `swipeable` is released.
    *
-   * This map describes the values to use as inputRange for extra interpolation:
-   * AnimatedValue: [startValue, endValue]
-   *
-   * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, -]
+   * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
+   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
    *
    * To support `rtl` flexbox layouts use `flexDirection` styling.
    * */
   renderRightActions?: (
-    progressAnimatedValue: SharedValue<number>,
-    dragAnimatedValue: SharedValue<number>,
-    swipeable: SwipeableMethods
+    progress: SharedValue<number>,
+    translation: SharedValue<number>,
+    swipeableMethods: SwipeableMethods
   ) => React.ReactNode;
 
   animationOptions?: Record<string, unknown>;

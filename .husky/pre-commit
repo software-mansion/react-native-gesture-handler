@@ -1,5 +1,15 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+print() {
+  echo "    [PRECOMMIT]: $1" >&2
+}
+
+BRANCH=$(git symbolic-ref HEAD)
+if [ "$BRANCH" = "refs/heads/main" ]; then
+  print "You tried to commit to main, which is probably a mistake. Aborting commit."
+  exit 1
+fi
+
 yarn lint-staged
 yarn ts-check

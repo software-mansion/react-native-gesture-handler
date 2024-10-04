@@ -29,7 +29,8 @@ import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 ### `friction`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance. e.g. value of 1 will indicate that the swipeable panel should exactly follow the gesture, 2 means it is going to be two times "slower".
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance.
+e.g. value of `1` will indicate that the swipeable panel should exactly follow the gesture, `2` means it is going to be two times "slower".
 
 ### `leftThreshold`
 
@@ -41,81 +42,86 @@ distance from the right edge at which released panel will animate to the open st
 
 ### `dragOffsetFromLeftEdge`
 
-distance that the panel must be dragged from the left edge to be considered a swipe. The default value is 10.
+distance that the panel must be dragged from the left edge to be considered a swipe. The default value is `10`.
 
 ### `dragOffsetFromRightEdge`
 
-distance that the panel must be dragged from the right edge to be considered a swipe. The default value is 10.
+distance that the panel must be dragged from the right edge to be considered a swipe. The default value is `10`.
 
 ### `overshootLeft`
 
-a boolean value indicating if the swipeable panel can be pulled further than the left actions panel's width. It is set to `true` by default as long as the left panel render method is present.
+a boolean value indicating if the swipeable panel can be pulled further than the left actions panel's width. It is set to `true` by default as long as the left panel render function is present.
 
 ### `overshootRight`
 
-a boolean value indicating if the swipeable panel can be pulled further than the right actions panel's width. It is set to `true` by default as long as the right panel render method is present.
+a boolean value indicating if the swipeable panel can be pulled further than the right actions panel's width. It is set to `true` by default as long as the right panel render function is present.
 
 ### `overshootFriction`
 
-a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is 1, it mean no friction, for a native feel, try 8 or above.
+a number that specifies how much the visual interaction will be delayed compared to the gesture distance at overshoot. Default value is `1`, it mean no friction, for a native feel, try `8` or above.
 
 ### `onSwipeableOpen`
 
-method that is called when action panel gets open (either right or left). Takes swipe direction as
-an argument.
+a function that is called when `swipeable` is opened (either right or left).
+Receives swipe direction as an argument.
 
 ### `onSwipeableClose`
 
-method that is called when action panel is closed. Takes swipe direction as
-an argument.
+a function that is called when `swipeable` is closed.
+Receives swipe direction as an argument.
 
 ### `onSwipeableWillOpen`
 
-method that is called when action panel starts animating on open (either right or left). Takes swipe direction as
-an argument.
+a function that is called when `swipeable` starts animating on open (either right or left).
+Receives swipe direction as an argument.
 
 ### `onSwipeableWillClose`
 
-method that is called when action panel starts animating on close. Takes swipe direction as
-an argument.
+a function that is called when `swipeable` starts animating on close.
+Receives swipe direction as an argument.
 
 ### `renderLeftActions`
 
-method that is expected to return an action panel that is going to be revealed from the left side when user swipes right.
-This map describes the values to use as inputRange for extra interpolation:
+a function that returns a component which will be rendered under the swipeable after swiping it to the right.
+The function receives the following arguments:
 
-SharedValue: [startValue, endValue]
+- `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
+  - Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
+  - When the element overshoots it's opened position the value tends towards `Infinity`.
+- `translation` - a horizontal offset of the `swipeable` relative to its closed position.
+- `swipeableMethods` - provides an object exposing the methods listed [here](#methods).
 
-progress: [0, 1]
-
-drag: [0, +]
+This function must return a `ReactNode`.
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ### `renderRightActions`
 
-method that is expected to return an action panel that is going to be revealed from the right side when user swipes left.
-This map describes the values to use as inputRange for extra interpolation:
+a function that returns a component which will be rendered under the swipeable after swiping it to the left.
+The function receives the following arguments:
 
-SharedValue: [startValue, endValue]
+- `progress` - a `SharedValue` representing swiping progress relative to the width of the returned element.
+  - Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
+  - When the element overshoots it's opened position the value tends towards `Infinity`.
+- `translation` - a horizontal offset of the `swipeable` relative to its closed position.
+- `swipeableMethods` - provides an object exposing the methods listed [here](#methods).
 
-progress: [0, 1]
-
-drag: [0, -]
+This function must return a `ReactNode`.
 
 To support `rtl` flexbox layouts use `flexDirection` styling.
 
 ### `containerStyle`
 
-style object for the container (Animated.View), for example to override `overflow: 'hidden'`.
+style object for the container (`Animated.View`), for example to override `overflow: 'hidden'`.
 
 ### `childrenContainerStyle`
 
-style object for the children container (Animated.View), for example to apply `flex: 1`.
+style object for the children container (`Animated.View`), for example to apply `flex: 1`.
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
-Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+Enables two-finger gestures on supported devices, for example iPads with trackpads.
+If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
@@ -140,80 +146,80 @@ Using reference to `Swipeable` it's possible to trigger some actions on it
 
 ### `close`
 
-method that closes component.
+a method that closes component.
 
 ### `openLeft`
 
-method that opens component on left side.
+a method that opens component on left side.
 
 ### `openRight`
 
-method that opens component on right side.
+a method that opens component on right side.
 
 ### `reset`
 
-method that resets the swiping states of this `Swipeable` component.
+a method that resets the swiping states of this `Swipeable` component.
 
 Unlike method `close`, this method does not trigger any animation.
 
 ### Example:
 
-See the [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
+For a more in-depth presentation of differences between the new and the legacy implementations,
+see [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
 
 ```jsx
-import React, { Component } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import React from 'react';
+import { Text, StyleSheet } from 'react-native';
 
-const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: interpolate(
-          dragX.value,
-          [0, 50, 100, 101],
-          [-20, 0, 0, 1],
-          Extrapolation.CLAMP
-        ),
-      },
-    ],
-  }));
-  return (
-    <RectButton
-      style={{
-        flex: 1,
-        backgroundColor: '#497AFC',
-        justifyContent: 'center',
-      }}
-      onPress={() => swipeableRef.current!.close()}>
-      <Animated.Text>
-        Archive
-      </Animated.Text>
-    </RectButton>
-  );
-};
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, {
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
-const renderLeftActions = (
-  _progress: any,
-  translation: SharedValue<number>,
-  swipeableRef: React.RefObject<SwipeableMethods>
-) => <LeftAction dragX={translation} swipeableRef={swipeableRef} />;
+function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('showRightProgress:', prog.value);
+    console.log('appliedTranslation:', drag.value);
 
-function AppleStyleSwipeableRow({ children }: AppleStyleSwipeableRowProps) {
-  const swipeableRow = useRef<SwipeableMethods>(null);
+    return {
+      transform: [{ translateX: drag.value + 50 }],
+    };
+  });
 
   return (
-    <Swipeable
-      ref={swipeableRow}
-      friction={2}
-      enableTrackpadTwoFingerGesture
-      leftThreshold={30}
-      renderLeftActions={(_, progress) =>
-        renderLeftActions(_, progress, swipeableRow)
-      }>
-      <Text>Apple style swipeable</Text>
-    </Swipeable>
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.rightAction}>Text</Text>
+    </Reanimated.View>
   );
 }
+
+export default function Example() {
+  return (
+    <GestureHandlerRootView>
+      <ReanimatedSwipeable
+        containerStyle={styles.swipeable}
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderRightActions={RightAction}>
+        <Text>Swipe me!</Text>
+      </ReanimatedSwipeable>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  separator: {
+    width: '100%',
+    borderTopWidth: 1,
+  },
+  swipeable: {
+    height: 50,
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+});
 ```

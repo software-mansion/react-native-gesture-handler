@@ -5,6 +5,8 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+require_relative '../../scripts/clangd-add-xcode-step.rb'
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -15,6 +17,7 @@ if linkage != nil
 end
 
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+ENV['GH_EXAMPLE_APP_NAME'] = 'FabricExample'
 
 target 'FabricExample' do
   config = use_native_modules!
@@ -39,4 +42,6 @@ target 'FabricExample' do
       # :ccache_enabled => true
     )
   end
+
+  add_clangd_generation_step()
 end
