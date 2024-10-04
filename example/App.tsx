@@ -86,7 +86,7 @@ import { Icon } from '@swmansion/icons';
 interface Example {
   name: string;
   component: React.ComponentType;
-  unsupportedPlatforms?: Set<String>;
+  unsupportedPlatforms?: Set<typeof Platform.OS>;
 }
 interface ExamplesSection {
   sectionTitle: string;
