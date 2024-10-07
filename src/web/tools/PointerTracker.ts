@@ -22,8 +22,8 @@ export default class PointerTracker {
 
   private lastMovedPointerId: number;
 
-  private cachedAbsoluteAverages: { x: number; y: number } = { x: 0, y: 0 };
-  private cachedRelativeAverages: { x: number; y: number } = { x: 0, y: 0 };
+  private cachedAbsoluteAverages: Point = { x: 0, y: 0 };
+  private cachedRelativeAverages: Point = { x: 0, y: 0 };
 
   public constructor() {
     this.lastMovedPointerId = NaN;
