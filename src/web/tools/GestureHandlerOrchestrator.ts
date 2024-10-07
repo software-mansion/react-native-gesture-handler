@@ -337,26 +337,13 @@ export default class GestureHandlerOrchestrator {
     const isPointerWithinBothBounds = (pointer: number) => {
       const point = handler.getTracker().getLastAbsoluteCoords(pointer);
 
-      // In some rare cases it may happen that this method will be called before handler
-      // has started tracking pointers. When it happens, `point` will be undefined, leading to
-      // silent fail
-      if (!point) {
-        return false;
-      }
-
       return (
         handler.getDelegate().isPointerInBounds(point) &&
         otherHandler.getDelegate().isPointerInBounds(point)
       );
     };
 
-    const handlerPointers: number[] = handler.getTrackedPointersID();
-    const otherPointers: number[] = otherHandler.getTrackedPointersID();
-
-    return (
-      handlerPointers.some(isPointerWithinBothBounds) ||
-      otherPointers.some(isPointerWithinBothBounds)
-    );
+    return handler.getTrackedPointersID().some(isPointerWithinBothBounds);
   }
 
   private isFinished(state: State): boolean {
