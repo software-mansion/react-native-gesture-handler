@@ -140,7 +140,7 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Force touch',
         component: ForceTouch,
-        unsupportedPlatforms: new Set(['web', 'android']),
+        unsupportedPlatforms: new Set(['web', 'android', 'macos']),
       },
       { name: 'Fling', component: Fling },
     ],
