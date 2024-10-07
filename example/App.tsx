@@ -361,10 +361,7 @@ function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
   return (
     <RectButton
       enabled={enabled}
-      style={[
-        styles.button,
-        !enabled && { backgroundColor: 'rgb(220, 220, 220)', opacity: 0.3 },
-      ]}
+      style={[styles.button, !enabled && styles.unavailableExample]}
       onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
       {Platform.OS !== 'macos' && enabled && (
@@ -432,5 +429,9 @@ const styles = StyleSheet.create({
           shadowRadius: 3.84,
         }
       : {}),
+  },
+  unavailableExample: {
+    backgroundColor: 'rgb(220, 220, 220)',
+    opacity: 0.3,
   },
 });
