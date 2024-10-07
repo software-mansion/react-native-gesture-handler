@@ -67,19 +67,26 @@ import ManualGestures from './src/new_api/manualGestures/index';
 import Hover from './src/new_api/hover';
 import HoverableIcons from './src/new_api/hoverable_icons';
 import VelocityTest from './src/new_api/velocityTest';
-import Swipeable from 'src/new_api/swipeable';
-import Pressable from 'src/new_api/pressable';
+import Swipeable from './src/new_api/swipeable';
+import Pressable from './src/new_api/pressable';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
 import { ListWithHeader } from './src/ListWithHeader';
 import { COLORS } from './src/common';
 
+import MacosDraggable from './src/simple/draggable';
+import Tap from './src/simple/tap';
+import LongPressExample from './src/simple/longPress';
+import ManualExample from './src/simple/manual';
+import SimpleFling from './src/simple/fling';
+
 import { Icon } from '@swmansion/icons';
 
 interface Example {
   name: string;
   component: React.ComponentType;
+  unsupportedPlatforms?: Set<typeof Platform.OS>;
 }
 interface ExamplesSection {
   sectionTitle: string;
@@ -103,7 +110,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Chat Heads', component: ChatHeadsNewApi },
       { name: 'Drag and drop', component: DragNDrop },
       { name: 'New Swipeable', component: Swipeable },
-      { name: 'New Pressable', component: Pressable },
+      { name: 'Pressable', component: Pressable },
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
       {
@@ -114,7 +121,6 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Manual gestures',
         component: ManualGestures,
       },
-      { name: 'Pressable', component: Pressable },
     ],
   },
   {
@@ -125,8 +131,16 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Bouncing box', component: BouncingBox },
       { name: 'Pan responder', component: PanResponder },
       { name: 'Horizontal drawer', component: HorizontalDrawer },
-      { name: 'Pager & drawer', component: PagerAndDrawer },
-      { name: 'Force touch', component: ForceTouch },
+      {
+        name: 'Pager & drawer',
+        component: PagerAndDrawer,
+        unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
+      },
+      {
+        name: 'Force touch',
+        component: ForceTouch,
+        unsupportedPlatforms: new Set(['web', 'android', 'macos']),
+      },
       { name: 'Fling', component: Fling },
     ],
   },
@@ -165,8 +179,9 @@ const EXAMPLES: ExamplesSection[] = [
         component: NestedPressables as React.ComponentType,
       },
       {
-        name: 'Nested buttons (sound & ripple on Android)',
+        name: 'Nested buttons (sound & ripple)',
         component: NestedButtons,
+        unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
@@ -175,13 +190,31 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Combo', component: ComboWithGHScroll },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
       { name: 'MouseButtons', component: MouseButtons },
-      { name: 'ContextMenu (web only)', component: ContextMenu },
+      {
+        name: 'ContextMenu',
+        component: ContextMenu,
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'PointerType', component: PointerType },
       { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
-      { name: 'Web styles reset', component: WebStylesResetExample },
+      {
+        name: 'Web styles reset',
+        component: WebStylesResetExample,
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'Stylus data', component: StylusData },
+    ],
+  },
+  {
+    sectionTitle: 'Simple',
+    data: [
+      { name: 'Simple Draggable', component: MacosDraggable },
+      { name: 'Tap', component: Tap },
+      { name: 'LongPress', component: LongPressExample },
+      { name: 'Manual', component: ManualExample },
+      { name: 'Simple Fling', component: SimpleFling },
     ],
   },
 ];
@@ -270,6 +303,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
           <MainScreenItem
             name={item.name}
             onPressItem={(name) => navigate(navigation, name)}
+            enabled={!item.unsupportedPlatforms?.has(Platform.OS)}
           />
         )}
         renderSectionHeader={({ section: { sectionTitle } }) => (
@@ -304,7 +338,7 @@ function OpenLastExampleSetting() {
       <View
         style={styles.buttonContent}
         pointerEvents={Platform.OS === 'web' ? 'box-only' : 'auto'}>
-        <Text>Open last example on launch</Text>
+        <Text style={styles.text}>Open last example on launch</Text>
         <Switch
           value={openLastExample}
           onValueChange={() => {
@@ -319,13 +353,19 @@ function OpenLastExampleSetting() {
 interface MainScreenItemProps {
   name: string;
   onPressItem: (name: string) => void;
+  enabled: boolean;
 }
 
-function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
+function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
   return (
-    <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
-      <Text>{name}</Text>
-      <Icon name="chevron-small-right" size={24} color="#bbb" />
+    <RectButton
+      enabled={enabled}
+      style={[styles.button, !enabled && styles.unavailableExample]}
+      onPress={() => onPressItem(name)}>
+      <Text style={styles.text}>{name}</Text>
+      {Platform.OS !== 'macos' && enabled && (
+        <Icon name="chevron-small-right" size={24} color="#bbb" />
+      )}
     </RectButton>
   );
 }
@@ -336,6 +376,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.offWhite,
   },
   sectionTitle: {
+    ...(Platform.OS !== 'macos' ? { backgroundColor: '#f8f9ff' } : {}),
     ...Platform.select({
       ios: {
         fontSize: 17,
@@ -347,7 +388,10 @@ const styles = StyleSheet.create({
       },
     }),
     padding: 16,
-    backgroundColor: COLORS.offWhite,
+    color: 'black',
+  },
+  text: {
+    color: 'black',
   },
   list: {},
   separator: {
@@ -376,9 +420,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: 'space-between',
     elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    ...(Platform.OS !== 'macos'
+      ? {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+        }
+      : {}),
+  },
+  unavailableExample: {
+    backgroundColor: 'rgb(220, 220, 220)',
+    opacity: 0.3,
   },
 });
