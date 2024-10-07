@@ -14,7 +14,7 @@ export default function findNodeHandle(
   }
 
   if (viewRef instanceof HTMLElement) {
-    if (viewRef.id.indexOf('RNGHWrapper') >= 0) {
+    if (viewRef.style.display === 'contents') {
       return findNodeHandle(viewRef.firstChild as HTMLElement);
     }
 

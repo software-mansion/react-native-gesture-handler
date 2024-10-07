@@ -2,8 +2,6 @@ import React, { forwardRef } from 'react';
 import type { LegacyRef, PropsWithChildren } from 'react';
 import { tagMessage } from '../../../utils';
 
-let wrapID = 0;
-
 export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
   ({ children }, ref) => {
     try {
@@ -23,7 +21,6 @@ export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
 
       return (
         <div
-          id={`RNGHWrapper${wrapID++}`}
           ref={ref as LegacyRef<HTMLDivElement>}
           style={{ display: 'contents' }}>
           {clone}
