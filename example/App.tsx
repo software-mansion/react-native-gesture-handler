@@ -363,7 +363,7 @@ function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
       enabled={enabled}
       style={[
         styles.button,
-        !enabled && { backgroundColor: 'rgba(220, 220, 220, 0.8)' },
+        !enabled && { backgroundColor: 'rgb(220, 220, 220)', opacity: 0.3 },
       ]}
       onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
