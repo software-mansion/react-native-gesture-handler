@@ -86,6 +86,7 @@ import { Icon } from '@swmansion/icons';
 interface Example {
   name: string;
   component: React.ComponentType;
+  unsupportedPlatforms?: Set<typeof Platform.OS>;
 }
 interface ExamplesSection {
   sectionTitle: string;
@@ -109,7 +110,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Chat Heads', component: ChatHeadsNewApi },
       { name: 'Drag and drop', component: DragNDrop },
       { name: 'New Swipeable', component: Swipeable },
-      { name: 'New Pressable', component: Pressable },
+      { name: 'Pressable', component: Pressable },
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
       {
@@ -120,7 +121,6 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Manual gestures',
         component: ManualGestures,
       },
-      { name: 'Pressable', component: Pressable },
     ],
   },
   {
@@ -131,8 +131,16 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Bouncing box', component: BouncingBox },
       { name: 'Pan responder', component: PanResponder },
       { name: 'Horizontal drawer', component: HorizontalDrawer },
-      { name: 'Pager & drawer', component: PagerAndDrawer },
-      { name: 'Force touch', component: ForceTouch },
+      {
+        name: 'Pager & drawer',
+        component: PagerAndDrawer,
+        unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
+      },
+      {
+        name: 'Force touch',
+        component: ForceTouch,
+        unsupportedPlatforms: new Set(['web', 'android', 'macos']),
+      },
       { name: 'Fling', component: Fling },
     ],
   },
@@ -171,22 +179,35 @@ const EXAMPLES: ExamplesSection[] = [
         component: NestedPressables as React.ComponentType,
       },
       {
-        name: 'Nested buttons (sound & ripple on Android)',
+        name: 'Nested buttons (sound & ripple)',
         component: NestedButtons,
+        unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
       { name: 'Nested Fling', component: NestedFling },
-      { name: 'Combo', component: ComboWithGHScroll },
+      {
+        name: 'Combo',
+        component: ComboWithGHScroll,
+        unsupportedPlatforms: new Set(['web']),
+      },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
       { name: 'MouseButtons', component: MouseButtons },
-      { name: 'ContextMenu (web only)', component: ContextMenu },
+      {
+        name: 'ContextMenu',
+        component: ContextMenu,
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'PointerType', component: PointerType },
       { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
-      { name: 'Web styles reset', component: WebStylesResetExample },
+      {
+        name: 'Web styles reset',
+        component: WebStylesResetExample,
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'Stylus data', component: StylusData },
     ],
   },
@@ -286,6 +307,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
           <MainScreenItem
             name={item.name}
             onPressItem={(name) => navigate(navigation, name)}
+            enabled={!item.unsupportedPlatforms?.has(Platform.OS)}
           />
         )}
         renderSectionHeader={({ section: { sectionTitle } }) => (
@@ -335,13 +357,17 @@ function OpenLastExampleSetting() {
 interface MainScreenItemProps {
   name: string;
   onPressItem: (name: string) => void;
+  enabled: boolean;
 }
 
-function MainScreenItem({ name, onPressItem }: MainScreenItemProps) {
+function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
   return (
-    <RectButton style={[styles.button]} onPress={() => onPressItem(name)}>
+    <RectButton
+      enabled={enabled}
+      style={[styles.button, !enabled && styles.unavailableExample]}
+      onPress={() => onPressItem(name)}>
       <Text style={styles.text}>{name}</Text>
-      {Platform.OS !== 'macos' && (
+      {Platform.OS !== 'macos' && enabled && (
         <Icon name="chevron-small-right" size={24} color="#bbb" />
       )}
     </RectButton>
@@ -406,5 +432,9 @@ const styles = StyleSheet.create({
           shadowRadius: 3.84,
         }
       : {}),
+  },
+  unavailableExample: {
+    backgroundColor: 'rgb(220, 220, 220)',
+    opacity: 0.3,
   },
 });
