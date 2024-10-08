@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+import com.android.build.gradle.tasks.ExternalNativeBuildJsonTask
 
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
@@ -25,6 +26,10 @@ def isNewArchitectureEnabled() {
 
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+def isGHExampleApp() {
+    return safeExtGet("isGHExampleApp", false)
 }
 
 def resolveReactNativeDirectory() {
@@ -168,6 +173,20 @@ android {
                 // codegen turned off
                 srcDirs += 'paper/src/main/java'
             }
+        }
+    }
+
+    if (isGHExampleApp()) {
+        tasks.withType(ExternalNativeBuildJsonTask) {
+            compileTask ->
+                compileTask.doLast {
+                    def rootDir = new File("${project.projectDir}/..")
+                    def generated = new File("${compileTask.abi.getCxxBuildFolder()}/compile_commands.json")
+                    def output = new File("${rootDir}/compile_commands.json")
+                    output.text = generated.text
+
+                    println("Generated clangd metadata.")
+                }
         }
     }
 }
