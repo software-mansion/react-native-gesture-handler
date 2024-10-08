@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   useCallback,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
@@ -551,42 +552,48 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       animateRow(startOffsetX, toValue, velocityX / friction);
     };
 
-    const close = () => {
-      'worklet';
-      animateRow(calculateCurrentOffset(), 0);
-    };
+    const tapGesture = useMemo(
+      () =>
+        Gesture.Tap().onStart(() => {
+          if (rowState.value !== 0) {
+            // close
+            animateRow(calculateCurrentOffset(), 0);
+          }
+        }),
+      []
+    );
 
-    const tapGesture = Gesture.Tap().onStart(() => {
-      if (rowState.value !== 0) {
-        close();
-      }
-    });
+    const panGesture = useMemo(
+      () =>
+        Gesture.Pan()
+          .onUpdate(
+            (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+              userDrag.value = event.translationX;
 
-    const panGesture = Gesture.Pan()
-      .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
-        userDrag.value = event.translationX;
+              const direction =
+                rowState.value === -1
+                  ? 'right'
+                  : rowState.value === 1
+                  ? 'left'
+                  : event.translationX > 0
+                  ? 'left'
+                  : 'right';
 
-        const direction =
-          rowState.value === -1
-            ? 'right'
-            : rowState.value === 1
-            ? 'left'
-            : event.translationX > 0
-            ? 'left'
-            : 'right';
-
-        if (rowState.value === 0 && onSwipeableOpenStartDrag) {
-          runOnJS(onSwipeableOpenStartDrag)(direction);
-        } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
-          runOnJS(onSwipeableCloseStartDrag)(direction);
-        }
-        updateAnimatedEvent();
-      })
-      .onEnd(
-        (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
-          handleRelease(event);
-        }
-      );
+              if (rowState.value === 0 && onSwipeableOpenStartDrag) {
+                runOnJS(onSwipeableOpenStartDrag)(direction);
+              } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
+                runOnJS(onSwipeableCloseStartDrag)(direction);
+              }
+              updateAnimatedEvent();
+            }
+          )
+          .onEnd(
+            (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+              handleRelease(event);
+            }
+          ),
+      []
+    );
 
     if (enableTrackpadTwoFingerGesture) {
       panGesture.enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture);
