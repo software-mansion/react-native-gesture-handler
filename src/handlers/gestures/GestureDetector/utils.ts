@@ -4,7 +4,6 @@ import { isJestEnv, tagMessage } from '../../../utils';
 import { GestureRef, BaseGesture, GestureType } from '../gesture';
 
 import { flingGestureHandlerProps } from '../../FlingGestureHandler';
-import { rotationGestureHandlerProps } from '../../RotationGestureHandler';
 import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
 import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
 import {
@@ -34,7 +33,6 @@ export const ALLOWED_PROPS = [
   ...longPressGestureHandlerProps,
   ...forceTouchGestureHandlerProps,
   ...flingGestureHandlerProps,
-  ...rotationGestureHandlerProps,
   ...hoverGestureHandlerProps,
   ...nativeViewGestureHandlerProps,
 ];

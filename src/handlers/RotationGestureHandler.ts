@@ -5,24 +5,8 @@ import {
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
 
-export const rotationGestureHandlerProps = [
-  'secondPointerLiftFinishesGesture',
-] as const;
-
-export interface RotationGestureConfig {
-  /**
-   * @Platform Android
-   *
-   * When `false`, the Handler will not finish when second Pointer Lifts,
-   * allowing Gesture to continue when a new second Pointer arrives
-   * (on iOS it's the default Behaviour)
-   */
-  secondPointerLiftFinishesGesture?: boolean;
-}
-
 export interface RotationGestureHandlerProps
-  extends BaseGestureHandlerProps<RotationGestureHandlerEventPayload>,
-    RotationGestureConfig {}
+  extends BaseGestureHandlerProps<RotationGestureHandlerEventPayload> {}
 
 export const rotationHandlerName = 'RotationGestureHandler';
 
