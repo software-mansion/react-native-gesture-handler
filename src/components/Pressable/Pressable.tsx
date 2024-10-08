@@ -302,7 +302,7 @@ export default function Pressable(props: PressableProps) {
       Gesture.Native()
         .onBegin(() => {
           // Android sets BEGAN state on press down
-          if (Platform.OS === 'android') {
+          if (Platform.OS === 'android' || Platform.OS === 'macos') {
             isTouchPropagationAllowed.current = true;
           }
         })
@@ -358,10 +358,10 @@ export default function Pressable(props: PressableProps) {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(false);
+    gesture.shouldCancelWhenOutside(true);
 
-    if (Platform.OS !== 'web') {
-      gesture.shouldCancelWhenOutside(true);
+    if (Platform.OS === 'web') {
+      gesture.shouldCancelWhenOutside(false);
     }
   }
 
