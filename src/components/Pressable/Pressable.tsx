@@ -358,11 +358,7 @@ export default function Pressable(props: PressableProps) {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(true);
-
-    if (Platform.OS === 'web') {
-      gesture.shouldCancelWhenOutside(false);
-    }
+    gesture.shouldCancelWhenOutside(Platform.OS === 'web' ? false : true);
   }
 
   // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
