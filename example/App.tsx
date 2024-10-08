@@ -187,7 +187,11 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
       { name: 'Nested Fling', component: NestedFling },
-      { name: 'Combo', component: ComboWithGHScroll },
+      {
+        name: 'Combo',
+        component: ComboWithGHScroll,
+        unsupportedPlatforms: new Set(['web']),
+      },
       { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
       { name: 'MouseButtons', component: MouseButtons },
       {
