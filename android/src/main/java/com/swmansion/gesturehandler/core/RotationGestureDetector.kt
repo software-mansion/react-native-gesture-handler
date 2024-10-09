@@ -133,11 +133,7 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
       }
       MotionEvent.ACTION_POINTER_DOWN -> {
         if (!isInProgress || isPaused) {
-          if (pointerIds[0] == MotionEvent.INVALID_POINTER_ID) {
-            pointerIds[0] = event.getPointerId(event.actionIndex)
-          } else {
-            pointerIds[1] = event.getPointerId(event.actionIndex)
-          }
+          pointerIds[1] = event.getPointerId(event.actionIndex)
           updateCurrent(event)
         }
         if (!isInProgress) {
@@ -156,7 +152,8 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
       MotionEvent.ACTION_POINTER_UP -> if (isInProgress) {
         val pointerId = event.getPointerId(event.actionIndex)
         if (pointerId == pointerIds[0]) {
-          pointerIds[0] = MotionEvent.INVALID_POINTER_ID
+          pointerIds[0] = pointerIds[1]
+          pointerIds[1] = MotionEvent.INVALID_POINTER_ID
           tryPause()
         } else if (pointerId == pointerIds[1]) {
           pointerIds[1] = MotionEvent.INVALID_POINTER_ID
