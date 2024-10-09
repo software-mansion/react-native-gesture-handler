@@ -57,6 +57,14 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
     currentTime = event.eventTime
     val firstPointerIndex = event.findPointerIndex(pointerIds[0])
     val secondPointerIndex = event.findPointerIndex(pointerIds[1])
+
+    if (
+      firstPointerIndex == MotionEvent.INVALID_POINTER_ID ||
+      secondPointerIndex == MotionEvent.INVALID_POINTER_ID
+    ) {
+      return
+    }
+
     val firstPtX = event.getX(firstPointerIndex)
     val firstPtY = event.getY(firstPointerIndex)
     val secondPtX = event.getX(secondPointerIndex)
@@ -68,6 +76,9 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
 
     // Angle diff should be positive when rotating in clockwise direction
     val angle = -atan2(vectorY.toDouble(), vectorX.toDouble())
+
+    tryUnpause(angle)
+
     rotation = if (previousAngle.isNaN()) {
       0.0
     } else previousAngle - angle
@@ -85,8 +96,29 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
     }
   }
 
+  /**
+   * Gesture pauses when second Pointer lifts
+   *
+   * Then Detector waits for a new second Pointer to arrive to continue Handling
+   * (last Pointer Lifting finishes the Gesture)
+   *
+   * @see tryPause
+   * @see tryUnpause
+   */
+  private var isPaused = false
+  private fun tryPause() {
+    if (isPaused) return
+    isPaused = true
+  }
+  private fun tryUnpause(eventAngle: Double) {
+    if (!isPaused) return
+    previousAngle = eventAngle
+    isPaused = false
+  }
+
   private fun finish() {
     if (isInProgress) {
+      isPaused = false
       isInProgress = false
       gestureListener?.onRotationEnd(this)
     }
@@ -99,33 +131,33 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
         pointerIds[0] = event.getPointerId(event.actionIndex)
         pointerIds[1] = MotionEvent.INVALID_POINTER_ID
       }
-      MotionEvent.ACTION_POINTER_DOWN -> if (!isInProgress) {
-        pointerIds[1] = event.getPointerId(event.actionIndex)
-        isInProgress = true
-        previousTime = event.eventTime
-        previousAngle = Double.NaN
-        updateCurrent(event)
-        gestureListener?.onRotationBegin(this)
+      MotionEvent.ACTION_POINTER_DOWN -> {
+        if (!isInProgress || isPaused) {
+          pointerIds[1] = event.getPointerId(event.actionIndex)
+          updateCurrent(event)
+        }
+        if (!isInProgress) {
+          isInProgress = true
+          previousTime = event.eventTime
+          previousAngle = Double.NaN
+          gestureListener?.onRotationBegin(this)
+        }
       }
       MotionEvent.ACTION_MOVE -> if (isInProgress) {
         updateCurrent(event)
-        gestureListener?.onRotation(this)
-      }
-      MotionEvent.ACTION_POINTER_UP -> {
-        val pointerId = event.getPointerId(event.actionIndex)
-
-        // All key pointers are up
-        if (!isInProgress && pointerId == pointerIds[0]) {
-          gestureListener?.onRotationEnd(this)
+        if (!isPaused) {
+          gestureListener?.onRotation(this)
         }
-
-        // One of the key pointers is up
-        if (isInProgress && pointerIds.contains(pointerId)) {
-          if (pointerId == pointerIds[0]) {
-            pointerIds[0] = pointerIds[1]
-          }
+      }
+      MotionEvent.ACTION_POINTER_UP -> if (isInProgress) {
+        val pointerId = event.getPointerId(event.actionIndex)
+        if (pointerId == pointerIds[0]) {
+          pointerIds[0] = pointerIds[1]
           pointerIds[1] = MotionEvent.INVALID_POINTER_ID
-          isInProgress = false
+          tryPause()
+        } else if (pointerId == pointerIds[1]) {
+          pointerIds[1] = MotionEvent.INVALID_POINTER_ID
+          tryPause()
         }
       }
       MotionEvent.ACTION_UP -> finish()
