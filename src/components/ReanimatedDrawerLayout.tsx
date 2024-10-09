@@ -10,7 +10,6 @@ import * as React from 'react';
 import { Component } from 'react';
 import invariant from 'invariant';
 import {
-  Animated,
   StyleSheet,
   View,
   Keyboard,
@@ -37,6 +36,14 @@ import type {
 } from '../handlers/GestureHandlerEventPayload';
 import { TapGestureHandler } from '../handlers/TapGestureHandler';
 import { State } from '../State';
+import Animated, {
+  Extrapolation,
+  SharedValue,
+  interpolate,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 const DRAG_TOSS = 0.05;
 
@@ -54,10 +61,6 @@ export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
 
 export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
 
-// Animated.AnimatedInterpolation has been converted to a generic type
-// in @types/react-native 0.70. This way we can maintain compatibility
-// with all versions of @types/react-native`
-type AnimatedInterpolation = ReturnType<Animated.Value['interpolate']>;
 export interface DrawerLayoutProps {
   /**
    * This attribute is present in the standard implementation already and is one
@@ -69,7 +72,7 @@ export interface DrawerLayoutProps {
    * while the drawer is opening or closing.
    */
   renderNavigationView: (
-    progressAnimatedValue: Animated.Value
+    progressAnimatedValue: SharedValue<number>
   ) => React.ReactNode;
 
   drawerPosition?: DrawerPosition;
@@ -157,7 +160,7 @@ export interface DrawerLayoutProps {
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?:
     | React.ReactNode
-    | ((openValue?: AnimatedInterpolation) => React.ReactNode);
+    | ((openValue?: SharedValue<number>) => React.ReactNode);
 
   /**
    * @default 'none'
@@ -187,9 +190,9 @@ export interface DrawerLayoutProps {
 }
 
 export type DrawerLayoutState = {
-  dragX: Animated.Value;
-  touchX: Animated.Value;
-  drawerTranslation: Animated.Value;
+  dragX: SharedValue<number>;
+  touchX: SharedValue<number>;
+  drawerTranslation: SharedValue<number>;
   containerWidth: number;
   drawerState: DrawerState;
   drawerOpened: boolean;
@@ -218,9 +221,9 @@ export default class DrawerLayout extends Component<
   constructor(props: DrawerLayoutProps) {
     super(props);
 
-    const dragX = new Animated.Value(0);
-    const touchX = new Animated.Value(0);
-    const drawerTranslation = new Animated.Value(0);
+    const dragX = useSharedValue(0);
+    const touchX = useSharedValue(0);
+    const drawerTranslation = useSharedValue(0);
 
     this.state = {
       dragX,
@@ -247,7 +250,7 @@ export default class DrawerLayout extends Component<
     return true;
   }
 
-  private openValue?: AnimatedInterpolation;
+  private openValue?: SharedValue<number>;
   private onGestureEvent?: (
     event: GestureEvent<PanGestureHandlerEventPayload>
   ) => void;
@@ -284,17 +287,11 @@ export default class DrawerLayout extends Component<
       // left-side drawer gestures. E.g. dragX is simply -dragX, and touchX is
       // calulcated by subtracing real touchX from the width of the container
       // (such that when touch happens at the right edge the value is simply 0)
-      dragX = Animated.multiply(
-        new Animated.Value(-1),
-        dragXValue
-      ) as Animated.Value; // TODO(TS): (for all "as" in this file) make sure we can map this
-      touchX = Animated.add(
-        new Animated.Value(containerWidth),
-        Animated.multiply(new Animated.Value(-1), touchXValue)
-      ) as Animated.Value; // TODO(TS): make sure we can map this;
-      touchXValue.setValue(containerWidth);
+      dragX = useDerivedValue(() => -1 * dragXValue.value); // TODO(TS): (for all "as" in this file) make sure we can map this
+      touchX = useDerivedValue(() => containerWidth + -1 * touchXValue.value);
+      touchXValue.value = containerWidth;
     } else {
-      touchXValue.setValue(0);
+      touchXValue.value = 0;
     }
 
     // While closing the drawer when user starts gesture outside of its area (in greyed
@@ -324,26 +321,29 @@ export default class DrawerLayout extends Component<
     //
     let translationX = dragX;
     if (drawerType === 'front') {
-      const startPositionX = Animated.add(
-        touchX,
-        Animated.multiply(new Animated.Value(-1), dragX)
+      const startPositionX = useDerivedValue(
+        () => touchX.value + -1 * dragX.value
       );
 
-      const dragOffsetFromOnStartPosition = startPositionX.interpolate({
-        inputRange: [drawerWidth! - 1, drawerWidth!, drawerWidth! + 1],
-        outputRange: [0, 0, 1],
-      });
-      translationX = Animated.add(
-        dragX,
-        dragOffsetFromOnStartPosition
-      ) as Animated.Value; // TODO: as above
+      const dragOffsetFromOnStartPosition = interpolate(
+        startPositionX.value,
+        [drawerWidth! - 1, drawerWidth!, drawerWidth! + 1],
+        [0, 0, 1]
+      );
+
+      translationX = useDerivedValue(
+        () => dragX.value + dragOffsetFromOnStartPosition
+      );
     }
 
-    this.openValue = Animated.add(translationX, drawerTranslation).interpolate({
-      inputRange: [0, drawerWidth!],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
+    if (this.openValue) {
+      this.openValue.value = interpolate(
+        translationX.value + drawerTranslation.value,
+        [0, drawerWidth!],
+        [0, 1],
+        Extrapolation.CLAMP
+      );
+    }
 
     const gestureOptions: {
       useNativeDriver: boolean;
@@ -364,10 +364,11 @@ export default class DrawerLayout extends Component<
       };
     }
 
-    this.onGestureEvent = Animated.event(
-      [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],
-      gestureOptions
-    );
+    // FIXME - translate to new API
+    // this.onGestureEvent = Animated.event(
+    //   [{ nativeEvent: { translationX: dragXValue, x: touchXValue } }],
+    //   gestureOptions
+    // );
   };
 
   private handleContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
@@ -480,10 +481,9 @@ export default class DrawerLayout extends Component<
     velocity: number,
     speed?: number
   ) => {
-    this.state.dragX.setValue(0);
-    this.state.touchX.setValue(
-      this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth
-    );
+    this.state.dragX.value = 0;
+    this.state.touchX.value =
+      this.props.drawerPosition === 'left' ? 0 : this.state.containerWidth;
 
     if (fromValue != null) {
       let nextFramePosition = fromValue;
@@ -498,7 +498,7 @@ export default class DrawerLayout extends Component<
           nextFramePosition = Math.max(fromValue + velocity / 60.0, toValue);
         }
       }
-      this.state.drawerTranslation.setValue(nextFramePosition);
+      this.state.drawerTranslation.value = nextFramePosition;
     }
 
     const willShow = toValue !== 0;
@@ -508,28 +508,27 @@ export default class DrawerLayout extends Component<
     if (this.props.hideStatusBar) {
       StatusBar.setHidden(willShow, this.props.statusBarAnimation || 'slide');
     }
-    Animated.spring(this.state.drawerTranslation, {
+    this.state.drawerTranslation.value = withSpring(toValue, {
       velocity,
-      bounciness: 0,
-      toValue,
-      useNativeDriver: this.props.useNativeAnimations!,
-      speed: speed ?? undefined,
-    }).start(({ finished }) => {
-      if (finished) {
-        this.emitStateChanged(IDLE, willShow);
-        this.setState({ drawerOpened: willShow });
-        if (this.state.drawerState !== DRAGGING) {
-          // It's possilbe that user started drag while the drawer
-          // was settling, don't override state in this case
-          this.setState({ drawerState: IDLE });
-        }
-        if (willShow) {
-          this.props.onDrawerOpen?.();
-        } else {
-          this.props.onDrawerClose?.();
-        }
-      }
     });
+
+    // FIXME - translate to new API
+    // .start(({ finished }: { finished: boolean }) => {
+    //   if (finished) {
+    //     this.emitStateChanged(IDLE, willShow);
+    //     this.setState({ drawerOpened: willShow });
+    //     if (this.state.drawerState !== DRAGGING) {
+    //       // It's possilbe that user started drag while the drawer
+    //       // was settling, don't override state in this case
+    //       this.setState({ drawerState: IDLE });
+    //     }
+    //     if (willShow) {
+    //       this.props.onDrawerOpen?.();
+    //     } else {
+    //       this.props.onDrawerClose?.();
+    //     }
+    //   }
+    // });
   };
 
   openDrawer = (options: DrawerMovementOption = {}) => {
@@ -616,31 +615,33 @@ export default class DrawerLayout extends Component<
 
     let containerStyles;
     if (containerSlide) {
-      const containerTranslateX = openValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: fromLeft ? [0, drawerWidth!] : [0, -drawerWidth!],
-        extrapolate: 'clamp',
-      });
+      const containerTranslateX = interpolate(
+        openValue.value,
+        [0, 1],
+        fromLeft ? [0, drawerWidth!] : [0, -drawerWidth!],
+        Extrapolation.CLAMP
+      );
       containerStyles = {
         transform: [{ translateX: containerTranslateX }],
       };
     }
 
-    let drawerTranslateX: number | AnimatedInterpolation = 0;
+    let drawerTranslateX: number | SharedValue = 0;
     if (drawerSlide) {
       const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
       if (this.state.drawerState !== IDLE) {
-        drawerTranslateX = openValue.interpolate({
-          inputRange: [0, 1],
-          outputRange: [closedDrawerOffset, 0],
-          extrapolate: 'clamp',
-        });
+        drawerTranslateX = interpolate(
+          openValue.value,
+          [0, 1],
+          [closedDrawerOffset, 0],
+          Extrapolation.CLAMP
+        );
       } else {
         drawerTranslateX = this.state.drawerOpened ? 0 : closedDrawerOffset;
       }
     }
     const drawerStyles: {
-      transform: { translateX: number | AnimatedInterpolation }[];
+      transform: { translateX: number }[];
       flexDirection: 'row-reverse' | 'row';
     } = {
       transform: [{ translateX: drawerTranslateX }],
@@ -671,7 +672,7 @@ export default class DrawerLayout extends Component<
           accessibilityViewIsModal={this.drawerShown}
           style={[styles.drawerContainer, drawerStyles, drawerContainerStyle]}>
           <View style={dynamicDrawerStyles}>
-            {this.props.renderNavigationView(this.openValue as Animated.Value)}
+            {this.props.renderNavigationView(this.openValue!)}
           </View>
         </Animated.View>
       </Animated.View>
