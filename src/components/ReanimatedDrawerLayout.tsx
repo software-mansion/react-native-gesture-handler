@@ -207,13 +207,16 @@ const defaultProps = {
   enableTrackpadTwoFingerGesture: false,
 };
 
-export default function DrawerLayout(props: DrawerLayoutProps) {
+const DrawerLayout = React.forwardRef(function DrawerLayout(
+  props: DrawerLayoutProps,
+  ref
+) {
   const dragX = useSharedValue<number>(0);
   const touchX = useSharedValue<number>(0);
   const drawerTranslation = useSharedValue<number>(0);
 
   const [containerWidth, setContainerWidth] = React.useState(0);
-  const [drawerState, setDrawerState] = React.useState(IDLE);
+  const [drawerState, setDrawerState] = React.useState<DrawerState>(IDLE);
   const [drawerOpened, setDrawerOpened] = React.useState(false);
 
   // %% see if neccessary after moving to FC
@@ -467,7 +470,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     );
   };
 
-  // %% TODO: expose via ref and/or methods-object (see SwipeableMethods)
   const openDrawer = (options: DrawerMovementOption = {}) => {
     animateDrawer(
       // TODO: decide if it should be null or undefined is the proper value
@@ -482,7 +484,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     forceUpdate();
   };
 
-  // %% TODO: expose via ref and/or methods-object (see SwipeableMethods)
   const closeDrawer = (options: DrawerMovementOption = {}) => {
     // TODO: decide if it should be null or undefined is the proper value
     animateDrawer(
@@ -643,13 +644,28 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       ? props.children(openValue) // renderer function
       : props.children;
 
+  const componentRef = React.useRef(null);
+
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      ...componentRef,
+      openDrawer,
+      closeDrawer,
+    }),
+    [componentRef.current, openDrawer, closeDrawer]
+  );
+
   return (
     <GestureDetector
       // %% ref={setPanGestureRef}
       gesture={panGesture}
       userSelect={props.userSelect}
       enableContextMenu={props.enableContextMenu}>
-      <Animated.View style={styles.main} onLayout={handleContainerLayout}>
+      <Animated.View
+        ref={componentRef}
+        style={styles.main}
+        onLayout={handleContainerLayout}>
         <Animated.View
           style={[
             drawerType === 'front'
@@ -674,7 +690,9 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       </Animated.View>
     </GestureDetector>
   );
-}
+});
+
+export default DrawerLayout;
 
 const styles = StyleSheet.create({
   drawerContainer: {
