@@ -221,11 +221,10 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   // %% see if neccessary after moving to FC
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
-  // %% START | constructor replacement
-  React.useEffect(() => {
-    updateAnimatedEvent(props);
-  }, []);
-  // %% END | constructor replacement
+  // %% START | added for usage within updateAnimatedEvent
+  const nestedDragX = useSharedValue<number>(0);
+  const nestedTouchX = useSharedValue<number>(0);
+  // %% END | added for usage within updateAnimatedEvent
 
   // %% START | was defined with no declarations
   const openValue = useSharedValue<number>(0);
@@ -234,6 +233,115 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   ) => null;
   // %% END | was defined with no declarations
 
+  // %% START | this was in constructor
+  // Event definition is based on
+  const {
+    drawerPosition = defaultProps.drawerPosition,
+    drawerWidth = defaultProps.drawerWidth,
+    drawerType = defaultProps.drawerType,
+  } = props;
+
+  nestedDragX.value = dragX.value;
+  nestedTouchX.value = touchX.value;
+
+  const local_dragX = useDerivedValue(() =>
+    drawerPosition !== 'left' ? -1 * nestedDragX.value : nestedDragX.value
+  );
+
+  const local_touchX = useDerivedValue(() =>
+    drawerPosition !== 'left'
+      ? containerWidth + -1 * nestedTouchX.value
+      : nestedTouchX.value
+  );
+
+  if (drawerPosition !== 'left') {
+    // Most of the code is written in a way to handle left-side drawer. In
+    // order to handle right-side drawer the only thing we need to do is to
+    // reverse events coming from gesture handler in a way they emulate
+    // left-side drawer gestures. E.g. dragX is simply -dragX, and touchX is
+    // calulcated by subtracing real touchX from the width of the container
+    // (such that when touch happens at the right edge the value is simply 0)
+    nestedTouchX.value = containerWidth;
+  } else {
+    nestedTouchX.value = 0;
+  }
+
+  // While closing the drawer when user starts gesture outside of its area (in greyed
+  // out part of the window), we want the drawer to follow only once finger reaches the
+  // edge of the drawer.
+  // E.g. on the diagram below drawer is illustrate by X signs and the greyed out area by
+  // dots. The touch gesture starts at '*' and moves left, touch path is indicated by
+  // an arrow pointing left
+  // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|......|    |XXXXXXXX|.<-*..|    |XXXXXXXX|<--*..|    |XXXXX|<-----*..|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    +---------------+    +---------------+    +---------------+    +---------------+
+  //
+  // For the above to work properly we define animated value that will keep
+  // start position of the gesture. Then we use that value to calculate how
+  // much we need to subtract from the dragX. If the gesture started on the
+  // greyed out area we take the distance from the edge of the drawer to the
+  // start position. Otherwise we don't subtract at all and the drawer be
+  // pulled back as soon as you start the pan.
+  //
+  // This is used only when drawerType is "front"
+  //
+  const drawerType_eq_front_startPositionX = useDerivedValue(
+    () => local_touchX.value + -1 * local_dragX.value
+  );
+
+  const drawerType_eq_front_dragOffsetFromOnStartPosition = interpolate(
+    drawerType_eq_front_startPositionX.value,
+    [drawerWidth! - 1, drawerWidth!, drawerWidth! + 1],
+    [0, 0, 1]
+  );
+
+  const translationX = useDerivedValue(() =>
+    drawerType === 'front'
+      ? local_dragX.value + drawerType_eq_front_dragOffsetFromOnStartPosition
+      : local_dragX.value
+  );
+
+  if (openValue) {
+    openValue.value = interpolate(
+      translationX.value + drawerTranslation.value,
+      [0, drawerWidth!],
+      [0, 1],
+      Extrapolation.CLAMP
+    );
+  }
+
+  const gestureOptions: {
+    useNativeDriver: boolean;
+    // TODO: make sure it is correct
+    listener?: (
+      ev: NativeSyntheticEvent<PanGestureHandlerEventPayload>
+    ) => void;
+  } = {
+    useNativeDriver: props.useNativeAnimations!,
+  };
+
+  if (props.onDrawerSlide) {
+    gestureOptions.listener = (ev) => {
+      const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
+      const position = translationX / containerWidth;
+
+      props.onDrawerSlide?.(position);
+    };
+  }
+
+  // FIXME - translate to new API
+  // onGestureEvent = Animated.event(
+  //   [{ nativeEvent: { translationX: nestedDragX, x: nestedTouchX } }],
+  //   gestureOptions
+  // );
+  // %% END | this was in constructor
+
   const accessibilityIsModalView = React.createRef<View>();
   const pointerEventsView = React.createRef<View>();
   const panGestureHandler = React.createRef<PanGestureHandler | null>();
@@ -241,118 +349,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   // %% START | not sure if ref or state
   const drawerShown = React.useRef(false);
   // %% END | not sure if ref or state
-
-  // %% START | added for usage within updateAnimatedEvent
-  const nestedDragX = useSharedValue<number>(0);
-  const nestedTouchX = useSharedValue<number>(0);
-  // %% END | added for usage within updateAnimatedEvent
-
-  const updateAnimatedEvent = (props: DrawerLayoutProps) => {
-    // Event definition is based on
-    const {
-      drawerPosition = defaultProps.drawerPosition,
-      drawerWidth = defaultProps.drawerWidth,
-      drawerType = defaultProps.drawerType,
-    } = props;
-
-    nestedDragX.value = dragX.value;
-    nestedTouchX.value = touchX.value;
-
-    let local_dragX = nestedDragX;
-    let local_touchX = nestedTouchX;
-
-    if (drawerPosition !== 'left') {
-      // Most of the code is written in a way to handle left-side drawer. In
-      // order to handle right-side drawer the only thing we need to do is to
-      // reverse events coming from gesture handler in a way they emulate
-      // left-side drawer gestures. E.g. dragX is simply -dragX, and touchX is
-      // calulcated by subtracing real touchX from the width of the container
-      // (such that when touch happens at the right edge the value is simply 0)
-      local_dragX = useDerivedValue(() => -1 * nestedDragX.value); // TODO(TS): (for all "as" in this file) make sure we can map this
-      local_touchX = useDerivedValue(
-        () => containerWidth + -1 * nestedTouchX.value
-      );
-      nestedTouchX.value = containerWidth;
-    } else {
-      nestedTouchX.value = 0;
-    }
-
-    // While closing the drawer when user starts gesture outside of its area (in greyed
-    // out part of the window), we want the drawer to follow only once finger reaches the
-    // edge of the drawer.
-    // E.g. on the diagram below drawer is illustrate by X signs and the greyed out area by
-    // dots. The touch gesture starts at '*' and moves left, touch path is indicated by
-    // an arrow pointing left
-    // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|.<-*..|    |XXXXXXXX|<--*..|    |XXXXX|<-----*..|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    +---------------+    +---------------+    +---------------+    +---------------+
-    //
-    // For the above to work properly we define animated value that will keep
-    // start position of the gesture. Then we use that value to calculate how
-    // much we need to subtract from the dragX. If the gesture started on the
-    // greyed out area we take the distance from the edge of the drawer to the
-    // start position. Otherwise we don't subtract at all and the drawer be
-    // pulled back as soon as you start the pan.
-    //
-    // This is used only when drawerType is "front"
-    //
-    let translationX = local_dragX;
-    if (drawerType === 'front') {
-      const startPositionX = useDerivedValue(
-        () => local_touchX.value + -1 * local_dragX.value
-      );
-
-      const dragOffsetFromOnStartPosition = interpolate(
-        startPositionX.value,
-        [drawerWidth! - 1, drawerWidth!, drawerWidth! + 1],
-        [0, 0, 1]
-      );
-
-      translationX = useDerivedValue(
-        () => local_dragX.value + dragOffsetFromOnStartPosition
-      );
-    }
-
-    if (openValue) {
-      openValue.value = interpolate(
-        translationX.value + drawerTranslation.value,
-        [0, drawerWidth!],
-        [0, 1],
-        Extrapolation.CLAMP
-      );
-    }
-
-    const gestureOptions: {
-      useNativeDriver: boolean;
-      // TODO: make sure it is correct
-      listener?: (
-        ev: NativeSyntheticEvent<PanGestureHandlerEventPayload>
-      ) => void;
-    } = {
-      useNativeDriver: props.useNativeAnimations!,
-    };
-
-    if (props.onDrawerSlide) {
-      gestureOptions.listener = (ev) => {
-        const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
-        const position = translationX / containerWidth;
-
-        props.onDrawerSlide?.(position);
-      };
-    }
-
-    // FIXME - translate to new API
-    // onGestureEvent = Animated.event(
-    //   [{ nativeEvent: { translationX: nestedDragX, x: nestedTouchX } }],
-    //   gestureOptions
-    // );
-  };
 
   const handleContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     setContainerWidth(nativeEvent.layout.width);
@@ -493,27 +489,28 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     if (props.hideStatusBar) {
       StatusBar.setHidden(willShow, props.statusBarAnimation || 'slide');
     }
-    drawerTranslation.value = withSpring(toValue, {
-      velocity,
-    });
-
-    // FIXME - translate to new API
-    // .start(({ finished }: { finished: boolean }) => {
-    //   if (finished) {
-    //     emitStateChanged(IDLE, willShow);
-    //     setState({ drawerOpened: willShow });
-    //     if (state.drawerState !== DRAGGING) {
-    //       // It's possilbe that user started drag while the drawer
-    //       // was settling, don't override state in this case
-    //       setState({ drawerState: IDLE });
-    //     }
-    //     if (willShow) {
-    //       props.onDrawerOpen?.();
-    //     } else {
-    //       props.onDrawerClose?.();
-    //     }
-    //   }
-    // });
+    drawerTranslation.value = withSpring(
+      toValue,
+      {
+        velocity,
+      },
+      (finished) => {
+        if (finished) {
+          emitStateChanged(IDLE, willShow);
+          setDrawerOpened(willShow);
+          if (drawerState !== DRAGGING) {
+            // It's possilbe that user started drag while the drawer
+            // was settling, don't override state in this case
+            setDrawerState(IDLE);
+          }
+          if (willShow) {
+            props.onDrawerOpen?.();
+          } else {
+            props.onDrawerClose?.();
+          }
+        }
+      }
+    );
   };
 
   // %% TODO: expose via ref and/or methods-object (see SwipeableMethods)
@@ -674,7 +671,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   };
 
   const {
-    drawerPosition = defaultProps.drawerPosition,
     drawerLockMode = defaultProps.drawerLockMode,
     edgeWidth = defaultProps.edgeWidth,
     minSwipeDistance = defaultProps.minSwipeDistance,

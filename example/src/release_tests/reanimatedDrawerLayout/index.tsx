@@ -9,7 +9,7 @@ const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
   return <View style={styles.drawerContainer} />;
 };
 
-export default function EmptyExample() {
+export default function ReanimatedDrawerExample() {
   const drawerRef = useRef<ReanimatedDrawerLayout>(null);
 
   const tapGesture = Gesture.Tap()
