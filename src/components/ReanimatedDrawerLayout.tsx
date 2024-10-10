@@ -18,6 +18,7 @@ import {
   ViewStyle,
   LayoutChangeEvent,
   NativeSyntheticEvent,
+  Platform,
 } from 'react-native';
 
 import {
@@ -42,6 +43,9 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+
+import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
 const DRAG_TOSS = 0.05;
 
@@ -239,6 +243,12 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     drawerPosition = defaultProps.drawerPosition,
     drawerWidth = defaultProps.drawerWidth,
     drawerType = defaultProps.drawerType,
+    drawerBackgroundColor,
+    drawerContainerStyle,
+    contentContainerStyle,
+    minSwipeDistance = defaultProps.minSwipeDistance,
+    edgeWidth = defaultProps.edgeWidth,
+    drawerLockMode = defaultProps.drawerLockMode,
   } = props;
 
   nestedDragX.value = dragX.value;
@@ -337,13 +347,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     };
   }
 
-  // %% START | translate to new API
-  // onGestureEvent = Animated.event(
-  //   [{ nativeEvent: { translationX: nestedDragX, x: nestedTouchX } }],
-  //   gestureOptions
-  // );
-  // %% END | translate to new API
-
   // %% END | this was in constructor
 
   const accessibilityIsModalView = React.createRef<View>();
@@ -362,23 +365,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     props.onDrawerStateChanged?.(newState, drawerWillShow);
   };
 
-  const openingHandlerStateChange = ({
-    nativeEvent,
-  }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
-    if (nativeEvent.oldState === State.ACTIVE) {
-      handleRelease({ nativeEvent });
-    } else if (nativeEvent.state === State.ACTIVE) {
-      emitStateChanged(DRAGGING, false);
-      setDrawerState(DRAGGING);
-      if (props.keyboardDismissMode === 'on-drag') {
-        Keyboard.dismiss();
-      }
-      if (props.hideStatusBar) {
-        StatusBar.setHidden(true, props.statusBarAnimation || 'slide');
-      }
-    }
-  };
-
   const onTapHandlerStateChange = ({
     nativeEvent,
   }: HandlerStateChangeEvent<TapGestureHandlerEventPayload>) => {
@@ -394,11 +380,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   const handleRelease = ({
     nativeEvent,
   }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
-    const {
-      drawerWidth = defaultProps.drawerWidth,
-      drawerPosition = defaultProps.drawerPosition,
-      drawerType = defaultProps.drawerType,
-    } = props;
     let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
     if (drawerPosition !== positions.Left) {
@@ -438,12 +419,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     pointerEventsView.current?.setNativeProps({
       pointerEvents: showing ? 'auto' : 'none',
     });
-    const {
-      drawerPosition = defaultProps.drawerPosition,
-      minSwipeDistance = defaultProps.minSwipeDistance,
-      edgeWidth = defaultProps.edgeWidth,
-    } = props;
-    const fromLeft = drawerPosition === positions.Left;
     // gestureOrientation is 1 if the expected gesture is from left to right and
     // -1 otherwise e.g. when drawer is on the left and is closed we expect left
     // to right gesture, thus orientation will be 1.
@@ -568,115 +543,15 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     );
   };
 
-  const renderDrawer = () => {
-    const {
-      drawerWidth = defaultProps.drawerWidth,
-      drawerPosition = defaultProps.drawerPosition,
-      drawerType = defaultProps.drawerType,
-      drawerBackgroundColor,
-      drawerContainerStyle,
-      contentContainerStyle,
-    } = props;
-
-    const fromLeft = drawerPosition === positions.Left;
-    const drawerSlide = drawerType !== 'back';
-    const containerSlide = drawerType !== 'front';
-
-    // We rely on row and row-reverse flex directions to position the drawer
-    // properly. Apparently for RTL these are flipped which requires us to use
-    // the opposite setting for the drawer to appear from left or right
-    // according to the drawerPosition prop
-    const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
-
-    const dynamicDrawerStyles = {
-      backgroundColor: drawerBackgroundColor,
-      width: drawerWidth,
-    };
-
-    // %% change into an animated style
-    let containerStyles;
-    if (containerSlide) {
-      const containerTranslateX = interpolate(
-        openValue.value,
-        [0, 1],
-        fromLeft ? [0, drawerWidth!] : [0, -drawerWidth!],
-        Extrapolation.CLAMP
-      );
-      containerStyles = {
-        transform: [{ translateX: containerTranslateX }],
-      };
-    }
-
-    const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
-
-    let drawerTranslateX: number = 0;
-
-    if (drawerSlide) {
-      if (drawerState !== IDLE) {
-        drawerTranslateX = interpolate(
-          openValue.value,
-          [0, 1],
-          [closedDrawerOffset, 0],
-          Extrapolation.CLAMP
-        );
-      } else {
-        drawerTranslateX = drawerOpened ? 0 : closedDrawerOffset;
-      }
-    }
-
-    // %% convert to animated styles
-    const drawerStyles: {
-      transform: { translateX: number }[];
-      flexDirection: 'row-reverse' | 'row';
-    } = {
-      transform: [{ translateX: drawerTranslateX }],
-      flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
-    };
-
-    return (
-      <Animated.View style={styles.main} onLayout={handleContainerLayout}>
-        <Animated.View
-          style={[
-            drawerType === 'front'
-              ? styles.containerOnBack
-              : styles.containerInFront,
-            containerStyles,
-            contentContainerStyle,
-          ]}
-          importantForAccessibility={
-            drawerShown.current ? 'no-hide-descendants' : 'yes'
-          }>
-          {typeof props.children === 'function'
-            ? props.children(openValue)
-            : props.children}
-          {renderOverlay()}
-        </Animated.View>
-        <Animated.View
-          pointerEvents="box-none"
-          ref={accessibilityIsModalView}
-          accessibilityViewIsModal={drawerShown.current}
-          style={[styles.drawerContainer, drawerStyles, drawerContainerStyle]}>
-          <Animated.View style={dynamicDrawerStyles}>
-            {props.renderNavigationView(openValue!)}
-          </Animated.View>
-        </Animated.View>
-      </Animated.View>
-    );
-  };
-
-  const setPanGestureRef = (ref: PanGestureHandler) => {
-    // TODO(TS): make sure it is OK taken from
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
-    (panGestureHandler as React.MutableRefObject<PanGestureHandler>).current =
-      ref;
-    props.onGestureRef?.(ref);
-  };
-
-  const {
-    drawerLockMode = defaultProps.drawerLockMode,
-    edgeWidth = defaultProps.edgeWidth,
-    minSwipeDistance = defaultProps.minSwipeDistance,
-  } = props;
+  // %% START | reimplement for new api or remove
+  // const setPanGestureRef = (ref: PanGestureHandler) => {
+  //   // TODO(TS): make sure it is OK taken from
+  //   // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
+  //   (panGestureHandler as React.MutableRefObject<PanGestureHandler>).current =
+  //     ref;
+  //   props.onGestureRef?.(ref);
+  // };
+  // %% END | reimplement for new api or remove
 
   const fromLeft = drawerPosition === positions.Left;
 
@@ -693,25 +568,127 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     ? { left: 0, width: drawerShown.current ? undefined : edgeWidth }
     : { right: 0, width: drawerShown.current ? undefined : edgeWidth };
 
+  const panGesture = Gesture.Pan()
+    .activeCursor(props.activeCursor ?? 'auto')
+    .mouseButton(props.mouseButton ?? MouseButton.LEFT)
+    .hitSlop(hitSlop)
+    .activeOffsetX(gestureOrientation * minSwipeDistance)
+    .failOffsetY([-15, 15])
+    .enableTrackpadTwoFingerGesture(
+      props.enableTrackpadTwoFingerGesture ?? false
+    ) // %% verify if should be `false`
+    .enabled(
+      drawerLockMode !== 'locked-closed' && drawerLockMode !== 'locked-open'
+    )
+    .onStart(() => {
+      emitStateChanged(DRAGGING, false);
+      setDrawerState(DRAGGING);
+      if (props.keyboardDismissMode === 'on-drag') {
+        Keyboard.dismiss();
+      }
+      if (props.hideStatusBar) {
+        StatusBar.setHidden(true, props.statusBarAnimation || 'slide');
+      }
+    })
+    .onEnd((event) => handleRelease({ nativeEvent: event }))
+    .onUpdate((event) => {
+      nestedDragX.value = event.translationX;
+      nestedTouchX.value = event.x;
+    });
+
+  const drawerSlide = drawerType !== 'back';
+  const containerSlide = drawerType !== 'front';
+
+  // We rely on row and row-reverse flex directions to position the drawer
+  // properly. Apparently for RTL these are flipped which requires us to use
+  // the opposite setting for the drawer to appear from left or right
+  // according to the drawerPosition prop
+  const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
+
+  const dynamicDrawerStyles = {
+    backgroundColor: drawerBackgroundColor,
+    width: drawerWidth,
+  };
+
+  // %% change into an animated style
+  let containerStyles;
+  if (containerSlide) {
+    const containerTranslateX = interpolate(
+      openValue.value,
+      [0, 1],
+      fromLeft ? [0, drawerWidth!] : [0, -drawerWidth!],
+      Extrapolation.CLAMP
+    );
+    containerStyles = {
+      transform: [{ translateX: containerTranslateX }],
+    };
+  }
+
+  const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
+
+  let drawerTranslateX: number = 0;
+
+  if (drawerSlide) {
+    if (drawerState !== IDLE) {
+      drawerTranslateX = interpolate(
+        openValue.value,
+        [0, 1],
+        [closedDrawerOffset, 0],
+        Extrapolation.CLAMP
+      );
+    } else {
+      drawerTranslateX = drawerOpened ? 0 : closedDrawerOffset;
+    }
+  }
+
+  // %% convert to animated styles
+  const drawerStyles: {
+    transform: { translateX: number }[];
+    flexDirection: 'row-reverse' | 'row';
+  } = {
+    transform: [{ translateX: drawerTranslateX }],
+    flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
+  };
+
+  const importantForAccessibility =
+    Platform.OS === 'android'
+      ? drawerShown.current
+        ? 'no-hide-descendants'
+        : 'yes'
+      : undefined;
+
   return (
-    <PanGestureHandler
-      // @ts-ignore could be fixed in handler types
+    <GestureDetector
+      // %% ref={setPanGestureRef}
+      gesture={panGesture}
       userSelect={props.userSelect}
-      activeCursor={props.activeCursor}
-      mouseButton={props.mouseButton}
-      enableContextMenu={props.enableContextMenu}
-      ref={setPanGestureRef}
-      hitSlop={hitSlop}
-      activeOffsetX={gestureOrientation * minSwipeDistance!}
-      failOffsetY={[-15, 15]}
-      onGestureEvent={onGestureEvent}
-      onHandlerStateChange={openingHandlerStateChange}
-      enableTrackpadTwoFingerGesture={props.enableTrackpadTwoFingerGesture}
-      enabled={
-        drawerLockMode !== 'locked-closed' && drawerLockMode !== 'locked-open'
-      }>
-      {renderDrawer()}
-    </PanGestureHandler>
+      enableContextMenu={props.enableContextMenu}>
+      <Animated.View style={styles.main} onLayout={handleContainerLayout}>
+        <Animated.View
+          style={[
+            drawerType === 'front'
+              ? styles.containerOnBack
+              : styles.containerInFront,
+            containerStyles,
+            contentContainerStyle,
+          ]}
+          importantForAccessibility={importantForAccessibility}>
+          {typeof props.children === 'function'
+            ? props.children(openValue)
+            : props.children}
+          {renderOverlay()}
+        </Animated.View>
+        <Animated.View
+          pointerEvents="box-none"
+          ref={accessibilityIsModalView}
+          accessibilityViewIsModal={drawerShown.current}
+          style={[styles.drawerContainer, drawerStyles, drawerContainerStyle]}>
+          <Animated.View style={dynamicDrawerStyles}>
+            {props.renderNavigationView(openValue!)}
+          </Animated.View>
+        </Animated.View>
+      </Animated.View>
+    </GestureDetector>
   );
 }
 
