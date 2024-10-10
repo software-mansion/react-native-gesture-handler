@@ -218,6 +218,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   const [drawerState, setDrawerState] = React.useState(IDLE);
   const [drawerOpened, setDrawerOpened] = React.useState(false);
 
+  // %% see if neccessary after moving to FC
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
   // %% START | constructor replacement
@@ -248,7 +249,11 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
 
   const updateAnimatedEvent = (props: DrawerLayoutProps) => {
     // Event definition is based on
-    const { drawerPosition, drawerWidth, drawerType } = props;
+    const {
+      drawerPosition = defaultProps.drawerPosition,
+      drawerWidth = defaultProps.drawerWidth,
+      drawerType = defaultProps.drawerType,
+    } = props;
 
     nestedDragX.value = dragX.value;
     nestedTouchX.value = touchX.value;
@@ -389,7 +394,11 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   const handleRelease = ({
     nativeEvent,
   }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
-    const { drawerWidth, drawerPosition, drawerType } = props;
+    const {
+      drawerWidth = defaultProps.drawerWidth,
+      drawerPosition = defaultProps.drawerPosition,
+      drawerType = defaultProps.drawerType,
+    } = props;
     let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
     if (drawerPosition !== 'left') {
@@ -429,7 +438,11 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     pointerEventsView.current?.setNativeProps({
       pointerEvents: showing ? 'auto' : 'none',
     });
-    const { drawerPosition, minSwipeDistance, edgeWidth } = props;
+    const {
+      drawerPosition = defaultProps.drawerPosition,
+      minSwipeDistance = defaultProps.minSwipeDistance,
+      edgeWidth = defaultProps.edgeWidth,
+    } = props;
     const fromLeft = drawerPosition === 'left';
     // gestureOrientation is 1 if the expected gesture is from left to right and
     // -1 otherwise e.g. when drawer is on the left and is closed we expect left
@@ -561,10 +574,10 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
 
   const renderDrawer = () => {
     const {
+      drawerWidth = defaultProps.drawerWidth,
+      drawerPosition = defaultProps.drawerPosition,
+      drawerType = defaultProps.drawerType,
       drawerBackgroundColor,
-      drawerWidth,
-      drawerPosition,
-      drawerType,
       drawerContainerStyle,
       contentContainerStyle,
     } = props;
@@ -584,6 +597,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       width: drawerWidth,
     };
 
+    // %% change into an animated style
     let containerStyles;
     if (containerSlide) {
       const containerTranslateX = interpolate(
@@ -611,6 +625,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
         drawerTranslateX = drawerOpened ? 0 : closedDrawerOffset;
       }
     }
+
     const drawerStyles: {
       transform: { translateX: number }[];
       flexDirection: 'row-reverse' | 'row';
@@ -658,7 +673,12 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     props.onGestureRef?.(ref);
   };
 
-  const { drawerPosition, drawerLockMode, edgeWidth, minSwipeDistance } = props;
+  const {
+    drawerPosition = defaultProps.drawerPosition,
+    drawerLockMode = defaultProps.drawerLockMode,
+    edgeWidth = defaultProps.edgeWidth,
+    minSwipeDistance = defaultProps.minSwipeDistance,
+  } = props;
 
   const fromLeft = drawerPosition === 'left';
 
