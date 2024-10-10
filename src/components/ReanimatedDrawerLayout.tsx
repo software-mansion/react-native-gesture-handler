@@ -199,7 +199,7 @@ const positions = {
 
 const defaultProps = {
   drawerWidth: 200,
-  drawerPosition: 'left',
+  drawerPosition: positions.Left,
   useNativeAnimations: true,
   drawerType: 'front',
   edgeWidth: 20,
@@ -210,9 +210,9 @@ const defaultProps = {
 };
 
 export default function DrawerLayout(props: DrawerLayoutProps) {
-  const dragX = useSharedValue(0);
-  const touchX = useSharedValue(0);
-  const drawerTranslation = useSharedValue(0);
+  const dragX = useSharedValue<number>(0);
+  const touchX = useSharedValue<number>(0);
+  const drawerTranslation = useSharedValue<number>(0);
 
   const [containerWidth, setContainerWidth] = React.useState(0);
   const [drawerState, setDrawerState] = React.useState(IDLE);
@@ -245,16 +245,18 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   nestedTouchX.value = touchX.value;
 
   const local_dragX = useDerivedValue(() =>
-    drawerPosition !== 'left' ? -1 * nestedDragX.value : nestedDragX.value
+    drawerPosition !== positions.Left
+      ? -1 * nestedDragX.value
+      : nestedDragX.value
   );
 
   const local_touchX = useDerivedValue(() =>
-    drawerPosition !== 'left'
+    drawerPosition !== positions.Left
       ? containerWidth + -1 * nestedTouchX.value
       : nestedTouchX.value
   );
 
-  if (drawerPosition !== 'left') {
+  if (drawerPosition !== positions.Left) {
     // Most of the code is written in a way to handle left-side drawer. In
     // order to handle right-side drawer the only thing we need to do is to
     // reverse events coming from gesture handler in a way they emulate
@@ -335,11 +337,13 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     };
   }
 
-  // FIXME - translate to new API
+  // %% START | translate to new API
   // onGestureEvent = Animated.event(
   //   [{ nativeEvent: { translationX: nestedDragX, x: nestedTouchX } }],
   //   gestureOptions
   // );
+  // %% END | translate to new API
+
   // %% END | this was in constructor
 
   const accessibilityIsModalView = React.createRef<View>();
@@ -397,7 +401,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     } = props;
     let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
-    if (drawerPosition !== 'left') {
+    if (drawerPosition !== positions.Left) {
       // See description in _updateAnimatedEvent about why events are flipped
       // for right-side drawer
       dragX = -dragX;
@@ -439,7 +443,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       minSwipeDistance = defaultProps.minSwipeDistance,
       edgeWidth = defaultProps.edgeWidth,
     } = props;
-    const fromLeft = drawerPosition === 'left';
+    const fromLeft = drawerPosition === positions.Left;
     // gestureOrientation is 1 if the expected gesture is from left to right and
     // -1 otherwise e.g. when drawer is on the left and is closed we expect left
     // to right gesture, thus orientation will be 1.
@@ -464,7 +468,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     _speed?: number // %% do not remove
   ) => {
     dragX.value = 0;
-    touchX.value = props.drawerPosition === 'left' ? 0 : containerWidth;
+    touchX.value = props.drawerPosition === positions.Left ? 0 : containerWidth;
 
     if (fromValue != null) {
       let nextFramePosition = fromValue;
@@ -545,17 +549,12 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
 
   const renderOverlay = () => {
     /* Overlay styles */
-    let overlayOpacity;
-
-    if (drawerState !== IDLE) {
-      overlayOpacity = openValue;
-    } else {
-      overlayOpacity = drawerOpened ? 1 : 0;
-    }
+    const overlayOpacity =
+      drawerState !== IDLE ? openValue : drawerOpened ? 1 : 0;
 
     const dynamicOverlayStyles = {
       opacity: overlayOpacity,
-      backgroundColor: props.overlayColor,
+      backgroundColor: props.overlayColor ?? defaultProps.overlayColor,
     };
 
     return (
@@ -579,7 +578,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       contentContainerStyle,
     } = props;
 
-    const fromLeft = drawerPosition === 'left';
+    const fromLeft = drawerPosition === positions.Left;
     const drawerSlide = drawerType !== 'back';
     const containerSlide = drawerType !== 'front';
 
@@ -608,9 +607,11 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       };
     }
 
-    let drawerTranslateX: number | SharedValue = 0;
+    const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
+
+    let drawerTranslateX: number = 0;
+
     if (drawerSlide) {
-      const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
       if (drawerState !== IDLE) {
         drawerTranslateX = interpolate(
           openValue.value,
@@ -623,6 +624,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       }
     }
 
+    // %% convert to animated styles
     const drawerStyles: {
       transform: { translateX: number }[];
       flexDirection: 'row-reverse' | 'row';
@@ -654,9 +656,9 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
           ref={accessibilityIsModalView}
           accessibilityViewIsModal={drawerShown.current}
           style={[styles.drawerContainer, drawerStyles, drawerContainerStyle]}>
-          <View style={dynamicDrawerStyles}>
+          <Animated.View style={dynamicDrawerStyles}>
             {props.renderNavigationView(openValue!)}
-          </View>
+          </Animated.View>
         </Animated.View>
       </Animated.View>
     );
@@ -676,7 +678,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
     minSwipeDistance = defaultProps.minSwipeDistance,
   } = props;
 
-  const fromLeft = drawerPosition === 'left';
+  const fromLeft = drawerPosition === positions.Left;
 
   // gestureOrientation is 1 if the expected gesture is from left to right and
   // -1 otherwise e.g. when drawer is on the left and is closed we expect left
