@@ -22,19 +22,13 @@ import {
 } from 'react-native';
 
 import {
-  GestureEvent,
   HandlerStateChangeEvent,
   UserSelect,
   ActiveCursor,
   MouseButton,
 } from '../handlers/gestureHandlerCommon';
 import { PanGestureHandler } from '../handlers/PanGestureHandler';
-import type {
-  PanGestureHandlerEventPayload,
-  TapGestureHandlerEventPayload,
-} from '../handlers/GestureHandlerEventPayload';
-import { TapGestureHandler } from '../handlers/TapGestureHandler';
-import { State } from '../State';
+import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 import Animated, {
   Extrapolation,
   SharedValue,
@@ -225,17 +219,10 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
   // %% see if neccessary after moving to FC
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
-  // %% START | added for usage within updateAnimatedEvent
   const nestedDragX = useSharedValue<number>(0);
   const nestedTouchX = useSharedValue<number>(0);
-  // %% END | added for usage within updateAnimatedEvent
 
-  // %% START | was defined with no declarations
   const openValue = useSharedValue<number>(0);
-  const onGestureEvent = (
-    _event: GestureEvent<PanGestureHandlerEventPayload>
-  ) => null;
-  // %% END | was defined with no declarations
 
   // %% START | this was in constructor
   // Event definition is based on
@@ -363,18 +350,6 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
 
   const emitStateChanged = (newState: DrawerState, drawerWillShow: boolean) => {
     props.onDrawerStateChanged?.(newState, drawerWillShow);
-  };
-
-  const onTapHandlerStateChange = ({
-    nativeEvent,
-  }: HandlerStateChangeEvent<TapGestureHandlerEventPayload>) => {
-    if (
-      drawerShown.current &&
-      nativeEvent.oldState === State.ACTIVE &&
-      props.drawerLockMode !== 'locked-open'
-    ) {
-      closeDrawer();
-    }
   };
 
   const handleRelease = ({
@@ -532,14 +507,20 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
       backgroundColor: props.overlayColor ?? defaultProps.overlayColor,
     };
 
+    const tapGesture = Gesture.Tap().onEnd(() => {
+      if (drawerShown.current && props.drawerLockMode !== 'locked-open') {
+        closeDrawer();
+      }
+    });
+
     return (
-      <TapGestureHandler onHandlerStateChange={onTapHandlerStateChange}>
+      <GestureDetector gesture={tapGesture}>
         <Animated.View
           pointerEvents={drawerShown.current ? 'auto' : 'none'}
           ref={pointerEventsView}
           style={[styles.overlay, dynamicOverlayStyles]}
         />
-      </TapGestureHandler>
+      </GestureDetector>
     );
   };
 
@@ -657,6 +638,11 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
         : 'yes'
       : undefined;
 
+  const children =
+    typeof props.children === 'function'
+      ? props.children(openValue) // renderer function
+      : props.children;
+
   return (
     <GestureDetector
       // %% ref={setPanGestureRef}
@@ -673,9 +659,7 @@ export default function DrawerLayout(props: DrawerLayoutProps) {
             contentContainerStyle,
           ]}
           importantForAccessibility={importantForAccessibility}>
-          {typeof props.children === 'function'
-            ? props.children(openValue)
-            : props.children}
+          {children}
           {renderOverlay()}
         </Animated.View>
         <Animated.View
