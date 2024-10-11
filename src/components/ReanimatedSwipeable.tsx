@@ -384,7 +384,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
         const progressSpringConfig = {
           ...translationSpringConfig,
-          velocity: 0,
+          restDisplacementThreshold: 0.01,
+          restSpeedThreshold: 0.01,
+          velocity:
+            velocityX &&
+            interpolate(velocityX, [-rowWidth.value, rowWidth.value], [-1, 1]),
         };
 
         appliedTranslation.value = withSpring(
