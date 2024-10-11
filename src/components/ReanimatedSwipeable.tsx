@@ -341,12 +341,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0) {
-          onSwipeableWillOpen && onSwipeableWillOpen('right');
+          onSwipeableWillOpen?.('right');
         } else if (toValue < 0) {
-          onSwipeableWillOpen && onSwipeableWillOpen('left');
+          onSwipeableWillOpen?.('left');
         } else {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          onSwipeableWillClose && onSwipeableWillClose(closingDirection);
+          onSwipeableWillClose?.(closingDirection);
         }
       },
       [onSwipeableWillClose, onSwipeableWillOpen]
@@ -355,13 +355,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0) {
-          onSwipeableOpen && onSwipeableOpen('right', swipeableMethods.current);
+          onSwipeableOpen?.('right', swipeableMethods.current);
         } else if (toValue < 0) {
-          onSwipeableOpen && onSwipeableOpen('left', swipeableMethods.current);
+          onSwipeableOpen?.('left', swipeableMethods.current);
         } else {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
-          onSwipeableClose &&
-            onSwipeableClose(closingDirection, swipeableMethods.current);
+          onSwipeableClose?.(closingDirection, swipeableMethods.current);
         }
       },
       [onSwipeableClose, onSwipeableOpen]
@@ -596,7 +595,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? 'right'
             : 'left';
 
-        if (dragStarted.value == false) {
+        if (dragStarted.value === false) {
           dragStarted.value = true;
           if (rowState.value === 0 && onSwipeableOpenStartDrag) {
             runOnJS(onSwipeableOpenStartDrag)(direction);
