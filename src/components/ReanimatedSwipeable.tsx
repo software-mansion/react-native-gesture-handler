@@ -345,7 +345,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         } else if (toValue < 0) {
           onSwipeableWillOpen && onSwipeableWillOpen('right');
         } else {
-          const closingDirection = fromValue > 0 ? 'left' : 'right'; // this is invalid too
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
           onSwipeableWillClose && onSwipeableWillClose(closingDirection);
         }
       },
@@ -359,7 +359,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         } else if (toValue < 0) {
           onSwipeableOpen && onSwipeableOpen('right', swipeableMethods.current);
         } else {
-          const closingDirection = fromValue > 0 ? 'left' : 'right'; // this is invalid too
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
           onSwipeableClose &&
             onSwipeableClose(closingDirection, swipeableMethods.current);
         }
@@ -370,7 +370,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const animationOptionsProp = animationOptions;
 
     const animateRow = useCallback(
-      (fromValue: number, toValue: number, velocityX?: number) => {
+      (_fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
 
         const translationSpringConfig = {
@@ -402,12 +402,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             interpolate(velocityX, [-usedWidth, usedWidth], [-1, 1]),
         };
 
+        const frozenRowState = rowState.value;
+
         appliedTranslation.value = withSpring(
           toValue,
           translationSpringConfig,
           (isFinished) => {
             if (isFinished) {
-              runOnJS(dispatchEndEvents)(fromValue, toValue);
+              runOnJS(dispatchEndEvents)(frozenRowState, toValue);
             }
           }
         );
@@ -423,7 +425,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? withSpring(progressTarget, progressSpringConfig)
             : 0;
 
-        runOnJS(dispatchImmediateEvents)(fromValue, toValue);
+        runOnJS(dispatchImmediateEvents)(frozenRowState, toValue);
 
         rowState.value = Math.sign(toValue);
       },
