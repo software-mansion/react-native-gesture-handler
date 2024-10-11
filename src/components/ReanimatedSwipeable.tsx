@@ -358,9 +358,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         } else if (toValue < 0) {
           onSwipeableWillOpen?.(SwipeDirection.LEFT);
         } else {
-          const closingDirection =
-            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT;
-          onSwipeableWillClose?.(closingDirection);
+          onSwipeableWillClose?.(
+            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
+          );
         }
       },
       [onSwipeableWillClose, onSwipeableWillOpen]
@@ -373,9 +373,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         } else if (toValue < 0) {
           onSwipeableOpen?.(SwipeDirection.LEFT, swipeableMethods.current);
         } else {
-          const closingDirection =
-            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT;
-          onSwipeableClose?.(closingDirection, swipeableMethods.current);
+          onSwipeableClose?.(
+            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT,
+            swipeableMethods.current
+          );
         }
       },
       [onSwipeableClose, onSwipeableOpen]
