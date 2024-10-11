@@ -277,12 +277,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const calculateCurrentOffset = useCallback(() => {
       'worklet';
       updateRightElementWidth();
-      if (rowState.value === 1) {
-        return leftWidth.value;
-      } else if (rowState.value === -1) {
-        return -rowWidth.value - rightOffset.value!;
-      }
-      return 0;
+      return rowState.value === 1
+        ? leftWidth.value
+        : rowState.value === -1
+        ? -rowWidth.value - rightOffset.value!
+        : 0;
     }, [leftWidth, rightOffset, rowState, rowWidth]);
 
     const updateAnimatedEvent = () => {
