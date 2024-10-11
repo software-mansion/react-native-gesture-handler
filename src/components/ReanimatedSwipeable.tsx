@@ -340,13 +340,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
-        if (toValue > 0) {
-          onSwipeableWillOpen && onSwipeableWillOpen('left');
-        } else if (toValue < 0) {
-          onSwipeableWillOpen && onSwipeableWillOpen('right');
-        } else {
-          const closingDirection = fromValue > 0 ? 'left' : 'right'; // this is invalid too
-          onSwipeableWillClose && onSwipeableWillClose(closingDirection);
+        if (toValue > 0 && onSwipeableWillOpen) {
+          onSwipeableWillOpen('left');
+        } else if (toValue < 0 && onSwipeableWillOpen) {
+          onSwipeableWillOpen('right');
+        } else if (onSwipeableWillClose) {
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          onSwipeableWillClose(closingDirection);
         }
       },
       [onSwipeableWillClose, onSwipeableWillOpen]
@@ -354,14 +354,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
-        if (toValue > 0) {
-          onSwipeableOpen && onSwipeableOpen('left', swipeableMethods.current);
-        } else if (toValue < 0) {
-          onSwipeableOpen && onSwipeableOpen('right', swipeableMethods.current);
-        } else {
-          const closingDirection = fromValue > 0 ? 'left' : 'right'; // this is invalid too
-          onSwipeableClose &&
-            onSwipeableClose(closingDirection, swipeableMethods.current);
+        if (toValue > 0 && onSwipeableOpen) {
+          onSwipeableOpen('left', swipeableMethods.current);
+        } else if (toValue < 0 && onSwipeableOpen) {
+          onSwipeableOpen('right', swipeableMethods.current);
+        } else if (onSwipeableClose) {
+          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          onSwipeableClose(closingDirection, swipeableMethods.current);
         }
       },
       [onSwipeableClose, onSwipeableOpen]
@@ -372,6 +371,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
+        rowState.value = Math.sign(toValue);
 
         const translationSpringConfig = {
           duration: 1000,
@@ -382,34 +382,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           ...animationOptionsProp,
         };
 
-        const isClosing = toValue === 0;
-        const moveToRight = toValue > fromValue; // this can't be used
-
-        // fromValue = always current person value
-        // toValue = always 0 | leftWidth | rightWidth
-
-        const usedWidth = isClosing
-          ? moveToRight
-            ? rightWidth.value
-            : leftWidth.value
-          : moveToRight
-          ? leftWidth.value
-          : rightWidth.value;
-
-        console.log(
-          `(${fromValue}) -> (${toValue}) \n\tusedWidth(${usedWidth}), \n\tisClosing(${isClosing}), \n\tmoveToRight(${moveToRight}), \n\tlefterWidth(${leftWidth.value}), \n\trighterWidth(${rightWidth.value})`
-        );
-
         const progressSpringConfig = {
           ...translationSpringConfig,
           restDisplacementThreshold: 0.01,
           restSpeedThreshold: 0.01,
           velocity:
             velocityX &&
-            interpolate(velocityX, [-usedWidth, usedWidth], [-1, 1]),
+            interpolate(velocityX, [-rowWidth.value, rowWidth.value], [-1, 1]),
         };
-
-        rowState.value = Math.sign(toValue); // move accordingly
 
         appliedTranslation.value = withSpring(
           toValue,
