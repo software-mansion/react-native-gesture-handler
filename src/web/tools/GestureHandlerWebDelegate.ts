@@ -1,4 +1,4 @@
-import { findNodeHandle } from 'react-native';
+import findNodeHandle from '../../findNodeHandle';
 import type IGestureHandler from '../handlers/IGestureHandler';
 import {
   GestureHandlerDelegate,
