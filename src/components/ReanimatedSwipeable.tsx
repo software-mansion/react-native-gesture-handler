@@ -581,6 +581,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     });
 
+    const dragStarted = useSharedValue<boolean>(false);
+
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
         userDrag.value = event.translationX;
@@ -594,18 +596,23 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? 'right'
             : 'left';
 
-        if (rowState.value === 0 && onSwipeableOpenStartDrag) {
-          runOnJS(onSwipeableOpenStartDrag)(direction);
-        } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
-          runOnJS(onSwipeableCloseStartDrag)(direction);
+        if (dragStarted.value == false) {
+          dragStarted.value = true;
+          if (rowState.value === 0 && onSwipeableOpenStartDrag) {
+            runOnJS(onSwipeableOpenStartDrag)(direction);
+          } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
+            runOnJS(onSwipeableCloseStartDrag)(direction);
+          }
         }
+
         updateAnimatedEvent();
       })
       .onEnd(
         (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
           handleRelease(event);
         }
-      );
+      )
+      .onFinalize(() => (dragStarted.value = false));
 
     if (enableTrackpadTwoFingerGesture) {
       panGesture.enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture);
