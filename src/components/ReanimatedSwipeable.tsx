@@ -111,7 +111,7 @@ export interface SwipeableProps
    * Called when action panel gets open (either right or left).
    */
   onSwipeableOpen?: (
-    direction: 'left' | 'right',
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT,
     swipeable: SwipeableMethods
   ) => void;
 
@@ -119,29 +119,37 @@ export interface SwipeableProps
    * Called when action panel is closed.
    */
   onSwipeableClose?: (
-    direction: 'left' | 'right',
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT,
     swipeable: SwipeableMethods
   ) => void;
 
   /**
    * Called when action panel starts animating on open (either right or left).
    */
-  onSwipeableWillOpen?: (direction: 'left' | 'right') => void;
+  onSwipeableWillOpen?: (
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+  ) => void;
 
   /**
    * Called when action panel starts animating on close.
    */
-  onSwipeableWillClose?: (direction: 'left' | 'right') => void;
+  onSwipeableWillClose?: (
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+  ) => void;
 
   /**
    * Called when action panel starts being shown on dragging to open.
    */
-  onSwipeableOpenStartDrag?: (direction: 'left' | 'right') => void;
+  onSwipeableOpenStartDrag?: (
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+  ) => void;
 
   /**
    * Called when action panel starts being shown on dragging to close.
    */
-  onSwipeableCloseStartDrag?: (direction: 'left' | 'right') => void;
+  onSwipeableCloseStartDrag?: (
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+  ) => void;
 
   /**
    * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
@@ -195,6 +203,11 @@ export interface SwipeableMethods {
   openLeft: () => void;
   openRight: () => void;
   reset: () => void;
+}
+
+enum SwipeDirection {
+  LEFT = 'left',
+  RIGHT = 'right',
 }
 
 const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
@@ -341,11 +354,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0) {
-          onSwipeableWillOpen?.('right');
+          onSwipeableWillOpen?.(SwipeDirection.RIGHT);
         } else if (toValue < 0) {
-          onSwipeableWillOpen?.('left');
+          onSwipeableWillOpen?.(SwipeDirection.LEFT);
         } else {
-          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          const closingDirection =
+            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT;
           onSwipeableWillClose?.(closingDirection);
         }
       },
@@ -355,11 +369,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0) {
-          onSwipeableOpen?.('right', swipeableMethods.current);
+          onSwipeableOpen?.(SwipeDirection.RIGHT, swipeableMethods.current);
         } else if (toValue < 0) {
-          onSwipeableOpen?.('left', swipeableMethods.current);
+          onSwipeableOpen?.(SwipeDirection.LEFT, swipeableMethods.current);
         } else {
-          const closingDirection = fromValue > 0 ? 'left' : 'right';
+          const closingDirection =
+            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT;
           onSwipeableClose?.(closingDirection, swipeableMethods.current);
         }
       },
@@ -588,12 +603,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
         const direction =
           rowState.value === -1
-            ? 'right'
+            ? SwipeDirection.RIGHT
             : rowState.value === 1
-            ? 'left'
+            ? SwipeDirection.LEFT
             : event.translationX > 0
-            ? 'right'
-            : 'left';
+            ? SwipeDirection.RIGHT
+            : SwipeDirection.LEFT;
 
         if (dragStarted.value === false) {
           dragStarted.value = true;
