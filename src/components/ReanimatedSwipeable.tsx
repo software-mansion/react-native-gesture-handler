@@ -591,8 +591,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             : rowState.value === 1
             ? 'left'
             : event.translationX > 0
-            ? 'left'
-            : 'right';
+            ? 'right'
+            : 'left';
 
         if (rowState.value === 0 && onSwipeableOpenStartDrag) {
           runOnJS(onSwipeableOpenStartDrag)(direction);
