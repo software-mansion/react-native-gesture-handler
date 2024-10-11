@@ -341,9 +341,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0) {
-          onSwipeableWillOpen && onSwipeableWillOpen('left');
-        } else if (toValue < 0) {
           onSwipeableWillOpen && onSwipeableWillOpen('right');
+        } else if (toValue < 0) {
+          onSwipeableWillOpen && onSwipeableWillOpen('left');
         } else {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
           onSwipeableWillClose && onSwipeableWillClose(closingDirection);
@@ -355,9 +355,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0) {
-          onSwipeableOpen && onSwipeableOpen('left', swipeableMethods.current);
-        } else if (toValue < 0) {
           onSwipeableOpen && onSwipeableOpen('right', swipeableMethods.current);
+        } else if (toValue < 0) {
+          onSwipeableOpen && onSwipeableOpen('left', swipeableMethods.current);
         } else {
           const closingDirection = fromValue > 0 ? 'left' : 'right';
           onSwipeableClose &&
