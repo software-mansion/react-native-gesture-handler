@@ -1,6 +1,10 @@
 #ifdef RCT_NEW_ARCH_ENABLED
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#else
+#import <React/RCTUIKit.h>
+#endif
 
 #import <React/RCTViewComponentView.h>
 

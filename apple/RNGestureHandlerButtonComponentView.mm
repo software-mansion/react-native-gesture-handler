@@ -21,6 +21,11 @@ using namespace facebook::react;
   RNGestureHandlerButton *_buttonView;
 }
 
++ (BOOL)shouldBeRecycled
+{
+  return NO;
+}
+
 // Needed because of this: https://github.com/facebook/react-native/pull/37274
 + (void)load
 {
@@ -40,12 +45,12 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_buttonView mountChildComponentView:childComponentView index:index];
 }
 
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_buttonView unmountChildComponentView:childComponentView index:index];
 }
@@ -97,7 +102,7 @@ using namespace facebook::react;
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
   _buttonView.userEnabled = newProps.enabled;
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;
 #endif
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
