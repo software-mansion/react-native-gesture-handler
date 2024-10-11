@@ -279,16 +279,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
 
-    const calculateCurrentOffset = useCallback(() => {
-      'worklet';
-      if (rowState.value === 1) {
-        return leftWidth.value;
-      } else if (rowState.value === -1) {
-        return -rowWidth.value - rightOffset.value;
-      }
-      return 0;
-    }, [leftWidth, rightOffset, rowState, rowWidth]);
-
     const updateAnimatedEvent = () => {
       'worklet';
       rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
@@ -385,7 +375,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const animationOptionsProp = animationOptions;
 
     const animateRow = useCallback(
-      (_fromValue: number, toValue: number, velocityX?: number) => {
+      (toValue: number, velocityX?: number) => {
         'worklet';
 
         const translationSpringConfig = {
@@ -472,16 +462,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     swipeableMethods.current = {
       close() {
         'worklet';
-        animateRow(calculateCurrentOffset(), 0);
+        animateRow(0);
       },
       openLeft() {
         'worklet';
-        animateRow(calculateCurrentOffset(), leftWidth.value);
+        animateRow(leftWidth.value);
       },
       openRight() {
         'worklet';
         rightWidth.value = rowWidth.value - rightOffset.value;
-        animateRow(calculateCurrentOffset(), -rightWidth.value);
+        animateRow(-rightWidth.value);
       },
       reset() {
         'worklet';
@@ -559,7 +549,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
       const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
 
-      const startOffsetX = calculateCurrentOffset() + userDrag.value / friction;
       const translationX = (userDrag.value + DRAG_TOSS * velocityX) / friction;
 
       let toValue = 0;
@@ -582,12 +571,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         }
       }
 
-      animateRow(startOffsetX, toValue, velocityX / friction);
+      animateRow(toValue, velocityX / friction);
     };
 
     const close = () => {
       'worklet';
-      animateRow(calculateCurrentOffset(), 0);
+      animateRow(0);
     };
 
     const tapGesture = Gesture.Tap().onStart(() => {
