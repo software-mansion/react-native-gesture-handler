@@ -372,7 +372,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const animateRow = useCallback(
       (fromValue: number, toValue: number, velocityX?: number) => {
         'worklet';
-        rowState.value = Math.sign(toValue);
 
         const translationSpringConfig = {
           duration: 1000,
@@ -383,13 +382,24 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           ...animationOptionsProp,
         };
 
+        const isClosing = toValue === 0;
+        const moveToRight = isClosing ? rowState.value < 0 : toValue > 0;
+
+        const usedWidth = isClosing
+          ? moveToRight
+            ? rightWidth.value
+            : leftWidth.value
+          : moveToRight
+          ? leftWidth.value
+          : rightWidth.value;
+
         const progressSpringConfig = {
           ...translationSpringConfig,
           restDisplacementThreshold: 0.01,
           restSpeedThreshold: 0.01,
           velocity:
             velocityX &&
-            interpolate(velocityX, [-rowWidth.value, rowWidth.value], [-1, 1]),
+            interpolate(velocityX, [-usedWidth, usedWidth], [-1, 1]),
         };
 
         appliedTranslation.value = withSpring(
@@ -414,6 +424,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             : 0;
 
         runOnJS(dispatchImmediateEvents)(fromValue, toValue);
+
+        rowState.value = Math.sign(toValue);
       },
       [
         rowState,
