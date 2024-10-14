@@ -3,7 +3,7 @@ import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
 
 import { GestureDetectorState } from './types';
 import React, { useCallback } from 'react';
-import { findNodeHandle } from 'react-native';
+import findNodeHandle from '../../../findNodeHandle';
 
 declare const global: {
   isFormsStackingContext: (node: unknown) => boolean | null; // JSI function

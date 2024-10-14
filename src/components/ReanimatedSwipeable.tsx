@@ -18,7 +18,6 @@ import {
 import type { PanGestureHandlerProps } from '../handlers/PanGestureHandler';
 import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 import Animated, {
-  Extrapolation,
   SharedValue,
   interpolate,
   runOnJS,
@@ -230,10 +229,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const rowWidth = useSharedValue<number>(0);
     const leftWidth = useSharedValue<number>(0);
     const rightWidth = useSharedValue<number>(0);
-    const rightOffset = useSharedValue<number>(0);
-
-    const leftActionTranslate = useSharedValue<number>(0);
-    const rightActionTranslate = useSharedValue<number>(0);
+    const rightOffset = useSharedValue<number | null>(null);
 
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
@@ -266,19 +262,28 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
 
+    const updateRightElementWidth = () => {
+      'worklet';
+      if (rightOffset.value === null) {
+        rightOffset.value = rowWidth.value;
+      }
+      rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
+    };
+
     const calculateCurrentOffset = useCallback(() => {
       'worklet';
-      if (rowState.value === 1) {
-        return leftWidth.value;
-      } else if (rowState.value === -1) {
-        return -rowWidth.value - rightOffset.value;
-      }
-      return 0;
+      updateRightElementWidth();
+      return rowState.value === 1
+        ? leftWidth.value
+        : rowState.value === -1
+        ? -rowWidth.value - rightOffset.value!
+        : 0;
     }, [leftWidth, rightOffset, rowState, rowWidth]);
 
     const updateAnimatedEvent = () => {
       'worklet';
-      rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
+
+      updateRightElementWidth();
 
       const overshootLeft = overshootLeftProp ?? leftWidth.value > 0;
       const overshootRight = overshootRightProp ?? rightWidth.value > 0;
@@ -316,12 +321,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               [0, 0, 1]
             )
           : 0;
-      leftActionTranslate.value = interpolate(
-        showLeftProgress.value,
-        [0, Number.MIN_VALUE],
-        [-10000, 0],
-        Extrapolation.CLAMP
-      );
+
       showRightProgress.value =
         rightWidth.value > 0
           ? interpolate(
@@ -330,12 +330,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               [1, 0, 0]
             )
           : 0;
-      rightActionTranslate.value = interpolate(
-        showRightProgress.value,
-        [0, Number.MIN_VALUE],
-        [-10000, 0],
-        Extrapolation.CLAMP
-      );
     };
 
     const dispatchImmediateEvents = useCallback(
@@ -446,7 +440,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
       openRight() {
         'worklet';
-        rightWidth.value = rowWidth.value - rightOffset.value;
         animateRow(calculateCurrentOffset(), -rightWidth.value);
       },
       reset() {
@@ -458,19 +451,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
     };
 
-    const leftAnimatedStyle = useAnimatedStyle(
-      () => ({
-        transform: [
-          {
-            translateX: leftActionTranslate.value,
-          },
-        ],
-      }),
-      [leftActionTranslate]
-    );
-
     const leftElement = renderLeftActions && (
-      <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
+      <Animated.View style={[styles.leftActions]}>
         {renderLeftActions(
           showLeftProgress,
           appliedTranslation,
@@ -484,19 +466,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
-    const rightAnimatedStyle = useAnimatedStyle(
-      () => ({
-        transform: [
-          {
-            translateX: rightActionTranslate.value,
-          },
-        ],
-      }),
-      [rightActionTranslate]
-    );
-
     const rightElement = renderRightActions && (
-      <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
+      <Animated.View style={[styles.rightActions]}>
         {renderRightActions(
           showRightProgress,
           appliedTranslation,
@@ -520,7 +491,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       const { velocityX } = event;
       userDrag.value = event.translationX;
 
-      rightWidth.value = rowWidth.value - rightOffset.value;
+      updateRightElementWidth();
 
       const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
       const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
@@ -562,6 +533,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }
     });
 
+    const dragStarted = useSharedValue<boolean>(false);
+
     const panGesture = Gesture.Pan()
       .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
         userDrag.value = event.translationX;
@@ -575,18 +548,25 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? 'left'
             : 'right';
 
-        if (rowState.value === 0 && onSwipeableOpenStartDrag) {
-          runOnJS(onSwipeableOpenStartDrag)(direction);
-        } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
-          runOnJS(onSwipeableCloseStartDrag)(direction);
+        if (!dragStarted.value) {
+          dragStarted.value = true;
+          if (rowState.value === 0 && onSwipeableOpenStartDrag) {
+            runOnJS(onSwipeableOpenStartDrag)(direction);
+          } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
+            runOnJS(onSwipeableCloseStartDrag)(direction);
+          }
         }
+
         updateAnimatedEvent();
       })
       .onEnd(
         (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
           handleRelease(event);
         }
-      );
+      )
+      .onFinalize(() => {
+        dragStarted.value = false;
+      });
 
     if (enableTrackpadTwoFingerGesture) {
       panGesture.enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture);
