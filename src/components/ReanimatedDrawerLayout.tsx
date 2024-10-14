@@ -220,7 +220,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
   const [drawerOpened, setDrawerOpened] = React.useState(false);
 
   // %% see if neccessary after moving to FC
-  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
+  const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
 
   const nestedDragX = useSharedValue<number>(0);
   const nestedTouchX = useSharedValue<number>(0);
@@ -239,6 +239,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
     minSwipeDistance = defaultProps.minSwipeDistance,
     edgeWidth = defaultProps.edgeWidth,
     drawerLockMode = defaultProps.drawerLockMode,
+    useNativeAnimations = defaultProps.useNativeAnimations,
   } = props;
 
   nestedDragX.value = dragX.value;
@@ -299,7 +300,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
 
   const drawerType_eq_front_dragOffsetFromOnStartPosition = interpolate(
     drawerType_eq_front_startPositionX.value,
-    [drawerWidth! - 1, drawerWidth!, drawerWidth! + 1],
+    [drawerWidth - 1, drawerWidth, drawerWidth + 1],
     [0, 0, 1]
   );
 
@@ -312,7 +313,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
   if (openValue) {
     openValue.value = interpolate(
       translationX.value + drawerTranslation.value,
-      [0, drawerWidth!],
+      [0, drawerWidth],
       [0, 1],
       Extrapolation.CLAMP
     );
@@ -325,7 +326,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
       ev: NativeSyntheticEvent<PanGestureHandlerEventPayload>
     ) => void;
   } = {
-    useNativeDriver: props.useNativeAnimations!,
+    useNativeDriver: useNativeAnimations,
   };
 
   if (props.onDrawerSlide) {
@@ -373,17 +374,17 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
 
     if (drawerType === 'front') {
       dragOffsetBasedOnStart =
-        gestureStartX > drawerWidth! ? gestureStartX - drawerWidth! : 0;
+        gestureStartX > drawerWidth ? gestureStartX - drawerWidth : 0;
     }
 
     const startOffsetX =
-      dragX + dragOffsetBasedOnStart + (drawerShown.current ? drawerWidth! : 0);
+      dragX + dragOffsetBasedOnStart + (drawerShown.current ? drawerWidth : 0);
     const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
 
-    const shouldOpen = projOffsetX > drawerWidth! / 2;
+    const shouldOpen = projOffsetX > drawerWidth / 2;
 
     if (shouldOpen) {
-      animateDrawer(startOffsetX, drawerWidth!, velocityX);
+      animateDrawer(startOffsetX, drawerWidth, velocityX);
     } else {
       animateDrawer(startOffsetX, 0, velocityX);
     }
@@ -407,10 +408,12 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
     const hitSlop = fromLeft
       ? { left: 0, width: showing ? undefined : edgeWidth }
       : { right: 0, width: showing ? undefined : edgeWidth };
+
+    // %% FIXME setNativeProps has issues iirc, may not work on web
     // @ts-ignore internal API, maybe could be fixed in handler types
     panGestureHandler.current?.setNativeProps({
       hitSlop,
-      activeOffsetX: gestureOrientation * minSwipeDistance!,
+      activeOffsetX: gestureOrientation * minSwipeDistance,
     });
   };
 
@@ -474,7 +477,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
     animateDrawer(
       // TODO: decide if it should be null or undefined is the proper value
       undefined,
-      props.drawerWidth!,
+      drawerWidth,
       options.velocity ? options.velocity : 0,
       options.speed
     );
@@ -598,7 +601,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
     const containerTranslateX = interpolate(
       openValue.value,
       [0, 1],
-      fromLeft ? [0, drawerWidth!] : [0, -drawerWidth!],
+      fromLeft ? [0, drawerWidth] : [0, -drawerWidth],
       Extrapolation.CLAMP
     );
     containerStyles = {
@@ -606,9 +609,9 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
     };
   }
 
-  const closedDrawerOffset = fromLeft ? -drawerWidth! : drawerWidth!;
+  const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
 
-  let drawerTranslateX: number = 0;
+  let drawerTranslateX = 0;
 
   if (drawerSlide) {
     if (drawerState !== IDLE) {
@@ -653,6 +656,8 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
       openDrawer,
       closeDrawer,
     }),
+    // componentRef.current is neccessary, eslint thinks it will be reloaded each render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [componentRef.current, openDrawer, closeDrawer]
   );
 
@@ -684,7 +689,7 @@ const DrawerLayout = React.forwardRef(function DrawerLayout(
           accessibilityViewIsModal={drawerShown.current}
           style={[styles.drawerContainer, drawerStyles, drawerContainerStyle]}>
           <Animated.View style={dynamicDrawerStyles}>
-            {props.renderNavigationView(openValue!)}
+            {props.renderNavigationView(openValue)}
           </Animated.View>
         </Animated.View>
       </Animated.View>

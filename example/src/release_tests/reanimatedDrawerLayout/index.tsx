@@ -10,7 +10,7 @@ const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
 };
 
 export default function ReanimatedDrawerExample() {
-  const drawerRef = useRef<ReanimatedDrawerLayout>(null);
+  const drawerRef = useRef<any>(null);
 
   const tapGesture = Gesture.Tap()
     .runOnJS(true)
