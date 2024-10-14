@@ -577,7 +577,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? 'left'
             : 'right';
 
-        if (dragStarted.value === false) {
+        if (!dragStarted.value) {
           dragStarted.value = true;
           if (rowState.value === 0 && onSwipeableOpenStartDrag) {
             runOnJS(onSwipeableOpenStartDrag)(direction);
@@ -593,7 +593,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           handleRelease(event);
         }
       )
-      .onFinalize(() => (dragStarted.value = false));
+      .onFinalize(() => {
+        dragStarted.value = false;
+      });
 
     if (enableTrackpadTwoFingerGesture) {
       panGesture.enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture);
