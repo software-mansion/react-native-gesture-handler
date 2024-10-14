@@ -82,12 +82,12 @@ Receives swipe direction as an argument.
 
 ### `onSwipeableOpenStartDrag`
 
-a function that is called when `swipeable` starts being dragged open.
+a function that is called when a user starts to drag the `swipable` to open.
 Receives swipe direction as an argument.
 
 ### `onSwipeableCloseStartDrag`
 
-a function that is called when `swipeable` starts being dragged close.
+a function that is called when a user starts to drag the `swipable` to close.
 Receives swipe direction as an argument.
 
 ### `renderLeftActions`
