@@ -18,7 +18,6 @@ import {
 import type { PanGestureHandlerProps } from '../handlers/PanGestureHandler';
 import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 import Animated, {
-  Extrapolation,
   SharedValue,
   interpolate,
   runOnJS,
@@ -232,9 +231,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const rightWidth = useSharedValue<number>(0);
     const rightOffset = useSharedValue<number | null>(null);
 
-    const leftActionTranslate = useSharedValue<number>(0);
-    const rightActionTranslate = useSharedValue<number>(0);
-
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
@@ -325,12 +321,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               [0, 0, 1]
             )
           : 0;
-      leftActionTranslate.value = interpolate(
-        showLeftProgress.value,
-        [0, Number.MIN_VALUE],
-        [-10000, 0],
-        Extrapolation.CLAMP
-      );
+
       showRightProgress.value =
         rightWidth.value > 0
           ? interpolate(
@@ -339,12 +330,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               [1, 0, 0]
             )
           : 0;
-      rightActionTranslate.value = interpolate(
-        showRightProgress.value,
-        [0, Number.MIN_VALUE],
-        [-10000, 0],
-        Extrapolation.CLAMP
-      );
     };
 
     const dispatchImmediateEvents = useCallback(
@@ -466,19 +451,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
     };
 
-    const leftAnimatedStyle = useAnimatedStyle(
-      () => ({
-        transform: [
-          {
-            translateX: leftActionTranslate.value,
-          },
-        ],
-      }),
-      [leftActionTranslate]
-    );
-
     const leftElement = renderLeftActions && (
-      <Animated.View style={[styles.leftActions, leftAnimatedStyle]}>
+      <Animated.View style={[styles.leftActions]}>
         {renderLeftActions(
           showLeftProgress,
           appliedTranslation,
@@ -492,19 +466,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       </Animated.View>
     );
 
-    const rightAnimatedStyle = useAnimatedStyle(
-      () => ({
-        transform: [
-          {
-            translateX: rightActionTranslate.value,
-          },
-        ],
-      }),
-      [rightActionTranslate]
-    );
-
     const rightElement = renderRightActions && (
-      <Animated.View style={[styles.rightActions, rightAnimatedStyle]}>
+      <Animated.View style={[styles.rightActions]}>
         {renderRightActions(
           showRightProgress,
           appliedTranslation,
