@@ -21,10 +21,12 @@ using namespace facebook::react;
   RNGestureHandlerButton *_buttonView;
 }
 
+#if TARGET_OS_OSX
 + (BOOL)shouldBeRecycled
 {
   return NO;
 }
+#endif
 
 // Needed because of this: https://github.com/facebook/react-native/pull/37274
 + (void)load
