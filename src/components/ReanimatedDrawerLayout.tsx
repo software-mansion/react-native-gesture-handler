@@ -33,6 +33,7 @@ import Animated, {
   Extrapolation,
   SharedValue,
   interpolate,
+  runOnJS,
   useDerivedValue,
   useSharedValue,
   withSpring,
@@ -359,7 +360,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       newState: DrawerState,
       drawerWillShow: boolean
     ) => {
-      props.onDrawerStateChanged?.(newState, drawerWillShow);
+      'worklet';
+      props.onDrawerStateChanged &&
+        runOnJS(props.onDrawerStateChanged)?.(newState, drawerWillShow);
     };
 
     const handleRelease = ({
@@ -399,7 +402,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     };
 
     const updateShowing = (showing: boolean) => {
-      drawerShown.current = showing;
       accessibilityIsModalView.current?.setNativeProps({
         accessibilityViewIsModal: showing,
       });
@@ -452,6 +454,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       }
 
       const willShow = toValue !== 0;
+      drawerShown.current = willShow;
+
       updateShowing(willShow);
       emitStateChanged(SETTLING, willShow);
       setDrawerState(SETTLING);
@@ -466,16 +470,16 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         (finished) => {
           if (finished) {
             emitStateChanged(IDLE, willShow);
-            setDrawerOpened(willShow);
+            runOnJS(setDrawerOpened)(willShow);
             if (drawerState !== DRAGGING) {
               // It's possilbe that user started drag while the drawer
               // was settling, don't override state in this case
-              setDrawerState(IDLE);
+              runOnJS(setDrawerState)(IDLE);
             }
             if (willShow) {
-              props.onDrawerOpen?.();
+              props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
             } else {
-              props.onDrawerClose?.();
+              props.onDrawerClose && runOnJS(props.onDrawerClose)?.();
             }
           }
         }
@@ -520,11 +524,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         backgroundColor: props.overlayColor ?? defaultProps.overlayColor,
       };
 
-      const tapGesture = Gesture.Tap().onEnd(() => {
-        if (drawerShown.current && props.drawerLockMode !== 'locked-open') {
-          closeDrawer();
-        }
-      });
+      const tapGesture = Gesture.Tap()
+        .runOnJS(true)
+        .onEnd(() => {
+          if (drawerShown.current && props.drawerLockMode !== 'locked-open') {
+            closeDrawer();
+          }
+        });
 
       return (
         <GestureDetector gesture={tapGesture}>
@@ -576,7 +582,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       )
       .onStart(() => {
         emitStateChanged(DRAGGING, false);
-        setDrawerState(DRAGGING);
+        runOnJS(setDrawerState)(DRAGGING);
         if (props.keyboardDismissMode === 'on-drag') {
           Keyboard.dismiss();
         }
@@ -584,7 +590,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           StatusBar.setHidden(true, props.statusBarAnimation || 'slide');
         }
       })
-      .onEnd((event) => handleRelease({ nativeEvent: event }))
+      .onEnd((event) => {
+        runOnJS(handleRelease)({ nativeEvent: event });
+      })
       .onUpdate((event) => {
         nestedDragX.value = event.translationX;
         nestedTouchX.value = event.x;
