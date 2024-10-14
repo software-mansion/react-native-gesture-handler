@@ -230,7 +230,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const rowWidth = useSharedValue<number>(0);
     const leftWidth = useSharedValue<number>(0);
     const rightWidth = useSharedValue<number>(0);
-    const rightOffset = useSharedValue<number>(0);
+    const rightOffset = useSharedValue<number | null>(null);
 
     const leftActionTranslate = useSharedValue<number>(0);
     const rightActionTranslate = useSharedValue<number>(0);
@@ -266,19 +266,28 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
 
+    const updateRightElementWidth = () => {
+      'worklet';
+      if (rightOffset.value === null) {
+        rightOffset.value = rowWidth.value;
+      }
+      rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
+    };
+
     const calculateCurrentOffset = useCallback(() => {
       'worklet';
-      if (rowState.value === 1) {
-        return leftWidth.value;
-      } else if (rowState.value === -1) {
-        return -rowWidth.value - rightOffset.value;
-      }
-      return 0;
+      updateRightElementWidth();
+      return rowState.value === 1
+        ? leftWidth.value
+        : rowState.value === -1
+        ? -rowWidth.value - rightOffset.value!
+        : 0;
     }, [leftWidth, rightOffset, rowState, rowWidth]);
 
     const updateAnimatedEvent = () => {
       'worklet';
-      rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
+
+      updateRightElementWidth();
 
       const overshootLeft = overshootLeftProp ?? leftWidth.value > 0;
       const overshootRight = overshootRightProp ?? rightWidth.value > 0;
@@ -446,7 +455,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
       openRight() {
         'worklet';
-        rightWidth.value = rowWidth.value - rightOffset.value;
         animateRow(calculateCurrentOffset(), -rightWidth.value);
       },
       reset() {
@@ -520,7 +528,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       const { velocityX } = event;
       userDrag.value = event.translationX;
 
-      rightWidth.value = rowWidth.value - rightOffset.value;
+      updateRightElementWidth();
 
       const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
       const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
