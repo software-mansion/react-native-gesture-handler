@@ -80,6 +80,16 @@ Receives swipe direction as an argument.
 a function that is called when `swipeable` starts animating on close.
 Receives swipe direction as an argument.
 
+### `onSwipeableOpenStartDrag`
+
+a function that is called when a user starts to drag the `swipable` to open.
+Receives swipe direction as an argument.
+
+### `onSwipeableCloseStartDrag`
+
+a function that is called when a user starts to drag the `swipable` to close.
+Receives swipe direction as an argument.
+
 ### `renderLeftActions`
 
 a function that returns a component which will be rendered under the swipeable after swiping it to the right.
