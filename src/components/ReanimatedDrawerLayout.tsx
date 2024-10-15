@@ -34,6 +34,7 @@ import Animated, {
   SharedValue,
   interpolate,
   runOnJS,
+  useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
@@ -232,7 +233,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const openValue = useSharedValue<number>(0);
 
     // %% START | this was in constructor
-    // Event definition is based on
     const {
       drawerPosition = defaultProps.drawerPosition,
       drawerWidth = defaultProps.drawerWidth,
@@ -420,6 +420,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         : { right: 0, width: showing ? undefined : edgeWidth };
 
       // %% FIXME setNativeProps has issues iirc, may not work on web
+      // %% on web use setAttribute instead, or find a complete replacement
       // @ts-ignore internal API, maybe could be fixed in handler types
       panGestureHandler.current?.setNativeProps({
         hitSlop,
@@ -431,7 +432,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       fromValue: number | null | undefined,
       toValue: number,
       velocity: number,
-      _speed?: number // %% do not remove
+      _speed?: number // %% should be used as animation speed rate
     ) => {
       dragX.value = 0;
       touchX.value =
@@ -612,45 +613,46 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       width: drawerWidth,
     };
 
-    // %% change into an animated style
-    let containerStyles;
-    if (containerSlide) {
-      const containerTranslateX = interpolate(
-        openValue.value,
-        [0, 1],
-        fromLeft ? [0, drawerWidth] : [0, -drawerWidth],
-        Extrapolation.CLAMP
-      );
-      containerStyles = {
-        transform: [{ translateX: containerTranslateX }],
-      };
-    }
-
-    const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
-
-    let drawerTranslateX = 0;
-
-    if (drawerSlide) {
-      if (drawerState !== IDLE) {
-        drawerTranslateX = interpolate(
-          openValue.value,
-          [0, 1],
-          [closedDrawerOffset, 0],
-          Extrapolation.CLAMP
-        );
-      } else {
-        drawerTranslateX = drawerOpened ? 0 : closedDrawerOffset;
+    const containerStyles = useAnimatedStyle(() => {
+      // %% see if containerSlide should be changed into sharedValue
+      if (!containerSlide) {
+        return {};
       }
-    }
 
-    // %% convert to animated styles
-    const drawerStyles: {
-      transform: { translateX: number }[];
-      flexDirection: 'row-reverse' | 'row';
-    } = {
-      transform: [{ translateX: drawerTranslateX }],
-      flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
-    };
+      return {
+        transform: [
+          {
+            translateX: interpolate(
+              openValue.value,
+              [0, 1],
+              fromLeft ? [0, drawerWidth] : [0, -drawerWidth],
+              Extrapolation.CLAMP
+            ),
+          },
+        ],
+      };
+    });
+
+    const drawerStyles = useAnimatedStyle(() => {
+      const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
+      const drawerTranslateX = !drawerSlide
+        ? 0
+        : drawerState === IDLE
+        ? drawerOpened
+          ? 0
+          : closedDrawerOffset
+        : interpolate(
+            openValue.value,
+            [0, 1],
+            [closedDrawerOffset, 0],
+            Extrapolation.CLAMP
+          );
+
+      return {
+        transform: [{ translateX: drawerTranslateX }],
+        flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
+      };
+    });
 
     const importantForAccessibility =
       Platform.OS === 'android'
