@@ -227,8 +227,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // %% see if neccessary after moving to FC
     const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
 
-    const openValue = useSharedValue<number>(0);
-
     // %% START | this was in constructor
     const {
       drawerPosition = defaultProps.drawerPosition,
@@ -290,31 +288,28 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //
     // This is used only when drawerType is "front"
     //
-    const sideCorrectedStartPositionX = useDerivedValue(
-      () => sideCorrectedTouchX.value + -1 * sideCorrectedDragX.value
-    );
 
-    // %% this cluser of variables almost certainly should either be all derived values or put into a dynamically updated function
-    const sideCorrectedDragOffsetFromOnStartPosition = interpolate(
-      sideCorrectedStartPositionX.value,
-      [drawerWidth - 1, drawerWidth, drawerWidth + 1],
-      [0, 0, 1]
-    );
+    const openValue = useDerivedValue(() => {
+      const sideCorrectedStartPositionX =
+        sideCorrectedTouchX.value + -1 * sideCorrectedDragX.value;
 
-    const translationX = useDerivedValue(() =>
-      drawerType === 'front'
-        ? sideCorrectedDragX.value + sideCorrectedDragOffsetFromOnStartPosition
-        : sideCorrectedDragX.value
-    );
+      const translationX =
+        drawerType === 'front'
+          ? sideCorrectedDragX.value +
+            interpolate(
+              sideCorrectedStartPositionX,
+              [drawerWidth - 1, drawerWidth, drawerWidth + 1],
+              [0, 0, 1]
+            )
+          : sideCorrectedDragX.value;
 
-    if (openValue) {
-      openValue.value = interpolate(
-        translationX.value + drawerTranslation.value,
+      return interpolate(
+        translationX + drawerTranslation.value,
         [0, drawerWidth],
         [0, 1],
         Extrapolation.CLAMP
       );
-    }
+    });
 
     const gestureOptions: {
       useNativeDriver: boolean;
@@ -337,13 +332,12 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     // %% END | this was in constructor
 
-    const accessibilityIsModalView = React.createRef<View>();
-    const pointerEventsView = React.createRef<View>();
-    const panGestureHandler = React.createRef<PanGestureHandler | null>();
+    const accessibilityIsModalView = React.useRef<View>(null);
+    const pointerEventsView = React.useRef<View>(null);
+    const panGestureHandler = React.useRef<PanGestureHandler>(null);
 
-    // %% START | not sure if ref or state
+    // %% not sure if ref or state
     const drawerShown = React.useRef(false);
-    // %% END | not sure if ref or state
 
     const handleContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
       setContainerWidth(nativeEvent.layout.width);
