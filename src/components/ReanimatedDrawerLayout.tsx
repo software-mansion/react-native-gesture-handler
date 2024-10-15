@@ -227,9 +227,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // %% see if neccessary after moving to FC
     const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
 
-    const nestedDragX = useSharedValue<number>(0);
-    const nestedTouchX = useSharedValue<number>(0);
-
     const openValue = useSharedValue<number>(0);
 
     // %% START | this was in constructor
@@ -246,19 +243,14 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       useNativeAnimations = defaultProps.useNativeAnimations,
     } = props;
 
-    nestedDragX.value = dragX.value;
-    nestedTouchX.value = touchX.value;
-
-    const local_dragX = useDerivedValue(() =>
-      drawerPosition !== positions.Left
-        ? -1 * nestedDragX.value
-        : nestedDragX.value
+    const sideCorrectedDragX = useDerivedValue(() =>
+      drawerPosition !== positions.Left ? -1 * dragX.value : dragX.value
     );
 
-    const local_touchX = useDerivedValue(() =>
+    const sideCorrectedTouchX = useDerivedValue(() =>
       drawerPosition !== positions.Left
-        ? containerWidth + -1 * nestedTouchX.value
-        : nestedTouchX.value
+        ? containerWidth + -1 * touchX.value
+        : touchX.value
     );
 
     if (drawerPosition !== positions.Left) {
@@ -268,9 +260,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       // left-side drawer gestures. E.g. dragX is simply -dragX, and touchX is
       // calulcated by subtracing real touchX from the width of the container
       // (such that when touch happens at the right edge the value is simply 0)
-      nestedTouchX.value = containerWidth;
+      touchX.value = containerWidth;
     } else {
-      nestedTouchX.value = 0;
+      touchX.value = 0;
     }
 
     // While closing the drawer when user starts gesture outside of its area (in greyed
@@ -298,20 +290,21 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //
     // This is used only when drawerType is "front"
     //
-    const drawerType_eq_front_startPositionX = useDerivedValue(
-      () => local_touchX.value + -1 * local_dragX.value
+    const sideCorrectedStartPositionX = useDerivedValue(
+      () => sideCorrectedTouchX.value + -1 * sideCorrectedDragX.value
     );
 
-    const drawerType_eq_front_dragOffsetFromOnStartPosition = interpolate(
-      drawerType_eq_front_startPositionX.value,
+    // %% this cluser of variables almost certainly should either be all derived values or put into a dynamically updated function
+    const sideCorrectedDragOffsetFromOnStartPosition = interpolate(
+      sideCorrectedStartPositionX.value,
       [drawerWidth - 1, drawerWidth, drawerWidth + 1],
       [0, 0, 1]
     );
 
     const translationX = useDerivedValue(() =>
       drawerType === 'front'
-        ? local_dragX.value + drawerType_eq_front_dragOffsetFromOnStartPosition
-        : local_dragX.value
+        ? sideCorrectedDragX.value + sideCorrectedDragOffsetFromOnStartPosition
+        : sideCorrectedDragX.value
     );
 
     if (openValue) {
@@ -595,12 +588,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         runOnJS(handleRelease)({ nativeEvent: event });
       })
       .onUpdate((event) => {
-        nestedDragX.value = event.translationX;
-        nestedTouchX.value = event.x;
+        dragX.value = event.translationX;
+        touchX.value = event.x;
       });
-
-    const drawerSlide = drawerType !== 'back';
-    const containerSlide = drawerType !== 'front';
 
     // We rely on row and row-reverse flex directions to position the drawer
     // properly. Apparently for RTL these are flipped which requires us to use
@@ -614,8 +604,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     };
 
     const containerStyles = useAnimatedStyle(() => {
-      // %% see if containerSlide should be changed into sharedValue
-      if (!containerSlide) {
+      if (drawerType === 'front') {
         return {};
       }
 
@@ -635,21 +624,25 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const drawerStyles = useAnimatedStyle(() => {
       const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
-      const drawerTranslateX = !drawerSlide
-        ? 0
-        : drawerState === IDLE
-        ? drawerOpened
-          ? 0
-          : closedDrawerOffset
-        : interpolate(
-            openValue.value,
-            [0, 1],
-            [closedDrawerOffset, 0],
-            Extrapolation.CLAMP
-          );
 
       return {
-        transform: [{ translateX: drawerTranslateX }],
+        transform: [
+          {
+            translateX:
+              drawerType === 'back'
+                ? 0
+                : drawerState === IDLE
+                ? drawerOpened
+                  ? 0
+                  : closedDrawerOffset
+                : interpolate(
+                    openValue.value,
+                    [0, 1],
+                    [closedDrawerOffset, 0],
+                    Extrapolation.CLAMP
+                  ),
+          },
+        ],
         flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
       };
     });
