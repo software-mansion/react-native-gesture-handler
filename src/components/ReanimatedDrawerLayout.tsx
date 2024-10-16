@@ -507,26 +507,27 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [closeDrawer, isDrawerOpen.value, props.drawerLockMode]
     );
 
-    const renderOverlay = () => {
-      // %% overlayOpacity started being jumpy after fixing [openValue -> openValue.value]
-      const overlayOpacity =
-        drawerState !== IDLE ? openValue.value : drawerOpened ? 1 : 0;
+    const overlayAnimatedStyle = useAnimatedStyle(() => ({
+      opacity: openValue.value,
+      backgroundColor: props.overlayColor ?? defaultProps.overlayColor,
+    }));
 
-      const dynamicOverlayStyles = {
-        opacity: overlayOpacity,
-        backgroundColor: props.overlayColor ?? defaultProps.overlayColor,
-      };
-
+    const renderOverlay = React.useCallback(() => {
       return (
         <GestureDetector gesture={overlayDismissGesture}>
           <Animated.View
             pointerEvents={isDrawerOpen.value ? 'auto' : 'none'}
             animatedProps={overlayAnimatedProps}
-            style={[styles.overlay, dynamicOverlayStyles]}
+            style={[styles.overlay, overlayAnimatedStyle]}
           />
         </GestureDetector>
       );
-    };
+    }, [
+      isDrawerOpen.value,
+      overlayAnimatedProps,
+      overlayAnimatedStyle,
+      overlayDismissGesture,
+    ]);
 
     // %% this should be dynamic, it uses SV in the render body
     // gestureOrientation is 1 if the expected gesture is from left to right and
