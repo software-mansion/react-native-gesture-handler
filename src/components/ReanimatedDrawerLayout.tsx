@@ -345,6 +345,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         : ('none' as const),
     }));
 
+    // When drawer is closed we want the hitSlop to be horizontally shorter than
+    // the container size by the value of SLOP. This will make it only activate
+    // when gesture happens not further than SLOP away from the edge.
+    const [hitSlop, setHitSlop] = React.useState<HitSlop>(
+      fromLeft ? { left: 0, width: edgeWidth } : { right: 0, width: edgeWidth }
+    );
+
     const updateShowing = React.useCallback(
       (showing: boolean) => {
         'worklet';
@@ -374,12 +381,12 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             // it, it is more noticable that the frame is dropped.
             if (fromValue < toValue && velocity > 0) {
               nextFramePosition = Math.min(
-                fromValue + velocity / 60.0,
+                fromValue + velocity / 60.0, // %% this assumes fps = 60, which is rarely true
                 toValue
               );
             } else if (fromValue > toValue && velocity < 0) {
               nextFramePosition = Math.max(
-                fromValue + velocity / 60.0,
+                fromValue + velocity / 60.0, // %% this assumes fps = 60, which is rarely true
                 toValue
               );
             }
@@ -389,7 +396,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
-        setHitSlop(
+        runOnJS(setHitSlop)(
           fromLeft
             ? { left: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
             : { right: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
@@ -555,14 +562,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // to right gesture, thus orientation will be 1.
     const gestureOrientation =
       (fromLeft ? 1 : -1) * (isDrawerOpen.value ? -1 : 1);
-
-    // %% convert to useState to dynamically change useMemo below
-    // When drawer is closed we want the hitSlop to be horizontally shorter than
-    // the container size by the value of SLOP. This will make it only activate
-    // when gesture happens not further than SLOP away from the edge
-    const [hitSlop, setHitSlop] = React.useState<HitSlop>(
-      fromLeft ? { left: 0, width: edgeWidth } : { right: 0, width: edgeWidth }
-    );
 
     const panGesture = React.useMemo(() => {
       return Gesture.Pan()
