@@ -9,7 +9,6 @@
 import * as React from 'react';
 import {
   StyleSheet,
-  View,
   Keyboard,
   StatusBar,
   I18nManager,
@@ -34,6 +33,7 @@ import Animated, {
   SharedValue,
   interpolate,
   runOnJS,
+  useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -317,12 +317,10 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     // %% END | this was in constructor
 
-    const accessibilityIsModalView = React.useRef<View>(null);
-    const pointerEventsView = React.useRef<View>(null);
     const panGestureHandler = React.useRef<PanGestureHandler>(null);
 
     // %% not sure if ref or state
-    const drawerShown = React.useRef(false);
+    const isDrawerOpen = useSharedValue(false);
 
     const handleContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
       setContainerWidth(nativeEvent.layout.width);
@@ -359,9 +357,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       }
 
       const startOffsetX =
-        dragX +
-        dragOffsetBasedOnStart +
-        (drawerShown.current ? drawerWidth : 0);
+        dragX + dragOffsetBasedOnStart + (isDrawerOpen.value ? drawerWidth : 0);
       const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
 
       const shouldOpen = projOffsetX > drawerWidth / 2;
@@ -373,13 +369,21 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       }
     };
 
+    const isDrawerShowing = useSharedValue(false);
+
+    const drawerAnimatedProps = useAnimatedProps(() => ({
+      accessibilityViewIsModal: isDrawerShowing.value,
+    }));
+
+    const overlayAnimatedProps = useAnimatedProps(() => ({
+      pointerEvents: isDrawerShowing.value
+        ? ('auto' as const)
+        : ('none' as const),
+    }));
+
     const updateShowing = (showing: boolean) => {
-      accessibilityIsModalView.current?.setNativeProps({
-        accessibilityViewIsModal: showing,
-      });
-      pointerEventsView.current?.setNativeProps({
-        pointerEvents: showing ? 'auto' : 'none',
-      });
+      'worklet';
+      isDrawerShowing.value = showing;
 
       // 1 if the expected gesture is from left to right and -1 otherwise
       // e.g. when drawer is on the left and is closed we expect left
@@ -397,7 +401,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       // %% FIXME setNativeProps has issues iirc, may not work on web
       // %% on web use setAttribute instead, or find a complete replacement
       // @ts-ignore internal API, maybe could be fixed in handler types
-      panGestureHandler.current?.setNativeProps({
+      panGestureHandler.current?.setNativeProps?.({
         hitSlop,
         activeOffsetX: gestureOrientation * minSwipeDistance,
       });
@@ -409,6 +413,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       velocity: number,
       _speed?: number // %% should be used as animation speed rate
     ) => {
+      'worklet';
       dragX.value = 0;
       touchX.value =
         props.drawerPosition === positions.Left ? 0 : containerWidth;
@@ -430,14 +435,18 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       }
 
       const willShow = toValue !== 0;
-      drawerShown.current = willShow;
+      isDrawerOpen.value = willShow;
 
       updateShowing(willShow);
       emitStateChanged(SETTLING, willShow);
-      setDrawerState(SETTLING);
+      runOnJS(setDrawerState)(SETTLING);
+
+      // %% do we want to run this every animation?
       if (props.hideStatusBar) {
+        // %% what is this function?
         StatusBar.setHidden(willShow, props.statusBarAnimation || 'slide');
       }
+
       drawerTranslation.value = withSpring(
         toValue,
         {
@@ -463,6 +472,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     };
 
     const openDrawer = (options: DrawerMovementOption = {}) => {
+      'worklet';
       animateDrawer(
         null,
         drawerWidth,
@@ -475,6 +485,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     };
 
     const closeDrawer = (options: DrawerMovementOption = {}) => {
+      'worklet';
       animateDrawer(
         null,
         0,
@@ -486,6 +497,12 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       // forceUpdate();
     };
 
+    const overlayDismissGesture = Gesture.Tap().onEnd(() => {
+      if (isDrawerOpen.value && props.drawerLockMode !== 'locked-open') {
+        closeDrawer();
+      }
+    });
+
     const renderOverlay = () => {
       const overlayOpacity =
         drawerState !== IDLE ? openValue : drawerOpened ? 1 : 0;
@@ -495,19 +512,11 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         backgroundColor: props.overlayColor ?? defaultProps.overlayColor,
       };
 
-      const tapGesture = Gesture.Tap()
-        .runOnJS(true)
-        .onEnd(() => {
-          if (drawerShown.current && props.drawerLockMode !== 'locked-open') {
-            closeDrawer();
-          }
-        });
-
       return (
-        <GestureDetector gesture={tapGesture}>
+        <GestureDetector gesture={overlayDismissGesture}>
           <Animated.View
-            pointerEvents={drawerShown.current ? 'auto' : 'none'}
-            ref={pointerEventsView}
+            pointerEvents={isDrawerOpen.value ? 'auto' : 'none'}
+            animatedProps={overlayAnimatedProps}
             style={[styles.overlay, dynamicOverlayStyles]}
           />
         </GestureDetector>
@@ -520,14 +529,14 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // -1 otherwise e.g. when drawer is on the left and is closed we expect left
     // to right gesture, thus orientation will be 1.
     const gestureOrientation =
-      (fromLeft ? 1 : -1) * (drawerShown.current ? -1 : 1);
+      (fromLeft ? 1 : -1) * (isDrawerOpen.value ? -1 : 1);
 
     // When drawer is closed we want the hitSlop to be horizontally shorter than
     // the container size by the value of SLOP. This will make it only activate
     // when gesture happens not further than SLOP away from the edge
     const hitSlop = fromLeft
-      ? { left: 0, width: drawerShown.current ? undefined : edgeWidth }
-      : { right: 0, width: drawerShown.current ? undefined : edgeWidth };
+      ? { left: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
+      : { right: 0, width: isDrawerOpen.value ? undefined : edgeWidth };
 
     const panGesture = Gesture.Pan()
       .activeCursor(props.activeCursor ?? 'auto')
@@ -614,7 +623,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const importantForAccessibility =
       Platform.OS === 'android'
-        ? drawerShown.current
+        ? isDrawerOpen.value
           ? 'no-hide-descendants'
           : 'yes'
         : undefined;
@@ -662,8 +671,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           </Animated.View>
           <Animated.View
             pointerEvents="box-none"
-            ref={accessibilityIsModalView}
-            accessibilityViewIsModal={drawerShown.current}
+            animatedProps={drawerAnimatedProps}
+            accessibilityViewIsModal={isDrawerOpen.value}
             style={[
               styles.drawerContainer,
               drawerStyles,
