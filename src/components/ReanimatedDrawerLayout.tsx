@@ -451,6 +451,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         toValue,
         {
           velocity,
+          damping: 50,
+          stiffness: 200,
         },
         (finished) => {
           if (finished) {
@@ -621,12 +623,15 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       };
     });
 
-    const importantForAccessibility =
-      Platform.OS === 'android'
-        ? isDrawerOpen.value
-          ? 'no-hide-descendants'
-          : 'yes'
-        : undefined;
+    // %% make dynamic
+    const containerAnimatedProps = useAnimatedProps(() => ({
+      importantForAccessibility:
+        Platform.OS === 'android'
+          ? isDrawerOpen.value
+            ? ('no-hide-descendants' as const)
+            : ('yes' as const)
+          : undefined,
+    }));
 
     const children =
       typeof props.children === 'function'
@@ -665,7 +670,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               containerStyles,
               contentContainerStyle,
             ]}
-            importantForAccessibility={importantForAccessibility}>
+            animatedProps={containerAnimatedProps}>
             {children}
             {renderOverlay()}
           </Animated.View>
