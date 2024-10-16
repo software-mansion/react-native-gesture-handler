@@ -16,19 +16,9 @@ import {
   StyleProp,
   ViewStyle,
   LayoutChangeEvent,
-  NativeSyntheticEvent,
   Platform,
 } from 'react-native';
 
-import {
-  HandlerStateChangeEvent,
-  UserSelect,
-  ActiveCursor,
-  MouseButton,
-  HitSlop,
-} from '../handlers/gestureHandlerCommon';
-import { PanGestureHandler } from '../handlers/PanGestureHandler';
-import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 import Animated, {
   Extrapolation,
   SharedValue,
@@ -41,6 +31,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import {
+  UserSelect,
+  ActiveCursor,
+  MouseButton,
+  HitSlop,
+} from '../handlers/gestureHandlerCommon';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
@@ -154,7 +150,8 @@ export interface DrawerLayoutProps {
 
   onDrawerSlide?: (position: number) => void;
 
-  onGestureRef?: (ref: PanGestureHandler) => void;
+  // %% we don't support this ref anymore, see if we can replace it
+  // onGestureRef?: (ref: PanGestureHandler) => void;
 
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?:
@@ -293,10 +290,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const gestureOptions: {
       useNativeDriver: boolean;
-      // TODO: make sure it is correct
-      listener?: (
-        ev: NativeSyntheticEvent<PanGestureHandlerEventPayload>
-      ) => void;
+      listener?: (event: { nativeEvent: { translationX: number } }) => void;
     } = {
       useNativeDriver: useNativeAnimations,
     };
@@ -433,7 +427,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const handleRelease = React.useCallback(
       ({
         nativeEvent,
-      }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
+      }: {
+        nativeEvent: {
+          translationX: number;
+          velocityX: number;
+          x: number;
+        };
+      }) => {
         let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
         if (drawerPosition !== positions.Left) {
@@ -456,6 +456,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           dragX +
           dragOffsetBasedOnStart +
           (isDrawerOpen.value ? drawerWidth : 0);
+
         const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
 
         const shouldOpen = projOffsetX > drawerWidth / 2;
