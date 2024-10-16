@@ -25,6 +25,7 @@ import {
   UserSelect,
   ActiveCursor,
   MouseButton,
+  HitSlop,
 } from '../handlers/gestureHandlerCommon';
 import { PanGestureHandler } from '../handlers/PanGestureHandler';
 import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
@@ -238,6 +239,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       useNativeAnimations = defaultProps.useNativeAnimations,
     } = props;
 
+    const fromLeft = drawerPosition === positions.Left;
+
     // %% this likely shouldn't be reset every render
     if (drawerPosition !== positions.Left) {
       // To handle right-side drawers, reverse events coming from gesture handler
@@ -315,57 +318,20 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     // %% END | this was in constructor
 
-    const panGestureHandler = React.useRef<PanGestureHandler>(null);
-
-    // %% not sure if ref or state
     const isDrawerOpen = useSharedValue(false);
 
     const handleContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
       setContainerWidth(nativeEvent.layout.width);
     };
 
-    const emitStateChanged = (
-      newState: DrawerState,
-      drawerWillShow: boolean
-    ) => {
-      'worklet';
-      props.onDrawerStateChanged &&
-        runOnJS(props.onDrawerStateChanged)?.(newState, drawerWillShow);
-    };
-
-    const handleRelease = ({
-      nativeEvent,
-    }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
-      let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
-
-      if (drawerPosition !== positions.Left) {
-        // See description in _updateAnimatedEvent about why events are flipped
-        // for right-side drawer
-        dragX = -dragX;
-        touchX = containerWidth - touchX;
-        velocityX = -velocityX;
-      }
-
-      const gestureStartX = touchX - dragX;
-      let dragOffsetBasedOnStart = 0;
-
-      if (drawerType === 'front') {
-        dragOffsetBasedOnStart =
-          gestureStartX > drawerWidth ? gestureStartX - drawerWidth : 0;
-      }
-
-      const startOffsetX =
-        dragX + dragOffsetBasedOnStart + (isDrawerOpen.value ? drawerWidth : 0);
-      const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
-
-      const shouldOpen = projOffsetX > drawerWidth / 2;
-
-      if (shouldOpen) {
-        animateDrawer(startOffsetX, drawerWidth, velocityX);
-      } else {
-        animateDrawer(startOffsetX, 0, velocityX);
-      }
-    };
+    const emitStateChanged = React.useCallback(
+      (newState: DrawerState, drawerWillShow: boolean) => {
+        'worklet';
+        props.onDrawerStateChanged &&
+          runOnJS(props.onDrawerStateChanged)?.(newState, drawerWillShow);
+      },
+      [props.onDrawerStateChanged]
+    );
 
     const isDrawerShowing = useSharedValue(false);
 
@@ -379,97 +345,156 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         : ('none' as const),
     }));
 
-    const updateShowing = (showing: boolean) => {
-      'worklet';
-      isDrawerShowing.value = showing;
+    const updateShowing = React.useCallback(
+      (showing: boolean) => {
+        'worklet';
+        isDrawerShowing.value = showing;
+      },
+      [isDrawerShowing]
+    );
 
-      // 1 if the expected gesture is from left to right and -1 otherwise
-      // e.g. when drawer is on the left and is closed we expect left
-      // to right gesture, thus orientation will be 1.
-      const gestureOrientation = (fromLeft ? 1 : -1) * (showing ? -1 : 1);
+    const animateDrawer = React.useCallback(
+      (
+        fromValue: number | null,
+        toValue: number,
+        velocity: number,
+        _speed?: number // %% should be used as animation speed rate
+      ) => {
+        'worklet';
+        dragX.value = 0;
+        touchX.value =
+          props.drawerPosition === positions.Left ? 0 : containerWidth;
 
-      // %% see if hitslop works like that, use the system used in Pressable otherwise
-      // When drawer is closed we want the hitSlop to be horizontally shorter than
-      // the container size by the value of SLOP. This will make it only activate
-      // when gesture happens not further than SLOP away from the edge
-      const hitSlop = fromLeft
-        ? { left: 0, width: showing ? undefined : edgeWidth }
-        : { right: 0, width: showing ? undefined : edgeWidth };
-
-      // %% FIXME setNativeProps has issues iirc, may not work on web
-      // %% on web use setAttribute instead, or find a complete replacement
-      // @ts-ignore internal API, maybe could be fixed in handler types
-      panGestureHandler.current?.setNativeProps?.({
-        hitSlop,
-        activeOffsetX: gestureOrientation * minSwipeDistance,
-      });
-    };
-
-    const animateDrawer = (
-      fromValue: number | null,
-      toValue: number,
-      velocity: number,
-      _speed?: number // %% should be used as animation speed rate
-    ) => {
-      'worklet';
-      dragX.value = 0;
-      touchX.value =
-        props.drawerPosition === positions.Left ? 0 : containerWidth;
-
-      if (fromValue != null) {
-        let nextFramePosition = fromValue;
-        if (props.useNativeAnimations) {
-          // When using native driver, we predict the next position of the
-          // animation because it takes one frame of a roundtrip to pass RELEASE
-          // event from native driver to JS before we can start animating. Without
-          // it, it is more noticable that the frame is dropped.
-          if (fromValue < toValue && velocity > 0) {
-            nextFramePosition = Math.min(fromValue + velocity / 60.0, toValue);
-          } else if (fromValue > toValue && velocity < 0) {
-            nextFramePosition = Math.max(fromValue + velocity / 60.0, toValue);
-          }
-        }
-        drawerTranslation.value = nextFramePosition;
-      }
-
-      const willShow = toValue !== 0;
-      isDrawerOpen.value = willShow;
-
-      updateShowing(willShow);
-      emitStateChanged(SETTLING, willShow);
-      runOnJS(setDrawerState)(SETTLING);
-
-      // %% do we want to run this every animation?
-      if (props.hideStatusBar) {
-        // %% what is this function?
-        StatusBar.setHidden(willShow, props.statusBarAnimation || 'slide');
-      }
-
-      drawerTranslation.value = withSpring(
-        toValue,
-        {
-          velocity,
-          damping: 50,
-          stiffness: 200,
-        },
-        (finished) => {
-          if (finished) {
-            emitStateChanged(IDLE, willShow);
-            runOnJS(setDrawerOpened)(willShow);
-            if (drawerState !== DRAGGING) {
-              // It's possilbe that user started drag while the drawer
-              // was settling, don't override state in this case
-              runOnJS(setDrawerState)(IDLE);
-            }
-            if (willShow) {
-              props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
-            } else {
-              props.onDrawerClose && runOnJS(props.onDrawerClose)?.();
+        if (fromValue != null) {
+          let nextFramePosition = fromValue;
+          if (props.useNativeAnimations) {
+            // When using native driver, we predict the next position of the
+            // animation because it takes one frame of a roundtrip to pass RELEASE
+            // event from native driver to JS before we can start animating. Without
+            // it, it is more noticable that the frame is dropped.
+            if (fromValue < toValue && velocity > 0) {
+              nextFramePosition = Math.min(
+                fromValue + velocity / 60.0,
+                toValue
+              );
+            } else if (fromValue > toValue && velocity < 0) {
+              nextFramePosition = Math.max(
+                fromValue + velocity / 60.0,
+                toValue
+              );
             }
           }
+          drawerTranslation.value = nextFramePosition;
         }
-      );
-    };
+
+        const willShow = toValue !== 0;
+        isDrawerOpen.value = willShow;
+        setHitSlop(
+          fromLeft
+            ? { left: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
+            : { right: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
+        );
+
+        updateShowing(willShow);
+        emitStateChanged(SETTLING, willShow);
+        runOnJS(setDrawerState)(SETTLING);
+
+        // %% do we want to run this every animation?
+        if (props.hideStatusBar) {
+          // %% what is this function?
+          StatusBar.setHidden(willShow, props.statusBarAnimation || 'slide');
+        }
+
+        drawerTranslation.value = withSpring(
+          toValue,
+          {
+            velocity,
+            damping: 50,
+            stiffness: 200,
+          },
+          (finished) => {
+            if (finished) {
+              emitStateChanged(IDLE, willShow);
+              runOnJS(setDrawerOpened)(willShow);
+              if (drawerState !== DRAGGING) {
+                // It's possilbe that user started drag while the drawer
+                // was settling, don't override state in this case
+                runOnJS(setDrawerState)(IDLE);
+              }
+              if (willShow) {
+                props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
+              } else {
+                props.onDrawerClose && runOnJS(props.onDrawerClose)?.();
+              }
+            }
+          }
+        );
+      },
+      [
+        containerWidth,
+        dragX,
+        drawerState,
+        drawerTranslation,
+        edgeWidth,
+        emitStateChanged,
+        fromLeft,
+        isDrawerOpen,
+        props.drawerPosition,
+        props.hideStatusBar,
+        props.onDrawerClose,
+        props.onDrawerOpen,
+        props.statusBarAnimation,
+        props.useNativeAnimations,
+        touchX,
+        updateShowing,
+      ]
+    );
+
+    const handleRelease = React.useCallback(
+      ({
+        nativeEvent,
+      }: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
+        let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
+
+        if (drawerPosition !== positions.Left) {
+          // See description in _updateAnimatedEvent about why events are flipped
+          // for right-side drawer
+          dragX = -dragX;
+          touchX = containerWidth - touchX;
+          velocityX = -velocityX;
+        }
+
+        const gestureStartX = touchX - dragX;
+        let dragOffsetBasedOnStart = 0;
+
+        if (drawerType === 'front') {
+          dragOffsetBasedOnStart =
+            gestureStartX > drawerWidth ? gestureStartX - drawerWidth : 0;
+        }
+
+        const startOffsetX =
+          dragX +
+          dragOffsetBasedOnStart +
+          (isDrawerOpen.value ? drawerWidth : 0);
+        const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
+
+        const shouldOpen = projOffsetX > drawerWidth / 2;
+
+        if (shouldOpen) {
+          animateDrawer(startOffsetX, drawerWidth, velocityX);
+        } else {
+          animateDrawer(startOffsetX, 0, velocityX);
+        }
+      },
+      [
+        animateDrawer,
+        containerWidth,
+        drawerPosition,
+        drawerType,
+        drawerWidth,
+        isDrawerOpen.value,
+      ]
+    );
 
     const openDrawer = (options: DrawerMovementOption = {}) => {
       'worklet';
@@ -481,21 +506,28 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       );
     };
 
-    const closeDrawer = (options: DrawerMovementOption = {}) => {
-      'worklet';
-      animateDrawer(
-        null,
-        0,
-        options.velocity ? options.velocity : 0,
-        options.speed
-      );
-    };
+    const closeDrawer = React.useCallback(
+      (options: DrawerMovementOption = {}) => {
+        'worklet';
+        animateDrawer(
+          null,
+          0,
+          options.velocity ? options.velocity : 0,
+          options.speed
+        );
+      },
+      [animateDrawer]
+    );
 
-    const overlayDismissGesture = Gesture.Tap().onEnd(() => {
-      if (isDrawerOpen.value && props.drawerLockMode !== 'locked-open') {
-        closeDrawer();
-      }
-    });
+    const overlayDismissGesture = React.useMemo(
+      () =>
+        Gesture.Tap().onEnd(() => {
+          if (isDrawerOpen.value && props.drawerLockMode !== 'locked-open') {
+            closeDrawer();
+          }
+        }),
+      [closeDrawer, isDrawerOpen.value, props.drawerLockMode]
+    );
 
     const renderOverlay = () => {
       const overlayOpacity =
@@ -517,8 +549,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       );
     };
 
-    const fromLeft = drawerPosition === positions.Left;
-
     // %% this should be dynamic, it uses SV in the render body
     // gestureOrientation is 1 if the expected gesture is from left to right and
     // -1 otherwise e.g. when drawer is on the left and is closed we expect left
@@ -526,42 +556,60 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const gestureOrientation =
       (fromLeft ? 1 : -1) * (isDrawerOpen.value ? -1 : 1);
 
+    // %% convert to useState to dynamically change useMemo below
     // When drawer is closed we want the hitSlop to be horizontally shorter than
     // the container size by the value of SLOP. This will make it only activate
     // when gesture happens not further than SLOP away from the edge
-    const hitSlop = fromLeft
-      ? { left: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
-      : { right: 0, width: isDrawerOpen.value ? undefined : edgeWidth };
+    const [hitSlop, setHitSlop] = React.useState<HitSlop>(
+      fromLeft ? { left: 0, width: edgeWidth } : { right: 0, width: edgeWidth }
+    );
 
-    const panGesture = Gesture.Pan()
-      .activeCursor(props.activeCursor ?? 'auto')
-      .mouseButton(props.mouseButton ?? MouseButton.LEFT)
-      .hitSlop(hitSlop)
-      .activeOffsetX(gestureOrientation * minSwipeDistance)
-      .failOffsetY([-15, 15])
-      .enableTrackpadTwoFingerGesture(
-        props.enableTrackpadTwoFingerGesture ?? false
-      ) // %% verify if should be `false`
-      .enabled(
-        drawerLockMode !== 'locked-closed' && drawerLockMode !== 'locked-open'
-      )
-      .onStart(() => {
-        emitStateChanged(DRAGGING, false);
-        runOnJS(setDrawerState)(DRAGGING);
-        if (props.keyboardDismissMode === 'on-drag') {
-          Keyboard.dismiss();
-        }
-        if (props.hideStatusBar) {
-          StatusBar.setHidden(true, props.statusBarAnimation || 'slide');
-        }
-      })
-      .onEnd((event) => {
-        runOnJS(handleRelease)({ nativeEvent: event });
-      })
-      .onUpdate((event) => {
-        dragX.value = event.translationX;
-        touchX.value = event.x;
-      });
+    const panGesture = React.useMemo(() => {
+      return Gesture.Pan()
+        .activeCursor(props.activeCursor ?? 'auto')
+        .mouseButton(props.mouseButton ?? MouseButton.LEFT)
+        .hitSlop(hitSlop)
+        .activeOffsetX(gestureOrientation * minSwipeDistance)
+        .failOffsetY([-15, 15])
+        .enableTrackpadTwoFingerGesture(
+          props.enableTrackpadTwoFingerGesture ?? false
+        ) // %% verify if should be `false`
+        .enabled(
+          drawerLockMode !== 'locked-closed' && drawerLockMode !== 'locked-open'
+        )
+        .onStart(() => {
+          emitStateChanged(DRAGGING, false);
+          runOnJS(setDrawerState)(DRAGGING);
+          if (props.keyboardDismissMode === 'on-drag') {
+            Keyboard.dismiss();
+          }
+          if (props.hideStatusBar) {
+            StatusBar.setHidden(true, props.statusBarAnimation || 'slide');
+          }
+        })
+        .onEnd((event) => {
+          runOnJS(handleRelease)({ nativeEvent: event });
+        })
+        .onUpdate((event) => {
+          dragX.value = event.translationX;
+          touchX.value = event.x;
+        });
+    }, [
+      dragX,
+      drawerLockMode,
+      emitStateChanged,
+      gestureOrientation,
+      handleRelease,
+      hitSlop,
+      minSwipeDistance,
+      props.activeCursor,
+      props.enableTrackpadTwoFingerGesture,
+      props.hideStatusBar,
+      props.keyboardDismissMode,
+      props.mouseButton,
+      props.statusBarAnimation,
+      touchX,
+    ]);
 
     // When using RTL, row and row-reverse flex directions are flipped.
     const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
