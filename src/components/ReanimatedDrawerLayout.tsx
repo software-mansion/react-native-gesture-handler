@@ -276,6 +276,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //    +---------------+    +---------------+    +---------------+    +---------------+
 
     const openValue = useDerivedValue(() => {
+      // %% this value sometimes snaps to 0 on animation start when it should be -200
       const sideCorrectedStartPositionX =
         sideCorrectedTouchX.value + -1 * sideCorrectedDragX.value;
 
@@ -288,6 +289,19 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               [0, 0, 1]
             )
           : sideCorrectedDragX.value;
+
+      console.log(
+        'openValue',
+        interpolate(
+          translationX + drawerTranslation.value,
+          [0, drawerWidth],
+          [0, 1],
+          Extrapolation.CLAMP
+        ).toFixed(2),
+        translationX.toFixed(2),
+        drawerTranslation.value.toFixed(2),
+        drawerWidth.toFixed(2)
+      );
 
       return interpolate(
         translationX + drawerTranslation.value,
@@ -362,7 +376,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const animateDrawer = React.useCallback(
       (
-        fromValue: number | null,
         toValue: number,
         velocity: number,
         _speed?: number // %% should be used as animation speed rate
@@ -372,27 +385,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         touchX.value =
           props.drawerPosition === positions.Left ? 0 : containerWidth;
 
-        if (fromValue != null) {
-          let nextFramePosition = fromValue;
-          if (props.useNativeAnimations) {
-            // When using native driver, we predict the next position of the
-            // animation because it takes one frame of a roundtrip to pass RELEASE
-            // event from native driver to JS before we can start animating. Without
-            // it, it is more noticable that the frame is dropped.
-            if (fromValue < toValue && velocity > 0) {
-              nextFramePosition = Math.min(
-                fromValue + velocity / 60.0, // %% this assumes fps = 60, which is rarely true
-                toValue
-              );
-            } else if (fromValue > toValue && velocity < 0) {
-              nextFramePosition = Math.max(
-                fromValue + velocity / 60.0, // %% this assumes fps = 60, which is rarely true
-                toValue
-              );
-            }
-          }
-          drawerTranslation.value = nextFramePosition;
-        }
+        // %% removed frame prediction, it seemed to glitched everything out
+        // %% make sure frame jumpiness is not a problem with Reanimated
 
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
@@ -451,7 +445,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         props.onDrawerClose,
         props.onDrawerOpen,
         props.statusBarAnimation,
-        props.useNativeAnimations,
         touchX,
         updateShowing,
       ]
@@ -488,9 +481,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         const shouldOpen = projOffsetX > drawerWidth / 2;
 
         if (shouldOpen) {
-          animateDrawer(startOffsetX, drawerWidth, velocityX);
+          animateDrawer(drawerWidth, velocityX);
         } else {
-          animateDrawer(startOffsetX, 0, velocityX);
+          animateDrawer(0, velocityX);
         }
       },
       [
@@ -506,7 +499,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const openDrawer = (options: DrawerMovementOption = {}) => {
       'worklet';
       animateDrawer(
-        null,
         drawerWidth,
         options.velocity ? options.velocity : 0,
         options.speed
@@ -517,7 +509,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       (options: DrawerMovementOption = {}) => {
         'worklet';
         animateDrawer(
-          null,
           0,
           options.velocity ? options.velocity : 0,
           options.speed
@@ -537,8 +528,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const renderOverlay = () => {
+      // %% overlayOpacity started being jumpy after fixing [openValue -> openValue.value]
       const overlayOpacity =
-        drawerState !== IDLE ? openValue : drawerOpened ? 1 : 0;
+        drawerState !== IDLE ? openValue.value : drawerOpened ? 1 : 0;
 
       const dynamicOverlayStyles = {
         opacity: overlayOpacity,
@@ -637,7 +629,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       };
     });
 
-    const drawerStyles = useAnimatedStyle(() => {
+    const drawerAnimatedStyle = useAnimatedStyle(() => {
       const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
 
       return {
@@ -719,7 +711,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             accessibilityViewIsModal={isDrawerOpen.value}
             style={[
               styles.drawerContainer,
-              drawerStyles,
+              drawerAnimatedStyle,
               drawerContainerStyle,
             ]}>
             <Animated.View style={dynamicDrawerStyles}>
