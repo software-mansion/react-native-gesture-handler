@@ -224,9 +224,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const [drawerState, setDrawerState] = React.useState<DrawerState>(IDLE);
     const [drawerOpened, setDrawerOpened] = React.useState(false);
 
-    // %% see if neccessary after moving to FC
-    // const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
-
     // %% START | this was in constructor
     const {
       drawerPosition = defaultProps.drawerPosition,
@@ -241,6 +238,15 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       useNativeAnimations = defaultProps.useNativeAnimations,
     } = props;
 
+    // %% this likely shouldn't be reset every render
+    if (drawerPosition !== positions.Left) {
+      // To handle right-side drawers, reverse events coming from gesture handler
+      // in a way they emulate left-side drawer gestures
+      touchX.value = containerWidth;
+    } else {
+      touchX.value = 0;
+    }
+
     const sideCorrectedDragX = useDerivedValue(() =>
       drawerPosition !== positions.Left ? -1 * dragX.value : dragX.value
     );
@@ -250,14 +256,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         ? containerWidth + -1 * touchX.value
         : touchX.value
     );
-
-    if (drawerPosition !== positions.Left) {
-      // To handle right-side drawers, reverse events coming from gesture handler
-      // in a way they emulate left-side drawer gestures
-      touchX.value = containerWidth;
-    } else {
-      touchX.value = 0;
-    }
 
     // %% determine if we need such comments in the code, keep at least until properly tested
     // While closing the drawer when user starts gesture outside of its area (in greyed
@@ -481,9 +479,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         options.velocity ? options.velocity : 0,
         options.speed
       );
-
-      // %% does not seem neccessary, original comment mentioned this fixes clickablility
-      // forceUpdate();
     };
 
     const closeDrawer = (options: DrawerMovementOption = {}) => {
@@ -494,9 +489,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         options.velocity ? options.velocity : 0,
         options.speed
       );
-
-      // %% does not seem neccessary, original comment mentioned this fixes clickablility
-      // forceUpdate();
     };
 
     const overlayDismissGesture = Gesture.Tap().onEnd(() => {
@@ -527,6 +519,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const fromLeft = drawerPosition === positions.Left;
 
+    // %% this should be dynamic, it uses SV in the render body
     // gestureOrientation is 1 if the expected gesture is from left to right and
     // -1 otherwise e.g. when drawer is on the left and is closed we expect left
     // to right gesture, thus orientation will be 1.
@@ -570,7 +563,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         touchX.value = event.x;
       });
 
-    // %% not sure if we want to force side reversal when RTL is enabled
     // When using RTL, row and row-reverse flex directions are flipped.
     const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
 
