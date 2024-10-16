@@ -31,14 +31,14 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
   UserSelect,
   ActiveCursor,
   MouseButton,
   HitSlop,
 } from '../handlers/gestureHandlerCommon';
-import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
-import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
 const DRAG_TOSS = 0.05;
 
@@ -546,7 +546,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         .failOffsetY([-15, 15])
         .enableTrackpadTwoFingerGesture(
           props.enableTrackpadTwoFingerGesture ?? false
-        ) // %% verify if should be `false`
+        )
         .enabled(
           drawerLockMode !== 'locked-closed' && drawerLockMode !== 'locked-open'
         )
@@ -554,10 +554,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           emitStateChanged(DRAGGING, false);
           runOnJS(setDrawerState)(DRAGGING);
           if (props.keyboardDismissMode === 'on-drag') {
-            Keyboard.dismiss();
+            runOnJS(Keyboard.dismiss)();
           }
           if (props.hideStatusBar) {
-            StatusBar.setHidden(true, props.statusBarAnimation || 'slide');
+            runOnJS(StatusBar.setHidden)(
+              true,
+              props.statusBarAnimation ?? 'slide'
+            );
           }
         })
         .onEnd((event) => {
