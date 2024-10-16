@@ -254,12 +254,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       drawerPosition !== positions.Left ? -1 * dragX.value : dragX.value
     );
 
-    const sideCorrectedTouchX = useDerivedValue(() =>
-      drawerPosition !== positions.Left
-        ? containerWidth + -1 * touchX.value
-        : touchX.value
-    );
-
     // %% determine if we need such comments in the code, keep at least until properly tested
     // While closing the drawer when user starts gesture outside of its area (in greyed
     // out part of the window), we want the drawer to follow only once finger reaches the
@@ -276,9 +270,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //    +---------------+    +---------------+    +---------------+    +---------------+
 
     const openValue = useDerivedValue(() => {
-      // %% this value sometimes snaps to 0 on animation start when it should be -200
-      const sideCorrectedStartPositionX =
-        sideCorrectedTouchX.value + -1 * sideCorrectedDragX.value;
+      // %% removed touchX from the equation, not sure why we would need the absolute coordinates on the screen here
+      const sideCorrectedStartPositionX = -1 * sideCorrectedDragX.value;
 
       const translationX =
         drawerType === 'front'
@@ -289,19 +282,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               [0, 0, 1]
             )
           : sideCorrectedDragX.value;
-
-      console.log(
-        'openValue',
-        interpolate(
-          translationX + drawerTranslation.value,
-          [0, drawerWidth],
-          [0, 1],
-          Extrapolation.CLAMP
-        ).toFixed(2),
-        translationX.toFixed(2),
-        drawerTranslation.value.toFixed(2),
-        drawerWidth.toFixed(2)
-      );
 
       return interpolate(
         translationX + drawerTranslation.value,
