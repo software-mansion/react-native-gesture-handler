@@ -225,7 +225,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const [drawerOpened, setDrawerOpened] = React.useState(false);
 
     // %% see if neccessary after moving to FC
-    const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
+    // const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
 
     // %% START | this was in constructor
     const {
@@ -252,17 +252,14 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     if (drawerPosition !== positions.Left) {
-      // Most of the code is written in a way to handle left-side drawer. In
-      // order to handle right-side drawer the only thing we need to do is to
-      // reverse events coming from gesture handler in a way they emulate
-      // left-side drawer gestures. E.g. dragX is simply -dragX, and touchX is
-      // calulcated by subtracing real touchX from the width of the container
-      // (such that when touch happens at the right edge the value is simply 0)
+      // To handle right-side drawers, reverse events coming from gesture handler
+      // in a way they emulate left-side drawer gestures
       touchX.value = containerWidth;
     } else {
       touchX.value = 0;
     }
 
+    // %% determine if we need such comments in the code, keep at least until properly tested
     // While closing the drawer when user starts gesture outside of its area (in greyed
     // out part of the window), we want the drawer to follow only once finger reaches the
     // edge of the drawer.
@@ -272,22 +269,10 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|.<-*..|    |XXXXXXXX|<--*..|    |XXXXX|<-----*..|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+    //    |XXXXXXXX|..<*..|    |XXXXXXXX|.<-*..|    |XXXXXXXX|<--*..|    |XXXXX|<-----*..|
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
     //    +---------------+    +---------------+    +---------------+    +---------------+
-    //
-    // For the above to work properly we define animated value that will keep
-    // start position of the gesture. Then we use that value to calculate how
-    // much we need to subtract from the dragX. If the gesture started on the
-    // greyed out area we take the distance from the edge of the drawer to the
-    // start position. Otherwise we don't subtract at all and the drawer be
-    // pulled back as soon as you start the pan.
-    //
-    // This is used only when drawerType is "front"
-    //
 
     const openValue = useDerivedValue(() => {
       const sideCorrectedStartPositionX =
@@ -395,10 +380,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       pointerEventsView.current?.setNativeProps({
         pointerEvents: showing ? 'auto' : 'none',
       });
-      // gestureOrientation is 1 if the expected gesture is from left to right and
-      // -1 otherwise e.g. when drawer is on the left and is closed we expect left
+
+      // 1 if the expected gesture is from left to right and -1 otherwise
+      // e.g. when drawer is on the left and is closed we expect left
       // to right gesture, thus orientation will be 1.
       const gestureOrientation = (fromLeft ? 1 : -1) * (showing ? -1 : 1);
+
+      // %% see if hitslop works like that, use the system used in Pressable otherwise
       // When drawer is closed we want the hitSlop to be horizontally shorter than
       // the container size by the value of SLOP. This will make it only activate
       // when gesture happens not further than SLOP away from the edge
@@ -416,7 +404,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     };
 
     const animateDrawer = (
-      fromValue: number | null | undefined,
+      fromValue: number | null,
       toValue: number,
       velocity: number,
       _speed?: number // %% should be used as animation speed rate
@@ -476,34 +464,29 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const openDrawer = (options: DrawerMovementOption = {}) => {
       animateDrawer(
-        // TODO: decide if it should be null or undefined is the proper value
-        undefined,
+        null,
         drawerWidth,
         options.velocity ? options.velocity : 0,
         options.speed
       );
 
-      // We need to force the update, otherwise the overlay is not rerendered and
-      // it would not be clickable
-      forceUpdate();
+      // %% does not seem neccessary, original comment mentioned this fixes clickablility
+      // forceUpdate();
     };
 
     const closeDrawer = (options: DrawerMovementOption = {}) => {
-      // TODO: decide if it should be null or undefined is the proper value
       animateDrawer(
-        undefined,
+        null,
         0,
         options.velocity ? options.velocity : 0,
         options.speed
       );
 
-      // We need to force the update, otherwise the overlay is not rerendered and
-      // it would be still clickable
-      forceUpdate();
+      // %% does not seem neccessary, original comment mentioned this fixes clickablility
+      // forceUpdate();
     };
 
     const renderOverlay = () => {
-      /* Overlay styles */
       const overlayOpacity =
         drawerState !== IDLE ? openValue : drawerOpened ? 1 : 0;
 
@@ -530,16 +513,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         </GestureDetector>
       );
     };
-
-    // %% START | reimplement for new api or remove
-    // const setPanGestureRef = (ref: PanGestureHandler) => {
-    //   // TODO(TS): make sure it is OK taken from
-    //   // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065#issuecomment-596081842
-    //   (panGestureHandler as React.MutableRefObject<PanGestureHandler>).current =
-    //     ref;
-    //   props.onGestureRef?.(ref);
-    // };
-    // %% END | reimplement for new api or remove
 
     const fromLeft = drawerPosition === positions.Left;
 
@@ -586,10 +559,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         touchX.value = event.x;
       });
 
-    // We rely on row and row-reverse flex directions to position the drawer
-    // properly. Apparently for RTL these are flipped which requires us to use
-    // the opposite setting for the drawer to appear from left or right
-    // according to the drawerPosition prop
+    // %% not sure if we want to force side reversal when RTL is enabled
+    // When using RTL, row and row-reverse flex directions are flipped.
     const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
 
     const dynamicDrawerStyles = {
