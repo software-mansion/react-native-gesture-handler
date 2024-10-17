@@ -58,7 +58,6 @@ export default class PanGestureHandler extends GestureHandler {
   private activationTimeout = 0;
 
   private enableTrackpadTwoFingerGesture = false;
-  private receivedWheelEvent = false;
   private endWheelTimeout = 0;
   private wheelDevice = WheelDevice.UNDETERMINED;
 
@@ -362,19 +361,17 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   private scheduleWheelEnd(event: AdaptedEvent) {
-    this.endWheelTimeout = setTimeout(() => {
-      if (this.receivedWheelEvent) {
-        return;
-      }
+    clearTimeout(this.endWheelTimeout);
 
-      this.end();
-      this.tracker.removeFromTracker(event.pointerId);
-      this.currentState = State.UNDETERMINED;
+    this.endWheelTimeout = setTimeout(() => {
+      if (this.currentState === State.ACTIVE) {
+        this.end();
+        this.tracker.removeFromTracker(event.pointerId);
+        this.currentState = State.UNDETERMINED;
+      }
 
       this.wheelDevice = WheelDevice.UNDETERMINED;
     }, 30);
-
-    this.receivedWheelEvent = false;
   }
 
   protected onWheel(event: AdaptedEvent): void {
@@ -384,9 +381,6 @@ export default class PanGestureHandler extends GestureHandler {
     ) {
       return;
     }
-
-    this.receivedWheelEvent = true;
-    clearTimeout(this.endWheelTimeout);
 
     if (this.currentState === State.UNDETERMINED) {
       this.wheelDevice =
