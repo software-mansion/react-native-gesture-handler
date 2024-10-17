@@ -22,6 +22,8 @@ using namespace facebook::react;
 }
 
 #if TARGET_OS_OSX
+// Here we want to disable view recycling on buttons. Listeners are not removed from views when they're being unmounted,
+// therefore after navigating through other screens buttons may have different actions then they are supposed to have.
 + (BOOL)shouldBeRecycled
 {
   return NO;
