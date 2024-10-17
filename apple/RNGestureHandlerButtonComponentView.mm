@@ -21,6 +21,15 @@ using namespace facebook::react;
   RNGestureHandlerButton *_buttonView;
 }
 
+#if TARGET_OS_OSX
+// Here we want to disable view recycling on buttons. Listeners are not removed from views when they're being unmounted,
+// therefore after navigating through other screens buttons may have different actions then they are supposed to have.
++ (BOOL)shouldBeRecycled
+{
+  return NO;
+}
+#endif
+
 // Needed because of this: https://github.com/facebook/react-native/pull/37274
 + (void)load
 {
@@ -40,12 +49,12 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_buttonView mountChildComponentView:childComponentView index:index];
 }
 
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_buttonView unmountChildComponentView:childComponentView index:index];
 }
@@ -97,7 +106,7 @@ using namespace facebook::react;
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
   _buttonView.userEnabled = newProps.enabled;
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;
 #endif
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
