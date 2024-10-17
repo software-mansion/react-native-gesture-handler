@@ -215,6 +215,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     props: SwipeableProps,
     ref: ForwardedRef<SwipeableMethods>
   ) {
+    const defaultProps = {
+      friction: 1,
+      overshootFriction: 1,
+      dragOffset: 10,
+    };
+
     const {
       leftThreshold,
       rightThreshold,
@@ -227,8 +233,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootRight,
       testID,
       children,
-      dragOffsetFromLeftEdge = 10,
-      dragOffsetFromRightEdge = 10,
+      dragOffsetFromLeftEdge = defaultProps.dragOffset,
+      dragOffsetFromRightEdge = defaultProps.dragOffset,
+      friction = defaultProps.friction,
+      overshootFriction = defaultProps.overshootFriction,
       onSwipeableOpenStartDrag,
       onSwipeableCloseStartDrag,
       onSwipeableWillOpen,
@@ -242,14 +250,19 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const rowState = useSharedValue<number>(0);
 
+    // %% cache value, see if they are already provided in the event
     const userDrag = useSharedValue<number>(0);
+
+    // %% same-ish
     const appliedTranslation = useSharedValue<number>(0);
 
+    // %% these likely could be removed, see if rightOffset is neccessary
     const rowWidth = useSharedValue<number>(0);
     const leftWidth = useSharedValue<number>(0);
     const rightWidth = useSharedValue<number>(0);
     const rightOffset = useSharedValue<number | null>(null);
 
+    // %% progression cache, houses withSpring output
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
@@ -267,16 +280,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         'worklet';
       },
     });
-
-    const defaultProps = {
-      friction: 1,
-      overshootFriction: 1,
-    };
-
-    const {
-      friction = defaultProps.friction,
-      overshootFriction = defaultProps.overshootFriction,
-    } = props;
 
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
@@ -373,7 +376,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [onSwipeableWillClose, onSwipeableWillOpen]
     );
 
-    // Cannot be converted to 'worklet' due to:
+    // Fixme: Cannot be converted to 'worklet' due to:
     // Error: [Reanimated] Trying to convert a cyclic object to a shareable. This is not supported.
     // The other event dispatcher works fine.
     const dispatchEndEvents = useCallback(
@@ -534,9 +537,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [appliedTranslation, renderRightActions, rightOffset, showRightProgress]
     );
 
-    const leftThresholdProp = leftThreshold;
-    const rightThresholdProp = rightThreshold;
-
     const handleRelease = useCallback(
       (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
         'worklet';
@@ -545,8 +545,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
         updateRightElementWidth();
 
-        const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
-        const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
+        const leftThresholdProp = leftThreshold ?? leftWidth.value / 2;
+        const rightThresholdProp = rightThreshold ?? rightWidth.value / 2;
 
         const translationX =
           (userDrag.value + DRAG_TOSS * velocityX) / friction;
@@ -554,19 +554,19 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         let toValue = 0;
 
         if (rowState.value === 0) {
-          if (translationX > leftThreshold) {
+          if (translationX > leftThresholdProp) {
             toValue = leftWidth.value;
-          } else if (translationX < -rightThreshold) {
+          } else if (translationX < -rightThresholdProp) {
             toValue = -rightWidth.value;
           }
         } else if (rowState.value === 1) {
           // Swiped to left
-          if (translationX > -leftThreshold) {
+          if (translationX > -leftThresholdProp) {
             toValue = leftWidth.value;
           }
         } else {
           // Swiped to right
-          if (translationX < rightThreshold) {
+          if (translationX < rightThresholdProp) {
             toValue = -rightWidth.value;
           }
         }
@@ -576,9 +576,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [
         animateRow,
         friction,
-        leftThresholdProp,
+        leftThreshold,
         leftWidth.value,
-        rightThresholdProp,
+        rightThreshold,
         rightWidth.value,
         rowState.value,
         updateRightElementWidth,
