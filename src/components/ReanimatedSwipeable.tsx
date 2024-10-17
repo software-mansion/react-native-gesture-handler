@@ -356,19 +356,26 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
+        'worklet';
         if (toValue > 0) {
-          onSwipeableWillOpen?.(SwipeDirection.RIGHT);
+          onSwipeableWillOpen &&
+            runOnJS(onSwipeableWillOpen)(SwipeDirection.RIGHT);
         } else if (toValue < 0) {
-          onSwipeableWillOpen?.(SwipeDirection.LEFT);
+          onSwipeableWillOpen &&
+            runOnJS(onSwipeableWillOpen)(SwipeDirection.LEFT);
         } else {
-          onSwipeableWillClose?.(
-            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
-          );
+          onSwipeableWillClose &&
+            runOnJS(onSwipeableWillClose)(
+              fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
+            );
         }
       },
       [onSwipeableWillClose, onSwipeableWillOpen]
     );
 
+    // Cannot be converted to 'worklet' due to:
+    // Error: [Reanimated] Trying to convert a cyclic object to a shareable. This is not supported.
+    // The other event dispatcher works fine.
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
         if (toValue > 0) {
@@ -443,7 +450,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? withSpring(progressTarget, progressSpringConfig)
             : 0;
 
-        runOnJS(dispatchImmediateEvents)(frozenRowState, toValue);
+        dispatchImmediateEvents(frozenRowState, toValue);
 
         rowState.value = Math.sign(toValue);
       },
@@ -460,9 +467,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
-    const onRowLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-      rowWidth.value = nativeEvent.layout.width;
-    };
+    const onRowLayout = useCallback(
+      ({ nativeEvent }: LayoutChangeEvent) => {
+        rowWidth.value = nativeEvent.layout.width;
+      },
+      [rowWidth]
+    );
 
     swipeableMethods.current = {
       close() {
@@ -486,34 +496,42 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
     };
 
-    const leftElement = renderLeftActions && (
-      <Animated.View style={[styles.leftActions]}>
-        {renderLeftActions(
-          showLeftProgress,
-          appliedTranslation,
-          swipeableMethods.current
-        )}
-        <View
-          onLayout={({ nativeEvent }) =>
-            (leftWidth.value = nativeEvent.layout.x)
-          }
-        />
-      </Animated.View>
+    const leftElement = useMemo(
+      () =>
+        renderLeftActions && (
+          <Animated.View style={[styles.leftActions]}>
+            {renderLeftActions(
+              showLeftProgress,
+              appliedTranslation,
+              swipeableMethods.current
+            )}
+            <View
+              onLayout={({ nativeEvent }) =>
+                (leftWidth.value = nativeEvent.layout.x)
+              }
+            />
+          </Animated.View>
+        ),
+      [appliedTranslation, leftWidth, renderLeftActions, showLeftProgress]
     );
 
-    const rightElement = renderRightActions && (
-      <Animated.View style={[styles.rightActions]}>
-        {renderRightActions(
-          showRightProgress,
-          appliedTranslation,
-          swipeableMethods.current
-        )}
-        <View
-          onLayout={({ nativeEvent }) =>
-            (rightOffset.value = nativeEvent.layout.x)
-          }
-        />
-      </Animated.View>
+    const rightElement = useMemo(
+      () =>
+        renderRightActions && (
+          <Animated.View style={[styles.rightActions]}>
+            {renderRightActions(
+              showRightProgress,
+              appliedTranslation,
+              swipeableMethods.current
+            )}
+            <View
+              onLayout={({ nativeEvent }) =>
+                (rightOffset.value = nativeEvent.layout.x)
+              }
+            />
+          </Animated.View>
+        ),
+      [appliedTranslation, renderRightActions, rightOffset, showRightProgress]
     );
 
     const leftThresholdProp = leftThreshold;
@@ -610,10 +628,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
               if (!dragStarted.value) {
                 dragStarted.value = true;
-                if (rowState.value === 0 && onSwipeableOpenStartDrag) {
-                  runOnJS(onSwipeableOpenStartDrag)(direction);
-                } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
-                  runOnJS(onSwipeableCloseStartDrag)(direction);
+                if (rowState.value === 0) {
+                  onSwipeableOpenStartDrag &&
+                    runOnJS(onSwipeableOpenStartDrag)(direction);
+                } else if (rowState.value !== 0) {
+                  onSwipeableCloseStartDrag &&
+                    runOnJS(onSwipeableCloseStartDrag)(direction);
                 }
               }
 
