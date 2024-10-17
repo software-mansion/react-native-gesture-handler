@@ -57,6 +57,7 @@ export default class PanGestureHandler extends GestureHandler {
   private activateAfterLongPress = 0;
   private activationTimeout = 0;
 
+  private enableTrackpadTwoFingerGesture = false;
   private receivedWheelEvent = false;
   private endWheelTimeout = 0;
   private wheelDevice = WheelDevice.UNDETERMINED;
@@ -164,6 +165,11 @@ export default class PanGestureHandler extends GestureHandler {
       if (this.config.failOffsetYStart === undefined) {
         this.failOffsetYStart = Number.MIN_SAFE_INTEGER;
       }
+    }
+
+    if (this.config.enableTrackpadTwoFingerGesture !== undefined) {
+      this.enableTrackpadTwoFingerGesture =
+        this.config.enableTrackpadTwoFingerGesture;
     }
   }
 
@@ -372,7 +378,10 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onWheel(event: AdaptedEvent): void {
-    if (this.wheelDevice === WheelDevice.MOUSE) {
+    if (
+      this.wheelDevice === WheelDevice.MOUSE ||
+      !this.enableTrackpadTwoFingerGesture
+    ) {
       return;
     }
 

@@ -78,6 +78,7 @@ export interface Config extends Record<string, ConfigArgs> {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   direction?: Directions;
+  enableTrackpadTwoFingerGesture?: boolean;
 }
 
 type NativeEventArgs = number | State | boolean | undefined;
