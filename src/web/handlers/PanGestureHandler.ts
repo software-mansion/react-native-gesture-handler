@@ -354,14 +354,41 @@ export default class PanGestureHandler extends GestureHandler {
       super.onPointerOutOfBounds(event);
     }
   }
+
+  private scheduleWheelEnd(event: AdaptedEvent) {
+    this.endWheelTimeout = setTimeout(() => {
+      if (this.receivedWheelEvent) {
+        return;
+      }
+
+      this.end();
+      this.tracker.removeFromTracker(event.pointerId);
+      this.currentState = State.UNDETERMINED;
+
+      this.wheelDevice = WheelDevice.UNDETERMINED;
+    }, 30);
+
+    this.receivedWheelEvent = false;
+  }
+
   protected onWheel(event: AdaptedEvent): void {
-    super.onWheel(event);
+    if (this.wheelDevice === WheelDevice.MOUSE) {
+      return;
+    }
+
     this.receivedWheelEvent = true;
     clearTimeout(this.endWheelTimeout);
 
-    if (this.tracker.getTrackedPointersCount() === 0) {
+    if (this.currentState === State.UNDETERMINED) {
       this.wheelDevice =
-        event.wheelDeltaY! !== 120 ? WheelDevice.TOUCHPAD : WheelDevice.MOUSE;
+        event.wheelDeltaY! % 120 !== 0
+          ? WheelDevice.TOUCHPAD
+          : WheelDevice.MOUSE;
+
+      if (this.wheelDevice === WheelDevice.MOUSE) {
+        this.scheduleWheelEnd(event);
+        return;
+      }
 
       this.tracker.addToTracker(event);
 
@@ -386,20 +413,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.velocityY = velocity.y;
 
     this.tryToSendMoveEvent(false, event);
-
-    this.endWheelTimeout = setTimeout(() => {
-      if (this.receivedWheelEvent) {
-        return;
-      }
-
-      this.end();
-      this.tracker.removeFromTracker(event.pointerId);
-      this.currentState = State.UNDETERMINED;
-
-      this.wheelDevice = WheelDevice.MOUSE;
-    }, 30);
-
-    this.receivedWheelEvent = false;
+    this.scheduleWheelEnd(event);
   }
 
   private shouldActivate(): boolean {
