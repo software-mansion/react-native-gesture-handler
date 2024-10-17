@@ -10,20 +10,16 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 const BOX_SIZE = 270;
 
+const clampColor = (v: number) => Math.min(255, Math.max(0, v));
+
 export default function TwoFingerPan() {
   const r = useSharedValue(128);
   const b = useSharedValue(128);
 
-  const clampColor = (sv: SharedValue<number>) =>
-    sv.value < 0 ? 0 : sv.value > 255 ? 255 : sv.value;
-
   const pan = Gesture.Pan()
     .onChange((event) => {
-      r.value -= event.changeY;
-      b.value += event.changeX;
-
-      r.value = clampColor(r);
-      b.value = clampColor(b);
+      r.value = clampColor(r.value - event.changeY);
+      b.value = clampColor(b.value + event.changeX);
 
       console.table({ red: r.value, blue: b.value });
     })
