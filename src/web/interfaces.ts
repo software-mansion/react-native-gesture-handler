@@ -151,6 +151,7 @@ export interface AdaptedEvent {
   time: number;
   button?: MouseButton;
   stylusData?: StylusData;
+  wheelDeltaY?: number;
 }
 
 export enum EventTypes {
@@ -170,4 +171,10 @@ export enum TouchEventType {
   MOVE,
   UP,
   CANCELLED,
+}
+
+export enum WheelDevice {
+  UNDETERMINED,
+  MOUSE,
+  TOUCHPAD,
 }
