@@ -19,9 +19,8 @@ export default function TwoFingerPan() {
     .onChange((event) => {
       r.value = clampColor(r.value - event.changeY);
       b.value = clampColor(b.value + event.changeX);
-
-      console.table({ red: r.value, blue: b.value });
     })
+    .runOnJS(true)
     .enableTrackpadTwoFingerGesture(true);
 
   const animatedStyles = useAnimatedStyle(() => {

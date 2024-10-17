@@ -213,7 +213,7 @@ const EXAMPLES: ExamplesSection[] = [
       {
         name: 'Two finger Pan',
         component: TwoFingerPan,
-        unsupportedPlatforms: new Set(['android', 'macos', 'ios']),
+        unsupportedPlatforms: new Set(['android', 'macos']),
       },
     ],
   },
