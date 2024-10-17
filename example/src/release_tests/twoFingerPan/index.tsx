@@ -1,6 +1,5 @@
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
