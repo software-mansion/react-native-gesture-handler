@@ -178,8 +178,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private onWheelCallback = (event: WheelEvent) => {
-    event.preventDefault();
-
     this.wheelDelta.x += event.deltaX;
     this.wheelDelta.y += event.deltaY;
 
