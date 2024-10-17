@@ -42,6 +42,11 @@ type SwipeableExcludes = Exclude<
   'onGestureEvent' | 'onHandlerStateChange'
 >;
 
+enum SwipeDirection {
+  LEFT = 'left',
+  RIGHT = 'right',
+}
+
 export interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
   /**
@@ -203,11 +208,6 @@ export interface SwipeableMethods {
   openLeft: () => void;
   openRight: () => void;
   reset: () => void;
-}
-
-enum SwipeDirection {
-  LEFT = 'left',
-  RIGHT = 'right',
 }
 
 const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
