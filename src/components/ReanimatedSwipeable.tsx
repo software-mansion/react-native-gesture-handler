@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   useCallback,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
@@ -217,8 +218,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const {
       leftThreshold,
       rightThreshold,
-      onSwipeableOpenStartDrag,
-      onSwipeableCloseStartDrag,
       enableTrackpadTwoFingerGesture,
       enabled,
       containerStyle,
@@ -226,11 +225,18 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       animationOptions,
       overshootLeft,
       overshootRight,
+      testID,
+      children,
+      dragOffsetFromLeftEdge = 10,
+      dragOffsetFromRightEdge = 10,
+      onSwipeableOpenStartDrag,
+      onSwipeableCloseStartDrag,
       onSwipeableWillOpen,
       onSwipeableWillClose,
       onSwipeableOpen,
       onSwipeableClose,
-      testID,
+      renderLeftActions,
+      renderRightActions,
       ...remainingProps
     } = props;
 
@@ -275,15 +281,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
 
-    const updateRightElementWidth = () => {
+    const updateRightElementWidth = useCallback(() => {
       'worklet';
       if (rightOffset.value === null) {
         rightOffset.value = rowWidth.value;
       }
       rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
-    };
+    }, [rightOffset, rightWidth, rowWidth.value]);
 
-    const updateAnimatedEvent = () => {
+    const updateAnimatedEvent = useCallback(() => {
       'worklet';
 
       updateRightElementWidth();
@@ -333,7 +339,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               [1, 0, 0]
             )
           : 0;
-    };
+    }, [
+      appliedTranslation,
+      friction,
+      leftWidth.value,
+      overshootFriction,
+      overshootLeftProp,
+      overshootRightProp,
+      rightWidth.value,
+      rowState.value,
+      showLeftProgress,
+      showRightProgress,
+      updateRightElementWidth,
+      userDrag.value,
+    ]);
 
     const dispatchImmediateEvents = useCallback(
       (fromValue: number, toValue: number) => {
@@ -445,14 +464,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       rowWidth.value = nativeEvent.layout.width;
     };
 
-    const {
-      children,
-      renderLeftActions,
-      renderRightActions,
-      dragOffsetFromLeftEdge = 10,
-      dragOffsetFromRightEdge = 10,
-    } = props;
-
     swipeableMethods.current = {
       close() {
         'worklet';
@@ -508,104 +519,133 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const leftThresholdProp = leftThreshold;
     const rightThresholdProp = rightThreshold;
 
-    const handleRelease = (
-      event: GestureStateChangeEvent<PanGestureHandlerEventPayload>
-    ) => {
-      'worklet';
-      const { velocityX } = event;
-      userDrag.value = event.translationX;
-
-      updateRightElementWidth();
-
-      const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
-      const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
-
-      const translationX = (userDrag.value + DRAG_TOSS * velocityX) / friction;
-
-      let toValue = 0;
-
-      if (rowState.value === 0) {
-        if (translationX > leftThreshold) {
-          toValue = leftWidth.value;
-        } else if (translationX < -rightThreshold) {
-          toValue = -rightWidth.value;
-        }
-      } else if (rowState.value === 1) {
-        // Swiped to left
-        if (translationX > -leftThreshold) {
-          toValue = leftWidth.value;
-        }
-      } else {
-        // Swiped to right
-        if (translationX < rightThreshold) {
-          toValue = -rightWidth.value;
-        }
-      }
-
-      animateRow(toValue, velocityX / friction);
-    };
-
-    const close = () => {
-      'worklet';
-      animateRow(0);
-    };
-
-    const tapGesture = Gesture.Tap().onStart(() => {
-      if (rowState.value !== 0) {
-        close();
-      }
-    });
-
-    const dragStarted = useSharedValue<boolean>(false);
-
-    const panGesture = Gesture.Pan()
-      .onUpdate((event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+    const handleRelease = useCallback(
+      (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+        'worklet';
+        const { velocityX } = event;
         userDrag.value = event.translationX;
 
-        const direction =
-          rowState.value === -1
-            ? SwipeDirection.RIGHT
-            : rowState.value === 1
-            ? SwipeDirection.LEFT
-            : event.translationX > 0
-            ? SwipeDirection.RIGHT
-            : SwipeDirection.LEFT;
+        updateRightElementWidth();
 
-        if (!dragStarted.value) {
-          dragStarted.value = true;
-          if (rowState.value === 0 && onSwipeableOpenStartDrag) {
-            runOnJS(onSwipeableOpenStartDrag)(direction);
-          } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
-            runOnJS(onSwipeableCloseStartDrag)(direction);
+        const leftThreshold = leftThresholdProp ?? leftWidth.value / 2;
+        const rightThreshold = rightThresholdProp ?? rightWidth.value / 2;
+
+        const translationX =
+          (userDrag.value + DRAG_TOSS * velocityX) / friction;
+
+        let toValue = 0;
+
+        if (rowState.value === 0) {
+          if (translationX > leftThreshold) {
+            toValue = leftWidth.value;
+          } else if (translationX < -rightThreshold) {
+            toValue = -rightWidth.value;
+          }
+        } else if (rowState.value === 1) {
+          // Swiped to left
+          if (translationX > -leftThreshold) {
+            toValue = leftWidth.value;
+          }
+        } else {
+          // Swiped to right
+          if (translationX < rightThreshold) {
+            toValue = -rightWidth.value;
           }
         }
 
-        updateAnimatedEvent();
-      })
-      .onEnd(
-        (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
-          handleRelease(event);
-        }
-      )
-      .onFinalize(() => {
-        dragStarted.value = false;
-      });
+        animateRow(toValue, velocityX / friction);
+      },
+      [
+        animateRow,
+        friction,
+        leftThresholdProp,
+        leftWidth.value,
+        rightThresholdProp,
+        rightWidth.value,
+        rowState.value,
+        updateRightElementWidth,
+        userDrag,
+      ]
+    );
 
-    if (enableTrackpadTwoFingerGesture) {
-      panGesture.enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture);
-    }
+    const close = useCallback(() => {
+      'worklet';
+      animateRow(0);
+    }, [animateRow]);
 
-    panGesture.activeOffsetX([
-      -dragOffsetFromRightEdge,
-      dragOffsetFromLeftEdge,
-    ]);
-    tapGesture.shouldCancelWhenOutside(true);
+    const dragStarted = useSharedValue<boolean>(false);
+
+    const tapGesture = useMemo(
+      () =>
+        Gesture.Tap()
+          .shouldCancelWhenOutside(true)
+          .onStart(() => {
+            if (rowState.value !== 0) {
+              close();
+            }
+          }),
+      [close, rowState.value]
+    );
+
+    const panGesture = useMemo(
+      () =>
+        Gesture.Pan()
+          .enabled(enabled !== false)
+          .enableTrackpadTwoFingerGesture(
+            enableTrackpadTwoFingerGesture ?? false
+          )
+          .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
+          .onUpdate(
+            (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+              userDrag.value = event.translationX;
+
+              const direction =
+                rowState.value === -1
+                  ? SwipeDirection.RIGHT
+                  : rowState.value === 1
+                  ? SwipeDirection.LEFT
+                  : event.translationX > 0
+                  ? SwipeDirection.RIGHT
+                  : SwipeDirection.LEFT;
+
+              if (!dragStarted.value) {
+                dragStarted.value = true;
+                if (rowState.value === 0 && onSwipeableOpenStartDrag) {
+                  runOnJS(onSwipeableOpenStartDrag)(direction);
+                } else if (rowState.value !== 0 && onSwipeableCloseStartDrag) {
+                  runOnJS(onSwipeableCloseStartDrag)(direction);
+                }
+              }
+
+              updateAnimatedEvent();
+            }
+          )
+          .onEnd(
+            (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+              handleRelease(event);
+            }
+          )
+          .onFinalize(() => {
+            dragStarted.value = false;
+          }),
+      [
+        dragOffsetFromLeftEdge,
+        dragOffsetFromRightEdge,
+        dragStarted,
+        enableTrackpadTwoFingerGesture,
+        enabled,
+        handleRelease,
+        onSwipeableCloseStartDrag,
+        onSwipeableOpenStartDrag,
+        rowState.value,
+        updateAnimatedEvent,
+        userDrag,
+      ]
+    );
 
     useImperativeHandle(ref, () => swipeableMethods.current, [
       swipeableMethods,
     ]);
-
-    panGesture.enabled(enabled !== false);
 
     const animatedStyle = useAnimatedStyle(
       () => ({
