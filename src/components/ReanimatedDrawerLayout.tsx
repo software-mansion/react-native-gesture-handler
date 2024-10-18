@@ -359,7 +359,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         touchX.value =
           props.drawerPosition === positions.Left ? 0 : containerWidth;
 
-        // %% removed frame prediction, it seemed to glitched everything out
+        // %% removed frame prediction as it was causing problems
         // %% make sure frame jumpiness is not a problem with Reanimated
 
         const willShow = toValue !== 0;
@@ -383,9 +383,15 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         drawerTranslation.value = withSpring(
           toValue,
           {
+            // velocity does not matter as long as the destination is reached
+            // this prevents rubberbanding
+            restDisplacementThreshold: 1,
+            restSpeedThreshold: 10000,
+
             velocity,
-            damping: 50,
-            stiffness: 200,
+            mass: 2,
+            damping: 80,
+            stiffness: 500,
           },
           (finished) => {
             if (finished) {
