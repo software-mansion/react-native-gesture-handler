@@ -222,7 +222,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const [drawerState, setDrawerState] = React.useState<DrawerState>(IDLE);
     const [drawerOpened, setDrawerOpened] = React.useState(false);
 
-    // %% START | this was in constructor
     const {
       drawerPosition = defaultProps.drawerPosition,
       drawerWidth = defaultProps.drawerWidth,
@@ -278,9 +277,22 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const gestureOptions: {
       useNativeDriver: boolean;
       listener?: (event: { nativeEvent: { translationX: number } }) => void;
-    } = {
-      useNativeDriver: useNativeAnimations,
-    };
+    } = React.useMemo(
+      () => ({
+        useNativeDriver: useNativeAnimations,
+        listener: props.onDrawerSlide
+          ? (ev) => {
+              const translationX = Math.floor(
+                Math.abs(ev.nativeEvent.translationX)
+              );
+              const position = translationX / containerWidth;
+
+              props.onDrawerSlide?.(position);
+            }
+          : undefined,
+      }),
+      [containerWidth, props, useNativeAnimations]
+    );
 
     if (props.onDrawerSlide) {
       gestureOptions.listener = (ev) => {
@@ -290,8 +302,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         props.onDrawerSlide?.(position);
       };
     }
-
-    // %% END | this was in constructor
 
     const isDrawerOpen = useSharedValue(false);
 
@@ -336,18 +346,14 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const animateDrawer = React.useCallback(
-      (
-        toValue: number,
-        velocity: number,
-        _speed?: number // %% should be used as animation speed rate
-      ) => {
+      (toValue: number, velocity: number, speed?: number) => {
         'worklet';
         dragX.value = 0;
         touchX.value =
           props.drawerPosition === positions.Left ? 0 : containerWidth;
 
         // %% removed frame prediction as it was causing problems
-        // %% make sure frame jumpiness is not a problem with Reanimated
+        // ^^ make sure frame jumpiness is not a problem with Reanimated
 
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
@@ -361,9 +367,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         emitStateChanged(SETTLING, willShow);
         runOnJS(setDrawerState)(SETTLING);
 
-        // %% do we want to run this every animation?
         if (props.hideStatusBar) {
-          // %% what is this function?
           StatusBar.setHidden(willShow, props.statusBarAnimation || 'slide');
         }
 
@@ -377,7 +381,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             overshootClamping: true,
 
             velocity,
-            mass: 2,
+            mass: speed ? 1 / speed : 2,
             damping: 80,
             stiffness: 500,
           },
@@ -561,7 +565,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           runOnJS(handleRelease)({ nativeEvent: event });
         })
         .onUpdate((event) => {
-          // %% removed touchX from the equation, not sure why we would need the absolute coordinates on the screen here
+          // %% removed touchX from the equation, add it back if we want no panning to occur until the finger touches the drawer edge
           dragX.value = event.translationX;
           touchX.value = event.x;
           drawerTranslation.value =
@@ -647,7 +651,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       };
     });
 
-    // %% make dynamic
     const containerAnimatedProps = useAnimatedProps(() => ({
       importantForAccessibility:
         Platform.OS === 'android'
@@ -678,7 +681,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     return (
       <GestureDetector
-        // %% ref={setPanGestureRef}
         gesture={panGesture}
         userSelect={props.userSelect}
         enableContextMenu={props.enableContextMenu}>
