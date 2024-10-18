@@ -387,6 +387,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             // this prevents rubberbanding
             restDisplacementThreshold: 1,
             restSpeedThreshold: 10000,
+            overshootClamping: true,
 
             velocity,
             mass: 2,
