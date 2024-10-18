@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { findNodeHandle } from 'react-native';
 import { GestureType } from '../gesture';
 import { ComposedGesture } from '../gestureComposition';
 
@@ -13,6 +12,7 @@ import { updateHandlers } from './updateHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
 import { useForceRender, validateDetectorChildren } from './utils';
+import findNodeHandle from '../../../findNodeHandle';
 
 // Returns a function that's responsible for updating the attached gestures
 // If the view has changed, it will reattach the handlers to the new view

@@ -6,7 +6,8 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { Platform, findNodeHandle } from 'react-native';
+import { Platform } from 'react-native';
+import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';

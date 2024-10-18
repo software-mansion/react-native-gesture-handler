@@ -71,8 +71,10 @@
 - (NSDictionary *)extractPointerData:(int)index forTouch:(RNGHUITouch *)touch
 {
 #if TARGET_OS_OSX
-  CGPoint absolutePos = [touch locationInWindow];
-  CGPoint relativePos = [touch.window.contentView convertPoint:absolutePos fromView:_gestureHandler.recognizer.view];
+  CGFloat windowHeight = touch.window.contentView.frame.size.height;
+  CGPoint yFlippedAbsolutePos = [touch locationInWindow];
+  CGPoint absolutePos = CGPointMake(yFlippedAbsolutePos.x, windowHeight - yFlippedAbsolutePos.y);
+  CGPoint relativePos = [_gestureHandler.recognizer.view convertPoint:absolutePos fromView:touch.window.contentView];
 #else
   CGPoint relativePos = [touch locationInView:_gestureHandler.recognizer.view];
   CGPoint absolutePos = [touch locationInView:_gestureHandler.recognizer.view.window];

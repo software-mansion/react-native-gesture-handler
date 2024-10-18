@@ -30,7 +30,7 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
 
 - (RNGHUIView *)view
 {
-  return [RNGestureHandlerButton new];
+  return (RNGHUIView *)[RNGestureHandlerButton new];
 }
 
 @end

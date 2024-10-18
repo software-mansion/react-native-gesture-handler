@@ -10,7 +10,12 @@
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#else
+#import <React/RCTUIKit.h>
 #endif
+
+#import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 
 /**
  * Gesture Handler Button components overrides standard mechanism used by RN
@@ -79,6 +84,61 @@
     inner = inner.superview;
   }
   return inner;
+}
+#endif
+
+#if TARGET_OS_OSX
+- (void)mountChildComponentView:(RNGHUIView *)childComponentView index:(NSInteger)index
+{
+  if (childComponentView.superview != nil) {
+    return;
+  }
+
+  if (index < [[self subviews] count]) {
+    // Get the view currently at your desired index
+    NSView *existingView = [[self subviews] objectAtIndex:index];
+
+    // Now use this to insert your new view above the existing one
+    [self addSubview:childComponentView positioned:NSWindowAbove relativeTo:existingView];
+  } else {
+    // if the index is out of bounds, add the new subview at the end
+    [self addSubview:childComponentView];
+  }
+}
+
+- (void)unmountChildComponentView:(RNGHUIView *)childComponentView index:(NSInteger)index
+{
+  [childComponentView removeFromSuperview];
+}
+
+- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics
+{
+  bool forceUpdate = oldLayoutMetrics == facebook::react::EmptyLayoutMetrics;
+
+  if (forceUpdate || (layoutMetrics.frame != oldLayoutMetrics.frame)) {
+    CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
+
+    if (!std::isfinite(frame.origin.x) || !std::isfinite(frame.origin.y) || !std::isfinite(frame.size.width) ||
+        !std::isfinite(frame.size.height)) {
+      // CALayer will crash if we pass NaN or Inf values.
+      // It's unclear how to detect this case on cross-platform manner holistically, so we have to do it on the mounting
+      // layer as well. NaN/Inf is a kinda valid result of some math operations. Even if we can (and should) detect (and
+      // report early) incorrect (NaN and Inf) values which come from JavaScript side, we sometimes cannot backtrace the
+      // sources of a calculation that produced an incorrect/useless result.
+      RCTLogWarn(
+          @"-[UIView(ComponentViewProtocol) updateLayoutMetrics:oldLayoutMetrics:]: Received invalid layout metrics (%@) for a view (%@).",
+          NSStringFromCGRect(frame),
+          self);
+    } else {
+      self.frame = frame;
+      self.bounds = CGRect{CGPointZero, frame.size};
+    }
+  }
+
+  if (forceUpdate || (layoutMetrics.displayType != oldLayoutMetrics.displayType)) {
+    self.hidden = layoutMetrics.displayType == facebook::react::DisplayType::None;
+  }
 }
 #endif
 

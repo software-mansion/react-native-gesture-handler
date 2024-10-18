@@ -343,13 +343,7 @@ export default class GestureHandlerOrchestrator {
       );
     };
 
-    const handlerPointers: number[] = handler.getTrackedPointersID();
-    const otherPointers: number[] = otherHandler.getTrackedPointersID();
-
-    return (
-      handlerPointers.some(isPointerWithinBothBounds) ||
-      otherPointers.some(isPointerWithinBothBounds)
-    );
+    return handler.getTrackedPointersID().some(isPointerWithinBothBounds);
   }
 
   private isFinished(state: State): boolean {
