@@ -10,6 +10,8 @@ module.exports = function (api) {
           alias: {
             'react-native-gesture-handler/ReanimatedSwipeable':
               '../src/components/ReanimatedSwipeable',
+            'react-native-gesture-handler/ReanimatedDrawerLayout':
+              '../src/components/ReanimatedDrawerLayout',
             'react-native-gesture-handler': '../src/index',
           },
         },
