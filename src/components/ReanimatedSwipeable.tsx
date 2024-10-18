@@ -6,6 +6,7 @@ import React, {
   ForwardedRef,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -477,27 +478,37 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [rowWidth]
     );
 
-    swipeableMethods.current = {
-      close() {
-        'worklet';
-        animateRow(0);
-      },
-      openLeft() {
-        'worklet';
-        animateRow(leftWidth.value);
-      },
-      openRight() {
-        'worklet';
-        animateRow(-rightWidth.value);
-      },
-      reset() {
-        'worklet';
-        userDrag.value = 0;
-        showLeftProgress.value = 0;
-        appliedTranslation.value = 0;
-        rowState.value = 0;
-      },
-    };
+    useEffect(() => {
+      swipeableMethods.current = {
+        close() {
+          'worklet';
+          animateRow(0);
+        },
+        openLeft() {
+          'worklet';
+          animateRow(leftWidth.value);
+        },
+        openRight() {
+          'worklet';
+          animateRow(-rightWidth.value);
+        },
+        reset() {
+          'worklet';
+          userDrag.value = 0;
+          showLeftProgress.value = 0;
+          appliedTranslation.value = 0;
+          rowState.value = 0;
+        },
+      };
+    }, [
+      animateRow,
+      appliedTranslation,
+      leftWidth.value,
+      rightWidth.value,
+      rowState,
+      showLeftProgress,
+      userDrag,
+    ]);
 
     const leftElement = useMemo(
       () =>
@@ -675,21 +686,35 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [appliedTranslation, rowState]
     );
 
-    const swipeableComponent = (
-      <GestureDetector gesture={panGesture} touchAction="pan-y">
-        <Animated.View
-          {...remainingProps}
-          onLayout={onRowLayout}
-          style={[styles.container, containerStyle]}>
-          {leftElement}
-          {rightElement}
-          <GestureDetector gesture={tapGesture} touchAction="pan-y">
-            <Animated.View style={[animatedStyle, childrenContainerStyle]}>
-              {children}
-            </Animated.View>
-          </GestureDetector>
-        </Animated.View>
-      </GestureDetector>
+    const swipeableComponent = useMemo(
+      () => (
+        <GestureDetector gesture={panGesture} touchAction="pan-y">
+          <Animated.View
+            {...remainingProps}
+            onLayout={onRowLayout}
+            style={[styles.container, containerStyle]}>
+            {leftElement}
+            {rightElement}
+            <GestureDetector gesture={tapGesture} touchAction="pan-y">
+              <Animated.View style={[animatedStyle, childrenContainerStyle]}>
+                {children}
+              </Animated.View>
+            </GestureDetector>
+          </Animated.View>
+        </GestureDetector>
+      ),
+      [
+        animatedStyle,
+        children,
+        childrenContainerStyle,
+        containerStyle,
+        leftElement,
+        onRowLayout,
+        panGesture,
+        remainingProps,
+        rightElement,
+        tapGesture,
+      ]
     );
 
     return testID ? (
