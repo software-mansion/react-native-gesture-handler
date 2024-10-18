@@ -15,10 +15,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
   private readonly mouseButtonsMapper = new Map<number, MouseButton>();
   private lastPosition: Point;
-  private wheelDelta = {
-    x: 0,
-    y: 0,
-  };
 
   constructor(view: HTMLElement) {
     super(view);
@@ -86,10 +82,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerMoveCallback = (event: PointerEvent) => {
-    this.wheelDelta = {
-      x: 0,
-      y: 0,
-    };
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
     const target = event.target as HTMLElement;
 
@@ -177,14 +169,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     }
   };
 
-  private onWheelCallback = (event: WheelEvent) => {
-    this.wheelDelta.x += event.deltaX;
-    this.wheelDelta.y += event.deltaY;
-
-    const adaptedEvent = this.mapEvent(event, EventTypes.MOVE);
-    this.onWheel(adaptedEvent);
-  };
-
   public registerListeners(): void {
     this.view.addEventListener('pointerdown', this.pointerDownCallback);
     this.view.addEventListener('pointerup', this.pointerUpCallback);
@@ -201,7 +185,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       'lostpointercapture',
       this.lostPointerCaptureCallback
     );
-    this.view.addEventListener('wheel', this.onWheelCallback);
   }
 
   public unregisterListeners(): void {
@@ -217,16 +200,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     );
   }
 
-  protected mapEvent(
-    event: PointerEvent | WheelEvent,
-    eventType: EventTypes
-  ): AdaptedEvent {
-    return event instanceof PointerEvent
-      ? this.mapPointerEvent(event, eventType)
-      : this.mapWheelEvent(event);
-  }
-
-  private mapPointerEvent(event: PointerEvent, eventType: EventTypes) {
+  protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
     const rect = this.view.getBoundingClientRect();
     const { scaleX, scaleY } = calculateViewScale(this.view);
 
@@ -242,21 +216,6 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       button: this.mouseButtonsMapper.get(event.button),
       time: event.timeStamp,
       stylusData: tryExtractStylusData(event),
-    };
-  }
-
-  private mapWheelEvent(event: WheelEvent): AdaptedEvent {
-    return {
-      x: event.clientX + this.wheelDelta.x,
-      y: event.clientY + this.wheelDelta.y,
-      offsetX: event.offsetX - event.deltaX,
-      offsetY: event.offsetY - event.deltaY,
-      pointerId: -1,
-      eventType: EventTypes.MOVE,
-      pointerType: PointerType.OTHER,
-      time: event.timeStamp,
-      // @ts-ignore It does exist, but it's deprecated
-      wheelDeltaY: event.wheelDeltaY,
     };
   }
 
