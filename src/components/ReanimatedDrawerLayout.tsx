@@ -267,21 +267,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //    +---------------+    +---------------+    +---------------+    +---------------+
 
     const openValue = useDerivedValue(() => {
-      // %% removed touchX from the equation, not sure why we would need the absolute coordinates on the screen here
-      const sideCorrectedStartPositionX = -1 * sideCorrectedDragX.value;
-
-      const translationX =
-        drawerType === 'front'
-          ? sideCorrectedDragX.value +
-            interpolate(
-              sideCorrectedStartPositionX,
-              [drawerWidth - 1, drawerWidth, drawerWidth + 1],
-              [0, 0, 1]
-            )
-          : sideCorrectedDragX.value;
-
       return interpolate(
-        translationX + drawerTranslation.value,
+        drawerTranslation.value,
         [0, drawerWidth],
         [0, 1],
         Extrapolation.CLAMP
@@ -574,12 +561,25 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           runOnJS(handleRelease)({ nativeEvent: event });
         })
         .onUpdate((event) => {
+          // %% removed touchX from the equation, not sure why we would need the absolute coordinates on the screen here
           dragX.value = event.translationX;
           touchX.value = event.x;
+          drawerTranslation.value =
+            drawerType === 'front'
+              ? sideCorrectedDragX.value +
+                interpolate(
+                  -1 * sideCorrectedDragX.value,
+                  [drawerWidth - 1, drawerWidth, drawerWidth + 1],
+                  [0, 0, 1]
+                )
+              : sideCorrectedDragX.value;
         });
     }, [
       dragX,
       drawerLockMode,
+      drawerTranslation,
+      drawerType,
+      drawerWidth,
       emitStateChanged,
       gestureOrientation,
       handleRelease,
@@ -591,6 +591,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       props.keyboardDismissMode,
       props.mouseButton,
       props.statusBarAnimation,
+      sideCorrectedDragX.value,
       touchX,
     ]);
 
