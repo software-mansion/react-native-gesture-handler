@@ -327,7 +327,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // the container size by the value of SLOP. This will make it only activate
     // when gesture happens not further than SLOP away from the edge.
     const [edgeHitSlop, setEdgeHitSlop] = React.useState<HitSlop>(
-      fromLeft ? { left: 0, width: edgeWidth } : { right: 0, width: edgeWidth }
+      fromLeft ? { right: edgeWidth } : { left: edgeWidth }
     );
 
     const updateShowing = React.useCallback(
@@ -417,6 +417,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           x: number;
         };
       }) => {
+        'worklet';
+        // %% this function has to start handling closing as well as opening
         let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
         if (drawerPosition !== positions.Left) {
@@ -532,6 +534,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         .hitSlop(edgeHitSlop)
         .activeOffsetX(gestureOrientation * minSwipeDistance)
         .failOffsetY([-15, 15])
+        .simultaneousWithExternalGesture(overlayDismissGesture)
         .enableTrackpadTwoFingerGesture(
           props.enableTrackpadTwoFingerGesture ?? false
         )
@@ -552,10 +555,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           }
         })
         .onEnd((event) => {
-          runOnJS(handleRelease)({ nativeEvent: event });
+          handleRelease({ nativeEvent: event });
         })
         .onUpdate((event) => {
-          // %% removed touchX from the equation, add it back if we want no panning to occur until the finger touches the drawer edge
           dragX.value = event.translationX;
           drawerTranslation.value =
             drawerType === 'front'
@@ -585,6 +587,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       props.mouseButton,
       props.statusBarAnimation,
       sideCorrectedDragX.value,
+      overlayDismissGesture,
     ]);
 
     // When using RTL, row and row-reverse flex directions are flipped.
