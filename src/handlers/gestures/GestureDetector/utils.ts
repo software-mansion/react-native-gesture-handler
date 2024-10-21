@@ -70,7 +70,7 @@ export function extractGestureRelations(gesture: GestureType) {
 }
 
 export function checkGestureCallbacksForWorklets(gesture: GestureType) {
-  if (!__DEV__) {
+  if (!__DEV__ || Platform.OS === 'web') {
     return;
   }
   // If a gesture is explicitly marked to run on the JS thread there is no need to check
