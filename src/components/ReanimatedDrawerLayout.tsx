@@ -266,6 +266,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //    +---------------+    +---------------+    +---------------+    +---------------+
 
     const openValue = useDerivedValue(() => {
+      // %% must test all of this in RTL
+      // console.log(dragX.value.toFixed(2), drawerTranslation.value.toFixed(2));
+
       return interpolate(
         drawerTranslation.value,
         [0, drawerWidth],
@@ -333,7 +336,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // When drawer is closed we want the hitSlop to be horizontally shorter than
     // the container size by the value of SLOP. This will make it only activate
     // when gesture happens not further than SLOP away from the edge.
-    const [hitSlop, setHitSlop] = React.useState<HitSlop>(
+    const [edgeHitSlop, setEdgeHitSlop] = React.useState<HitSlop>(
       fromLeft ? { left: 0, width: edgeWidth } : { right: 0, width: edgeWidth }
     );
 
@@ -352,12 +355,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         touchX.value =
           props.drawerPosition === positions.Left ? 0 : containerWidth;
 
-        // %% removed frame prediction as it was causing problems
-        // ^^ make sure frame jumpiness is not a problem with Reanimated
-
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
-        runOnJS(setHitSlop)(
+        runOnJS(setEdgeHitSlop)(
           fromLeft
             ? { left: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
             : { right: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
@@ -535,11 +535,14 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const gestureOrientation =
       (fromLeft ? 1 : -1) * (isDrawerOpen.value ? -1 : 1);
 
+    // %% fixme: excessive rerenders
+    // console.log('rerender');
+
     const panGesture = React.useMemo(() => {
       return Gesture.Pan()
         .activeCursor(props.activeCursor ?? 'auto')
         .mouseButton(props.mouseButton ?? MouseButton.LEFT)
-        .hitSlop(hitSlop)
+        .hitSlop(edgeHitSlop)
         .activeOffsetX(gestureOrientation * minSwipeDistance)
         .failOffsetY([-15, 15])
         .enableTrackpadTwoFingerGesture(
@@ -587,7 +590,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       emitStateChanged,
       gestureOrientation,
       handleRelease,
-      hitSlop,
+      edgeHitSlop,
       minSwipeDistance,
       props.activeCursor,
       props.enableTrackpadTwoFingerGesture,
