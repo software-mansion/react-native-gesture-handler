@@ -215,7 +215,6 @@ const defaultProps = {
 const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
     const dragX = useSharedValue<number>(0);
-    const touchX = useSharedValue<number>(0);
     const drawerTranslation = useSharedValue<number>(0);
 
     const [containerWidth, setContainerWidth] = React.useState(0);
@@ -236,15 +235,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     } = props;
 
     const fromLeft = drawerPosition === positions.Left;
-
-    // %% this likely shouldn't be reset every render
-    if (drawerPosition !== positions.Left) {
-      // To handle right-side drawers, reverse events coming from gesture handler
-      // in a way they emulate left-side drawer gestures
-      touchX.value = containerWidth;
-    } else {
-      touchX.value = 0;
-    }
 
     const sideCorrectedDragX = useDerivedValue(() =>
       drawerPosition !== positions.Left ? -1 * dragX.value : dragX.value
@@ -352,8 +342,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       (toValue: number, velocity: number, speed?: number) => {
         'worklet';
         dragX.value = 0;
-        touchX.value =
-          props.drawerPosition === positions.Left ? 0 : containerWidth;
 
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
@@ -404,7 +392,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         );
       },
       [
-        containerWidth,
         dragX,
         drawerState,
         drawerTranslation,
@@ -412,12 +399,10 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         emitStateChanged,
         fromLeft,
         isDrawerOpen,
-        props.drawerPosition,
         props.hideStatusBar,
         props.onDrawerClose,
         props.onDrawerOpen,
         props.statusBarAnimation,
-        touchX,
         updateShowing,
       ]
     );
@@ -498,11 +483,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const overlayDismissGesture = React.useMemo(
       () =>
-        Gesture.Tap().onEnd(() => {
-          if (isDrawerOpen.value && props.drawerLockMode !== 'locked-open') {
-            closeDrawer();
-          }
-        }),
+        Gesture.Tap()
+          .maxDistance(25)
+          .onEnd(() => {
+            if (isDrawerOpen.value && props.drawerLockMode !== 'locked-open') {
+              closeDrawer();
+            }
+          }),
       [closeDrawer, isDrawerOpen.value, props.drawerLockMode]
     );
 
@@ -570,7 +557,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         .onUpdate((event) => {
           // %% removed touchX from the equation, add it back if we want no panning to occur until the finger touches the drawer edge
           dragX.value = event.translationX;
-          touchX.value = event.x;
           drawerTranslation.value =
             drawerType === 'front'
               ? sideCorrectedDragX.value +
@@ -599,7 +585,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       props.mouseButton,
       props.statusBarAnimation,
       sideCorrectedDragX.value,
-      touchX,
     ]);
 
     // When using RTL, row and row-reverse flex directions are flipped.
