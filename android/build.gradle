@@ -21,7 +21,7 @@ def isNewArchitectureEnabled() {
     // - Set `newArchEnabled` to true inside the `gradle.properties` file
     // - Invoke gradle with `-newArchEnabled=true`
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
-    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+    return true; // required since 0.76
 }
 
 def safeExtGet(prop, fallback) {
@@ -111,8 +111,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 21)
-        targetSdkVersion safeExtGet('targetSdkVersion', 33)
+        minSdkVersion safeExtGet('minSdkVersion', 24)
+        targetSdkVersion safeExtGet('targetSdkVersion', 34)
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
