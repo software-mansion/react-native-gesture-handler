@@ -7,10 +7,15 @@ import ReanimatedDrawerLayout, {
   DrawerType,
   DrawerPosition,
 } from 'react-native-gesture-handler/ReanimatedDrawerLayout';
+import { LoremIpsum } from 'src/common';
 
 const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
   progress && console.log('Drawer opening progress:', progress);
-  return <View style={styles.drawerContainer} />;
+  return (
+    <View style={styles.drawerContainer}>
+      <LoremIpsum />
+    </View>
+  );
 };
 
 export default function ReanimatedDrawerExample() {
@@ -28,7 +33,9 @@ export default function ReanimatedDrawerExample() {
 
   const toggleTypeGesture = Gesture.Tap()
     .runOnJS(true)
-    .onStart(() => setType(type === 'front' ? 'back' : 'front'));
+    .onStart(() =>
+      setType(type === 'front' ? 'back' : type === 'back' ? 'slide' : 'front')
+    );
 
   return (
     <ReanimatedDrawerLayout
