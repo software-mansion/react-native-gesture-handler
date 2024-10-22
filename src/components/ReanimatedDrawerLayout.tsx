@@ -1,10 +1,6 @@
 // This component is based on RN's DrawerLayoutAndroid API
-//
-// It perhaps deserves to be put in a separate repo, but since it relies on
-// react-native-gesture-handler library which isn't very popular at the moment I
-// decided to keep it here for the time being. It will allow us to move faster
-// and fix issues that may arise in gesture handler library that could be found
-// when using the drawer component
+// It's cross-compatible with all platforms despite
+// `DrawerLayoutAndroid` only being available on android
 
 import * as React from 'react';
 import {
@@ -240,13 +236,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       drawerPosition !== positions.Left ? -1 * dragX.value : dragX.value
     );
 
-    // %% determine if we need such comments in the code, keep at least until properly tested
-    // While closing the drawer when user starts gesture outside of its area (in greyed
-    // out part of the window), we want the drawer to follow only once finger reaches the
-    // edge of the drawer.
-    // E.g. on the diagram below drawer is illustrate by X signs and the greyed out area by
-    // dots. The touch gesture starts at '*' and moves left, touch path is indicated by
-    // an arrow pointing left
+    // While closing the drawer when user starts gesture in the greyed out part of the window,
+    // we want the drawer to follow only once the finger reaches the edge of the drawer.
+    // See the diagram for reference. * = starting finger position, < = current finger position
     // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
@@ -256,9 +248,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //    +---------------+    +---------------+    +---------------+    +---------------+
 
     const openValue = useDerivedValue(() => {
-      // %% must test all of this in RTL
-      // console.log(dragX.value.toFixed(2), drawerTranslation.value.toFixed(2));
-
       return interpolate(
         drawerTranslation.value,
         [0, drawerWidth],
@@ -360,7 +349,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         drawerTranslation.value = withSpring(
           toValue,
           {
-            // velocity does not matter as long as the destination is reached
+            // velocity threshold does not matter as long as the destination is reached
             // this prevents rubberbanding
             restDisplacementThreshold: 1,
             restSpeedThreshold: 10000,
@@ -376,7 +365,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               emitStateChanged(IDLE, willShow);
               runOnJS(setDrawerOpened)(willShow);
               if (drawerState !== DRAGGING) {
-                // It's possilbe that user started drag while the drawer
+                // It's possible that user started drag while the drawer
                 // was settling, don't override state in this case
                 runOnJS(setDrawerState)(IDLE);
               }
@@ -419,7 +408,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         };
       }) => {
         'worklet';
-        // %% this function has to start handling closing as well as opening
         let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
         if (drawerPosition !== positions.Left) {
@@ -518,11 +506,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       overlayDismissGesture,
     ]);
 
-    // %% this should be dynamic, it uses SV in the render body
-    // gestureOrientation is 1 if the expected gesture is from left to right and
-    // -1 otherwise e.g. when drawer is on the left and is closed we expect left
-    // to right gesture, thus orientation will be 1.
-
+    // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
     const gestureOrientation = React.useMemo(
       () => (fromLeft ? 1 : -1) * (drawerOpened ? -1 : 1),
       [fromLeft, drawerOpened]
