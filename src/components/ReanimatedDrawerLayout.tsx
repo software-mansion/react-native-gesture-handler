@@ -146,9 +146,6 @@ export interface DrawerLayoutProps {
 
   onDrawerSlide?: (position: number) => void;
 
-  // %% we don't support this ref anymore, see if we can replace it
-  // onGestureRef?: (ref: PanGestureHandler) => void;
-
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?:
     | React.ReactNode
