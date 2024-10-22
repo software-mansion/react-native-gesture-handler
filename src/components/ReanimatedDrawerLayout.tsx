@@ -542,17 +542,26 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           }
         })
         .onUpdate((event) => {
-          dragX.value = Math.max(
-            drawerOpened
-              ? interpolate(
-                  event.x,
-                  [0, drawerWidth, drawerWidth + 1],
-                  [0, drawerWidth, drawerWidth]
-                )
-              : 0,
-            event.translationX +
-              (drawerOpened ? drawerWidth * -gestureOrientation : 0)
-          );
+          dragX.value =
+            sideCorrection *
+            Math.max(
+              drawerOpened
+                ? isFromLeft
+                  ? interpolate(
+                      event.x,
+                      [0, drawerWidth, drawerWidth + 1],
+                      [0, drawerWidth, drawerWidth]
+                    )
+                  : interpolate(
+                      event.x - containerWidth,
+                      [-drawerWidth - 1, -drawerWidth, 0],
+                      [drawerWidth, drawerWidth, 0]
+                    )
+                : 0,
+              sideCorrection *
+                (event.translationX +
+                  (drawerOpened ? drawerWidth * -gestureOrientation : 0))
+            );
 
           drawerTranslation.value =
             drawerType === 'front'
@@ -588,6 +597,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       sideCorrectedDragX.value,
       overlayDismissGesture,
       drawerOpened,
+      isFromLeft,
+      containerWidth,
+      sideCorrection,
     ]);
 
     // When using RTL, row and row-reverse flex directions are flipped.
