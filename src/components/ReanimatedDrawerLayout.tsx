@@ -214,8 +214,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const [drawerState, setDrawerState] = React.useState<DrawerState>(IDLE);
     const [drawerOpened, setDrawerOpened] = React.useState(false);
 
-    console.log(drawerState);
-
     const {
       drawerPosition = defaultProps.drawerPosition,
       drawerWidth = defaultProps.drawerWidth,
@@ -313,9 +311,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         : ('none' as const),
     }));
 
-    // When drawer is closed we want the hitSlop to be horizontally shorter than
-    // the container size by the value of SLOP. This will make it only activate
-    // when gesture happens not further than SLOP away from the edge.
+    // While the drawer is hidden, it's hitSlop overflows onto the main view by edgeWidth
+    // This way it can be swiped open even when it's hidden
     const [edgeHitSlop, setEdgeHitSlop] = React.useState<HitSlop>(
       isFromLeft ? { right: edgeWidth } : { left: edgeWidth }
     );
@@ -349,8 +346,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         drawerTranslation.value = withSpring(
           toValue,
           {
-            // velocity threshold does not matter as long as the destination is reached
-            // this prevents rubberbanding
+            // Velocity threshold does not matter as long as the destination is reached
+            // This prevents rubberbanding
             restDisplacementThreshold: 1,
             restSpeedThreshold: 10000,
             overshootClamping: true,
