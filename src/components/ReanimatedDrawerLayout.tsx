@@ -327,6 +327,12 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [isDrawerShowing]
     );
 
+    // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
+    const gestureOrientation = React.useMemo(
+      () => (fromLeft ? 1 : -1) * (drawerOpened ? -1 : 1),
+      [fromLeft, drawerOpened]
+    );
+
     const animateDrawer = React.useCallback(
       (toValue: number, velocity: number, speed?: number) => {
         'worklet';
@@ -370,7 +376,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
                 runOnJS(setDrawerState)(IDLE);
               }
               if (willShow) {
-                dragX.value = drawerWidth;
+                dragX.value = drawerWidth * gestureOrientation;
                 props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
               } else {
                 dragX.value = 0;
@@ -394,6 +400,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         props.statusBarAnimation,
         updateShowing,
         drawerWidth,
+        gestureOrientation,
       ]
     );
 
@@ -506,12 +513,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       overlayDismissGesture,
     ]);
 
-    // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
-    const gestureOrientation = React.useMemo(
-      () => (fromLeft ? 1 : -1) * (drawerOpened ? -1 : 1),
-      [fromLeft, drawerOpened]
-    );
-
     const fillHitSlop = React.useMemo(
       () => (fromLeft ? { left: drawerWidth } : { right: drawerWidth }),
       [drawerWidth, fromLeft]
@@ -546,8 +547,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           }
         })
         .onUpdate((event) => {
-          console.log(dragX.value);
-          dragX.value = event.translationX + (drawerOpened ? drawerWidth : 0);
+          dragX.value =
+            event.translationX +
+            (drawerOpened ? drawerWidth * -gestureOrientation : 0);
           drawerTranslation.value =
             drawerType === 'front'
               ? sideCorrectedDragX.value +
