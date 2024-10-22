@@ -542,9 +542,18 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           }
         })
         .onUpdate((event) => {
-          dragX.value =
+          dragX.value = Math.max(
+            drawerOpened
+              ? interpolate(
+                  event.x,
+                  [0, drawerWidth, drawerWidth + 1],
+                  [0, drawerWidth, drawerWidth]
+                )
+              : 0,
             event.translationX +
-            (drawerOpened ? drawerWidth * -gestureOrientation : 0);
+              (drawerOpened ? drawerWidth * -gestureOrientation : 0)
+          );
+
           drawerTranslation.value =
             drawerType === 'front'
               ? sideCorrectedDragX.value +
