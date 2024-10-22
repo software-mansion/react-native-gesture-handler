@@ -214,6 +214,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const [drawerState, setDrawerState] = React.useState<DrawerState>(IDLE);
     const [drawerOpened, setDrawerOpened] = React.useState(false);
 
+    console.log(drawerState);
+
     const {
       drawerPosition = defaultProps.drawerPosition,
       drawerWidth = defaultProps.drawerWidth,
@@ -362,11 +364,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             if (finished) {
               emitStateChanged(IDLE, willShow);
               runOnJS(setDrawerOpened)(willShow);
-              if (drawerState !== DRAGGING) {
-                // It's possible that user started drag while the drawer
-                // was settling, don't override state in this case
-                runOnJS(setDrawerState)(IDLE);
-              }
+              runOnJS(setDrawerState)(IDLE);
               if (willShow) {
                 dragX.value = drawerWidth * sideCorrection;
                 props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
@@ -380,7 +378,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       },
       [
         dragX,
-        drawerState,
         drawerTranslation,
         edgeWidth,
         emitStateChanged,
