@@ -523,7 +523,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           props.enableTrackpadTwoFingerGesture ?? false
         )
         .enabled(
-          drawerLockMode !== 'locked-closed' && drawerLockMode !== 'locked-open'
+          drawerLockMode !== 'locked-closed' &&
+            drawerLockMode !== 'locked-open' &&
+            drawerState !== SETTLING
         )
         .onStart(() => {
           emitStateChanged(DRAGGING, false);
@@ -597,6 +599,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       isFromLeft,
       containerWidth,
       sideCorrection,
+      drawerState,
     ]);
 
     // When using RTL, row and row-reverse flex directions are flipped.
