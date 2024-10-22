@@ -230,10 +230,12 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       useNativeAnimations = defaultProps.useNativeAnimations,
     } = props;
 
-    const fromLeft = drawerPosition === positions.Left;
+    const isFromLeft = drawerPosition === positions.Left;
 
-    const sideCorrectedDragX = useDerivedValue(() =>
-      drawerPosition !== positions.Left ? -1 * dragX.value : dragX.value
+    const sideCorrection = isFromLeft ? 1 : -1;
+
+    const sideCorrectedDragX = useDerivedValue(
+      () => sideCorrection * dragX.value
     );
 
     // While closing the drawer when user starts gesture in the greyed out part of the window,
@@ -316,21 +318,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // the container size by the value of SLOP. This will make it only activate
     // when gesture happens not further than SLOP away from the edge.
     const [edgeHitSlop, setEdgeHitSlop] = React.useState<HitSlop>(
-      fromLeft ? { right: edgeWidth } : { left: edgeWidth }
-    );
-
-    const updateShowing = React.useCallback(
-      (showing: boolean) => {
-        'worklet';
-        isDrawerShowing.value = showing;
-      },
-      [isDrawerShowing]
+      isFromLeft ? { right: edgeWidth } : { left: edgeWidth }
     );
 
     // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
     const gestureOrientation = React.useMemo(
-      () => (fromLeft ? 1 : -1) * (drawerOpened ? -1 : 1),
-      [fromLeft, drawerOpened]
+      () => (isFromLeft ? 1 : -1) * (drawerOpened ? -1 : 1),
+      [isFromLeft, drawerOpened]
     );
 
     const animateDrawer = React.useCallback(
@@ -339,12 +333,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
         runOnJS(setEdgeHitSlop)(
-          fromLeft
+          isFromLeft
             ? { left: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
             : { right: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
         );
 
-        updateShowing(willShow);
+        isDrawerShowing.value = willShow;
+
         emitStateChanged(SETTLING, willShow);
         runOnJS(setDrawerState)(SETTLING);
 
@@ -376,7 +371,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
                 runOnJS(setDrawerState)(IDLE);
               }
               if (willShow) {
-                dragX.value = drawerWidth * gestureOrientation;
+                dragX.value = drawerWidth * sideCorrection;
                 props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
               } else {
                 dragX.value = 0;
@@ -392,15 +387,15 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         drawerTranslation,
         edgeWidth,
         emitStateChanged,
-        fromLeft,
+        isFromLeft,
         isDrawerOpen,
         props.hideStatusBar,
         props.onDrawerClose,
         props.onDrawerOpen,
         props.statusBarAnimation,
-        updateShowing,
         drawerWidth,
-        gestureOrientation,
+        sideCorrection,
+        isDrawerShowing,
       ]
     );
 
@@ -514,8 +509,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     ]);
 
     const fillHitSlop = React.useMemo(
-      () => (fromLeft ? { left: drawerWidth } : { right: drawerWidth }),
-      [drawerWidth, fromLeft]
+      () => (isFromLeft ? { left: drawerWidth } : { right: drawerWidth }),
+      [drawerWidth, isFromLeft]
     );
 
     const panGesture = React.useMemo(() => {
@@ -587,7 +582,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     ]);
 
     // When using RTL, row and row-reverse flex directions are flipped.
-    const reverseContentDirection = I18nManager.isRTL ? fromLeft : !fromLeft;
+    const reverseContentDirection = I18nManager.isRTL
+      ? isFromLeft
+      : !isFromLeft;
 
     const dynamicDrawerStyles = {
       backgroundColor: drawerBackgroundColor,
@@ -605,7 +602,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             translateX: interpolate(
               openValue.value,
               [0, 1],
-              fromLeft ? [0, drawerWidth] : [0, -drawerWidth],
+              [0, drawerWidth * sideCorrection],
               Extrapolation.CLAMP
             ),
           },
@@ -614,7 +611,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     });
 
     const drawerAnimatedStyle = useAnimatedStyle(() => {
-      const closedDrawerOffset = fromLeft ? -drawerWidth : drawerWidth;
+      const closedDrawerOffset = drawerWidth * -sideCorrection;
 
       return {
         transform: [
