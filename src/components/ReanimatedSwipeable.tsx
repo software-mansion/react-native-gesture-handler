@@ -260,7 +260,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const leftWidth = useSharedValue<number>(0);
     const rightWidth = useSharedValue<number>(0);
 
-    // %% progression cache, houses withSpring output
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
