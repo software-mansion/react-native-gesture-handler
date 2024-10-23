@@ -260,6 +260,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const leftWidth = useSharedValue<number>(0);
     const rightWidth = useSharedValue<number>(0);
 
+    // used for synchronizing layout measurements between JS and UI
+    const rightOffset = useSharedValue<number | null>(null);
+
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
@@ -278,11 +281,22 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
     });
 
+    // %% remove or rename these, may cause 1. reloads, 2. name shadowing
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
 
+    const updateRightElementWidth = useCallback(() => {
+      'worklet';
+      if (rightOffset.value === null) {
+        rightOffset.value = rowWidth.value;
+      }
+      rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
+    }, [rightOffset, rightWidth, rowWidth.value]);
+
     const updateAnimatedEvent = useCallback(() => {
       'worklet';
+
+      updateRightElementWidth();
 
       const overshootLeft = overshootLeftProp ?? leftWidth.value > 0;
       const overshootRight = overshootRightProp ?? rightWidth.value > 0;
@@ -341,6 +355,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       showLeftProgress,
       showRightProgress,
       userDrag.value,
+      updateRightElementWidth,
     ]);
 
     const dispatchImmediateEvents = useCallback(
@@ -525,7 +540,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             )}
             <View
               onLayout={({ nativeEvent }) => {
-                rightWidth.value = rowWidth.value - nativeEvent.layout.x;
+                rightOffset.value = rowWidth.value - nativeEvent.layout.x;
               }}
             />
           </Animated.View>
@@ -533,7 +548,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [
         appliedTranslation,
         renderRightActions,
-        rightWidth,
+        rightOffset,
         rowWidth.value,
         showRightProgress,
       ]
@@ -544,6 +559,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         'worklet';
         const { velocityX } = event;
         userDrag.value = event.translationX;
+
+        updateRightElementWidth();
 
         const leftThresholdProp = leftThreshold ?? leftWidth.value / 2;
         const rightThresholdProp = rightThreshold ?? rightWidth.value / 2;
@@ -582,6 +599,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         rightWidth.value,
         rowState.value,
         userDrag,
+        updateRightElementWidth,
       ]
     );
 
