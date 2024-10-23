@@ -285,6 +285,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
 
+    // %% should only run once, not every pan update
     const updateRightElementWidth = useCallback(() => {
       'worklet';
       if (rightOffset.value === null) {
@@ -540,18 +541,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             )}
             <View
               onLayout={({ nativeEvent }) => {
-                rightOffset.value = rowWidth.value - nativeEvent.layout.x;
+                rightOffset.value = nativeEvent.layout.x;
               }}
             />
           </Animated.View>
         ),
-      [
-        appliedTranslation,
-        renderRightActions,
-        rightOffset,
-        rowWidth.value,
-        showRightProgress,
-      ]
+      [appliedTranslation, renderRightActions, rightOffset, showRightProgress]
     );
 
     const handleRelease = useCallback(
