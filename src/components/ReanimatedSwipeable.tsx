@@ -251,17 +251,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const rowState = useSharedValue<number>(0);
 
-    // %% cache value, see if they are already provided in the event
     const userDrag = useSharedValue<number>(0);
 
-    // %% same-ish
     const appliedTranslation = useSharedValue<number>(0);
 
-    // %% these likely could be removed, see if rightOffset is neccessary
     const rowWidth = useSharedValue<number>(0);
     const leftWidth = useSharedValue<number>(0);
     const rightWidth = useSharedValue<number>(0);
-    const rightOffset = useSharedValue<number | null>(null);
 
     // %% progression cache, houses withSpring output
     const showLeftProgress = useSharedValue<number>(0);
@@ -285,18 +281,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const overshootLeftProp = overshootLeft;
     const overshootRightProp = overshootRight;
 
-    const updateRightElementWidth = useCallback(() => {
-      'worklet';
-      if (rightOffset.value === null) {
-        rightOffset.value = rowWidth.value;
-      }
-      rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
-    }, [rightOffset, rightWidth, rowWidth.value]);
-
     const updateAnimatedEvent = useCallback(() => {
       'worklet';
-
-      updateRightElementWidth();
 
       const overshootLeft = overshootLeftProp ?? leftWidth.value > 0;
       const overshootRight = overshootRightProp ?? rightWidth.value > 0;
@@ -354,7 +340,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       rowState.value,
       showLeftProgress,
       showRightProgress,
-      updateRightElementWidth,
       userDrag.value,
     ]);
 
@@ -539,13 +524,19 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               swipeableMethods.current
             )}
             <View
-              onLayout={({ nativeEvent }) =>
-                (rightOffset.value = nativeEvent.layout.x)
-              }
+              onLayout={({ nativeEvent }) => {
+                rightWidth.value = rowWidth.value - nativeEvent.layout.x;
+              }}
             />
           </Animated.View>
         ),
-      [appliedTranslation, renderRightActions, rightOffset, showRightProgress]
+      [
+        appliedTranslation,
+        renderRightActions,
+        rightWidth,
+        rowWidth.value,
+        showRightProgress,
+      ]
     );
 
     const handleRelease = useCallback(
@@ -553,8 +544,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         'worklet';
         const { velocityX } = event;
         userDrag.value = event.translationX;
-
-        updateRightElementWidth();
 
         const leftThresholdProp = leftThreshold ?? leftWidth.value / 2;
         const rightThresholdProp = rightThreshold ?? rightWidth.value / 2;
@@ -592,7 +581,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         rightThreshold,
         rightWidth.value,
         rowState.value,
-        updateRightElementWidth,
         userDrag,
       ]
     );
