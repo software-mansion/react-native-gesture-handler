@@ -511,41 +511,39 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       userDrag,
     ]);
 
-    const leftElement = useMemo(
-      () =>
-        renderLeftActions && (
-          <Animated.View style={[styles.leftActions]}>
-            {renderLeftActions(
-              showLeftProgress,
-              appliedTranslation,
-              swipeableMethods.current
-            )}
-            <View
-              onLayout={({ nativeEvent }) =>
-                (leftWidth.value = nativeEvent.layout.x)
-              }
-            />
-          </Animated.View>
-        ),
+    const leftElement = useCallback(
+      () => (
+        <Animated.View style={[styles.leftActions]}>
+          {renderLeftActions?.(
+            showLeftProgress,
+            appliedTranslation,
+            swipeableMethods.current
+          )}
+          <View
+            onLayout={({ nativeEvent }) =>
+              (leftWidth.value = nativeEvent.layout.x)
+            }
+          />
+        </Animated.View>
+      ),
       [appliedTranslation, leftWidth, renderLeftActions, showLeftProgress]
     );
 
-    const rightElement = useMemo(
-      () =>
-        renderRightActions && (
-          <Animated.View style={[styles.rightActions]}>
-            {renderRightActions(
-              showRightProgress,
-              appliedTranslation,
-              swipeableMethods.current
-            )}
-            <View
-              onLayout={({ nativeEvent }) => {
-                rightOffset.value = nativeEvent.layout.x;
-              }}
-            />
-          </Animated.View>
-        ),
+    const rightElement = useCallback(
+      () => (
+        <Animated.View style={[styles.rightActions]}>
+          {renderRightActions?.(
+            showRightProgress,
+            appliedTranslation,
+            swipeableMethods.current
+          )}
+          <View
+            onLayout={({ nativeEvent }) => {
+              rightOffset.value = nativeEvent.layout.x;
+            }}
+          />
+        </Animated.View>
+      ),
       [appliedTranslation, renderRightActions, rightOffset, showRightProgress]
     );
 
@@ -685,35 +683,21 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [appliedTranslation, rowState]
     );
 
-    const swipeableComponent = useMemo(
-      () => (
-        <GestureDetector gesture={panGesture} touchAction="pan-y">
-          <Animated.View
-            {...remainingProps}
-            onLayout={onRowLayout}
-            style={[styles.container, containerStyle]}>
-            {leftElement}
-            {rightElement}
-            <GestureDetector gesture={tapGesture} touchAction="pan-y">
-              <Animated.View style={[animatedStyle, childrenContainerStyle]}>
-                {children}
-              </Animated.View>
-            </GestureDetector>
-          </Animated.View>
-        </GestureDetector>
-      ),
-      [
-        animatedStyle,
-        children,
-        childrenContainerStyle,
-        containerStyle,
-        leftElement,
-        onRowLayout,
-        panGesture,
-        remainingProps,
-        rightElement,
-        tapGesture,
-      ]
+    const swipeableComponent = (
+      <GestureDetector gesture={panGesture} touchAction="pan-y">
+        <Animated.View
+          {...remainingProps}
+          onLayout={onRowLayout}
+          style={[styles.container, containerStyle]}>
+          {leftElement()}
+          {rightElement()}
+          <GestureDetector gesture={tapGesture} touchAction="pan-y">
+            <Animated.View style={[animatedStyle, childrenContainerStyle]}>
+              {children}
+            </Animated.View>
+          </GestureDetector>
+        </Animated.View>
+      </GestureDetector>
     );
 
     return testID ? (
