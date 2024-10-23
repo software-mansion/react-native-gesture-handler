@@ -220,12 +220,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       friction: 1,
       overshootFriction: 1,
       dragOffset: 10,
+      enableTrackpadTwoFingerGesture: false,
     };
 
     const {
       leftThreshold,
       rightThreshold,
-      enableTrackpadTwoFingerGesture,
       enabled,
       containerStyle,
       childrenContainerStyle,
@@ -234,6 +234,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       overshootRight,
       testID,
       children,
+      enableTrackpadTwoFingerGesture = defaultProps.enableTrackpadTwoFingerGesture,
       dragOffsetFromLeftEdge = defaultProps.dragOffset,
       dragOffsetFromRightEdge = defaultProps.dragOffset,
       friction = defaultProps.friction,
@@ -608,9 +609,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       () =>
         Gesture.Pan()
           .enabled(enabled !== false)
-          .enableTrackpadTwoFingerGesture(
-            enableTrackpadTwoFingerGesture ?? false
-          )
+          .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
           .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
           .onUpdate(
             (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
