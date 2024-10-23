@@ -9,7 +9,6 @@ import React, {
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
@@ -266,7 +265,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
-    const swipeableMethods = useRef<SwipeableMethods>({
+    const swipeableMethods = useSharedValue<SwipeableMethods>({
       close: () => {
         'worklet';
       },
@@ -378,23 +377,30 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [onSwipeableWillClose, onSwipeableWillOpen]
     );
 
-    // Fixme: Cannot be converted to 'worklet' due to:
-    // Error: [Reanimated] Trying to convert a cyclic object to a shareable. This is not supported.
-    // The other event dispatcher works fine.
     const dispatchEndEvents = useCallback(
       (fromValue: number, toValue: number) => {
+        'worklet';
         if (toValue > 0) {
-          onSwipeableOpen?.(SwipeDirection.RIGHT, swipeableMethods.current);
+          onSwipeableOpen &&
+            runOnJS(onSwipeableOpen)(
+              SwipeDirection.RIGHT,
+              swipeableMethods.value
+            );
         } else if (toValue < 0) {
-          onSwipeableOpen?.(SwipeDirection.LEFT, swipeableMethods.current);
+          onSwipeableOpen &&
+            runOnJS(onSwipeableOpen)(
+              SwipeDirection.LEFT,
+              swipeableMethods.value
+            );
         } else {
-          onSwipeableClose?.(
-            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT,
-            swipeableMethods.current
-          );
+          onSwipeableClose &&
+            runOnJS(onSwipeableClose)(
+              fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT,
+              swipeableMethods.value
+            );
         }
       },
-      [onSwipeableClose, onSwipeableOpen]
+      [onSwipeableClose, onSwipeableOpen, swipeableMethods.value]
     );
 
     const animationOptionsProp = animationOptions;
@@ -439,7 +445,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           translationSpringConfig,
           (isFinished) => {
             if (isFinished) {
-              runOnJS(dispatchEndEvents)(frozenRowState, toValue);
+              dispatchEndEvents(frozenRowState, toValue);
             }
           }
         );
@@ -480,7 +486,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     );
 
     useEffect(() => {
-      swipeableMethods.current = {
+      swipeableMethods.value = {
         close() {
           'worklet';
           animateRow(0);
@@ -509,6 +515,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       rowState,
       showLeftProgress,
       userDrag,
+      swipeableMethods,
     ]);
 
     const leftElement = useCallback(
@@ -517,7 +524,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           {renderLeftActions?.(
             showLeftProgress,
             appliedTranslation,
-            swipeableMethods.current
+            swipeableMethods.value
           )}
           <View
             onLayout={({ nativeEvent }) =>
@@ -526,7 +533,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           />
         </Animated.View>
       ),
-      [appliedTranslation, leftWidth, renderLeftActions, showLeftProgress]
+      [
+        appliedTranslation,
+        leftWidth,
+        renderLeftActions,
+        showLeftProgress,
+        swipeableMethods.value,
+      ]
     );
 
     const rightElement = useCallback(
@@ -535,7 +548,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           {renderRightActions?.(
             showRightProgress,
             appliedTranslation,
-            swipeableMethods.current
+            swipeableMethods.value
           )}
           <View
             onLayout={({ nativeEvent }) => {
@@ -544,7 +557,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           />
         </Animated.View>
       ),
-      [appliedTranslation, renderRightActions, rightOffset, showRightProgress]
+      [
+        appliedTranslation,
+        renderRightActions,
+        rightOffset,
+        showRightProgress,
+        swipeableMethods.value,
+      ]
     );
 
     const handleRelease = useCallback(
@@ -671,9 +690,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
-    useImperativeHandle(ref, () => swipeableMethods.current, [
-      swipeableMethods,
-    ]);
+    useImperativeHandle(ref, () => swipeableMethods.value, [swipeableMethods]);
 
     const animatedStyle = useAnimatedStyle(
       () => ({
