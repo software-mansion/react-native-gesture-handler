@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config, StylusData } from '../interfaces';
+import { AdaptedEvent, Config, StylusData, WheelDevice } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -56,6 +56,10 @@ export default class PanGestureHandler extends GestureHandler {
 
   private activateAfterLongPress = 0;
   private activationTimeout = 0;
+
+  private enableTrackpadTwoFingerGesture = false;
+  private endWheelTimeout = 0;
+  private wheelDevice = WheelDevice.UNDETERMINED;
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -160,6 +164,11 @@ export default class PanGestureHandler extends GestureHandler {
       if (this.config.failOffsetYStart === undefined) {
         this.failOffsetYStart = Number.MIN_SAFE_INTEGER;
       }
+    }
+
+    if (this.config.enableTrackpadTwoFingerGesture !== undefined) {
+      this.enableTrackpadTwoFingerGesture =
+        this.config.enableTrackpadTwoFingerGesture;
     }
   }
 
@@ -349,6 +358,65 @@ export default class PanGestureHandler extends GestureHandler {
     if (this.currentState === State.ACTIVE) {
       super.onPointerOutOfBounds(event);
     }
+  }
+
+  private scheduleWheelEnd(event: AdaptedEvent) {
+    clearTimeout(this.endWheelTimeout);
+
+    this.endWheelTimeout = setTimeout(() => {
+      if (this.currentState === State.ACTIVE) {
+        this.end();
+        this.tracker.removeFromTracker(event.pointerId);
+        this.currentState = State.UNDETERMINED;
+      }
+
+      this.wheelDevice = WheelDevice.UNDETERMINED;
+    }, 30);
+  }
+
+  protected onWheel(event: AdaptedEvent): void {
+    if (
+      this.wheelDevice === WheelDevice.MOUSE ||
+      !this.enableTrackpadTwoFingerGesture
+    ) {
+      return;
+    }
+
+    if (this.currentState === State.UNDETERMINED) {
+      this.wheelDevice =
+        event.wheelDeltaY! % 120 !== 0
+          ? WheelDevice.TOUCHPAD
+          : WheelDevice.MOUSE;
+
+      if (this.wheelDevice === WheelDevice.MOUSE) {
+        this.scheduleWheelEnd(event);
+        return;
+      }
+
+      this.tracker.addToTracker(event);
+
+      const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+      this.lastX = lastCoords.x;
+      this.lastY = lastCoords.y;
+
+      this.startX = this.lastX;
+      this.startY = this.lastY;
+
+      this.begin();
+      this.activate();
+    }
+    this.tracker.track(event);
+
+    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    this.lastX = lastCoords.x;
+    this.lastY = lastCoords.y;
+
+    const velocity = this.tracker.getVelocity(event.pointerId);
+    this.velocityX = velocity.x;
+    this.velocityY = velocity.y;
+
+    this.tryToSendMoveEvent(false, event);
+    this.scheduleWheelEnd(event);
   }
 
   private shouldActivate(): boolean {

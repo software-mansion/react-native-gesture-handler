@@ -74,6 +74,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     manager.setOnPointerOutOfBounds(this.onPointerOutOfBounds.bind(this));
     manager.setOnPointerMoveOver(this.onPointerMoveOver.bind(this));
     manager.setOnPointerMoveOut(this.onPointerMoveOut.bind(this));
+    manager.setOnWheel(this.onWheel.bind(this));
 
     manager.registerListeners();
   }
@@ -338,7 +339,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected onPointerMoveOut(_event: AdaptedEvent): void {
     // Used only by hover gesture handler atm
   }
-  private tryToSendMoveEvent(out: boolean, event: AdaptedEvent): void {
+  protected onWheel(_event: AdaptedEvent): void {
+    // Used only by pan gesture handler
+  }
+  protected tryToSendMoveEvent(out: boolean, event: AdaptedEvent): void {
     if ((out && this.shouldCancelWhenOutside) || !this.enabled) {
       return;
     }
