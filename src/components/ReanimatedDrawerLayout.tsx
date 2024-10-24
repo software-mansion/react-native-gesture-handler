@@ -402,10 +402,10 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         props.hideStatusBar,
         props.onDrawerClose,
         props.onDrawerOpen,
-        props.statusBarAnimation,
         drawerWidth,
         sideCorrection,
         isDrawerShowing,
+        statusBarAnimation,
       ]
     );
 
@@ -588,12 +588,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       edgeHitSlop,
       fillHitSlop,
       minSwipeDistance,
-      props.activeCursor,
-      props.enableTrackpadTwoFingerGesture,
       props.hideStatusBar,
       props.keyboardDismissMode,
-      props.mouseButton,
-      props.statusBarAnimation,
       sideCorrectedDragX.value,
       overlayDismissGesture,
       drawerOpened,
@@ -601,6 +597,10 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       containerWidth,
       sideCorrection,
       drawerState,
+      activeCursor,
+      enableTrackpadTwoFingerGesture,
+      mouseButton,
+      statusBarAnimation,
     ]);
 
     // When using RTL, row and row-reverse flex directions are flipped.

@@ -20,8 +20,8 @@ const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
 
 export default function ReanimatedDrawerExample() {
   const drawerRef = useRef<any>(null);
-  const [side, setSide] = useState<DrawerPosition>('left');
-  const [type, setType] = useState<DrawerType>('front');
+  const [side, setSide] = useState(DrawerPosition.LEFT);
+  const [type, setType] = useState(DrawerType.FRONT);
 
   const tapGesture = Gesture.Tap()
     .runOnJS(true)
@@ -29,12 +29,24 @@ export default function ReanimatedDrawerExample() {
 
   const toggleSideGesture = Gesture.Tap()
     .runOnJS(true)
-    .onStart(() => setSide(side === 'left' ? 'right' : 'left'));
+    .onStart(() =>
+      setSide(
+        side === DrawerPosition.LEFT
+          ? DrawerPosition.RIGHT
+          : DrawerPosition.LEFT
+      )
+    );
 
   const toggleTypeGesture = Gesture.Tap()
     .runOnJS(true)
     .onStart(() =>
-      setType(type === 'front' ? 'back' : type === 'back' ? 'slide' : 'front')
+      setType(
+        type === DrawerType.FRONT
+          ? DrawerType.BACK
+          : type === DrawerType.BACK
+          ? DrawerType.SLIDE
+          : DrawerType.FRONT
+      )
     );
 
   return (
