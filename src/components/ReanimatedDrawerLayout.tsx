@@ -201,6 +201,9 @@ const defaultProps = {
   overlayColor: 'rgba(0, 0, 0, 0.7)',
   drawerLockMode: 'unlocked',
   enableTrackpadTwoFingerGesture: false,
+  activeCursor: 'auto' as ActiveCursor,
+  mouseButton: MouseButton.LEFT,
+  statusBarAnimation: 'slide' as StatusBarAnimation,
 };
 
 const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
@@ -223,6 +226,11 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       edgeWidth = defaultProps.edgeWidth,
       drawerLockMode = defaultProps.drawerLockMode,
       useNativeAnimations = defaultProps.useNativeAnimations,
+      overlayColor = defaultProps.overlayColor,
+      enableTrackpadTwoFingerGesture = defaultProps.enableTrackpadTwoFingerGesture,
+      activeCursor = defaultProps.activeCursor,
+      mouseButton = defaultProps.mouseButton,
+      statusBarAnimation = defaultProps.statusBarAnimation,
     } = props;
 
     const isFromLeft = drawerPosition === positions.Left;
@@ -338,7 +346,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         runOnJS(setDrawerState)(SETTLING);
 
         if (props.hideStatusBar) {
-          StatusBar.setHidden(willShow, props.statusBarAnimation || 'slide');
+          StatusBar.setHidden(willShow, statusBarAnimation);
         }
 
         drawerTranslation.value = withSpring(
@@ -477,7 +485,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const overlayAnimatedStyle = useAnimatedStyle(() => ({
       opacity: openValue.value,
-      backgroundColor: props.overlayColor ?? defaultProps.overlayColor,
+      backgroundColor: overlayColor,
     }));
 
     const renderOverlay = React.useCallback(() => {
@@ -504,16 +512,14 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const panGesture = React.useMemo(() => {
       return Gesture.Pan()
-        .activeCursor(props.activeCursor ?? 'auto')
-        .mouseButton(props.mouseButton ?? MouseButton.LEFT)
+        .activeCursor(activeCursor)
+        .mouseButton(mouseButton)
         .hitSlop(drawerOpened ? fillHitSlop : edgeHitSlop)
         .minDistance(drawerOpened ? 100 : 0)
         .activeOffsetX(gestureOrientation * minSwipeDistance)
         .failOffsetY([-15, 15])
         .simultaneousWithExternalGesture(overlayDismissGesture)
-        .enableTrackpadTwoFingerGesture(
-          props.enableTrackpadTwoFingerGesture ?? false
-        )
+        .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
         .enabled(
           drawerLockMode !== 'locked-closed' &&
             drawerLockMode !== 'locked-open' &&
@@ -526,10 +532,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             runOnJS(Keyboard.dismiss)();
           }
           if (props.hideStatusBar) {
-            runOnJS(StatusBar.setHidden)(
-              true,
-              props.statusBarAnimation ?? 'slide'
-            );
+            runOnJS(StatusBar.setHidden)(true, statusBarAnimation);
           }
         })
         .onUpdate((event) => {
@@ -681,6 +684,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         gesture={panGesture}
         userSelect={props.userSelect}
         enableContextMenu={props.enableContextMenu}>
+        {/* ^^^ "false if MouseButton.RIGHT is specified" either remove that description or add that logic */}
         <Animated.View
           ref={componentRef}
           style={styles.main}
