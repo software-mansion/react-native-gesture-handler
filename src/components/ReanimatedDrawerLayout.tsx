@@ -109,7 +109,6 @@ export interface DrawerLayoutProps {
     newState: DrawerState,
     drawerWillShow: boolean
   ) => void;
-  useNativeAnimations?: boolean;
 
   drawerType?: DrawerType;
 
@@ -205,7 +204,6 @@ interface DrawerLayoutMethods {
 const defaultProps = {
   drawerWidth: 200,
   drawerPosition: DrawerPosition.LEFT,
-  useNativeAnimations: true,
   drawerType: DrawerType.FRONT,
   edgeWidth: 20,
   minSwipeDistance: 3,
@@ -238,7 +236,6 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       minSwipeDistance = defaultProps.minSwipeDistance,
       edgeWidth = defaultProps.edgeWidth,
       drawerLockMode = defaultProps.drawerLockMode,
-      useNativeAnimations = defaultProps.useNativeAnimations,
       overlayColor = defaultProps.overlayColor,
       enableTrackpadTwoFingerGesture = defaultProps.enableTrackpadTwoFingerGesture,
       activeCursor = defaultProps.activeCursor,
@@ -275,11 +272,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     });
 
     const gestureOptions: {
-      useNativeDriver: boolean;
       listener?: (event: { nativeEvent: { translationX: number } }) => void;
     } = React.useMemo(
       () => ({
-        useNativeDriver: useNativeAnimations,
         listener: props.onDrawerSlide
           ? (ev) => {
               const translationX = Math.floor(
@@ -291,7 +286,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             }
           : undefined,
       }),
-      [containerWidth, props, useNativeAnimations]
+      [containerWidth, props]
     );
 
     if (props.onDrawerSlide) {
