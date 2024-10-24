@@ -38,19 +38,33 @@ import {
 
 const DRAG_TOSS = 0.05;
 
-const IDLE: DrawerState = 'Idle';
-const DRAGGING: DrawerState = 'Dragging';
-const SETTLING: DrawerState = 'Settling';
+export enum DrawerPosition {
+  LEFT = 'left',
+  RIGHT = 'right',
+}
 
-export type DrawerPosition = 'left' | 'right';
+export enum DrawerState {
+  IDLE = 'Idle',
+  DRAGGING = 'Dragging',
+  SETTLING = 'Settling',
+}
 
-export type DrawerState = 'Idle' | 'Dragging' | 'Settling';
+export enum DrawerType {
+  FRONT = 'front',
+  BACK = 'back',
+  SLIDE = 'slide',
+}
 
-export type DrawerType = 'front' | 'back' | 'slide';
+export enum DrawerLockMode {
+  UNLOCKED = 'unlocked',
+  LOCKED_CLOSED = 'locked-closed',
+  LOCKED_OPEN = 'locked-open',
+}
 
-export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
-
-export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
+export enum DrawerKeyboardDismissMode {
+  NONE = 'none',
+  ON_DRAG = 'on-drag',
+}
 
 export interface DrawerLayoutProps {
   /**
@@ -186,20 +200,15 @@ interface DrawerLayoutMethods {
   closeDrawer: (options: DrawerMovementOption) => void;
 }
 
-const positions = {
-  Left: 'left',
-  Right: 'right',
-};
-
 const defaultProps = {
   drawerWidth: 200,
-  drawerPosition: positions.Left,
+  drawerPosition: DrawerPosition.LEFT,
   useNativeAnimations: true,
-  drawerType: 'front',
+  drawerType: DrawerType.FRONT,
   edgeWidth: 20,
   minSwipeDistance: 3,
   overlayColor: 'rgba(0, 0, 0, 0.7)',
-  drawerLockMode: 'unlocked',
+  drawerLockMode: DrawerLockMode.UNLOCKED,
   enableTrackpadTwoFingerGesture: false,
   activeCursor: 'auto' as ActiveCursor,
   mouseButton: MouseButton.LEFT,
@@ -212,7 +221,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const drawerTranslation = useSharedValue<number>(0);
 
     const [containerWidth, setContainerWidth] = React.useState(0);
-    const [drawerState, setDrawerState] = React.useState<DrawerState>(IDLE);
+    const [drawerState, setDrawerState] = React.useState<DrawerState>(
+      DrawerState.IDLE
+    );
     const [drawerOpened, setDrawerOpened] = React.useState(false);
 
     const {
@@ -233,7 +244,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       statusBarAnimation = defaultProps.statusBarAnimation,
     } = props;
 
-    const isFromLeft = drawerPosition === positions.Left;
+    const isFromLeft = drawerPosition === DrawerPosition.LEFT;
 
     const sideCorrection = isFromLeft ? 1 : -1;
 
@@ -342,8 +353,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
         isDrawerShowing.value = willShow;
 
-        emitStateChanged(SETTLING, willShow);
-        runOnJS(setDrawerState)(SETTLING);
+        emitStateChanged(DrawerState.SETTLING, willShow);
+        runOnJS(setDrawerState)(DrawerState.SETTLING);
 
         if (props.hideStatusBar) {
           StatusBar.setHidden(willShow, statusBarAnimation);
@@ -365,9 +376,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           },
           (finished) => {
             if (finished) {
-              emitStateChanged(IDLE, willShow);
+              emitStateChanged(DrawerState.IDLE, willShow);
               runOnJS(setDrawerOpened)(willShow);
-              runOnJS(setDrawerState)(IDLE);
+              runOnJS(setDrawerState)(DrawerState.IDLE);
               if (willShow) {
                 dragX.value = drawerWidth * sideCorrection;
                 props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
@@ -409,7 +420,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         'worklet';
         let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
 
-        if (drawerPosition !== positions.Left) {
+        if (drawerPosition !== DrawerPosition.LEFT) {
           // See description in _updateAnimatedEvent about why events are flipped
           // for right-side drawer
           dragX = -dragX;
@@ -420,7 +431,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         const gestureStartX = touchX - dragX;
         let dragOffsetBasedOnStart = 0;
 
-        if (drawerType === 'front') {
+        if (drawerType === DrawerType.FRONT) {
           dragOffsetBasedOnStart =
             gestureStartX > drawerWidth ? gestureStartX - drawerWidth : 0;
         }
@@ -476,7 +487,10 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         Gesture.Tap()
           .maxDistance(25)
           .onEnd(() => {
-            if (isDrawerOpen.value && props.drawerLockMode !== 'locked-open') {
+            if (
+              isDrawerOpen.value &&
+              props.drawerLockMode !== DrawerLockMode.LOCKED_OPEN
+            ) {
               closeDrawer();
             }
           }),
@@ -521,13 +535,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         .simultaneousWithExternalGesture(overlayDismissGesture)
         .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
         .enabled(
-          drawerLockMode !== 'locked-closed' &&
-            drawerLockMode !== 'locked-open' &&
-            drawerState !== SETTLING
+          drawerLockMode !== DrawerLockMode.LOCKED_CLOSED &&
+            drawerLockMode !== DrawerLockMode.LOCKED_OPEN &&
+            drawerState !== DrawerState.SETTLING
         )
         .onStart(() => {
-          emitStateChanged(DRAGGING, false);
-          runOnJS(setDrawerState)(DRAGGING);
+          emitStateChanged(DrawerState.DRAGGING, false);
+          runOnJS(setDrawerState)(DrawerState.DRAGGING);
           if (props.keyboardDismissMode === 'on-drag') {
             runOnJS(Keyboard.dismiss)();
           }
@@ -558,7 +572,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             );
 
           drawerTranslation.value =
-            drawerType === 'front'
+            drawerType === DrawerType.FRONT
               ? sideCorrectedDragX.value +
                 interpolate(
                   -1 * sideCorrectedDragX.value,
@@ -608,7 +622,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     };
 
     const containerStyles = useAnimatedStyle(() => {
-      if (drawerType === 'front') {
+      if (drawerType === DrawerType.FRONT) {
         return {};
       }
 
@@ -633,9 +647,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         transform: [
           {
             translateX:
-              drawerType === 'back'
+              drawerType === DrawerType.BACK
                 ? 0
-                : drawerState === IDLE
+                : drawerState === DrawerState.IDLE
                 ? drawerOpened
                   ? 0
                   : closedDrawerOffset
@@ -691,7 +705,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           onLayout={handleContainerLayout}>
           <Animated.View
             style={[
-              drawerType === 'front'
+              drawerType === DrawerType.FRONT
                 ? styles.containerOnBack
                 : styles.containerInFront,
               containerStyles,
