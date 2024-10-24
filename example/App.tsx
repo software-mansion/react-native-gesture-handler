@@ -54,6 +54,7 @@ import ForceTouch from './src/basic/forcetouch';
 import Fling from './src/basic/fling';
 import WebStylesResetExample from './src/release_tests/webStylesReset';
 import StylusData from './src/release_tests/StylusData';
+import ReanimatedDrawerLayout from './src/release_tests/reanimatedDrawerLayout';
 
 import Camera from './src/new_api/camera';
 import Transformations from './src/new_api/transformations';
@@ -200,6 +201,7 @@ const EXAMPLES: ExamplesSection[] = [
         unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
       },
       { name: 'PointerType', component: PointerType },
+      { name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout },
       { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
