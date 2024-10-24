@@ -70,8 +70,8 @@ export enum DrawerKeyboardDismissMode {
 
 export interface DrawerLayoutProps {
   /**
-   * This attribute is present in the standard implementation already and is one
-   * of the required params. Gesture handler version of DrawerLayout make it
+   * This attribute is present in the native android implementation already and is one
+   * of the required params. The gesture handler version of DrawerLayout makes it
    * possible for the function passed as `renderNavigationView` to take an
    * Animated value as a parameter that indicates the progress of drawer
    * opening/closing animation (progress value is 0 when closed and 1 when
