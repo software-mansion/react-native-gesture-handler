@@ -34,7 +34,9 @@ import {
   ActiveCursor,
   MouseButton,
   HitSlop,
+  GestureStateChangeEvent,
 } from '../handlers/gestureHandlerCommon';
+import { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 
 const DRAG_TOSS = 0.05;
 
@@ -408,17 +410,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const handleRelease = React.useCallback(
-      ({
-        nativeEvent,
-      }: {
-        nativeEvent: {
-          translationX: number;
-          velocityX: number;
-          x: number;
-        };
-      }) => {
+      (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
         'worklet';
-        let { translationX: dragX, velocityX, x: touchX } = nativeEvent;
+        let { translationX: dragX, velocityX, x: touchX } = event;
 
         if (drawerPosition !== DrawerPosition.LEFT) {
           // See description in _updateAnimatedEvent about why events are flipped
@@ -581,9 +575,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
                 )
               : sideCorrectedDragX.value;
         })
-        .onEnd((event) => {
-          handleRelease({ nativeEvent: event });
-        });
+        .onEnd(handleRelease);
     }, [
       dragX,
       drawerLockMode,
