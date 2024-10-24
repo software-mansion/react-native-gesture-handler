@@ -12,7 +12,6 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		34211D627B121FBDD3B3434A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 748A2AC40A2F803BAF052F38 /* PrivacyInfo.xcprivacy */; };
-		66805B9E8B30807C646518F9 /* libPods-FabricExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE2F82E0F1AB634A0B38D03 /* libPods-FabricExample.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		ACD86ABBFF4E3FF8EE398D32 /* libPods-FabricExample-FabricExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E20FF3FE4813416C901E2E09 /* libPods-FabricExample-FabricExampleTests.a */; };
 		BBE044B0A4E818645B660AC7 /* libPods-FabricExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFDC4742A022910065B3C42 /* libPods-FabricExample.a */; };
@@ -43,7 +42,6 @@
 		4B24A75D2190CE12D64753A2 /* Pods-FabricExample-FabricExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FabricExample-FabricExampleTests.release.xcconfig"; path = "Target Support Files/Pods-FabricExample-FabricExampleTests/Pods-FabricExample-FabricExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		582497408175332C6EA196AD /* Pods-FabricExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FabricExample.release.xcconfig"; path = "Target Support Files/Pods-FabricExample/Pods-FabricExample.release.xcconfig"; sourceTree = "<group>"; };
 		748A2AC40A2F803BAF052F38 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = FabricExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		792E6F5A5A3C18C65B6D665C /* Pods-FabricExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FabricExample.release.xcconfig"; path = "Target Support Files/Pods-FabricExample/Pods-FabricExample.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FabricExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E20FF3FE4813416C901E2E09 /* libPods-FabricExample-FabricExampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FabricExample-FabricExampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E55367196281EC2BCDCF262B /* Pods-FabricExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FabricExample.debug.xcconfig"; path = "Target Support Files/Pods-FabricExample/Pods-FabricExample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -191,7 +189,6 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				FD43E35D5DC03FB643AB717C /* [CP] Embed Pods Frameworks */,
 				831EC5CC38F65BCB8A5A1F8E /* [CP] Copy Pods Resources */,
-				3C3DA49365889B22CF417469 /* [CP-User] Generate metadata for clangd */,
 			);
 			buildRules = (
 			);
@@ -274,17 +271,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
-		};
-		3C3DA49365889B22CF417469 /* [CP-User] Generate metadata for clangd */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = true;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "[CP-User] Generate metadata for clangd";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "../../scripts/clangd-generate-xcode-metadata.sh";
 		};
 		3F56FF5A054F9B0AC106C534 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
