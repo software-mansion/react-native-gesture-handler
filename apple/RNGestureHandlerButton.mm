@@ -14,8 +14,12 @@
 #import <React/RCTUIKit.h>
 #endif
 
+#if RCT_NEW_ARCH_ENABLED
+
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
+
+#endif
 
 /**
  * Gesture Handler Button components overrides standard mechanism used by RN
@@ -87,7 +91,7 @@
 }
 #endif
 
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX && RCT_NEW_ARCH_ENABLED
 - (void)mountChildComponentView:(RNGHUIView *)childComponentView index:(NSInteger)index
 {
   if (childComponentView.superview != nil) {
