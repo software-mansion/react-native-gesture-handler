@@ -500,18 +500,12 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       return (
         <GestureDetector gesture={overlayDismissGesture}>
           <Animated.View
-            pointerEvents={isDrawerOpen.value ? 'auto' : 'none'}
             animatedProps={overlayAnimatedProps}
             style={[styles.overlay, overlayAnimatedStyle]}
           />
         </GestureDetector>
       );
-    }, [
-      isDrawerOpen.value,
-      overlayAnimatedProps,
-      overlayAnimatedStyle,
-      overlayDismissGesture,
-    ]);
+    }, [overlayAnimatedProps, overlayAnimatedStyle, overlayDismissGesture]);
 
     const fillHitSlop = React.useMemo(
       () => (isFromLeft ? { left: drawerWidth } : { right: drawerWidth }),
