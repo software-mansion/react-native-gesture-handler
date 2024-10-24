@@ -123,12 +123,10 @@ export interface DrawerLayoutProps {
   statusBarAnimation?: StatusBarAnimation;
 
   /**
-   * @default black
+   * @default 'rgba(0, 0, 0, 0.7)'
    *
-   * Color of a semi-transparent overlay to be displayed on top of the content
-   * view when drawer gets open. A solid color should be used as the opacity is
-   * added by the Drawer itself and the opacity of the overlay is animated (from
-   * 0% to 70%).
+   * Color of the background overlay.
+   * Animated from `0%` to `100%` as the drawer opens.
    */
   overlayColor?: string;
 
