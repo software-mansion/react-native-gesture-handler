@@ -333,8 +333,8 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
     const gestureOrientation = React.useMemo(
-      () => (isFromLeft ? 1 : -1) * (drawerOpened ? -1 : 1),
-      [isFromLeft, drawerOpened]
+      () => sideCorrection * (drawerOpened ? -1 : 1),
+      [sideCorrection, drawerOpened]
     );
 
     const animateDrawer = React.useCallback(
@@ -452,21 +452,13 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const openDrawer = (options: DrawerMovementOption = {}) => {
       'worklet';
-      animateDrawer(
-        drawerWidth,
-        options.velocity ? options.velocity : 0,
-        options.speed
-      );
+      animateDrawer(drawerWidth, options.velocity ?? 0, options.speed);
     };
 
     const closeDrawer = React.useCallback(
       (options: DrawerMovementOption = {}) => {
         'worklet';
-        animateDrawer(
-          0,
-          options.velocity ? options.velocity : 0,
-          options.speed
-        );
+        animateDrawer(0, options.velocity ?? 0, options.speed);
       },
       [animateDrawer]
     );
