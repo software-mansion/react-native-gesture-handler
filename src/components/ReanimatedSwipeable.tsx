@@ -286,7 +286,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         rightOffset.value = rowWidth.value;
       }
       rightWidth.value = Math.max(0, rowWidth.value - rightOffset.value);
-    }, [rightOffset, rightWidth, rowWidth.value]);
+    }, [rightOffset, rightWidth, rowWidth]);
 
     const updateAnimatedEvent = useCallback(() => {
       'worklet';
@@ -340,14 +340,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     }, [
       appliedTranslation,
       friction,
-      leftWidth.value,
+      leftWidth,
       overshootFriction,
-      rightWidth.value,
-      rowState.value,
+      rightWidth,
+      rowState,
       showLeftProgress,
       showRightProgress,
-      userDrag.value,
-      updateRightElementWidth,
+      userDrag,
       overshootLeft,
       overshootRight,
     ]);
@@ -385,7 +384,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           );
         }
       },
-      [onSwipeableClose, onSwipeableOpen, swipeableMethods.value]
+      [onSwipeableClose, onSwipeableOpen, swipeableMethods]
     );
 
     const animationOptionsProp = animationOptions;
@@ -455,9 +454,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         animationOptionsProp,
         appliedTranslation,
         showLeftProgress,
-        leftWidth.value,
+        leftWidth,
         showRightProgress,
-        rightWidth.value,
+        rightWidth,
         dispatchImmediateEvents,
         dispatchEndEvents,
       ]
@@ -591,10 +590,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         animateRow,
         friction,
         leftThreshold,
-        leftWidth.value,
+        leftWidth,
         rightThreshold,
-        rightWidth.value,
-        rowState.value,
+        rightWidth,
+        rowState,
         userDrag,
         updateRightElementWidth,
       ]
@@ -616,7 +615,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               close();
             }
           }),
-      [close, rowState.value]
+      [close, rowState]
     );
 
     const panGesture = useMemo(
@@ -670,8 +669,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         handleRelease,
         onSwipeableCloseStartDrag,
         onSwipeableOpenStartDrag,
-        rowState.value,
+        rowState,
         updateAnimatedEvent,
+        updateRightElementWidth,
         userDrag,
       ]
     );
