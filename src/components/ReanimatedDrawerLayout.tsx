@@ -2,7 +2,16 @@
 // It's cross-compatible with all platforms despite
 // `DrawerLayoutAndroid` only being available on android
 
-import * as React from 'react';
+import React, {
+  ReactNode,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
 import {
   StyleSheet,
   Keyboard,
@@ -80,7 +89,7 @@ export interface DrawerLayoutProps {
    */
   renderNavigationView: (
     progressAnimatedValue: SharedValue<number>
-  ) => React.ReactNode;
+  ) => ReactNode;
 
   drawerPosition?: DrawerPosition;
 
@@ -160,9 +169,7 @@ export interface DrawerLayoutProps {
   onDrawerSlide?: (position: number) => void;
 
   // Implicit `children` prop has been removed in @types/react^18.0.0
-  children?:
-    | React.ReactNode
-    | ((openValue?: SharedValue<number>) => React.ReactNode);
+  children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
 
   /**
    * @default 'none'
@@ -215,16 +222,16 @@ const defaultProps = {
   statusBarAnimation: 'slide' as StatusBarAnimation,
 };
 
-const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
+const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
     const dragX = useSharedValue<number>(0);
     const drawerTranslation = useSharedValue<number>(0);
 
-    const [containerWidth, setContainerWidth] = React.useState(0);
-    const [drawerState, setDrawerState] = React.useState<DrawerState>(
+    const [containerWidth, setContainerWidth] = useState(0);
+    const [drawerState, setDrawerState] = useState<DrawerState>(
       DrawerState.IDLE
     );
-    const [drawerOpened, setDrawerOpened] = React.useState(false);
+    const [drawerOpened, setDrawerOpened] = useState(false);
 
     const {
       drawerPosition = defaultProps.drawerPosition,
@@ -281,7 +288,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       setContainerWidth(nativeEvent.layout.width);
     };
 
-    const emitStateChanged = React.useCallback(
+    const emitStateChanged = useCallback(
       (newState: DrawerState, drawerWillShow: boolean) => {
         'worklet';
         props.onDrawerStateChanged &&
@@ -304,17 +311,17 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     // While the drawer is hidden, it's hitSlop overflows onto the main view by edgeWidth
     // This way it can be swiped open even when it's hidden
-    const [edgeHitSlop, setEdgeHitSlop] = React.useState<HitSlop>(
+    const [edgeHitSlop, setEdgeHitSlop] = useState<HitSlop>(
       isFromLeft ? { right: edgeWidth } : { left: edgeWidth }
     );
 
     // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
-    const gestureOrientation = React.useMemo(
+    const gestureOrientation = useMemo(
       () => sideCorrection * (drawerOpened ? -1 : 1),
       [sideCorrection, drawerOpened]
     );
 
-    const animateDrawer = React.useCallback(
+    const animateDrawer = useCallback(
       (toValue: number, velocity: number, speed?: number) => {
         'worklet';
         const willShow = toValue !== 0;
@@ -381,7 +388,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       ]
     );
 
-    const handleRelease = React.useCallback(
+    const handleRelease = useCallback(
       (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
         'worklet';
         let { translationX: dragX, velocityX, x: touchX } = event;
@@ -432,7 +439,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       animateDrawer(drawerWidth, options.velocity ?? 0, options.speed);
     };
 
-    const closeDrawer = React.useCallback(
+    const closeDrawer = useCallback(
       (options: DrawerMovementOption = {}) => {
         'worklet';
         animateDrawer(0, options.velocity ?? 0, options.speed);
@@ -440,7 +447,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [animateDrawer]
     );
 
-    const overlayDismissGesture = React.useMemo(
+    const overlayDismissGesture = useMemo(
       () =>
         Gesture.Tap()
           .maxDistance(25)
@@ -460,7 +467,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       backgroundColor: overlayColor,
     }));
 
-    const renderOverlay = React.useCallback(() => {
+    const renderOverlay = useCallback(() => {
       return (
         <GestureDetector gesture={overlayDismissGesture}>
           <Animated.View
@@ -471,12 +478,12 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       );
     }, [overlayAnimatedProps, overlayAnimatedStyle, overlayDismissGesture]);
 
-    const fillHitSlop = React.useMemo(
+    const fillHitSlop = useMemo(
       () => (isFromLeft ? { left: drawerWidth } : { right: drawerWidth }),
       [drawerWidth, isFromLeft]
     );
 
-    const panGesture = React.useMemo(() => {
+    const panGesture = useMemo(() => {
       return Gesture.Pan()
         .activeCursor(activeCursor)
         .mouseButton(mouseButton)
@@ -629,9 +636,9 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         ? props.children(openValue) // renderer function
         : props.children;
 
-    const componentRef = React.useRef(null);
+    const componentRef = useRef(null);
 
-    React.useImperativeHandle(
+    useImperativeHandle(
       ref,
       () => ({
         ...componentRef,
