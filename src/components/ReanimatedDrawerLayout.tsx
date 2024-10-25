@@ -297,16 +297,12 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [props.onDrawerStateChanged]
     );
 
-    const isDrawerShowing = useSharedValue(false);
-
     const drawerAnimatedProps = useAnimatedProps(() => ({
-      accessibilityViewIsModal: isDrawerShowing.value,
+      accessibilityViewIsModal: isDrawerOpen.value,
     }));
 
     const overlayAnimatedProps = useAnimatedProps(() => ({
-      pointerEvents: isDrawerShowing.value
-        ? ('auto' as const)
-        : ('none' as const),
+      pointerEvents: isDrawerOpen.value ? ('auto' as const) : ('none' as const),
     }));
 
     // While the drawer is hidden, it's hitSlop overflows onto the main view by edgeWidth
@@ -328,11 +324,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         isDrawerOpen.value = willShow;
         runOnJS(setEdgeHitSlop)(
           isFromLeft
-            ? { left: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
-            : { right: 0, width: isDrawerOpen.value ? undefined : edgeWidth }
+            ? { left: 0, width: willShow ? undefined : edgeWidth }
+            : { right: 0, width: willShow ? undefined : edgeWidth }
         );
-
-        isDrawerShowing.value = willShow;
 
         emitStateChanged(DrawerState.SETTLING, willShow);
         runOnJS(setDrawerState)(DrawerState.SETTLING);
@@ -383,7 +377,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         props.onDrawerOpen,
         drawerWidth,
         sideCorrection,
-        isDrawerShowing,
         statusBarAnimation,
       ]
     );
