@@ -280,7 +280,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
     });
 
-    // %% should only run once, not every pan update
     const updateRightElementWidth = useCallback(() => {
       'worklet';
       if (rightOffset.value === null) {
@@ -291,8 +290,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const updateAnimatedEvent = useCallback(() => {
       'worklet';
-
-      updateRightElementWidth();
 
       const shouldOvershootLeft = overshootLeft ?? leftWidth.value > 0;
       const shouldOvershootRight = overshootRight ?? rightWidth.value > 0;
@@ -628,6 +625,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           .enabled(enabled !== false)
           .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
           .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
+          .onStart(() => {
+            updateRightElementWidth();
+          })
           .onUpdate(
             (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
               userDrag.value = event.translationX;
