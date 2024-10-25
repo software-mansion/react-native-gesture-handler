@@ -6,7 +6,6 @@ import React, {
   ForwardedRef,
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useMemo,
 } from 'react';
@@ -23,6 +22,7 @@ import Animated, {
   interpolate,
   runOnJS,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -265,20 +265,27 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
-    const swipeableMethods = useSharedValue<SwipeableMethods>({
-      close: () => {
+    const swipeableMethods = useDerivedValue<SwipeableMethods>(() => ({
+      close() {
         'worklet';
+        animateRow(0);
       },
-      openLeft: () => {
+      openLeft() {
         'worklet';
+        animateRow(leftWidth.value);
       },
-      openRight: () => {
+      openRight() {
         'worklet';
+        animateRow(-rightWidth.value);
       },
-      reset: () => {
+      reset() {
         'worklet';
+        userDrag.value = 0;
+        showLeftProgress.value = 0;
+        appliedTranslation.value = 0;
+        rowState.value = 0;
       },
-    });
+    }));
 
     const updateRightElementWidth = useCallback(() => {
       'worklet';
@@ -468,39 +475,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
       [rowWidth]
     );
-
-    useEffect(() => {
-      swipeableMethods.value = {
-        close() {
-          'worklet';
-          animateRow(0);
-        },
-        openLeft() {
-          'worklet';
-          animateRow(leftWidth.value);
-        },
-        openRight() {
-          'worklet';
-          animateRow(-rightWidth.value);
-        },
-        reset() {
-          'worklet';
-          userDrag.value = 0;
-          showLeftProgress.value = 0;
-          appliedTranslation.value = 0;
-          rowState.value = 0;
-        },
-      };
-    }, [
-      animateRow,
-      appliedTranslation,
-      leftWidth.value,
-      rightWidth.value,
-      rowState,
-      showLeftProgress,
-      userDrag,
-      swipeableMethods,
-    ]);
 
     const leftElement = useCallback(
       () => (
