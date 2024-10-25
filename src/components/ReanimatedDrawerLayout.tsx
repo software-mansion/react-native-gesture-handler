@@ -50,31 +50,31 @@ import { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPa
 const DRAG_TOSS = 0.05;
 
 export enum DrawerPosition {
-  LEFT = 'left',
-  RIGHT = 'right',
+  LEFT,
+  RIGHT,
 }
 
 export enum DrawerState {
-  IDLE = 'Idle',
-  DRAGGING = 'Dragging',
-  SETTLING = 'Settling',
+  IDLE,
+  DRAGGING,
+  SETTLING,
 }
 
 export enum DrawerType {
-  FRONT = 'front',
-  BACK = 'back',
-  SLIDE = 'slide',
+  FRONT,
+  BACK,
+  SLIDE,
 }
 
 export enum DrawerLockMode {
-  UNLOCKED = 'unlocked',
-  LOCKED_CLOSED = 'locked-closed',
-  LOCKED_OPEN = 'locked-open',
+  UNLOCKED,
+  LOCKED_CLOSED,
+  LOCKED_OPEN,
 }
 
 export enum DrawerKeyboardDismissMode {
-  NONE = 'none',
-  ON_DRAG = 'on-drag',
+  NONE,
+  ON_DRAG,
 }
 
 export interface DrawerLayoutProps {

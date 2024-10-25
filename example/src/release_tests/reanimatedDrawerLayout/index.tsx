@@ -63,12 +63,22 @@ export default function ReanimatedDrawerExample() {
         </GestureDetector>
         <GestureDetector gesture={toggleSideGesture}>
           <View style={styles.box}>
-            <Text>Currently opening from: {side}</Text>
+            <Text>
+              Currently opening from:{' '}
+              {side === DrawerPosition.LEFT ? 'left' : 'right'}
+            </Text>
           </View>
         </GestureDetector>
         <GestureDetector gesture={toggleTypeGesture}>
           <View style={styles.box}>
-            <Text>Current background type: {type}</Text>
+            <Text>
+              Current background type:{' '}
+              {type === DrawerType.FRONT
+                ? 'back'
+                : type === DrawerType.BACK
+                ? 'slide'
+                : 'front'}
+            </Text>
           </View>
         </GestureDetector>
       </View>
