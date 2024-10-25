@@ -654,7 +654,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         gesture={panGesture}
         userSelect={props.userSelect}
         enableContextMenu={props.enableContextMenu}>
-        {/* ^^^ "false if MouseButton.RIGHT is specified" either remove that description or add that logic */}
         <Animated.View
           ref={componentRef}
           style={styles.main}
