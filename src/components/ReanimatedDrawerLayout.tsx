@@ -595,23 +595,26 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const drawerAnimatedStyle = useAnimatedStyle(() => {
       const closedDrawerOffset = drawerWidth * -sideCorrection;
+      const isBack = drawerType === DrawerType.BACK;
+      const isIdle = drawerState === DrawerState.IDLE;
+
+      let translateX = 0;
+
+      if (!isBack && isIdle) {
+        translateX = drawerOpened ? 0 : closedDrawerOffset;
+      } else if (!isBack && !isIdle) {
+        translateX = interpolate(
+          openValue.value,
+          [0, 1],
+          [closedDrawerOffset, 0],
+          Extrapolation.CLAMP
+        );
+      }
 
       return {
         transform: [
           {
-            translateX:
-              drawerType === DrawerType.BACK
-                ? 0
-                : drawerState === DrawerState.IDLE
-                ? drawerOpened
-                  ? 0
-                  : closedDrawerOffset
-                : interpolate(
-                    openValue.value,
-                    [0, 1],
-                    [closedDrawerOffset, 0],
-                    Extrapolation.CLAMP
-                  ),
+            translateX,
           },
         ],
         flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
