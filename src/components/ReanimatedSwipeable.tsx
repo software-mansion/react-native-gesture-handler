@@ -280,10 +280,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
     });
 
-    // %% remove or rename these, may cause 1. reloads, 2. name shadowing
-    const overshootLeftProp = overshootLeft;
-    const overshootRightProp = overshootRight;
-
     // %% should only run once, not every pan update
     const updateRightElementWidth = useCallback(() => {
       'worklet';
@@ -298,8 +294,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
       updateRightElementWidth();
 
-      const overshootLeft = overshootLeftProp ?? leftWidth.value > 0;
-      const overshootRight = overshootRightProp ?? rightWidth.value > 0;
+      const shouldOvershootLeft = overshootLeft ?? leftWidth.value > 0;
+      const shouldOvershootRight = overshootRight ?? rightWidth.value > 0;
 
       const startOffset =
         rowState.value === 1
@@ -319,10 +315,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           leftWidth.value + 1,
         ],
         [
-          -rightWidth.value - (overshootRight ? 1 / overshootFriction : 0),
+          -rightWidth.value -
+            (shouldOvershootRight ? 1 / overshootFriction : 0),
           -rightWidth.value,
           leftWidth.value,
-          leftWidth.value + (overshootLeft ? 1 / overshootFriction : 0),
+          leftWidth.value + (shouldOvershootLeft ? 1 / overshootFriction : 0),
         ]
       );
 
@@ -348,14 +345,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       friction,
       leftWidth.value,
       overshootFriction,
-      overshootLeftProp,
-      overshootRightProp,
       rightWidth.value,
       rowState.value,
       showLeftProgress,
       showRightProgress,
       userDrag.value,
       updateRightElementWidth,
+      overshootLeft,
+      overshootRight,
     ]);
 
     const dispatchImmediateEvents = useCallback(
