@@ -502,25 +502,28 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           }
         })
         .onUpdate((event) => {
+          const startedOutsideTranslation = isFromLeft
+            ? interpolate(
+                event.x,
+                [0, drawerWidth, drawerWidth + 1],
+                [0, drawerWidth, drawerWidth]
+              )
+            : interpolate(
+                event.x - containerWidth,
+                [-drawerWidth - 1, -drawerWidth, 0],
+                [drawerWidth, drawerWidth, 0]
+              );
+
+          const startedInsideTranslation =
+            sideCorrection *
+            (event.translationX +
+              (drawerOpened ? drawerWidth * -gestureOrientation : 0));
+
           dragX.value =
             sideCorrection *
             Math.max(
-              drawerOpened
-                ? isFromLeft
-                  ? interpolate(
-                      event.x,
-                      [0, drawerWidth, drawerWidth + 1],
-                      [0, drawerWidth, drawerWidth]
-                    )
-                  : interpolate(
-                      event.x - containerWidth,
-                      [-drawerWidth - 1, -drawerWidth, 0],
-                      [drawerWidth, drawerWidth, 0]
-                    )
-                : 0,
-              sideCorrection *
-                (event.translationX +
-                  (drawerOpened ? drawerWidth * -gestureOrientation : 0))
+              drawerOpened ? startedOutsideTranslation : 0,
+              startedInsideTranslation
             );
 
           drawerTranslation.value =
