@@ -517,7 +517,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         .onStart(() => {
           emitStateChanged(DrawerState.DRAGGING, false);
           runOnJS(setDrawerState)(DrawerState.DRAGGING);
-          if (props.keyboardDismissMode === 'on-drag') {
+          if (props.keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
             runOnJS(Keyboard.dismiss)();
           }
           if (props.hideStatusBar) {
@@ -691,7 +691,7 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           <Animated.View
             pointerEvents="box-none"
             animatedProps={drawerAnimatedProps}
-            accessibilityViewIsModal={isDrawerOpen.value}
+            accessibilityViewIsModal={isDrawerOpen.value} // %% use animated props
             style={[
               styles.drawerContainer,
               drawerAnimatedStyle,
