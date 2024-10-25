@@ -263,40 +263,17 @@ const DrawerLayout = React.forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //    +---------------+    +---------------+    +---------------+    +---------------+
 
     const openValue = useDerivedValue(() => {
-      return interpolate(
+      const newOpenValue = interpolate(
         drawerTranslation.value,
         [0, drawerWidth],
         [0, 1],
         Extrapolation.CLAMP
       );
+
+      props.onDrawerSlide && runOnJS(props.onDrawerSlide)(newOpenValue);
+
+      return newOpenValue;
     });
-
-    const gestureOptions: {
-      listener?: (event: { nativeEvent: { translationX: number } }) => void;
-    } = React.useMemo(
-      () => ({
-        listener: props.onDrawerSlide
-          ? (ev) => {
-              const translationX = Math.floor(
-                Math.abs(ev.nativeEvent.translationX)
-              );
-              const position = translationX / containerWidth;
-
-              props.onDrawerSlide?.(position);
-            }
-          : undefined,
-      }),
-      [containerWidth, props]
-    );
-
-    if (props.onDrawerSlide) {
-      gestureOptions.listener = (ev) => {
-        const translationX = Math.floor(Math.abs(ev.nativeEvent.translationX));
-        const position = translationX / containerWidth;
-
-        props.onDrawerSlide?.(position);
-      };
-    }
 
     const isDrawerOpen = useSharedValue(false);
 
