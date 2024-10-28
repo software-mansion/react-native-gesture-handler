@@ -7,7 +7,7 @@ import ReanimatedDrawerLayout, {
   DrawerType,
   DrawerPosition,
 } from 'react-native-gesture-handler/ReanimatedDrawerLayout';
-import { LoremIpsum } from 'src/common';
+import { LoremIpsum } from '../../../src/common';
 
 const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
   progress && console.log('Drawer opening progress:', progress);
