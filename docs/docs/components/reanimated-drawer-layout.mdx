@@ -11,17 +11,15 @@ Cross-platform replacement for the React Native's [DrawerLayoutAndroid](http://r
 Provides a compatible API while allows for the component to be used on both Android and iOS.
 Please refer to [React Native docs](http://reactnative.dev/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
 
-## Usage:
+### Usage:
 
-`DrawerLayout` component isn't exported by default from the `react-native-gesture-handler` package. To use it, import it in the following way:
+To use it, import it in the following way:
 
 ```js
-import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
+import ReanimatedDrawerLayout from 'react-native-gesture-handler/ReanimatedDrawerLayout';
 ```
 
 ## Properties:
-
-On top of the standard list of parameters DrawerLayout has an additional set of attributes to customize its behavior. Please refer to the list below:
 
 ### `drawerType`
 
@@ -70,7 +68,7 @@ This color animates from `0%` to `100%` opacity as drawer animates from `closed`
 ### `renderNavigationView`
 
 renderer function for the drawer componenet.
-Provided with a `progress` SharedValue parameter that indicates the progress of drawer opening/closing (`0` when drawer is `closed` and `1` when `open`).
+Provided with a `progress` SharedValue parameter that indicates the progress of drawer opening/closing. Equals `0` when drawer is `closed` and `1` when `open`.
 This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ### `onDrawerClose`
@@ -83,18 +81,18 @@ function. This function is called when the drawer is opened.
 
 ### `onDrawerSlide`
 
-function. This function is called as a drawer sliding open from touch events.
-The progress of the drawer opening/closing is passed back as 0 when closed and 1 when opened.
+function. Called when drawer is moving or animating.
+Provided with a `progress` SharedValue parameter that indicates the progress of drawer opening/closing. Equals `0` when drawer is `closed` and `1` when `open`.
 
 ### `onDrawerStateChanged`
 
 function. This function is called when the status of the drawer changes. It takes two arguments:
 
-- `newState: DrawerState` - state of the `Drawer`. It can be one of the following:
-  - `Idle`
-  - `Dragging`
-  - `Settling`
-- `drawerWillShow: boolean` - if `true`, `Drawer` is about to open.
+- `newState` - interaction state of the drawer. It can be one of the following:
+  - `DrawerState.IDLE`
+  - `DrawerState.DRAGGING`
+  - `DrawerState.SETTLING`
+- `drawerWillShow` - `true` when `drawer` started animating to `open` position, `false` otherwise.
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
