@@ -11,6 +11,7 @@ import EventManager from './EventManager';
 import { Config } from '../interfaces';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
+import WheelEventManager from './WheelEventManager';
 
 interface DefaultViewStyles {
   userSelect: string;
@@ -58,6 +59,7 @@ export class GestureHandlerWebDelegate
 
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new KeyboardEventManager(this.view));
+    this.eventManagers.push(new WheelEventManager(this.view));
 
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)
