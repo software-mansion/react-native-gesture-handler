@@ -26,7 +26,9 @@ export default function ReanimatedDrawerExample() {
 
   const tapGesture = Gesture.Tap()
     .runOnJS(true)
-    .onStart(() => drawerRef.current?.openDrawer({ speed: 0.5, velocity: 0 }));
+    .onStart(() =>
+      drawerRef.current?.openDrawer({ animationSpeed: 1, initialVelocity: 0 })
+    );
 
   const toggleSideGesture = Gesture.Tap()
     .runOnJS(true)
