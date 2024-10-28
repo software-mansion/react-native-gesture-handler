@@ -598,11 +598,22 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       const isBack = drawerType === DrawerType.BACK;
       const isIdle = drawerState === DrawerState.IDLE;
 
+      if (isBack) {
+        return {
+          transform: [
+            {
+              translateX: 0,
+            },
+          ],
+          flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
+        };
+      }
+
       let translateX = 0;
 
-      if (!isBack && isIdle) {
+      if (isIdle) {
         translateX = drawerOpened ? 0 : closedDrawerOffset;
-      } else if (!isBack && !isIdle) {
+      } else {
         translateX = interpolate(
           openValue.value,
           [0, 1],
