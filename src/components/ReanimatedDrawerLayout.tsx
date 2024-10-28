@@ -318,7 +318,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const animateDrawer = useCallback(
-      (toValue: number, velocity: number, speed?: number) => {
+      (toValue: number, initialVelocity: number, animationSpeed?: number) => {
         'worklet';
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
@@ -344,8 +344,8 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             restSpeedThreshold: 10000,
             overshootClamping: true,
 
-            velocity,
-            mass: speed ? 1 / speed : 2,
+            velocity: initialVelocity,
+            mass: animationSpeed ? 1 / animationSpeed : 2,
             damping: 80,
             stiffness: 500,
           },
