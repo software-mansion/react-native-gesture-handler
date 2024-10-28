@@ -462,17 +462,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       backgroundColor: overlayColor,
     }));
 
-    const renderOverlay = useCallback(() => {
-      return (
-        <GestureDetector gesture={overlayDismissGesture}>
-          <Animated.View
-            animatedProps={overlayAnimatedProps}
-            style={[styles.overlay, overlayAnimatedStyle]}
-          />
-        </GestureDetector>
-      );
-    }, [overlayAnimatedProps, overlayAnimatedStyle, overlayDismissGesture]);
-
     const fillHitSlop = useMemo(
       () => (isFromLeft ? { left: drawerWidth } : { right: drawerWidth }),
       [drawerWidth, isFromLeft]
@@ -671,18 +660,23 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           ref={componentRef}
           style={styles.main}
           onLayout={handleContainerLayout}>
-          <Animated.View
-            style={[
-              drawerType === DrawerType.FRONT
-                ? styles.containerOnBack
-                : styles.containerInFront,
-              containerStyles,
-              contentContainerStyle,
-            ]}
-            animatedProps={containerAnimatedProps}>
-            {children}
-            {renderOverlay()}
-          </Animated.View>
+          <GestureDetector gesture={overlayDismissGesture}>
+            <Animated.View
+              style={[
+                drawerType === DrawerType.FRONT
+                  ? styles.containerOnBack
+                  : styles.containerInFront,
+                containerStyles,
+                contentContainerStyle,
+              ]}
+              animatedProps={containerAnimatedProps}>
+              {children}
+              <Animated.View
+                animatedProps={overlayAnimatedProps}
+                style={[styles.overlay, overlayAnimatedStyle]}
+              />
+            </Animated.View>
+          </GestureDetector>
           <Animated.View
             pointerEvents="box-none"
             animatedProps={drawerAnimatedProps}
