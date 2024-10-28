@@ -199,8 +199,8 @@ export interface DrawerLayoutProps {
 }
 
 export type DrawerMovementOption = {
-  velocity?: number;
-  speed?: number;
+  initialVelocity?: number;
+  animationSpeed?: number;
 };
 
 export interface DrawerLayoutMethods {
@@ -431,13 +431,17 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const openDrawer = (options: DrawerMovementOption = {}) => {
       'worklet';
-      animateDrawer(drawerWidth, options.velocity ?? 0, options.speed);
+      animateDrawer(
+        drawerWidth,
+        options.initialVelocity ?? 0,
+        options.animationSpeed
+      );
     };
 
     const closeDrawer = useCallback(
       (options: DrawerMovementOption = {}) => {
         'worklet';
-        animateDrawer(0, options.velocity ?? 0, options.speed);
+        animateDrawer(0, options.initialVelocity ?? 0, options.animationSpeed);
       },
       [animateDrawer]
     );
