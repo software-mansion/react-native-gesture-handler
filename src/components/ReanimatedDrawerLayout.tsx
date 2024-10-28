@@ -714,7 +714,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           <Animated.View
             pointerEvents="box-none"
             animatedProps={drawerAnimatedProps}
-            accessibilityViewIsModal={isDrawerOpen.value} // %% use animated props
             style={[
               styles.drawerContainer,
               drawerAnimatedStyle,
