@@ -91,14 +91,29 @@ export interface DrawerLayoutProps {
     progressAnimatedValue: SharedValue<number>
   ) => ReactNode;
 
+  /**
+   * Determines the side from which the drawer will open.
+   */
   drawerPosition?: DrawerPosition;
 
+  /**
+   * Width of the drawer.
+   */
   drawerWidth?: number;
 
+  /**
+   * Background color of the drawer.
+   */
   drawerBackgroundColor?: string;
 
+  /**
+   * Set if the drawer should get locked after being opened or closed.
+   */
   drawerLockMode?: DrawerLockMode;
 
+  /**
+   * Determines if system keyboard should be closed upon dragging the drawer.
+   */
   keyboardDismissMode?: DrawerKeyboardDismissMode;
 
   /**
@@ -119,6 +134,9 @@ export interface DrawerLayoutProps {
     drawerWillShow: boolean
   ) => void;
 
+  /**
+   * Type of animation that will play when opening the drawer.
+   */
   drawerType?: DrawerType;
 
   /**
@@ -127,6 +145,9 @@ export interface DrawerLayoutProps {
    */
   edgeWidth?: number;
 
+  /**
+   * Minimal distance to swipe before the drawable starts moving.
+   */
   minSwipeDistance?: number;
 
   /**
@@ -154,8 +175,14 @@ export interface DrawerLayoutProps {
    */
   overlayColor?: string;
 
+  /**
+   * Style wrapping the content.
+   */
   contentContainerStyle?: StyleProp<ViewStyle>;
 
+  /**
+   * Style wrapping the drawer.
+   */
   drawerContainerStyle?: StyleProp<ViewStyle>;
 
   /**
@@ -168,7 +195,10 @@ export interface DrawerLayoutProps {
 
   onDrawerSlide?: (position: number) => void;
 
-  // Implicit `children` prop has been removed in @types/react^18.0.0
+  // Implicit `children` prop has been removed in @types/react^18.0.
+  /**
+   * Children to be rendered normally - not inside the drawer.
+   */
   children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
 
   /**
