@@ -203,7 +203,7 @@ export type DrawerMovementOption = {
   speed?: number;
 };
 
-interface DrawerLayoutMethods {
+export interface DrawerLayoutMethods {
   openDrawer: (options: DrawerMovementOption) => void;
   closeDrawer: (options: DrawerMovementOption) => void;
 }

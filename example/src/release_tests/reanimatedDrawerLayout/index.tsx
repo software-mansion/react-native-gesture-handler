@@ -6,6 +6,7 @@ import { SharedValue } from 'react-native-reanimated';
 import ReanimatedDrawerLayout, {
   DrawerType,
   DrawerPosition,
+  DrawerLayoutMethods,
 } from 'react-native-gesture-handler/ReanimatedDrawerLayout';
 import { LoremIpsum } from '../../../src/common';
 
@@ -19,13 +20,13 @@ const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
 };
 
 export default function ReanimatedDrawerExample() {
-  const drawerRef = useRef<any>(null);
+  const drawerRef = useRef<DrawerLayoutMethods>(null);
   const [side, setSide] = useState(DrawerPosition.LEFT);
   const [type, setType] = useState(DrawerType.FRONT);
 
   const tapGesture = Gesture.Tap()
     .runOnJS(true)
-    .onStart(() => drawerRef.current?.openDrawer());
+    .onStart(() => drawerRef.current?.openDrawer({ speed: 0.5, velocity: 0 }));
 
   const toggleSideGesture = Gesture.Tap()
     .runOnJS(true)
