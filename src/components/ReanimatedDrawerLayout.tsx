@@ -308,7 +308,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     // While the drawer is hidden, it's hitSlop overflows onto the main view by edgeWidth
     // This way it can be swiped open even when it's hidden
     const [edgeHitSlop, setEdgeHitSlop] = useState<HitSlop>(
-      isFromLeft ? { right: edgeWidth } : { left: edgeWidth }
+      isFromLeft
+        ? { left: 0, width: edgeWidth }
+        : { right: 0, width: edgeWidth }
     );
 
     // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
