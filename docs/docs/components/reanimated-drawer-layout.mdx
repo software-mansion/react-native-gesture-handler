@@ -140,39 +140,71 @@ Specifies whether context menu should be enabled after clicking on underlying vi
 
 ## Example:
 
-See the [drawer example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/basic/horizontalDrawer/index.tsx) from GestureHandler Example App or view it directly on your phone by visiting [our expo demo](https://snack.expo.io/@adamgrzybowski/react-native-gesture-handler-demo).
+See the [reanimated drawer layout example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/reanimatedDrawerLayout/index.tsx) from GestureHandler Example App.
 
 ```js
-class DrawerExample extends Component {
-  handleDrawerSlide = (status) => {
-    // outputs a value between 0 and 1
-    console.log(status);
-  };
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { SharedValue } from 'react-native-reanimated';
 
-  renderDrawer = () => {
-    return (
-      <View>
-        <Text>I am in the drawer!</Text>
-      </View>
-    );
-  };
+import ReanimatedDrawerLayout, {
+  DrawerType,
+  DrawerPosition,
+  DrawerLayoutMethods,
+} from 'react-native-gesture-handler/ReanimatedDrawerLayout';
+import { LoremIpsum } from '../../../src/common';
 
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <DrawerLayout
-          drawerWidth={200}
-          drawerPosition={DrawerLayout.positions.Right}
-          drawerType="front"
-          drawerBackgroundColor="#ddd"
-          renderNavigationView={this.renderDrawer}
-          onDrawerSlide={this.handleDrawerSlide}>
-          <View>
-            <Text>Hello, it's me</Text>
+const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
+  return (
+    <View style={styles.drawerContainer}>
+      <LoremIpsum />
+    </View>
+  );
+};
+
+export default function ReanimatedDrawerExample() {
+  const drawerRef = useRef < DrawerLayoutMethods > null;
+  const tapGesture = Gesture.Tap()
+    .runOnJS(true)
+    .onStart(() => drawerRef.current?.openDrawer({ speed: 0.5, velocity: 0 }));
+
+  return (
+    <ReanimatedDrawerLayout
+      ref={drawerRef}
+      renderNavigationView={() => <DrawerPage />}
+      drawerPosition={DrawerPosition.LEFT}
+      drawerType={DrawerType.FRONT}>
+      <View style={styles.innerContainer}>
+        <GestureDetector gesture={tapGesture}>
+          <View style={styles.box}>
+            <Text>Open drawer</Text>
           </View>
-        </DrawerLayout>
+        </GestureDetector>
       </View>
-    );
-  }
+    </ReanimatedDrawerLayout>
+  );
 }
+
+const styles = StyleSheet.create({
+  drawerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'pink',
+  },
+  innerContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  box: {
+    width: 150,
+    padding: 10,
+    paddingHorizontal: 5,
+    backgroundColor: 'pink',
+  },
+});
 ```
