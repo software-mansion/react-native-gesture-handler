@@ -234,8 +234,8 @@ export type DrawerMovementOption = {
 };
 
 export interface DrawerLayoutMethods {
-  openDrawer: (options: DrawerMovementOption) => void;
-  closeDrawer: (options: DrawerMovementOption) => void;
+  openDrawer: (options?: DrawerMovementOption) => void;
+  closeDrawer: (options?: DrawerMovementOption) => void;
 }
 
 const defaultProps = {
