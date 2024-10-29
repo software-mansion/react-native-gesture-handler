@@ -625,11 +625,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
       if (isBack) {
         return {
-          transform: [
-            {
-              translateX: 0,
-            },
-          ],
+          transform: [{ translateX: 0 }],
           flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
         };
       }
@@ -648,11 +644,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       }
 
       return {
-        transform: [
-          {
-            translateX,
-          },
-        ],
+        transform: [{ translateX }],
         flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
       };
     });
