@@ -50,7 +50,7 @@ Type `slide`:
 
 ### `edgeWidth`
 
-number. Width of the invisible area on the edge of the screen, which can be dragged to open the drawer.
+number. Width of the invisible draggable area on the edge of the content view, which can be dragged to open the drawer.
 
 ### `hideStatusBar`
 
@@ -103,8 +103,8 @@ If not enabled the gesture will require click + drag, with enableTrackpadTwoFing
 
 ### `children`
 
-component or function. Children is a component which is rendered by default and is wrapped by drawer.
-May also be a render function which takes a `progress` SharedValue as a parameter that indicates the animation progress, similarily to the `renderNavigationView` render function.
+component or function. Children is a component which is rendered in the content view.
+May also be a render function which may accept a `progress` SharedValue as a parameter that indicates the animation progress, similarily to the `renderNavigationView` render function.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
