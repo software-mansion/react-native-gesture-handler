@@ -197,7 +197,7 @@ export interface DrawerLayoutProps {
 
   // Implicit `children` prop has been removed in @types/react^18.0.
   /**
-   * Children to be rendered normally - not inside the drawer.
+   * Elements that will be rendered inside the content view.
    */
   children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
 
@@ -459,14 +459,17 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       ]
     );
 
-    const openDrawer = (options: DrawerMovementOption = {}) => {
-      'worklet';
-      animateDrawer(
-        drawerWidth,
-        options.initialVelocity ?? 0,
-        options.animationSpeed
-      );
-    };
+    const openDrawer = useCallback(
+      (options: DrawerMovementOption = {}) => {
+        'worklet';
+        animateDrawer(
+          drawerWidth,
+          options.initialVelocity ?? 0,
+          options.animationSpeed
+        );
+      },
+      [animateDrawer, drawerWidth]
+    );
 
     const closeDrawer = useCallback(
       (options: DrawerMovementOption = {}) => {
