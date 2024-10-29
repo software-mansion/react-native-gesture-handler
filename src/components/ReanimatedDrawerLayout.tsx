@@ -377,9 +377,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             overshootClamping: true,
 
             velocity: initialVelocity,
-            mass: animationSpeed ? 1 / animationSpeed : 2,
-            damping: 80,
-            stiffness: 500,
+            mass: animationSpeed ? 1 / animationSpeed : 1,
+            damping: 50,
+            stiffness: 300,
           },
           (finished) => {
             if (finished) {
