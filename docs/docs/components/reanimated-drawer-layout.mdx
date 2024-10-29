@@ -7,8 +7,8 @@ sidebar_label: Reanimated Drawer Layout
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery';
 
-Cross-platform replacement for the React Native's [DrawerLayoutAndroid](http://reactnative.dev/docs/drawerlayoutandroid.html) component.
-Provides a compatible API while allows for the component to be used on both Android and iOS.
+Cross-platform replacement for the React Native's [DrawerLayoutAndroid](http://reactnative.dev/docs/drawerlayoutandroid.html) component.  
+Provides a compatible API while allows for the component to be used on both Android and iOS.  
 Please refer to [React Native docs](http://reactnative.dev/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
 
 ### Usage:
@@ -23,16 +23,12 @@ import ReanimatedDrawerLayout from 'react-native-gesture-handler/ReanimatedDrawe
 
 ### `drawerType`
 
-possible values are: `front`, `back` or `slide` (default is `front`). Specifies the way the drawer will be displayed.
-When set to `front` the drawer will slide in and out along with the gesture and will display on top of the content view.
-When `back` is used the drawer displays behind the content view and can be revealed with gesture of pulling the content view to the side.
-Finally `slide` option makes the drawer appear like it is attached to the side of the content view; when you pull both content view and drawer will follow the gesture.
+accepts values of the `DrawerPosition` enum, defaults to `DrawerPosition.FRONT`.  
+Specifies the way the drawer will be displayed.
 
-Type `slide`:
-
-<GifGallery>
-  <img src={useBaseUrl('gifs/drawer-slide.gif')} width="280" />
-</GifGallery>
+- `DrawerPosition.FRONT` the drawer will display on top of the content view.
+- `DrawerPosition.BACK` the drawer appears to be behind the content view, revealed by sliding away the content view.
+- `DrawerPosition.SLIDE` the drawer displays attached to the content view, opening it slides both the drawer and the content view.
 
 Type `front`:
 
@@ -44,6 +40,12 @@ Type `back`:
 
 <GifGallery>
   <img src={useBaseUrl('gifs/drawer-back.gif')} width="280" />
+</GifGallery>
+
+Type `slide`:
+
+<GifGallery>
+  <img src={useBaseUrl('gifs/drawer-slide.gif')} width="280" />
 </GifGallery>
 
 ### `edgeWidth`
@@ -143,22 +145,20 @@ Specifies whether context menu should be enabled after clicking on underlying vi
 See the [reanimated drawer layout example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/reanimatedDrawerLayout/index.tsx) from GestureHandler Example App.
 
 ```js
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { SharedValue } from 'react-native-reanimated';
 
 import ReanimatedDrawerLayout, {
   DrawerType,
   DrawerPosition,
   DrawerLayoutMethods,
 } from 'react-native-gesture-handler/ReanimatedDrawerLayout';
-import { LoremIpsum } from '../../../src/common';
 
-const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
+const DrawerPage = () => {
   return (
     <View style={styles.drawerContainer}>
-      <LoremIpsum />
+      <Text>Lorem ipsum</Text>
     </View>
   );
 };
@@ -167,7 +167,7 @@ export default function ReanimatedDrawerExample() {
   const drawerRef = useRef < DrawerLayoutMethods > null;
   const tapGesture = Gesture.Tap()
     .runOnJS(true)
-    .onStart(() => drawerRef.current?.openDrawer({ speed: 0.5, velocity: 0 }));
+    .onStart(() => drawerRef.current?.openDrawer());
 
   return (
     <ReanimatedDrawerLayout
@@ -201,9 +201,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   box: {
-    width: 150,
-    padding: 10,
-    paddingHorizontal: 5,
+    padding: 20,
     backgroundColor: 'pink',
   },
 });
