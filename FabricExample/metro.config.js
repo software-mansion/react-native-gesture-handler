@@ -1,28 +1,19 @@
-/**
- * Metro configuration for React Native
- * https://reactnative.dev/docs/metro
- *
- * @format
- */
-
-const { getDefaultConfig } = require('@react-native/metro-config');
-const { mergeConfig } = require('metro-config');
-
 const path = require('path');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
 const escape = require('escape-string-regexp');
 const pack = require('../package.json');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
 const root = path.resolve(__dirname, '..');
 
 const modules = Object.keys(pack.peerDependencies);
 
-// Gesture handler tries to require 'react-native-reanimated' inside a try...catch
-// block. In root directory, we have reanimated installed but FabricExample doesn't.
-// We need to blacklist reanimated to prevent its JS code from bein in the bundle
-// without the native code or the babel plugin.
-modules.push('react-native-reanimated');
-
+/**
+ * Metro configuration
+ * https://facebook.github.io/metro/docs/configuration
+ *
+ * @type {import('metro-config').MetroConfig}
+ */
 const config = {
   projectRoot: __dirname,
   watchFolders: [root],
@@ -41,6 +32,8 @@ const config = {
       acc[name] = path.join(__dirname, 'node_modules', name);
       return acc;
     }, {}),
+
+    nodeModulesPaths: [path.resolve(__dirname, 'node_modules')],
   },
 
   transformer: {

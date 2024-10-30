@@ -1,4 +1,10 @@
 {
   "name": "FabricExample",
-  "displayName": "FabricExample"
+  "displayName": "FabricExample",
+  "android": {
+    "package": "com.anonymous.fabricexample"
+  },
+  "ios": {
+    "bundleIdentifier": "com.anonymous.fabricexample"
+  }
 }
