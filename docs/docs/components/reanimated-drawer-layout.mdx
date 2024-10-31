@@ -34,15 +34,15 @@ Specifies the way the drawer will be displayed.
 
 ### `edgeWidth`
 
-number. Width of the invisible draggable area on the edge of the content view, which can be dragged to open the drawer.
+width of the invisible draggable area on the edge of the content view, which can be dragged to open the drawer.
 
 ### `hideStatusBar`
 
-boolean. When set to `true`, drawer component will use [StatusBar API](http://reactnative.dev/docs/statusbar.html) to hide the OS status bar when the drawer is dragged or idle in the `open` position.
+a boolean value, when set to `true`, drawer component will use [StatusBar API](http://reactnative.dev/docs/statusbar.html) to hide the OS status bar when the drawer is dragged or idle in the `open` position.
 
 ### `statusBarAnimation`
 
-possible values are: `slide`, `none` or `fade` (defaults to `slide`).
+a string, possible values are: `slide`, `none` or `fade`, defaults to `slide`.
 May be used in combination with `hideStatusBar` to select the animation used for hiding the status bar.
 See [StatusBar API](http://reactnative.dev/docs/statusbar.html#statusbaranimation) docs.
 
@@ -53,17 +53,17 @@ This color animates from `0%` to `100%` opacity as drawer animates from `closed`
 
 ### `renderNavigationView`
 
-renderer function for the drawer componenet.
+a renderer function for the drawer componenet.
 Provided with a `progress` SharedValue parameter that indicates the progress of drawer opening/closing. Equals `0` when drawer is `closed` and `1` when `open`.
 This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ### `onDrawerClose`
 
-function. This function is called when the drawer is closed.
+a function which is called when the drawer is closed.
 
 ### `onDrawerOpen`
 
-function. This function is called when the drawer is opened.
+a function which is called when the drawer is opened.
 
 ### `onDrawerSlide`
 
@@ -72,7 +72,7 @@ Provided with a `progress` SharedValue parameter that indicates the progress of 
 
 ### `onDrawerStateChanged`
 
-function. This function is called when the status of the drawer changes. It takes two arguments:
+a function which is called when the status of the drawer changes. It takes two arguments:
 
 - `newState` - interaction state of the drawer. It can be one of the following:
   - `DrawerState.IDLE`
@@ -82,7 +82,7 @@ function. This function is called when the status of the drawer changes. It take
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
-Enables two-finger gestures on supported devices, for example iPads with trackpads.
+enables two-finger gestures on supported devices, for example iPads with trackpads.
 If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
 
 ### `children`
@@ -92,7 +92,7 @@ May also be a render function which may accept a `progress` SharedValue as a par
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
-Allows users to choose which mouse button should handler respond to.
+allows users to choose which mouse button should handler respond to.
 The enum `MouseButton` consists of the following predefined fields:
 
 - `LEFT`
@@ -106,7 +106,7 @@ Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT
 
 ### `enableContextMenu(value: boolean)` (Web only)
 
-Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
+specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
 
 ## Methods
 
