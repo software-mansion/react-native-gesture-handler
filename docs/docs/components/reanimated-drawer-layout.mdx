@@ -87,8 +87,8 @@ If not enabled the gesture will require click + drag, with `enableTrackpadTwoFin
 
 ### `children`
 
-component or function. Children is a component which is rendered in the content view.
-May also be a render function which may accept a `progress` SharedValue as a parameter that indicates the animation progress, similarily to the `renderNavigationView` render function.
+either a component that's rendered in the content view or a function.
+When provided as a function, it accepts a `progress` SharedValue parameter that indicates the animation progress, similar to the [`renderNavigationView`](#rendernavigationview) function.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
