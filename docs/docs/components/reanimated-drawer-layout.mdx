@@ -7,7 +7,7 @@ sidebar_label: Reanimated Drawer Layout
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Cross-platform replacement for the React Native's [DrawerLayoutAndroid](http://reactnative.dev/docs/drawerlayoutandroid.html) component.  
-Please refer to [React Native docs](http://reactnative.dev/docs/drawerlayoutandroid.html) for the detailed usage for standard parameters.
+For detailed usage of standard parameters, please refer to the [React Native docs](http://reactnative.dev/docs/drawerlayoutandroid.html).
 
 ### Usage:
 
@@ -21,7 +21,7 @@ import ReanimatedDrawerLayout from 'react-native-gesture-handler/ReanimatedDrawe
 
 ### `drawerType`
 
-accepts values of the `DrawerPosition` enum, defaults to `FRONT`.  
+accepts values of the `DrawerPosition` enum. Defaults to `FRONT`.  
 Specifies the way the drawer will be displayed.
 
 - `FRONT` the drawer will be displayed above the content view.
@@ -38,32 +38,32 @@ width of the invisible draggable area on the edge of the content view, which can
 
 ### `hideStatusBar`
 
-a boolean value, when set to `true`, drawer component will use [StatusBar API](http://reactnative.dev/docs/statusbar.html) to hide the OS status bar when the drawer is dragged or idle in the `open` position.
+a boolean value. When set to `true`, drawer component will use [StatusBar API](http://reactnative.dev/docs/statusbar.html) to hide the OS status bar when the drawer is dragged or idle in the `open` position.
 
 ### `statusBarAnimation`
 
-a string, possible values are: `slide`, `none` or `fade`, defaults to `slide`.
+a string, with possible values: `slide`, `none` or `fade`. Defaults to `slide`.
 May be used in combination with `hideStatusBar` to select the animation used for hiding the status bar.
 See [StatusBar API](http://reactnative.dev/docs/statusbar.html#statusbaranimation) docs.
 
 ### `overlayColor`
 
-color (default `rgba(0, 0, 0, 0.7)`) of the background overlay on top of the content window when the drawer is `open`.
-This color animates from `0%` to `100%` opacity as drawer animates from `closed` to `open`.
+color of the background overlay on top of the content window when the drawer is `open`.  
+This color's opacity animates from 0% to 100% as the drawer transitions from closed to open. Defaults to `rgba(0, 0, 0, 0.7)`.
 
 ### `renderNavigationView`
 
-a renderer function for the drawer componenet.
+a renderer function for the drawer component.
 Provided with a `progress` SharedValue parameter that indicates the progress of drawer opening/closing. Equals `0` when drawer is `closed` and `1` when `open`.
 This can be used by the drawer component to animated its children while the drawer is opening or closing.
 
 ### `onDrawerClose`
 
-a function which is called when the drawer is closed.
+a function which is called when the drawer has been closed.
 
 ### `onDrawerOpen`
 
-a function which is called when the drawer is opened.
+a function which is called when the drawer has been opened.
 
 ### `onDrawerSlide`
 
@@ -83,7 +83,7 @@ a function which is called when the status of the drawer changes. It takes two a
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
 enables two-finger gestures on supported devices, for example iPads with trackpads.
-If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
 
 ### `children`
 
@@ -102,11 +102,11 @@ The enum `MouseButton` consists of the following predefined fields:
 - `BUTTON_5`
 - `ALL`
 
-Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Defaults to `MouseButton.LEFT`.
 
 ### `enableContextMenu(value: boolean)` (Web only)
 
-specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
+specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Defaults to `false`.
 
 ## Methods
 
@@ -114,19 +114,19 @@ specifies whether context menu should be enabled after clicking on underlying vi
 
 `openDrawer` accepts an optional `options` parameter, which is an object with the following optional properties:
 
-`initialVelocity`: number, the initial velocity of the object attached to the spring. Default `0`.
-`animationSpeed`: number, controls speed of the animation. Default `1`.
+- `initialVelocity` - the initial velocity of the object attached to the spring. Defaults to `0`.
+- `animationSpeed` - controls speed of the animation. Defaults to `1`.
 
 ### `closeDrawer(options)`
 
 `closeDrawer` accepts an optional `options` parameter, which is an object with the following optional properties:
 
-`initialVelocity`: number, the initial velocity of the object attached to the spring. Default `0`.
-`animationSpeed`: number, controls speed of the animation. Default `1`.
+- `initialVelocity` - initial velocity of the object attached to the spring. Defaults to `0`.
+- `animationSpeed` - controls speed of the animation. Defaults to `1`.
 
 ## Example:
 
-See the [reanimated drawer layout example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/reanimatedDrawerLayout/index.tsx) from GestureHandler Example App.
+See the [reanimated drawer layout example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/reanimatedDrawerLayout/index.tsx) from GestureHandler example app.
 
 ```js
 import React, { useRef } from 'react';
