@@ -1,5 +1,10 @@
 import { PointerType } from '../PointerType';
-import type { Point, StylusData } from './interfaces';
+import type {
+  GestureHandlerRef,
+  Point,
+  StylusData,
+  SVGRef,
+} from './interfaces';
 
 export function isPointerInBounds(view: HTMLElement, { x, y }: Point): boolean {
   const rect: DOMRect = view.getBoundingClientRect();
@@ -226,4 +231,35 @@ function spherical2tilt(altitudeAngle: number, azimuthAngle: number) {
   const tiltY = Math.round(tiltYrad * radToDeg);
 
   return { tiltX, tiltY };
+}
+
+const SVGElements = [
+  'Circle',
+  'ClipPath',
+  'Ellipse',
+  'ForeignObject',
+  'G',
+  'Image',
+  'Line',
+  'Marker',
+  'Mask',
+  'Path',
+  'Pattern',
+  'Polygon',
+  'Polyline',
+  'Rect',
+  'Svg',
+  'Symbol',
+  'TSpan',
+  'Text',
+  'TextPath',
+  'Use',
+];
+
+export function isSVGElement(viewRef: SVGRef | GestureHandlerRef) {
+  const className = Object.getPrototypeOf(viewRef).constructor.name;
+
+  return (
+    SVGElements.indexOf(className) >= 0 && Object.hasOwn(viewRef, 'elementRef')
+  );
 }

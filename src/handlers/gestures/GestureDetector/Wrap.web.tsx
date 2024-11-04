@@ -12,14 +12,23 @@ export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const child: any = React.Children.only(children);
 
+      const isSVGElement =
+        Object.getPrototypeOf(child?.type)?.name === 'WebShape';
+
+      const additionalProps = isSVGElement
+        ? { collapsable: false, ref }
+        : { collapsable: false };
+
       const clone = React.cloneElement(
         child,
-        { collapsable: false },
+        additionalProps,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         child.props.children
       );
 
-      return (
+      return isSVGElement ? (
+        clone
+      ) : (
         <div
           ref={ref as LegacyRef<HTMLDivElement>}
           style={{ display: 'contents' }}>
