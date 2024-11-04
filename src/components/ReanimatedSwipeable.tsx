@@ -115,16 +115,14 @@ export interface SwipeableProps
    * Called when action panel gets open (either right or left).
    */
   onSwipeableOpen?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT,
-    swipeable: SwipeableMethods
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
   ) => void;
 
   /**
    * Called when action panel is closed.
    */
   onSwipeableClose?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT,
-    swipeable: SwipeableMethods
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
   ) => void;
 
   /**
@@ -355,13 +353,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       (fromValue: number, toValue: number) => {
         'worklet';
         if (toValue > 0 && onSwipeableOpen) {
-          runOnJS(onSwipeableOpen)(SwipeDirection.RIGHT, swipeableMethods);
+          runOnJS(onSwipeableOpen)(SwipeDirection.RIGHT);
         } else if (toValue < 0 && onSwipeableOpen) {
-          runOnJS(onSwipeableOpen)(SwipeDirection.LEFT, swipeableMethods);
+          runOnJS(onSwipeableOpen)(SwipeDirection.LEFT);
         } else if (onSwipeableClose) {
           runOnJS(onSwipeableClose)(
-            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT,
-            swipeableMethods
+            fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
           );
         }
       },
