@@ -22,7 +22,6 @@ import Animated, {
   interpolate,
   runOnJS,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -265,28 +264,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     const showLeftProgress = useSharedValue<number>(0);
     const showRightProgress = useSharedValue<number>(0);
 
-    const swipeableMethods = useDerivedValue<SwipeableMethods>(() => ({
-      close() {
-        'worklet';
-        animateRow(0);
-      },
-      openLeft() {
-        'worklet';
-        animateRow(leftWidth.value);
-      },
-      openRight() {
-        'worklet';
-        animateRow(-rightWidth.value);
-      },
-      reset() {
-        'worklet';
-        userDrag.value = 0;
-        showLeftProgress.value = 0;
-        appliedTranslation.value = 0;
-        rowState.value = 0;
-      },
-    }));
-
     const updateRightElementWidth = useCallback(() => {
       'worklet';
       if (rightOffset.value === null) {
@@ -378,94 +355,123 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       (fromValue: number, toValue: number) => {
         'worklet';
         if (toValue > 0 && onSwipeableOpen) {
-          runOnJS(onSwipeableOpen)(
-            SwipeDirection.RIGHT,
-            swipeableMethods.value
-          );
+          runOnJS(onSwipeableOpen)(SwipeDirection.RIGHT, swipeableMethods);
         } else if (toValue < 0 && onSwipeableOpen) {
-          runOnJS(onSwipeableOpen)(SwipeDirection.LEFT, swipeableMethods.value);
+          runOnJS(onSwipeableOpen)(SwipeDirection.LEFT, swipeableMethods);
         } else if (onSwipeableClose) {
           runOnJS(onSwipeableClose)(
             fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT,
-            swipeableMethods.value
+            swipeableMethods
           );
         }
       },
-      [onSwipeableClose, onSwipeableOpen, swipeableMethods]
+      [onSwipeableClose, onSwipeableOpen]
     );
 
-    const animationOptionsProp = animationOptions;
+    const animateRow: (toValue: number, velocityX?: number) => void =
+      useCallback(
+        (toValue: number, velocityX?: number) => {
+          'worklet';
 
-    const animateRow = useCallback(
-      (toValue: number, velocityX?: number) => {
-        'worklet';
+          const translationSpringConfig = {
+            duration: 1000,
+            dampingRatio: 0.9,
+            stiffness: 500,
+            velocity: velocityX,
+            overshootClamping: true,
+            ...animationOptions,
+          };
 
-        const translationSpringConfig = {
-          duration: 1000,
-          dampingRatio: 0.9,
-          stiffness: 500,
-          velocity: velocityX,
-          overshootClamping: true,
-          ...animationOptionsProp,
-        };
+          const isClosing = toValue === 0;
+          const moveToRight = isClosing ? rowState.value < 0 : toValue > 0;
 
-        const isClosing = toValue === 0;
-        const moveToRight = isClosing ? rowState.value < 0 : toValue > 0;
+          const usedWidth = isClosing
+            ? moveToRight
+              ? rightWidth.value
+              : leftWidth.value
+            : moveToRight
+            ? leftWidth.value
+            : rightWidth.value;
 
-        const usedWidth = isClosing
-          ? moveToRight
-            ? rightWidth.value
-            : leftWidth.value
-          : moveToRight
-          ? leftWidth.value
-          : rightWidth.value;
+          const progressSpringConfig = {
+            ...translationSpringConfig,
+            restDisplacementThreshold: 0.01,
+            restSpeedThreshold: 0.01,
+            velocity:
+              velocityX &&
+              interpolate(velocityX, [-usedWidth, usedWidth], [-1, 1]),
+          };
 
-        const progressSpringConfig = {
-          ...translationSpringConfig,
-          restDisplacementThreshold: 0.01,
-          restSpeedThreshold: 0.01,
-          velocity:
-            velocityX &&
-            interpolate(velocityX, [-usedWidth, usedWidth], [-1, 1]),
-        };
+          const frozenRowState = rowState.value;
 
-        const frozenRowState = rowState.value;
-
-        appliedTranslation.value = withSpring(
-          toValue,
-          translationSpringConfig,
-          (isFinished) => {
-            if (isFinished) {
-              dispatchEndEvents(frozenRowState, toValue);
+          appliedTranslation.value = withSpring(
+            toValue,
+            translationSpringConfig,
+            (isFinished) => {
+              if (isFinished) {
+                dispatchEndEvents(frozenRowState, toValue);
+              }
             }
-          }
-        );
+          );
 
-        const progressTarget = toValue === 0 ? 0 : 1;
+          const progressTarget = toValue === 0 ? 0 : 1;
 
-        showLeftProgress.value =
-          leftWidth.value > 0
-            ? withSpring(progressTarget, progressSpringConfig)
-            : 0;
-        showRightProgress.value =
-          rightWidth.value > 0
-            ? withSpring(progressTarget, progressSpringConfig)
-            : 0;
+          showLeftProgress.value =
+            leftWidth.value > 0
+              ? withSpring(progressTarget, progressSpringConfig)
+              : 0;
+          showRightProgress.value =
+            rightWidth.value > 0
+              ? withSpring(progressTarget, progressSpringConfig)
+              : 0;
 
-        dispatchImmediateEvents(frozenRowState, toValue);
+          dispatchImmediateEvents(frozenRowState, toValue);
 
-        rowState.value = Math.sign(toValue);
-      },
+          rowState.value = Math.sign(toValue);
+        },
+        [
+          rowState,
+          animationOptions,
+          appliedTranslation,
+          showLeftProgress,
+          leftWidth,
+          showRightProgress,
+          rightWidth,
+          dispatchImmediateEvents,
+          dispatchEndEvents,
+        ]
+      );
+
+    const swipeableMethods = useMemo<SwipeableMethods>(
+      () => ({
+        close() {
+          'worklet';
+          animateRow(0);
+        },
+        openLeft() {
+          'worklet';
+          animateRow(leftWidth.value);
+        },
+        openRight() {
+          'worklet';
+          animateRow(-rightWidth.value);
+        },
+        reset() {
+          'worklet';
+          userDrag.value = 0;
+          showLeftProgress.value = 0;
+          appliedTranslation.value = 0;
+          rowState.value = 0;
+        },
+      }),
       [
-        rowState,
-        animationOptionsProp,
-        appliedTranslation,
-        showLeftProgress,
         leftWidth,
-        showRightProgress,
         rightWidth,
-        dispatchImmediateEvents,
-        dispatchEndEvents,
+        userDrag,
+        showLeftProgress,
+        appliedTranslation,
+        rowState,
+        animateRow,
       ]
     );
 
@@ -482,7 +488,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           {renderLeftActions?.(
             showLeftProgress,
             appliedTranslation,
-            swipeableMethods.value
+            swipeableMethods
           )}
           <View
             onLayout={({ nativeEvent }) =>
@@ -496,7 +502,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         leftWidth,
         renderLeftActions,
         showLeftProgress,
-        swipeableMethods.value,
+        swipeableMethods,
       ]
     );
 
@@ -506,7 +512,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           {renderRightActions?.(
             showRightProgress,
             appliedTranslation,
-            swipeableMethods.value
+            swipeableMethods
           )}
           <View
             onLayout={({ nativeEvent }) => {
@@ -520,7 +526,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         renderRightActions,
         rightOffset,
         showRightProgress,
-        swipeableMethods.value,
+        swipeableMethods,
       ]
     );
 
@@ -650,7 +656,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
-    useImperativeHandle(ref, () => swipeableMethods.value, [swipeableMethods]);
+    useImperativeHandle(ref, () => swipeableMethods, [swipeableMethods]);
 
     const animatedStyle = useAnimatedStyle(
       () => ({
