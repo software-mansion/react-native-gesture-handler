@@ -256,6 +256,15 @@ const SVGElements = [
   'Use',
 ];
 
+// This function helps us determine whether given node is SVGElement or not. In our implementation of
+// findNodeHandle, we can encounter such element in 2 forms - SVG tag or ref to SVG Element. Since Gesture Handler
+// does not depend on SVG, we use our simplified SVGRef type that has `elementRef` field. This is something that is present
+// in actual SVG ref object.
+//
+// In order to make sure that node passed into this function is in fact SVG element, first we check if its constructor name
+// corresponds to one of the possible SVG elements. Then we also check if `elementRef` field exists.
+// By doing both steps we decrease probability of detecting situations where, for example, user makes custom `Circle` and
+// we treat it as SVG.
 export function isSVGElement(viewRef: SVGRef | GestureHandlerRef) {
   const className = Object.getPrototypeOf(viewRef).constructor.name;
 
