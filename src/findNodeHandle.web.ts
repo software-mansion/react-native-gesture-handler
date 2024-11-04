@@ -11,7 +11,7 @@ export default function findNodeHandle(
     return findNodeHandle((viewRef as GestureHandlerRef).viewTag);
   }
 
-  if (viewRef instanceof HTMLElement || viewRef instanceof SVGElement) {
+  if (viewRef instanceof Element) {
     if (viewRef.style.display === 'contents') {
       return findNodeHandle(viewRef.firstChild as HTMLElement);
     }
