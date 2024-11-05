@@ -278,6 +278,15 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       activeCursor = defaultProps.activeCursor,
       mouseButton = defaultProps.mouseButton,
       statusBarAnimation = defaultProps.statusBarAnimation,
+      hideStatusBar,
+      keyboardDismissMode,
+      userSelect,
+      enableContextMenu,
+      renderNavigationView,
+      onDrawerSlide,
+      onDrawerClose,
+      onDrawerOpen,
+      onDrawerStateChanged,
     } = props;
 
     const isFromLeft = drawerPosition === DrawerPosition.LEFT;
@@ -307,7 +316,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         Extrapolation.CLAMP
       );
 
-      props.onDrawerSlide && runOnJS(props.onDrawerSlide)(newOpenValue);
+      onDrawerSlide && runOnJS(onDrawerSlide)(newOpenValue);
 
       return newOpenValue;
     });
@@ -321,10 +330,10 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const emitStateChanged = useCallback(
       (newState: DrawerState, drawerWillShow: boolean) => {
         'worklet';
-        props.onDrawerStateChanged &&
-          runOnJS(props.onDrawerStateChanged)?.(newState, drawerWillShow);
+        onDrawerStateChanged &&
+          runOnJS(onDrawerStateChanged)?.(newState, drawerWillShow);
       },
-      [props.onDrawerStateChanged]
+      [onDrawerStateChanged]
     );
 
     const drawerAnimatedProps = useAnimatedProps(() => ({
@@ -363,7 +372,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         emitStateChanged(DrawerState.SETTLING, willShow);
         runOnJS(setDrawerState)(DrawerState.SETTLING);
 
-        if (props.hideStatusBar) {
+        if (hideStatusBar) {
           StatusBar.setHidden(willShow, statusBarAnimation);
         }
 
@@ -388,10 +397,10 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               runOnJS(setDrawerState)(DrawerState.IDLE);
               if (willShow) {
                 dragX.value = drawerWidth * sideCorrection;
-                props.onDrawerOpen && runOnJS(props.onDrawerOpen)?.();
+                onDrawerOpen && runOnJS(onDrawerOpen)?.();
               } else {
                 dragX.value = 0;
-                props.onDrawerClose && runOnJS(props.onDrawerClose)?.();
+                onDrawerClose && runOnJS(onDrawerClose)?.();
               }
             }
           }
@@ -404,9 +413,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         emitStateChanged,
         isFromLeft,
         isDrawerOpen,
-        props.hideStatusBar,
-        props.onDrawerClose,
-        props.onDrawerOpen,
+        hideStatusBar,
+        onDrawerClose,
+        onDrawerOpen,
         drawerWidth,
         sideCorrection,
         statusBarAnimation,
@@ -486,12 +495,12 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           .onEnd(() => {
             if (
               isDrawerOpen.value &&
-              props.drawerLockMode !== DrawerLockMode.LOCKED_OPEN
+              drawerLockMode !== DrawerLockMode.LOCKED_OPEN
             ) {
               closeDrawer();
             }
           }),
-      [closeDrawer, isDrawerOpen.value, props.drawerLockMode]
+      [closeDrawer, isDrawerOpen.value, drawerLockMode]
     );
 
     const overlayAnimatedStyle = useAnimatedStyle(() => ({
@@ -522,10 +531,10 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         .onStart(() => {
           emitStateChanged(DrawerState.DRAGGING, false);
           runOnJS(setDrawerState)(DrawerState.DRAGGING);
-          if (props.keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
+          if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
             runOnJS(Keyboard.dismiss)();
           }
-          if (props.hideStatusBar) {
+          if (hideStatusBar) {
             runOnJS(StatusBar.setHidden)(true, statusBarAnimation);
           }
         })
@@ -577,8 +586,8 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       edgeHitSlop,
       fillHitSlop,
       minSwipeDistance,
-      props.hideStatusBar,
-      props.keyboardDismissMode,
+      hideStatusBar,
+      keyboardDismissMode,
       sideCorrectedDragX.value,
       overlayDismissGesture,
       drawerOpened,
@@ -683,8 +692,8 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     return (
       <GestureDetector
         gesture={panGesture}
-        userSelect={props.userSelect}
-        enableContextMenu={props.enableContextMenu}>
+        userSelect={userSelect}
+        enableContextMenu={enableContextMenu}>
         <Animated.View
           ref={componentRef}
           style={styles.main}
@@ -715,7 +724,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               drawerContainerStyle,
               dynamicDrawerStyles,
             ]}>
-            {props.renderNavigationView(openValue)}
+            {renderNavigationView(openValue)}
           </Animated.View>
         </Animated.View>
       </GestureDetector>
