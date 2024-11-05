@@ -8,7 +8,6 @@ import React, {
   useCallback,
   useImperativeHandle,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -675,18 +674,13 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         ? props.children(openValue) // renderer function
         : props.children;
 
-    const componentRef = useRef(null);
-
     useImperativeHandle(
       ref,
       () => ({
-        ...componentRef,
         openDrawer,
         closeDrawer,
       }),
-      // componentRef.current is neccessary, eslint thinks it will be reloaded each render
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [componentRef.current, openDrawer, closeDrawer]
+      [openDrawer, closeDrawer]
     );
 
     return (
@@ -694,10 +688,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         gesture={panGesture}
         userSelect={userSelect}
         enableContextMenu={enableContextMenu}>
-        <Animated.View
-          ref={componentRef}
-          style={styles.main}
-          onLayout={handleContainerLayout}>
+        <Animated.View style={styles.main} onLayout={handleContainerLayout}>
           <GestureDetector gesture={overlayDismissGesture}>
             <Animated.View
               style={[
