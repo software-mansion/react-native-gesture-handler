@@ -145,7 +145,7 @@ export interface DrawerLayoutProps {
   edgeWidth?: number;
 
   /**
-   * Minimal distance to swipe before the drawable starts moving.
+   * Minimal distance to swipe before the drawer starts moving.
    */
   minSwipeDistance?: number;
 
@@ -202,14 +202,14 @@ export interface DrawerLayoutProps {
 
   /**
    * @default 'none'
-   * Defines which userSelect property should be used.
-   * Values: 'none'|'text'|'auto'
+   * Sets whether the text inside both the drawer and the context window can be selected.
+   * Values: 'none' | 'text' | 'auto'
    */
   userSelect?: UserSelect;
 
   /**
    * @default 'auto'
-   * Defines which cursor property should be used when gesture activates.
+   * Sets the displayed cursor pictogram when hovering over the drawer.
    * Values: see CSS cursor values
    */
   activeCursor?: ActiveCursor;
