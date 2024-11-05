@@ -209,7 +209,7 @@ export interface DrawerLayoutProps {
 
   /**
    * @default 'auto'
-   * Sets the displayed cursor pictogram when hovering over the drawer.
+   * Sets the displayed cursor pictogram when the drawer is being dragged.
    * Values: see CSS cursor values
    */
   activeCursor?: ActiveCursor;
