@@ -713,10 +713,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               styles.drawerContainer,
               drawerAnimatedStyle,
               drawerContainerStyle,
+              dynamicDrawerStyles,
             ]}>
-            <Animated.View style={dynamicDrawerStyles}>
-              {props.renderNavigationView(openValue)}
-            </Animated.View>
+            {props.renderNavigationView(openValue)}
           </Animated.View>
         </Animated.View>
       </GestureDetector>
