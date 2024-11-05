@@ -373,7 +373,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         runOnJS(setDrawerState)(DrawerState.SETTLING);
 
         if (hideStatusBar) {
-          StatusBar.setHidden(willShow, statusBarAnimation);
+          runOnJS(StatusBar.setHidden)(willShow, statusBarAnimation);
         }
 
         drawerTranslation.value = withSpring(
