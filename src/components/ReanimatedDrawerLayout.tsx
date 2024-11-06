@@ -523,9 +523,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         .simultaneousWithExternalGesture(overlayDismissGesture)
         .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
         .enabled(
-          drawerLockMode !== DrawerLockMode.LOCKED_CLOSED &&
-            drawerLockMode !== DrawerLockMode.LOCKED_OPEN &&
-            drawerState !== DrawerState.SETTLING
+          drawerState !== DrawerState.SETTLING && drawerOpened
+            ? drawerLockMode !== DrawerLockMode.LOCKED_OPEN
+            : drawerLockMode !== DrawerLockMode.LOCKED_CLOSED
         )
         .onStart(() => {
           emitStateChanged(DrawerState.DRAGGING, false);
