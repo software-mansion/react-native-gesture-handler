@@ -106,7 +106,11 @@ export interface DrawerLayoutProps {
   drawerBackgroundColor?: string;
 
   /**
-   * Set if the drawer should get locked after being opened or closed.
+   * Specifies the lock mode of the drawer.
+   * Programatic opening/closing isn't affected by the lock mode. Defaults to `UNLOCKED`.
+   * - `UNLOCKED` - the drawer will respond to gestures.
+   * - `LOCKED_CLOSED` - the drawer will move freely until it settles in a closed position, then the gestures will be disabled.
+   * - `LOCKED_OPEN` - the drawer will move freely until it settles in an opened position, then the gestures will be disabled.
    */
   drawerLockMode?: DrawerLockMode;
 
