@@ -295,8 +295,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         rowState.value === 1
           ? leftWidth.value
           : rowState.value === -1
-          ? -rightWidth.value
-          : 0;
+            ? -rightWidth.value
+            : 0;
 
       const offsetDrag = userDrag.value / friction + startOffset;
 
@@ -389,8 +389,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             ? rightWidth.value
             : leftWidth.value
           : moveToRight
-          ? leftWidth.value
-          : rightWidth.value;
+            ? leftWidth.value
+            : rightWidth.value;
 
         const progressSpringConfig = {
           ...translationSpringConfig,
@@ -566,10 +566,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           rowState.value === -1
             ? SwipeDirection.RIGHT
             : rowState.value === 1
-            ? SwipeDirection.LEFT
-            : event.translationX > 0
-            ? SwipeDirection.RIGHT
-            : SwipeDirection.LEFT;
+              ? SwipeDirection.LEFT
+              : event.translationX > 0
+                ? SwipeDirection.RIGHT
+                : SwipeDirection.LEFT;
 
         if (!dragStarted.value) {
           dragStarted.value = true;

@@ -58,7 +58,7 @@ export default function Pressable(props: PressableProps) {
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
-      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : hitSlop ?? {},
+      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : (hitSlop ?? {}),
     [hitSlop]
   );
 
@@ -66,7 +66,7 @@ export default function Pressable(props: PressableProps) {
     () =>
       typeof pressRetentionOffset === 'number'
         ? numberAsInset(pressRetentionOffset)
-        : pressRetentionOffset ?? {},
+        : (pressRetentionOffset ?? {}),
     [pressRetentionOffset]
   );
 

@@ -78,7 +78,7 @@ try {
 }
 
 type GestureHandlerTestEvent<
-  TEventPayload extends Record<string, unknown> = Record<string, unknown>
+  TEventPayload extends Record<string, unknown> = Record<string, unknown>,
 > = (
   | GestureEvent<TEventPayload>
   | HandlerStateChangeEvent<TEventPayload>
@@ -454,17 +454,15 @@ type AllHandlers =
 // prettier-ignore
 type ClassComponentConstructor<P> = new (props: P) => React.Component<P, any, any>;
 
-type ExtractPayloadFromProps<T> = T extends BaseGestureHandlerProps<
-  infer TPayload
->
-  ? TPayload
-  : never;
+type ExtractPayloadFromProps<T> =
+  T extends BaseGestureHandlerProps<infer TPayload> ? TPayload : never;
 
-type ExtractConfig<T> = T extends BaseGesture<infer TGesturePayload>
-  ? TGesturePayload
-  : T extends ClassComponentConstructor<infer THandlerProps>
-  ? ExtractPayloadFromProps<THandlerProps>
-  : Record<string, unknown>;
+type ExtractConfig<T> =
+  T extends BaseGesture<infer TGesturePayload>
+    ? TGesturePayload
+    : T extends ClassComponentConstructor<infer THandlerProps>
+      ? ExtractPayloadFromProps<THandlerProps>
+      : Record<string, unknown>;
 
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
   componentOrGesture: ReactTestInstance | GestureType,
