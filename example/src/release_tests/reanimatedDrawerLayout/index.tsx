@@ -7,6 +7,7 @@ import ReanimatedDrawerLayout, {
   DrawerType,
   DrawerPosition,
   DrawerLayoutMethods,
+  DrawerLockMode,
 } from 'react-native-gesture-handler/ReanimatedDrawerLayout';
 import { LoremIpsum } from '../../../src/common';
 
@@ -23,6 +24,7 @@ export default function ReanimatedDrawerExample() {
   const drawerRef = useRef<DrawerLayoutMethods>(null);
   const [side, setSide] = useState(DrawerPosition.LEFT);
   const [type, setType] = useState(DrawerType.FRONT);
+  const [lock, setLock] = useState(DrawerLockMode.UNLOCKED);
 
   const tapGesture = Gesture.Tap()
     .runOnJS(true)
@@ -52,12 +54,25 @@ export default function ReanimatedDrawerExample() {
       )
     );
 
+  const toggleLockGesture = Gesture.Tap()
+    .runOnJS(true)
+    .onStart(() =>
+      setLock(
+        lock === DrawerLockMode.UNLOCKED
+          ? DrawerLockMode.LOCKED_CLOSED
+          : lock === DrawerLockMode.LOCKED_CLOSED
+          ? DrawerLockMode.LOCKED_OPEN
+          : DrawerLockMode.UNLOCKED
+      )
+    );
+
   return (
     <ReanimatedDrawerLayout
       ref={drawerRef}
       renderNavigationView={() => <DrawerPage />}
       drawerPosition={side}
-      drawerType={type}>
+      drawerType={type}
+      drawerLockMode={lock}>
       <View style={styles.innerContainer}>
         <GestureDetector gesture={tapGesture}>
           <View style={styles.box}>
@@ -81,6 +96,18 @@ export default function ReanimatedDrawerExample() {
                 : type === DrawerType.BACK
                 ? 'slide'
                 : 'front'}
+            </Text>
+          </View>
+        </GestureDetector>
+        <GestureDetector gesture={toggleLockGesture}>
+          <View style={styles.box}>
+            <Text>
+              Current lock mode:{' '}
+              {lock === DrawerLockMode.UNLOCKED
+                ? 'unlocked'
+                : lock === DrawerLockMode.LOCKED_OPEN
+                ? 'locked-open'
+                : 'locked-closed'}
             </Text>
           </View>
         </GestureDetector>
