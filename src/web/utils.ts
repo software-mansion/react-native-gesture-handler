@@ -233,7 +233,7 @@ function spherical2tilt(altitudeAngle: number, azimuthAngle: number) {
   return { tiltX, tiltY };
 }
 
-const SVGElements = [
+const RNSVGElements = [
   'Circle',
   'ClipPath',
   'Ellipse',
@@ -265,10 +265,11 @@ const SVGElements = [
 // corresponds to one of the possible SVG elements. Then we also check if `elementRef` field exists.
 // By doing both steps we decrease probability of detecting situations where, for example, user makes custom `Circle` and
 // we treat it as SVG.
-export function isSVGElement(viewRef: SVGRef | GestureHandlerRef) {
+export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
   const className = Object.getPrototypeOf(viewRef).constructor.name;
 
   return (
-    SVGElements.indexOf(className) >= 0 && Object.hasOwn(viewRef, 'elementRef')
+    RNSVGElements.indexOf(className) >= 0 &&
+    Object.hasOwn(viewRef, 'elementRef')
   );
 }

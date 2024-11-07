@@ -1,5 +1,5 @@
 import type { GestureHandlerRef, SVGRef } from './web/interfaces';
-import { isSVGElement } from './web/utils';
+import { isRNSVGElement } from './web/utils';
 
 export default function findNodeHandle(
   viewRef: GestureHandlerRef | SVGRef | HTMLElement | SVGElement
@@ -19,7 +19,7 @@ export default function findNodeHandle(
     return viewRef;
   }
 
-  if (isSVGElement(viewRef)) {
+  if (isRNSVGElement(viewRef)) {
     return (viewRef as SVGRef).elementRef.current;
   }
 

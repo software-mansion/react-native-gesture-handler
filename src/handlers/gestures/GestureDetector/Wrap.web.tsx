@@ -12,10 +12,10 @@ export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const child: any = React.Children.only(children);
 
-      const isSVGElement =
+      const isRNSVGElement =
         Object.getPrototypeOf(child?.type)?.name === 'WebShape';
 
-      const additionalProps = isSVGElement
+      const additionalProps = isRNSVGElement
         ? { collapsable: false, ref }
         : { collapsable: false };
 
@@ -26,7 +26,7 @@ export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
         child.props.children
       );
 
-      return isSVGElement ? (
+      return isRNSVGElement ? (
         clone
       ) : (
         <div
