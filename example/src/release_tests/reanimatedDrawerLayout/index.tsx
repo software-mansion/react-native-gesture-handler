@@ -1,11 +1,9 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { SharedValue } from 'react-native-reanimated';
 
-import ReanimatedDrawerLayout, {
-  DrawerLayoutMethods,
-} from 'react-native-gesture-handler/ReanimatedDrawerLayout';
+import ReanimatedDrawerLayout from 'react-native-gesture-handler/ReanimatedDrawerLayout';
 import { LoremIpsum } from '../../../src/common';
 
 const DrawerPage = ({ progress }: { progress?: SharedValue }) => {

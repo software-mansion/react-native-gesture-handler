@@ -7,7 +7,6 @@ import React, {
   forwardRef,
   useCallback,
   useEffect,
-  useImperativeHandle,
   useMemo,
 } from 'react';
 
@@ -226,23 +225,9 @@ export interface DrawerLayoutMethods {
   closeDrawer: (options?: DrawerMovementOption) => void;
 }
 
-const defaultProps = {
-  drawerWidth: 200,
-  drawerPosition: DrawerPosition.LEFT,
-  drawerType: DrawerType.FRONT,
-  edgeWidth: 20,
-  minSwipeDistance: 3,
-  overlayColor: 'rgba(0, 0, 0, 0.7)',
-  drawerLockMode: DrawerLockMode.UNLOCKED,
-  enableTrackpadTwoFingerGesture: false,
-  activeCursor: 'auto' as ActiveCursor,
-  mouseButton: MouseButton.LEFT,
-  statusBarAnimation: 'slide' as StatusBarAnimation,
-};
-
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps) {
-    const { overlayColor = defaultProps.overlayColor } = props;
+    const overlayColor = 'rgba(0, 0, 0, 0.7)';
 
     const isDrawerOpen = useSharedValue(false);
 
@@ -285,7 +270,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           {props.children}
           <Animated.View
             animatedProps={overlayAnimatedProps}
-            style={[styles.overlay, overlayAnimatedStyle]}
+            style={[StyleSheet.absoluteFillObject, overlayAnimatedStyle]}
           />
         </Animated.View>
       </GestureDetector>
@@ -294,15 +279,3 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 );
 
 export default DrawerLayout;
-
-const styles = StyleSheet.create({
-  drawerContainer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1001,
-    flexDirection: 'row',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1000,
-  },
-});
