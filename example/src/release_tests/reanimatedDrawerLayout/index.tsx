@@ -18,13 +18,6 @@ const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
 };
 
 export default function ReanimatedDrawerExample() {
-  const drawerRef = useRef<DrawerLayoutMethods>(null);
-  const tapGesture = Gesture.Tap()
-    .runOnJS(true)
-    .onStart(() =>
-      drawerRef.current?.openDrawer({ animationSpeed: 1, initialVelocity: 0 })
-    );
-
   const toggleLockGesture = Gesture.Tap()
     .runOnJS(true)
     .onFinalize((_, success) =>
@@ -32,15 +25,11 @@ export default function ReanimatedDrawerExample() {
     );
 
   return (
-    <ReanimatedDrawerLayout
-      ref={drawerRef}
-      renderNavigationView={() => <DrawerPage />}>
+    <ReanimatedDrawerLayout renderNavigationView={() => <DrawerPage />}>
       <View style={styles.innerContainer}>
-        <GestureDetector gesture={tapGesture}>
-          <View style={styles.box}>
-            <Text>Open drawer</Text>
-          </View>
-        </GestureDetector>
+        <View style={styles.box}>
+          <Text>Open drawer</Text>
+        </View>
         <GestureDetector gesture={toggleLockGesture}>
           <View style={styles.box}>
             <Text>Button</Text>

@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
 } from 'react';
@@ -186,7 +187,7 @@ export interface DrawerLayoutProps {
   /**
    * Elements that will be rendered inside the content view.
    */
-  children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
+  children?: ReactNode;
 
   /**
    * @default 'none'
@@ -240,13 +241,8 @@ const defaultProps = {
 };
 
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
-  function DrawerLayout(props: DrawerLayoutProps, ref) {
-    const drawerTranslation = useSharedValue<number>(0);
-
-    const {
-      drawerWidth = defaultProps.drawerWidth,
-      overlayColor = defaultProps.overlayColor,
-    } = props;
+  function DrawerLayout(props: DrawerLayoutProps) {
+    const { overlayColor = defaultProps.overlayColor } = props;
 
     const isDrawerOpen = useSharedValue(false);
 
@@ -262,22 +258,13 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       };
     });
 
-    const animateDrawer = useCallback(
-      (toValue: number) => {
-        'worklet';
-        const willShow = toValue !== 0;
-        isDrawerOpen.value = willShow;
-        console.log('setting drawer open value to', willShow);
-
-        drawerTranslation.value = toValue;
-      },
-      [drawerTranslation, isDrawerOpen]
-    );
-
-    const openDrawer = useCallback(() => {
+    const animateDrawer = useCallback(() => {
       'worklet';
-      animateDrawer(drawerWidth);
-    }, [animateDrawer, drawerWidth]);
+      console.log('setting drawer open value to true');
+      isDrawerOpen.value = true;
+    }, [isDrawerOpen]);
+
+    useEffect(() => animateDrawer(), [animateDrawer]);
 
     const overlayDismissGesture = useMemo(
       () =>
@@ -292,32 +279,10 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       backgroundColor: overlayColor,
     }));
 
-    const containerStyles = useAnimatedStyle(() => ({
-      transform: [
-        {
-          translateX: 1,
-        },
-      ],
-    }));
-
-    const children =
-      typeof props.children === 'function'
-        ? props.children() // renderer function
-        : props.children;
-
-    useImperativeHandle(
-      ref,
-      () => ({
-        openDrawer,
-        closeDrawer: () => null,
-      }),
-      [openDrawer]
-    );
-
     return (
       <GestureDetector gesture={overlayDismissGesture}>
-        <Animated.View style={[styles.containerOnBack, containerStyles]}>
-          {children}
+        <Animated.View style={StyleSheet.absoluteFillObject}>
+          {props.children}
           <Animated.View
             animatedProps={overlayAnimatedProps}
             style={[styles.overlay, overlayAnimatedStyle]}
@@ -335,18 +300,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 1001,
     flexDirection: 'row',
-  },
-  containerInFront: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1002,
-  },
-  containerOnBack: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  main: {
-    flex: 1,
-    zIndex: 0,
-    overflow: 'hidden',
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
