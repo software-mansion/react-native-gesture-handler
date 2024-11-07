@@ -179,3 +179,12 @@ export enum WheelDevice {
   MOUSE,
   TOUCHPAD,
 }
+
+export type GestureHandlerRef = {
+  viewTag: GestureHandlerRef;
+  current: HTMLElement;
+};
+
+export type SVGRef = {
+  elementRef: { current: SVGElement };
+};
