@@ -43,6 +43,17 @@
             "./node_modules/@swmansion/icons/fonts/curved/swm-icons-curved.ttf"
           ]
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          },
+          "android": {
+            "newArchEnabled": true
+          }
+        }
       ]
     ]
   }
