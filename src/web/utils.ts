@@ -266,10 +266,10 @@ const RNSVGElements = [
 // By doing both steps we decrease probability of detecting situations where, for example, user makes custom `Circle` and
 // we treat it as SVG.
 export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
-  const className = Object.getPrototypeOf(viewRef).constructor.name;
+  const componentClassName = Object.getPrototypeOf(viewRef).constructor.name;
 
   return (
-    RNSVGElements.indexOf(className) >= 0 &&
+    RNSVGElements.indexOf(componentClassName) >= 0 &&
     Object.hasOwn(viewRef, 'elementRef')
   );
 }
