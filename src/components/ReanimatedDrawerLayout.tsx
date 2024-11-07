@@ -2,13 +2,7 @@
 // It's cross-compatible with all platforms despite
 // `DrawerLayoutAndroid` only being available on android
 
-import React, {
-  ReactNode,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-} from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo } from 'react';
 
 import { StyleSheet } from 'react-native';
 
@@ -28,57 +22,53 @@ export interface DrawerLayoutProps {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DrawerLayoutMethods {}
 
-const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
-  function DrawerLayout(props: DrawerLayoutProps) {
-    const overlayColor = 'rgba(0, 0, 0, 0.7)';
+function DrawerLayout(props: DrawerLayoutProps) {
+  const overlayColor = 'rgba(0, 0, 0, 0.7)';
 
-    const isDrawerOpen = useSharedValue(false);
+  const isDrawerOpen = useSharedValue(false);
 
-    const overlayAnimatedProps = useAnimatedProps(() => {
-      console.log(
-        'updated pointerEvents to',
-        isDrawerOpen.value ? 'auto' : 'none'
-      );
-      return {
-        pointerEvents: isDrawerOpen.value
-          ? ('auto' as const)
-          : ('none' as const),
-      };
-    });
-
-    const animateDrawer = useCallback(() => {
-      'worklet';
-      console.log('setting drawer open value to true');
-      isDrawerOpen.value = true;
-    }, [isDrawerOpen]);
-
-    useEffect(() => animateDrawer(), [animateDrawer]);
-
-    const overlayDismissGesture = useMemo(
-      () =>
-        Gesture.Tap().onFinalize((_, success) =>
-          console.log('drawer', success ? 'activated [GOOD]' : 'canceled')
-        ),
-      []
+  const overlayAnimatedProps = useAnimatedProps(() => {
+    console.log(
+      'updated pointerEvents to',
+      isDrawerOpen.value ? 'auto' : 'none'
     );
+    return {
+      pointerEvents: isDrawerOpen.value ? ('auto' as const) : ('none' as const),
+    };
+  });
 
-    const overlayAnimatedStyle = useAnimatedStyle(() => ({
-      opacity: 1,
-      backgroundColor: overlayColor,
-    }));
+  const animateDrawer = useCallback(() => {
+    'worklet';
+    console.log('setting drawer open value to true');
+    isDrawerOpen.value = true;
+  }, [isDrawerOpen]);
 
-    return (
-      <GestureDetector gesture={overlayDismissGesture}>
-        <Animated.View style={StyleSheet.absoluteFillObject}>
-          {props.children}
-          <Animated.View
-            animatedProps={overlayAnimatedProps}
-            style={[StyleSheet.absoluteFillObject, overlayAnimatedStyle]}
-          />
-        </Animated.View>
-      </GestureDetector>
-    );
-  }
-);
+  useEffect(() => animateDrawer(), [animateDrawer]);
+
+  const overlayDismissGesture = useMemo(
+    () =>
+      Gesture.Tap().onFinalize((_, success) =>
+        console.log('drawer', success ? 'activated [GOOD]' : 'canceled')
+      ),
+    []
+  );
+
+  const overlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: 1,
+    backgroundColor: overlayColor,
+  }));
+
+  return (
+    <GestureDetector gesture={overlayDismissGesture}>
+      <Animated.View style={StyleSheet.absoluteFillObject}>
+        {props.children}
+        <Animated.View
+          animatedProps={overlayAnimatedProps}
+          style={[StyleSheet.absoluteFillObject, overlayAnimatedStyle]}
+        />
+      </Animated.View>
+    </GestureDetector>
+  );
+}
 
 export default DrawerLayout;
