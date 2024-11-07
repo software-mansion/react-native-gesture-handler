@@ -451,7 +451,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         },
         openRight() {
           'worklet';
-          animateRow(-rightWidth.value);
+          // rightOffset and rowWidth are already much sooner than rightWidth
+          animateRow((rightOffset.value ?? 0) - rowWidth.value);
         },
         reset() {
           'worklet';
@@ -463,7 +464,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       }),
       [
         leftWidth,
-        rightWidth,
+        rightOffset,
+        rowWidth,
         userDrag,
         showLeftProgress,
         appliedTranslation,
