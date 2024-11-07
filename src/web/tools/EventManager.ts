@@ -37,6 +37,7 @@ export default abstract class EventManager<T> {
   protected onPointerOutOfBounds(_event: AdaptedEvent): void {}
   protected onPointerMoveOver(_event: AdaptedEvent): void {}
   protected onPointerMoveOut(_event: AdaptedEvent): void {}
+  protected onWheel(_event: AdaptedEvent): void {}
 
   public setOnPointerDown(callback: PointerEventCallback): void {
     this.onPointerDown = callback;
@@ -70,6 +71,9 @@ export default abstract class EventManager<T> {
   }
   public setOnPointerMoveOut(callback: PointerEventCallback): void {
     this.onPointerMoveOut = callback;
+  }
+  public setOnWheel(callback: PointerEventCallback): void {
+    this.onWheel = callback;
   }
 
   protected markAsInBounds(pointerId: number): void {

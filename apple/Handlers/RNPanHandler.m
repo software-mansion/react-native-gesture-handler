@@ -464,9 +464,13 @@
               withVelocity:[recognizer velocityInView:recognizer.view.window]
        withNumberOfTouches:recognizer.numberOfTouches
            withPointerType:_pointerType
+#if !TARGET_OS_TV
             withStylusData:[panRecognizer.stylusData toDictionary]]; // In Objective-C calling method on nil returns
                                                                      // nil, therefore this line does not crash.
+#else
+            withStylusData:nil];
+#endif // TARGET_OS_TV
 }
-#endif
+#endif // TARGET_OS_OSX
 
 @end

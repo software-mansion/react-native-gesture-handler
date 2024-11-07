@@ -78,6 +78,7 @@ export interface Config extends Record<string, ConfigArgs> {
   shouldActivateOnStart?: boolean;
   disallowInterruption?: boolean;
   direction?: Directions;
+  enableTrackpadTwoFingerGesture?: boolean;
 }
 
 type NativeEventArgs = number | State | boolean | undefined;
@@ -151,6 +152,7 @@ export interface AdaptedEvent {
   time: number;
   button?: MouseButton;
   stylusData?: StylusData;
+  wheelDeltaY?: number;
 }
 
 export enum EventTypes {
@@ -170,4 +172,10 @@ export enum TouchEventType {
   MOVE,
   UP,
   CANCELLED,
+}
+
+export enum WheelDevice {
+  UNDETERMINED,
+  MOUSE,
+  TOUCHPAD,
 }
