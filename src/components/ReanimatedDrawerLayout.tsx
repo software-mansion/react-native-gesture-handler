@@ -18,13 +18,10 @@ import {
 } from 'react-native';
 
 import Animated, {
-  Extrapolation,
   SharedValue,
-  interpolate,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
 } from 'react-native-reanimated';
 
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
@@ -247,60 +244,40 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const drawerTranslation = useSharedValue<number>(0);
 
     const {
-      drawerPosition = defaultProps.drawerPosition,
       drawerWidth = defaultProps.drawerWidth,
       overlayColor = defaultProps.overlayColor,
     } = props;
 
-    const isFromLeft = drawerPosition === DrawerPosition.LEFT;
-
-    const sideCorrection = isFromLeft ? 1 : -1;
-
-    const openValue = {
-      value: 1,
-    };
-
     const isDrawerOpen = useSharedValue(false);
 
-    const overlayAnimatedProps = useAnimatedProps(() => ({
-      pointerEvents: isDrawerOpen.value ? ('auto' as const) : ('none' as const),
-    }));
-
-    // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
+    const overlayAnimatedProps = useAnimatedProps(() => {
+      console.log(
+        'updated pointerEvents to',
+        isDrawerOpen.value ? 'auto' : 'none'
+      );
+      return {
+        pointerEvents: isDrawerOpen.value
+          ? ('auto' as const)
+          : ('none' as const),
+      };
+    });
 
     const animateDrawer = useCallback(
-      (toValue: number, initialVelocity: number, animationSpeed?: number) => {
+      (toValue: number) => {
         'worklet';
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
+        console.log('setting drawer open value to', willShow);
 
-        drawerTranslation.value = withSpring(toValue, {
-          // Velocity threshold does not matter as long as the destination is reached
-          // This prevents rubberbanding
-          restDisplacementThreshold: 1,
-          restSpeedThreshold: 10000,
-          overshootClamping: true,
-
-          velocity: initialVelocity,
-          mass: animationSpeed ? 1 / animationSpeed : 1,
-          damping: 50,
-          stiffness: 300,
-        });
+        drawerTranslation.value = toValue;
       },
       [drawerTranslation, isDrawerOpen]
     );
 
-    const openDrawer = useCallback(
-      (options: DrawerMovementOption = {}) => {
-        'worklet';
-        animateDrawer(
-          drawerWidth,
-          options.initialVelocity ?? 0,
-          options.animationSpeed
-        );
-      },
-      [animateDrawer, drawerWidth]
-    );
+    const openDrawer = useCallback(() => {
+      'worklet';
+      animateDrawer(drawerWidth);
+    }, [animateDrawer, drawerWidth]);
 
     const overlayDismissGesture = useMemo(
       () =>
@@ -311,19 +288,14 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const overlayAnimatedStyle = useAnimatedStyle(() => ({
-      opacity: openValue.value,
+      opacity: 1,
       backgroundColor: overlayColor,
     }));
 
     const containerStyles = useAnimatedStyle(() => ({
       transform: [
         {
-          translateX: interpolate(
-            openValue.value,
-            [0, 1],
-            [0, drawerWidth * sideCorrection],
-            Extrapolation.CLAMP
-          ),
+          translateX: 1,
         },
       ],
     }));
