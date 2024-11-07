@@ -8,7 +8,6 @@ import React, {
   useCallback,
   useImperativeHandle,
   useMemo,
-  useState,
 } from 'react';
 
 import {
@@ -22,10 +21,8 @@ import Animated, {
   Extrapolation,
   SharedValue,
   interpolate,
-  runOnJS,
   useAnimatedProps,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
@@ -36,7 +33,6 @@ import {
   UserSelect,
   ActiveCursor,
   MouseButton,
-  HitSlop,
 } from '../handlers/gestureHandlerCommon';
 
 export enum DrawerPosition {
@@ -248,14 +244,11 @@ const defaultProps = {
 
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
-    const dragX = useSharedValue<number>(0);
     const drawerTranslation = useSharedValue<number>(0);
 
     const {
       drawerPosition = defaultProps.drawerPosition,
       drawerWidth = defaultProps.drawerWidth,
-      drawerType = defaultProps.drawerType,
-      edgeWidth = defaultProps.edgeWidth,
       overlayColor = defaultProps.overlayColor,
     } = props;
 
@@ -263,41 +256,15 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const sideCorrection = isFromLeft ? 1 : -1;
 
-    // While closing the drawer when user starts gesture in the greyed out part of the window,
-    // we want the drawer to follow only once the finger reaches the edge of the drawer.
-    // See the diagram for reference. * = starting finger position, < = current finger position
-    // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|..<*..|    |XXXXXXXX|.<-*..|    |XXXXXXXX|<--*..|    |XXXXX|<-----*..|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    +---------------+    +---------------+    +---------------+    +---------------+
-
-    const openValue = useDerivedValue(() => {
-      const newOpenValue = interpolate(
-        drawerTranslation.value,
-        [0, drawerWidth],
-        [0, 1],
-        Extrapolation.CLAMP
-      );
-
-      return newOpenValue;
-    });
+    const openValue = {
+      value: 1,
+    };
 
     const isDrawerOpen = useSharedValue(false);
 
     const overlayAnimatedProps = useAnimatedProps(() => ({
       pointerEvents: isDrawerOpen.value ? ('auto' as const) : ('none' as const),
     }));
-
-    // While the drawer is hidden, it's hitSlop overflows onto the main view by edgeWidth
-    // This way it can be swiped open even when it's hidden
-    const [, setEdgeHitSlop] = useState<HitSlop>(
-      isFromLeft
-        ? { left: 0, width: edgeWidth }
-        : { right: 0, width: edgeWidth }
-    );
 
     // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
 
@@ -306,46 +273,21 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         'worklet';
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
-        runOnJS(setEdgeHitSlop)(
-          isFromLeft
-            ? { left: 0, width: willShow ? undefined : edgeWidth }
-            : { right: 0, width: willShow ? undefined : edgeWidth }
-        );
 
-        drawerTranslation.value = withSpring(
-          toValue,
-          {
-            // Velocity threshold does not matter as long as the destination is reached
-            // This prevents rubberbanding
-            restDisplacementThreshold: 1,
-            restSpeedThreshold: 10000,
-            overshootClamping: true,
+        drawerTranslation.value = withSpring(toValue, {
+          // Velocity threshold does not matter as long as the destination is reached
+          // This prevents rubberbanding
+          restDisplacementThreshold: 1,
+          restSpeedThreshold: 10000,
+          overshootClamping: true,
 
-            velocity: initialVelocity,
-            mass: animationSpeed ? 1 / animationSpeed : 1,
-            damping: 50,
-            stiffness: 300,
-          },
-          (finished) => {
-            if (finished) {
-              if (willShow) {
-                dragX.value = drawerWidth * sideCorrection;
-              } else {
-                dragX.value = 0;
-              }
-            }
-          }
-        );
+          velocity: initialVelocity,
+          mass: animationSpeed ? 1 / animationSpeed : 1,
+          damping: 50,
+          stiffness: 300,
+        });
       },
-      [
-        dragX,
-        drawerTranslation,
-        edgeWidth,
-        isFromLeft,
-        isDrawerOpen,
-        drawerWidth,
-        sideCorrection,
-      ]
+      [drawerTranslation, isDrawerOpen]
     );
 
     const openDrawer = useCallback(
@@ -363,7 +305,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const overlayDismissGesture = useMemo(
       () =>
         Gesture.Tap().onFinalize((_, success) =>
-          console.log('drawer', success ? 'activated' : 'canceled')
+          console.log('drawer', success ? 'activated [GOOD]' : 'canceled')
         ),
       []
     );
@@ -373,36 +315,29 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       backgroundColor: overlayColor,
     }));
 
-    const containerStyles = useAnimatedStyle(() => {
-      if (drawerType === DrawerType.FRONT) {
-        return {};
-      }
-
-      return {
-        transform: [
-          {
-            translateX: interpolate(
-              openValue.value,
-              [0, 1],
-              [0, drawerWidth * sideCorrection],
-              Extrapolation.CLAMP
-            ),
-          },
-        ],
-      };
-    });
+    const containerStyles = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: interpolate(
+            openValue.value,
+            [0, 1],
+            [0, drawerWidth * sideCorrection],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+    }));
 
     const children =
       typeof props.children === 'function'
-        ? props.children(openValue) // renderer function
+        ? props.children() // renderer function
         : props.children;
 
-    const noop = () => null;
     useImperativeHandle(
       ref,
       () => ({
         openDrawer,
-        closeDrawer: noop,
+        closeDrawer: () => null,
       }),
       [openDrawer]
     );

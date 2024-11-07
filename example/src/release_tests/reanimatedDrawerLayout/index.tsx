@@ -28,7 +28,7 @@ export default function ReanimatedDrawerExample() {
   const toggleLockGesture = Gesture.Tap()
     .runOnJS(true)
     .onFinalize((_, success) =>
-      console.log('inner', success ? 'activated' : 'canceled')
+      console.log('inner', success ? 'activated [BAD]' : 'canceled')
     );
 
   return (
