@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
@@ -347,16 +348,19 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [sideCorrection, drawerOpened]
     );
 
+    useEffect(() => {
+      setEdgeHitSlop(
+        isFromLeft
+          ? { left: 0, width: edgeWidth }
+          : { right: 0, width: edgeWidth }
+      );
+    }, [isFromLeft, edgeWidth]);
+
     const animateDrawer = useCallback(
       (toValue: number, initialVelocity: number, animationSpeed?: number) => {
         'worklet';
         const willShow = toValue !== 0;
         isDrawerOpen.value = willShow;
-        runOnJS(setEdgeHitSlop)(
-          isFromLeft
-            ? { left: 0, width: willShow ? undefined : edgeWidth }
-            : { right: 0, width: willShow ? undefined : edgeWidth }
-        );
 
         emitStateChanged(DrawerState.SETTLING, willShow);
         runOnJS(setDrawerState)(DrawerState.SETTLING);
@@ -404,9 +408,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       },
       [
         openValue,
-        edgeWidth,
         emitStateChanged,
-        isFromLeft,
         isDrawerOpen,
         hideStatusBar,
         onDrawerClose,
