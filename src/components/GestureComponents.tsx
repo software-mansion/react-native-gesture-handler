@@ -17,16 +17,22 @@ import {
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
+  Text as RNText,
+  TextProps as RNTextProps,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
 import {
+  NativeViewGestureHandler,
   NativeViewGestureHandlerProps,
   nativeViewProps,
 } from '../handlers/NativeViewGestureHandler';
 
 import { toArray } from '../utils';
+import { State } from '../State';
+import type { HandlerStateChangeEvent } from '../handlers/gestureHandlerCommon';
+import type { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
 
 export const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
@@ -83,6 +89,30 @@ export type Switch = typeof Switch & RNSwitch;
 export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
+
+type TextProps = Omit<RNTextProps, 'onPress'> & {
+  onPress?: (
+    event: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
+  ) => void;
+};
+
+export const Text = (props: TextProps) => {
+  const { children, onPress, ...rest } = props;
+  return (
+    <NativeViewGestureHandler
+      onHandlerStateChange={(event) => {
+        if (
+          event.nativeEvent.oldState === State.ACTIVE &&
+          event.nativeEvent.state === State.END
+        ) {
+          onPress?.(event);
+        }
+      }}>
+      <RNText {...rest}>{children}</RNText>
+    </NativeViewGestureHandler>
+  );
+};
+export type Text = typeof Text & RNText;
 
 export const DrawerLayoutAndroid = createNativeWrapper<
   PropsWithChildren<RNDrawerLayoutAndroidProps>

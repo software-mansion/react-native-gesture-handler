@@ -101,6 +101,7 @@ export {
   DrawerLayoutAndroid,
   FlatList,
   RefreshControl,
+  Text,
 } from './components/GestureComponents';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
