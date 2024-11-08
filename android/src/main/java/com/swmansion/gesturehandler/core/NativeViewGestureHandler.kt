@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
+import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 import com.swmansion.gesturehandler.react.isScreenReaderOn
@@ -44,7 +45,13 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     // if the gesture is marked by user as simultaneous with other or the hook return true
-    if (super.shouldRecognizeSimultaneously(handler) || hook.shouldRecognizeSimultaneously(handler)) {
+    val hookCheckResult = hook.shouldRecognizeSimultaneously(handler)
+
+    if (hookCheckResult != null) {
+      return hookCheckResult
+    }
+
+    if (super.shouldRecognizeSimultaneously(handler)) {
       return true
     }
 
@@ -79,6 +86,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       is ReactEditText -> this.hook = EditTextHook(this, view)
       is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
       is ReactScrollView -> this.hook = ScrollViewHook()
+      is ReactTextView -> this.hook = TextHook()
     }
   }
 
@@ -179,7 +187,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * @return Boolean value signalling whether the gesture can be recognized simultaneously with
      * other (handler). Returning false doesn't necessarily prevent it from happening.
      */
-    fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
+    fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean? = null
 
     /**
      * shouldActivateOnStart and tryIntercept have priority over this method
@@ -199,6 +207,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * by this one.
      */
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
+  }
+
+  private class TextHook() : NativeViewGestureHandlerHook {
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
+      return false
+    }
   }
 
   private class EditTextHook(
