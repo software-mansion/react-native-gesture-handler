@@ -258,7 +258,6 @@ const defaultProps = {
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
     const dragX = useSharedValue<number>(0);
-    const drawerTranslation = useSharedValue<number>(0);
 
     const [containerWidth, setContainerWidth] = useState(0);
     const [drawerState, setDrawerState] = useState<DrawerState>(
@@ -311,18 +310,11 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
     //    +---------------+    +---------------+    +---------------+    +---------------+
 
-    const openValue = useDerivedValue(() => {
-      const newOpenValue = interpolate(
-        drawerTranslation.value,
-        [0, drawerWidth],
-        [0, 1],
-        Extrapolation.CLAMP
-      );
+    const openValue = useSharedValue<number>(0);
 
-      onDrawerSlide && runOnJS(onDrawerSlide)(newOpenValue);
-
-      return newOpenValue;
-    });
+    useDerivedValue(() => {
+      onDrawerSlide && runOnJS(onDrawerSlide)(openValue.value);
+    }, []);
 
     const isDrawerOpen = useSharedValue(false);
 
@@ -379,16 +371,25 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           runOnJS(StatusBar.setHidden)(willShow, statusBarAnimation);
         }
 
-        drawerTranslation.value = withSpring(
+        const normalizedToValue = interpolate(
           toValue,
-          {
-            // Velocity threshold does not matter as long as the destination is reached
-            // This prevents rubberbanding
-            restDisplacementThreshold: 1,
-            restSpeedThreshold: 10000,
-            overshootClamping: true,
+          [0, drawerWidth],
+          [0, 1],
+          Extrapolation.CLAMP
+        );
 
-            velocity: initialVelocity,
+        const normalizedInitialVelocity = interpolate(
+          initialVelocity,
+          [0, drawerWidth],
+          [0, 1],
+          Extrapolation.CLAMP
+        );
+
+        openValue.value = withSpring(
+          normalizedToValue,
+          {
+            overshootClamping: true,
+            velocity: normalizedInitialVelocity,
             mass: animationSpeed ? 1 / animationSpeed : 1,
             damping: 50,
             stiffness: 300,
@@ -411,7 +412,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       },
       [
         dragX,
-        drawerTranslation,
+        openValue,
         edgeWidth,
         emitStateChanged,
         isFromLeft,
@@ -566,7 +567,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               startedInsideTranslation
             );
 
-          drawerTranslation.value =
+          const drawerTranslation =
             drawerType === DrawerType.FRONT
               ? sideCorrectedDragX.value +
                 interpolate(
@@ -575,12 +576,19 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
                   [0, 0, 1]
                 )
               : sideCorrectedDragX.value;
+
+          openValue.value = interpolate(
+            drawerTranslation,
+            [0, drawerWidth],
+            [0, 1],
+            Extrapolation.CLAMP
+          );
         })
         .onEnd(handleRelease);
     }, [
       dragX,
       drawerLockMode,
-      drawerTranslation,
+      openValue,
       drawerType,
       drawerWidth,
       emitStateChanged,
