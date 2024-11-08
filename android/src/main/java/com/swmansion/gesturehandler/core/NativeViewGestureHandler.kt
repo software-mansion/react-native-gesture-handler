@@ -108,7 +108,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         cancel()
       } else {
         view.onTouchEvent(event)
-        if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
+
+        // We have to explicitly check for ReactTextView, since its `isPressed` flag is not set to `true`,
+        // in contrast to Touchable
+        val shouldActivate = view.isPressed || view is ReactTextView
+
+        if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && shouldActivate) {
           activate()
         }
 
