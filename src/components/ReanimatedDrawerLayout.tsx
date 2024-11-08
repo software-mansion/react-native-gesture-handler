@@ -257,8 +257,6 @@ const defaultProps = {
 
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
-    const dragX = useSharedValue<number>(0);
-
     const [containerWidth, setContainerWidth] = useState(0);
     const [drawerState, setDrawerState] = useState<DrawerState>(
       DrawerState.IDLE
@@ -294,10 +292,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const isFromLeft = drawerPosition === DrawerPosition.LEFT;
 
     const sideCorrection = isFromLeft ? 1 : -1;
-
-    const sideCorrectedDragX = useDerivedValue(
-      () => sideCorrection * dragX.value
-    );
 
     // While closing the drawer when user starts gesture in the greyed out part of the window,
     // we want the drawer to follow only once the finger reaches the edge of the drawer.
@@ -400,10 +394,8 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               runOnJS(setDrawerOpened)(willShow);
               runOnJS(setDrawerState)(DrawerState.IDLE);
               if (willShow) {
-                dragX.value = drawerWidth * sideCorrection;
                 onDrawerOpen && runOnJS(onDrawerOpen)?.();
               } else {
-                dragX.value = 0;
                 onDrawerClose && runOnJS(onDrawerClose)?.();
               }
             }
@@ -411,7 +403,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         );
       },
       [
-        dragX,
         openValue,
         edgeWidth,
         emitStateChanged,
@@ -421,7 +412,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         onDrawerClose,
         onDrawerOpen,
         drawerWidth,
-        sideCorrection,
         statusBarAnimation,
       ]
     );
@@ -468,7 +458,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         drawerPosition,
         drawerType,
         drawerWidth,
-        isDrawerOpen.value,
+        isDrawerOpen,
       ]
     );
 
@@ -504,7 +494,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               closeDrawer();
             }
           }),
-      [closeDrawer, isDrawerOpen.value, drawerLockMode]
+      [closeDrawer, isDrawerOpen, drawerLockMode]
     );
 
     const overlayAnimatedStyle = useAnimatedStyle(() => ({
@@ -560,36 +550,22 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
             (event.translationX +
               (drawerOpened ? drawerWidth * -gestureOrientation : 0));
 
-          dragX.value =
-            sideCorrection *
-            Math.max(
-              drawerOpened ? startedOutsideTranslation : 0,
-              startedInsideTranslation
-            );
-
-          const drawerTranslation =
-            drawerType === DrawerType.FRONT
-              ? sideCorrectedDragX.value +
-                interpolate(
-                  -1 * sideCorrectedDragX.value,
-                  [drawerWidth - 1, drawerWidth, drawerWidth + 1],
-                  [0, 0, 1]
-                )
-              : sideCorrectedDragX.value;
+          const adjustedTranslation = Math.max(
+            drawerOpened ? startedOutsideTranslation : 0,
+            startedInsideTranslation
+          );
 
           openValue.value = interpolate(
-            drawerTranslation,
-            [0, drawerWidth],
-            [0, 1],
+            adjustedTranslation,
+            [-drawerWidth, 0, drawerWidth],
+            [1, 0, 1],
             Extrapolation.CLAMP
           );
         })
         .onEnd(handleRelease);
     }, [
-      dragX,
       drawerLockMode,
       openValue,
-      drawerType,
       drawerWidth,
       emitStateChanged,
       gestureOrientation,
@@ -599,7 +575,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       minSwipeDistance,
       hideStatusBar,
       keyboardDismissMode,
-      sideCorrectedDragX.value,
       overlayDismissGesture,
       drawerOpened,
       isFromLeft,
