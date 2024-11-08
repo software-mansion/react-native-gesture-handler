@@ -92,10 +92,10 @@ export default function ReanimatedDrawerExample() {
             <Text>
               Current background type:{' '}
               {type === DrawerType.FRONT
-                ? 'back'
+                ? 'front'
                 : type === DrawerType.BACK
-                ? 'slide'
-                : 'front'}
+                ? 'back'
+                : 'slide'}
             </Text>
           </View>
         </GestureDetector>
