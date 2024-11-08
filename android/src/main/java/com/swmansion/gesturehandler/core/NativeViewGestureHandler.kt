@@ -210,9 +210,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   private class TextHook() : NativeViewGestureHandlerHook {
-    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
-      return false
-    }
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
   }
 
   private class EditTextHook(
