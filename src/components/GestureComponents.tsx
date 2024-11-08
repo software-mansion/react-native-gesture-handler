@@ -112,6 +112,7 @@ export const Text = (props: TextProps) => {
     </NativeViewGestureHandler>
   );
 };
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Text = typeof Text & RNText;
 
 export const DrawerLayoutAndroid = createNativeWrapper<
