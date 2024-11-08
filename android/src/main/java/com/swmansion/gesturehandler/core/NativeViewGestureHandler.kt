@@ -84,7 +84,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       is ReactEditText -> this.hook = EditTextHook(this, view)
       is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
       is ReactScrollView -> this.hook = ScrollViewHook()
-      is ReactTextView -> this.hook = TextHook()
+      is ReactTextView -> this.hook = TextViewHook()
     }
   }
 
@@ -212,7 +212,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
   }
 
-  private class TextHook() : NativeViewGestureHandlerHook {
+  private class TextViewHook() : NativeViewGestureHandlerHook {
     override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
   }
 
