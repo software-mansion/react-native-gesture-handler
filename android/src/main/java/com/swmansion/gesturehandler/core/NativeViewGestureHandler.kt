@@ -45,10 +45,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     // if the gesture is marked by user as simultaneous with other or the hook return true
-    val hookCheckResult = hook.shouldRecognizeSimultaneously(handler)
-
-    if (hookCheckResult != null) {
-      return hookCheckResult
+    hook.shouldRecognizeSimultaneously(handler)?.let {
+      return@shouldRecognizeSimultaneously it
     }
 
     if (super.shouldRecognizeSimultaneously(handler)) {
