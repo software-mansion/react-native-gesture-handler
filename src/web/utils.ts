@@ -1,5 +1,10 @@
 import { PointerType } from '../PointerType';
-import type { Point, StylusData } from './interfaces';
+import type {
+  GestureHandlerRef,
+  Point,
+  StylusData,
+  SVGRef,
+} from './interfaces';
 
 export function isPointerInBounds(view: HTMLElement, { x, y }: Point): boolean {
   const rect: DOMRect = view.getBoundingClientRect();
@@ -226,4 +231,45 @@ function spherical2tilt(altitudeAngle: number, azimuthAngle: number) {
   const tiltY = Math.round(tiltYrad * radToDeg);
 
   return { tiltX, tiltY };
+}
+
+const RNSVGElements = [
+  'Circle',
+  'ClipPath',
+  'Ellipse',
+  'ForeignObject',
+  'G',
+  'Image',
+  'Line',
+  'Marker',
+  'Mask',
+  'Path',
+  'Pattern',
+  'Polygon',
+  'Polyline',
+  'Rect',
+  'Svg',
+  'Symbol',
+  'TSpan',
+  'Text',
+  'TextPath',
+  'Use',
+];
+
+// This function helps us determine whether given node is SVGElement or not. In our implementation of
+// findNodeHandle, we can encounter such element in 2 forms - SVG tag or ref to SVG Element. Since Gesture Handler
+// does not depend on SVG, we use our simplified SVGRef type that has `elementRef` field. This is something that is present
+// in actual SVG ref object.
+//
+// In order to make sure that node passed into this function is in fact SVG element, first we check if its constructor name
+// corresponds to one of the possible SVG elements. Then we also check if `elementRef` field exists.
+// By doing both steps we decrease probability of detecting situations where, for example, user makes custom `Circle` and
+// we treat it as SVG.
+export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
+  const componentClassName = Object.getPrototypeOf(viewRef).constructor.name;
+
+  return (
+    RNSVGElements.indexOf(componentClassName) >= 0 &&
+    Object.hasOwn(viewRef, 'elementRef')
+  );
 }
