@@ -18,51 +18,47 @@ const warningMessage = tagMessage(
 const REANIMATED_AVAILABLE = Reanimated?.useSharedValue !== undefined;
 const setGestureState = Reanimated?.setGestureState;
 
+// ui runtime global
+declare const global: {
+  _setGestureStateNew: (handlerTag: number, state: State) => void;
+};
+
+const wrappedSetGestureState = (handlerTag: number, state: State) => {
+  'worklet';
+
+  if (REANIMATED_AVAILABLE) {
+    // When Reanimated is available, setGestureState should be defined
+    if (global._setGestureStateNew) {
+      global._setGestureStateNew(handlerTag, state);
+    } else if (setGestureState) {
+      setGestureState(handlerTag, state);
+    }
+  } else {
+    console.warn(warningMessage);
+  }
+};
+
 function create(handlerTag: number): GestureStateManagerType {
   'worklet';
   return {
     begin: () => {
       'worklet';
-      if (REANIMATED_AVAILABLE) {
-        // When Reanimated is available, setGestureState should be defined
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setGestureState!(handlerTag, State.BEGAN);
-      } else {
-        console.warn(warningMessage);
-      }
+      wrappedSetGestureState(handlerTag, State.BEGAN);
     },
 
     activate: () => {
       'worklet';
-      if (REANIMATED_AVAILABLE) {
-        // When Reanimated is available, setGestureState should be defined
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setGestureState!(handlerTag, State.ACTIVE);
-      } else {
-        console.warn(warningMessage);
-      }
+      wrappedSetGestureState(handlerTag, State.ACTIVE);
     },
 
     fail: () => {
       'worklet';
-      if (REANIMATED_AVAILABLE) {
-        // When Reanimated is available, setGestureState should be defined
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setGestureState!(handlerTag, State.FAILED);
-      } else {
-        console.warn(warningMessage);
-      }
+      wrappedSetGestureState(handlerTag, State.FAILED);
     },
 
     end: () => {
       'worklet';
-      if (REANIMATED_AVAILABLE) {
-        // When Reanimated is available, setGestureState should be defined
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setGestureState!(handlerTag, State.END);
-      } else {
-        console.warn(warningMessage);
-      }
+      wrappedSetGestureState(handlerTag, State.END);
     },
   };
 }

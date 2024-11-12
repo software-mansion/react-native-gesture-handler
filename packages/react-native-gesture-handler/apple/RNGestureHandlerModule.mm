@@ -13,6 +13,7 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
+#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 
 #import <react/renderer/components/text/ParagraphShadowNode.h>
 #import <react/renderer/components/text/TextShadowNode.h>
@@ -25,7 +26,6 @@
 #import "RNGestureHandlerState.h"
 
 #import "RNGestureHandlerButton.h"
-#import "RNGestureHandlerStateManager.h"
 
 #import <React/RCTJSThread.h>
 
@@ -35,11 +35,11 @@ using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
-@interface RNGestureHandlerModule () <RNGestureHandlerStateManager, RCTTurboModule>
+@interface RNGestureHandlerModule () <RCTTurboModule, RCTTurboModuleWithJSIBindings>
 
 @end
 #else
-@interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
+@interface RNGestureHandlerModule () <RCTUIManagerObserver>
 
 @end
 #endif // RCT_NEW_ARCH_ENABLED
@@ -51,6 +51,8 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
   // Oparations called after views have been updated.
   NSMutableArray<GestureHandlerOperation> *_operations;
+
+  jsi::Runtime *_runtime;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -91,8 +93,9 @@ RCT_EXPORT_MODULE()
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-void decorateRuntime(jsi::Runtime &runtime)
+- (void)installJSIBindingsWithRuntime:(jsi::Runtime &)runtime
 {
+  _runtime = &runtime;
   auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
       runtime,
       jsi::PropNameID::forAscii(runtime, "isViewFlatteningDisabled"),
@@ -125,6 +128,7 @@ void decorateRuntime(jsi::Runtime &runtime)
   _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
                                                         viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
+  _runtime = nullptr;
 }
 #else
 - (void)setBridge:(RCTBridge *)bridge
@@ -140,13 +144,43 @@ void decorateRuntime(jsi::Runtime &runtime)
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installUIRuntimeBindings)
 {
+  auto runtime = _runtime;
+
   dispatch_block_t block = ^{
-    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-    auto runtime = (jsi::Runtime *)cxxBridge.runtime;
-    decorateRuntime(*runtime);
+    auto arrayBufferValue = runtime->global()
+                                .getProperty(*runtime, "_WORKLET_RUNTIME")
+                                .getObject(*runtime)
+                                .getArrayBuffer(*runtime)
+                                .data(*runtime);
+    uintptr_t *uiAddr = reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
+    jsi::Runtime *uiRuntime = reinterpret_cast<jsi::Runtime *>(*uiAddr);
+
+    __weak RNGestureHandlerModule *weakSelf = self;
+
+    auto setGestureStateNew = jsi::Function::createFromHostFunction(
+        *uiRuntime,
+        jsi::PropNameID::forAscii(*uiRuntime, "_setGestureStateNew"),
+        2,
+        [weakSelf](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count)
+            -> jsi::Value {
+          if (count == 2) {
+            auto handlerTag = (int)arguments[0].asNumber();
+            auto state = (int)arguments[1].asNumber();
+
+            // TODO: expose to JS and dispatch to UI thread if called on JS?
+            RNGestureHandlerModule *strongSelf = weakSelf;
+            if (strongSelf != nullptr) {
+              [strongSelf setGestureState:state forHandler:handlerTag];
+            }
+          }
+          return jsi::Value::undefined();
+        });
+
+    uiRuntime->global().setProperty(*uiRuntime, "_setGestureStateNew", std::move(setGestureStateNew));
   };
+
   if (_dispatchToJSThread) {
     _dispatchToJSThread(block);
   } else {
