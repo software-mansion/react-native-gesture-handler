@@ -117,6 +117,7 @@ RCT_EXPORT_MODULE()
   _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
                                                         viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
+  _runtime = nullptr;
 }
 #else
 - (void)setBridge:(RCTBridge *)bridge
