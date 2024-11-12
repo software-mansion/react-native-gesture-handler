@@ -48,10 +48,10 @@ export default ({ config }) => ({
       'expo-build-properties',
       {
         ios: {
-          newArchEnabled: true,
+          newArchEnabled: !(process.env.PAPER_ENABLED ?? 0),
         },
         android: {
-          newArchEnabled: true,
+          newArchEnabled: !(process.env.PAPER_ENABLED ?? 0),
         },
       },
     ],
