@@ -29,7 +29,7 @@ To demonstrate how you would use the new API, let's make a simple app where you 
 <Step title="Step 3">
   <div>
     We also need to define{' '}
-    <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/shared-values">
+    <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value">
       shared values
     </a>{' '}
     to keep track of the ball position and create animated styles in order to be
