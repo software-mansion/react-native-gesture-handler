@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Text, Animated, StyleSheet, View } from 'react-native';
 
 import {
   Swipeable,
   GestureHandlerRootView,
+  Pressable,
 } from 'react-native-gesture-handler';
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, {
   SharedValue,
   useAnimatedStyle,
@@ -92,11 +95,55 @@ function LegacyRightAction(prog: any, drag: any) {
 }
 
 export default function Example() {
+  const reanimatedRef = useRef<SwipeableMethods>(null);
+  const legacyRef = useRef<Swipeable>(null);
+
   return (
     <GestureHandlerRootView>
       <View style={styles.separator} />
 
+      <View style={styles.controlPanelWrapper}>
+        <Text>Programatical controls</Text>
+        <View style={styles.controlPanel}>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.openLeft();
+              legacyRef.current?.openLeft();
+            }}>
+            <Text>open left</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.close();
+              legacyRef.current!.close();
+            }}>
+            <Text>close</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.reset();
+              legacyRef.current!.reset();
+            }}>
+            <Text>reset</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.openRight();
+              legacyRef.current!.openRight();
+            }}>
+            <Text>open right</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.separator} />
+
       <ReanimatedSwipeable
+        ref={reanimatedRef}
         containerStyle={styles.swipeable}
         friction={2}
         leftThreshold={80}
@@ -110,6 +157,7 @@ export default function Example() {
       <View style={styles.separator} />
 
       <Swipeable
+        ref={legacyRef}
         containerStyle={styles.swipeable}
         friction={2}
         leftThreshold={80}
@@ -136,5 +184,21 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: 'papayawhip',
     alignItems: 'center',
+  },
+  controlPanelWrapper: {
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+  controlPanel: {
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  control: {
+    flex: 1,
+    height: 40,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
