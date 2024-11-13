@@ -53,9 +53,11 @@ This color's opacity animates from 0% to 100% as the drawer transitions from clo
 
 ### `renderNavigationView`
 
-a renderer function for the drawer component.
-Provided with a `progress` SharedValue parameter that indicates the progress of drawer opening/closing. Equals `0` when drawer is `closed` and `1` when `open`.
-This can be used by the drawer component to animated its children while the drawer is opening or closing.
+a renderer function for the drawer component, provided with a `progress` parameter.
+
+-  `progress` - `SharedValue` that indicates the progress of drawer opening/closing animation.
+    - equals `0` when the `drawer` is closed and `1` when the `drawer` is opened
+    - can be used by the `drawer` component to animated its children while the `drawer` is opening or closing
 
 ### `onDrawerClose`
 
