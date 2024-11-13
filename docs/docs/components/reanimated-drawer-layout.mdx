@@ -69,8 +69,11 @@ a function which is called when the drawer has been opened.
 
 ### `onDrawerSlide`
 
-a function which is called when drawer is moving or animating.
-Provided with a `progress` SharedValue parameter that indicates the progress of drawer opening/closing. Equals `0` when drawer is `closed` and `1` when `open`.
+a function which is called when drawer is moving or animating, provided with a `progress` parameter.
+
+-  `progress` - `SharedValue` that indicates the progress of drawer opening/closing animation.
+    - equals `0` when the `drawer` is closed and `1` when the `drawer` is opened
+    - can be used by the `drawer` component to animated its children while the `drawer` is opening or closing
 
 ### `onDrawerStateChanged`
 
@@ -90,7 +93,11 @@ If not enabled, the gesture will require click + drag, with `enableTrackpadTwoFi
 ### `children`
 
 either a component that's rendered in the content view or a function.
-When provided as a function, it accepts a `progress` SharedValue parameter that indicates the animation progress, similar to the [`renderNavigationView`](#rendernavigationview) function.
+When provided as a function, it is provided with a `progress` parameter.
+
+-  `progress` - `SharedValue` that indicates the progress of drawer opening/closing animation.
+    - equals `0` when the `drawer` is closed and `1` when the `drawer` is opened
+    - can be used by the `drawer` component to animated its children while the `drawer` is opening or closing
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
