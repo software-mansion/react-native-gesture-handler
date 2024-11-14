@@ -2,11 +2,9 @@ import React from 'react';
 import {
   Pressable as LegacyPressable,
   PressableStateCallbackType,
-  StyleProp,
   StyleSheet,
   Text,
   View,
-  ViewStyle,
 } from 'react-native';
 import {
   ScrollView,
@@ -28,29 +26,23 @@ export default function Example() {
 
 const BOX_SIZE_COEFFICIENT = 100;
 
-const getBoxStyle = (size: number): StyleProp<ViewStyle> => ({
+const getBoxStyle = (size: number) => ({
   width: size,
   height: size,
   borderWidth: 1,
 });
 
-const innerStyle = ({
-  pressed,
-}: PressableStateCallbackType): StyleProp<ViewStyle> => [
+const innerStyle = ({ pressed }: PressableStateCallbackType) => [
   getBoxStyle(BOX_SIZE_COEFFICIENT),
   pressed ? { backgroundColor: '#c00' } : { backgroundColor: '#c77' },
   styles.centering,
 ];
-const middleStyle = ({
-  pressed,
-}: PressableStateCallbackType): StyleProp<ViewStyle> => [
+const middleStyle = ({ pressed }: PressableStateCallbackType) => [
   getBoxStyle(BOX_SIZE_COEFFICIENT * 2),
   pressed ? { backgroundColor: '#0c0' } : { backgroundColor: '#7a7' },
   styles.centering,
 ];
-const outerStyle = ({
-  pressed,
-}: PressableStateCallbackType): StyleProp<ViewStyle> => [
+const outerStyle = ({ pressed }: PressableStateCallbackType) => [
   getBoxStyle(BOX_SIZE_COEFFICIENT * 3),
   pressed ? { backgroundColor: '#00c' } : { backgroundColor: '#88a' },
   styles.centering,
