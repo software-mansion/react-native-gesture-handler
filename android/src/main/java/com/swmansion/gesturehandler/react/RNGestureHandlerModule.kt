@@ -1,8 +1,9 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
-import android.util.Log
 import android.view.MotionEvent
+import com.facebook.jni.HybridData
+import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactApplicationContext
@@ -11,10 +12,11 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.events.Event
 import com.facebook.soloader.SoLoader
-import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.NativeRNGestureHandlerModuleSpec
 import com.swmansion.gesturehandler.ReanimatedEventDispatcher
@@ -49,7 +51,7 @@ import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDa
 @Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
-  NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
+  NativeRNGestureHandlerModuleSpec(reactContext), TurboModuleWithJSIBindings {
   private abstract class HandlerFactory<T : GestureHandler<T>> {
     abstract val type: Class<T>
     abstract val name: String
@@ -337,6 +339,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
+
+  @DoNotStrip
+  @Suppress("unused")
+  private var mHybridData: HybridData = initHybrid()
+
   override fun getName() = NAME
 
   @Suppress("UNCHECKED_CAST")
@@ -434,7 +441,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   override fun flushOperations() {
   }
 
-  override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
+  fun setGestureHandlerState(handlerTag: Int, newState: Int) {
     registry.getHandler(handlerTag)?.let { handler ->
       when (newState) {
         GestureHandler.STATE_ACTIVE -> handler.activate(force = true)
@@ -446,22 +453,17 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  override fun install(): Boolean {
-    reactApplicationContext.runOnJSQueueThread {
-      try {
-        SoLoader.loadLibrary("gesturehandler")
-        val jsContext = reactApplicationContext.javaScriptContextHolder!!
-        decorateRuntime(jsContext.get())
-      } catch (exception: Exception) {
-        Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
-      }
-    }
+  private external fun initHybrid(): HybridData
+  private external fun getBindingsInstallerCxx(): BindingsInstallerHolder
+  private external fun decorateUIRuntime()
 
+  override fun getBindingsInstaller() = getBindingsInstallerCxx()
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  override fun installUIRuntimeBindings(): Boolean {
+    decorateUIRuntime()
     return true
   }
-
-  private external fun decorateRuntime(jsiPtr: Long)
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
@@ -694,6 +696,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     private const val KEY_PAN_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
     private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
     private const val KEY_DIRECTION = "direction"
+
+    init {
+      SoLoader.loadLibrary("gesturehandler")
+    }
 
     private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
       if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {

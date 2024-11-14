@@ -59,7 +59,7 @@ public abstract class NativeRNGestureHandlerModuleSpec extends ReactContextBaseJ
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract boolean install();
+  public abstract boolean installUIRuntimeBindings();
 
   @ReactMethod
   @DoNotStrip
