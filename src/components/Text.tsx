@@ -1,5 +1,9 @@
-import * as React from 'react';
-import { Text as RNText, TextProps as RNTextProps } from 'react-native';
+import React, { forwardRef, Ref, RefObject, useEffect, useRef } from 'react';
+import {
+  Platform,
+  Text as RNText,
+  TextProps as RNTextProps,
+} from 'react-native';
 
 import { NativeViewGestureHandler } from '../handlers/NativeViewGestureHandler';
 
@@ -13,13 +17,28 @@ type TextProps = Omit<RNTextProps, 'onPress'> & {
   ) => void;
 };
 
-export const Text = (props: TextProps) => {
-  console.log(props);
+export const Text = forwardRef((props: TextProps, ref: Ref<RNText>) => {
   const { children, onPress, ...rest } = props;
+
+  const textRef = useRef<RNText>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    const textElement = ref
+      ? (ref as RefObject<RNText>).current
+      : textRef.current;
+
+    // @ts-ignore at this point we are sure that text is div
+    textElement?.setAttribute('RNGHText', 'true');
+  }, []);
+
   return (
     <NativeViewGestureHandler
+      disallowInterruption={true}
       onHandlerStateChange={(event) => {
-        console.log(event);
         if (
           event.nativeEvent.oldState === State.ACTIVE &&
           event.nativeEvent.state === State.END
@@ -27,9 +46,11 @@ export const Text = (props: TextProps) => {
           onPress?.(event);
         }
       }}>
-      <RNText {...rest}>{children}</RNText>
+      <RNText ref={ref ?? textRef} {...rest}>
+        {children}
+      </RNText>
     </NativeViewGestureHandler>
   );
-};
+});
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Text = typeof Text & RNText;
