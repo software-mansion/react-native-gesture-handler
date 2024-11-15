@@ -41,6 +41,7 @@ export default function EmptyExample() {
 
   const pan = Gesture.Pan()
     .activateAfterLongPress(250)
+    .simultaneousWithExternalGesture(scroll)
     .onStart(() => {
       panActive.value = true;
       position.value = 0;
