@@ -65,8 +65,7 @@
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
     "hoist-non-react-statics": "^3.3.0",
-    "invariant": "^2.2.4",
-    "prop-types": "^15.7.2"
+    "invariant": "^2.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
