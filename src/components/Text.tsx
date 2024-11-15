@@ -37,7 +37,6 @@ export const Text = forwardRef((props: TextProps, ref: Ref<RNText>) => {
 
   return (
     <NativeViewGestureHandler
-      disallowInterruption={true}
       onHandlerStateChange={(event) => {
         if (
           event.nativeEvent.oldState === State.ACTIVE &&
