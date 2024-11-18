@@ -1187,7 +1187,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.15.0):
+  - RNReanimated (3.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1207,10 +1207,32 @@ PODS:
     - React-utils
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.15.0)
-    - RNReanimated/worklets (= 3.15.0)
+    - RNReanimated/reanimated (= 3.16.1)
+    - RNReanimated/worklets (= 3.16.1)
     - Yoga
-  - RNReanimated/reanimated (3.15.0):
+  - RNReanimated/reanimated (3.16.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated/apple (= 3.16.1)
+    - Yoga
+  - RNReanimated/reanimated/apple (3.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1231,7 +1253,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.15.0):
+  - RNReanimated/worklets (3.16.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1443,10 +1465,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 0686b6af8cbd638c784fea5afb789be66699823c
-  DoubleConversion: acaf5db79676d2e9119015819153f0f99191de12
+  DoubleConversion: 5b92c4507c560bb62e7aa1acdf2785ea3ff08b3b
   FBLazyVector: 8f41053475f558b29633b434bd62929813a38560
   fmt: 03574da4b7ba40de39da59677ca66610ce8c4a02
-  glog: 6df0a3d6e2750a50609471fd1a01fd2948d405b5
+  glog: ba31c1afa7dcf1915a109861bccdb4421be6175b
   hermes-engine: 2102c92e54a031a270fd1fe84169ec8a0901b7bd
   RCT-Folly: 2edbb9597acadc2312235c7ad6243d49852047a3
   RCTDeprecation: 5f1d7e1f8ef6c53f0207e3ac0d0ca23575e8a6ab
@@ -1497,7 +1519,7 @@ SPEC CHECKSUMS:
   ReactCommon: 68cae4af53cf2d34e6a26c0099f434f170495dd1
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
   RNGestureHandler: b7a0ffadce234020252d803904e7b32405945e27
-  RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
+  RNReanimated: af4e059a8fd0fb7a9cdf5ad35ead4699598a9447
   RNSVG: 4590aa95758149fa27c5c83e54a6a466349a1688
   SocketRocket: f6c6249082c011e6de2de60ed641ef8bbe0cfac9
   Yoga: 2b5a8ace4c52fd28c52de828b9a66aede21c3a9c
