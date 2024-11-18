@@ -5,15 +5,13 @@ import {
   TextProps as RNTextProps,
 } from 'react-native';
 
-import { NativeViewGestureHandler } from '../handlers/NativeViewGestureHandler';
-
-import { State } from '../State';
-import type { HandlerStateChangeEvent } from '../handlers/gestureHandlerCommon';
+import type { GestureStateChangeEvent } from '../handlers/gestureHandlerCommon';
 import type { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
+import { Gesture, GestureDetector } from '../';
 
 type TextProps = Omit<RNTextProps, 'onPress'> & {
   onPress?: (
-    event: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
+    event: GestureStateChangeEvent<NativeViewGestureHandlerPayload>
   ) => void;
 };
 
@@ -21,6 +19,9 @@ export const Text = forwardRef((props: TextProps, ref: Ref<RNText>) => {
   const { children, onPress, ...rest } = props;
 
   const textRef = useRef<RNText>(null);
+  const native = Gesture.Native()
+    .onEnd((event, _) => onPress?.(event))
+    .runOnJS(true);
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -36,19 +37,11 @@ export const Text = forwardRef((props: TextProps, ref: Ref<RNText>) => {
   }, []);
 
   return (
-    <NativeViewGestureHandler
-      onHandlerStateChange={(event) => {
-        if (
-          event.nativeEvent.oldState === State.ACTIVE &&
-          event.nativeEvent.state === State.END
-        ) {
-          onPress?.(event);
-        }
-      }}>
+    <GestureDetector gesture={native}>
       <RNText ref={ref ?? textRef} {...rest}>
         {children}
       </RNText>
-    </NativeViewGestureHandler>
+    </GestureDetector>
   );
 });
 // eslint-disable-next-line @typescript-eslint/no-redeclare
