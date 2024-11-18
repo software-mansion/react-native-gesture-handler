@@ -144,6 +144,8 @@ export type {
 
 export type { SwipeableProps } from './components/Swipeable';
 export { default as Swipeable } from './components/Swipeable';
+export type { ReanimatedSwipeableProps } from './components/ReanimatedSwipeable';
+export { default as ReanimatedSwipeable } from './components/ReanimatedSwipeable';
 export type { PressableProps } from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
 
