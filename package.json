@@ -44,6 +44,7 @@
     "ReanimatedSwipeable/",
     "jest-utils/",
     "DrawerLayout/",
+    "ReanimatedDrawerLayout/",
     "README.md",
     "jestSetup.js",
     "RNGestureHandler.podspec"
