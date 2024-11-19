@@ -2,11 +2,10 @@ import React from 'react';
 
 import type { ActionType } from './ActionType';
 import { isNewWebImplementationEnabled } from './EnableNewWebImplementation';
-import { Gestures, HammerGestures } from './web/Gestures';
+import { Gestures } from './web/Gestures';
 import type { Config } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
-import * as HammerNodeManager from './web_hammer/NodeManager';
 import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
 
 // init method is called inside attachGestureHandler function. However, this function may
