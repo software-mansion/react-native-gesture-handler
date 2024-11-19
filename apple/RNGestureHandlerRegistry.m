@@ -37,7 +37,10 @@
               withActionType:(RNGestureHandlerActionType)actionType
 {
   RNGestureHandler *handler = _handlers[handlerTag];
-  RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
+  if (handler == nil) {
+    NSLog(@"Handler for tag %@ does not exist", handlerTag);
+    return;
+  }
   [handler unbindFromView];
   handler.actionType = actionType;
   [handler bindToView:view];
