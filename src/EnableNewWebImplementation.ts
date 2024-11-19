@@ -11,7 +11,3 @@ export function enableLegacyWebImplementation(
     'Legacy web implementation is no longer available in RNGH version >= 3.0.0'
   );
 }
-
-export function isNewWebImplementationEnabled(): boolean {
-  return true;
-}
