@@ -91,6 +91,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  arm64-darwin-23
 
 DEPENDENCIES
   activesupport (>= 6.1.7.5, < 7.1.0)
