@@ -35,7 +35,7 @@ const renderSampleBox = (color?: string) => (
 
 const toReactNativeTouchable = (
   touchable: React.ComponentType<unknown>
-): React.ComponentType<any> => {
+): React.ElementType => {
   if (touchable === TouchableOpacity) {
     return RNTouchableOpacity;
   }
