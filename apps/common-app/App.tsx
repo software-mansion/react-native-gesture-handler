@@ -40,7 +40,6 @@ import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
 
 import { BottomSheet } from './src/showcase/bottomSheet';
-import Swipeables from './src/showcase/swipeable';
 import ChatHeads from './src/showcase/chatHeads';
 
 import Draggable from './src/basic/draggable';
@@ -155,7 +154,6 @@ const EXAMPLES: ExamplesSection[] = [
     sectionTitle: 'Showcase',
     data: [
       { name: 'Bottom sheet', component: BottomSheet },
-      { name: 'Swipeables', component: Swipeables },
       { name: 'Chat heads', component: ChatHeads },
     ],
   },

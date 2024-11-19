@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
-import { Text, Animated, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 
 import {
-  Swipeable,
   GestureHandlerRootView,
   Pressable,
 } from 'react-native-gesture-handler';
@@ -48,55 +47,8 @@ function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
   );
 }
 
-function LegacyLeftAction(prog: any, drag: any) {
-  prog.addListener((value: any) => {
-    console.log('[L] showLeftProgress:', value.value);
-  });
-  drag.addListener((value: any) => {
-    console.log('[L] appliedTranslation:', value.value);
-  });
-
-  const trans = Animated.subtract(drag, 50);
-
-  return (
-    <Animated.Text
-      style={[
-        styles.leftAction,
-        {
-          transform: [{ translateX: trans }],
-        },
-      ]}>
-      Text
-    </Animated.Text>
-  );
-}
-
-function LegacyRightAction(prog: any, drag: any) {
-  prog.addListener((value: any) => {
-    console.log('[L] showRightProgress:', value.value);
-  });
-  drag.addListener((value: any) => {
-    console.log('[L] appliedTranslation:', value.value);
-  });
-
-  const trans = Animated.add(drag, 50);
-
-  return (
-    <Animated.Text
-      style={[
-        styles.rightAction,
-        {
-          transform: [{ translateX: trans }],
-        },
-      ]}>
-      Text
-    </Animated.Text>
-  );
-}
-
 export default function Example() {
   const reanimatedRef = useRef<SwipeableMethods>(null);
-  const legacyRef = useRef<Swipeable>(null);
 
   return (
     <GestureHandlerRootView>
@@ -109,7 +61,6 @@ export default function Example() {
             style={styles.control}
             onPress={() => {
               reanimatedRef.current!.openLeft();
-              legacyRef.current?.openLeft();
             }}>
             <Text>open left</Text>
           </Pressable>
@@ -117,7 +68,6 @@ export default function Example() {
             style={styles.control}
             onPress={() => {
               reanimatedRef.current!.close();
-              legacyRef.current!.close();
             }}>
             <Text>close</Text>
           </Pressable>
@@ -125,7 +75,6 @@ export default function Example() {
             style={styles.control}
             onPress={() => {
               reanimatedRef.current!.reset();
-              legacyRef.current!.reset();
             }}>
             <Text>reset</Text>
           </Pressable>
@@ -133,7 +82,6 @@ export default function Example() {
             style={styles.control}
             onPress={() => {
               reanimatedRef.current!.openRight();
-              legacyRef.current!.openRight();
             }}>
             <Text>open right</Text>
           </Pressable>
@@ -153,20 +101,6 @@ export default function Example() {
         renderRightActions={RightAction}>
         <Text>[Reanimated] Swipe me!</Text>
       </ReanimatedSwipeable>
-
-      <View style={styles.separator} />
-
-      <Swipeable
-        ref={legacyRef}
-        containerStyle={styles.swipeable}
-        friction={2}
-        leftThreshold={80}
-        enableTrackpadTwoFingerGesture
-        rightThreshold={40}
-        renderLeftActions={LegacyLeftAction}
-        renderRightActions={LegacyRightAction}>
-        <Text>[Legacy] Swipe me!</Text>
-      </Swipeable>
 
       <View style={styles.separator} />
     </GestureHandlerRootView>

@@ -144,8 +144,6 @@ export type {
   BorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
-export type { SwipeableProps } from './components/Swipeable';
-export { default as Swipeable } from './components/Swipeable';
 export type {
   PressableProps,
   PressableStateCallbackType,

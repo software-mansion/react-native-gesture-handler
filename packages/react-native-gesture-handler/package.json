@@ -42,7 +42,6 @@
     "apple/",
     "shared/",
     "scripts/",
-    "Swipeable/",
     "ReanimatedSwipeable/",
     "jest-utils/",
     "DrawerLayout/",
