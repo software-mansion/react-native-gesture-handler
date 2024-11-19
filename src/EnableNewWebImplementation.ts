@@ -1,8 +1,3 @@
-import { Platform } from 'react-native';
-
-let useNewWebImplementation = true;
-let getWasCalled = false;
-
 export function enableExperimentalWebImplementation(
   _shouldEnable = true
 ): void {
@@ -10,26 +5,13 @@ export function enableExperimentalWebImplementation(
 }
 
 export function enableLegacyWebImplementation(
-  shouldUseLegacyImplementation = true
+  _shouldUseLegacyImplementation = true
 ): void {
-  if (
-    Platform.OS !== 'web' ||
-    useNewWebImplementation === !shouldUseLegacyImplementation
-  ) {
-    return;
-  }
-
-  if (getWasCalled) {
-    console.error(
-      'Some parts of this application have already started using the new gesture handler implementation. No changes will be applied. You can try enabling legacy implementation earlier.'
-    );
-    return;
-  }
-
-  useNewWebImplementation = !shouldUseLegacyImplementation;
+  console.error(
+    'Legacy web implementation is no longer available in RNGH version >= 3.0.0'
+  );
 }
 
 export function isNewWebImplementationEnabled(): boolean {
-  getWasCalled = true;
-  return useNewWebImplementation;
+  return true;
 }
