@@ -75,14 +75,12 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
       var parent = viewGroup.parent
       while (parent != null) {
-        // our own deprecated root view
         @Suppress("DEPRECATION")
-        if (parent is RNGestureHandlerEnabledRootView || parent is RNGestureHandlerRootView) {
+        if (parent is RNGestureHandlerRootView) {
           return true
         }
         // Checks other roots views but it's mainly for ReactModalHostView.DialogRootViewGroup
         // since modals are outside RN hierachy and we have to initialize GH's root view for it
-        // Note that RNGestureHandlerEnabledRootView implements RootView - that's why this check has to be below
         if (parent is RootView) {
           return false
         }
