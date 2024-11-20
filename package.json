@@ -102,8 +102,7 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": ">= 0.73.0",
-    "react-native-reanimated": ">= 2.0.0"
+    "react-native": "*"
   },
   "lint-staged": {
     "./{src,example,FabricExample,MacOSExample}/**/*.{ts,tsx}": "yarn format:js",
