@@ -173,14 +173,6 @@ android {
                 // codegen turned off
                 srcDirs += 'paper/src/main/java'
             }
-
-            if (REACT_NATIVE_MINOR_VERSION >= 74) { // new Package API https://github.com/software-mansion/react-native-svg/pull/2541
-                // use for react-native@0.74 and above
-                srcDirs += 'package74/src/main/java'
-            } else {
-                // maintain compatibility with react-native@0.73
-                srcDirs += 'package73/src/main/java'
-            }
         }
     }
 

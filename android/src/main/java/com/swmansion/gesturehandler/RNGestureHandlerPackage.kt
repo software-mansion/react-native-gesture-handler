@@ -71,7 +71,6 @@ class RNGestureHandlerPackage : BaseReactPackage(), ViewManagerOnDemandReactPack
             RNGestureHandlerModule::class.java.name,
             reactModule.canOverrideExistingModule,
             reactModule.needsEagerInit,
-            true, // Has constants is hardcoded to return true, so replacing it with `true` changes nothing.
             reactModule.isCxxModule,
             true
           )
