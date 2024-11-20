@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 
-import { DrawerType, RectButton } from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 import {
   DrawerLayoutController,
   DrawerLayout,
@@ -11,6 +11,8 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
 } from 'react-native-reanimated';
+
+type DrawerType = 'front' | 'back' | 'back' | 'slide';
 
 const TYPES: DrawerType[] = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];

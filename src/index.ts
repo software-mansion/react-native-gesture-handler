@@ -145,14 +145,4 @@ export type {
 export type { PressableProps } from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
 
-export type {
-  DrawerLayoutProps,
-  DrawerPosition,
-  DrawerState,
-  DrawerType,
-  DrawerLockMode,
-  DrawerKeyboardDismissMode,
-} from './components/DrawerLayout';
-export { default as DrawerLayout } from './components/DrawerLayout';
-
 initialize();
