@@ -12,7 +12,7 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 
-type DrawerType = 'front' | 'back' | 'back' | 'slide';
+type DrawerType = 'front' | 'back' | 'slide';
 
 const TYPES: DrawerType[] = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];
