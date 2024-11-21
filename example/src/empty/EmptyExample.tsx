@@ -1,67 +1,19 @@
-import { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import {
-  Text,
-  GestureHandlerRootView,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
-
-export default function App() {
-  const [counter, setCounter] = useState(0);
-
+export default function EmptyExample() {
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <Text style={{ fontSize: 30 }}>{`Counter: ${counter}`}</Text>
-
-      <TouchableOpacity
-        onPress={() => {
-          console.log('Touchable');
-          setCounter((prev) => prev + 1);
-        }}>
-        <Text
-          style={[styles.textCommon, styles.outerText]}
-          onPress={() => {
-            console.log('Outer text');
-            setCounter((prev) => prev + 1);
-          }}>
-          {'Outer Text '}
-          <Text
-            style={[styles.textCommon, styles.innerText]}
-            onPress={() => {
-              console.log('Nested text');
-              setCounter((prev) => prev + 1);
-            }}>
-            {'Nested Text'}
-          </Text>
-        </Text>
-      </TouchableOpacity>
-    </GestureHandlerRootView>
+    <View style={styles.container}>
+      <Text style={{ fontSize: 64, opacity: 0.25 }}>😞</Text>
+      <Text style={{ fontSize: 24, opacity: 0.25 }}>It's so empty here</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-
-    gap: 20,
-  },
-
-  textCommon: {
-    padding: 10,
-    color: 'white',
-  },
-
-  outerText: {
-    fontSize: 30,
-    borderWidth: 2,
-    backgroundColor: '#131313',
-  },
-
-  innerText: {
-    fontSize: 25,
-    backgroundColor: '#F06312',
+    alignItems: 'center',
   },
 });

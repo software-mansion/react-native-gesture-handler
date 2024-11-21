@@ -220,7 +220,7 @@ const EXAMPLES: ExamplesSection[] = [
       },
       {
         name: 'Nested Text',
-        component: TwoFingerPan,
+        component: NestedText,
         unsupportedPlatforms: new Set(['macos']),
       },
     ],
