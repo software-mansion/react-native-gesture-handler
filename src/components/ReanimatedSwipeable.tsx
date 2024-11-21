@@ -671,8 +671,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           {...remainingProps}
           onLayout={onRowLayout}
           style={[styles.container, containerStyle]}>
-          {leftElement()}
-          {rightElement()}
+          <View>
+            {leftElement()}
+            {rightElement()}
+          </View>
           <GestureDetector gesture={tapGesture} touchAction="pan-y">
             <Animated.View style={[animatedStyle, childrenContainerStyle]}>
               {children}
