@@ -91,7 +91,16 @@
 {
   [_gestureHandler setCurrentPointerTypeToMouse];
 
-  self.state = NSGestureRecognizerStateBegan;
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([self.view.superview isKindOfClass:[RCTParagraphComponentView class]]) {
+#else
+  if ([self.view isKindOfClass:[RCTTextView class]]) {
+#endif
+    self.state = NSGestureRecognizerStatePossible;
+  } else {
+    self.state = NSGestureRecognizerStateBegan;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
