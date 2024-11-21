@@ -16,9 +16,11 @@
 #import <React/UIView+React.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 #else
 #import <React/RCTScrollView.h>
+#import <React/RCTTextView.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
 #pragma mark RNDummyGestureRecognizer
@@ -40,6 +42,14 @@
 {
   [_gestureHandler setCurrentPointerType:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([self.view.superview isKindOfClass:[RCTParagraphComponentView class]]) {
+#else
+  if ([self.view isKindOfClass:[RCTTextView class]]) {
+#endif
+    self.state = UIGestureRecognizerStatePossible;
+  }
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -51,7 +61,16 @@
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-  self.state = UIGestureRecognizerStateFailed;
+
+#ifdef RCT_NEW_ARCH_ENABLED
+  if ([self.view.superview isKindOfClass:[RCTParagraphComponentView class]]) {
+#else
+  if ([self.view isKindOfClass:[RCTTextView class]]) {
+#endif
+    self.state = UIGestureRecognizerStateEnded;
+  } else {
+    self.state = UIGestureRecognizerStateFailed;
+  }
 
   // For now, we are handling only the scroll view case.
   // If more views need special treatment, then we can switch to a delegate pattern
