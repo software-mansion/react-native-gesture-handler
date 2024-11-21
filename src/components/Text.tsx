@@ -5,23 +5,13 @@ import {
   TextProps as RNTextProps,
 } from 'react-native';
 
-import type { GestureStateChangeEvent } from '../handlers/gestureHandlerCommon';
-import type { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
 import { Gesture, GestureDetector } from '../';
 
-type TextProps = Omit<RNTextProps, 'onPress'> & {
-  onPress?: (
-    event: GestureStateChangeEvent<NativeViewGestureHandlerPayload>
-  ) => void;
-};
-
-export const Text = forwardRef((props: TextProps, ref: Ref<RNText>) => {
+export const Text = forwardRef((props: RNTextProps, ref: Ref<RNText>) => {
   const { children, onPress, ...rest } = props;
 
   const textRef = useRef<RNText>(null);
-  const native = Gesture.Native()
-    .onEnd((event, _) => onPress?.(event))
-    .runOnJS(true);
+  const native = Gesture.Native().runOnJS(true);
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -38,7 +28,7 @@ export const Text = forwardRef((props: TextProps, ref: Ref<RNText>) => {
 
   return (
     <GestureDetector gesture={native}>
-      <RNText ref={ref ?? textRef} {...rest}>
+      <RNText onPress={onPress} ref={ref ?? textRef} {...rest}>
         {children}
       </RNText>
     </GestureDetector>
