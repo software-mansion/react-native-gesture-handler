@@ -16,11 +16,6 @@ export default function EmptyExample() {
   return (
     <GestureDetector gesture={tapGesture}>
       <Animated.View>
-        <GestureDetector gesture={innerTapGesture}>
-          <Animated.View style={styles.button}>
-            <Text>TapGesture</Text>
-          </Animated.View>
-        </GestureDetector>
         <RawButton
           style={styles.button}
           onActivated={() => console.log('$ pressed')}>
@@ -38,8 +33,13 @@ export default function EmptyExample() {
           onLongPress={() => console.log('$ long pressed')}>
           <Text>RectButton</Text>
         </RectButton>
+        <GestureDetector gesture={innerTapGesture}>
+          <Animated.View style={[styles.button, styles.other]}>
+            <Text>TapGesture</Text>
+          </Animated.View>
+        </GestureDetector>
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, styles.other]}
           onPress={() => console.log('$ pressed')}
           onLongPress={() => console.log('$ long pressed')}>
           <Text>Touchable</Text>
@@ -55,7 +55,10 @@ const styles = StyleSheet.create({
     height: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'tomato',
+    backgroundColor: 'orange',
     borderWidth: 1,
+  },
+  other: {
+    backgroundColor: 'skyblue',
   },
 });
