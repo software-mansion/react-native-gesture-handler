@@ -24,6 +24,19 @@ export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldActivateOnStart: false,
 });
 
+const stateToString = (state: State): string =>
+  state === State.ACTIVE
+    ? 'ACTIVE'
+    : state === State.BEGAN
+    ? 'BEGAN'
+    : state === State.END
+    ? 'END'
+    : state === State.CANCELLED
+    ? 'CANCELLED'
+    : state === State.FAILED
+    ? 'FAILED'
+    : 'UNDETERMINED';
+
 class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
     delayLongPress: 600,
@@ -42,6 +55,14 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   private handleEvent = ({
     nativeEvent,
   }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
+    console.log(
+      'new event: [',
+      stateToString(nativeEvent.oldState),
+      '] -> [',
+      stateToString(nativeEvent.state),
+      ']'
+    );
+
     const { state, oldState, pointerInside } = nativeEvent;
     const active = pointerInside && state === State.ACTIVE;
 
