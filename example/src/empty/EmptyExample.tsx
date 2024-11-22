@@ -1,19 +1,61 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  BaseButton,
+  Gesture,
+  GestureDetector,
+  RawButton,
+  RectButton,
+} from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
 export default function EmptyExample() {
+  const tapGesture = Gesture.Tap().onStart(() => console.log('X tap gesture'));
+  const innerTapGesture = Gesture.Tap().onStart(() => console.log('$ pressed'));
+
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 64, opacity: 0.25 }}>😞</Text>
-      <Text style={{ fontSize: 24, opacity: 0.25 }}>It's so empty here</Text>
-    </View>
+    <GestureDetector gesture={tapGesture}>
+      <Animated.View>
+        <GestureDetector gesture={innerTapGesture}>
+          <Animated.View style={styles.button}>
+            <Text>TapGesture</Text>
+          </Animated.View>
+        </GestureDetector>
+        <RawButton
+          style={styles.button}
+          onActivated={() => console.log('$ pressed')}>
+          <Text>RawButton</Text>
+        </RawButton>
+        <BaseButton
+          style={styles.button}
+          onPress={() => console.log('$ pressed')}
+          onLongPress={() => console.log('$ long pressed')}>
+          <Text>BaseButton</Text>
+        </BaseButton>
+        <RectButton
+          style={styles.button}
+          onPress={() => console.log('$ pressed')}
+          onLongPress={() => console.log('$ long pressed')}>
+          <Text>RectButton</Text>
+        </RectButton>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => console.log('$ pressed')}
+          onLongPress={() => console.log('$ long pressed')}>
+          <Text>Touchable</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    </GestureDetector>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  button: {
+    width: 200,
+    height: 100,
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'tomato',
+    borderWidth: 1,
   },
 });
