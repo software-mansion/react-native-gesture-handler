@@ -10,11 +10,7 @@
 
 #import <React/UIView+React.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTScrollViewComponentView.h>
-#else
-#import <React/RCTScrollView.h>
-#endif
 
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
@@ -539,20 +535,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIScrollView *)retrieveScrollView:(RNGHUIView *)view
 {
-#ifdef RCT_NEW_ARCH_ENABLED
   if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
     RNGHUIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     return scrollView;
   }
-#else
-  if ([view isKindOfClass:[RCTScrollView class]]) {
-    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
-    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
-    // subview
-    RNGHUIScrollView *scrollView = [view.subviews objectAtIndex:0];
-    return scrollView;
-  }
-#endif
 
   return nil;
 }

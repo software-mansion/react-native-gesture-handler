@@ -12,11 +12,7 @@
 #import <UIKit/UIGestureRecognizerSubclass.h>
 #endif
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTSurfaceTouchHandler.h>
-#else
-#import <React/RCTTouchHandler.h>
-#endif // RCT_NEW_ARCH_ENABLED
 
 @implementation RNRootViewGestureRecognizer {
   BOOL _active;
@@ -51,13 +47,7 @@
 
 - (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
 {
-  return ![preventedGestureRecognizer isKindOfClass:[
-#ifdef RCT_NEW_ARCH_ENABLED
-        RCTSurfaceTouchHandler
-#else
-        RCTTouchHandler
-#endif
-        class]];
+  return ![preventedGestureRecognizer isKindOfClass:[RCTSurfaceTouchHandler class]];
 }
 
 - (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
