@@ -208,6 +208,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView
 {
+  RNGHUIView *touchHandlerView = childView;
+
 #if !TARGET_OS_OSX
   if ([[childView reactViewController] isKindOfClass:[RCTFabricModalHostViewController class]]) {
     touchHandlerView = [childView reactViewController].view;
