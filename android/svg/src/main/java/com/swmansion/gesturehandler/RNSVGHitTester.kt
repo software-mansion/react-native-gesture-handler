@@ -1,8 +1,10 @@
 package com.swmansion.gesturehandler
 
+import com.horcrux.svg.RenderableView
+
 class RNSVGHitTester {
   @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
-  fun <T> hitTest(view: T, posX: Integer, posY: Integer) {
+  fun hitTest(view: RenderableView, posX: Integer, posY: Integer) {
     // no-op
   }
 }
