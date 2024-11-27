@@ -87,10 +87,13 @@ class PressGestureHandler extends DiscreteGestureHandler {
     this.isGestureRunning = true;
     clearTimeout(this.visualFeedbackTimer);
     this.initialEvent = ev;
-    this.visualFeedbackTimer = fireAfterInterval(() => {
-      this.sendGestureStartedEvent(this.initialEvent as HammerInputExt);
-      this.initialEvent = null;
-    }, this.shouldDelayTouchForEvent(ev) && CONTENT_TOUCHES_DELAY);
+    this.visualFeedbackTimer = fireAfterInterval(
+      () => {
+        this.sendGestureStartedEvent(this.initialEvent as HammerInputExt);
+        this.initialEvent = null;
+      },
+      this.shouldDelayTouchForEvent(ev) && CONTENT_TOUCHES_DELAY
+    );
   }
 
   sendGestureStartedEvent(ev: HammerInputExt) {

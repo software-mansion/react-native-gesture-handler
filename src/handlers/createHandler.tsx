@@ -160,7 +160,7 @@ const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 // TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
   T extends BaseGestureHandlerProps<U>,
-  U extends Record<string, unknown>
+  U extends Record<string, unknown>,
 >({
   name,
   allowedProps = [],

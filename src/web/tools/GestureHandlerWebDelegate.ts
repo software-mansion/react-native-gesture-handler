@@ -135,11 +135,11 @@ export class GestureHandlerWebDelegate
     const { userSelect } = this.gestureHandler.getConfig();
 
     this.view.style['userSelect'] = isHandlerEnabled
-      ? userSelect ?? 'none'
+      ? (userSelect ?? 'none')
       : this.defaultViewStyles.userSelect;
 
     this.view.style['webkitUserSelect'] = isHandlerEnabled
-      ? userSelect ?? 'none'
+      ? (userSelect ?? 'none')
       : this.defaultViewStyles.userSelect;
   }
 
@@ -147,12 +147,12 @@ export class GestureHandlerWebDelegate
     const { touchAction } = this.gestureHandler.getConfig();
 
     this.view.style['touchAction'] = isHandlerEnabled
-      ? touchAction ?? 'none'
+      ? (touchAction ?? 'none')
       : this.defaultViewStyles.touchAction;
 
     // @ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = isHandlerEnabled
-      ? touchAction ?? 'none'
+      ? (touchAction ?? 'none')
       : this.defaultViewStyles.touchAction;
   }
 

@@ -4,5 +4,5 @@ export const ghQueueMicrotask =
   typeof setImmediate === 'function'
     ? setImmediate.bind(null)
     : typeof requestAnimationFrame === 'function'
-    ? requestAnimationFrame.bind(null)
-    : queueMicrotask.bind(null);
+      ? requestAnimationFrame.bind(null)
+      : queueMicrotask.bind(null);
