@@ -183,7 +183,6 @@ android {
             if (shouldUseCommonInterfaceFromRNSVG()) {
                 srcDirs += 'svg/src/main/java'
             } else {
-                srcDirs += 'common/src/main/java'
                 srcDirs += 'nosvg/src/main/java'
             }
 
