@@ -1,6 +1,6 @@
 package com.swmansion.gesturehandler
 
-import com.facebook.react.TurboReactPackage
+import com.facebook.react.BaseReactPackage
 import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
@@ -19,7 +19,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
     RNGestureHandlerModule::class
   ]
 )
-class RNGestureHandlerPackage : TurboReactPackage(), ViewManagerOnDemandReactPackage {
+class RNGestureHandlerPackage : BaseReactPackage(), ViewManagerOnDemandReactPackage {
   private val viewManagers: Map<String, ModuleSpec> by lazy {
     mapOf(
       RNGestureHandlerRootViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
