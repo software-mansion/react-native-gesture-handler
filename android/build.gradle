@@ -75,6 +75,20 @@ def shouldUseCommonInterfaceFromReanimated() {
     }
 }
 
+// Using the latest version for now, todo: find the oldest working version
+def shouldUseCommonInterfaceFromRNSVG() {
+    def rnsvg = rootProject.subprojects.find { it.name == 'react-native-svg' }
+    if (rnsvg != null) {
+        def inputFile = new File(rnsvg.projectDir, '../package.json')
+        def json = new JsonSlurper().parseText(inputFile.text)
+        def rnsvgVersion = json.version as String
+        def (major, minor, patch) = rnsvgVersion.tokenize('.')
+        return (Integer.parseInt(major) == 15 && Integer.parseInt(minor) >= 8) || Integer.parseInt(major) > 15
+    } else {
+        return false
+    }
+}
+
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -164,6 +178,13 @@ android {
             } else {
                 srcDirs += 'common/src/main/java'
                 srcDirs += 'noreanimated/src/main/java'
+            }
+
+            if (shouldUseCommonInterfaceFromRNSVG()) {
+                srcDirs += 'svg/src/main/java'
+            } else {
+                srcDirs += 'common/src/main/java'
+                srcDirs += 'nosvg/src/main/java'
             }
 
             if (isNewArchitectureEnabled()) {
