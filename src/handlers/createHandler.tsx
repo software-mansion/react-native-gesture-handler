@@ -160,7 +160,7 @@ const UNRESOLVED_REFS_RETRY_LIMIT = 1;
 // TODO(TS) - make sure that BaseGestureHandlerProps doesn't need other generic parameter to work with custom properties.
 export default function createHandler<
   T extends BaseGestureHandlerProps<U>,
-  U extends Record<string, unknown>
+  U extends Record<string, unknown>,
 >({
   name,
   allowedProps = [],
@@ -233,6 +233,12 @@ export default function createHandler<
           config
         )
       );
+
+      if (!this.viewNode) {
+        throw new Error(
+          `[Gesture Handler] Failed to obtain view for ${Handler.displayName}. Note that old API doesn't support functional components.`
+        );
+      }
 
       this.attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
     }
