@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler
 
-import android.view.View
 import com.horcrux.svg.RenderableView
 
 class RNSVGHitTester {
