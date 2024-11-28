@@ -107,11 +107,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       } else {
         view.onTouchEvent(event)
 
-        // We have to explicitly check for ReactTextView, since its `isPressed` flag is not set to `true`,
-        // in contrast to Touchable
-        val shouldActivate = view.isPressed || view is ReactTextView
-
-        if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && shouldActivate) {
+        if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && hook.canActivate(view)) {
           activate()
         }
 
@@ -182,6 +178,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     fun canBegin(event: MotionEvent) = true
 
     /**
+     * Checks whether handler can activate. Used by TextViewHook.
+     */
+    fun canActivate(view: View) = true
+
+    /**
      * Called after the gesture transitions to the END state.
      */
     fun afterGestureEnd(event: MotionEvent) = Unit
@@ -214,6 +215,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   private class TextViewHook() : NativeViewGestureHandlerHook {
     override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
+
+    // We have to explicitly check for ReactTextView, since its `isPressed` flag is not set to `true`,
+    // in contrast to e.g. Touchable
+    override fun canActivate(view: View) = view.isPressed || view is ReactTextView
   }
 
   private class EditTextHook(
