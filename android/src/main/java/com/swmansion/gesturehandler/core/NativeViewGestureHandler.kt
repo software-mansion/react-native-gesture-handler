@@ -99,7 +99,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
       } else {
-        view.onTouchEvent(event)
+        view.dispatchTouchEvent(event)
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
           activate()
         }
@@ -116,12 +116,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       when {
         shouldActivateOnStart -> {
           tryIntercept(view, event)
-          view.onTouchEvent(event)
+          view.dispatchTouchEvent(event)
           activate()
         }
 
         tryIntercept(view, event) -> {
-          view.onTouchEvent(event)
+          view.dispatchTouchEvent(event)
           activate()
         }
 
@@ -136,7 +136,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         }
       }
     } else if (state == STATE_ACTIVE) {
-      view.onTouchEvent(event)
+      view.dispatchTouchEvent(event)
     }
   }
 
@@ -145,7 +145,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
       action = MotionEvent.ACTION_CANCEL
     }
-    view!!.onTouchEvent(event)
+    view!!.dispatchTouchEvent(event)
     event.recycle()
   }
 
