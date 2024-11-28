@@ -1,12 +1,12 @@
 package com.swmansion.gesturehandler
 
 class RNSVGHitTester {
-  fun <T> isSvgElement(view: T): Boolean {
+  fun isSvgElement(view: Any): Boolean {
     return false
   }
 
   @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
-  fun <T> hitTest(view: T, posX: Int, posY: Int) {
+  fun hitTest(view: Any, posX: Int, posY: Int) {
     // no-op
   }
 }

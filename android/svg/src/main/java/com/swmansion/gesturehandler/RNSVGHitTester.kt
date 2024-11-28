@@ -1,14 +1,19 @@
 package com.swmansion.gesturehandler
 
+import android.view.View
 import com.horcrux.svg.RenderableView
 
 class RNSVGHitTester {
-  fun <T> isSvgElement(view: T): Boolean {
-    return (view is RenderableView)
-  }
+  companion object {
+    fun isSvgElement(view: Any): Boolean {
+      return (view is RenderableView)
+    }
 
-  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
-  fun hitTest(view: RenderableView, posX: Int, posY: Int) {
-    // view.hitTest(...)
+    fun hitTest(view: Any, posX: Float, posY: Float): Boolean {
+      if (view is RenderableView) {
+        return view.hitTest(floatArrayOf(posX, posY)) != -1
+      }
+      return false
+    }
   }
 }
