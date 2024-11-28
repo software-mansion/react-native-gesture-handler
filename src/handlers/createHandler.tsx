@@ -234,6 +234,12 @@ export default function createHandler<
         )
       );
 
+      if (!this.viewNode) {
+        throw new Error(
+          `[Gesture Handler] Failed to obtain view for ${Handler.displayName}. Note that old API doesn't support functional components.`
+        );
+      }
+
       this.attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
     }
 
