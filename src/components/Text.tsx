@@ -23,7 +23,7 @@ export const Text = forwardRef((props: RNTextProps, ref: Ref<RNText>) => {
       : textRef.current;
 
     // @ts-ignore at this point we are sure that text is div
-    textElement?.setAttribute('RNGHText', 'true');
+    textElement?.setAttribute('rnghtext', 'true');
   }, []);
 
   return (
