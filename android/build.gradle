@@ -225,7 +225,6 @@ dependencies {
     }
 
     if (shouldUseCommonInterfaceFromRNSVG()) {
-        // Include Reanimated as dependency to load the common interface
         implementation (rootProject.subprojects.find { it.name == 'react-native-svg' }) {
             // no-op
         }
