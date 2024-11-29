@@ -49,8 +49,8 @@ export default function ReanimatedDrawerExample() {
         type === DrawerType.FRONT
           ? DrawerType.BACK
           : type === DrawerType.BACK
-          ? DrawerType.SLIDE
-          : DrawerType.FRONT
+            ? DrawerType.SLIDE
+            : DrawerType.FRONT
       )
     );
 
@@ -61,8 +61,8 @@ export default function ReanimatedDrawerExample() {
         lock === DrawerLockMode.UNLOCKED
           ? DrawerLockMode.LOCKED_CLOSED
           : lock === DrawerLockMode.LOCKED_CLOSED
-          ? DrawerLockMode.LOCKED_OPEN
-          : DrawerLockMode.UNLOCKED
+            ? DrawerLockMode.LOCKED_OPEN
+            : DrawerLockMode.UNLOCKED
       )
     );
 
@@ -94,8 +94,8 @@ export default function ReanimatedDrawerExample() {
               {type === DrawerType.FRONT
                 ? 'front'
                 : type === DrawerType.BACK
-                ? 'back'
-                : 'slide'}
+                  ? 'back'
+                  : 'slide'}
             </Text>
           </View>
         </GestureDetector>
@@ -106,8 +106,8 @@ export default function ReanimatedDrawerExample() {
               {lock === DrawerLockMode.UNLOCKED
                 ? 'unlocked'
                 : lock === DrawerLockMode.LOCKED_OPEN
-                ? 'locked-open'
-                : 'locked-closed'}
+                  ? 'locked-open'
+                  : 'locked-closed'}
             </Text>
           </View>
         </GestureDetector>

@@ -142,7 +142,7 @@ export interface GestureEvent<ExtraEventPayloadT = Record<string, unknown>> {
   nativeEvent: Readonly<GestureEventPayload & ExtraEventPayloadT>;
 }
 export interface HandlerStateChangeEvent<
-  ExtraEventPayloadT = Record<string, unknown>
+  ExtraEventPayloadT = Record<string, unknown>,
 > {
   nativeEvent: Readonly<HandlerStateChangeEventPayload & ExtraEventPayloadT>;
 }
@@ -169,7 +169,7 @@ export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
   GestureEventPayload & GestureEventPayloadT;
 
 export type GestureStateChangeEvent<
-  GestureStateChangeEventPayloadT = Record<string, unknown>
+  GestureStateChangeEventPayloadT = Record<string, unknown>,
 > = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
 
 export type CommonGestureConfig = {
@@ -186,7 +186,7 @@ export type CommonGestureConfig = {
 // Events payloads are types instead of interfaces due to TS limitation.
 // See https://github.com/microsoft/TypeScript/issues/15300 for more info.
 export type BaseGestureHandlerProps<
-  ExtraEventPayloadT extends Record<string, unknown> = Record<string, unknown>
+  ExtraEventPayloadT extends Record<string, unknown> = Record<string, unknown>,
 > = CommonGestureConfig & {
   id?: string;
   waitFor?: React.Ref<unknown> | React.Ref<unknown>[];

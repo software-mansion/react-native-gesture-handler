@@ -1,17 +1,9 @@
 import React from 'react';
-import {
-  PressableStateCallbackType,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { PressableStateCallbackType, StyleSheet, View } from 'react-native';
 import TestingBase from './testingBase';
 
 export function FunctionalStyleExample() {
-  const functionalStyle = (
-    state: PressableStateCallbackType
-  ): StyleProp<ViewStyle> => {
+  const functionalStyle = (state: PressableStateCallbackType) => {
     if (state.pressed) {
       return {
         width: 100,

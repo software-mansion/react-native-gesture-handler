@@ -33,7 +33,9 @@ const renderSampleBox = (color?: string) => (
   />
 );
 
-const toReactNativeTouchable = (touchable: React.ComponentType<unknown>) => {
+const toReactNativeTouchable = (
+  touchable: React.ComponentType<unknown>
+): React.ElementType => {
   if (touchable === TouchableOpacity) {
     return RNTouchableOpacity;
   }
@@ -53,9 +55,11 @@ type Touchables = {
   type: React.ComponentType<any>;
   props?: Record<string, unknown>;
   color?: string;
-  renderChild: (() => null) | ((color?: string) => React.ReactNode);
+  renderChild: (color?: string) => React.ReactNode;
   text: string;
-  background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
+  background?: (
+    A: typeof TouchableNativeFeedback | typeof RNTouchableNativeFeedback
+  ) => BackgroundPropType;
 };
 
 const TOUCHABLES: Touchables[] = [
@@ -297,7 +301,10 @@ const TOUCHABLES: Touchables[] = [
 ];
 
 const screens: Record<string, Touchables> = TOUCHABLES.reduce(
-  (map: Record<string, Touchables>, obj) => ((map[obj.text] = obj), map),
+  (map: Record<string, Touchables>, obj: Touchables) => {
+    map[obj.text] = obj;
+    return map;
+  },
   {}
 );
 
@@ -353,12 +360,10 @@ export class TouchableExample extends Component<
       color,
     } = screens[this.props.route.params.item];
     const RNTouchable = toReactNativeTouchable(GHTouchable);
-    const Component: React.ComponentType<any> = this.state.useScrollView
-      ? ScrollView
-      : View;
+    const Wrapper = this.state.useScrollView ? ScrollView : View;
 
     return (
-      <Component style={{ width: '100%', height: '100%', padding: 10 }}>
+      <Wrapper style={{ width: '100%', height: '100%', padding: 10 }}>
         <TouchableOpacity onPress={this.toggleScrollView}>
           <Text>
             Use {this.state.useScrollView ? 'View' : 'ScrollView'} as a wrapper
@@ -382,7 +387,7 @@ export class TouchableExample extends Component<
             {renderChild(color)}
           </GHTouchable>
         </View>
-      </Component>
+      </Wrapper>
     );
   }
 }

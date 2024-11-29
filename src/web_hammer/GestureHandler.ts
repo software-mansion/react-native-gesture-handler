@@ -538,7 +538,7 @@ abstract class GestureHandler {
       'activeOffsetYStart',
       'activeOffsetYEnd',
     ] as const;
-    configProps.forEach((prop: typeof configProps[number]) => {
+    configProps.forEach((prop: (typeof configProps)[number]) => {
       if (typeof props[prop] === 'undefined') {
         props[prop] = Number.NaN;
       }

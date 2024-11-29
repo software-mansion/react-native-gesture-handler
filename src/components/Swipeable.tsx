@@ -362,10 +362,10 @@ export default class Swipeable extends Component<
         rowState === -1
           ? 'right'
           : rowState === 1
-          ? 'left'
-          : translationX > 0
-          ? 'left'
-          : 'right';
+            ? 'left'
+            : translationX > 0
+              ? 'left'
+              : 'right';
 
       if (rowState === 0) {
         this.props.onSwipeableOpenStartDrag?.(direction);

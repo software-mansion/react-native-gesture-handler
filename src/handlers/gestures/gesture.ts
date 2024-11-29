@@ -101,7 +101,7 @@ export const CALLBACK_TYPE = {
 
 // Allow using CALLBACK_TYPE as object and type
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type CALLBACK_TYPE = typeof CALLBACK_TYPE[keyof typeof CALLBACK_TYPE];
+export type CALLBACK_TYPE = (typeof CALLBACK_TYPE)[keyof typeof CALLBACK_TYPE];
 
 export abstract class Gesture {
   /**
@@ -125,7 +125,7 @@ export abstract class Gesture {
 
 let nextGestureId = 0;
 export abstract class BaseGesture<
-  EventPayloadT extends Record<string, unknown>
+  EventPayloadT extends Record<string, unknown>,
 > extends Gesture {
   private gestureId = -1;
   public handlerTag = -1;
@@ -433,7 +433,7 @@ export abstract class BaseGesture<
 
 export abstract class ContinousBaseGesture<
   EventPayloadT extends Record<string, unknown>,
-  EventChangePayloadT extends Record<string, unknown>
+  EventChangePayloadT extends Record<string, unknown>,
 > extends BaseGesture<EventPayloadT> {
   /**
    * Set the callback that is being called every time the gesture receives an update while it's active.
