@@ -35,7 +35,7 @@ public class RNGestureHandlerButtonManagerDelegate<T extends View, U extends Bas
         mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;
       case "rippleColor":
-        mViewManager.setRippleColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        mViewManager.setRippleColor(view, value == null ? 0 : ((Double) value).intValue());
         break;
       case "rippleRadius":
         mViewManager.setRippleRadius(view, value == null ? 0 : ((Double) value).intValue());

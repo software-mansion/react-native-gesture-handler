@@ -104,7 +104,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   @ReactProp(name = "rippleColor")
-  override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int?) {
+  override fun setRippleColor(view: ButtonViewGroup, rippleColor: Int) {
     view.rippleColor = rippleColor
   }
 
