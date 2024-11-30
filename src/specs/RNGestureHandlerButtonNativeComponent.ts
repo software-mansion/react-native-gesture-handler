@@ -11,7 +11,7 @@ interface NativeProps extends ViewProps {
   foreground?: boolean;
   borderless?: boolean;
   enabled?: WithDefault<boolean, true>;
-  rippleColor?: ColorValue;
+  rippleColor?: Int32;
   rippleRadius?: Int32;
   touchSoundDisabled?: WithDefault<boolean, false>;
   borderWidth?: Float;
