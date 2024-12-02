@@ -9,6 +9,7 @@ import android.widget.ScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.textinput.ReactEditText
+import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 import com.swmansion.gesturehandler.react.isScreenReaderOn
 
@@ -82,6 +83,16 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
   }
 
+  fun triggerEvent(event: MotionEvent) {
+    val view = view!!
+
+    if (view is ReactViewGroup) {
+      view.dispatchTouchEvent(event)
+    } else {
+      view.onTouchEvent(event)
+    }
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
 
@@ -99,7 +110,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
       } else {
-        view.dispatchTouchEvent(event)
+        triggerEvent(event)
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
           activate()
         }
@@ -116,12 +127,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       when {
         shouldActivateOnStart -> {
           tryIntercept(view, event)
-          view.dispatchTouchEvent(event)
+          triggerEvent(event)
           activate()
         }
 
         tryIntercept(view, event) -> {
-          view.dispatchTouchEvent(event)
+          triggerEvent(event)
           activate()
         }
 
@@ -136,7 +147,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         }
       }
     } else if (state == STATE_ACTIVE) {
-      view.dispatchTouchEvent(event)
+      triggerEvent(event)
     }
   }
 
@@ -145,7 +156,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
       action = MotionEvent.ACTION_CANCEL
     }
-    view!!.dispatchTouchEvent(event)
+    triggerEvent(event)
     event.recycle()
   }
 
