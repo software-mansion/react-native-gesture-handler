@@ -67,7 +67,7 @@ export default class LongPressGestureHandler extends GestureHandler {
       return;
     }
 
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerDown(event);
 
     this.startX = event.x;
@@ -80,14 +80,15 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
   protected onPointerAdd(event: AdaptedEvent): void {
     super.onPointerAdd(event);
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
 
-    if (this.tracker.getTrackedPointersCount() > this.numberOfPointers) {
+    if (this.pointerTracker.getTrackedPointersCount() > this.numberOfPointers) {
       this.fail();
       return;
     }
 
-    const absoluteCoordsAverage = this.tracker.getAbsoluteCoordsAverage();
+    const absoluteCoordsAverage =
+      this.pointerTracker.getAbsoluteCoordsAverage();
 
     this.startX = absoluteCoordsAverage.x;
     this.startY = absoluteCoordsAverage.y;
@@ -97,15 +98,15 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   protected onPointerMove(event: AdaptedEvent): void {
     super.onPointerMove(event);
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
     this.checkDistanceFail();
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.end();
     } else {
       this.fail();
@@ -114,18 +115,18 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   protected onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
 
     if (
-      this.tracker.getTrackedPointersCount() < this.numberOfPointers &&
-      this.getState() !== State.ACTIVE
+      this.pointerTracker.getTrackedPointersCount() < this.numberOfPointers &&
+      this.state !== State.ACTIVE
     ) {
       this.fail();
     }
   }
 
   private tryBegin(): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 
@@ -136,7 +137,9 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   private tryActivate(): void {
-    if (this.tracker.getTrackedPointersCount() !== this.numberOfPointers) {
+    if (
+      this.pointerTracker.getTrackedPointersCount() !== this.numberOfPointers
+    ) {
       return;
     }
 
@@ -150,7 +153,8 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   private checkDistanceFail(): void {
-    const absoluteCoordsAverage = this.tracker.getAbsoluteCoordsAverage();
+    const absoluteCoordsAverage =
+      this.pointerTracker.getAbsoluteCoordsAverage();
 
     const dx = absoluteCoordsAverage.x - this.startX;
     const dy = absoluteCoordsAverage.y - this.startY;
@@ -160,7 +164,7 @@ export default class LongPressGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.cancel();
     } else {
       this.fail();

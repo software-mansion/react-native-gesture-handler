@@ -21,43 +21,138 @@ import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
-  protected currentState: State = State.UNDETERMINED;
 
-  protected shouldCancelWhenOutside = false;
-  protected hasCustomActivationCriteria = false;
-  protected enabled = false;
+  private _state: State = State.UNDETERMINED;
+  get state() {
+    return this._state;
+  }
+  set state(newState: State) {
+    this._state = newState;
+  }
 
-  private viewRef!: number;
-  private propsRef!: React.RefObject<unknown>;
-  private handlerTag!: number;
-  protected config: Config = { enabled: false };
+  private _shouldCancelWhenOutside = false;
+  get shouldCancelWhenOutside() {
+    return this._shouldCancelWhenOutside;
+  }
+  set shouldCancelWhenOutside(val: boolean) {
+    this._shouldCancelWhenOutside = val;
+  }
 
-  protected tracker: PointerTracker = new PointerTracker();
+  private _hasCustomActivationCriteria = false;
+  get hasCustomActivationCriteria() {
+    return this._hasCustomActivationCriteria;
+  }
+  set hasCustomActivationCriteria(val: boolean) {
+    this._hasCustomActivationCriteria = val;
+  }
 
-  // Orchestrator properties
-  protected activationIndex = 0;
-  protected awaiting = false;
-  protected active = false;
-  protected shouldResetProgress = false;
-  protected pointerType: PointerType = PointerType.MOUSE;
+  private _enabled = false;
+  get enabled() {
+    return this._enabled;
+  }
+  set enabled(val: boolean) {
+    this._enabled = val;
+  }
 
-  protected delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
+  private _viewRef!: number;
+  get viewRef() {
+    return this._viewRef;
+  }
+  set viewRef(val: number) {
+    this._viewRef = val;
+  }
+
+  private _propsRef!: React.RefObject<unknown>;
+  get propsRef() {
+    return this._propsRef;
+  }
+  set propsRef(val: React.RefObject<unknown>) {
+    this._propsRef = val;
+  }
+
+  private _handlerTag!: number;
+  get handlerTag() {
+    return this._handlerTag;
+  }
+  set handlerTag(tag: number) {
+    this._handlerTag = tag;
+  }
+
+  private _config: Config = { enabled: false };
+  get config() {
+    return this._config;
+  }
+  set config(newConfig: Config) {
+    this._config = newConfig;
+  }
+
+  private _pointerTracker: PointerTracker = new PointerTracker();
+  get pointerTracker() {
+    return this._pointerTracker;
+  }
+  set pointerTracker(tracker: PointerTracker) {
+    this._pointerTracker = tracker;
+  }
+
+  private _activationIndex = 0;
+  get activationIndex() {
+    return this._activationIndex;
+  }
+  set activationIndex(val: number) {
+    this._activationIndex = val;
+  }
+
+  private _awaiting = false;
+  get awaiting() {
+    return this._awaiting;
+  }
+  set awaiting(val: boolean) {
+    this._awaiting = val;
+  }
+
+  private _active = false;
+  get active() {
+    return this._active;
+  }
+  set active(val: boolean) {
+    this._active = val;
+  }
+
+  private _shouldResetProgress = false;
+  get shouldResetProgress() {
+    return this._shouldResetProgress;
+  }
+  set shouldResetProgress(val: boolean) {
+    this._shouldResetProgress = val;
+  }
+
+  private _pointerType: PointerType = PointerType.MOUSE;
+  get pointerType() {
+    return this._pointerType;
+  }
+  set pointerType(newPointerType: PointerType) {
+    this._pointerType = newPointerType;
+  }
+
+  private _delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
+  get delegate() {
+    return this._delegate;
+  }
+  set delegate(newDelegate: GestureHandlerDelegate<unknown, IGestureHandler>) {
+    this._delegate = newDelegate;
+  }
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
   ) {
-    this.delegate = delegate;
+    this._delegate = delegate;
   }
-
-  //
-  // Initializing handler
-  //
 
   protected init(viewRef: number, propsRef: React.RefObject<unknown>) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
 
-    this.currentState = State.UNDETERMINED;
+    this.state = State.UNDETERMINED;
 
     this.delegate.init(viewRef, this);
   }
@@ -79,36 +174,28 @@ export default abstract class GestureHandler implements IGestureHandler {
     manager.registerListeners();
   }
 
-  //
-  // Resetting handler
-  //
-
   protected onCancel(): void {}
   protected onReset(): void {}
   protected resetProgress(): void {}
 
   public reset(): void {
-    this.tracker.resetTracker();
+    this.pointerTracker.resetTracker();
     this.onReset();
     this.resetProgress();
     this.delegate.reset();
-    this.currentState = State.UNDETERMINED;
+    this.state = State.UNDETERMINED;
   }
 
-  //
-  // State logic
-  //
-
   public moveToState(newState: State, sendIfDisabled?: boolean) {
-    if (this.currentState === newState) {
+    if (this.state === newState) {
       return;
     }
 
-    const oldState = this.currentState;
-    this.currentState = newState;
+    const oldState = this.state;
+    this.state = newState;
 
     if (
-      this.tracker.getTrackedPointersCount() > 0 &&
+      this.pointerTracker.getTrackedPointersCount() > 0 &&
       this.config.needsPointerData &&
       this.isFinished()
     ) {
@@ -125,7 +212,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.onStateChange(newState, oldState);
 
     if (!this.enabled && this.isFinished()) {
-      this.currentState = State.UNDETERMINED;
+      this.state = State.UNDETERMINED;
     }
   }
 
@@ -136,7 +223,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (this.currentState === State.UNDETERMINED) {
+    if (this.state === State.UNDETERMINED) {
       this.moveToState(State.BEGAN);
     }
   }
@@ -145,12 +232,9 @@ export default abstract class GestureHandler implements IGestureHandler {
    * @param {boolean} sendIfDisabled - Used when handler becomes disabled. With this flag orchestrator will be forced to send fail event
    */
   public fail(sendIfDisabled?: boolean): void {
-    if (
-      this.currentState === State.ACTIVE ||
-      this.currentState === State.BEGAN
-    ) {
+    if (this.state === State.ACTIVE || this.state === State.BEGAN) {
       // Here the order of calling the delegate and moveToState is important.
-      // At this point we can use currentState as previuos state, because immediately after changing cursor we call moveToState method.
+      // At this point we can use state as previuos state, because immediately after changing cursor we call moveToState method.
       this.delegate.onFail();
 
       this.moveToState(State.FAILED, sendIfDisabled);
@@ -164,9 +248,9 @@ export default abstract class GestureHandler implements IGestureHandler {
    */
   public cancel(sendIfDisabled?: boolean): void {
     if (
-      this.currentState === State.ACTIVE ||
-      this.currentState === State.UNDETERMINED ||
-      this.currentState === State.BEGAN
+      this.state === State.ACTIVE ||
+      this.state === State.UNDETERMINED ||
+      this.state === State.BEGAN
     ) {
       this.onCancel();
 
@@ -180,8 +264,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   public activate(force = false) {
     if (
       (this.config.manualActivation !== true || force) &&
-      (this.currentState === State.UNDETERMINED ||
-        this.currentState === State.BEGAN)
+      (this.state === State.UNDETERMINED || this.state === State.BEGAN)
     ) {
       this.delegate.onActivate();
       this.moveToState(State.ACTIVE);
@@ -189,10 +272,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public end() {
-    if (
-      this.currentState === State.BEGAN ||
-      this.currentState === State.ACTIVE
-    ) {
+    if (this.state === State.BEGAN || this.state === State.ACTIVE) {
       // Same as above - order matters
       this.delegate.onEnd();
 
@@ -202,36 +282,11 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.resetProgress();
   }
 
-  //
-  // Methods for orchestrator
-  //
-
-  public isAwaiting(): boolean {
-    return this.awaiting;
-  }
-  public setAwaiting(value: boolean): void {
-    this.awaiting = value;
-  }
-
-  public isActive(): boolean {
-    return this.active;
-  }
-  public setActive(value: boolean): void {
-    this.active = value;
-  }
-
   public getShouldResetProgress(): boolean {
     return this.shouldResetProgress;
   }
   public setShouldResetProgress(value: boolean): void {
     this.shouldResetProgress = value;
-  }
-
-  public getActivationIndex(): number {
-    return this.activationIndex;
-  }
-  public setActivationIndex(value: number): void {
-    this.activationIndex = value;
   }
 
   public shouldWaitForHandlerFailure(handler: IGestureHandler): boolean {
@@ -278,10 +333,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
-  //
-  // Event actions
-  //
-
   protected onPointerDown(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
     this.pointerType = event.pointerType;
@@ -308,7 +359,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected onPointerLeave(event: AdaptedEvent): void {
     if (this.shouldCancelWhenOutside) {
-      switch (this.currentState) {
+      switch (this.state) {
         case State.ACTIVE:
           this.cancel();
           break;
@@ -348,7 +399,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (this.active) {
-      this.sendEvent(this.currentState, this.currentState);
+      this.sendEvent(this.state, this.state);
     }
 
     this.tryToSendTouchEvent(event);
@@ -398,7 +449,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.lastSentState = newState;
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       resultEvent.nativeEvent.oldState = undefined;
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     }
@@ -407,10 +458,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformEventData(newState: State, oldState: State): ResultEvent {
     return {
       nativeEvent: {
-        numberOfPointers: this.tracker.getTrackedPointersCount(),
+        numberOfPointers: this.pointerTracker.getTrackedPointersCount(),
         state: newState,
         pointerInside: this.delegate.isPointerInBounds(
-          this.tracker.getAbsoluteCoordsAverage()
+          this.pointerTracker.getAbsoluteCoordsAverage()
         ),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
@@ -430,7 +481,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
-    const trackerData = this.tracker.getData();
+    const trackerData = this.pointerTracker.getData();
 
     // This if handles edge case where all pointers have been cancelled
     // When pointercancel is triggered, reset method is called. This means that tracker will be reset after first pointer being cancelled
@@ -441,7 +492,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     trackerData.forEach((element: TrackerElement, key: number): void => {
-      const id: number = this.tracker.getMappedTouchEventId(key);
+      const id: number = this.pointerTracker.getMappedTouchEventId(key);
 
       all.push({
         id: id,
@@ -456,7 +507,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     // However, if the event is cancel, we want to cancel all pointers to avoid crashes
     if (event.eventType !== EventTypes.CANCEL) {
       changed.push({
-        id: this.tracker.getMappedTouchEventId(event.pointerId),
+        id: this.pointerTracker.getMappedTouchEventId(event.pointerId),
         x: event.x - rect.pageX,
         y: event.y - rect.pageY,
         absoluteX: event.x,
@@ -464,7 +515,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       });
     } else {
       trackerData.forEach((element: TrackerElement, key: number): void => {
-        const id: number = this.tracker.getMappedTouchEventId(key);
+        const id: number = this.pointerTracker.getMappedTouchEventId(key);
 
         changed.push({
           id: id,
@@ -510,7 +561,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     return {
       nativeEvent: {
         handlerTag: this.handlerTag,
-        state: this.currentState,
+        state: this.state,
         eventType: eventType,
         changedTouches: changed,
         allTouches: all,
@@ -527,14 +578,14 @@ export default abstract class GestureHandler implements IGestureHandler {
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
-    const trackerData = this.tracker.getData();
+    const trackerData = this.pointerTracker.getData();
 
     if (trackerData.size === 0) {
       return;
     }
 
     trackerData.forEach((element: TrackerElement, key: number): void => {
-      const id: number = this.tracker.getMappedTouchEventId(key);
+      const id: number = this.pointerTracker.getMappedTouchEventId(key);
 
       all.push({
         id: id,
@@ -556,7 +607,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const cancelEvent: ResultTouchEvent = {
       nativeEvent: {
         handlerTag: this.handlerTag,
-        state: this.currentState,
+        state: this.state,
         eventType: TouchEventType.CANCELLED,
         changedTouches: changed,
         allTouches: all,
@@ -574,8 +625,8 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   protected transformNativeEvent(): Record<string, unknown> {
     // Those properties are shared by most handlers and if not this method will be overriden
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    const lastRelativeCoords = this.tracker.getRelativeCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
+    const lastRelativeCoords = this.pointerTracker.getRelativeCoordsAverage();
 
     return {
       x: lastRelativeCoords.x,
@@ -585,10 +636,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
-  //
-  // Handling config
-  //
-
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.config = { enabled: enabled, ...props };
     this.enabled = enabled;
@@ -596,7 +643,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.delegate.onEnabledChange(enabled);
 
     if (this.config.shouldCancelWhenOutside !== undefined) {
-      this.setShouldCancelWhenOutside(this.config.shouldCancelWhenOutside);
+      this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
     }
 
     this.validateHitSlops();
@@ -605,7 +652,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    switch (this.currentState) {
+    switch (this.state) {
       case State.ACTIVE:
         this.fail(true);
         break;
@@ -728,7 +775,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     const rect = this.delegate.measureView();
-    const { x, y } = this.tracker.getLastAbsoluteCoords();
+    const { x, y } = this.pointerTracker.getLastAbsoluteCoords();
     const offsetX: number = x - rect.pageX;
     const offsetY: number = y - rect.pageY;
 
@@ -751,60 +798,16 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.delegate.destroy(this.config);
   }
 
-  //
-  // Getters and setters
-  //
-
-  public getTag(): number {
-    return this.handlerTag;
-  }
-
-  public setTag(tag: number): void {
-    this.handlerTag = tag;
-  }
-
-  public getConfig() {
-    return this.config;
-  }
-
-  public getDelegate(): GestureHandlerDelegate<unknown, IGestureHandler> {
-    return this.delegate;
-  }
-
-  public getTracker(): PointerTracker {
-    return this.tracker;
-  }
-
   public getTrackedPointersID(): number[] {
-    return this.tracker.getTrackedPointersID();
-  }
-
-  public getState(): State {
-    return this.currentState;
-  }
-
-  public isEnabled(): boolean {
-    return this.enabled;
+    return this.pointerTracker.getTrackedPointersID();
   }
 
   private isFinished(): boolean {
     return (
-      this.currentState === State.END ||
-      this.currentState === State.FAILED ||
-      this.currentState === State.CANCELLED
+      this.state === State.END ||
+      this.state === State.FAILED ||
+      this.state === State.CANCELLED
     );
-  }
-
-  protected setShouldCancelWhenOutside(shouldCancel: boolean) {
-    this.shouldCancelWhenOutside = shouldCancel;
-  }
-
-  protected getShouldCancelWhenOutside(): boolean {
-    return this.shouldCancelWhenOutside;
-  }
-
-  public getPointerType(): PointerType {
-    return this.pointerType;
   }
 }
 

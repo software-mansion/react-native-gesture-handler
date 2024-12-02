@@ -1,25 +1,34 @@
-import type { PointerType } from '../../PointerType';
+import { PointerType } from '../../PointerType';
 import type { MouseButton } from '../../handlers/gestureHandlerCommon';
 import type { State } from '../../State';
 import type { Config } from '../interfaces';
 import type EventManager from '../tools/EventManager';
-import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import type PointerTracker from '../tools/PointerTracker';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import PointerTracker from '../tools/PointerTracker';
 
 export default interface IGestureHandler {
-  getTag: () => number;
-  getState: () => State;
-  getConfig: () => Config;
-  getDelegate: () => GestureHandlerDelegate<unknown, this>;
+  active: boolean;
+  awaiting: boolean;
+  activationIndex: number;
+
+  config: Config;
+
+  delegate: GestureHandlerDelegate<unknown, unknown>;
+
+  enabled: boolean;
+
+  pointerTracker: PointerTracker;
+  pointerType: PointerType;
+
+  state: State;
+  handlerTag: number;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 
   isButtonInConfig: (
     mouseButton: MouseButton | undefined
   ) => boolean | number | undefined;
-  getPointerType: () => PointerType;
 
-  getTracker: () => PointerTracker;
   getTrackedPointersID: () => number[];
 
   begin: () => void;
@@ -29,12 +38,7 @@ export default interface IGestureHandler {
   cancel: () => void;
 
   reset: () => void;
-  isEnabled: () => boolean;
-  isActive: () => boolean;
-  setActive: (value: boolean) => void;
-  isAwaiting: () => boolean;
-  setAwaiting: (value: boolean) => void;
-  setActivationIndex: (value: number) => void;
+
   setShouldResetProgress: (value: boolean) => void;
 
   shouldWaitForHandlerFailure: (handler: IGestureHandler) => boolean;

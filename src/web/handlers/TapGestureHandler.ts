@@ -109,7 +109,7 @@ export default class TapGestureHandler extends GestureHandler {
       return;
     }
 
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerDown(event);
 
     this.trySettingPosition(event);
@@ -127,13 +127,13 @@ export default class TapGestureHandler extends GestureHandler {
 
   protected onPointerAdd(event: AdaptedEvent): void {
     super.onPointerAdd(event);
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     this.trySettingPosition(event);
 
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
     this.lastX = lastCoords.x;
     this.lastY = lastCoords.y;
 
@@ -146,23 +146,23 @@ export default class TapGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
     this.lastX = lastCoords.x;
     this.lastY = lastCoords.y;
 
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
 
     this.updateState(event);
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
 
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
     this.lastX = lastCoords.x;
     this.lastY = lastCoords.y;
 
@@ -174,9 +174,9 @@ export default class TapGestureHandler extends GestureHandler {
 
   protected onPointerMove(event: AdaptedEvent): void {
     this.trySettingPosition(event);
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
     this.lastX = lastCoords.x;
     this.lastY = lastCoords.y;
 
@@ -187,9 +187,9 @@ export default class TapGestureHandler extends GestureHandler {
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.trySettingPosition(event);
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
     this.lastX = lastCoords.x;
     this.lastY = lastCoords.y;
 
@@ -200,9 +200,11 @@ export default class TapGestureHandler extends GestureHandler {
 
   private updateState(event: AdaptedEvent): void {
     if (
-      this.currentMaxNumberOfPointers < this.tracker.getTrackedPointersCount()
+      this.currentMaxNumberOfPointers <
+      this.pointerTracker.getTrackedPointersCount()
     ) {
-      this.currentMaxNumberOfPointers = this.tracker.getTrackedPointersCount();
+      this.currentMaxNumberOfPointers =
+        this.pointerTracker.getTrackedPointersCount();
     }
 
     if (this.shouldFail()) {
@@ -210,7 +212,7 @@ export default class TapGestureHandler extends GestureHandler {
       return;
     }
 
-    switch (this.currentState) {
+    switch (this.state) {
       case State.UNDETERMINED:
         if (event.eventType === EventTypes.DOWN) {
           this.begin();
@@ -231,7 +233,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private trySettingPosition(event: AdaptedEvent): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 

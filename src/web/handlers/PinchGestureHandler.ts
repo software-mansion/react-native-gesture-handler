@@ -22,7 +22,7 @@ export default class PinchGestureHandler extends GestureHandler {
     onScale: (detector: ScaleGestureDetector): boolean => {
       const prevScaleFactor: number = this.scale;
       this.scale *= detector.getScaleFactor(
-        this.tracker.getTrackedPointersCount()
+        this.pointerTracker.getTrackedPointersCount()
       );
 
       const delta = detector.getTimeDelta();
@@ -33,7 +33,7 @@ export default class PinchGestureHandler extends GestureHandler {
       if (
         Math.abs(this.startingSpan - detector.getCurrentSpan()) >=
           this.spanSlop &&
-        this.currentState === State.BEGAN
+        this.state === State.BEGAN
       ) {
         this.activate();
       }
@@ -52,7 +52,7 @@ export default class PinchGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
 
-    this.setShouldCancelWhenOutside(false);
+    this.shouldCancelWhenOutside = false;
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -69,28 +69,28 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerDown(event);
 
     this.tryToSendTouchEvent(event);
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerAdd(event);
     this.tryBegin();
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.scaleGestureDetector.onTouchEvent(event, this.pointerTracker);
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
-    this.tracker.removeFromTracker(event.pointerId);
-    if (this.currentState !== State.ACTIVE) {
+    this.pointerTracker.removeFromTracker(event.pointerId);
+    if (this.state !== State.ACTIVE) {
       return;
     }
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.scaleGestureDetector.onTouchEvent(event, this.pointerTracker);
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.end();
     } else {
       this.fail();
@@ -99,38 +99,38 @@ export default class PinchGestureHandler extends GestureHandler {
 
   protected onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
-    this.tracker.removeFromTracker(event.pointerId);
+    this.scaleGestureDetector.onTouchEvent(event, this.pointerTracker);
+    this.pointerTracker.removeFromTracker(event.pointerId);
 
     if (
-      this.currentState === State.ACTIVE &&
-      this.tracker.getTrackedPointersCount() < 2
+      this.state === State.ACTIVE &&
+      this.pointerTracker.getTrackedPointersCount() < 2
     ) {
       this.end();
     }
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.pointerTracker.getTrackedPointersCount() < 2) {
       return;
     }
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
 
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.scaleGestureDetector.onTouchEvent(event, this.pointerTracker);
     super.onPointerMove(event);
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.pointerTracker.getTrackedPointersCount() < 2) {
       return;
     }
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
 
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+    this.scaleGestureDetector.onTouchEvent(event, this.pointerTracker);
     super.onPointerOutOfBounds(event);
   }
 
   private tryBegin(): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 
@@ -139,7 +139,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   public activate(force?: boolean): void {
-    if (this.currentState !== State.ACTIVE) {
+    if (this.state !== State.ACTIVE) {
       this.resetProgress();
     }
 
@@ -151,7 +151,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       return;
     }
     this.velocity = 0;

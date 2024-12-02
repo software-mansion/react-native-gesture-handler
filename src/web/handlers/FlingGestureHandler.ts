@@ -51,7 +51,10 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private tryEndFling(): boolean {
-    const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
+    const velocityVector = Vector.fromVelocity(
+      this.pointerTracker,
+      this.keyPointer
+    );
 
     const getAlignment = (
       direction: Directions | DiagonalDirections,
@@ -109,7 +112,7 @@ export default class FlingGestureHandler extends GestureHandler {
       return;
     }
 
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     this.keyPointer = event.pointerId;
 
     super.onPointerDown(event);
@@ -119,35 +122,35 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerAdd(event);
     this.newPointerAction();
   }
 
   private newPointerAction(): void {
-    if (this.currentState === State.UNDETERMINED) {
+    if (this.state === State.UNDETERMINED) {
       this.startFling();
     }
 
-    if (this.currentState !== State.BEGAN) {
+    if (this.state !== State.BEGAN) {
       return;
     }
 
     this.tryEndFling();
 
     if (
-      this.tracker.getTrackedPointersCount() >
+      this.pointerTracker.getTrackedPointersCount() >
       this.maxNumberOfPointersSimultaneously
     ) {
       this.maxNumberOfPointersSimultaneously =
-        this.tracker.getTrackedPointersCount();
+        this.pointerTracker.getTrackedPointersCount();
     }
   }
 
   private pointerMoveAction(event: AdaptedEvent): void {
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
 
-    if (this.currentState !== State.BEGAN) {
+    if (this.state !== State.BEGAN) {
       return;
     }
 
@@ -177,11 +180,11 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private onUp(event: AdaptedEvent): void {
-    if (this.currentState === State.BEGAN) {
+    if (this.state === State.BEGAN) {
       this.endFling();
     }
 
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
   }
 
   public activate(force?: boolean): void {

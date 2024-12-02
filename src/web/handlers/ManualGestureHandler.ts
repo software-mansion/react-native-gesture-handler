@@ -11,7 +11,7 @@ export default class ManualGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerDown(event);
     this.begin();
 
@@ -19,27 +19,27 @@ export default class ManualGestureHandler extends GestureHandler {
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerAdd(event);
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
     super.onPointerMove(event);
   }
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
     super.onPointerOutOfBounds(event);
   }
 
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
   }
 }

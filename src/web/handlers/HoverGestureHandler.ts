@@ -24,18 +24,18 @@ export default class HoverGestureHandler extends GestureHandler {
   protected onPointerMoveOver(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
 
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     this.stylusData = event.stylusData;
     super.onPointerMoveOver(event);
 
-    if (this.getState() === State.UNDETERMINED) {
+    if (this.state === State.UNDETERMINED) {
       this.begin();
       this.activate();
     }
   }
 
   protected onPointerMoveOut(event: AdaptedEvent): void {
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
     this.stylusData = event.stylusData;
 
     super.onPointerMoveOut(event);
@@ -44,7 +44,7 @@ export default class HoverGestureHandler extends GestureHandler {
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
     this.stylusData = event.stylusData;
 
     super.onPointerMove(event);

@@ -19,7 +19,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
-    this.setShouldCancelWhenOutside(true);
+    this.shouldCancelWhenOutside = true;
 
     if (Platform.OS !== 'web') {
       return;
@@ -60,7 +60,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected onPointerDown(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerDown(event);
     this.newPointerAction();
 
@@ -68,17 +68,17 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected onPointerAdd(event: AdaptedEvent): void {
-    this.tracker.addToTracker(event);
+    this.pointerTracker.addToTracker(event);
     super.onPointerAdd(event);
     this.newPointerAction();
   }
 
   private newPointerAction(): void {
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
     this.startX = lastCoords.x;
     this.startY = lastCoords.y;
 
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 
@@ -89,27 +89,24 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    this.tracker.track(event);
+    this.pointerTracker.track(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
+    const lastCoords = this.pointerTracker.getAbsoluteCoordsAverage();
     const dx = this.startX - lastCoords.x;
     const dy = this.startY - lastCoords.y;
     const distSq = dx * dx + dy * dy;
 
     if (distSq >= this.minDistSq) {
-      if (this.buttonRole && this.currentState === State.ACTIVE) {
+      if (this.buttonRole && this.state === State.ACTIVE) {
         this.cancel();
-      } else if (!this.buttonRole && this.currentState === State.BEGAN) {
+      } else if (!this.buttonRole && this.state === State.BEGAN) {
         this.activate();
       }
     }
   }
 
   protected onPointerLeave(): void {
-    if (
-      this.currentState === State.BEGAN ||
-      this.currentState === State.ACTIVE
-    ) {
+    if (this.state === State.BEGAN || this.state === State.ACTIVE) {
       this.cancel();
     }
   }
@@ -125,10 +122,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   private onUp(event: AdaptedEvent): void {
-    this.tracker.removeFromTracker(event.pointerId);
+    this.pointerTracker.removeFromTracker(event.pointerId);
 
-    if (this.tracker.getTrackedPointersCount() === 0) {
-      if (this.currentState === State.ACTIVE) {
+    if (this.pointerTracker.getTrackedPointersCount() === 0) {
+      if (this.state === State.ACTIVE) {
         this.end();
       } else {
         this.fail();
@@ -143,7 +140,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     if (
       handler instanceof NativeViewGestureHandler &&
-      handler.getState() === State.ACTIVE &&
+      handler.state === State.ACTIVE &&
       handler.disallowsInterruption()
     ) {
       return false;
@@ -152,17 +149,15 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const canBeInterrupted = !this.disallowInterruption;
 
     if (
-      this.currentState === State.ACTIVE &&
-      handler.getState() === State.ACTIVE &&
+      this.state === State.ACTIVE &&
+      handler.state === State.ACTIVE &&
       canBeInterrupted
     ) {
       return false;
     }
 
     return (
-      this.currentState === State.ACTIVE &&
-      canBeInterrupted &&
-      handler.getTag() > 0
+      this.state === State.ACTIVE && canBeInterrupted && handler.handlerTag > 0
     );
   }
 
