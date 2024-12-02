@@ -80,16 +80,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       is ReactEditText -> this.hook = EditTextHook(this, view)
       is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
       is ReactScrollView -> this.hook = ScrollViewHook()
-    }
-  }
-
-  fun triggerEvent(event: MotionEvent) {
-    val view = view!!
-
-    if (view is ReactViewGroup) {
-      view.dispatchTouchEvent(event)
-    } else {
-      view.onTouchEvent(event)
+      is ReactViewGroup -> this.hook = ReactViewGroupHook()
     }
   }
 
@@ -110,7 +101,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
       } else {
-        triggerEvent(event)
+        hook.triggerEvent(view, event)
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
           activate()
         }
@@ -127,12 +118,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       when {
         shouldActivateOnStart -> {
           tryIntercept(view, event)
-          triggerEvent(event)
+          hook.triggerEvent(view, event)
           activate()
         }
 
         tryIntercept(view, event) -> {
-          triggerEvent(event)
+          hook.triggerEvent(view, event)
           activate()
         }
 
@@ -147,7 +138,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         }
       }
     } else if (state == STATE_ACTIVE) {
-      triggerEvent(event)
+      hook.triggerEvent(view, event)
     }
   }
 
@@ -156,7 +147,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
       action = MotionEvent.ACTION_CANCEL
     }
-    triggerEvent(event)
+    hook.triggerEvent(view, event)
     event.recycle()
   }
 
@@ -210,6 +201,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * by this one.
      */
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
+
+    /**
+     * Decides whether or not target view should pass event to children.
+     */
+    fun triggerEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
   }
 
   private class EditTextHook(
@@ -288,5 +284,15 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   private class ScrollViewHook : NativeViewGestureHandlerHook {
     override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
+  }
+
+  private class ReactViewGroupHook : NativeViewGestureHandlerHook {
+    // In some cases wrapping component with NativeViewGestureHandler doesn't work, because the component
+    // itself has a wrapper. This happens for example with WebView, where it has 2 layers of wrappers above
+    // an actual WebView.
+    //
+    // Calling onTouchEvent won't do anything on wrappers, therefore we use dispatchTouchEvent. This way
+    // not only do we trigger onTouchEvent, but also pass event to children.
+    override fun triggerEvent(view: View?, event: MotionEvent) = view?.dispatchTouchEvent(event)
   }
 }
