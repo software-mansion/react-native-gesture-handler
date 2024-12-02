@@ -183,6 +183,11 @@ code {
   border-bottom: 1px solid var(--ifm-font-color-base);
 }
 
+.markdown h2 code {
+  font-size: 22px;
+  font-weight: 600;
+}
+
 /* Sidebar */
 [class*='menu__list-item-collapsible'] a {
   font-family: var(--swm-title-font);
