@@ -8186,10 +8186,10 @@ react-native-screens@3.35.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
-react-native-svg@15.8.0:
-  version "15.8.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-15.8.0.tgz#9b5fd4f5cf5675197b3f4cbfcc77c215de2b9502"
-  integrity sha512-KHJzKpgOjwj1qeZzsBjxNdoIgv2zNCO9fVcoq2TEhTRsVV5DGTZ9JzUZwybd7q4giT/H3RdtqC3u44dWdO0Ffw==
+react-native-svg@15.10.0:
+  version "15.10.0"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-15.10.0.tgz#bc5c4352f35895bfc35714bbbc2696d35900e38d"
+  integrity sha512-tUdiNitPyE6fP0rrQfqnc75kXJuaJXkiqBlgs0zvmO/2CL3ar2uP4EIn56BqG8KeSeb4OLnEy0iBI9Cu2ltpcw==
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
