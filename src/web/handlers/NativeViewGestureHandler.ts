@@ -5,16 +5,54 @@ import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
-  private buttonRole!: boolean;
+  private _buttonRole!: boolean;
+  get buttonRole() {
+    return this._buttonRole;
+  }
+  set buttonRole(value: boolean) {
+    this._buttonRole = value;
+  }
 
   // TODO: Implement logic for activation on start
-  // @ts-ignore Logic yet to be implemented
-  private shouldActivateOnStart = false;
-  private disallowInterruption = false;
+  private _shouldActivateOnStart = false;
+  get shouldActivateOnStart() {
+    return this._shouldActivateOnStart;
+  }
+  set shouldActivateOnStart(value: boolean) {
+    this._shouldActivateOnStart = value;
+  }
 
-  private startX = 0;
-  private startY = 0;
-  private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
+  private _disallowInterruption = false;
+  get disallowInterruption() {
+    return this._disallowInterruption;
+  }
+  set disallowInterruption(value: boolean) {
+    this._disallowInterruption = value;
+  }
+
+  private _startX = 0;
+  get startX() {
+    return this._startX;
+  }
+  set startX(value: number) {
+    this._startX = value;
+  }
+
+  private _startY = 0;
+  get startY() {
+    return this._startY;
+  }
+  set startY(value: number) {
+    this._startY = value;
+  }
+
+  private _minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
+  get minDistSq() {
+    return this._minDistSq;
+  }
+  set minDistSq(value: number) {
+    this._minDistSq = value;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
