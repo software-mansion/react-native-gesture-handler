@@ -9,13 +9,39 @@ import RotationGestureDetector, {
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
 export default class RotationGestureHandler extends GestureHandler {
-  private rotation = 0;
-  private velocity = 0;
+  private _rotation = 0;
+  get rotation() {
+    return this._rotation;
+  }
+  set rotation(value: number) {
+    this._rotation = value;
+  }
 
-  private cachedAnchorX = 0;
-  private cachedAnchorY = 0;
+  private _velocity = 0;
+  get velocity() {
+    return this._velocity;
+  }
+  set velocity(value: number) {
+    this._velocity = value;
+  }
 
-  private rotationGestureListener: RotationGestureListener = {
+  private _cachedAnchorX = 0;
+  get cachedAnchorX() {
+    return this._cachedAnchorX;
+  }
+  set cachedAnchorX(value: number) {
+    this._cachedAnchorX = value;
+  }
+
+  private _cachedAnchorY = 0;
+  get cachedAnchorY() {
+    return this._cachedAnchorY;
+  }
+  set cachedAnchorY(value: number) {
+    this._cachedAnchorY = value;
+  }
+
+  private _rotationGestureListener: RotationGestureListener = {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (detector: RotationGestureDetector): boolean => {
       const previousRotation: number = this.rotation;
@@ -41,8 +67,21 @@ export default class RotationGestureHandler extends GestureHandler {
     },
   };
 
-  private rotationGestureDetector: RotationGestureDetector =
+  get rotationGestureListener(): RotationGestureListener {
+    return this._rotationGestureListener;
+  }
+  set rotationGestureListener(listener: RotationGestureListener) {
+    this._rotationGestureListener = listener;
+  }
+
+  private _rotationGestureDetector: RotationGestureDetector =
     new RotationGestureDetector(this.rotationGestureListener);
+  get rotationGestureDetector(): RotationGestureDetector {
+    return this._rotationGestureDetector;
+  }
+  set rotationGestureDetector(detector: RotationGestureDetector) {
+    this._rotationGestureDetector = detector;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
