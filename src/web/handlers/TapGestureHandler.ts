@@ -9,27 +9,141 @@ const DEFAULT_NUMBER_OF_TAPS = 1;
 const DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
 
 export default class TapGestureHandler extends GestureHandler {
-  private maxDeltaX = Number.MIN_SAFE_INTEGER;
-  private maxDeltaY = Number.MIN_SAFE_INTEGER;
-  private maxDistSq = Number.MIN_SAFE_INTEGER;
-  private maxDurationMs = DEFAULT_MAX_DURATION_MS;
-  private maxDelayMs = DEFAULT_MAX_DELAY_MS;
+  private _maxDeltaX = Number.MIN_SAFE_INTEGER;
+  get maxDeltaX() {
+    return this._maxDeltaX;
+  }
+  set maxDeltaX(value: number) {
+    this._maxDeltaX = value;
+  }
 
-  private numberOfTaps = DEFAULT_NUMBER_OF_TAPS;
-  private minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
-  private currentMaxNumberOfPointers = 1;
+  private _maxDeltaY = Number.MIN_SAFE_INTEGER;
+  get maxDeltaY() {
+    return this._maxDeltaY;
+  }
+  set maxDeltaY(value: number) {
+    this._maxDeltaY = value;
+  }
 
-  private startX = 0;
-  private startY = 0;
-  private offsetX = 0;
-  private offsetY = 0;
-  private lastX = 0;
-  private lastY = 0;
+  private _maxDistSq = Number.MIN_SAFE_INTEGER;
+  get maxDistSq() {
+    return this._maxDistSq;
+  }
+  set maxDistSq(value: number) {
+    this._maxDistSq = value;
+  }
 
-  private waitTimeout: number | undefined;
-  private delayTimeout: number | undefined;
+  private _maxDurationMs = DEFAULT_MAX_DURATION_MS;
+  get maxDurationMs() {
+    return this._maxDurationMs;
+  }
+  set maxDurationMs(value: number) {
+    this._maxDurationMs = value;
+  }
 
-  private tapsSoFar = 0;
+  private _maxDelayMs = DEFAULT_MAX_DELAY_MS;
+  get maxDelayMs() {
+    return this._maxDelayMs;
+  }
+  set maxDelayMs(value: number) {
+    this._maxDelayMs = value;
+  }
+
+  private _numberOfTaps = DEFAULT_NUMBER_OF_TAPS;
+  get numberOfTaps() {
+    return this._numberOfTaps;
+  }
+  set numberOfTaps(value: number) {
+    this._numberOfTaps = value;
+  }
+
+  private _minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
+  get minNumberOfPointers() {
+    return this._minNumberOfPointers;
+  }
+  set minNumberOfPointers(value: number) {
+    this._minNumberOfPointers = value;
+  }
+
+  private _currentMaxNumberOfPointers = 1;
+  get currentMaxNumberOfPointers() {
+    return this._currentMaxNumberOfPointers;
+  }
+  set currentMaxNumberOfPointers(value: number) {
+    this._currentMaxNumberOfPointers = value;
+  }
+
+  private _startX = 0;
+  get startX() {
+    return this._startX;
+  }
+  set startX(value: number) {
+    this._startX = value;
+  }
+
+  private _startY = 0;
+  get startY() {
+    return this._startY;
+  }
+  set startY(value: number) {
+    this._startY = value;
+  }
+
+  private _offsetX = 0;
+  get offsetX() {
+    return this._offsetX;
+  }
+  set offsetX(value: number) {
+    this._offsetX = value;
+  }
+
+  private _offsetY = 0;
+  get offsetY() {
+    return this._offsetY;
+  }
+  set offsetY(value: number) {
+    this._offsetY = value;
+  }
+
+  private _lastX = 0;
+  get lastX() {
+    return this._lastX;
+  }
+  set lastX(value: number) {
+    this._lastX = value;
+  }
+
+  private _lastY = 0;
+  get lastY() {
+    return this._lastY;
+  }
+  set lastY(value: number) {
+    this._lastY = value;
+  }
+
+  private _waitTimeout: number | undefined;
+  get waitTimeout() {
+    return this._waitTimeout;
+  }
+  set waitTimeout(value: number | undefined) {
+    this._waitTimeout = value;
+  }
+
+  private _delayTimeout: number | undefined;
+  get delayTimeout() {
+    return this._delayTimeout;
+  }
+  set delayTimeout(value: number | undefined) {
+    this._delayTimeout = value;
+  }
+
+  private _tapsSoFar = 0;
+  get tapsSoFar() {
+    return this._tapsSoFar;
+  }
+  set tapsSoFar(value: number) {
+    this._tapsSoFar = value;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
