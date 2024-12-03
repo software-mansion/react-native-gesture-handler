@@ -10,27 +10,100 @@ export interface RotationGestureListener {
 export default class RotationGestureDetector
   implements RotationGestureListener
 {
-  onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  onRotation: (detector: RotationGestureDetector) => boolean;
-  onRotationEnd: (detector: RotationGestureDetector) => void;
+  private _onRotationBegin: (detector: RotationGestureDetector) => boolean;
+  get onRotationBegin() {
+    return this._onRotationBegin;
+  }
+  set onRotationBegin(
+    callback: (detector: RotationGestureDetector) => boolean
+  ) {
+    this._onRotationBegin = callback;
+  }
 
-  private currentTime = 0;
-  private previousTime = 0;
+  private _onRotation: (detector: RotationGestureDetector) => boolean;
+  get onRotation() {
+    return this._onRotation;
+  }
+  set onRotation(callback: (detector: RotationGestureDetector) => boolean) {
+    this._onRotation = callback;
+  }
 
-  private previousAngle = 0;
-  private rotation = 0;
+  private _onRotationEnd: (detector: RotationGestureDetector) => void;
+  get onRotationEnd() {
+    return this._onRotationEnd;
+  }
+  set onRotationEnd(callback: (detector: RotationGestureDetector) => void) {
+    this._onRotationEnd = callback;
+  }
 
-  private anchorX = 0;
-  private anchorY = 0;
+  private _currentTime = 0;
+  get currentTime() {
+    return this._currentTime;
+  }
+  set currentTime(value: number) {
+    this._currentTime = value;
+  }
 
-  private isInProgress = false;
+  private _previousTime = 0;
+  get previousTime() {
+    return this._previousTime;
+  }
+  set previousTime(value: number) {
+    this._previousTime = value;
+  }
 
-  private keyPointers: number[] = [NaN, NaN];
+  private _previousAngle = 0;
+  get previousAngle() {
+    return this._previousAngle;
+  }
+  set previousAngle(value: number) {
+    this._previousAngle = value;
+  }
+
+  private _rotation = 0;
+  get rotation() {
+    return this._rotation;
+  }
+  set rotation(value: number) {
+    this._rotation = value;
+  }
+
+  private _anchorX = 0;
+  get anchorX() {
+    return this._anchorX;
+  }
+  set anchorX(value: number) {
+    this._anchorX = value;
+  }
+
+  private _anchorY = 0;
+  get anchorY() {
+    return this._anchorY;
+  }
+  set anchorY(value: number) {
+    this._anchorY = value;
+  }
+
+  private _isInProgress = false;
+  get isInProgress() {
+    return this._isInProgress;
+  }
+  set isInProgress(value: boolean) {
+    this._isInProgress = value;
+  }
+
+  private _keyPointers: number[] = [NaN, NaN];
+  get keyPointers() {
+    return this._keyPointers;
+  }
+  set keyPointers(values: number[]) {
+    this._keyPointers = values;
+  }
 
   constructor(callbacks: RotationGestureListener) {
-    this.onRotationBegin = callbacks.onRotationBegin;
-    this.onRotation = callbacks.onRotation;
-    this.onRotationEnd = callbacks.onRotationEnd;
+    this._onRotationBegin = callbacks.onRotationBegin;
+    this._onRotation = callbacks.onRotation;
+    this._onRotationEnd = callbacks.onRotationEnd;
   }
 
   private updateCurrent(event: AdaptedEvent, tracker: PointerTracker): void {
