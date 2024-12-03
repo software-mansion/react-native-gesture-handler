@@ -10,32 +10,117 @@ export interface ScaleGestureListener {
 }
 
 export default class ScaleGestureDetector implements ScaleGestureListener {
-  public onScaleBegin: (detector: ScaleGestureDetector) => boolean;
-  public onScale: (detector: ScaleGestureDetector) => boolean;
-  public onScaleEnd: (detector: ScaleGestureDetector) => void;
+  private _onScaleBegin: (detector: ScaleGestureDetector) => boolean;
+  get onScaleBegin() {
+    return this._onScaleBegin;
+  }
+  set onScaleBegin(value: (detector: ScaleGestureDetector) => boolean) {
+    this._onScaleBegin = value;
+  }
 
-  private focusX!: number;
-  private focusY!: number;
+  private _onScale: (detector: ScaleGestureDetector) => boolean;
+  get onScale() {
+    return this._onScale;
+  }
+  set onScale(value: (detector: ScaleGestureDetector) => boolean) {
+    this._onScale = value;
+  }
 
-  private currentSpan!: number;
-  private prevSpan!: number;
-  private initialSpan!: number;
+  private _onScaleEnd: (detector: ScaleGestureDetector) => void;
+  get onScaleEnd() {
+    return this._onScaleEnd;
+  }
+  set onScaleEnd(value: (detector: ScaleGestureDetector) => void) {
+    this._onScaleEnd = value;
+  }
 
-  private currentTime!: number;
-  private prevTime!: number;
+  private _focusX!: number;
+  get focusX() {
+    return this._focusX;
+  }
+  set focusX(value: number) {
+    this._focusX = value;
+  }
 
-  private inProgress = false;
+  private _focusY!: number;
+  get focusY() {
+    return this._focusY;
+  }
+  set focusY(value: number) {
+    this._focusY = value;
+  }
 
-  private spanSlop: number;
-  private minSpan: number;
+  private _currentSpan!: number;
+  get currentSpan() {
+    return this._currentSpan;
+  }
+  set currentSpan(value: number) {
+    this._currentSpan = value;
+  }
+
+  private _prevSpan!: number;
+  get prevSpan() {
+    return this._prevSpan;
+  }
+  set prevSpan(value: number) {
+    this._prevSpan = value;
+  }
+
+  private _initialSpan!: number;
+  get initialSpan() {
+    return this._initialSpan;
+  }
+  set initialSpan(value: number) {
+    this._initialSpan = value;
+  }
+
+  private _currentTime!: number;
+  get currentTime() {
+    return this._currentTime;
+  }
+  set currentTime(value: number) {
+    this._currentTime = value;
+  }
+
+  private _prevTime!: number;
+  get prevTime() {
+    return this._prevTime;
+  }
+  set prevTime(value: number) {
+    this._prevTime = value;
+  }
+
+  private _inProgress = false;
+  get inProgress() {
+    return this._inProgress;
+  }
+  set inProgress(value: boolean) {
+    this._inProgress = value;
+  }
+
+  private _spanSlop: number;
+  get spanSlop() {
+    return this._spanSlop;
+  }
+  set spanSlop(value: number) {
+    this._spanSlop = value;
+  }
+
+  private _minSpan: number;
+  get minSpan() {
+    return this._minSpan;
+  }
+  set minSpan(value: number) {
+    this._minSpan = value;
+  }
 
   public constructor(callbacks: ScaleGestureListener) {
-    this.onScaleBegin = callbacks.onScaleBegin;
-    this.onScale = callbacks.onScale;
-    this.onScaleEnd = callbacks.onScaleEnd;
+    this._onScaleBegin = callbacks.onScaleBegin;
+    this._onScale = callbacks.onScale;
+    this._onScaleEnd = callbacks.onScaleEnd;
 
-    this.spanSlop = DEFAULT_TOUCH_SLOP * 2;
-    this.minSpan = 0;
+    this._spanSlop = DEFAULT_TOUCH_SLOP * 2;
+    this._minSpan = 0;
   }
 
   public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
