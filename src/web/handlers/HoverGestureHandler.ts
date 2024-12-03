@@ -4,7 +4,13 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import GestureHandler from './GestureHandler';
 
 export default class HoverGestureHandler extends GestureHandler {
-  private stylusData: StylusData | undefined;
+  private _stylusData: StylusData | undefined;
+  get stylusData() {
+    return this._stylusData;
+  }
+  set stylusData(value: StylusData | undefined) {
+    this._stylusData = value;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
