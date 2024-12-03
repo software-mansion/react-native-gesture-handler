@@ -8,13 +8,39 @@ import ScaleGestureDetector, {
 } from '../detectors/ScaleGestureDetector';
 
 export default class PinchGestureHandler extends GestureHandler {
-  private scale = 1;
-  private velocity = 0;
+  private _scale = 1;
+  get scale() {
+    return this._scale;
+  }
+  set scale(value: number) {
+    this._scale = value;
+  }
 
-  private startingSpan = 0;
-  private spanSlop = DEFAULT_TOUCH_SLOP;
+  private _velocity = 0;
+  get velocity() {
+    return this._velocity;
+  }
+  set velocity(value: number) {
+    this._velocity = value;
+  }
 
-  private scaleDetectorListener: ScaleGestureListener = {
+  private _startingSpan = 0;
+  get startingSpan() {
+    return this._startingSpan;
+  }
+  set startingSpan(value: number) {
+    this._startingSpan = value;
+  }
+
+  private _spanSlop = DEFAULT_TOUCH_SLOP;
+  get spanSlop() {
+    return this._spanSlop;
+  }
+  set spanSlop(value: number) {
+    this._spanSlop = value;
+  }
+
+  private _scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
       this.startingSpan = detector.getCurrentSpan();
       return true;
@@ -45,9 +71,21 @@ export default class PinchGestureHandler extends GestureHandler {
     ): void => {},
   };
 
-  private scaleGestureDetector: ScaleGestureDetector = new ScaleGestureDetector(
-    this.scaleDetectorListener
-  );
+  get scaleDetectorListener() {
+    return this._scaleDetectorListener;
+  }
+  set scaleDetectorListener(listener: ScaleGestureListener) {
+    this._scaleDetectorListener = listener;
+  }
+
+  private _scaleGestureDetector: ScaleGestureDetector =
+    new ScaleGestureDetector(this.scaleDetectorListener);
+  get scaleGestureDetector() {
+    return this._scaleGestureDetector;
+  }
+  set scaleGestureDetector(detector: ScaleGestureDetector) {
+    this._scaleGestureDetector = detector;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
