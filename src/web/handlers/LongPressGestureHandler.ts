@@ -8,18 +8,77 @@ const DEFAULT_MAX_DIST_DP = 10;
 const SCALING_FACTOR = 10;
 
 export default class LongPressGestureHandler extends GestureHandler {
-  private minDurationMs = DEFAULT_MIN_DURATION_MS;
-  private defaultMaxDistSq = DEFAULT_MAX_DIST_DP * SCALING_FACTOR;
+  private _minDurationMs = DEFAULT_MIN_DURATION_MS;
+  get minDurationMs() {
+    return this._minDurationMs;
+  }
+  set minDurationMs(value: number) {
+    this._minDurationMs = value;
+  }
 
-  private maxDistSq = this.defaultMaxDistSq;
-  private numberOfPointers = 1;
-  private startX = 0;
-  private startY = 0;
+  private _defaultMaxDistSq = DEFAULT_MAX_DIST_DP * SCALING_FACTOR;
+  get defaultMaxDistSq() {
+    return this._defaultMaxDistSq;
+  }
+  set defaultMaxDistSq(value: number) {
+    this._defaultMaxDistSq = value;
+  }
 
-  private startTime = 0;
-  private previousTime = 0;
+  private _maxDistSq = this.defaultMaxDistSq;
+  get maxDistSq() {
+    return this._maxDistSq;
+  }
+  set maxDistSq(value: number) {
+    this._maxDistSq = value;
+  }
 
-  private activationTimeout: number | undefined;
+  private _numberOfPointers = 1;
+  get numberOfPointers() {
+    return this._numberOfPointers;
+  }
+  set numberOfPointers(value: number) {
+    this._numberOfPointers = value;
+  }
+
+  private _startX = 0;
+  get startX() {
+    return this._startX;
+  }
+  set startX(value: number) {
+    this._startX = value;
+  }
+
+  private _startY = 0;
+  get startY() {
+    return this._startY;
+  }
+  set startY(value: number) {
+    this._startY = value;
+  }
+
+  private _startTime = 0;
+  get startTime() {
+    return this._startTime;
+  }
+  set startTime(value: number) {
+    this._startTime = value;
+  }
+
+  private _previousTime = 0;
+  get previousTime() {
+    return this._previousTime;
+  }
+  set previousTime(value: number) {
+    this._previousTime = value;
+  }
+
+  private _activationTimeout: number | undefined;
+  get activationTimeout() {
+    return this._activationTimeout;
+  }
+  set activationTimeout(value: number | undefined) {
+    this._activationTimeout = value;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     if (this.config.enableContextMenu === undefined) {
