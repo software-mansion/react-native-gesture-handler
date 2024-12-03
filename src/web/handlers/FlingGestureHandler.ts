@@ -1,7 +1,6 @@
 import { State } from '../../State';
 import { DiagonalDirections, Directions } from '../../Directions';
 import { AdaptedEvent, Config } from '../interfaces';
-
 import GestureHandler from './GestureHandler';
 import Vector from '../tools/Vector';
 import { coneToDeviation } from '../utils';
@@ -16,15 +15,61 @@ const AXIAL_DEVIATION_COSINE = coneToDeviation(DEFAULT_ALIGNMENT_CONE);
 const DIAGONAL_DEVIATION_COSINE = coneToDeviation(90 - DEFAULT_ALIGNMENT_CONE);
 
 export default class FlingGestureHandler extends GestureHandler {
-  private numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
-  private direction: Directions = DEFAULT_DIRECTION;
+  private _numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
+  get numberOfPointersRequired() {
+    return this._numberOfPointersRequired;
+  }
+  set numberOfPointersRequired(val: number) {
+    this._numberOfPointersRequired = val;
+  }
 
-  private maxDurationMs = DEFAULT_MAX_DURATION_MS;
-  private minVelocity = DEFAULT_MIN_VELOCITY;
-  private delayTimeout!: number;
+  private _direction: Directions = DEFAULT_DIRECTION;
+  get direction() {
+    return this._direction;
+  }
+  set direction(newDirection: Directions) {
+    this._direction = newDirection;
+  }
 
-  private maxNumberOfPointersSimultaneously = 0;
-  private keyPointer = NaN;
+  private _maxDurationMs = DEFAULT_MAX_DURATION_MS;
+  get maxDurationMs() {
+    return this._maxDurationMs;
+  }
+  set maxDurationMs(value: number) {
+    this._maxDurationMs = value;
+  }
+
+  private _minVelocity = DEFAULT_MIN_VELOCITY;
+  get minVelocity() {
+    return this._minVelocity;
+  }
+  set minVelocity(value: number) {
+    this._minVelocity = value;
+  }
+
+  private _delayTimeout!: number;
+  get delayTimeout() {
+    return this._delayTimeout;
+  }
+  set delayTimeout(value: number) {
+    this._delayTimeout = value;
+  }
+
+  private _maxNumberOfPointersSimultaneously = 0;
+  get maxNumberOfPointersSimultaneously() {
+    return this._maxNumberOfPointersSimultaneously;
+  }
+  set maxNumberOfPointersSimultaneously(value: number) {
+    this._maxNumberOfPointersSimultaneously = value;
+  }
+
+  private _keyPointer = NaN;
+  get keyPointer() {
+    return this._keyPointer;
+  }
+  set keyPointer(value: number) {
+    this._keyPointer = value;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
