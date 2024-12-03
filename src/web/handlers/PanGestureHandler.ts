@@ -8,58 +8,244 @@ const DEFAULT_MIN_POINTERS = 1;
 const DEFAULT_MAX_POINTERS = 10;
 const DEFAULT_MIN_DIST_SQ = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
+const PAN_CUSTOM_ACTIVATION_PROPERTIES = [
+  'activeOffsetXStart',
+  'activeOffsetXEnd',
+  'failOffsetXStart',
+  'failOffsetXEnd',
+  'activeOffsetYStart',
+  'activeOffsetYEnd',
+  'failOffsetYStart',
+  'failOffsetYEnd',
+  'minVelocityX',
+  'minVelocityY',
+  'minVelocity',
+];
+
 export default class PanGestureHandler extends GestureHandler {
-  private readonly customActivationProperties: string[] = [
-    'activeOffsetXStart',
-    'activeOffsetXEnd',
-    'failOffsetXStart',
-    'failOffsetXEnd',
-    'activeOffsetYStart',
-    'activeOffsetYEnd',
-    'failOffsetYStart',
-    'failOffsetYEnd',
-    'minVelocityX',
-    'minVelocityY',
-    'minVelocity',
-  ];
+  private _velocityX = 0;
+  get velocityX() {
+    return this._velocityX;
+  }
+  set velocityX(value: number) {
+    this._velocityX = value;
+  }
 
-  public velocityX = 0;
-  public velocityY = 0;
+  private _velocityY = 0;
+  get velocityY() {
+    return this._velocityY;
+  }
+  set velocityY(value: number) {
+    this._velocityY = value;
+  }
 
-  private minDistSq = DEFAULT_MIN_DIST_SQ;
+  private _minDistSq = DEFAULT_MIN_DIST_SQ;
+  get minDistSq() {
+    return this._minDistSq;
+  }
+  set minDistSq(value: number) {
+    this._minDistSq = value;
+  }
 
-  private activeOffsetXStart = -Number.MAX_SAFE_INTEGER;
-  private activeOffsetXEnd = Number.MIN_SAFE_INTEGER;
-  private failOffsetXStart = Number.MIN_SAFE_INTEGER;
-  private failOffsetXEnd = Number.MAX_SAFE_INTEGER;
+  private _activeOffsetXStart = -Number.MAX_SAFE_INTEGER;
+  get activeOffsetXStart() {
+    return this._activeOffsetXStart;
+  }
+  set activeOffsetXStart(value: number) {
+    this._activeOffsetXStart = value;
+  }
 
-  private activeOffsetYStart = Number.MAX_SAFE_INTEGER;
-  private activeOffsetYEnd = Number.MIN_SAFE_INTEGER;
-  private failOffsetYStart = Number.MIN_SAFE_INTEGER;
-  private failOffsetYEnd = Number.MAX_SAFE_INTEGER;
+  private _activeOffsetXEnd = Number.MIN_SAFE_INTEGER;
+  get activeOffsetXEnd() {
+    return this._activeOffsetXEnd;
+  }
+  set activeOffsetXEnd(value: number) {
+    this._activeOffsetXEnd = value;
+  }
 
-  private minVelocityX = Number.MAX_SAFE_INTEGER;
-  private minVelocityY = Number.MAX_SAFE_INTEGER;
-  private minVelocitySq = Number.MAX_SAFE_INTEGER;
+  private _failOffsetXStart = Number.MIN_SAFE_INTEGER;
+  get failOffsetXStart() {
+    return this._failOffsetXStart;
+  }
+  set failOffsetXStart(value: number) {
+    this._failOffsetXStart = value;
+  }
 
-  private minPointers = DEFAULT_MIN_POINTERS;
-  private maxPointers = DEFAULT_MAX_POINTERS;
+  private _failOffsetXEnd = Number.MAX_SAFE_INTEGER;
+  get failOffsetXEnd() {
+    return this._failOffsetXEnd;
+  }
+  set failOffsetXEnd(value: number) {
+    this._failOffsetXEnd = value;
+  }
 
-  private startX = 0;
-  private startY = 0;
-  private offsetX = 0;
-  private offsetY = 0;
-  private lastX = 0;
-  private lastY = 0;
+  private _activeOffsetYStart = Number.MAX_SAFE_INTEGER;
+  get activeOffsetYStart() {
+    return this._activeOffsetYStart;
+  }
+  set activeOffsetYStart(value: number) {
+    this._activeOffsetYStart = value;
+  }
 
-  private stylusData: StylusData | undefined;
+  private _activeOffsetYEnd = Number.MIN_SAFE_INTEGER;
+  get activeOffsetYEnd() {
+    return this._activeOffsetYEnd;
+  }
+  set activeOffsetYEnd(value: number) {
+    this._activeOffsetYEnd = value;
+  }
 
-  private activateAfterLongPress = 0;
-  private activationTimeout = 0;
+  private _failOffsetYStart = Number.MIN_SAFE_INTEGER;
+  get failOffsetYStart() {
+    return this._failOffsetYStart;
+  }
+  set failOffsetYStart(value: number) {
+    this._failOffsetYStart = value;
+  }
 
-  private enableTrackpadTwoFingerGesture = false;
-  private endWheelTimeout = 0;
-  private wheelDevice = WheelDevice.UNDETERMINED;
+  private _failOffsetYEnd = Number.MAX_SAFE_INTEGER;
+  get failOffsetYEnd() {
+    return this._failOffsetYEnd;
+  }
+  set failOffsetYEnd(value: number) {
+    this._failOffsetYEnd = value;
+  }
+
+  private _minVelocityX = Number.MAX_SAFE_INTEGER;
+  get minVelocityX() {
+    return this._minVelocityX;
+  }
+  set minVelocityX(value: number) {
+    this._minVelocityX = value;
+  }
+
+  private _minVelocityY = Number.MAX_SAFE_INTEGER;
+  get minVelocityY() {
+    return this._minVelocityY;
+  }
+  set minVelocityY(value: number) {
+    this._minVelocityY = value;
+  }
+
+  private _minVelocitySq = Number.MAX_SAFE_INTEGER;
+  get minVelocitySq() {
+    return this._minVelocitySq;
+  }
+  set minVelocitySq(value: number) {
+    this._minVelocitySq = value;
+  }
+
+  private _minPointers = DEFAULT_MIN_POINTERS;
+  get minPointers() {
+    return this._minPointers;
+  }
+  set minPointers(value: number) {
+    this._minPointers = value;
+  }
+
+  private _maxPointers = DEFAULT_MAX_POINTERS;
+  get maxPointers() {
+    return this._maxPointers;
+  }
+  set maxPointers(value: number) {
+    this._maxPointers = value;
+  }
+
+  private _startX = 0;
+  get startX() {
+    return this._startX;
+  }
+  set startX(value: number) {
+    this._startX = value;
+  }
+
+  private _startY = 0;
+  get startY() {
+    return this._startY;
+  }
+  set startY(value: number) {
+    this._startY = value;
+  }
+
+  private _offsetX = 0;
+  get offsetX() {
+    return this._offsetX;
+  }
+  set offsetX(value: number) {
+    this._offsetX = value;
+  }
+
+  private _offsetY = 0;
+  get offsetY() {
+    return this._offsetY;
+  }
+  set offsetY(value: number) {
+    this._offsetY = value;
+  }
+
+  private _lastX = 0;
+  get lastX() {
+    return this._lastX;
+  }
+  set lastX(value: number) {
+    this._lastX = value;
+  }
+
+  private _lastY = 0;
+  get lastY() {
+    return this._lastY;
+  }
+  set lastY(value: number) {
+    this._lastY = value;
+  }
+
+  private _stylusData: StylusData | undefined;
+  get stylusData() {
+    return this._stylusData;
+  }
+  set stylusData(value: StylusData | undefined) {
+    this._stylusData = value;
+  }
+
+  private _activateAfterLongPress = 0;
+  get activateAfterLongPress() {
+    return this._activateAfterLongPress;
+  }
+  set activateAfterLongPress(value: number) {
+    this._activateAfterLongPress = value;
+  }
+
+  private _activationTimeout = 0;
+  get activationTimeout() {
+    return this._activationTimeout;
+  }
+  set activationTimeout(value: number) {
+    this._activationTimeout = value;
+  }
+
+  private _enableTrackpadTwoFingerGesture = false;
+  get enableTrackpadTwoFingerGesture() {
+    return this._enableTrackpadTwoFingerGesture;
+  }
+  set enableTrackpadTwoFingerGesture(value: boolean) {
+    this._enableTrackpadTwoFingerGesture = value;
+  }
+
+  private _endWheelTimeout = 0;
+  get endWheelTimeout() {
+    return this._endWheelTimeout;
+  }
+  set endWheelTimeout(value: number) {
+    this._endWheelTimeout = value;
+  }
+
+  private _wheelDevice = WheelDevice.UNDETERMINED;
+  get wheelDevice() {
+    return this._wheelDevice;
+  }
+  set wheelDevice(value: WheelDevice) {
+    this._wheelDevice = value;
+  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -69,7 +255,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.resetConfig();
 
     super.updateGestureConfig({ enabled: enabled, ...props });
-    this.checkCustomActivationCriteria(this.customActivationProperties);
+    this.checkCustomActivationCriteria(PAN_CUSTOM_ACTIVATION_PROPERTIES);
 
     if (this.config.minDist !== undefined) {
       this.minDistSq = this.config.minDist * this.config.minDist;
