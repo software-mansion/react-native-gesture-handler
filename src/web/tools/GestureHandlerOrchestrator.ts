@@ -217,7 +217,7 @@ export default class GestureHandlerOrchestrator {
     const currentState = handler.state;
 
     handler.active = true;
-    handler.setShouldResetProgress(true);
+    handler.shouldResetProgress = true;
     handler.activationIndex = this.activationIndex++;
 
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {

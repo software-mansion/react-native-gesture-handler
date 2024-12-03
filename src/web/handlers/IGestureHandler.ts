@@ -10,16 +10,12 @@ export default interface IGestureHandler {
   active: boolean;
   awaiting: boolean;
   activationIndex: number;
-
   config: Config;
-
   delegate: GestureHandlerDelegate<unknown, unknown>;
-
   enabled: boolean;
-
   pointerTracker: PointerTracker;
   pointerType: PointerType;
-
+  shouldResetProgress: boolean;
   state: State;
   handlerTag: number;
 
@@ -38,8 +34,6 @@ export default interface IGestureHandler {
   cancel: () => void;
 
   reset: () => void;
-
-  setShouldResetProgress: (value: boolean) => void;
 
   shouldWaitForHandlerFailure: (handler: IGestureHandler) => boolean;
   shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;

@@ -288,13 +288,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.resetProgress();
   }
 
-  public getShouldResetProgress(): boolean {
-    return this.shouldResetProgress;
-  }
-  public setShouldResetProgress(value: boolean): void {
-    this.shouldResetProgress = value;
-  }
-
   public shouldWaitForHandlerFailure(handler: IGestureHandler): boolean {
     if (handler === this) {
       return false;
