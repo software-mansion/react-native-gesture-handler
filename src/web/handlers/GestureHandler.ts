@@ -20,7 +20,13 @@ import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 export default abstract class GestureHandler implements IGestureHandler {
-  private lastSentState: State | null = null;
+  private _lastSentState: State | null = null;
+  get lastSentState() {
+    return this._lastSentState;
+  }
+  set lastSentState(val: State | null) {
+    this._lastSentState = val;
+  }
 
   private _state: State = State.UNDETERMINED;
   get state() {
