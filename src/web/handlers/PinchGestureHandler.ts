@@ -14,7 +14,7 @@ export default class PinchGestureHandler extends GestureHandler {
   private _spanSlop = DEFAULT_TOUCH_SLOP;
   private _scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
-      this.startingSpan = detector.getCurrentSpan();
+      this.startingSpan = detector.currentSpan;
       return true;
     },
     onScale: (detector: ScaleGestureDetector): boolean => {
@@ -29,8 +29,7 @@ export default class PinchGestureHandler extends GestureHandler {
       }
 
       if (
-        Math.abs(this.startingSpan - detector.getCurrentSpan()) >=
-          this.spanSlop &&
+        Math.abs(this.startingSpan - detector.currentSpan) >= this.spanSlop &&
         this.state === State.BEGAN
       ) {
         this.activate();
@@ -57,8 +56,8 @@ export default class PinchGestureHandler extends GestureHandler {
 
   protected transformNativeEvent() {
     return {
-      focalX: this.scaleGestureDetector.getFocusX(),
-      focalY: this.scaleGestureDetector.getFocusY(),
+      focalX: this.scaleGestureDetector.focusX,
+      focalY: this.scaleGestureDetector.focusY,
       velocity: this.velocity,
       scale: this.scale,
     };

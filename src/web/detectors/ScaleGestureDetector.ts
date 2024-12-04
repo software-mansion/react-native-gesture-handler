@@ -10,9 +10,6 @@ export interface ScaleGestureListener {
 }
 
 export default class ScaleGestureDetector implements ScaleGestureListener {
-  private _onScaleBegin: (detector: ScaleGestureDetector) => boolean;
-  private _onScale: (detector: ScaleGestureDetector) => boolean;
-  private _onScaleEnd: (detector: ScaleGestureDetector) => void;
   private _focusX!: number;
   private _focusY!: number;
   private _currentSpan!: number;
@@ -24,10 +21,14 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   private _spanSlop: number;
   private _minSpan: number;
 
+  onScaleBegin: (detector: ScaleGestureDetector) => boolean;
+  onScale: (detector: ScaleGestureDetector) => boolean;
+  onScaleEnd: (detector: ScaleGestureDetector) => void;
+
   public constructor(callbacks: ScaleGestureListener) {
-    this._onScaleBegin = callbacks.onScaleBegin;
-    this._onScale = callbacks.onScale;
-    this._onScaleEnd = callbacks.onScaleEnd;
+    this.onScaleBegin = callbacks.onScaleBegin;
+    this.onScale = callbacks.onScale;
+    this.onScaleEnd = callbacks.onScaleEnd;
 
     this._spanSlop = DEFAULT_TOUCH_SLOP * 2;
     this._minSpan = 0;
@@ -140,18 +141,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     return true;
   }
 
-  public getCurrentSpan(): number {
-    return this.currentSpan;
-  }
-
-  public getFocusX(): number {
-    return this.focusX;
-  }
-
-  public getFocusY(): number {
-    return this.focusY;
-  }
-
   public getTimeDelta(): number {
     return this.currentTime - this.prevTime;
   }
@@ -162,27 +151,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     }
 
     return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
-  }
-
-  public get onScaleBegin() {
-    return this._onScaleBegin;
-  }
-  public set onScaleBegin(value: (detector: ScaleGestureDetector) => boolean) {
-    this._onScaleBegin = value;
-  }
-
-  public get onScale() {
-    return this._onScale;
-  }
-  public set onScale(value: (detector: ScaleGestureDetector) => boolean) {
-    this._onScale = value;
-  }
-
-  public get onScaleEnd() {
-    return this._onScaleEnd;
-  }
-  public set onScaleEnd(value: (detector: ScaleGestureDetector) => void) {
-    this._onScaleEnd = value;
   }
 
   public get focusX() {

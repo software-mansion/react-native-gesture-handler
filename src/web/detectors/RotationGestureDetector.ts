@@ -10,9 +10,6 @@ export interface RotationGestureListener {
 export default class RotationGestureDetector
   implements RotationGestureListener
 {
-  private _onRotationBegin: (detector: RotationGestureDetector) => boolean;
-  private _onRotation: (detector: RotationGestureDetector) => boolean;
-  private _onRotationEnd: (detector: RotationGestureDetector) => void;
   private _currentTime = 0;
   private _previousTime = 0;
   private _previousAngle = 0;
@@ -22,10 +19,14 @@ export default class RotationGestureDetector
   private _isInProgress = false;
   private _keyPointers: number[] = [NaN, NaN];
 
+  onRotationBegin: (detector: RotationGestureDetector) => boolean;
+  onRotation: (detector: RotationGestureDetector) => boolean;
+  onRotationEnd: (detector: RotationGestureDetector) => void;
+
   constructor(callbacks: RotationGestureListener) {
-    this._onRotationBegin = callbacks.onRotationBegin;
-    this._onRotation = callbacks.onRotation;
-    this._onRotationEnd = callbacks.onRotationEnd;
+    this.onRotationBegin = callbacks.onRotationBegin;
+    this.onRotation = callbacks.onRotation;
+    this.onRotationEnd = callbacks.onRotationEnd;
   }
 
   private updateCurrent(event: AdaptedEvent, tracker: PointerTracker): void {
@@ -142,48 +143,9 @@ export default class RotationGestureDetector
     return this.currentTime + this.previousTime;
   }
 
-  public getAnchorX(): number {
-    return this.anchorX;
-  }
-
-  public getAnchorY(): number {
-    return this.anchorY;
-  }
-
-  public getRotation(): number {
-    return this.rotation;
-  }
-
   public reset(): void {
     this.keyPointers = [NaN, NaN];
     this.isInProgress = false;
-  }
-
-  public get onRotationBegin() {
-    return this._onRotationBegin;
-  }
-  public set onRotationBegin(
-    callback: (detector: RotationGestureDetector) => boolean
-  ) {
-    this._onRotationBegin = callback;
-  }
-
-  public get onRotation() {
-    return this._onRotation;
-  }
-  public set onRotation(
-    callback: (detector: RotationGestureDetector) => boolean
-  ) {
-    this._onRotation = callback;
-  }
-
-  public get onRotationEnd() {
-    return this._onRotationEnd;
-  }
-  public set onRotationEnd(
-    callback: (detector: RotationGestureDetector) => void
-  ) {
-    this._onRotationEnd = callback;
   }
 
   public get currentTime() {
