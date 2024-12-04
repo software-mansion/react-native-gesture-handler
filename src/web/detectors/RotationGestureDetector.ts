@@ -139,10 +139,6 @@ export default class RotationGestureDetector
     return true;
   }
 
-  public getTimeDelta(): number {
-    return this.currentTime + this.previousTime;
-  }
-
   public reset(): void {
     this.keyPointers = [NaN, NaN];
     this.isInProgress = false;
@@ -202,5 +198,9 @@ export default class RotationGestureDetector
   }
   public set keyPointers(values: number[]) {
     this._keyPointers = values;
+  }
+
+  public get timeDelta() {
+    return this.currentTime + this.previousTime;
   }
 }

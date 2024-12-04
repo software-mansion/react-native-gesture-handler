@@ -19,11 +19,9 @@ export default class PinchGestureHandler extends GestureHandler {
     },
     onScale: (detector: ScaleGestureDetector): boolean => {
       const prevScaleFactor: number = this.scale;
-      this.scale *= detector.getScaleFactor(
-        this.pointerTracker.getTrackedPointersCount()
-      );
+      this.scale *= detector.scaleFactor;
 
-      const delta = detector.getTimeDelta();
+      const delta = detector.timeDelta;
       if (delta > 0) {
         this.velocity = (this.scale - prevScaleFactor) / delta;
       }
@@ -42,7 +40,7 @@ export default class PinchGestureHandler extends GestureHandler {
     ): void => {},
   };
   private _scaleGestureDetector: ScaleGestureDetector =
-    new ScaleGestureDetector(this.scaleDetectorListener);
+    new ScaleGestureDetector(this.scaleDetectorListener, this.pointerTracker);
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);

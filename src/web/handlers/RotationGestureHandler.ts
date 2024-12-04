@@ -19,7 +19,7 @@ export default class RotationGestureHandler extends GestureHandler {
       const previousRotation: number = this.rotation;
       this.rotation += detector.rotation;
 
-      const delta = detector.getTimeDelta();
+      const delta = detector.timeDelta;
 
       if (delta > 0) {
         this.velocity = (this.rotation - previousRotation) / delta;

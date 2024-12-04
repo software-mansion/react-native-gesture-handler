@@ -20,18 +20,23 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   private _inProgress = false;
   private _spanSlop: number;
   private _minSpan: number;
+  private _pointerTracker: PointerTracker;
 
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
   onScale: (detector: ScaleGestureDetector) => boolean;
   onScaleEnd: (detector: ScaleGestureDetector) => void;
 
-  public constructor(callbacks: ScaleGestureListener) {
+  public constructor(
+    callbacks: ScaleGestureListener,
+    pointerTracker: PointerTracker
+  ) {
     this.onScaleBegin = callbacks.onScaleBegin;
     this.onScale = callbacks.onScale;
     this.onScaleEnd = callbacks.onScaleEnd;
 
     this._spanSlop = DEFAULT_TOUCH_SLOP * 2;
     this._minSpan = 0;
+    this._pointerTracker = pointerTracker;
   }
 
   public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
@@ -141,18 +146,6 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     return true;
   }
 
-  public getTimeDelta(): number {
-    return this.currentTime - this.prevTime;
-  }
-
-  public getScaleFactor(numOfPointers: number): number {
-    if (numOfPointers < 2) {
-      return 1;
-    }
-
-    return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
-  }
-
   public get focusX() {
     return this._focusX;
   }
@@ -221,5 +214,24 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   }
   public set minSpan(value: number) {
     this._minSpan = value;
+  }
+
+  public get pointerTracker() {
+    return this._pointerTracker;
+  }
+  public set pointerTracker(value: PointerTracker) {
+    this._pointerTracker = value;
+  }
+
+  public get timeDelta(): number {
+    return this.currentTime - this.prevTime;
+  }
+
+  public get scaleFactor() {
+    if (this.pointerTracker.getTrackedPointersCount() < 2) {
+      return 1;
+    }
+
+    return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
   }
 }
