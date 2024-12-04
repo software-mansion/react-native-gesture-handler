@@ -1427,13 +1427,6 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@egjs/hammerjs@^2.0.17":
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/@egjs/hammerjs/-/hammerjs-2.0.17.tgz#5dc02af75a6a06e4c2db0202cae38c9263895124"
-  integrity sha512-XQsZgjm2EcVUiZQf11UBJQfmZeEmOW8DpI1gsFeln6w0ae0ii4dMQEQ0kjl6DspdWX1aGY1/loyXnP0JS06e/A==
-  dependencies:
-    "@types/hammerjs" "^2.0.36"
-
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.4.0.tgz#a23514e8fb9af1269d5f7788aa556798d61c6b59"
@@ -2329,11 +2322,6 @@
   integrity sha512-NhRH7YzWq8WiNKVavKPBmtLYZHxNY19Hh+az28O/phfp68CF45pMFud+ZzJ8ewnxnC5smIdF3dqFeiSUQ5I+pw==
   dependencies:
     "@types/node" "*"
-
-"@types/hammerjs@^2.0.36":
-  version "2.0.43"
-  resolved "https://registry.yarnpkg.com/@types/hammerjs/-/hammerjs-2.0.43.tgz#8660dd1e0e5fd979395e2f999e670cdb9484d1e9"
-  integrity sha512-wqxfwHk83RS7+6OpytGdo5wqkqtvx+bGaIs1Rwm5NrtQHUfL4OgWs/5p0OipmjmT+fexePh37Ek+mqIpdNjQKA==
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.5"
