@@ -61,10 +61,6 @@ export default class PanGestureHandler extends GestureHandler {
   private endWheelTimeout = 0;
   private wheelDevice = WheelDevice.UNDETERMINED;
 
-  public init(ref: number, propsRef: React.RefObject<unknown>): void {
-    super.init(ref, propsRef);
-  }
-
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this.resetConfig();
 

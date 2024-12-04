@@ -1,15 +1,7 @@
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 import GestureHandler from './GestureHandler';
 
 export default class ManualGestureHandler extends GestureHandler {
-  public init(ref: number, propsRef: React.RefObject<unknown>) {
-    super.init(ref, propsRef);
-  }
-
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
-  }
-
   protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
