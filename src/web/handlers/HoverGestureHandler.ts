@@ -55,10 +55,10 @@ export default class HoverGestureHandler extends GestureHandler {
     this.reset();
   }
 
-  get stylusData() {
+  public get stylusData() {
     return this._stylusData;
   }
-  set stylusData(value: StylusData | undefined) {
+  public set stylusData(value: StylusData | undefined) {
     this._stylusData = value;
   }
 }
