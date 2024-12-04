@@ -159,82 +159,86 @@ export default class RotationGestureDetector
     this.isInProgress = false;
   }
 
-  get onRotationBegin() {
+  public get onRotationBegin() {
     return this._onRotationBegin;
   }
-  set onRotationBegin(
+  public set onRotationBegin(
     callback: (detector: RotationGestureDetector) => boolean
   ) {
     this._onRotationBegin = callback;
   }
 
-  get onRotation() {
+  public get onRotation() {
     return this._onRotation;
   }
-  set onRotation(callback: (detector: RotationGestureDetector) => boolean) {
+  public set onRotation(
+    callback: (detector: RotationGestureDetector) => boolean
+  ) {
     this._onRotation = callback;
   }
 
-  get onRotationEnd() {
+  public get onRotationEnd() {
     return this._onRotationEnd;
   }
-  set onRotationEnd(callback: (detector: RotationGestureDetector) => void) {
+  public set onRotationEnd(
+    callback: (detector: RotationGestureDetector) => void
+  ) {
     this._onRotationEnd = callback;
   }
 
-  get currentTime() {
+  public get currentTime() {
     return this._currentTime;
   }
-  set currentTime(value: number) {
+  public set currentTime(value: number) {
     this._currentTime = value;
   }
 
-  get previousTime() {
+  public get previousTime() {
     return this._previousTime;
   }
-  set previousTime(value: number) {
+  public set previousTime(value: number) {
     this._previousTime = value;
   }
 
-  get previousAngle() {
+  public get previousAngle() {
     return this._previousAngle;
   }
-  set previousAngle(value: number) {
+  public set previousAngle(value: number) {
     this._previousAngle = value;
   }
 
-  get rotation() {
+  public get rotation() {
     return this._rotation;
   }
-  set rotation(value: number) {
+  public set rotation(value: number) {
     this._rotation = value;
   }
 
-  get anchorX() {
+  public get anchorX() {
     return this._anchorX;
   }
-  set anchorX(value: number) {
+  public set anchorX(value: number) {
     this._anchorX = value;
   }
 
-  get anchorY() {
+  public get anchorY() {
     return this._anchorY;
   }
-  set anchorY(value: number) {
+  public set anchorY(value: number) {
     this._anchorY = value;
   }
 
-  get isInProgress() {
+  public get isInProgress() {
     return this._isInProgress;
   }
-  set isInProgress(value: boolean) {
+  public set isInProgress(value: boolean) {
     this._isInProgress = value;
   }
 
-  get keyPointers() {
+  public get keyPointers() {
     return this._keyPointers;
   }
-  set keyPointers(values: number[]) {
+  public set keyPointers(values: number[]) {
     this._keyPointers = values;
   }
 }

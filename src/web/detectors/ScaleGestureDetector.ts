@@ -164,94 +164,94 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
   }
 
-  get onScaleBegin() {
+  public get onScaleBegin() {
     return this._onScaleBegin;
   }
-  set onScaleBegin(value: (detector: ScaleGestureDetector) => boolean) {
+  public set onScaleBegin(value: (detector: ScaleGestureDetector) => boolean) {
     this._onScaleBegin = value;
   }
 
-  get onScale() {
+  public get onScale() {
     return this._onScale;
   }
-  set onScale(value: (detector: ScaleGestureDetector) => boolean) {
+  public set onScale(value: (detector: ScaleGestureDetector) => boolean) {
     this._onScale = value;
   }
 
-  get onScaleEnd() {
+  public get onScaleEnd() {
     return this._onScaleEnd;
   }
-  set onScaleEnd(value: (detector: ScaleGestureDetector) => void) {
+  public set onScaleEnd(value: (detector: ScaleGestureDetector) => void) {
     this._onScaleEnd = value;
   }
 
-  get focusX() {
+  public get focusX() {
     return this._focusX;
   }
-  set focusX(value: number) {
+  public set focusX(value: number) {
     this._focusX = value;
   }
 
-  get focusY() {
+  public get focusY() {
     return this._focusY;
   }
-  set focusY(value: number) {
+  public set focusY(value: number) {
     this._focusY = value;
   }
 
-  get currentSpan() {
+  public get currentSpan() {
     return this._currentSpan;
   }
-  set currentSpan(value: number) {
+  public set currentSpan(value: number) {
     this._currentSpan = value;
   }
 
-  get prevSpan() {
+  public get prevSpan() {
     return this._prevSpan;
   }
-  set prevSpan(value: number) {
+  public set prevSpan(value: number) {
     this._prevSpan = value;
   }
 
-  get initialSpan() {
+  public get initialSpan() {
     return this._initialSpan;
   }
-  set initialSpan(value: number) {
+  public set initialSpan(value: number) {
     this._initialSpan = value;
   }
 
-  get currentTime() {
+  public get currentTime() {
     return this._currentTime;
   }
-  set currentTime(value: number) {
+  public set currentTime(value: number) {
     this._currentTime = value;
   }
 
-  get prevTime() {
+  public get prevTime() {
     return this._prevTime;
   }
-  set prevTime(value: number) {
+  public set prevTime(value: number) {
     this._prevTime = value;
   }
 
-  get inProgress() {
+  public get inProgress() {
     return this._inProgress;
   }
-  set inProgress(value: boolean) {
+  public set inProgress(value: boolean) {
     this._inProgress = value;
   }
 
-  get spanSlop() {
+  public get spanSlop() {
     return this._spanSlop;
   }
-  set spanSlop(value: number) {
+  public set spanSlop(value: number) {
     this._spanSlop = value;
   }
 
-  get minSpan() {
+  public get minSpan() {
     return this._minSpan;
   }
-  set minSpan(value: number) {
+  public set minSpan(value: number) {
     this._minSpan = value;
   }
 }

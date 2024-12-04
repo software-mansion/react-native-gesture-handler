@@ -169,45 +169,45 @@ export default class RotationGestureHandler extends GestureHandler {
     this.rotationGestureDetector.reset();
   }
 
-  get rotation() {
+  public get rotation() {
     return this._rotation;
   }
-  set rotation(value: number) {
+  public set rotation(value: number) {
     this._rotation = value;
   }
 
-  get velocity() {
+  public get velocity() {
     return this._velocity;
   }
-  set velocity(value: number) {
+  public set velocity(value: number) {
     this._velocity = value;
   }
 
-  get cachedAnchorX() {
+  public get cachedAnchorX() {
     return this._cachedAnchorX;
   }
-  set cachedAnchorX(value: number) {
+  public set cachedAnchorX(value: number) {
     this._cachedAnchorX = value;
   }
 
-  get cachedAnchorY() {
+  public get cachedAnchorY() {
     return this._cachedAnchorY;
   }
-  set cachedAnchorY(value: number) {
+  public set cachedAnchorY(value: number) {
     this._cachedAnchorY = value;
   }
 
-  get rotationGestureListener(): RotationGestureListener {
+  public get rotationGestureListener(): RotationGestureListener {
     return this._rotationGestureListener;
   }
-  set rotationGestureListener(listener: RotationGestureListener) {
+  public set rotationGestureListener(listener: RotationGestureListener) {
     this._rotationGestureListener = listener;
   }
 
-  get rotationGestureDetector(): RotationGestureDetector {
+  public get rotationGestureDetector(): RotationGestureDetector {
     return this._rotationGestureDetector;
   }
-  set rotationGestureDetector(detector: RotationGestureDetector) {
+  public set rotationGestureDetector(detector: RotationGestureDetector) {
     this._rotationGestureDetector = detector;
   }
 }

@@ -698,115 +698,117 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
-  get lastSentState() {
+  public get lastSentState() {
     return this._lastSentState;
   }
-  set lastSentState(val: State | null) {
+  public set lastSentState(val: State | null) {
     this._lastSentState = val;
   }
 
-  get state() {
+  public get state() {
     return this._state;
   }
-  set state(newState: State) {
+  public set state(newState: State) {
     this._state = newState;
   }
 
-  get shouldCancelWhenOutside() {
+  public get shouldCancelWhenOutside() {
     return this._shouldCancelWhenOutside;
   }
-  set shouldCancelWhenOutside(val: boolean) {
+  public set shouldCancelWhenOutside(val: boolean) {
     this._shouldCancelWhenOutside = val;
   }
 
-  get hasCustomActivationCriteria() {
+  public get hasCustomActivationCriteria() {
     return this._hasCustomActivationCriteria;
   }
-  set hasCustomActivationCriteria(val: boolean) {
+  public set hasCustomActivationCriteria(val: boolean) {
     this._hasCustomActivationCriteria = val;
   }
 
-  get enabled() {
+  public get enabled() {
     return this._enabled;
   }
-  set enabled(val: boolean) {
+  public set enabled(val: boolean) {
     this._enabled = val;
   }
 
-  get viewRef() {
+  public get viewRef() {
     return this._viewRef;
   }
-  set viewRef(val: number) {
+  public set viewRef(val: number) {
     this._viewRef = val;
   }
 
-  get propsRef() {
+  public get propsRef() {
     return this._propsRef;
   }
-  set propsRef(val: React.RefObject<unknown>) {
+  public set propsRef(val: React.RefObject<unknown>) {
     this._propsRef = val;
   }
 
-  get handlerTag() {
+  public get handlerTag() {
     return this._handlerTag;
   }
-  set handlerTag(tag: number) {
+  public set handlerTag(tag: number) {
     this._handlerTag = tag;
   }
 
-  get config() {
+  public get config() {
     return this._config;
   }
-  set config(newConfig: Config) {
+  public set config(newConfig: Config) {
     this._config = newConfig;
   }
 
-  get pointerTracker() {
+  public get pointerTracker() {
     return this._pointerTracker;
   }
-  set pointerTracker(tracker: PointerTracker) {
+  public set pointerTracker(tracker: PointerTracker) {
     this._pointerTracker = tracker;
   }
 
-  get activationIndex() {
+  public get activationIndex() {
     return this._activationIndex;
   }
-  set activationIndex(val: number) {
+  public set activationIndex(val: number) {
     this._activationIndex = val;
   }
 
-  get awaiting() {
+  public get awaiting() {
     return this._awaiting;
   }
-  set awaiting(val: boolean) {
+  public set awaiting(val: boolean) {
     this._awaiting = val;
   }
 
-  get active() {
+  public get active() {
     return this._active;
   }
-  set active(val: boolean) {
+  public set active(val: boolean) {
     this._active = val;
   }
 
-  get shouldResetProgress() {
+  public get shouldResetProgress() {
     return this._shouldResetProgress;
   }
-  set shouldResetProgress(val: boolean) {
+  public set shouldResetProgress(val: boolean) {
     this._shouldResetProgress = val;
   }
 
-  get pointerType() {
+  public get pointerType() {
     return this._pointerType;
   }
-  set pointerType(newPointerType: PointerType) {
+  public set pointerType(newPointerType: PointerType) {
     this._pointerType = newPointerType;
   }
 
-  get delegate() {
+  public get delegate() {
     return this._delegate;
   }
-  set delegate(newDelegate: GestureHandlerDelegate<unknown, IGestureHandler>) {
+  public set delegate(
+    newDelegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
     this._delegate = newDelegate;
   }
 }

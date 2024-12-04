@@ -170,45 +170,45 @@ export default class NativeViewGestureHandler extends GestureHandler {
     return this.buttonRole;
   }
 
-  get buttonRole() {
+  public get buttonRole() {
     return this._buttonRole;
   }
-  set buttonRole(value: boolean) {
+  public set buttonRole(value: boolean) {
     this._buttonRole = value;
   }
 
-  get shouldActivateOnStart() {
+  public get shouldActivateOnStart() {
     return this._shouldActivateOnStart;
   }
-  set shouldActivateOnStart(value: boolean) {
+  public set shouldActivateOnStart(value: boolean) {
     this._shouldActivateOnStart = value;
   }
 
-  get disallowInterruption() {
+  public get disallowInterruption() {
     return this._disallowInterruption;
   }
-  set disallowInterruption(value: boolean) {
+  public set disallowInterruption(value: boolean) {
     this._disallowInterruption = value;
   }
 
-  get startX() {
+  public get startX() {
     return this._startX;
   }
-  set startX(value: number) {
+  public set startX(value: number) {
     this._startX = value;
   }
 
-  get startY() {
+  public get startY() {
     return this._startY;
   }
-  set startY(value: number) {
+  public set startY(value: number) {
     this._startY = value;
   }
 
-  get minDistSq() {
+  public get minDistSq() {
     return this._minDistSq;
   }
-  set minDistSq(value: number) {
+  public set minDistSq(value: number) {
     this._minDistSq = value;
   }
 }

@@ -154,45 +154,45 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scale = 1;
   }
 
-  get scale() {
+  public get scale() {
     return this._scale;
   }
-  set scale(value: number) {
+  public set scale(value: number) {
     this._scale = value;
   }
 
-  get velocity() {
+  public get velocity() {
     return this._velocity;
   }
-  set velocity(value: number) {
+  public set velocity(value: number) {
     this._velocity = value;
   }
 
-  get startingSpan() {
+  public get startingSpan() {
     return this._startingSpan;
   }
-  set startingSpan(value: number) {
+  public set startingSpan(value: number) {
     this._startingSpan = value;
   }
 
-  get spanSlop() {
+  public get spanSlop() {
     return this._spanSlop;
   }
-  set spanSlop(value: number) {
+  public set spanSlop(value: number) {
     this._spanSlop = value;
   }
 
-  get scaleDetectorListener() {
+  public get scaleDetectorListener() {
     return this._scaleDetectorListener;
   }
-  set scaleDetectorListener(listener: ScaleGestureListener) {
+  public set scaleDetectorListener(listener: ScaleGestureListener) {
     this._scaleDetectorListener = listener;
   }
 
-  get scaleGestureDetector() {
+  public get scaleGestureDetector() {
     return this._scaleGestureDetector;
   }
-  set scaleGestureDetector(detector: ScaleGestureDetector) {
+  public set scaleGestureDetector(detector: ScaleGestureDetector) {
     this._scaleGestureDetector = detector;
   }
 }

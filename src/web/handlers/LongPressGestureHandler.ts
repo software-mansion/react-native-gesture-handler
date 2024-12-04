@@ -168,66 +168,66 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  get minDurationMs() {
+  public get minDurationMs() {
     return this._minDurationMs;
   }
-  set minDurationMs(value: number) {
+  public set minDurationMs(value: number) {
     this._minDurationMs = value;
   }
 
-  get defaultMaxDistSq() {
+  public get defaultMaxDistSq() {
     return this._defaultMaxDistSq;
   }
-  set defaultMaxDistSq(value: number) {
+  public set defaultMaxDistSq(value: number) {
     this._defaultMaxDistSq = value;
   }
 
-  get maxDistSq() {
+  public get maxDistSq() {
     return this._maxDistSq;
   }
-  set maxDistSq(value: number) {
+  public set maxDistSq(value: number) {
     this._maxDistSq = value;
   }
 
-  get numberOfPointers() {
+  public get numberOfPointers() {
     return this._numberOfPointers;
   }
-  set numberOfPointers(value: number) {
+  public set numberOfPointers(value: number) {
     this._numberOfPointers = value;
   }
 
-  get startX() {
+  public get startX() {
     return this._startX;
   }
-  set startX(value: number) {
+  public set startX(value: number) {
     this._startX = value;
   }
 
-  get startY() {
+  public get startY() {
     return this._startY;
   }
-  set startY(value: number) {
+  public set startY(value: number) {
     this._startY = value;
   }
 
-  get startTime() {
+  public get startTime() {
     return this._startTime;
   }
-  set startTime(value: number) {
+  public set startTime(value: number) {
     this._startTime = value;
   }
 
-  get previousTime() {
+  public get previousTime() {
     return this._previousTime;
   }
-  set previousTime(value: number) {
+  public set previousTime(value: number) {
     this._previousTime = value;
   }
 
-  get activationTimeout() {
+  public get activationTimeout() {
     return this._activationTimeout;
   }
-  set activationTimeout(value: number | undefined) {
+  public set activationTimeout(value: number | undefined) {
     this._activationTimeout = value;
   }
 }

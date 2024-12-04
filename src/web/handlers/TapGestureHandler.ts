@@ -281,122 +281,122 @@ export default class TapGestureHandler extends GestureHandler {
     this.currentMaxNumberOfPointers = 0;
   }
 
-  get maxDeltaX() {
+  public get maxDeltaX() {
     return this._maxDeltaX;
   }
-  set maxDeltaX(value: number) {
+  public set maxDeltaX(value: number) {
     this._maxDeltaX = value;
   }
 
-  get maxDeltaY() {
+  public get maxDeltaY() {
     return this._maxDeltaY;
   }
-  set maxDeltaY(value: number) {
+  public set maxDeltaY(value: number) {
     this._maxDeltaY = value;
   }
 
-  get maxDistSq() {
+  public get maxDistSq() {
     return this._maxDistSq;
   }
-  set maxDistSq(value: number) {
+  public set maxDistSq(value: number) {
     this._maxDistSq = value;
   }
 
-  get maxDurationMs() {
+  public get maxDurationMs() {
     return this._maxDurationMs;
   }
-  set maxDurationMs(value: number) {
+  public set maxDurationMs(value: number) {
     this._maxDurationMs = value;
   }
 
-  get maxDelayMs() {
+  public get maxDelayMs() {
     return this._maxDelayMs;
   }
-  set maxDelayMs(value: number) {
+  public set maxDelayMs(value: number) {
     this._maxDelayMs = value;
   }
 
-  get numberOfTaps() {
+  public get numberOfTaps() {
     return this._numberOfTaps;
   }
-  set numberOfTaps(value: number) {
+  public set numberOfTaps(value: number) {
     this._numberOfTaps = value;
   }
 
-  get minNumberOfPointers() {
+  public get minNumberOfPointers() {
     return this._minNumberOfPointers;
   }
-  set minNumberOfPointers(value: number) {
+  public set minNumberOfPointers(value: number) {
     this._minNumberOfPointers = value;
   }
 
-  get currentMaxNumberOfPointers() {
+  public get currentMaxNumberOfPointers() {
     return this._currentMaxNumberOfPointers;
   }
-  set currentMaxNumberOfPointers(value: number) {
+  public set currentMaxNumberOfPointers(value: number) {
     this._currentMaxNumberOfPointers = value;
   }
 
-  get startX() {
+  public get startX() {
     return this._startX;
   }
-  set startX(value: number) {
+  public set startX(value: number) {
     this._startX = value;
   }
 
-  get startY() {
+  public get startY() {
     return this._startY;
   }
-  set startY(value: number) {
+  public set startY(value: number) {
     this._startY = value;
   }
 
-  get offsetX() {
+  public get offsetX() {
     return this._offsetX;
   }
-  set offsetX(value: number) {
+  public set offsetX(value: number) {
     this._offsetX = value;
   }
 
-  get offsetY() {
+  public get offsetY() {
     return this._offsetY;
   }
-  set offsetY(value: number) {
+  public set offsetY(value: number) {
     this._offsetY = value;
   }
 
-  get lastX() {
+  public get lastX() {
     return this._lastX;
   }
-  set lastX(value: number) {
+  public set lastX(value: number) {
     this._lastX = value;
   }
 
-  get lastY() {
+  public get lastY() {
     return this._lastY;
   }
-  set lastY(value: number) {
+  public set lastY(value: number) {
     this._lastY = value;
   }
 
-  get waitTimeout() {
+  public get waitTimeout() {
     return this._waitTimeout;
   }
-  set waitTimeout(value: number | undefined) {
+  public set waitTimeout(value: number | undefined) {
     this._waitTimeout = value;
   }
 
-  get delayTimeout() {
+  public get delayTimeout() {
     return this._delayTimeout;
   }
-  set delayTimeout(value: number | undefined) {
+  public set delayTimeout(value: number | undefined) {
     this._delayTimeout = value;
   }
 
-  get tapsSoFar() {
+  public get tapsSoFar() {
     return this._tapsSoFar;
   }
-  set tapsSoFar(value: number) {
+  public set tapsSoFar(value: number) {
     this._tapsSoFar = value;
   }
 }

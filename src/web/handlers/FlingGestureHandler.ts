@@ -195,52 +195,52 @@ export default class FlingGestureHandler extends GestureHandler {
     this.direction = DEFAULT_DIRECTION;
   }
 
-  get numberOfPointersRequired() {
+  public get numberOfPointersRequired() {
     return this._numberOfPointersRequired;
   }
-  set numberOfPointersRequired(val: number) {
+  public set numberOfPointersRequired(val: number) {
     this._numberOfPointersRequired = val;
   }
 
-  get direction() {
+  public get direction() {
     return this._direction;
   }
-  set direction(newDirection: Directions) {
+  public set direction(newDirection: Directions) {
     this._direction = newDirection;
   }
 
-  get maxDurationMs() {
+  public get maxDurationMs() {
     return this._maxDurationMs;
   }
-  set maxDurationMs(value: number) {
+  public set maxDurationMs(value: number) {
     this._maxDurationMs = value;
   }
 
-  get minVelocity() {
+  public get minVelocity() {
     return this._minVelocity;
   }
-  set minVelocity(value: number) {
+  public set minVelocity(value: number) {
     this._minVelocity = value;
   }
 
-  get delayTimeout() {
+  public get delayTimeout() {
     return this._delayTimeout;
   }
-  set delayTimeout(value: number) {
+  public set delayTimeout(value: number) {
     this._delayTimeout = value;
   }
 
-  get maxNumberOfPointersSimultaneously() {
+  public get maxNumberOfPointersSimultaneously() {
     return this._maxNumberOfPointersSimultaneously;
   }
-  set maxNumberOfPointersSimultaneously(value: number) {
+  public set maxNumberOfPointersSimultaneously(value: number) {
     this._maxNumberOfPointersSimultaneously = value;
   }
 
-  get keyPointer() {
+  public get keyPointer() {
     return this._keyPointer;
   }
-  set keyPointer(value: number) {
+  public set keyPointer(value: number) {
     this._keyPointer = value;
   }
 }

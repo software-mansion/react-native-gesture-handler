@@ -576,199 +576,199 @@ export default class PanGestureHandler extends GestureHandler {
     this.startY = this.lastY;
   }
 
-  get velocityX() {
+  public get velocityX() {
     return this._velocityX;
   }
-  set velocityX(value: number) {
+  public set velocityX(value: number) {
     this._velocityX = value;
   }
 
-  get velocityY() {
+  public get velocityY() {
     return this._velocityY;
   }
-  set velocityY(value: number) {
+  public set velocityY(value: number) {
     this._velocityY = value;
   }
 
-  get minDistSq() {
+  public get minDistSq() {
     return this._minDistSq;
   }
-  set minDistSq(value: number) {
+  public set minDistSq(value: number) {
     this._minDistSq = value;
   }
 
-  get activeOffsetXStart() {
+  public get activeOffsetXStart() {
     return this._activeOffsetXStart;
   }
-  set activeOffsetXStart(value: number) {
+  public set activeOffsetXStart(value: number) {
     this._activeOffsetXStart = value;
   }
 
-  get activeOffsetXEnd() {
+  public get activeOffsetXEnd() {
     return this._activeOffsetXEnd;
   }
-  set activeOffsetXEnd(value: number) {
+  public set activeOffsetXEnd(value: number) {
     this._activeOffsetXEnd = value;
   }
 
-  get failOffsetXStart() {
+  public get failOffsetXStart() {
     return this._failOffsetXStart;
   }
-  set failOffsetXStart(value: number) {
+  public set failOffsetXStart(value: number) {
     this._failOffsetXStart = value;
   }
 
-  get failOffsetXEnd() {
+  public get failOffsetXEnd() {
     return this._failOffsetXEnd;
   }
-  set failOffsetXEnd(value: number) {
+  public set failOffsetXEnd(value: number) {
     this._failOffsetXEnd = value;
   }
 
-  get activeOffsetYStart() {
+  public get activeOffsetYStart() {
     return this._activeOffsetYStart;
   }
-  set activeOffsetYStart(value: number) {
+  public set activeOffsetYStart(value: number) {
     this._activeOffsetYStart = value;
   }
 
-  get activeOffsetYEnd() {
+  public get activeOffsetYEnd() {
     return this._activeOffsetYEnd;
   }
-  set activeOffsetYEnd(value: number) {
+  public set activeOffsetYEnd(value: number) {
     this._activeOffsetYEnd = value;
   }
 
-  get failOffsetYStart() {
+  public get failOffsetYStart() {
     return this._failOffsetYStart;
   }
-  set failOffsetYStart(value: number) {
+  public set failOffsetYStart(value: number) {
     this._failOffsetYStart = value;
   }
 
-  get failOffsetYEnd() {
+  public get failOffsetYEnd() {
     return this._failOffsetYEnd;
   }
-  set failOffsetYEnd(value: number) {
+  public set failOffsetYEnd(value: number) {
     this._failOffsetYEnd = value;
   }
 
-  get minVelocityX() {
+  public get minVelocityX() {
     return this._minVelocityX;
   }
-  set minVelocityX(value: number) {
+  public set minVelocityX(value: number) {
     this._minVelocityX = value;
   }
 
-  get minVelocityY() {
+  public get minVelocityY() {
     return this._minVelocityY;
   }
-  set minVelocityY(value: number) {
+  public set minVelocityY(value: number) {
     this._minVelocityY = value;
   }
 
-  get minVelocitySq() {
+  public get minVelocitySq() {
     return this._minVelocitySq;
   }
-  set minVelocitySq(value: number) {
+  public set minVelocitySq(value: number) {
     this._minVelocitySq = value;
   }
 
-  get minPointers() {
+  public get minPointers() {
     return this._minPointers;
   }
-  set minPointers(value: number) {
+  public set minPointers(value: number) {
     this._minPointers = value;
   }
 
-  get maxPointers() {
+  public get maxPointers() {
     return this._maxPointers;
   }
-  set maxPointers(value: number) {
+  public set maxPointers(value: number) {
     this._maxPointers = value;
   }
 
-  get startX() {
+  public get startX() {
     return this._startX;
   }
-  set startX(value: number) {
+  public set startX(value: number) {
     this._startX = value;
   }
 
-  get startY() {
+  public get startY() {
     return this._startY;
   }
-  set startY(value: number) {
+  public set startY(value: number) {
     this._startY = value;
   }
 
-  get offsetX() {
+  public get offsetX() {
     return this._offsetX;
   }
-  set offsetX(value: number) {
+  public set offsetX(value: number) {
     this._offsetX = value;
   }
 
-  get offsetY() {
+  public get offsetY() {
     return this._offsetY;
   }
-  set offsetY(value: number) {
+  public set offsetY(value: number) {
     this._offsetY = value;
   }
 
-  get lastX() {
+  public get lastX() {
     return this._lastX;
   }
-  set lastX(value: number) {
+  public set lastX(value: number) {
     this._lastX = value;
   }
 
-  get lastY() {
+  public get lastY() {
     return this._lastY;
   }
-  set lastY(value: number) {
+  public set lastY(value: number) {
     this._lastY = value;
   }
 
-  get stylusData() {
+  public get stylusData() {
     return this._stylusData;
   }
-  set stylusData(value: StylusData | undefined) {
+  public set stylusData(value: StylusData | undefined) {
     this._stylusData = value;
   }
 
-  get activateAfterLongPress() {
+  public get activateAfterLongPress() {
     return this._activateAfterLongPress;
   }
-  set activateAfterLongPress(value: number) {
+  public set activateAfterLongPress(value: number) {
     this._activateAfterLongPress = value;
   }
 
-  get activationTimeout() {
+  public get activationTimeout() {
     return this._activationTimeout;
   }
-  set activationTimeout(value: number) {
+  public set activationTimeout(value: number) {
     this._activationTimeout = value;
   }
 
-  get enableTrackpadTwoFingerGesture() {
+  public get enableTrackpadTwoFingerGesture() {
     return this._enableTrackpadTwoFingerGesture;
   }
-  set enableTrackpadTwoFingerGesture(value: boolean) {
+  public set enableTrackpadTwoFingerGesture(value: boolean) {
     this._enableTrackpadTwoFingerGesture = value;
   }
 
-  get endWheelTimeout() {
+  public get endWheelTimeout() {
     return this._endWheelTimeout;
   }
-  set endWheelTimeout(value: number) {
+  public set endWheelTimeout(value: number) {
     this._endWheelTimeout = value;
   }
 
-  get wheelDevice() {
+  public get wheelDevice() {
     return this._wheelDevice;
   }
-  set wheelDevice(value: WheelDevice) {
+  public set wheelDevice(value: WheelDevice) {
     this._wheelDevice = value;
   }
 }
