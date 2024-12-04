@@ -9,6 +9,7 @@ import android.widget.ScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.textinput.ReactEditText
+import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 import com.swmansion.gesturehandler.react.isScreenReaderOn
 
@@ -79,6 +80,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       is ReactEditText -> this.hook = EditTextHook(this, view)
       is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
       is ReactScrollView -> this.hook = ScrollViewHook()
+      is ReactViewGroup -> this.hook = ReactViewGroupHook()
     }
   }
 
@@ -99,7 +101,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
       } else {
-        view.onTouchEvent(event)
+        hook.sendTouchEvent(view, event)
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
           activate()
         }
@@ -116,12 +118,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       when {
         shouldActivateOnStart -> {
           tryIntercept(view, event)
-          view.onTouchEvent(event)
+          hook.sendTouchEvent(view, event)
           activate()
         }
 
         tryIntercept(view, event) -> {
-          view.onTouchEvent(event)
+          hook.sendTouchEvent(view, event)
           activate()
         }
 
@@ -136,7 +138,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         }
       }
     } else if (state == STATE_ACTIVE) {
-      view.onTouchEvent(event)
+      hook.sendTouchEvent(view, event)
     }
   }
 
@@ -145,7 +147,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
       action = MotionEvent.ACTION_CANCEL
     }
-    view!!.onTouchEvent(event)
+    hook.sendTouchEvent(view, event)
     event.recycle()
   }
 
@@ -199,6 +201,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * by this one.
      */
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
+
+    /**
+     * Passes the event down to the underlying view using the correct method.
+     */
+    fun sendTouchEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
   }
 
   private class EditTextHook(
@@ -277,5 +284,13 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   private class ScrollViewHook : NativeViewGestureHandlerHook {
     override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
+  }
+
+  private class ReactViewGroupHook : NativeViewGestureHandlerHook {
+    // There are cases where a native component is wrapped with a `ReactViewGroup` (the component is rendered
+    // inside a `<View />` component in JS). In such cases, calling `onTouchEvent` wouldn't work as those are
+    // ignored by the wrapper view. Instead `dispatchTouchEvent` can be used, which causes the view to dispatch
+    // the event to its children.
+    override fun sendTouchEvent(view: View?, event: MotionEvent) = view?.dispatchTouchEvent(event)
   }
 }
