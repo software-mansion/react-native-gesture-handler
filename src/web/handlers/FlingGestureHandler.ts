@@ -16,60 +16,12 @@ const DIAGONAL_DEVIATION_COSINE = coneToDeviation(90 - DEFAULT_ALIGNMENT_CONE);
 
 export default class FlingGestureHandler extends GestureHandler {
   private _numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
-  get numberOfPointersRequired() {
-    return this._numberOfPointersRequired;
-  }
-  set numberOfPointersRequired(val: number) {
-    this._numberOfPointersRequired = val;
-  }
-
   private _direction: Directions = DEFAULT_DIRECTION;
-  get direction() {
-    return this._direction;
-  }
-  set direction(newDirection: Directions) {
-    this._direction = newDirection;
-  }
-
   private _maxDurationMs = DEFAULT_MAX_DURATION_MS;
-  get maxDurationMs() {
-    return this._maxDurationMs;
-  }
-  set maxDurationMs(value: number) {
-    this._maxDurationMs = value;
-  }
-
   private _minVelocity = DEFAULT_MIN_VELOCITY;
-  get minVelocity() {
-    return this._minVelocity;
-  }
-  set minVelocity(value: number) {
-    this._minVelocity = value;
-  }
-
   private _delayTimeout!: number;
-  get delayTimeout() {
-    return this._delayTimeout;
-  }
-  set delayTimeout(value: number) {
-    this._delayTimeout = value;
-  }
-
   private _maxNumberOfPointersSimultaneously = 0;
-  get maxNumberOfPointersSimultaneously() {
-    return this._maxNumberOfPointersSimultaneously;
-  }
-  set maxNumberOfPointersSimultaneously(value: number) {
-    this._maxNumberOfPointersSimultaneously = value;
-  }
-
   private _keyPointer = NaN;
-  get keyPointer() {
-    return this._keyPointer;
-  }
-  set keyPointer(value: number) {
-    this._keyPointer = value;
-  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -241,5 +193,54 @@ export default class FlingGestureHandler extends GestureHandler {
     super.resetConfig();
     this.numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
     this.direction = DEFAULT_DIRECTION;
+  }
+
+  get numberOfPointersRequired() {
+    return this._numberOfPointersRequired;
+  }
+  set numberOfPointersRequired(val: number) {
+    this._numberOfPointersRequired = val;
+  }
+
+  get direction() {
+    return this._direction;
+  }
+  set direction(newDirection: Directions) {
+    this._direction = newDirection;
+  }
+
+  get maxDurationMs() {
+    return this._maxDurationMs;
+  }
+  set maxDurationMs(value: number) {
+    this._maxDurationMs = value;
+  }
+
+  get minVelocity() {
+    return this._minVelocity;
+  }
+  set minVelocity(value: number) {
+    this._minVelocity = value;
+  }
+
+  get delayTimeout() {
+    return this._delayTimeout;
+  }
+  set delayTimeout(value: number) {
+    this._delayTimeout = value;
+  }
+
+  get maxNumberOfPointersSimultaneously() {
+    return this._maxNumberOfPointersSimultaneously;
+  }
+  set maxNumberOfPointersSimultaneously(value: number) {
+    this._maxNumberOfPointersSimultaneously = value;
+  }
+
+  get keyPointer() {
+    return this._keyPointer;
+  }
+  set keyPointer(value: number) {
+    this._keyPointer = value;
   }
 }

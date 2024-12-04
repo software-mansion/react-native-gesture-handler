@@ -10,37 +10,9 @@ const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
 export default class RotationGestureHandler extends GestureHandler {
   private _rotation = 0;
-  get rotation() {
-    return this._rotation;
-  }
-  set rotation(value: number) {
-    this._rotation = value;
-  }
-
   private _velocity = 0;
-  get velocity() {
-    return this._velocity;
-  }
-  set velocity(value: number) {
-    this._velocity = value;
-  }
-
   private _cachedAnchorX = 0;
-  get cachedAnchorX() {
-    return this._cachedAnchorX;
-  }
-  set cachedAnchorX(value: number) {
-    this._cachedAnchorX = value;
-  }
-
   private _cachedAnchorY = 0;
-  get cachedAnchorY() {
-    return this._cachedAnchorY;
-  }
-  set cachedAnchorY(value: number) {
-    this._cachedAnchorY = value;
-  }
-
   private _rotationGestureListener: RotationGestureListener = {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (detector: RotationGestureDetector): boolean => {
@@ -66,22 +38,8 @@ export default class RotationGestureHandler extends GestureHandler {
       this.end();
     },
   };
-
-  get rotationGestureListener(): RotationGestureListener {
-    return this._rotationGestureListener;
-  }
-  set rotationGestureListener(listener: RotationGestureListener) {
-    this._rotationGestureListener = listener;
-  }
-
   private _rotationGestureDetector: RotationGestureDetector =
     new RotationGestureDetector(this.rotationGestureListener);
-  get rotationGestureDetector(): RotationGestureDetector {
-    return this._rotationGestureDetector;
-  }
-  set rotationGestureDetector(detector: RotationGestureDetector) {
-    this._rotationGestureDetector = detector;
-  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
@@ -209,5 +167,47 @@ export default class RotationGestureHandler extends GestureHandler {
     this.rotation = 0;
     this.velocity = 0;
     this.rotationGestureDetector.reset();
+  }
+
+  get rotation() {
+    return this._rotation;
+  }
+  set rotation(value: number) {
+    this._rotation = value;
+  }
+
+  get velocity() {
+    return this._velocity;
+  }
+  set velocity(value: number) {
+    this._velocity = value;
+  }
+
+  get cachedAnchorX() {
+    return this._cachedAnchorX;
+  }
+  set cachedAnchorX(value: number) {
+    this._cachedAnchorX = value;
+  }
+
+  get cachedAnchorY() {
+    return this._cachedAnchorY;
+  }
+  set cachedAnchorY(value: number) {
+    this._cachedAnchorY = value;
+  }
+
+  get rotationGestureListener(): RotationGestureListener {
+    return this._rotationGestureListener;
+  }
+  set rotationGestureListener(listener: RotationGestureListener) {
+    this._rotationGestureListener = listener;
+  }
+
+  get rotationGestureDetector(): RotationGestureDetector {
+    return this._rotationGestureDetector;
+  }
+  set rotationGestureDetector(detector: RotationGestureDetector) {
+    this._rotationGestureDetector = detector;
   }
 }

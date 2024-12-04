@@ -21,132 +21,21 @@ import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private _lastSentState: State | null = null;
-  get lastSentState() {
-    return this._lastSentState;
-  }
-  set lastSentState(val: State | null) {
-    this._lastSentState = val;
-  }
-
   private _state: State = State.UNDETERMINED;
-  get state() {
-    return this._state;
-  }
-  set state(newState: State) {
-    this._state = newState;
-  }
-
   private _shouldCancelWhenOutside = false;
-  get shouldCancelWhenOutside() {
-    return this._shouldCancelWhenOutside;
-  }
-  set shouldCancelWhenOutside(val: boolean) {
-    this._shouldCancelWhenOutside = val;
-  }
-
   private _hasCustomActivationCriteria = false;
-  get hasCustomActivationCriteria() {
-    return this._hasCustomActivationCriteria;
-  }
-  set hasCustomActivationCriteria(val: boolean) {
-    this._hasCustomActivationCriteria = val;
-  }
-
   private _enabled = false;
-  get enabled() {
-    return this._enabled;
-  }
-  set enabled(val: boolean) {
-    this._enabled = val;
-  }
-
   private _viewRef!: number;
-  get viewRef() {
-    return this._viewRef;
-  }
-  set viewRef(val: number) {
-    this._viewRef = val;
-  }
-
   private _propsRef!: React.RefObject<unknown>;
-  get propsRef() {
-    return this._propsRef;
-  }
-  set propsRef(val: React.RefObject<unknown>) {
-    this._propsRef = val;
-  }
-
-  private _handlerTag!: number;
-  get handlerTag() {
-    return this._handlerTag;
-  }
-  set handlerTag(tag: number) {
-    this._handlerTag = tag;
-  }
-
   private _config: Config = { enabled: false };
-  get config() {
-    return this._config;
-  }
-  set config(newConfig: Config) {
-    this._config = newConfig;
-  }
-
+  private _handlerTag!: number;
   private _pointerTracker: PointerTracker = new PointerTracker();
-  get pointerTracker() {
-    return this._pointerTracker;
-  }
-  set pointerTracker(tracker: PointerTracker) {
-    this._pointerTracker = tracker;
-  }
-
   private _activationIndex = 0;
-  get activationIndex() {
-    return this._activationIndex;
-  }
-  set activationIndex(val: number) {
-    this._activationIndex = val;
-  }
-
   private _awaiting = false;
-  get awaiting() {
-    return this._awaiting;
-  }
-  set awaiting(val: boolean) {
-    this._awaiting = val;
-  }
-
   private _active = false;
-  get active() {
-    return this._active;
-  }
-  set active(val: boolean) {
-    this._active = val;
-  }
-
   private _shouldResetProgress = false;
-  get shouldResetProgress() {
-    return this._shouldResetProgress;
-  }
-  set shouldResetProgress(val: boolean) {
-    this._shouldResetProgress = val;
-  }
-
   private _pointerType: PointerType = PointerType.MOUSE;
-  get pointerType() {
-    return this._pointerType;
-  }
-  set pointerType(newPointerType: PointerType) {
-    this._pointerType = newPointerType;
-  }
-
   private _delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
-  get delegate() {
-    return this._delegate;
-  }
-  set delegate(newDelegate: GestureHandlerDelegate<unknown, IGestureHandler>) {
-    this._delegate = newDelegate;
-  }
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
@@ -807,6 +696,118 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.state === State.FAILED ||
       this.state === State.CANCELLED
     );
+  }
+
+  get lastSentState() {
+    return this._lastSentState;
+  }
+  set lastSentState(val: State | null) {
+    this._lastSentState = val;
+  }
+
+  get state() {
+    return this._state;
+  }
+  set state(newState: State) {
+    this._state = newState;
+  }
+
+  get shouldCancelWhenOutside() {
+    return this._shouldCancelWhenOutside;
+  }
+  set shouldCancelWhenOutside(val: boolean) {
+    this._shouldCancelWhenOutside = val;
+  }
+
+  get hasCustomActivationCriteria() {
+    return this._hasCustomActivationCriteria;
+  }
+  set hasCustomActivationCriteria(val: boolean) {
+    this._hasCustomActivationCriteria = val;
+  }
+
+  get enabled() {
+    return this._enabled;
+  }
+  set enabled(val: boolean) {
+    this._enabled = val;
+  }
+
+  get viewRef() {
+    return this._viewRef;
+  }
+  set viewRef(val: number) {
+    this._viewRef = val;
+  }
+
+  get propsRef() {
+    return this._propsRef;
+  }
+  set propsRef(val: React.RefObject<unknown>) {
+    this._propsRef = val;
+  }
+
+  get handlerTag() {
+    return this._handlerTag;
+  }
+  set handlerTag(tag: number) {
+    this._handlerTag = tag;
+  }
+
+  get config() {
+    return this._config;
+  }
+  set config(newConfig: Config) {
+    this._config = newConfig;
+  }
+
+  get pointerTracker() {
+    return this._pointerTracker;
+  }
+  set pointerTracker(tracker: PointerTracker) {
+    this._pointerTracker = tracker;
+  }
+
+  get activationIndex() {
+    return this._activationIndex;
+  }
+  set activationIndex(val: number) {
+    this._activationIndex = val;
+  }
+
+  get awaiting() {
+    return this._awaiting;
+  }
+  set awaiting(val: boolean) {
+    this._awaiting = val;
+  }
+
+  get active() {
+    return this._active;
+  }
+  set active(val: boolean) {
+    this._active = val;
+  }
+
+  get shouldResetProgress() {
+    return this._shouldResetProgress;
+  }
+  set shouldResetProgress(val: boolean) {
+    this._shouldResetProgress = val;
+  }
+
+  get pointerType() {
+    return this._pointerType;
+  }
+  set pointerType(newPointerType: PointerType) {
+    this._pointerType = newPointerType;
+  }
+
+  get delegate() {
+    return this._delegate;
+  }
+  set delegate(newDelegate: GestureHandlerDelegate<unknown, IGestureHandler>) {
+    this._delegate = newDelegate;
   }
 }
 

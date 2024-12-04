@@ -5,12 +5,6 @@ import GestureHandler from './GestureHandler';
 
 export default class HoverGestureHandler extends GestureHandler {
   private _stylusData: StylusData | undefined;
-  get stylusData() {
-    return this._stylusData;
-  }
-  set stylusData(value: StylusData | undefined) {
-    this._stylusData = value;
-  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
@@ -59,5 +53,12 @@ export default class HoverGestureHandler extends GestureHandler {
   protected onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
     this.reset();
+  }
+
+  get stylusData() {
+    return this._stylusData;
+  }
+  set stylusData(value: StylusData | undefined) {
+    this._stylusData = value;
   }
 }

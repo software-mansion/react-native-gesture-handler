@@ -9,37 +9,9 @@ import ScaleGestureDetector, {
 
 export default class PinchGestureHandler extends GestureHandler {
   private _scale = 1;
-  get scale() {
-    return this._scale;
-  }
-  set scale(value: number) {
-    this._scale = value;
-  }
-
   private _velocity = 0;
-  get velocity() {
-    return this._velocity;
-  }
-  set velocity(value: number) {
-    this._velocity = value;
-  }
-
   private _startingSpan = 0;
-  get startingSpan() {
-    return this._startingSpan;
-  }
-  set startingSpan(value: number) {
-    this._startingSpan = value;
-  }
-
   private _spanSlop = DEFAULT_TOUCH_SLOP;
-  get spanSlop() {
-    return this._spanSlop;
-  }
-  set spanSlop(value: number) {
-    this._spanSlop = value;
-  }
-
   private _scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
       this.startingSpan = detector.getCurrentSpan();
@@ -70,22 +42,8 @@ export default class PinchGestureHandler extends GestureHandler {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
     ): void => {},
   };
-
-  get scaleDetectorListener() {
-    return this._scaleDetectorListener;
-  }
-  set scaleDetectorListener(listener: ScaleGestureListener) {
-    this._scaleDetectorListener = listener;
-  }
-
   private _scaleGestureDetector: ScaleGestureDetector =
     new ScaleGestureDetector(this.scaleDetectorListener);
-  get scaleGestureDetector() {
-    return this._scaleGestureDetector;
-  }
-  set scaleGestureDetector(detector: ScaleGestureDetector) {
-    this._scaleGestureDetector = detector;
-  }
 
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
@@ -194,5 +152,47 @@ export default class PinchGestureHandler extends GestureHandler {
     }
     this.velocity = 0;
     this.scale = 1;
+  }
+
+  get scale() {
+    return this._scale;
+  }
+  set scale(value: number) {
+    this._scale = value;
+  }
+
+  get velocity() {
+    return this._velocity;
+  }
+  set velocity(value: number) {
+    this._velocity = value;
+  }
+
+  get startingSpan() {
+    return this._startingSpan;
+  }
+  set startingSpan(value: number) {
+    this._startingSpan = value;
+  }
+
+  get spanSlop() {
+    return this._spanSlop;
+  }
+  set spanSlop(value: number) {
+    this._spanSlop = value;
+  }
+
+  get scaleDetectorListener() {
+    return this._scaleDetectorListener;
+  }
+  set scaleDetectorListener(listener: ScaleGestureListener) {
+    this._scaleDetectorListener = listener;
+  }
+
+  get scaleGestureDetector() {
+    return this._scaleGestureDetector;
+  }
+  set scaleGestureDetector(detector: ScaleGestureDetector) {
+    this._scaleGestureDetector = detector;
   }
 }
