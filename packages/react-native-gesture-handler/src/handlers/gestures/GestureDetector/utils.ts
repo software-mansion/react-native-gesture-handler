@@ -17,7 +17,6 @@ import {
   HandlerStateChangeEvent,
   baseGestureHandlerWithDetectorProps,
 } from '../../gestureHandlerCommon';
-import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
 import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
@@ -172,10 +171,8 @@ export function useWebEventHandlers() {
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
-    onGestureHandlerStateChange: isNewWebImplementationEnabled()
-      ? (e: HandlerStateChangeEvent<unknown>) => {
-          onGestureHandlerEvent(e.nativeEvent);
-        }
-      : undefined,
+    onGestureHandlerStateChange: (e: HandlerStateChangeEvent<unknown>) => {
+      onGestureHandlerEvent(e.nativeEvent);
+    },
   });
 }
