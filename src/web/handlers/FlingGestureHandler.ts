@@ -198,15 +198,15 @@ export default class FlingGestureHandler extends GestureHandler {
   public get numberOfPointersRequired() {
     return this._numberOfPointersRequired;
   }
-  public set numberOfPointersRequired(val: number) {
-    this._numberOfPointersRequired = val;
+  public set numberOfPointersRequired(value: number) {
+    this._numberOfPointersRequired = value;
   }
 
   public get direction() {
     return this._direction;
   }
-  public set direction(newDirection: Directions) {
-    this._direction = newDirection;
+  public set direction(direction: Directions) {
+    this._direction = direction;
   }
 
   public get maxDurationMs() {

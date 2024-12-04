@@ -213,15 +213,15 @@ export default class LongPressGestureHandler extends GestureHandler {
   public get startTime() {
     return this._startTime;
   }
-  public set startTime(value: number) {
-    this._startTime = value;
+  public set startTime(time: number) {
+    this._startTime = time;
   }
 
   public get previousTime() {
     return this._previousTime;
   }
-  public set previousTime(value: number) {
-    this._previousTime = value;
+  public set previousTime(time: number) {
+    this._previousTime = time;
   }
 
   public get activationTimeout() {

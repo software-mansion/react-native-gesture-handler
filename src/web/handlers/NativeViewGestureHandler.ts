@@ -173,8 +173,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public get buttonRole() {
     return this._buttonRole;
   }
-  public set buttonRole(value: boolean) {
-    this._buttonRole = value;
+  public set buttonRole(isButton: boolean) {
+    this._buttonRole = isButton;
   }
 
   public get shouldActivateOnStart() {

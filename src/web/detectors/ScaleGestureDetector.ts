@@ -184,22 +184,22 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   public get currentTime() {
     return this._currentTime;
   }
-  public set currentTime(value: number) {
-    this._currentTime = value;
+  public set currentTime(time: number) {
+    this._currentTime = time;
   }
 
   public get prevTime() {
     return this._prevTime;
   }
-  public set prevTime(value: number) {
-    this._prevTime = value;
+  public set prevTime(time: number) {
+    this._prevTime = time;
   }
 
   public get inProgress() {
     return this._inProgress;
   }
-  public set inProgress(value: boolean) {
-    this._inProgress = value;
+  public set inProgress(inProgress: boolean) {
+    this._inProgress = inProgress;
   }
 
   public get spanSlop() {
@@ -219,8 +219,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   public get pointerTracker() {
     return this._pointerTracker;
   }
-  public set pointerTracker(value: PointerTracker) {
-    this._pointerTracker = value;
+  public set pointerTracker(pointerTracker: PointerTracker) {
+    this._pointerTracker = pointerTracker;
   }
 
   public get timeDelta(): number {

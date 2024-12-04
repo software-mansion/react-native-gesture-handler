@@ -16,7 +16,7 @@ export default class RotationGestureDetector
   private _rotation = 0;
   private _anchorX = 0;
   private _anchorY = 0;
-  private _isInProgress = false;
+  private _inProgress = false;
   private _keyPointers: number[] = [NaN, NaN];
 
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
@@ -67,11 +67,11 @@ export default class RotationGestureDetector
   }
 
   private finish(): void {
-    if (!this.isInProgress) {
+    if (!this.inProgress) {
       return;
     }
 
-    this.isInProgress = false;
+    this.inProgress = false;
     this.keyPointers = [NaN, NaN];
     this.onRotationEnd(this);
   }
@@ -90,14 +90,14 @@ export default class RotationGestureDetector
   public onTouchEvent(event: AdaptedEvent, tracker: PointerTracker): boolean {
     switch (event.eventType) {
       case EventTypes.DOWN:
-        this.isInProgress = false;
+        this.inProgress = false;
         break;
 
       case EventTypes.ADDITIONAL_POINTER_DOWN:
-        if (this.isInProgress) {
+        if (this.inProgress) {
           break;
         }
-        this.isInProgress = true;
+        this.inProgress = true;
 
         this.previousTime = event.time;
         this.previousAngle = NaN;
@@ -109,7 +109,7 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.MOVE:
-        if (!this.isInProgress) {
+        if (!this.inProgress) {
           break;
         }
 
@@ -119,7 +119,7 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.ADDITIONAL_POINTER_UP:
-        if (!this.isInProgress) {
+        if (!this.inProgress) {
           break;
         }
 
@@ -130,7 +130,7 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.UP:
-        if (this.isInProgress) {
+        if (this.inProgress) {
           this.finish();
         }
         break;
@@ -141,35 +141,35 @@ export default class RotationGestureDetector
 
   public reset(): void {
     this.keyPointers = [NaN, NaN];
-    this.isInProgress = false;
+    this.inProgress = false;
   }
 
   public get currentTime() {
     return this._currentTime;
   }
-  public set currentTime(value: number) {
-    this._currentTime = value;
+  public set currentTime(time: number) {
+    this._currentTime = time;
   }
 
   public get previousTime() {
     return this._previousTime;
   }
-  public set previousTime(value: number) {
-    this._previousTime = value;
+  public set previousTime(time: number) {
+    this._previousTime = time;
   }
 
   public get previousAngle() {
     return this._previousAngle;
   }
-  public set previousAngle(value: number) {
-    this._previousAngle = value;
+  public set previousAngle(angle: number) {
+    this._previousAngle = angle;
   }
 
   public get rotation() {
     return this._rotation;
   }
-  public set rotation(value: number) {
-    this._rotation = value;
+  public set rotation(angle: number) {
+    this._rotation = angle;
   }
 
   public get anchorX() {
@@ -186,18 +186,18 @@ export default class RotationGestureDetector
     this._anchorY = value;
   }
 
-  public get isInProgress() {
-    return this._isInProgress;
+  public get inProgress() {
+    return this._inProgress;
   }
-  public set isInProgress(value: boolean) {
-    this._isInProgress = value;
+  public set inProgress(inProgress: boolean) {
+    this._inProgress = inProgress;
   }
 
   public get keyPointers() {
     return this._keyPointers;
   }
-  public set keyPointers(values: number[]) {
-    this._keyPointers = values;
+  public set keyPointers(pointers: number[]) {
+    this._keyPointers = pointers;
   }
 
   public get timeDelta() {

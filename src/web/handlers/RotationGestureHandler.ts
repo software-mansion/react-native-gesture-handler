@@ -172,8 +172,8 @@ export default class RotationGestureHandler extends GestureHandler {
   public get rotation() {
     return this._rotation;
   }
-  public set rotation(value: number) {
-    this._rotation = value;
+  public set rotation(angle: number) {
+    this._rotation = angle;
   }
 
   public get velocity() {
