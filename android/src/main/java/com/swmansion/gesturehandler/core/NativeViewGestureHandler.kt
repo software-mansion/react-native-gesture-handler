@@ -101,7 +101,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       if (state == STATE_UNDETERMINED && !hook.canBegin(event)) {
         cancel()
       } else {
-        hook.triggerEvent(view, event)
+        hook.sendTouchEvent(view, event)
         if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
           activate()
         }
@@ -118,12 +118,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       when {
         shouldActivateOnStart -> {
           tryIntercept(view, event)
-          hook.triggerEvent(view, event)
+          hook.sendTouchEvent(view, event)
           activate()
         }
 
         tryIntercept(view, event) -> {
-          hook.triggerEvent(view, event)
+          hook.sendTouchEvent(view, event)
           activate()
         }
 
@@ -138,7 +138,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         }
       }
     } else if (state == STATE_ACTIVE) {
-      hook.triggerEvent(view, event)
+      hook.sendTouchEvent(view, event)
     }
   }
 
@@ -147,7 +147,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
       action = MotionEvent.ACTION_CANCEL
     }
-    hook.triggerEvent(view, event)
+    hook.sendTouchEvent(view, event)
     event.recycle()
   }
 
@@ -203,9 +203,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     fun shouldCancelRootViewGestureHandlerIfNecessary() = false
 
     /**
-     * Decides whether or not target view should pass event to children.
+     * Passes the event down to the underlying view using the correct method.
      */
-    fun triggerEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
+    fun sendTouchEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
   }
 
   private class EditTextHook(
@@ -293,6 +293,6 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     //
     // Calling onTouchEvent won't do anything on wrappers, therefore we use dispatchTouchEvent. This way
     // not only do we trigger onTouchEvent, but also pass event to children.
-    override fun triggerEvent(view: View?, event: MotionEvent) = view?.dispatchTouchEvent(event)
+    override fun sendTouchEvent(view: View?, event: MotionEvent) = view?.dispatchTouchEvent(event)
   }
 }
