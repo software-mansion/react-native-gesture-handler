@@ -287,12 +287,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   private class ReactViewGroupHook : NativeViewGestureHandlerHook {
-    // In some cases wrapping component with NativeViewGestureHandler doesn't work, because the component
-    // itself has a wrapper. This happens for example with WebView, where it has 2 layers of wrappers above
-    // an actual WebView.
-    //
-    // Calling onTouchEvent won't do anything on wrappers, therefore we use dispatchTouchEvent. This way
-    // not only do we trigger onTouchEvent, but also pass event to children.
-    override fun sendTouchEvent(view: View?, event: MotionEvent) = view?.dispatchTouchEvent(event)
+    // There are cases where a native component is wrapped with a `ReactViewGroup` (the component is rendered
+    // inside a `<View />` component in JS). In such cases, calling `onTouchEvent` wouldn't work as those are
+    // ignored by the wrapper view. Instead `dispatchTouchEvent` can be used, which causes the view to dispatch
+    // the event to its children.
+    override fun triggerEvent(view: View?, event: MotionEvent) = view?.dispatchTouchEvent(event)
   }
 }
