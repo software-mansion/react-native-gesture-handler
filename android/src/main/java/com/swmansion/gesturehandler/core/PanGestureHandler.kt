@@ -209,6 +209,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     return failOffsetYEnd != MIN_VALUE_IGNORE && dy > failOffsetYEnd
   }
 
+  override fun isContinuous() = true
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return

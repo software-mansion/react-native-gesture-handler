@@ -41,6 +41,8 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
+  override fun isContinuous() = true
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       resetProgress()

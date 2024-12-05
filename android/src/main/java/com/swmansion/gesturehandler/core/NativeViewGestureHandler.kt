@@ -84,6 +84,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
   }
 
+  override fun isContinuous() = view is ReactScrollView || view is ReactSwipeRefreshLayout
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
 
