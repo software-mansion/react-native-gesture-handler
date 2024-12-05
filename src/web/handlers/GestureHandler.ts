@@ -43,9 +43,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   protected delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
 
-  public constructor(
-    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
-  ) {
+  constructor(delegate: GestureHandlerDelegate<unknown, IGestureHandler>) {
     this.delegate = delegate;
   }
 
