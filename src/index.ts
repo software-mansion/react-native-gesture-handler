@@ -145,9 +145,4 @@ export type {
 export type { PressableProps } from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
 
-export {
-  enableExperimentalWebImplementation,
-  enableLegacyWebImplementation,
-} from './EnableNewWebImplementation';
-
 initialize();
