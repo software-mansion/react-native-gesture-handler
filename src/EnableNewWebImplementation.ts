@@ -4,19 +4,19 @@ let useNewWebImplementation = true;
 let getWasCalled = false;
 
 /**
- * @deprecated the legacy implementation is no longer supported. This function will be removed in Gesture Handler 3
+ * @deprecated legacy implementation is no longer supported. This function will be removed in Gesture Handler 3
  */
 export function enableExperimentalWebImplementation(
   _shouldEnable = true
 ): void {
   // NO-OP since the new implementation is now the default
   console.warn(
-    'Legacy web implementation is deprecated and will be removed in Gesture Handler 3'
+    'Legacy web implementation is deprecated. This function will be removed in Gesture Handler 3'
   );
 }
 
 /**
- * @deprecated the legacy implementation is no longer supported. This function will be removed in Gesture Handler 3
+ * @deprecated legacy implementation is no longer supported. This function will be removed in Gesture Handler 3
  */
 export function enableLegacyWebImplementation(
   shouldUseLegacyImplementation = true
