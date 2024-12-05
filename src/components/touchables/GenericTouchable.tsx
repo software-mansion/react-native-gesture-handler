@@ -12,6 +12,7 @@ import {
 import type { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
 import type { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedbackProps';
 import type { GenericTouchableProps } from './GenericTouchableProps';
+import { tagMessage } from '../../utils';
 
 /**
  * Each touchable is a states' machine which preforms transitions.
@@ -65,6 +66,16 @@ export default class GenericTouchable extends Component<
 
   // State of touchable
   STATE: TouchableState = TOUCHABLE_STATE.UNDETERMINED;
+
+  constructor(props: GenericTouchableProps & InternalProps) {
+    super(props);
+
+    console.warn(
+      tagMessage(
+        'TouchableOpacity component will be removed in Gesture Handler 4'
+      )
+    );
+  }
 
   // handlePressIn in called on first touch on traveling inside component.
   // Handles state transition with delay.

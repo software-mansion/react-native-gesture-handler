@@ -9,7 +9,6 @@ import {
   ColorValue,
   ViewProps,
 } from 'react-native';
-import { tagMessage } from '../../utils';
 
 interface State {
   extraChildStyle: null | {
@@ -48,12 +47,6 @@ export default class TouchableHighlight extends Component<
       extraChildStyle: null,
       extraUnderlayStyle: null,
     };
-
-    console.warn(
-      tagMessage(
-        'TouchableHighlight component will be removed in Gesture Handler 4'
-      )
-    );
   }
 
   // Copied from RN
