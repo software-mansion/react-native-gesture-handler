@@ -29,7 +29,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   private spanSlop: number;
   private minSpan: number;
 
-  public constructor(callbacks: ScaleGestureListener) {
+  constructor(callbacks: ScaleGestureListener) {
     this.onScaleBegin = callbacks.onScaleBegin;
     this.onScale = callbacks.onScale;
     this.onScaleEnd = callbacks.onScaleEnd;

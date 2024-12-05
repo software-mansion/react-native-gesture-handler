@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
 export default function RectButtonBorders() {
@@ -62,10 +62,14 @@ export default function RectButtonBorders() {
   );
 }
 
-type ButtonProps = { style: StyleProp<ViewStyle>; text: string };
+type ButtonProps = {
+  // RN cross-version conflicts prevent us from using `ViewStyle` with RNGH <= 2.21.0 and RN >= 0.75.0
+  style: Record<string, string | number>;
+  text: string;
+};
 
 function Button({ style, text }: ButtonProps) {
-  const rectButtonStyles: StyleProp<ViewStyle> = [styles.button, style];
+  const rectButtonStyles = [styles.button, style];
 
   const onPress = () => alert(`Pressed ${text}!`);
 
