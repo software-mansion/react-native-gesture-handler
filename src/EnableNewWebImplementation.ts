@@ -11,7 +11,7 @@ export function enableExperimentalWebImplementation(
 ): void {
   // NO-OP since the new implementation is now the default
   console.warn(
-    'The legacy web implementation is deprecated and will be removed in Gesture Handler 3'
+    'Legacy web implementation is deprecated and will be removed in Gesture Handler 3'
   );
 }
 
@@ -22,7 +22,7 @@ export function enableLegacyWebImplementation(
   shouldUseLegacyImplementation = true
 ): void {
   console.warn(
-    'The legacy web implementation is deprecated and will be removed in Gesture Handler 3'
+    'Legacy web implementation is deprecated and will be removed in Gesture Handler 3'
   );
 
   if (
