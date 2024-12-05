@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
@@ -53,10 +53,6 @@ export default class PinchGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(false);
-  }
-
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
   }
 
   protected transformNativeEvent() {

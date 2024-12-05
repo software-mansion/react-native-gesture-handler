@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
@@ -48,10 +48,6 @@ export default class RotationGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
 
     this.setShouldCancelWhenOutside(false);
-  }
-
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
   }
 
   protected transformNativeEvent() {
@@ -156,10 +152,6 @@ export default class RotationGestureHandler extends GestureHandler {
     }
 
     this.begin();
-  }
-
-  public activate(_force?: boolean): void {
-    super.activate();
   }
 
   protected onReset(): void {
