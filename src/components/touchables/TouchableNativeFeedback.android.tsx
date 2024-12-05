@@ -8,6 +8,8 @@ import {
 } from './TouchableNativeFeedbackProps';
 
 /**
+ * @deprecated TouchableNativeFeedback will be removed in Gesture Handler 4
+ *
  * TouchableNativeFeedback behaves slightly different than RN's TouchableNativeFeedback.
  * There's small difference with handling long press ripple since RN's implementation calls
  * ripple animation via bridge. This solution leaves all animations' handling for native components so
