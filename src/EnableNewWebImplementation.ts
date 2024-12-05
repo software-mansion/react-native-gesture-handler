@@ -22,7 +22,7 @@ export function enableLegacyWebImplementation(
   shouldUseLegacyImplementation = true
 ): void {
   console.warn(
-    'Legacy web implementation is deprecated and will be removed in Gesture Handler 3'
+    'Legacy web implementation is deprecated. This function will be removed in Gesture Handler 3'
   );
 
   if (
