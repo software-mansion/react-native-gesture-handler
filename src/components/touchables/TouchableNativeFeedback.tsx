@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { TouchableNativeFeedback as RNTouchableNativeFeedback } from 'react-native';
 import { tagMessage } from '../../utils';
 
