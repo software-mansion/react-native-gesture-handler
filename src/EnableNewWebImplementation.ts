@@ -42,9 +42,6 @@ export function enableLegacyWebImplementation(
   useNewWebImplementation = !shouldUseLegacyImplementation;
 }
 
-/**
- * @deprecated the legacy implementation is no longer supported. This function will be removed in Gesture Handler 3
- */
 export function isNewWebImplementationEnabled(): boolean {
   getWasCalled = true;
   return useNewWebImplementation;
