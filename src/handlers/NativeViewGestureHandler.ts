@@ -27,7 +27,7 @@ export interface NativeViewGestureConfig {
 }
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
+ * @deprecated NativeViewGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
  */
 export interface NativeViewGestureHandlerProps
   extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload>,
@@ -41,12 +41,12 @@ export const nativeViewProps = [
 export const nativeViewHandlerName = 'NativeViewGestureHandler';
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
+ * @deprecated NativeViewGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
  */
 export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
+ * @deprecated NativeViewGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
  */
 export const NativeViewGestureHandler = createHandler<
   NativeViewGestureHandlerProps,

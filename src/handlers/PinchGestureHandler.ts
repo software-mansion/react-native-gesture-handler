@@ -6,7 +6,7 @@ import {
 } from './gestureHandlerCommon';
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
+ * @deprecated PinchGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
  */
 export interface PinchGestureHandlerProps
   extends BaseGestureHandlerProps<PinchGestureHandlerEventPayload> {}
@@ -14,12 +14,12 @@ export interface PinchGestureHandlerProps
 export const pinchHandlerName = 'PinchGestureHandler';
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
+ * @deprecated PinchGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
  */
 export type PinchGestureHandler = typeof PinchGestureHandler;
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
+ * @deprecated PinchGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
  */
 export const PinchGestureHandler = createHandler<
   PinchGestureHandlerProps,

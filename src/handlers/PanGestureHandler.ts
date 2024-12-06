@@ -83,7 +83,7 @@ export interface PanGestureConfig extends CommonPanProperties {
 }
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pan()` instead.
+ * @deprecated PanGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Pan()` instead.
  */
 export interface PanGestureHandlerProps
   extends BaseGestureHandlerProps<PanGestureHandlerEventPayload>,
@@ -136,12 +136,12 @@ export interface PanGestureHandlerProps
 export const panHandlerName = 'PanGestureHandler';
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pan()` instead.
+ * @deprecated PanGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Pan()` instead.
  */
 export type PanGestureHandler = typeof PanGestureHandler;
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pan()` instead.
+ * @deprecated PanGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Pan()` instead.
  */
 export const PanGestureHandler = createHandler<
   PanGestureHandlerProps,

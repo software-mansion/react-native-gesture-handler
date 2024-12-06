@@ -34,7 +34,7 @@ export interface FlingGestureConfig {
 }
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
+ * @deprecated FlingGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
  */
 export interface FlingGestureHandlerProps
   extends BaseGestureHandlerProps<FlingGestureHandlerEventPayload>,
@@ -43,12 +43,12 @@ export interface FlingGestureHandlerProps
 export const flingHandlerName = 'FlingGestureHandler';
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
+ * @deprecated FlingGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
  */
 export type FlingGestureHandler = typeof FlingGestureHandler;
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
+ * @deprecated FlingGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
  */
 export const FlingGestureHandler = createHandler<
   FlingGestureHandlerProps,

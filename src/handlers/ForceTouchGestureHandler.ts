@@ -51,14 +51,14 @@ export interface ForceTouchGestureConfig {
 }
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
+ * @deprecated ForceTouchGestureHandler will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
  */
 export interface ForceTouchGestureHandlerProps
   extends BaseGestureHandlerProps<ForceTouchGestureHandlerEventPayload>,
     ForceTouchGestureConfig {}
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
+ * @deprecated ForceTouchGestureHandler will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
  */
 export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
   forceTouchAvailable: boolean;
@@ -67,7 +67,7 @@ export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
 export const forceTouchHandlerName = 'ForceTouchGestureHandler';
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
+ * @deprecated ForceTouchGestureHandler will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
  */
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<

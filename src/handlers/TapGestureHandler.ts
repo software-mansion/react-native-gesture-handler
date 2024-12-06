@@ -67,7 +67,7 @@ export interface TapGestureConfig {
 }
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
+ * @deprecated TapGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
  */
 export interface TapGestureHandlerProps
   extends BaseGestureHandlerProps<TapGestureHandlerEventPayload>,
@@ -76,12 +76,12 @@ export interface TapGestureHandlerProps
 export const tapHandlerName = 'TapGestureHandler';
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
+ * @deprecated TapGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
  */
 export type TapGestureHandler = typeof TapGestureHandler;
 
 /**
- * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
+ * @deprecated TapGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
  */
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProps,
