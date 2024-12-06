@@ -66,14 +66,23 @@ export interface TapGestureConfig {
   maxDist?: number;
 }
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
+ */
 export interface TapGestureHandlerProps
   extends BaseGestureHandlerProps<TapGestureHandlerEventPayload>,
     TapGestureConfig {}
 
 export const tapHandlerName = 'TapGestureHandler';
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
+ */
 export type TapGestureHandler = typeof TapGestureHandler;
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
+
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
+ */
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProps,
   TapGestureHandlerEventPayload
