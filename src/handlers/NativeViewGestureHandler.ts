@@ -26,6 +26,9 @@ export interface NativeViewGestureConfig {
   disallowInterruption?: boolean;
 }
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
+ */
 export interface NativeViewGestureHandlerProps
   extends BaseGestureHandlerProps<NativeViewGestureHandlerPayload>,
     NativeViewGestureConfig {}
@@ -37,8 +40,14 @@ export const nativeViewProps = [
 
 export const nativeViewHandlerName = 'NativeViewGestureHandler';
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
+ */
 export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
+
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Native()` instead.
+ */
 export const NativeViewGestureHandler = createHandler<
   NativeViewGestureHandlerProps,
   NativeViewGestureHandlerPayload
