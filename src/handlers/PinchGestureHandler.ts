@@ -5,13 +5,22 @@ import {
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
+ */
 export interface PinchGestureHandlerProps
   extends BaseGestureHandlerProps<PinchGestureHandlerEventPayload> {}
 
 export const pinchHandlerName = 'PinchGestureHandler';
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
+ */
 export type PinchGestureHandler = typeof PinchGestureHandler;
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
+
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Pinch()` instead.
+ */
 export const PinchGestureHandler = createHandler<
   PinchGestureHandlerProps,
   PinchGestureHandlerEventPayload
