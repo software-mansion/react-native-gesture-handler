@@ -157,9 +157,4 @@ export type {
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
 
-export {
-  enableExperimentalWebImplementation,
-  enableLegacyWebImplementation,
-} from './EnableNewWebImplementation';
-
 initialize();
