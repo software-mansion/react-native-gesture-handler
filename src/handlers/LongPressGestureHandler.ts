@@ -49,6 +49,7 @@ export type LongPressGestureHandler = typeof LongPressGestureHandler;
 /**
  * @deprecated LongPressGestureHandler will be removed in Gesture Handler 4. Use `Gesture.LongPress()` instead.
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerProps,
   LongPressGestureHandlerEventPayload

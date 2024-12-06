@@ -83,6 +83,7 @@ export type TapGestureHandler = typeof TapGestureHandler;
 /**
  * @deprecated TapGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Tap()` instead.
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const TapGestureHandler = createHandler<
   TapGestureHandlerProps,
   TapGestureHandlerEventPayload

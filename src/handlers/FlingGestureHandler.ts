@@ -50,6 +50,7 @@ export type FlingGestureHandler = typeof FlingGestureHandler;
 /**
  * @deprecated FlingGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const FlingGestureHandler = createHandler<
   FlingGestureHandlerProps,
   FlingGestureHandlerEventPayload

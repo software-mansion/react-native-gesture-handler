@@ -21,6 +21,7 @@ export type RotationGestureHandler = typeof RotationGestureHandler;
 /**
  * @deprecated RotationGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Rotation()` instead.
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const RotationGestureHandler = createHandler<
   RotationGestureHandlerProps,
   RotationGestureHandlerEventPayload

@@ -143,6 +143,7 @@ export type PanGestureHandler = typeof PanGestureHandler;
 /**
  * @deprecated PanGestureHandler will be removed in Gesture Handler 4. Use `Gesture.Pan()` instead.
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const PanGestureHandler = createHandler<
   PanGestureHandlerProps,
   PanGestureHandlerEventPayload
