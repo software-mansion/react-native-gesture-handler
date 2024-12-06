@@ -3,7 +3,7 @@ import { TouchableNativeFeedback as RNTouchableNativeFeedback } from 'react-nati
 import { tagMessage } from '../../utils';
 
 /**
- * @deprecated TouchableNativeFeedback will be removed in Gesture Handler 4
+ * @deprecated TouchableNativeFeedback will be removed in the future version of Gesture Handler.
  */
 const TouchableNativeFeedback: React.FC<
   React.ComponentProps<typeof RNTouchableNativeFeedback>
@@ -11,7 +11,7 @@ const TouchableNativeFeedback: React.FC<
   useEffect(() => {
     console.warn(
       tagMessage(
-        'TouchableOpacity component will be removed in Gesture Handler 4'
+        'TouchableOpacity component will be removed in the future version of Gesture Handler.'
       )
     );
   }, []);

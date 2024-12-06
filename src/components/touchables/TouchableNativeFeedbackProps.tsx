@@ -9,7 +9,7 @@ export type TouchableNativeFeedbackExtraProps = {
 };
 
 /**
- * @deprecated TouchableNativeFeedback will be removed in Gesture Handler 4
+ * @deprecated TouchableNativeFeedback will be removed in the future version of Gesture Handler.
  */
 export type TouchableNativeFeedbackProps = RNTouchableNativeFeedbackProps &
   GenericTouchableProps;
