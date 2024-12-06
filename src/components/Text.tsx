@@ -42,8 +42,11 @@ export const Text = forwardRef(
         ? (ref as RefObject<RNText>).current
         : textRef.current;
 
-      // @ts-ignore at this point we are sure that text is div
-      textElement?.setAttribute('rnghtext', 'true');
+      // At this point we are sure that textElement is div in HTML tree
+      (textElement as unknown as HTMLDivElement)?.setAttribute(
+        'rnghtext',
+        'true'
+      );
     }, []);
 
     return (
