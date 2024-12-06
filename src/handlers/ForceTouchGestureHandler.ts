@@ -50,17 +50,25 @@ export interface ForceTouchGestureConfig {
   feedbackOnActivation?: boolean;
 }
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
+ */
 export interface ForceTouchGestureHandlerProps
   extends BaseGestureHandlerProps<ForceTouchGestureHandlerEventPayload>,
     ForceTouchGestureConfig {}
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
+ */
 export type ForceTouchGestureHandler = typeof ForceTouchGestureHandler & {
   forceTouchAvailable: boolean;
 };
 
 export const forceTouchHandlerName = 'ForceTouchGestureHandler';
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.ForceTouch()` instead.
+ */
 export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
   ? createHandler<
       ForceTouchGestureHandlerProps,
