@@ -111,14 +111,14 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.state = newState;
 
     if (
-      this.tracker.getTrackedPointersCount() > 0 &&
+      this.tracker.trackedPointersCount > 0 &&
       this.config.needsPointerData &&
       this.isFinished()
     ) {
       this.cancelTouches();
     }
 
-    GestureHandlerOrchestrator.getInstance().onHandlerStateChange(
+    GestureHandlerOrchestrator.instance.onHandlerStateChange(
       this,
       newState,
       oldState,
@@ -214,7 +214,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return false;
     }
 
-    return InteractionManager.getInstance().shouldWaitForHandlerFailure(
+    return InteractionManager.instance.shouldWaitForHandlerFailure(
       this,
       handler
     );
@@ -225,7 +225,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return false;
     }
 
-    return InteractionManager.getInstance().shouldRequireHandlerToWaitForFailure(
+    return InteractionManager.instance.shouldRequireHandlerToWaitForFailure(
       this,
       handler
     );
@@ -236,7 +236,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return true;
     }
 
-    return InteractionManager.getInstance().shouldRecognizeSimultaneously(
+    return InteractionManager.instance.shouldRecognizeSimultaneously(
       this,
       handler
     );
@@ -247,7 +247,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return false;
     }
 
-    return InteractionManager.getInstance().shouldHandlerBeCancelledBy(
+    return InteractionManager.instance.shouldHandlerBeCancelledBy(
       this,
       handler
     );
@@ -258,11 +258,11 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   protected onPointerDown(event: AdaptedEvent): void {
-    GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
     this.pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
-      GestureHandlerOrchestrator.getInstance().cancelMouseAndPenGestures(this);
+      GestureHandlerOrchestrator.instance.cancelMouseAndPenGestures(this);
     }
 
     // TODO: Bring back touch events along with introducing `handleDown` method that will handle handler specific stuff
@@ -382,7 +382,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformEventData(newState: State, oldState: State): ResultEvent {
     return {
       nativeEvent: {
-        numberOfPointers: this.tracker.getTrackedPointersCount(),
+        numberOfPointers: this.tracker.trackedPointersCount,
         state: newState,
         pointerInside: this.delegate.isPointerInBounds(
           this.tracker.getAbsoluteCoordsAverage()
@@ -405,7 +405,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
-    const trackerData = this.tracker.getData();
+    const trackerData = this.tracker.trackedPointers;
 
     // This if handles edge case where all pointers have been cancelled
     // When pointercancel is triggered, reset method is called. This means that tracker will be reset after first pointer being cancelled
@@ -502,7 +502,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const all: PointerData[] = [];
     const changed: PointerData[] = [];
 
-    const trackerData = this.tracker.getData();
+    const trackerData = this.tracker.trackedPointers;
 
     if (trackerData.size === 0) {
       return;
@@ -585,9 +585,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         this.fail(true);
         break;
       case State.UNDETERMINED:
-        GestureHandlerOrchestrator.getInstance().removeHandlerFromOrchestrator(
-          this
-        );
+        GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
         break;
       default:
         this.cancel(true);
@@ -817,7 +815,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public getTrackedPointersID(): number[] {
-    return this.tracker.getTrackedPointersID();
+    return this.tracker.trackedPointersIDs;
   }
 
   private isFinished(): boolean {

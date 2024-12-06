@@ -22,17 +22,14 @@ export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
   private isInitialized = false;
-  private view!: HTMLElement;
+  private _view!: HTMLElement;
+
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
   private defaultViewStyles: DefaultViewStyles = {
     userSelect: '',
     touchAction: '',
   };
-
-  getView(): HTMLElement {
-    return this.view;
-  }
 
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
@@ -209,5 +206,12 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
+  }
+
+  public get view() {
+    return this._view;
+  }
+  public set view(value: HTMLElement) {
+    this._view = value;
   }
 }

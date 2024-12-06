@@ -22,7 +22,7 @@ export default class HoverGestureHandler extends GestureHandler {
   }
 
   protected onPointerMoveOver(event: AdaptedEvent): void {
-    GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
 
     this.tracker.addToTracker(event);
     this.stylusData = event.stylusData;

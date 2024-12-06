@@ -3,7 +3,7 @@ import { State } from '../../State';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
-  private static instance: InteractionManager;
+  private static _instance: InteractionManager;
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
   private readonly blocksHandlersRelations: Map<number, number[]> = new Map();
@@ -126,11 +126,11 @@ export default class InteractionManager {
     this.blocksHandlersRelations.clear();
   }
 
-  public static getInstance(): InteractionManager {
+  public static get instance(): InteractionManager {
     if (!this.instance) {
-      this.instance = new InteractionManager();
+      this._instance = new InteractionManager();
     }
 
-    return this.instance;
+    return this._instance;
   }
 }

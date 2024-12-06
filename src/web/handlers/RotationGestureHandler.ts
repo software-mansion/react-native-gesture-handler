@@ -91,7 +91,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
 
@@ -110,7 +110,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
 

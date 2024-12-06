@@ -22,7 +22,7 @@ export default class PinchGestureHandler extends GestureHandler {
     onScale: (detector: ScaleGestureDetector): boolean => {
       const prevScaleFactor: number = this.scale;
       this.scale *= detector.calculateScaleFactor(
-        this.tracker.getTrackedPointersCount()
+        this.tracker.trackedPointersCount
       );
 
       const delta = detector.timeDelta;
@@ -101,16 +101,13 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (
-      this.state === State.ACTIVE &&
-      this.tracker.getTrackedPointersCount() < 2
-    ) {
+    if (this.state === State.ACTIVE && this.tracker.trackedPointersCount < 2) {
       this.end();
     }
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
     this.tracker.track(event);
@@ -119,7 +116,7 @@ export default class PinchGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
     this.tracker.track(event);

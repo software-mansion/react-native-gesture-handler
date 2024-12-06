@@ -261,7 +261,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.startX = this.lastX;
     this.startY = this.lastY;
 
-    if (this.tracker.getTrackedPointersCount() > this.maxPointers) {
+    if (this.tracker.trackedPointersCount > this.maxPointers) {
       if (this.state === State.ACTIVE) {
         this.cancel();
       } else {
@@ -284,7 +284,7 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.tracker.getTrackedPointersCount() === 0) {
+    if (this.tracker.trackedPointersCount === 0) {
       this.clearActivationTimeout();
     }
 
@@ -313,7 +313,7 @@ export default class PanGestureHandler extends GestureHandler {
     if (
       !(
         this.state === State.ACTIVE &&
-        this.tracker.getTrackedPointersCount() < this.minPointers
+        this.tracker.trackedPointersCount < this.minPointers
       )
     ) {
       this.checkBegan();
@@ -528,7 +528,7 @@ export default class PanGestureHandler extends GestureHandler {
   private tryBegin(event: AdaptedEvent): void {
     if (
       this.state === State.UNDETERMINED &&
-      this.tracker.getTrackedPointersCount() >= this.minPointers
+      this.tracker.trackedPointersCount >= this.minPointers
     ) {
       this.resetProgress();
       this.offsetX = 0;

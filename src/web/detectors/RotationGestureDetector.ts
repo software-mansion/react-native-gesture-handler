@@ -85,7 +85,7 @@ export default class RotationGestureDetector
       return;
     }
 
-    const pointerIDs: IterableIterator<number> = tracker.getData().keys();
+    const pointerIDs: IterableIterator<number> = tracker.trackedPointers.keys();
 
     this.keyPointers[0] = pointerIDs.next().value as number;
     this.keyPointers[1] = pointerIDs.next().value as number;

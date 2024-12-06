@@ -5,7 +5,7 @@ import type IGestureHandler from '../handlers/IGestureHandler';
 import PointerTracker from './PointerTracker';
 
 export default class GestureHandlerOrchestrator {
-  private static instance: GestureHandlerOrchestrator;
+  private static _instance: GestureHandlerOrchestrator;
 
   private gestureHandlers: IGestureHandler[] = [];
   private awaitingHandlers: IGestureHandler[] = [];
@@ -316,7 +316,7 @@ export default class GestureHandlerOrchestrator {
 
     if (
       !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
-      handler.delegate.getView() !== otherHandler.delegate.getView()
+      handler.delegate.view !== otherHandler.delegate.view
     ) {
       return this.checkOverlap(handler, otherHandler);
     }
@@ -382,11 +382,11 @@ export default class GestureHandlerOrchestrator {
     });
   }
 
-  public static getInstance(): GestureHandlerOrchestrator {
-    if (!GestureHandlerOrchestrator.instance) {
-      GestureHandlerOrchestrator.instance = new GestureHandlerOrchestrator();
+  public static get instance(): GestureHandlerOrchestrator {
+    if (!GestureHandlerOrchestrator._instance) {
+      GestureHandlerOrchestrator._instance = new GestureHandlerOrchestrator();
     }
 
-    return GestureHandlerOrchestrator.instance;
+    return GestureHandlerOrchestrator._instance;
   }
 }

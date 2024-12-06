@@ -25,7 +25,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return;
     }
 
-    const view = this.delegate.getView() as HTMLElement;
+    const view = this.delegate.view as HTMLElement;
 
     this.restoreViewStyles(view);
     this.buttonRole = view.getAttribute('role') === 'button';
@@ -41,7 +41,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.disallowInterruption = this.config.disallowInterruption;
     }
 
-    const view = this.delegate.getView() as HTMLElement;
+    const view = this.delegate.view as HTMLElement;
     this.restoreViewStyles(view);
   }
 
@@ -124,7 +124,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private onUp(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.tracker.getTrackedPointersCount() === 0) {
+    if (this.tracker.trackedPointersCount === 0) {
       if (this.state === State.ACTIVE) {
         this.end();
       } else {

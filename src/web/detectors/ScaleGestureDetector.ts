@@ -42,7 +42,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.currentTime = event.time;
 
     const action: EventTypes = event.eventType;
-    const numOfPointers = tracker.getTrackedPointersCount();
+    const numOfPointers = tracker.trackedPointersCount;
 
     const streamComplete: boolean =
       action === EventTypes.UP ||
@@ -86,7 +86,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     let devSumX = 0;
     let devSumY = 0;
 
-    tracker.getData().forEach((value, key) => {
+    tracker.trackedPointers.forEach((value, key) => {
       if (key === ignoredPointer) {
         return;
       }

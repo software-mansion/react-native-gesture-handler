@@ -42,7 +42,7 @@ export default abstract class NodeManager {
     delete this.gestures[handlerTag];
   }
 
-  public static getNodes() {
+  public static get nodes() {
     return { ...this.gestures };
   }
 }

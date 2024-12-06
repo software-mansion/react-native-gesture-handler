@@ -136,11 +136,10 @@ export default class FlingGestureHandler extends GestureHandler {
     this.tryEndFling();
 
     if (
-      this.tracker.getTrackedPointersCount() >
-      this.maxNumberOfPointersSimultaneously
+      this.tracker.trackedPointersCount > this.maxNumberOfPointersSimultaneously
     ) {
       this.maxNumberOfPointersSimultaneously =
-        this.tracker.getTrackedPointersCount();
+        this.tracker.trackedPointersCount;
     }
   }
 

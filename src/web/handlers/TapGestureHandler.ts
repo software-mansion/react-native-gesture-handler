@@ -199,10 +199,8 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private updateState(event: AdaptedEvent): void {
-    if (
-      this.currentMaxNumberOfPointers < this.tracker.getTrackedPointersCount()
-    ) {
-      this.currentMaxNumberOfPointers = this.tracker.getTrackedPointersCount();
+    if (this.currentMaxNumberOfPointers < this.tracker.trackedPointersCount) {
+      this.currentMaxNumberOfPointers = this.tracker.trackedPointersCount;
     }
 
     if (this.shouldFail()) {
