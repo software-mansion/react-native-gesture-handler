@@ -6,7 +6,7 @@ sidebar_position: 13
 ---
 
 :::warning
-The old API will be removed in Gesture Handler 4. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
+The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
 Creates provided component with NativeViewGestureHandler, allowing it to be part of RNGH's

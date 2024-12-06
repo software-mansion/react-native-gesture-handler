@@ -199,14 +199,6 @@ export default function createHandler<
         }
         handlerIDToTag[props.id] = this.handlerTag;
       }
-
-      const gestureName = name.replace(/(GestureHandler|View)/g, '');
-
-      console.warn(
-        tagMessage(
-          `${name} will be removed in Gesture Handler 4. Use Gesture.${gestureName}() instead.`
-        )
-      );
     }
 
     componentDidMount() {

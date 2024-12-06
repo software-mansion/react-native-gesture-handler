@@ -6,7 +6,7 @@ sidebar_position: 11
 ---
 
 :::warning
-The old API will be removed in Gesture Handler 4. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
+The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
 A continuous gesture handler that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.

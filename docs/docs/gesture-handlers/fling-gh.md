@@ -6,7 +6,7 @@ sidebar_position: 9
 ---
 
 :::warning
-The old API will be removed in Gesture Handler 4. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
+The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
 A discrete gesture handler that activates when the movement is sufficiently long and fast.
