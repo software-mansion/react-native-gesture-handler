@@ -16,23 +16,22 @@ export default class PinchGestureHandler extends GestureHandler {
 
   private scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
-      this.startingSpan = detector.getCurrentSpan();
+      this.startingSpan = detector.currentSpan;
       return true;
     },
     onScale: (detector: ScaleGestureDetector): boolean => {
       const prevScaleFactor: number = this.scale;
-      this.scale *= detector.getScaleFactor(
+      this.scale *= detector.calculateScaleFactor(
         this.tracker.getTrackedPointersCount()
       );
 
-      const delta = detector.getTimeDelta();
+      const delta = detector.timeDelta;
       if (delta > 0) {
         this.velocity = (this.scale - prevScaleFactor) / delta;
       }
 
       if (
-        Math.abs(this.startingSpan - detector.getCurrentSpan()) >=
-          this.spanSlop &&
+        Math.abs(this.startingSpan - detector.currentSpan) >= this.spanSlop &&
         this.currentState === State.BEGAN
       ) {
         this.activate();
@@ -61,8 +60,8 @@ export default class PinchGestureHandler extends GestureHandler {
 
   protected transformNativeEvent() {
     return {
-      focalX: this.scaleGestureDetector.getFocusX(),
-      focalY: this.scaleGestureDetector.getFocusY(),
+      focalX: this.scaleGestureDetector.focusX,
+      focalY: this.scaleGestureDetector.focusY,
       velocity: this.velocity,
       scale: this.scale,
     };

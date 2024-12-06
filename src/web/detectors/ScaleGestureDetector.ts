@@ -14,10 +14,10 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   public onScale: (detector: ScaleGestureDetector) => boolean;
   public onScaleEnd: (detector: ScaleGestureDetector) => void;
 
-  private focusX!: number;
-  private focusY!: number;
+  private _focusX!: number;
+  private _focusY!: number;
 
-  private currentSpan!: number;
+  private _currentSpan!: number;
   private prevSpan!: number;
   private initialSpan!: number;
 
@@ -145,27 +145,36 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     return true;
   }
 
-  public getCurrentSpan(): number {
-    return this.currentSpan;
-  }
-
-  public getFocusX(): number {
-    return this.focusX;
-  }
-
-  public getFocusY(): number {
-    return this.focusY;
-  }
-
-  public getTimeDelta(): number {
-    return this.currentTime - this.prevTime;
-  }
-
-  public getScaleFactor(numOfPointers: number): number {
+  public calculateScaleFactor(numOfPointers: number): number {
     if (numOfPointers < 2) {
       return 1;
     }
 
     return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
+  }
+
+  public get currentSpan() {
+    return this._currentSpan;
+  }
+  private set currentSpan(value: number) {
+    this._currentSpan = value;
+  }
+
+  public get focusX() {
+    return this._focusX;
+  }
+  private set focusX(value: number) {
+    this._focusX = value;
+  }
+
+  public get focusY() {
+    return this._focusY;
+  }
+  private set focusY(value: number) {
+    this._focusY = value;
+  }
+
+  public get timeDelta() {
+    return this.currentTime - this.prevTime;
   }
 }
