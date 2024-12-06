@@ -18,10 +18,10 @@ export default class RotationGestureDetector
   private previousTime = 0;
 
   private previousAngle = 0;
-  private rotation = 0;
+  private _rotation = 0;
 
-  private anchorX = 0;
-  private anchorY = 0;
+  private _anchorX = 0;
+  private _anchorY = 0;
 
   private isInProgress = false;
 
@@ -143,24 +143,33 @@ export default class RotationGestureDetector
     return true;
   }
 
-  public getTimeDelta(): number {
-    return this.currentTime + this.previousTime;
-  }
-
-  public getAnchorX(): number {
-    return this.anchorX;
-  }
-
-  public getAnchorY(): number {
-    return this.anchorY;
-  }
-
-  public getRotation(): number {
-    return this.rotation;
-  }
-
   public reset(): void {
     this.keyPointers = [NaN, NaN];
     this.isInProgress = false;
+  }
+
+  public get anchorX() {
+    return this._anchorX;
+  }
+  private set anchorX(value: number) {
+    this._anchorX = value;
+  }
+
+  public get anchorY() {
+    return this._anchorY;
+  }
+  private set anchorY(value: number) {
+    this._anchorY = value;
+  }
+
+  public get rotation() {
+    return this._rotation;
+  }
+  private set rotation(value: number) {
+    this._rotation = value;
+  }
+
+  public get timeDelta() {
+    return this.currentTime + this.previousTime;
   }
 }

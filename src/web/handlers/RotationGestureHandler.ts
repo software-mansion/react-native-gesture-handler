@@ -19,9 +19,9 @@ export default class RotationGestureHandler extends GestureHandler {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (detector: RotationGestureDetector): boolean => {
       const previousRotation: number = this.rotation;
-      this.rotation += detector.getRotation();
+      this.rotation += detector.rotation;
 
-      const delta = detector.getTimeDelta();
+      const delta = detector.timeDelta;
 
       if (delta > 0) {
         this.velocity = (this.rotation - previousRotation) / delta;
@@ -64,13 +64,13 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   public getAnchorX(): number {
-    const anchorX = this.rotationGestureDetector.getAnchorX();
+    const anchorX = this.rotationGestureDetector.anchorX;
 
     return anchorX ? anchorX : this.cachedAnchorX;
   }
 
   public getAnchorY(): number {
-    const anchorY = this.rotationGestureDetector.getAnchorY();
+    const anchorY = this.rotationGestureDetector.anchorY;
 
     return anchorY ? anchorY : this.cachedAnchorY;
   }
