@@ -33,14 +33,23 @@ export interface FlingGestureConfig {
   numberOfPointers?: number;
 }
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
+ */
 export interface FlingGestureHandlerProps
   extends BaseGestureHandlerProps<FlingGestureHandlerEventPayload>,
     FlingGestureConfig {}
 
 export const flingHandlerName = 'FlingGestureHandler';
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
+ */
 export type FlingGestureHandler = typeof FlingGestureHandler;
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
+
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Fling()` instead.
+ */
 export const FlingGestureHandler = createHandler<
   FlingGestureHandlerProps,
   FlingGestureHandlerEventPayload
