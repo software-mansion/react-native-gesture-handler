@@ -182,7 +182,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     /**
      * Checks whether handler can activate. Used by TextViewHook.
      */
-    fun canActivate(view: View) = true
+    fun canActivate(view: View) = view.isPressed
 
     /**
      * Called after the gesture transitions to the END state.
@@ -225,7 +225,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
     // We have to explicitly check for ReactTextView, since its `isPressed` flag is not set to `true`,
     // in contrast to e.g. Touchable
-    override fun canActivate(view: View) = view.isPressed || view is ReactTextView
+    override fun canActivate(view: View) = view is ReactTextView
   }
 
   private class EditTextHook(
