@@ -5,7 +5,7 @@ sidebar_label: Touchables
 ---
 
 :::warning
-Touchables will be removed in Gesture Handler 4.
+Touchables will be removed in the future version of Gesture Handler.
 :::
 
 Gesture Handler library provides an implementation of RN's touchable components that are based on [native buttons](buttons.mdx) and does not rely on JS responder system utilized by RN. Our touchable implementation follows the same API and aims to be a drop-in replacement for touchables available in React Native.
