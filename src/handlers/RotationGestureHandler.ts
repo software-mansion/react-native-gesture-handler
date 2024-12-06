@@ -5,13 +5,22 @@ import {
   baseGestureHandlerProps,
 } from './gestureHandlerCommon';
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Rotation()` instead.
+ */
 export interface RotationGestureHandlerProps
   extends BaseGestureHandlerProps<RotationGestureHandlerEventPayload> {}
 
 export const rotationHandlerName = 'RotationGestureHandler';
 
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Rotation()` instead.
+ */
 export type RotationGestureHandler = typeof RotationGestureHandler;
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
+
+/**
+ * @deprecated Gesture Handler old API will be removed in Gesture Handler 4. Use `Gesture.Rotation()` instead.
+ */
 export const RotationGestureHandler = createHandler<
   RotationGestureHandlerProps,
   RotationGestureHandlerEventPayload
