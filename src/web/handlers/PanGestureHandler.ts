@@ -262,7 +262,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.startY = this.lastY;
 
     if (this.tracker.getTrackedPointersCount() > this.maxPointers) {
-      if (this.currentState === State.ACTIVE) {
+      if (this.state === State.ACTIVE) {
         this.cancel();
       } else {
         this.fail();
@@ -276,7 +276,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.stylusData = event.stylusData;
 
     super.onPointerUp(event);
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       const lastCoords = this.tracker.getAbsoluteCoordsAverage();
       this.lastX = lastCoords.x;
       this.lastY = lastCoords.y;
@@ -288,7 +288,7 @@ export default class PanGestureHandler extends GestureHandler {
       this.clearActivationTimeout();
     }
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.end();
     } else {
       this.resetProgress();
@@ -312,7 +312,7 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (
       !(
-        this.currentState === State.ACTIVE &&
+        this.state === State.ACTIVE &&
         this.tracker.getTrackedPointersCount() < this.minPointers
       )
     ) {
@@ -338,7 +338,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.getShouldCancelWhenOutside()) {
+    if (this.shouldCancelWhenOutside) {
       return;
     }
 
@@ -355,7 +355,7 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.checkBegan();
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       super.onPointerOutOfBounds(event);
     }
   }
@@ -364,10 +364,10 @@ export default class PanGestureHandler extends GestureHandler {
     clearTimeout(this.endWheelTimeout);
 
     this.endWheelTimeout = setTimeout(() => {
-      if (this.currentState === State.ACTIVE) {
+      if (this.state === State.ACTIVE) {
         this.end();
         this.tracker.removeFromTracker(event.pointerId);
-        this.currentState = State.UNDETERMINED;
+        this.state = State.UNDETERMINED;
       }
 
       this.wheelDevice = WheelDevice.UNDETERMINED;
@@ -382,7 +382,7 @@ export default class PanGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.currentState === State.UNDETERMINED) {
+    if (this.state === State.UNDETERMINED) {
       this.wheelDevice =
         event.wheelDeltaY! % 120 !== 0
           ? WheelDevice.TOUCHPAD
@@ -527,7 +527,7 @@ export default class PanGestureHandler extends GestureHandler {
 
   private tryBegin(event: AdaptedEvent): void {
     if (
-      this.currentState === State.UNDETERMINED &&
+      this.state === State.UNDETERMINED &&
       this.tracker.getTrackedPointersCount() >= this.minPointers
     ) {
       this.resetProgress();
@@ -551,7 +551,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   private checkBegan(): void {
-    if (this.currentState === State.BEGAN) {
+    if (this.state === State.BEGAN) {
       if (this.shouldFail()) {
         this.fail();
       } else if (this.shouldActivate()) {
@@ -561,7 +561,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   public activate(force = false): void {
-    if (this.currentState !== State.ACTIVE) {
+    if (this.state !== State.ACTIVE) {
       this.resetProgress();
     }
 
@@ -577,7 +577,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       return;
     }
 

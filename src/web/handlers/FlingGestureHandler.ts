@@ -125,11 +125,11 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private newPointerAction(): void {
-    if (this.currentState === State.UNDETERMINED) {
+    if (this.state === State.UNDETERMINED) {
       this.startFling();
     }
 
-    if (this.currentState !== State.BEGAN) {
+    if (this.state !== State.BEGAN) {
       return;
     }
 
@@ -147,7 +147,7 @@ export default class FlingGestureHandler extends GestureHandler {
   private pointerMoveAction(event: AdaptedEvent): void {
     this.tracker.track(event);
 
-    if (this.currentState !== State.BEGAN) {
+    if (this.state !== State.BEGAN) {
       return;
     }
 
@@ -177,7 +177,7 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private onUp(event: AdaptedEvent): void {
-    if (this.currentState === State.BEGAN) {
+    if (this.state === State.BEGAN) {
       this.endFling();
     }
 

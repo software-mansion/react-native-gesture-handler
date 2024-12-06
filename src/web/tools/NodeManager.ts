@@ -28,7 +28,7 @@ export default abstract class NodeManager {
     }
 
     this.gestures[handlerTag] = handler;
-    this.gestures[handlerTag].setTag(handlerTag);
+    this.gestures[handlerTag].handlerTag = handlerTag;
   }
 
   public static dropGestureHandler(handlerTag: number): void {

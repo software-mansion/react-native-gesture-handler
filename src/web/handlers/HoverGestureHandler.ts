@@ -28,7 +28,7 @@ export default class HoverGestureHandler extends GestureHandler {
     this.stylusData = event.stylusData;
     super.onPointerMoveOver(event);
 
-    if (this.getState() === State.UNDETERMINED) {
+    if (this.state === State.UNDETERMINED) {
       this.begin();
       this.activate();
     }

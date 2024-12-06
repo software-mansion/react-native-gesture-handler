@@ -37,7 +37,7 @@ export class GestureHandlerWebDelegate
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
       throw new Error(
-        `Cannot find HTML Element for handler ${handler.getTag()}`
+        `Cannot find HTML Element for handler ${handler.handlerTag}`
       );
     }
 
@@ -51,7 +51,7 @@ export class GestureHandlerWebDelegate
       touchAction: this.view.style.touchAction,
     };
 
-    const config = handler.getConfig();
+    const config = handler.config;
 
     this.setUserSelect(config.enabled);
     this.setTouchAction(config.enabled);
@@ -88,12 +88,12 @@ export class GestureHandlerWebDelegate
   }
 
   tryResetCursor() {
-    const config = this.gestureHandler.getConfig();
+    const config = this.gestureHandler.config;
 
     if (
       config.activeCursor &&
       config.activeCursor !== 'auto' &&
-      this.gestureHandler.getState() === State.ACTIVE
+      this.gestureHandler.state === State.ACTIVE
     ) {
       this.view.style.cursor = 'auto';
     }
@@ -132,7 +132,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setUserSelect(isHandlerEnabled: boolean) {
-    const { userSelect } = this.gestureHandler.getConfig();
+    const { userSelect } = this.gestureHandler.config;
 
     this.view.style['userSelect'] = isHandlerEnabled
       ? userSelect ?? 'none'
@@ -144,7 +144,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setTouchAction(isHandlerEnabled: boolean) {
-    const { touchAction } = this.gestureHandler.getConfig();
+    const { touchAction } = this.gestureHandler.config;
 
     this.view.style['touchAction'] = isHandlerEnabled
       ? touchAction ?? 'none'
@@ -157,7 +157,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setContextMenu(isHandlerEnabled: boolean) {
-    const config = this.gestureHandler.getConfig();
+    const config = this.gestureHandler.config;
 
     if (isHandlerEnabled) {
       this.addContextMenuListeners(config);
@@ -181,7 +181,7 @@ export class GestureHandlerWebDelegate
   }
 
   onActivate(): void {
-    const config = this.gestureHandler.getConfig();
+    const config = this.gestureHandler.config;
 
     if (
       (!this.view.style.cursor || this.view.style.cursor === 'auto') &&

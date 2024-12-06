@@ -29,7 +29,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
       if (
         Math.abs(this.rotation) >= ROTATION_RECOGNITION_THRESHOLD &&
-        this.currentState === State.BEGAN
+        this.state === State.BEGAN
       ) {
         this.activate();
       }
@@ -47,7 +47,7 @@ export default class RotationGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
-    this.setShouldCancelWhenOutside(false);
+    this.shouldCancelWhenOutside = false;
   }
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
@@ -133,11 +133,11 @@ export default class RotationGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
-    if (this.currentState !== State.ACTIVE) {
+    if (this.state !== State.ACTIVE) {
       return;
     }
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.end();
     } else {
       this.fail();
@@ -151,7 +151,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected tryBegin(): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 
@@ -163,7 +163,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onReset(): void {
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       return;
     }
 
