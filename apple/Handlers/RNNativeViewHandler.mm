@@ -16,11 +16,9 @@
 #import <React/UIView+React.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 #else
 #import <React/RCTScrollView.h>
-#import <React/RCTTextView.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
 #pragma mark RNDummyGestureRecognizer
@@ -37,24 +35,11 @@
   return self;
 }
 
-- (BOOL)isHandlerAttachedToTextView
-{
-#if RCT_NEW_ARCH_ENABLED
-  return [self.view.superview isKindOfClass:[RCTParagraphComponentView class]];
-#else
-  return [self.view isKindOfClass:[RCTTextView class]];
-#endif
-}
-
 #if !TARGET_OS_OSX
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerType:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
-
-  if ([self isHandlerAttachedToTextView]) {
-    self.state = UIGestureRecognizerStatePossible;
-  }
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -66,8 +51,7 @@
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-
-  self.state = [self isHandlerAttachedToTextView] ? UIGestureRecognizerStateEnded : UIGestureRecognizerStateFailed;
+  self.state = UIGestureRecognizerStateFailed;
 
   // For now, we are handling only the scroll view case.
   // If more views need special treatment, then we can switch to a delegate pattern
@@ -88,9 +72,9 @@
 {
   [_gestureHandler setCurrentPointerTypeToMouse];
 
-  self.state = [self isHandlerAttachedToTextView] ? NSGestureRecognizerStatePossible : NSGestureRecognizerStateBegan;
-
-  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+  self.state = NSGestureRecognizerStateBegan
+  
+      [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event
