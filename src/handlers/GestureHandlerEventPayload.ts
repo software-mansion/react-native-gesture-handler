@@ -126,7 +126,7 @@ export type PanGestureHandlerEventPayload = {
   /**
    * Object containing additional stylus data.
    */
-  stylusData: StylusData | undefined;
+  stylusData?: StylusData | undefined;
 };
 
 export type PinchGestureHandlerEventPayload = {
