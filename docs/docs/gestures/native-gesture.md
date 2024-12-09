@@ -15,6 +15,7 @@ A gesture that allows other touch handling components to participate in RNGH's g
 ## Reference
 
 ```jsx
+import { ScrollView } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 function App() {
@@ -23,11 +24,17 @@ function App() {
 
   return (
     <GestureDetector gesture={native}>
-      <View />
+      <ScrollView>
+        {/* Scrollable content */}
+      </ScrollView>
     </GestureDetector>
   );
 }
 ```
+
+:::danger
+Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
+:::
 
 ## Config
 
@@ -56,3 +63,50 @@ When `true`, cancels all other gesture handlers when this `NativeViewGestureHand
 True if gesture was performed inside of containing view, false otherwise.
 
 <BaseEventData />
+
+## Example
+
+This example renders a `ScrollView` with multiple colored rectangles, where each rectangle has a black section. Starting a touch on a black section will disable the `ScrollView` for the duration of the `Pan` gesture.
+
+```jsx
+import { View, ScrollView } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+const COLORS = ['red', 'green', 'blue', 'purple', 'orange', 'cyan'];
+
+export default function App() {
+  const native = Gesture.Native();
+
+  return (
+    <GestureDetector gesture={native}>
+      <ScrollView style={{ flex: 1 }}>
+        <ScrollableContent scrollGesture={native} />
+      </ScrollView>
+    </GestureDetector>
+  );
+}
+
+function ScrollableContent({ scrollGesture }) {
+  return (
+    <View>
+      {COLORS.map((color) => (
+        <Rectangle key={color} color={color} scrollGesture={scrollGesture} />
+      ))}
+    </View>
+  );
+}
+
+function Rectangle({ color, scrollGesture }) {
+  const pan = Gesture.Pan().blocksExternalGesture(scrollGesture);
+
+  return (
+    <View
+      key={color}
+      style={{ width: '100%', height: 250, backgroundColor: color }}>
+      <GestureDetector gesture={pan}>
+        <View style={{ width: '100%', height: 50, backgroundColor: 'black' }} />
+      </GestureDetector>
+    </View>
+  );
+}
+```
