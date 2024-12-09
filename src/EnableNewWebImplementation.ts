@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { tagMessage } from './utils';
 
 let useNewWebImplementation = true;
 let getWasCalled = false;
@@ -11,7 +12,9 @@ export function enableExperimentalWebImplementation(
 ): void {
   // NO-OP since the new implementation is now the default
   console.warn(
-    'New web implementation is enabled by default. This function will be removed in Gesture Handler 3'
+    tagMessage(
+      'New web implementation is enabled by default. This function will be removed in Gesture Handler 3'
+    )
   );
 }
 
@@ -22,7 +25,9 @@ export function enableLegacyWebImplementation(
   shouldUseLegacyImplementation = true
 ): void {
   console.warn(
-    'Legacy web implementation is deprecated. This function will be removed in Gesture Handler 3'
+    tagMessage(
+      'Legacy web implementation is deprecated. This function will be removed in Gesture Handler 3.'
+    )
   );
 
   if (
