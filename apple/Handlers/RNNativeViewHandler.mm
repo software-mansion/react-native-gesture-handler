@@ -72,9 +72,8 @@
 {
   [_gestureHandler setCurrentPointerTypeToMouse];
 
-  self.state = NSGestureRecognizerStateBegan
-  
-      [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
+  self.state = NSGestureRecognizerStateBegan;
+  [_gestureHandler.pointerTracker touchesBegan:[NSSet setWithObject:event] withEvent:event];
 }
 
 - (void)mouseDragged:(NSEvent *)event
