@@ -222,5 +222,5 @@ export type HoverGestureHandlerEventPayload = {
   /**
    * Object containing additional stylus data.
    */
-  stylusData?: StylusData
+  stylusData?: StylusData;
 };
