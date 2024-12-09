@@ -86,7 +86,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
   }
 
-  override fun isContinuous() = view is ReactScrollView || view is ReactHorizontalScrollView || view is ReactSwipeRefreshLayout
+  override fun isContinuous() = hook.isContinuous()
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val view = view!!
@@ -210,6 +210,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * Passes the event down to the underlying view using the correct method.
      */
     fun sendTouchEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
+
+    /**
+     * @return Boolean value indicating whether the handled gesture is continuous or discrete.
+     */
+    fun isContinuous() = false
   }
 
   private class EditTextHook(
@@ -256,6 +261,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   ) : NativeViewGestureHandlerHook {
     override fun wantsToHandleEventBeforeActivation() = true
 
+    override fun isContinuous() = true
+
     override fun handleEventBeforeActivation(event: MotionEvent) {
       // RefreshControl from GH is set up in a way that ScrollView wrapped with it should wait for
       // it to fail. This way the RefreshControl is not canceled by the scroll handler.
@@ -288,6 +295,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   private class ScrollViewHook : NativeViewGestureHandlerHook {
     override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
+    override fun isContinuous() = true
   }
 
   private class ReactViewGroupHook : NativeViewGestureHandlerHook {
