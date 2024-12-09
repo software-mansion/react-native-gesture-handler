@@ -29,7 +29,6 @@ import NestedTouchables from './src/release_tests/nestedTouchables';
 import NestedPressables from './src/release_tests/nestedPressables';
 import NestedButtons from './src/release_tests/nestedButtons';
 import PointerType from './src/release_tests/pointerType';
-import SwipeableReanimation from './src/release_tests/swipeableReanimation';
 import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
 import TwoFingerPan from './src/release_tests/twoFingerPan';
 import SvgCompatibility from './src/release_tests/svg';
@@ -194,7 +193,6 @@ const EXAMPLES: ExamplesSection[] = [
       },
       { name: 'PointerType', component: PointerType },
       { name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout },
-      { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
       {
