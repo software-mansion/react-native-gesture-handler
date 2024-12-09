@@ -56,6 +56,7 @@ import Fling from './src/basic/fling';
 import WebStylesResetExample from './src/release_tests/webStylesReset';
 import StylusData from './src/release_tests/StylusData';
 import ReanimatedDrawerLayout from './src/release_tests/reanimatedDrawerLayout';
+import NestedContinuousDiscreteGestures from './src/release_tests/nestedContinuousDiscreteGestures';
 
 import Camera from './src/new_api/camera';
 import Transformations from './src/new_api/transformations';
@@ -184,6 +185,10 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Nested buttons (sound & ripple)',
         component: NestedButtons,
         unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
+      },
+      {
+        name: 'Nested continuous & discrete gestures',
+        component: NestedContinuousDiscreteGestures,
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
