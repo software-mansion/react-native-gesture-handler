@@ -13,7 +13,7 @@ export function enableExperimentalWebImplementation(
   // NO-OP since the new implementation is now the default
   console.warn(
     tagMessage(
-      'New web implementation is enabled by default. This function will be removed in Gesture Handler 3'
+      'New web implementation is enabled by default. This function will be removed in Gesture Handler 3.'
     )
   );
 }
