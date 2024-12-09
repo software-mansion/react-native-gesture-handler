@@ -4,10 +4,11 @@ interface ReactComponentWithHandlerTag extends React.Component {
   handlerTag: number;
 }
 
-export interface GestureMountListener {
-  (gesture: GestureType | ReactComponentWithHandlerTag): void;
-}
+export type GestureMountListener = (
+  gesture: GestureType | ReactComponentWithHandlerTag
+) => void;
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class MountRegistry {
   private static mountListeners = new Set<GestureMountListener>();
   private static unmountListeners = new Set<GestureMountListener>();
