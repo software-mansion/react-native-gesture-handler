@@ -14,10 +14,6 @@ A gesture that allows other touch handling components to work within RNGH's gest
 
 When used, the native component should be the direct child of a `GestureDetector`.
 
-:::danger
-Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
-:::
-
 ## Example
 
 This example renders a `ScrollView` with multiple colored rectangles, where each rectangle has a black section. Starting a touch on a black section will disable the `ScrollView` for the duration of the `Pan` gesture.
@@ -69,6 +65,10 @@ function Rectangle({ color, scrollGesture }) {
 ## Remarks
 
 - `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to make a block a native component for the duration of the gesture or to make it work alongside a gesture.
+
+:::danger
+Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
+:::
 
 ## Config
 
