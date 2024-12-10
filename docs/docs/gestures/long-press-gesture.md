@@ -41,21 +41,36 @@ The gesture will fail to recognize a touch event if the finger is lifted before 
 
 <samp id="LongPressGestureBasic">Long Press Gesture</samp>
 
-## Reference
+## Example
 
 ```jsx
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { View, StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-function App() {
+export default function App() {
   // highlight-next-line
-  const longPress = Gesture.LongPress();
+  const longPressGesture = Gesture.LongPress().onEnd((e, success) => {
+    if (success) {
+      console.log(`Long pressed for ${e.duration} ms!`);
+    }
+  });
 
   return (
-    <GestureDetector gesture={longPress}>
-      <View />
+    <GestureDetector gesture={longPressGesture}>
+      <View style={styles.box} />
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```
 
 ## Config
@@ -114,34 +129,3 @@ Y coordinate, expressed in points, of the current position of the pointer (finge
 Duration of the long press (time since the start of the gesture), expressed in milliseconds.
 
 <BaseEventData />
-
-## Example
-
-```jsx
-import { View, StyleSheet } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-
-export default function App() {
-  const longPressGesture = Gesture.LongPress().onEnd((e, success) => {
-    if (success) {
-      console.log(`Long pressed for ${e.duration} ms!`);
-    }
-  });
-
-  return (
-    <GestureDetector gesture={longPressGesture}>
-      <View style={styles.box} />
-    </GestureDetector>
-  );
-}
-
-const styles = StyleSheet.create({
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-```
