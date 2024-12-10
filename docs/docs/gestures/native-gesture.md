@@ -64,7 +64,7 @@ function Rectangle({ color, scrollGesture }) {
 
 ## Remarks
 
-- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to make a block a native component for the duration of the gesture or to make it work alongside a gesture.
+- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
 :::danger
 Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
