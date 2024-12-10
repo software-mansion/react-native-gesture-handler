@@ -80,6 +80,8 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
     return super.shouldRecognizeSimultaneously(handler)
   }
 
+  override fun isContinuous() = true
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (event.action == MotionEvent.ACTION_DOWN) {
       handler?.removeCallbacksAndMessages(null)

@@ -104,6 +104,8 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     return maxDistSq != MAX_VALUE_IGNORE && dist > maxDistSq
   }
 
+  override fun isContinuous() = false
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return

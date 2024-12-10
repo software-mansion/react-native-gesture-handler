@@ -87,6 +87,8 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     }
   }
 
+  override fun isContinuous() = false
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return

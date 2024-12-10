@@ -688,7 +688,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
 
-  open fun isContinuous() = false
+  open fun isContinuous(): Boolean? = null
 
   protected open fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     moveToState(STATE_FAILED)

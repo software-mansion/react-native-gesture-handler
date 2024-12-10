@@ -71,6 +71,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     return Pair(x, y)
   }
 
+  override fun isContinuous() = false
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
