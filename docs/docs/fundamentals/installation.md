@@ -58,7 +58,7 @@ export default function App() {
 
 If you don't provide anything to the `styles` prop, it will default to `flex: 1`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything. Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all gesture relations. The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
-If you're unsure if one of your dependencies alredy renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway. In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones.
+If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway. In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones.
 
 :::tip
 If you're using gesture handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
