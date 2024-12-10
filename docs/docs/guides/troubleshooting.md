@@ -107,3 +107,24 @@ const callback = () => {
 const gesture = Gesture.Tap();
 gesture.onBegin(callback);
 ```
+
+In the above cases, you should add a [`"worklet";`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) directive at the beginning of the callbacks, like so:
+
+```jsx
+const callback = () => {
+  // highlight-next-line
+  "worklet";
+  console.log(_WORKLET);
+};
+const gesture = Gesture.Tap().onBegin(callback);
+```
+
+```jsx
+const callback = () => {
+  // highlight-next-line
+  "worklet";
+  console.log(_WORKLET);
+};
+const gesture = Gesture.Tap();
+gesture.onBegin(callback);
+```
