@@ -7,7 +7,6 @@ import {
   View,
   Alert,
   TouchableHighlightProps as RNTouchableHighlightProps,
-  Button,
 } from 'react-native';
 
 import {
