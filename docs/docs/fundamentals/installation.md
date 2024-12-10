@@ -76,7 +76,7 @@ npx expo prebuild
 
 #### Android
 
-Android doesn't require any more steps, but keep in mind that if you want to use gestures in Modals you need to wrap Modal's content with `GestureHandlerRootView`:
+Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in Modals you need to wrap Modal's content with `GestureHandlerRootView`:
 
 ```jsx
 import { Modal } from 'react-native';
