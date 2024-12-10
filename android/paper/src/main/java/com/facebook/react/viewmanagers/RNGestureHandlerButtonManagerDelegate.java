@@ -9,6 +9,7 @@
 
 package com.facebook.react.viewmanagers;
 
+import android.graphics.Color;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ColorPropConverter;
@@ -35,7 +36,13 @@ public class RNGestureHandlerButtonManagerDelegate<T extends View, U extends Bas
         mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;
       case "rippleColor":
-        mViewManager.setRippleColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        if (value instanceof String) {
+          int colorValue = Color.parseColor((String) value);
+          mViewManager.setRippleColor(view, ColorPropConverter.getColor(colorValue, view.getContext()));
+        } else {
+          // Legacy compatibility with colors processed on JS by `processColor()`
+          mViewManager.setRippleColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        }
         break;
       case "rippleRadius":
         mViewManager.setRippleRadius(view, value == null ? 0 : ((Double) value).intValue());
