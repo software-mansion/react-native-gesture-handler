@@ -46,21 +46,44 @@ In order for a gesture to [activate](/docs/fundamentals/states-events#active), s
 
 <samp id="TapGestureBasic">Tap Gesture</samp>
 
-## Reference
+## Example
 
 ```jsx
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { View, StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-function App() {
+export default function App() {
   // highlight-next-line
-  const tap = Gesture.Tap();
+  const singleTap = Gesture.Tap()
+    .maxDuration(250)
+    .onStart(() => {
+      console.log('Single tap!');
+    });
+
+  // highlight-next-line
+  const doubleTap = Gesture.Tap()
+    .maxDuration(250)
+    .numberOfTaps(2)
+    .onStart(() => {
+      console.log('Double tap!');
+    });
 
   return (
-    <GestureDetector gesture={tap}>
-      <View />
+    <GestureDetector gesture={Gesture.Exclusive(doubleTap, singleTap)}>
+      <View style={styles.box} />
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```
 
 ## Config
@@ -135,41 +158,3 @@ X coordinate, expressed in points, of the current position of the pointer (finge
 Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector) can be transformed as an effect of the gesture.
 
 <BaseEventData />
-
-## Example
-
-```jsx
-import { View, StyleSheet } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-
-export default function App() {
-  const singleTap = Gesture.Tap()
-    .maxDuration(250)
-    .onStart(() => {
-      console.log('Single tap!');
-    });
-
-  const doubleTap = Gesture.Tap()
-    .maxDuration(250)
-    .numberOfTaps(2)
-    .onStart(() => {
-      console.log('Double tap!');
-    });
-
-  return (
-    <GestureDetector gesture={Gesture.Exclusive(doubleTap, singleTap)}>
-      <View style={styles.box} />
-    </GestureDetector>
-  );
-}
-
-const styles = StyleSheet.create({
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-```
