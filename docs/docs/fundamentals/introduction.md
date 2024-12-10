@@ -25,7 +25,7 @@ It is recommended to use Reanimated for animations when using React Native Gestu
 
 RNGH2 introduces a new way of creating gestures. Instead of creating a gesture handler component for every gesture you want to create, you just need to create a `GestureDetector` component and assign to it all the gestures you want it to recognize. It is also designed to work seamlessly with `Reanimated` and it will automatically detect if it is installed, and start using it if it is.
 You can create gestures using the `Gesture` object and methods it provides, and configure them in the builder-like pattern. If you want to specify behavior between the gestures instead of using `waitFor` and `simultaneousGestures` you can use the new system of [gesture composition](/docs/fundamentals/gesture-composition).
-Along the new API, version 2.0 brings one of the most requested features: [touch events and manual gestures](/docs/fundamentals/manual-gestures). Thanks to great work done by the Reanimated team, we were able to provide synchronous communication between gestures and their native implementation using worklets. This allows to manage gesture state from the JS without risking race-conditions.
+Along the new API, version 2.0 brings one of the most requested features: [touch events and manual gestures](/docs/guides/manual-gestures). Thanks to great work done by the Reanimated team, we were able to provide synchronous communication between gestures and their native implementation using worklets. This allows to manage gesture state from the JS without risking race-conditions.
 
 ### Interoperability with gesture handlers
 
