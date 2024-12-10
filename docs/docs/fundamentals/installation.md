@@ -116,7 +116,7 @@ cd ios && pod install && cd ..
 
 #### Web
 
-There is no additional configuration required for the web, however, since the Gesture Handler 2.10.0 the new web implementation is enabled by default. It is recommended to check if the gestures in your app are working as expected since their behavior should now resemble the native platforms. If you don't want to use the new implementation, you can still revert back to the legacy one by enabling it at the beginning of your `index.js` file:
+There is no additional configuration required for the web, however, since the Gesture Handler 2.10.0 the new web implementation is enabled by default. We recommend you to check if the gestures in your app are working as expected since their behavior should now resemble the native platforms. If you don't want to use the new implementation, you can still revert back to the legacy one by enabling it at the beginning of your `index.js` file:
 
 ```js
 import { enableLegacyWebImplementation } from 'react-native-gesture-handler';
