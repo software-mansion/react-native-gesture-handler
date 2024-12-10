@@ -199,10 +199,6 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
-
-  if (_gestureHandler.manualActivation) {
-    [self reset];
-  }
 }
 
 #if TARGET_OS_OSX
