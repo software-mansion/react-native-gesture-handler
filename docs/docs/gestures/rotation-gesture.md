@@ -45,21 +45,49 @@ Gesture callback can be used for continuous tracking of the rotation gesture. It
 
 <samp id="RotationGestureBasicSrc">Rotation Gesture</samp>
 
-## Reference
+## Example
 
 ```jsx
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
-function App() {
+export default function App() {
+  const rotation = useSharedValue(1);
+  const savedRotation = useSharedValue(1);
+
   // highlight-next-line
-  const rotation = Gesture.Rotation();
+  const rotationGesture = Gesture.Rotation()
+    .onUpdate((e) => {
+      rotation.value = savedRotation.value + e.rotation;
+    })
+    .onEnd(() => {
+      savedRotation.value = rotation.value;
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotateZ: `${(rotation.value / Math.PI) * 180}deg` }],
+  }));
 
   return (
-    <GestureDetector gesture={rotation}>
-      <Animated.View />
+    <GestureDetector gesture={rotationGesture}>
+      <Animated.View style={[styles.box, animatedStyle]} />
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```
 
 ## Config
@@ -93,47 +121,3 @@ X coordinate, expressed in points, of the gesture's central focal point (anchor)
 Y coordinate, expressed in points, of the gesture's central focal point (anchor).
 
 <BaseEventData />
-
-## Example
-
-```jsx
-import { StyleSheet } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-
-export default function App() {
-  const rotation = useSharedValue(1);
-  const savedRotation = useSharedValue(1);
-
-  const rotationGesture = Gesture.Rotation()
-    .onUpdate((e) => {
-      rotation.value = savedRotation.value + e.rotation;
-    })
-    .onEnd(() => {
-      savedRotation.value = rotation.value;
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${(rotation.value / Math.PI) * 180}deg` }],
-  }));
-
-  return (
-    <GestureDetector gesture={rotationGesture}>
-      <Animated.View style={[styles.box, animatedStyle]} />
-    </GestureDetector>
-  );
-}
-
-const styles = StyleSheet.create({
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-```

@@ -42,21 +42,50 @@ The gesture will fail to recognize if the finger is lifted before being activate
 
 <samp id="FlingGestureBasicSrc">Fling Gesture</samp>
 
-## Reference
+## Example
 
 ```jsx
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
+import {
+  Gesture,
+  GestureDetector,
+  Directions,
+} from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
-function App() {
+export default function App() {
+  const position = useSharedValue(0);
   // highlight-next-line
-  const fling = Gesture.Fling();
+  const flingGesture = Gesture.Fling()
+    .direction(Directions.RIGHT)
+    .onStart((e) => {
+      position.value = withTiming(position.value + 10, { duration: 100 });
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: position.value }],
+  }));
 
   return (
-    <GestureDetector gesture={fling}>
-      <Animated.View />
+    <GestureDetector gesture={flingGesture}>
+      <Animated.View style={[styles.box, animatedStyle]} />
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```
 
 ## Config
@@ -122,49 +151,3 @@ X coordinate of the current position of the pointer (finger or a leading pointer
 Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
 
 <BaseEventData />
-
-## Example
-
-```jsx
-import { StyleSheet } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  Directions,
-} from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
-
-export default function App() {
-  const position = useSharedValue(0);
-
-  const flingGesture = Gesture.Fling()
-    .direction(Directions.RIGHT)
-    .onStart((e) => {
-      position.value = withTiming(position.value + 10, { duration: 100 });
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: position.value }],
-  }));
-
-  return (
-    <GestureDetector gesture={flingGesture}>
-      <Animated.View style={[styles.box, animatedStyle]} />
-    </GestureDetector>
-  );
-}
-
-const styles = StyleSheet.create({
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-```
