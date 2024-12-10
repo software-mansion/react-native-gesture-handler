@@ -2,7 +2,7 @@
 id: quickstart
 title: Quick start
 sidebar_label: Quick start
-sidebar_position: 3
+sidebar_position: 1
 ---
 
 import Step, { Divider } from '@site/src/theme/Step';
