@@ -10,59 +10,13 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
-A gesture that allows other touch handling components to participate in RNGH's gesture system. When used, the other component should be the direct child of a `GestureDetector`.
+A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
 
-## Reference
-
-```jsx
-import { ScrollView } from 'react-native';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-
-function App() {
-  // highlight-next-line
-  const native = Gesture.Native();
-
-  return (
-    <GestureDetector gesture={native}>
-      <ScrollView>
-        {/* Scrollable content */}
-      </ScrollView>
-    </GestureDetector>
-  );
-}
-```
+When used, the native component should be the direct child of a `GestureDetector`.
 
 :::danger
 Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
 :::
-
-## Config
-
-### Properties specific to `NativeGesture`:
-
-### `shouldActivateOnStart(value: boolean)` (**Android only**)
-
-When `true`, underlying handler will activate unconditionally when in `BEGAN` or `UNDETERMINED` state.
-
-### `disallowInterruption(value: boolean)`
-
-When `true`, cancels all other gesture handlers when this `NativeViewGestureHandler` receives an `ACTIVE` state event.
-
-<BaseEventConfig />
-
-## Callbacks
-
-<BaseEventCallbacks />
-
-## Event data
-
-### Event attributes specific to `NativeGesture`:
-
-### `pointerInside`
-
-True if gesture was performed inside of containing view, false otherwise.
-
-<BaseEventData />
 
 ## Example
 
@@ -75,6 +29,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 const COLORS = ['red', 'green', 'blue', 'purple', 'orange', 'cyan'];
 
 export default function App() {
+  // highlight-next-line
   const native = Gesture.Native();
 
   return (
@@ -110,3 +65,35 @@ function Rectangle({ color, scrollGesture }) {
   );
 }
 ```
+
+## Remarks
+
+- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to make a block a native component for the duration of the gesture or to make it work alongside a gesture.
+
+## Config
+
+### Properties specific to `NativeGesture`:
+
+### `shouldActivateOnStart(value: boolean)` (**Android only**)
+
+When `true`, underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/fundamentals/states-events#undetermined) state.
+
+### `disallowInterruption(value: boolean)`
+
+When `true`, cancels all other gesture handlers when this `NativeViewGestureHandler` changes its state to [`ACTIVE`](/docs/fundamentals/states-events#active).
+
+<BaseEventConfig />
+
+## Callbacks
+
+<BaseEventCallbacks />
+
+## Event data
+
+### Event attributes specific to `NativeGesture`:
+
+### `pointerInside`
+
+True if gesture was performed inside of containing view, false otherwise.
+
+<BaseEventData />
