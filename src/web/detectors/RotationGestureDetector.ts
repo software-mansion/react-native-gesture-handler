@@ -45,28 +45,28 @@ export default class RotationGestureDetector
     const vectorX: number = secondPointerCoords.x - firstPointerCoords.x;
     const vectorY: number = secondPointerCoords.y - firstPointerCoords.y;
 
-    this.anchorX = (firstPointerCoords.x + secondPointerCoords.x) / 2;
-    this.anchorY = (firstPointerCoords.y + secondPointerCoords.y) / 2;
+    this._anchorX = (firstPointerCoords.x + secondPointerCoords.x) / 2;
+    this._anchorY = (firstPointerCoords.y + secondPointerCoords.y) / 2;
 
     // Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
 
-    this.rotation = Number.isNaN(this.previousAngle)
+    this._rotation = Number.isNaN(this.previousAngle)
       ? 0
       : this.previousAngle - angle;
 
     this.previousAngle = angle;
 
     if (this.rotation > Math.PI) {
-      this.rotation -= Math.PI;
+      this._rotation -= Math.PI;
     } else if (this.rotation < -Math.PI) {
-      this.rotation += Math.PI;
+      this._rotation += Math.PI;
     }
 
     if (this.rotation > Math.PI / 2) {
-      this.rotation -= Math.PI;
+      this._rotation -= Math.PI;
     } else if (this.rotation < -Math.PI / 2) {
-      this.rotation += Math.PI;
+      this._rotation += Math.PI;
     }
   }
 
@@ -151,22 +151,13 @@ export default class RotationGestureDetector
   public get anchorX() {
     return this._anchorX;
   }
-  private set anchorX(value: number) {
-    this._anchorX = value;
-  }
 
   public get anchorY() {
     return this._anchorY;
   }
-  private set anchorY(value: number) {
-    this._anchorY = value;
-  }
 
   public get rotation() {
     return this._rotation;
-  }
-  private set rotation(value: number) {
-    this._rotation = value;
   }
 
   public get timeDelta() {

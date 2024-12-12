@@ -14,7 +14,7 @@ export default class CircularBuffer<T> {
   public push(element: T): void {
     this.buffer[this.index] = element;
     this.index = (this.index + 1) % this.capacity;
-    this.size = Math.min(this.size + 1, this.capacity);
+    this._size = Math.min(this.size + 1, this.capacity);
   }
 
   public get(at: number): T {
@@ -38,8 +38,5 @@ export default class CircularBuffer<T> {
 
   public get size() {
     return this._size;
-  }
-  private set size(value: number) {
-    this._size = value;
   }
 }

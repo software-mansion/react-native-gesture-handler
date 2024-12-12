@@ -565,7 +565,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    this.config = { enabled: enabled, ...props };
+    this._config = { enabled: enabled, ...props };
     this.enabled = enabled;
 
     this.delegate.onEnabledChange(enabled);
@@ -738,24 +738,13 @@ export default abstract class GestureHandler implements IGestureHandler {
   public get config(): Config {
     return this._config;
   }
-  private set config(value: Config) {
-    this._config = value;
-  }
 
   public get delegate() {
     return this._delegate;
   }
-  private set delegate(
-    value: GestureHandlerDelegate<unknown, IGestureHandler>
-  ) {
-    this._delegate = value;
-  }
 
   public get tracker() {
     return this._tracker;
-  }
-  private set tracker(value: PointerTracker) {
-    this._tracker = value;
   }
 
   public get state(): State {
