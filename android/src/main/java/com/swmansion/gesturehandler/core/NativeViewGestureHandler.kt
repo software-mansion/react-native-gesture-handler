@@ -9,6 +9,7 @@ import android.widget.ScrollView
 import com.facebook.react.views.scroll.ReactHorizontalScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
+import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
@@ -46,7 +47,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
     // if the gesture is marked by user as simultaneous with other or the hook return true
-    if (super.shouldRecognizeSimultaneously(handler) || hook.shouldRecognizeSimultaneously(handler)) {
+    hook.shouldRecognizeSimultaneously(handler)?.let {
+      return@shouldRecognizeSimultaneously it
+    }
+
+    if (super.shouldRecognizeSimultaneously(handler)) {
       return true
     }
 
@@ -82,6 +87,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
       is ReactScrollView -> this.hook = ScrollViewHook()
       is ReactHorizontalScrollView -> this.hook = ScrollViewHook()
+      is ReactTextView -> this.hook = TextViewHook()
       is ReactViewGroup -> this.hook = ReactViewGroupHook()
     }
   }
@@ -106,7 +112,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         cancel()
       } else {
         hook.sendTouchEvent(view, event)
-        if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && view.isPressed) {
+
+        if ((state == STATE_UNDETERMINED || state == STATE_BEGAN) && hook.canActivate(view)) {
           activate()
         }
 
@@ -177,6 +184,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     fun canBegin(event: MotionEvent) = true
 
     /**
+     * Checks whether handler can activate. Used by TextViewHook.
+     */
+    fun canActivate(view: View) = view.isPressed
+
+    /**
      * Called after the gesture transitions to the END state.
      */
     fun afterGestureEnd(event: MotionEvent) = Unit
@@ -185,7 +197,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * @return Boolean value signalling whether the gesture can be recognized simultaneously with
      * other (handler). Returning false doesn't necessarily prevent it from happening.
      */
-    fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
+    fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean? = null
 
     /**
      * shouldActivateOnStart and tryIntercept have priority over this method
@@ -215,6 +227,14 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * @return Boolean value indicating whether the handled gesture is continuous or discrete.
      */
     fun isContinuous() = false
+  }
+
+  private class TextViewHook() : NativeViewGestureHandlerHook {
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
+
+    // We have to explicitly check for ReactTextView, since its `isPressed` flag is not set to `true`,
+    // in contrast to e.g. Touchable
+    override fun canActivate(view: View) = view is ReactTextView
   }
 
   private class EditTextHook(

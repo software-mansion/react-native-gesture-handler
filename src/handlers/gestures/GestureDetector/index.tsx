@@ -23,6 +23,7 @@ import { useWebEventHandlers } from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
+import { useMountReactions } from './useMountReactions';
 
 function propagateDetectorConfig(
   props: GestureDetectorProps,
@@ -173,6 +174,8 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       updateAttachedGestures();
     }
   }, [props]);
+
+  useMountReactions(updateAttachedGestures, preparedGesture);
 
   if (shouldUseReanimated) {
     return (

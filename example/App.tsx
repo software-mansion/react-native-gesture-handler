@@ -40,6 +40,7 @@ import PointerType from './src/release_tests/pointerType';
 import SwipeableReanimation from './src/release_tests/swipeableReanimation';
 import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
 import TwoFingerPan from './src/release_tests/twoFingerPan';
+import NestedText from './src/release_tests/nestedText';
 import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
 import { BottomSheet } from './src/showcase/bottomSheet';
@@ -221,6 +222,11 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Two finger Pan',
         component: TwoFingerPan,
         unsupportedPlatforms: new Set(['android', 'macos']),
+      },
+      {
+        name: 'Nested Text',
+        component: NestedText,
+        unsupportedPlatforms: new Set(['macos']),
       },
     ],
   },
