@@ -6,7 +6,7 @@ sidebar_position: 12
 ---
 
 :::warning
-The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
+The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out our [upgrading guide](/docs/guides/upgrading-to-2) for more information.
 :::
 
 A gesture handler that allows other touch handling components to participate in
