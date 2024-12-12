@@ -196,12 +196,9 @@
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
-
-  [self reset];
 }
 
 #if TARGET_OS_OSX
