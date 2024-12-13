@@ -153,6 +153,7 @@ android {
         exclude "**/libreact_render*.so"
         exclude "**/libreactnative.so"
         exclude "**/libjsi.so"
+        exclude "**/libc++_shared.so"
     }
 
     sourceSets.main {
