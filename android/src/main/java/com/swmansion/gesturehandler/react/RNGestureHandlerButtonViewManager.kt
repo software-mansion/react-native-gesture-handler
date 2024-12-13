@@ -16,6 +16,7 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Build
 import android.util.TypedValue
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -24,6 +25,7 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.core.view.children
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.R
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
@@ -239,6 +241,20 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
       _backgroundColor = color
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+      super.onInitializeAccessibilityNodeInfo(info)
+
+      // Expose the testID prop as the resource-id name of the view. Black-box E2E/UI testing
+      // frameworks, which interact with the UI through the accessibility framework, do not have
+      // access to view tags. This allows developers/testers to avoid polluting the
+      // content-description with test identifiers.
+      val testId = super.getTag(R.id.react_test_id)
+
+      if (testId is String) {
+        info.setViewIdResourceName(testId)
+      }
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
