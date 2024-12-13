@@ -89,6 +89,29 @@
   }
   return inner;
 }
+
+- (void)setBorderRadius:(CGFloat)radius
+{
+  if (_borderRadius == radius) {
+    return;
+  }
+
+  _borderRadius = radius;
+  [self.layer setNeedsDisplay];
+}
+
+- (void)displayLayer:(CALayer *)layer
+{
+  if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
+    return;
+  }
+
+  const CGFloat radius = MAX(0, _borderRadius);
+  const CGSize size = self.bounds.size;
+  const CGFloat scaleFactor = RCTZeroIfNaN(MIN(1, size.width / (2 * radius)));
+  const CGFloat currentBorderRadius = radius * scaleFactor;
+  layer.cornerRadius = currentBorderRadius;
+}
 #endif
 
 #if TARGET_OS_OSX && RCT_NEW_ARCH_ENABLED

@@ -206,7 +206,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
-  [self reset];
 }
 
 #endif

@@ -14,6 +14,7 @@ import {
   checkGestureCallbacksForWorklets,
   ALLOWED_PROPS,
 } from './utils';
+import { MountRegistry } from '../../../mountRegistry';
 
 interface AttachHandlersConfig {
   preparedGesture: AttachedGestureState;
@@ -93,6 +94,8 @@ export function attachHandlers({
         actionType
       );
     }
+
+    MountRegistry.gestureWillMount(gesture);
   }
 
   preparedGesture.attachedGestures = gesturesToAttach;
