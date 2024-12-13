@@ -11,9 +11,9 @@ export default interface IGestureHandler {
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
-  config: Config;
-  delegate: GestureHandlerDelegate<unknown, this>;
-  tracker: PointerTracker;
+  readonly config: Config;
+  readonly delegate: GestureHandlerDelegate<unknown, this>;
+  readonly tracker: PointerTracker;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
