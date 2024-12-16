@@ -13,7 +13,7 @@ const MAX_POINTERS = 20;
 
 export default class PointerTracker {
   private velocityTracker = new VelocityTracker();
-  private trackedPointers: Map<number, TrackerElement> = new Map<
+  private readonly _trackedPointers: Map<number, TrackerElement> = new Map<
     number,
     TrackerElement
   >();
@@ -72,7 +72,7 @@ export default class PointerTracker {
     this.lastMovedPointerId = event.pointerId;
 
     this.velocityTracker.add(event);
-    const [velocityX, velocityY] = this.velocityTracker.getVelocity();
+    const [velocityX, velocityY] = this.velocityTracker.velocity;
 
     element.velocityX = velocityX;
     element.velocityY = velocityY;
@@ -189,24 +189,6 @@ export default class PointerTracker {
     return sum;
   }
 
-  public getTrackedPointersCount(): number {
-    return this.trackedPointers.size;
-  }
-
-  public getTrackedPointersID(): number[] {
-    const keys: number[] = [];
-
-    this.trackedPointers.forEach((_value, key) => {
-      keys.push(key);
-    });
-
-    return keys;
-  }
-
-  public getData(): Map<number, TrackerElement> {
-    return this.trackedPointers;
-  }
-
   public resetTracker(): void {
     this.velocityTracker.reset();
     this.trackedPointers.clear();
@@ -222,5 +204,23 @@ export default class PointerTracker {
     ndPointers: number[]
   ): boolean {
     return stPointers.some((pointerId) => ndPointers.includes(pointerId));
+  }
+
+  public get trackedPointersCount(): number {
+    return this.trackedPointers.size;
+  }
+
+  public get trackedPointersIDs() {
+    const keys: number[] = [];
+
+    this.trackedPointers.forEach((_value, key) => {
+      keys.push(key);
+    });
+
+    return keys;
+  }
+
+  public get trackedPointers() {
+    return this._trackedPointers;
   }
 }
