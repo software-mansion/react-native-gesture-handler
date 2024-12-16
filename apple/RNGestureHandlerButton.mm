@@ -179,10 +179,10 @@
 }
 
 // Vendored from RCTView.m to infer accessibility label from children
-static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
+static NSString *RNGHRecursiveAccessibilityLabel(RNGHUIView *view)
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
-  for (UIView *subview in view.subviews) {
+  for (RNGHUIView *subview in view.subviews) {
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RNGHRecursiveAccessibilityLabel(subview);
