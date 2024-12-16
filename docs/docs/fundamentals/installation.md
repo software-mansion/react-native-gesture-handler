@@ -45,7 +45,7 @@ Setting up `react-native-gesture-handler` is pretty straightforward:
 ### 2. Wrap your app with `GestureHandlerRootView` component
 
 ```jsx
-import { GestureHandlerRootView } from 'react-native-gesture-handler`;
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   return (
@@ -80,7 +80,7 @@ Setting up Gesture Handler on Android doesn't require any more steps. Keep in mi
 
 ```jsx
 import { Modal } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler`;
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export function CustomModal({ children, ...rest }) {
   return (
