@@ -55,7 +55,7 @@ type Touchables = {
   color?: string;
   renderChild: (() => null) | ((color?: string) => React.ReactNode);
   text: string;
-  background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
+  background?: (A: typeof RNTouchableNativeFeedback) => BackgroundPropType;
 };
 
 const TOUCHABLES: Touchables[] = [
@@ -378,6 +378,8 @@ export class TouchableExample extends Component<
           </RNTouchable>
           <GHTouchable
             {...props}
+            // @ts-ignore TouchableNativeFeedback is a FC without explicitly declared static functions
+            //            despite this, it forwards all the static functions of RNTouchableNativeFeedback
             background={background?.(TouchableNativeFeedback)}>
             {renderChild(color)}
           </GHTouchable>
