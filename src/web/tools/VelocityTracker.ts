@@ -84,7 +84,7 @@ export default class VelocityTracker {
     return null;
   }
 
-  public getVelocity(): [number, number] {
+  public get velocity() {
     const estimate = this.getVelocityEstimate();
     if (estimate !== null) {
       return estimate;
