@@ -55,7 +55,7 @@ type Touchables = {
   color?: string;
   renderChild: (() => null) | ((color?: string) => React.ReactNode);
   text: string;
-  background?: (A: typeof TouchableNativeFeedback) => BackgroundPropType;
+  background?: (A: typeof RNTouchableNativeFeedback) => BackgroundPropType;
 };
 
 const TOUCHABLES: Touchables[] = [
