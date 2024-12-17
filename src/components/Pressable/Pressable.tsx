@@ -145,6 +145,10 @@ export default function Pressable(props: PressableProps) {
           longPressTimeoutRef.current = null;
         }
 
+        if (pressDelayTimeoutRef.current) {
+          clearTimeout(pressDelayTimeoutRef.current);
+        }
+
         return;
       }
 
