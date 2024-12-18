@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ScrollView
+import com.facebook.react.views.scroll.ReactHorizontalScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.text.ReactTextView
@@ -85,6 +86,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       is ReactEditText -> this.hook = EditTextHook(this, view)
       is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
       is ReactScrollView -> this.hook = ScrollViewHook()
+      is ReactHorizontalScrollView -> this.hook = ScrollViewHook()
       is ReactTextView -> this.hook = TextViewHook()
       is ReactViewGroup -> this.hook = ReactViewGroupHook()
     }
