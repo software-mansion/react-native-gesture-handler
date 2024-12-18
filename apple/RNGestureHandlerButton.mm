@@ -112,6 +112,34 @@
   const CGFloat currentBorderRadius = radius * scaleFactor;
   layer.cornerRadius = currentBorderRadius;
 }
+
+- (NSString *)accessibilityLabel
+{
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
+  }
+  return RNGHRecursiveAccessibilityLabel(self);
+}
+
+// Vendored from RCTView.m to infer accessibility label from children
+static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
+{
+  NSMutableString *str = [NSMutableString stringWithString:@""];
+  for (UIView *subview in view.subviews) {
+    NSString *label = subview.accessibilityLabel;
+    if (!label) {
+      label = RNGHRecursiveAccessibilityLabel(subview);
+    }
+    if (label && label.length > 0) {
+      if (str.length > 0) {
+        [str appendString:@" "];
+      }
+      [str appendString:label];
+    }
+  }
+  return str.length == 0 ? nil : str;
+}
 #endif
 
 #if TARGET_OS_OSX && RCT_NEW_ARCH_ENABLED
