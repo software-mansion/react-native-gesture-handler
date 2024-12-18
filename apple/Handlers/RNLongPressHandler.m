@@ -108,7 +108,6 @@
 {
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-  [self reset];
 }
 
 #else
