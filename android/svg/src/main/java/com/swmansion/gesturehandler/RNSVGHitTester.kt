@@ -14,12 +14,12 @@ class RNSVGHitTester {
         val rootLocation = intArrayOf(0, 0)
 
         view.getLocationOnScreen(viewLocation)
-        view.svgView?.getLocationOnScreen(rootLocation)
+        view.getSvgView()?.getLocationOnScreen(rootLocation)
 
         val rootX = posX + viewLocation[0] - rootLocation[0]
         val rootY = posY + viewLocation[1] - rootLocation[1]
 
-        return view.id == view.svgView?.reactTagForTouch(rootX, rootY)
+        return view.id == view.getSvgView()?.reactTagForTouch(rootX, rootY)
       }
       return false
     }
