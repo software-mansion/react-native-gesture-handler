@@ -684,6 +684,22 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
+  /*
+  * Returns true if the view this handler is attached to is a descendant of the view the other handler
+  * is attached to and false otherwise.
+  */
+  fun isDescendantOf(of: GestureHandler<*>): Boolean {
+    var view = this.view?.parent as? View
+    while (view != null) {
+      if (view == of.view) {
+        return true
+      }
+
+      view = view.parent as? View
+    }
+    return false
+  }
+
   // responsible for resetting the state of handler upon activation (may be called more than once
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
