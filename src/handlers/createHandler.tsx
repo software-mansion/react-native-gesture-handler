@@ -24,6 +24,7 @@ import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { MountRegistry } from '../mountRegistry';
 
 const UIManagerAny = UIManager as any;
 
@@ -234,6 +235,12 @@ export default function createHandler<
         )
       );
 
+      if (!this.viewNode) {
+        throw new Error(
+          `[Gesture Handler] Failed to obtain view for ${Handler.displayName}. Note that old API doesn't support functional components.`
+        );
+      }
+
       this.attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
     }
 
@@ -256,6 +263,8 @@ export default function createHandler<
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete handlerIDToTag[handlerID];
       }
+
+      MountRegistry.gestureHandlerWillUnmount(this);
     }
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
@@ -367,6 +376,10 @@ export default function createHandler<
       }
 
       scheduleFlushOperations();
+
+      ghQueueMicrotask(() => {
+        MountRegistry.gestureHandlerWillMount(this);
+      });
     };
 
     private updateGestureHandler = (

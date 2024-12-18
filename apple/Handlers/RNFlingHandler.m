@@ -60,7 +60,6 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-  [self reset];
 }
 
 - (void)triggerAction

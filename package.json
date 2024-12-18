@@ -144,6 +144,11 @@
     "jsSrcsDir": "./src/specs",
     "android": {
       "javaPackageName": "com.swmansion.gesturehandler"
+    },
+    "ios": {
+      "componentProvider": {
+        "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView"
+      }
     }
   },
   "packageManager": "yarn@1.22.22"
