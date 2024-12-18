@@ -10,7 +10,16 @@ class RNSVGHitTester {
 
     fun hitTest(view: Any, posX: Float, posY: Float): Boolean {
       if (view is RenderableView) {
-        return view.hitTest(floatArrayOf(posX, posY)) != -1
+        val viewLocation = intArrayOf(0, 0)
+        val rootLocation = intArrayOf(0, 0)
+
+        view.getLocationOnScreen(viewLocation)
+        view.svgView?.getLocationOnScreen(rootLocation)
+
+        val rootX = posX + viewLocation[0] - rootLocation[0]
+        val rootY = posY + viewLocation[1] - rootLocation[1]
+
+        return view.id == view.svgView?.reactTagForTouch(rootX, rootY)
       }
       return false
     }
