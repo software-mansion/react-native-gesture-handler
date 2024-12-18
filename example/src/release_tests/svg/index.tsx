@@ -6,19 +6,19 @@ import Svg, { Circle, Rect } from 'react-native-svg';
 
 export default function EmptyExample() {
   const circleElementTap = Gesture.Tap().onStart(() =>
-    console.log('clicked circle')
+    console.log('RNGH: clicked circle')
   );
   const rectElementTap = Gesture.Tap().onStart(() =>
-    console.log('clicked parallelogram')
+    console.log('RNGH: clicked parallelogram')
   );
   const containerTap = Gesture.Tap().onStart(() =>
-    console.log('clicked container')
+    console.log('RNGH: clicked container')
   );
   const vbContainerTap = Gesture.Tap().onStart(() =>
-    console.log('clicked viewbox container (pixels)')
+    console.log('RNGH: clicked viewbox container')
   );
   const vbCircleTap = Gesture.Tap().onStart(() =>
-    console.log('clicked viewbox circle (pixels)')
+    console.log('RNGH: clicked viewbox circle')
   );
 
   return (
@@ -29,12 +29,27 @@ export default function EmptyExample() {
         </Text>
         <View style={{ backgroundColor: 'tomato' }}>
           <GestureDetector gesture={containerTap}>
-            <Svg height="250" width="250">
+            <Svg
+              height="250"
+              width="250"
+              onPress={() => console.log('SVG: clicked container')}>
               <GestureDetector gesture={circleElementTap}>
-                <Circle cx="125" cy="125" r="125" fill="green" />
+                <Circle
+                  cx="125"
+                  cy="125"
+                  r="125"
+                  fill="green"
+                  onPress={() => console.log('SVG: clicked circle')}
+                />
               </GestureDetector>
               <GestureDetector gesture={rectElementTap}>
-                <Rect skewX="45" width="125" height="250" fill="yellow" />
+                <Rect
+                  skewX="45"
+                  width="125"
+                  height="250"
+                  fill="yellow"
+                  onPress={() => console.log('SVG: clicked parallelogram')}
+                />
               </GestureDetector>
             </Svg>
           </GestureDetector>
@@ -50,9 +65,17 @@ export default function EmptyExample() {
         </Text>
         <View style={{ backgroundColor: 'tomato' }}>
           <GestureDetector gesture={vbContainerTap}>
-            <Svg height="250" width="250" viewBox="-300 -300 600 600">
+            <Svg
+              height="250"
+              width="250"
+              viewBox="-300 -300 600 600"
+              onPress={() => console.log('SVG: clicked viewbox container')}>
               <GestureDetector gesture={vbCircleTap}>
-                <Circle r="150" fill="green" />
+                <Circle
+                  r="150"
+                  fill="green"
+                  onPress={() => console.log('SVG: clicked viewbox circle')}
+                />
               </GestureDetector>
             </Svg>
           </GestureDetector>
