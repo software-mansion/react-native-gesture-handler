@@ -16,6 +16,8 @@ class RNSVGHitTester {
         view.getLocationOnScreen(viewLocation)
         view.getSvgView()?.getLocationOnScreen(rootLocation)
 
+        // convert View-relative coordinates into SvgView-relative coordinates
+
         val rootX = posX + viewLocation[0] - rootLocation[0]
         val rootY = posY + viewLocation[1] - rootLocation[1]
 
