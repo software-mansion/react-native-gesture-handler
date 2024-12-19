@@ -1,6 +1,0 @@
-{
-  "main": "../lib/commonjs/components/DrawerLayout",
-  "module": "../lib/module/components/DrawerLayout",
-  "react-native": "../src/components/DrawerLayout",
-  "types": "../lib/typescript/components/DrawerLayout.d.ts"
-}
