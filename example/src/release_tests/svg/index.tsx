@@ -17,6 +17,9 @@ export default function EmptyExample() {
   const vbContainerTap = Gesture.Tap().onStart(() =>
     console.log('RNGH: clicked viewbox container')
   );
+  const vbInnerContainerTap = Gesture.Tap().onStart(() =>
+    console.log('RNGH: clicked inner viewbox container')
+  );
   const vbCircleTap = Gesture.Tap().onStart(() =>
     console.log('RNGH: clicked viewbox circle')
   );
@@ -60,27 +63,44 @@ export default function EmptyExample() {
         </Text>
       </View>
       <View style={styles.container}>
-        <Text style={styles.header}>
-          SVG view with ViewBox and pixel dimensions
-        </Text>
+        <Text style={styles.header}>SvgView with SvgView with ViewBox</Text>
         <View style={{ backgroundColor: 'tomato' }}>
           <GestureDetector gesture={vbContainerTap}>
             <Svg
               height="250"
               width="250"
-              viewBox="-300 -300 600 600"
+              viewBox="-50 -50 150 150"
               onPress={() => console.log('SVG: clicked viewbox container')}>
-              <GestureDetector gesture={vbCircleTap}>
-                <Circle
-                  r="150"
-                  fill="green"
-                  onPress={() => console.log('SVG: clicked viewbox circle')}
-                />
+              <GestureDetector gesture={vbInnerContainerTap}>
+                <Svg
+                  height="250"
+                  width="250"
+                  viewBox="-300 -300 600 600"
+                  onPress={() =>
+                    console.log('SVG: clicked inner viewbox container')
+                  }>
+                  <Rect
+                    x="-3000"
+                    y="-3000"
+                    width="6000"
+                    height="6000"
+                    stroke="red"
+                    strokeWidth="2"
+                    fill="yellow"
+                  />
+                  <GestureDetector gesture={vbCircleTap}>
+                    <Circle
+                      r="300"
+                      fill="green"
+                      onPress={() => console.log('SVG: clicked viewbox circle')}
+                    />
+                  </GestureDetector>
+                </Svg>
               </GestureDetector>
             </Svg>
           </GestureDetector>
         </View>
-        <Text>ViewBox property remaps SVG to user coordinate spaces</Text>
+        <Text>The viewBox property remaps SVG's coordinate space</Text>
       </View>
     </View>
   );
