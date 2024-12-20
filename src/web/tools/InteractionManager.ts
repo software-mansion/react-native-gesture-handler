@@ -127,7 +127,7 @@ export default class InteractionManager {
   }
 
   public static get instance(): InteractionManager {
-    if (!this.instance) {
+    if (!this._instance) {
       this._instance = new InteractionManager();
     }
 
