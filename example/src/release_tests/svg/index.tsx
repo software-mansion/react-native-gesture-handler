@@ -58,8 +58,7 @@ export default function EmptyExample() {
           </GestureDetector>
         </View>
         <Text>
-          Clicks should only be registered while pressing on the green area.
-          Pressing the tomato-colored area should not have an effect
+          Tapping each color should read to a different console.log output
         </Text>
       </View>
       <View style={styles.container}>
@@ -80,12 +79,10 @@ export default function EmptyExample() {
                     console.log('SVG: clicked inner viewbox container')
                   }>
                   <Rect
-                    x="-3000"
-                    y="-3000"
-                    width="6000"
-                    height="6000"
-                    stroke="red"
-                    strokeWidth="2"
+                    x="-300"
+                    y="-300"
+                    width="600"
+                    height="600"
                     fill="yellow"
                   />
                   <GestureDetector gesture={vbCircleTap}>
