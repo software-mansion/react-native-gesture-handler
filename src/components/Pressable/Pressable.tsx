@@ -354,7 +354,9 @@ export default function Pressable(props: PressableProps) {
 
           if (shouldPreventNativeEffects.current) {
             shouldPreventNativeEffects.current = false;
-            if (!handlingOnTouchesDown.current) return;
+            if (!handlingOnTouchesDown.current) {
+              return;
+            }
           }
 
           isTouchPropagationAllowed.current = true;
