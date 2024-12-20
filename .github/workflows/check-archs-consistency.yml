@@ -5,8 +5,7 @@ on:
       - main
     paths: 
       - src/specs/**
-      - android/paper/**
-      - example/package.json
+      - package.json
       - FabricExample/package.json
       - .github/workflows/check-archs-consistency.yml
   push:
