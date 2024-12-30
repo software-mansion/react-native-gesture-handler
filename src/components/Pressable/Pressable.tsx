@@ -299,21 +299,15 @@ export default function Pressable(props: PressableProps) {
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
   const buttonGesture = useMemo(
     () =>
-      Gesture.Native()
-        .onBegin(() => {
-          // Android sets BEGAN state on press down
-          if (Platform.OS === 'android' || Platform.OS === 'macos') {
+      Gesture.Native().shouldActivateOnStart(true)
+        .onBegin(() => {          
+          if (Platform.OS === 'macos') {
             isTouchPropagationAllowed.current = true;
           }
         })
         .onStart(() => {
           if (Platform.OS === 'web') {
             isTouchPropagationAllowed.current = true;
-          }
-
-          // iOS sets ACTIVE state on press down
-          if (Platform.OS !== 'ios') {
-            return;
           }
 
           if (deferredEventPayload.current) {
