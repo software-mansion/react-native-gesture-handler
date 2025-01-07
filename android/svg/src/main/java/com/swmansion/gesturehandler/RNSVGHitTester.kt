@@ -11,10 +11,6 @@ class RNSVGHitTester {
     }
 
     fun hitTest(view: Any, posX: Float, posY: Float): Boolean {
-      if (view is SvgView) {
-        return view.reactTagForTouch(posX, posY) != -1
-      }
-
       if (view is RenderableView) {
         // get highest-order parent
         var highestOrderSvgView = view.svgView
