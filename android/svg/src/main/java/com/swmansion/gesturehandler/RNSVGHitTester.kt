@@ -11,6 +11,13 @@ class RNSVGHitTester {
     }
 
     fun hitTest(view: Any, posX: Float, posY: Float): Boolean {
+      if (view is SvgView) {
+        val hasBeenPressed = view.id == view.reactTagForTouch(posX, posY)
+        val pressIsInBounds = 0 < posX && posX < view.width && 0 < posY && posY < view.height
+        // todo: add parent traversal
+        return hasBeenPressed && pressIsInBounds
+      }
+
       if (view is RenderableView) {
         // get highest-order parent
         var highestOrderSvgView = view.svgView
