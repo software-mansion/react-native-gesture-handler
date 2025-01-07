@@ -1,24 +1,23 @@
 package com.swmansion.gesturehandler
 
-import com.horcrux.svg.RenderableView
 import com.horcrux.svg.SvgView
 import com.horcrux.svg.VirtualView
 
 class RNSVGHitTester {
   companion object {
     fun isSvgElement(view: Any): Boolean {
-      return (view is RenderableView || view is SvgView)
+      return (view is VirtualView || view is SvgView)
     }
 
     fun hitTest(view: Any, posX: Float, posY: Float): Boolean {
       if (view is SvgView) {
         val hasBeenPressed = view.id == view.reactTagForTouch(posX, posY)
         val pressIsInBounds = 0 < posX && posX < view.width && 0 < posY && posY < view.height
-        // todo: add parent traversal
+        // todo: add parent traversal, copying the one used for VirtualView doesn't work
         return hasBeenPressed && pressIsInBounds
       }
 
-      if (view is RenderableView) {
+      if (view is VirtualView) {
         // get highest-order parent
         var highestOrderSvgView = view.svgView
         while (isSvgElement(highestOrderSvgView.parent)) {
