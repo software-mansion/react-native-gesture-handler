@@ -1,8 +1,8 @@
 package com.swmansion.gesturehandler
 
-import android.graphics.Matrix
 import com.horcrux.svg.RenderableView
 import com.horcrux.svg.SvgView
+import com.horcrux.svg.VirtualView
 
 class RNSVGHitTester {
   companion object {
@@ -16,18 +16,14 @@ class RNSVGHitTester {
       }
 
       if (view is RenderableView) {
-        var highestView = view
-        var highestRoot = view.svgView
-
-        val pointTransformations = mutableListOf<Matrix>()
-
-        while (highestView is SvgView || highestView is RenderableView) {
-          if (highestView is RenderableView) {
-            highestView = highestView.parent
-          } else if (highestView is SvgView) {
-            highestRoot = highestView
-            pointTransformations.add(highestView.mInvViewBoxMatrix)
-            highestView = highestView.parent
+        // get highest-order parent
+        var highestOrderSvgView = view.svgView
+        while (isSvgElement(highestOrderSvgView.parent)) {
+          if (highestOrderSvgView.parent is SvgView) {
+            highestOrderSvgView = highestOrderSvgView.parent as SvgView
+          }
+          if (highestOrderSvgView.parent is VirtualView) {
+            highestOrderSvgView = (highestOrderSvgView.parent as VirtualView).svgView
           }
         }
 
@@ -35,21 +31,13 @@ class RNSVGHitTester {
         val rootLocation = intArrayOf(0, 0)
 
         view.getLocationOnScreen(viewLocation)
-        highestRoot?.getLocationOnScreen(rootLocation)
-        // all transformations and bounds are relative to the highest-order SvgView
+        highestOrderSvgView.getLocationOnScreen(rootLocation)
 
+        // convert View-relative coordinates into SvgView-relative coordinates
         val rootX = posX + viewLocation[0] - rootLocation[0]
         val rootY = posY + viewLocation[1] - rootLocation[1]
 
-        val transformed = floatArrayOf(rootX, rootY)
-
-        pointTransformations.reverse()
-
-        for (matrix in pointTransformations) {
-          matrix.mapPoints(transformed)
-        }
-
-        return view.hitTest(transformed) != -1
+        return view.id == highestOrderSvgView.reactTagForTouch(rootX, rootY)
       }
       return false
     }
