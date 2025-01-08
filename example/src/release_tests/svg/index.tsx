@@ -4,7 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import Svg, { Circle, Rect } from 'react-native-svg';
 
-export default function EmptyExample() {
+export default function SvgExample() {
   const circleElementTap = Gesture.Tap().onStart(() =>
     console.log('RNGH: clicked circle')
   );
