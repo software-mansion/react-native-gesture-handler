@@ -17,11 +17,10 @@ class RNSVGHitTester {
       }
 
       while (isSvgElement(highestOrderSvgView.parent)) {
-        if (highestOrderSvgView.parent is SvgView) {
-          highestOrderSvgView = highestOrderSvgView.parent as SvgView
-        }
-        if (highestOrderSvgView.parent is VirtualView) {
-          highestOrderSvgView = (highestOrderSvgView.parent as VirtualView).svgView!!
+        highestOrderSvgView = if (highestOrderSvgView.parent is VirtualView) {
+          (highestOrderSvgView.parent as VirtualView).svgView!!
+        } else {
+          highestOrderSvgView.parent as SvgView
         }
       }
 
@@ -60,6 +59,7 @@ class RNSVGHitTester {
       if (view is VirtualView) {
         return view.id == highestOrderSvgView.reactTagForTouch(rootX, rootY)
       }
+
       return false
     }
   }
