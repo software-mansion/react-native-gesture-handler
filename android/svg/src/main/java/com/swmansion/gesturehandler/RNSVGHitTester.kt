@@ -51,7 +51,9 @@ class RNSVGHitTester {
         val hasBeenPressed = view.id == pressedId
         val hasChildBeenPressed = pressedId in childrenIds
 
-        val pressIsInBounds = 0 < posX && posX < view.width && 0 < posY && posY < view.height
+        val pressIsInBounds =
+          posX in 0.0..view.width.toDouble() &&
+            posY in 0.0..view.height.toDouble()
 
         return (hasBeenPressed || hasChildBeenPressed) && pressIsInBounds
       }
