@@ -78,15 +78,15 @@ def shouldUseCommonInterfaceFromReanimated() {
 // Using the latest version for now, todo: find the oldest working version
 def shouldUseCommonInterfaceFromRNSVG() {
     def rnsvg = rootProject.subprojects.find { it.name == 'react-native-svg' }
-    if (rnsvg != null) {
-        def inputFile = new File(rnsvg.projectDir, '../package.json')
-        def json = new JsonSlurper().parseText(inputFile.text)
-        def rnsvgVersion = json.version as String
-        def (major, minor, patch) = rnsvgVersion.tokenize('.')
-        return (Integer.parseInt(major) == 15 && Integer.parseInt(minor) >= 8) || Integer.parseInt(major) > 15
-    } else {
+    if (rnsvg == null) {
         return false
     }
+
+    def inputFile = new File(rnsvg.projectDir, '../package.json')
+    def json = new JsonSlurper().parseText(inputFile.text)
+    def rnsvgVersion = json.version as String
+    def (major, minor, patch) = rnsvgVersion.tokenize('.')
+    return (Integer.parseInt(major) == 15 && Integer.parseInt(minor) >= 8) || Integer.parseInt(major) > 15
 }
 
 def reactNativeArchitectures() {
