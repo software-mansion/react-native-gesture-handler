@@ -7,7 +7,7 @@ import com.horcrux.svg.VirtualView
 
 class RNSVGHitTester {
   companion object {
-    private fun getHighestOrderSvgView(view: Any): SvgView {
+    private fun getRootSvgView(view: Any): SvgView {
       var highestOrderSvgView: SvgView
 
       highestOrderSvgView = if (view is VirtualView) {
@@ -32,7 +32,7 @@ class RNSVGHitTester {
     }
 
     fun hitTest(view: View, posX: Float, posY: Float): Boolean {
-      val highestOrderSvgView = getHighestOrderSvgView(view)
+      val highestOrderSvgView = getRootSvgView(view)
       val viewLocation = intArrayOf(0, 0)
       val rootLocation = intArrayOf(0, 0)
 
