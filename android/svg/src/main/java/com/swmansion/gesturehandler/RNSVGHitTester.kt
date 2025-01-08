@@ -8,23 +8,23 @@ import com.horcrux.svg.VirtualView
 class RNSVGHitTester {
   companion object {
     private fun getRootSvgView(view: Any): SvgView {
-      var highestOrderSvgView: SvgView
+      var rootSvgView: SvgView
 
-      highestOrderSvgView = if (view is VirtualView) {
+      rootSvgView = if (view is VirtualView) {
         view.svgView!!
       } else {
         view as SvgView
       }
 
-      while (isSvgElement(highestOrderSvgView.parent)) {
-        highestOrderSvgView = if (highestOrderSvgView.parent is VirtualView) {
-          (highestOrderSvgView.parent as VirtualView).svgView!!
+      while (isSvgElement(rootSvgView.parent)) {
+        rootSvgView = if (rootSvgView.parent is VirtualView) {
+          (rootSvgView.parent as VirtualView).svgView!!
         } else {
-          highestOrderSvgView.parent as SvgView
+          rootSvgView.parent as SvgView
         }
       }
 
-      return highestOrderSvgView
+      return rootSvgView
     }
 
     fun isSvgElement(view: Any): Boolean {
@@ -32,18 +32,18 @@ class RNSVGHitTester {
     }
 
     fun hitTest(view: View, posX: Float, posY: Float): Boolean {
-      val highestOrderSvgView = getRootSvgView(view)
+      val rootSvgView = getRootSvgView(view)
       val viewLocation = intArrayOf(0, 0)
       val rootLocation = intArrayOf(0, 0)
 
       view.getLocationOnScreen(viewLocation)
-      highestOrderSvgView.getLocationOnScreen(rootLocation)
+      rootSvgView.getLocationOnScreen(rootLocation)
 
       // convert View-relative coordinates into SvgView-relative coordinates
       val rootX = posX + viewLocation[0] - rootLocation[0]
       val rootY = posY + viewLocation[1] - rootLocation[1]
 
-      val pressedId = highestOrderSvgView.reactTagForTouch(rootX, rootY)
+      val pressedId = rootSvgView.reactTagForTouch(rootX, rootY)
 
       if (view is SvgView) {
         val childrenIds = view.children.map { it.id }
@@ -57,7 +57,7 @@ class RNSVGHitTester {
       }
 
       if (view is VirtualView) {
-        return view.id == highestOrderSvgView.reactTagForTouch(rootX, rootY)
+        return view.id == rootSvgView.reactTagForTouch(rootX, rootY)
       }
 
       return false
