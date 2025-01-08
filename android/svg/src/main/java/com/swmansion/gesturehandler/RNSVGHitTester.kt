@@ -11,10 +11,10 @@ class RNSVGHitTester {
       // get highest-order SvgView
       var highestOrderSvgView: SvgView
 
-      if (view is VirtualView) {
-        highestOrderSvgView = view.svgView
+      highestOrderSvgView = if (view is VirtualView) {
+        view.svgView
       } else {
-        highestOrderSvgView = view as SvgView
+        view as SvgView
       }
 
       while (isSvgElement(highestOrderSvgView.parent)) {
