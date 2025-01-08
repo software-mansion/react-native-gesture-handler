@@ -8,7 +8,6 @@ import com.horcrux.svg.VirtualView
 class RNSVGHitTester {
   companion object {
     private fun getHighestOrderSvgView(view: Any): SvgView {
-      // get highest-order SvgView
       var highestOrderSvgView: SvgView
 
       highestOrderSvgView = if (view is VirtualView) {
@@ -50,8 +49,6 @@ class RNSVGHitTester {
       if (view is SvgView) {
         val childrenIds = view.children.map { it.id }
 
-        // pressed directly, or any of it's children pressed
-        // replicates onPress behaviour
         val hasBeenPressed = view.id == pressedId
         val hasChildBeenPressed = pressedId in childrenIds
 
