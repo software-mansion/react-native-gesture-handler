@@ -11,7 +11,7 @@ class RNSVGHitTester {
       var highestOrderSvgView: SvgView
 
       highestOrderSvgView = if (view is VirtualView) {
-        view.svgView
+        view.svgView!!
       } else {
         view as SvgView
       }
@@ -21,7 +21,7 @@ class RNSVGHitTester {
           highestOrderSvgView = highestOrderSvgView.parent as SvgView
         }
         if (highestOrderSvgView.parent is VirtualView) {
-          highestOrderSvgView = (highestOrderSvgView.parent as VirtualView).svgView
+          highestOrderSvgView = (highestOrderSvgView.parent as VirtualView).svgView!!
         }
       }
 
