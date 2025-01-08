@@ -235,9 +235,7 @@ dependencies {
     }
 
     if (shouldUseCommonInterfaceFromRNSVG()) {
-        implementation (rootProject.subprojects.find { it.name == 'react-native-svg' }) {
-            // no-op
-        }
+        implementation rootProject.subprojects.find { it.name == 'react-native-svg' }
     }
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
