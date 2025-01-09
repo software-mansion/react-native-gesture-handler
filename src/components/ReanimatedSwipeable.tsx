@@ -8,6 +8,7 @@ import React, {
   useCallback,
   useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
@@ -212,6 +213,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
     props: SwipeableProps,
     ref: ForwardedRef<SwipeableMethods>
   ) {
+    const rerenders = useRef<number>(0);
+
+    if (props.testID) {
+      console.log(`[${props.testID}] ${rerenders.current++}`);
+    }
+
     const defaultProps = {
       friction: 1,
       overshootFriction: 1,
