@@ -40,7 +40,7 @@ import PointerType from './src/release_tests/pointerType';
 import SwipeableReanimation from './src/release_tests/swipeableReanimation';
 import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
 import TwoFingerPan from './src/release_tests/twoFingerPan';
-import Svg from './src/release_tests/svg';
+import SvgCompatibility from './src/release_tests/svg';
 import NestedText from './src/release_tests/nestedText';
 
 import { PinchableBox } from './src/recipes/scaleAndRotate';
@@ -190,7 +190,10 @@ const EXAMPLES: ExamplesSection[] = [
         component: NestedButtons,
         unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
       },
-      { name: 'Svg integration with Gesture Handler', component: Svg },
+      {
+        name: 'Svg integration with Gesture Handler',
+        component: SvgCompatibility,
+      },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
       { name: 'Rows', component: Rows },
