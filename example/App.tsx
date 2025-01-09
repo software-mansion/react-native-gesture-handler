@@ -1,9 +1,12 @@
-import { Text, StyleSheet, View, Alert } from 'react-native';
+import React, { Text, StyleSheet, View, Alert } from 'react-native';
 
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { FlashList, ListRenderItem, useBenchmark } from '@shopify/flash-list';
 import { memo, useRef } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  // Swipeable as LegacySwipeable,
+} from 'react-native-gesture-handler';
 
 function RightAction() {
   return <Text style={styles.rightAction}>Text</Text>;
@@ -20,18 +23,18 @@ const generateItems = (count: number): Item[] => {
     .fill(0)
     .map((value, idx) => {
       // render speed test
-      // return {
-      //   id: String(idx),
-      //   testID: String(idx),
-      //   title: `Number ${idx}`,
-      // };
-
-      // re-renders test
       return {
         id: String(idx),
-        testID: String(value),
-        title: `Number ${value}`,
+        testID: String(idx),
+        title: `Number ${idx}`,
       };
+
+      // re-renders test
+      // return {
+      //   id: String(idx),
+      //   testID: String(value),
+      //   title: `Number ${value}`,
+      // };
     });
 };
 
