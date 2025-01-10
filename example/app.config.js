@@ -43,16 +43,6 @@ export default ({ config }) => ({
         ],
       },
     ],
-    [
-      'expo-build-properties',
-      {
-        ios: {
-          newArchEnabled: Boolean(Number(process.env.FABRIC_ENABLED)),
-        },
-        android: {
-          newArchEnabled: Boolean(Number(process.env.FABRIC_ENABLED)),
-        },
-      },
-    ],
   ],
+  newArchEnabled: Boolean(Number(process.env.FABRIC_ENABLED)),
 });

@@ -25,7 +25,6 @@
     "@react-navigation/stack": "^6.3.29",
     "@swmansion/icons": "^0.0.1",
     "expo": "^52.0.24",
-    "expo-build-properties": "~0.13.1",
     "expo-camera": "~16.0.10",
     "expo-font": "~13.0.2",
     "hoist-non-react-statics": "^3.3.2",
