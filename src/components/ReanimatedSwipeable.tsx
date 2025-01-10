@@ -9,6 +9,7 @@ import React, {
   useImperativeHandle,
   useMemo,
 } from 'react';
+import { GestureType } from '../handlers/gestures/gesture';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
@@ -202,6 +203,12 @@ export interface SwipeableProps
    * apply `flex: 1`
    */
   childrenContainerStyle?: StyleProp<ViewStyle>;
+
+  /**
+   * A base gesture object containing the configuration and callbacks to be
+   * used simultaneously with `Swipeable`'s gesture object.
+   */
+  simultaneousGesture?: GestureType;
 }
 
 export interface SwipeableMethods {
@@ -247,6 +254,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       onSwipeableClose,
       renderLeftActions,
       renderRightActions,
+      simultaneousGesture,
       ...remainingProps
     } = props;
 
@@ -713,8 +721,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [appliedTranslation, rowState]
     );
 
+    const swipeableGesture = simultaneousGesture
+      ? Gesture.Simultaneous(panGesture, simultaneousGesture)
+      : panGesture;
+
     const swipeableComponent = (
-      <GestureDetector gesture={panGesture} touchAction="pan-y">
+      <GestureDetector gesture={swipeableGesture} touchAction="pan-y">
         <Animated.View
           {...remainingProps}
           onLayout={onRowLayout}
