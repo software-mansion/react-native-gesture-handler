@@ -5,7 +5,6 @@ export default ({ config }) => ({
   version: '0.0.1',
   orientation: 'portrait',
   icon: './assets/icon.png',
-  sdkVersion: '51.0.0',
   splash: {
     image: './assets/splash.png',
     resizeMode: 'cover',
