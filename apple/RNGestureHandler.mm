@@ -461,8 +461,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
     shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
+  RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
   if ([_handlersToWaitFor count]) {
-    RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:otherGestureRecognizer];
     if (handler != nil) {
       for (NSNumber *handlerTag in _handlersToWaitFor) {
         if ([handler.tag isEqual:handlerTag]) {
@@ -471,6 +471,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       }
     }
   }
+
+  if (handler != nil) {
+    for (NSNumber *handlerTag in handler->_handlersThatShouldWait) {
+      if ([_tag isEqual:handlerTag]) {
+        return YES;
+      }
+    }
+  }
+
   return NO;
 }
 
