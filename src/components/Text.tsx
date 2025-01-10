@@ -11,7 +11,8 @@ import {
   TextProps as RNTextProps,
 } from 'react-native';
 
-import { Gesture, GestureDetector } from '../';
+import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
 export const Text = forwardRef(
   (props: RNTextProps, ref: ForwardedRef<RNText>) => {
