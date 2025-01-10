@@ -206,7 +206,7 @@ export interface SwipeableProps
 
   /**
    * A base gesture object containing the configuration and callbacks to be
-   * used simultaneously with `Swipeable`'s gesture object.
+   * used with the swipeable's gesture handler.
    */
   simultaneousGesture?: GestureType;
 }

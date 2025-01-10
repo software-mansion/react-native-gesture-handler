@@ -128,6 +128,10 @@ style object for the container (`Animated.View`), for example to override `overf
 
 style object for the children container (`Animated.View`), for example to apply `flex: 1`.
 
+### `simultaneousGesture`
+
+An optional gesture configuration that allows another gesture to be recognized simultaneously with the swipeable gesture. This can be useful for implementing complex gesture interactions where multiple gestures need to be detected at the same time.
+
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads.
