@@ -39,6 +39,8 @@
     "android/common/src/main/java/",
     "android/reanimated/src/main/java/",
     "android/noreanimated/src/main/java/",
+    "android/package77/",
+    "android/packageDeprecated/",
     "apple/",
     "Swipeable/",
     "ReanimatedSwipeable/",
