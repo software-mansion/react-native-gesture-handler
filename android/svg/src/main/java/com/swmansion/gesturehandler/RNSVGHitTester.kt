@@ -44,11 +44,11 @@ class RNSVGHitTester {
       val rootY = posY + viewLocation[1] - rootLocation[1]
 
       val pressedId = rootSvgView.reactTagForTouch(rootX, rootY)
+      val hasBeenPressed = view.id == pressedId
 
       if (view is SvgView) {
         val childrenIds = view.children.map { it.id }
 
-        val hasBeenPressed = view.id == pressedId
         val hasChildBeenPressed = pressedId in childrenIds
 
         val pressIsInBounds =
@@ -59,7 +59,7 @@ class RNSVGHitTester {
       }
 
       if (view is VirtualView) {
-        return view.id == rootSvgView.reactTagForTouch(rootX, rootY)
+        return hasBeenPressed
       }
 
       return false
