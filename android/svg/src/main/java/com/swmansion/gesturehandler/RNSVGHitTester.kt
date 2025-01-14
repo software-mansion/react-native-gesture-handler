@@ -7,7 +7,7 @@ import com.horcrux.svg.VirtualView
 
 class RNSVGHitTester {
   companion object {
-    private fun getRootSvgView(view: Any): SvgView {
+    private fun getRootSvgView(view: View): SvgView {
       var rootSvgView: SvgView
 
       rootSvgView = if (view is VirtualView) {
