@@ -485,7 +485,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   override fun invalidate() {
     registry.dropAllHandlers()
     interactionManager.reset()
-    synchronized(roots) {
+    run {
       while (roots.isNotEmpty()) {
         val sizeBefore: Int = roots.size
         val root: RNGestureHandlerRootHelper = roots[0]
@@ -499,7 +499,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
-    synchronized(roots) {
+    run {
       if (root in roots) {
         throw IllegalStateException("Root helper$root already registered")
       }
@@ -508,7 +508,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   fun unregisterRootHelper(root: RNGestureHandlerRootHelper) {
-    synchronized(roots) { roots.remove(root) }
+    run { roots.remove(root) }
   }
 
   private fun findRootHelperForViewAncestor(viewTag: Int): RNGestureHandlerRootHelper? {
@@ -518,7 +518,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     if (rootViewTag < 1) {
       return null
     }
-    synchronized(roots) {
+    run {
       return roots.firstOrNull {
         it.rootView is ReactRootView && it.rootView.rootViewTag == rootViewTag
       }

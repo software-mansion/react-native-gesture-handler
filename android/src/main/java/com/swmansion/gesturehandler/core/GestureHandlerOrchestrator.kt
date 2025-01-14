@@ -452,7 +452,7 @@ class GestureHandlerOrchestrator(
         val parentViewGroup: ViewGroup = parent
 
         handlerRegistry.getHandlersForView(parent)?.let {
-          synchronized(it) {
+          run {
             for (handler in it) {
               if (handler.isEnabled && handler.isWithinBounds(view, coords[0], coords[1])) {
                 found = true
@@ -473,7 +473,7 @@ class GestureHandlerOrchestrator(
   private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
-      synchronized(it) {
+      run {
         for (handler in it) {
           // skip disabled and out-of-bounds handlers
           if (!handler.isEnabled || !handler.isWithinBounds(view, coords[0], coords[1])) {
