@@ -61,11 +61,7 @@ class RNSVGHitTester {
         return (hasBeenPressed || hasChildBeenPressed) && pressIsInBounds
       }
 
-      if (view is VirtualView) {
-        return hasBeenPressed
-      }
-
-      return false
+      return hasBeenPressed
     }
   }
 }
