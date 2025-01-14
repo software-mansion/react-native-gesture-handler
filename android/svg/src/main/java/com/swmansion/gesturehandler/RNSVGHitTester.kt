@@ -46,6 +46,9 @@ class RNSVGHitTester {
       val pressedId = rootSvgView.reactTagForTouch(rootX, rootY)
       val hasBeenPressed = view.id == pressedId
 
+      // hitTest(view, ...) should only be called after isSvgElement(view) returns true
+      // Consequently, `view` will always be either SvgView or VirtualView
+
       if (view is SvgView) {
         val childrenIds = view.children.map { it.id }
 
