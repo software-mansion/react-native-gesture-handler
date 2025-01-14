@@ -34,8 +34,8 @@ function AnnouncementBar() {
 
   // hide announcement bar at the end of the State of React Native survey
   const today = new Date();
-  const endOfStateOfReactNative = new Date('2025-01-08T00:00:00.000Z');
-  if (today > endOfStateOfReactNative) {
+  const hideAfter = new Date('2025-01-28T00:00:00.000Z');
+  if (today > hideAfter) {
     return null;
   }
 
