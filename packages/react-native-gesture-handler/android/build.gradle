@@ -151,7 +151,6 @@ android {
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
         if (isNewArchitectureEnabled()) {
-            var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
             externalNativeBuild {
                 cmake {
                     cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
