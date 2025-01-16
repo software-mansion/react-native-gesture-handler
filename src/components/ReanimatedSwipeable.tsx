@@ -530,7 +530,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         appliedTranslation,
         renderRightActions,
         rightWidth,
-        rowWidth.value,
+        rowWidth,
         showRightProgress,
         swipeableMethods,
       ]
