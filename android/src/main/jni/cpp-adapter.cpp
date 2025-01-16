@@ -2,6 +2,8 @@
 #include <jsi/jsi.h>
 
 #include <react/renderer/uimanager/primitives.h>
+#include <react/renderer/components/text/ParagraphShadowNode.h>
+#include <react/renderer/components/text/TextShadowNode.h>
 
 using namespace facebook;
 using namespace react;
@@ -20,9 +22,14 @@ void decorateRuntime(jsi::Runtime &runtime) {
                 }
 
                 auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
-                bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
+                bool isFormsStackingContext = shadowNode->getTraits().check(
+                        ShadowNodeTraits::FormsStackingContext);
 
-                return jsi::Value(isFormsStackingContext);
+                const char *componentName = shadowNode->getComponentName();
+                bool isParagraphComponent = strcmp(componentName, "Paragraph") == 0 ||
+                                            strcmp(componentName, "Text") == 0;
+
+                return jsi::Value(isFormsStackingContext || isParagraphComponent);
             });
     runtime.global().setProperty(
             runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
@@ -30,11 +37,11 @@ void decorateRuntime(jsi::Runtime &runtime) {
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_swmansion_gesturehandler_react_RNGestureHandlerModule_decorateRuntime(
-    JNIEnv *env,
-    jobject clazz,
-    jlong jsiPtr) {
-  jsi::Runtime *runtime = reinterpret_cast<jsi::Runtime *>(jsiPtr);
-  if (runtime) {
-    decorateRuntime(*runtime);
-  }
+        JNIEnv *env,
+        jobject clazz,
+        jlong jsiPtr) {
+    jsi::Runtime *runtime = reinterpret_cast<jsi::Runtime *>(jsiPtr);
+    if (runtime) {
+        decorateRuntime(*runtime);
+    }
 }
