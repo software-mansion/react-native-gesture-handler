@@ -8,6 +8,7 @@ import React, {
   useCallback,
   useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
@@ -462,11 +463,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
+    const leftLayoutRef = useRef<View>(null);
+    const rightLayoutRef = useRef<View>(null);
+
     const onRowLayout = useCallback(
       ({ nativeEvent }: LayoutChangeEvent) => {
         rowWidth.value = nativeEvent.layout.width;
+        leftLayoutRef.current?.measure((x) =>
+          runOnUI(() => (leftWidth.value = x))()
+        );
+        rightLayoutRef.current?.measure((x) =>
+          runOnUI(() => (rightWidth.value = Math.max(rowWidth.value - x, 0)))()
+        );
       },
-      [rowWidth]
+      [leftWidth, rightWidth, rowWidth]
     );
 
     const leftElement = useCallback(
@@ -478,8 +488,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             swipeableMethods
           )}
           <View
+            ref={leftLayoutRef}
             onLayout={({ nativeEvent }) =>
-              (leftWidth.value = nativeEvent.layout.x)
+              runOnUI(() => (leftWidth.value = nativeEvent.layout.x))()
             }
           />
         </Animated.View>
@@ -502,6 +513,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             swipeableMethods
           )}
           <View
+            ref={rightLayoutRef}
             onLayout={({ nativeEvent }) => {
               runOnUI(
                 () =>
