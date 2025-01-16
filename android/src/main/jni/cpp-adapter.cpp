@@ -26,10 +26,10 @@ void decorateRuntime(jsi::Runtime &runtime) {
                         ShadowNodeTraits::FormsStackingContext);
 
                 const char *componentName = shadowNode->getComponentName();
-                bool isParagraphComponent = strcmp(componentName, "Paragraph") == 0 ||
+                bool isTextComponent = strcmp(componentName, "Paragraph") == 0 ||
                                             strcmp(componentName, "Text") == 0;
 
-                return jsi::Value(isFormsStackingContext || isParagraphComponent);
+                return jsi::Value(isFormsStackingContext || isTextComponent);
             });
     runtime.global().setProperty(
             runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
