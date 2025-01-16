@@ -536,6 +536,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [
         appliedTranslation,
         renderRightActions,
+        rightActionAnimation,
         rightOffset,
         showRightProgress,
         swipeableMethods,
@@ -694,18 +695,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         </Animated.View>
       </GestureDetector>
     );
-
-    useAnimatedStyle(() => {
-      console.log('----------');
-      console.log('rowWidth', rowWidth.value);
-      console.log('leftWidth', leftWidth.value);
-      console.log('rightWidth', rightWidth.value);
-      console.log('rightOffset', rightOffset.value);
-      console.log('showLeftProgress', showLeftProgress.value);
-      console.log('showRightProgress', showRightProgress.value);
-      console.log('userDrag', userDrag.value);
-      return {};
-    });
 
     return testID ? (
       <View testID={testID}>{swipeableComponent}</View>
