@@ -14,6 +14,8 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
 
+#import <react/renderer/components/text/ParagraphShadowNode.h>
+#import <react/renderer/components/text/TextShadowNode.h>
 #import <react/renderer/uimanager/primitives.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
@@ -26,6 +28,8 @@
 #import "RNGestureHandlerStateManager.h"
 
 #import <React/RCTJSThread.h>
+
+#import <cstring>
 
 #ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook;
@@ -101,7 +105,18 @@ void decorateRuntime(jsi::Runtime &runtime)
         }
         auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
         bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
-        return jsi::Value(isFormsStackingContext);
+
+        bool isTextComponent = false;
+
+        if (auto v = dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode); v != nullptr) {
+          isTextComponent = true;
+        }
+
+        if (auto v = dynamic_pointer_cast<const TextShadowNode>(shadowNode); v != nullptr) {
+          isTextComponent = true;
+        }
+
+        return jsi::Value(isFormsStackingContext || isTextComponent);
       });
   runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
 }
