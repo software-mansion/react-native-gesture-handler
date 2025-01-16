@@ -414,11 +414,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           const progressTarget = toValue === 0 ? 0 : 1;
 
           showLeftProgress.value =
-            leftWidth.value > 0
+            showLeftProgress.value > 0
               ? withSpring(progressTarget, progressSpringConfig)
               : 0;
           showRightProgress.value =
-            rightWidth.value > 0
+            showRightProgress.value > 0
               ? withSpring(progressTarget, progressSpringConfig)
               : 0;
 
@@ -481,9 +481,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [rowWidth]
     );
 
+    const leftActionAnimation = useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: showLeftProgress.value === 0 ? -10000 : 0 }],
+      };
+    });
+
     const leftElement = useCallback(
       () => (
-        <Animated.View style={[styles.leftActions]}>
+        <Animated.View style={[styles.leftActions, leftActionAnimation]}>
           {renderLeftActions?.(
             showLeftProgress,
             appliedTranslation,
@@ -498,6 +504,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ),
       [
         appliedTranslation,
+        leftActionAnimation,
         leftWidth,
         renderLeftActions,
         showLeftProgress,
@@ -505,9 +512,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
+    const rightActionAnimation = useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: showRightProgress.value === 0 ? 10000 : 0 }],
+      };
+    });
+
     const rightElement = useCallback(
       () => (
-        <Animated.View style={[styles.rightActions]}>
+        <Animated.View style={[styles.rightActions, rightActionAnimation]}>
           {renderRightActions?.(
             showRightProgress,
             appliedTranslation,
@@ -681,6 +694,18 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         </Animated.View>
       </GestureDetector>
     );
+
+    useAnimatedStyle(() => {
+      console.log('----------');
+      console.log('rowWidth', rowWidth.value);
+      console.log('leftWidth', leftWidth.value);
+      console.log('rightWidth', rightWidth.value);
+      console.log('rightOffset', rightOffset.value);
+      console.log('showLeftProgress', showLeftProgress.value);
+      console.log('showRightProgress', showRightProgress.value);
+      console.log('userDrag', userDrag.value);
+      return {};
+    });
 
     return testID ? (
       <View testID={testID}>{swipeableComponent}</View>
