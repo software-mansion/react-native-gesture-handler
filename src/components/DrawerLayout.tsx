@@ -199,6 +199,10 @@ export type DrawerMovementOption = {
   velocity?: number;
   speed?: number;
 };
+
+/**
+ * @deprecated use Reanimated version of DrawerLayout instead
+ */
 export default class DrawerLayout extends Component<
   DrawerLayoutProps,
   DrawerLayoutState
