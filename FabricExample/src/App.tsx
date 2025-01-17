@@ -1,58 +1,26 @@
-import * as React from 'react';
-import { SafeAreaView } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 
-import Navigator from './Navigator';
-
-import ComponentsScreen from './ComponentsScreen';
-import FinalScreen from './FinalScreen';
-import GestureCompositionScreen from './GestureCompositionScreen';
-import HomeScreen from './HomeScreen';
-import ViewFlatteningScreen from './ViewFlatteningScreen';
-
-const Stack = Navigator.create();
-
-Stack.setRoutes({
-  home: {
-    component: HomeScreen,
-    title: 'RNGH FabricExample',
-    rightButtonAction: () => {
-      Stack.navigateTo('gestureComposition');
-    },
-  },
-  gestureComposition: {
-    component: GestureCompositionScreen,
-    title: 'Gesture Composition',
-    rightButtonAction: () => {
-      Stack.navigateTo('components');
-    },
-  },
-  components: {
-    component: ComponentsScreen,
-    title: 'Components',
-    rightButtonAction: () => {
-      Stack.navigateTo('viewFlattening');
-    },
-  },
-  viewFlattening: {
-    component: ViewFlatteningScreen,
-    title: 'View Flattening',
-    rightButtonAction: () => {
-      Stack.navigateTo('final');
-    },
-  },
-  final: {
-    component: FinalScreen,
-    title: 'Final Screen',
-  },
-});
-
-export default function App() {
+export default function EmptyExample() {
+  const tap = Gesture.Native();
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Stack.Navigator initialRouteName="home" />
-      </SafeAreaView>
+    <GestureHandlerRootView>
+      <GestureDetector gesture={tap}>
+        <View style={styles.container} />
+      </GestureDetector>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: 80,
+    height: 80,
+    backgroundColor: 'tomato',
+  },
+});
