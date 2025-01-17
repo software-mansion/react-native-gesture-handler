@@ -22,7 +22,6 @@ import Animated, {
   SharedValue,
   interpolate,
   runOnJS,
-  runOnUI,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -468,12 +467,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const onRowLayout = useCallback(
       ({ nativeEvent }: LayoutChangeEvent) => {
-        runOnUI(() => (rowWidth.value = nativeEvent.layout.width))();
-        leftLayoutRef.current?.measure((_x, _y, _w, _h, pX) =>
-          runOnUI(() => (leftWidth.value = pX))()
+        rowWidth.value = nativeEvent.layout.width;
+        leftLayoutRef.current?.measure(
+          (_x, _y, _w, _h, pX) => (leftWidth.value = pX)
         );
-        rightLayoutRef.current?.measure((_x, _y, _w, _h, pX) =>
-          runOnUI(() => (rightWidth.value = rowWidth.value - pX))()
+        rightLayoutRef.current?.measure(
+          (_x, _y, _w, _h, pX) => (rightWidth.value = rowWidth.value - pX)
         );
       },
       [leftWidth, rightWidth, rowWidth]
@@ -490,7 +489,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           <View
             ref={leftLayoutRef}
             onLayout={({ nativeEvent }) =>
-              runOnUI(() => (leftWidth.value = nativeEvent.layout.x))()
+              (leftWidth.value = nativeEvent.layout.x)
             }
           />
         </Animated.View>
@@ -515,13 +514,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           <View
             ref={rightLayoutRef}
             onLayout={({ nativeEvent }) => {
-              runOnUI(
-                () =>
-                  (rightWidth.value = Math.max(
-                    rowWidth.value - nativeEvent.layout.x,
-                    0
-                  ))
-              )();
+              rightWidth.value = Math.max(
+                rowWidth.value - nativeEvent.layout.x,
+                0
+              );
             }}
           />
         </Animated.View>
