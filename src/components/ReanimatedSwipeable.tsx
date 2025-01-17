@@ -8,7 +8,6 @@ import React, {
   useCallback,
   useImperativeHandle,
   useMemo,
-  useRef,
 } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
@@ -21,7 +20,10 @@ import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEv
 import Animated, {
   SharedValue,
   interpolate,
+  measure,
   runOnJS,
+  runOnUI,
+  useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -462,20 +464,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
-    const leftLayoutRef = useRef<View>(null);
-    const rightLayoutRef = useRef<View>(null);
+    const leftLayoutRef = useAnimatedRef();
+    const rightLayoutRef = useAnimatedRef();
 
     const onRowLayout = useCallback(
       ({ nativeEvent }: LayoutChangeEvent) => {
         rowWidth.value = nativeEvent.layout.width;
-        leftLayoutRef.current?.measure(
-          (_x, _y, _w, _h, pX) => (leftWidth.value = pX)
-        );
-        rightLayoutRef.current?.measure(
-          (_x, _y, _w, _h, pX) => (rightWidth.value = rowWidth.value - pX)
-        );
+        runOnUI(() => {
+          const leftLayout = measure(leftLayoutRef);
+          leftWidth.value = leftLayout?.pageX ?? 0;
+          const rightLayout = measure(rightLayoutRef);
+          rightWidth.value = rowWidth.value - (rightLayout?.pageX ?? 0);
+        });
       },
-      [leftWidth, rightWidth, rowWidth]
+      [leftLayoutRef, rightLayoutRef, leftWidth, rightWidth, rowWidth]
     );
 
     const leftElement = useCallback(
@@ -486,7 +488,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             appliedTranslation,
             swipeableMethods
           )}
-          <View
+          <Animated.View
             ref={leftLayoutRef}
             onLayout={({ nativeEvent }) =>
               (leftWidth.value = nativeEvent.layout.x)
@@ -496,6 +498,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ),
       [
         appliedTranslation,
+        leftLayoutRef,
         leftWidth,
         renderLeftActions,
         showLeftProgress,
@@ -511,7 +514,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             appliedTranslation,
             swipeableMethods
           )}
-          <View
+          <Animated.View
             ref={rightLayoutRef}
             onLayout={({ nativeEvent }) => {
               rightWidth.value = Math.max(
@@ -525,6 +528,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [
         appliedTranslation,
         renderRightActions,
+        rightLayoutRef,
         rightWidth,
         rowWidth,
         showRightProgress,
