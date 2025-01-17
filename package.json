@@ -99,7 +99,6 @@
     "react": "18.3.1",
     "react-native": "0.77.0-rc.3",
     "react-native-builder-bob": "^0.17.1",
-    "react-native-reanimated": "^3.12.0",
     "react-test-renderer": "18.2.0",
     "release-it": "^13.6.5",
     "typescript": "5.0.4"

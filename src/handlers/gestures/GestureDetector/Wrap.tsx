@@ -24,7 +24,7 @@ export class Wrap extends React.Component<{
     } catch (e) {
       throw new Error(
         tagMessage(
-          `GestureDetector got more than one view as a child. If you want the gesture to work on multiple views, wrap them with a common parent and attach the gesture to that view.`
+          `Received ${e}! GestureDetector got more than one view as a child. If you want the gesture to work on multiple views, wrap them with a common parent and attach the gesture to that view.`
         )
       );
     }
