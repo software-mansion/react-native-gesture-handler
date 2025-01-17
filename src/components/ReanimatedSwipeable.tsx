@@ -471,9 +471,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ({ nativeEvent }: LayoutChangeEvent) => {
         rowWidth.value = nativeEvent.layout.width;
         runOnUI(() => {
+          'worklet';
           const leftLayout = measure(leftLayoutRef);
-          leftWidth.value = leftLayout?.pageX ?? 0;
           const rightLayout = measure(rightLayoutRef);
+          leftWidth.value = leftLayout?.pageX ?? 0;
           rightWidth.value = rowWidth.value - (rightLayout?.pageX ?? 0);
         });
       },
