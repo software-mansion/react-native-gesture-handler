@@ -468,12 +468,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const onRowLayout = useCallback(
       ({ nativeEvent }: LayoutChangeEvent) => {
-        rowWidth.value = nativeEvent.layout.width;
-        leftLayoutRef.current?.measure((x) =>
-          runOnUI(() => (leftWidth.value = x))()
+        runOnUI(() => (rowWidth.value = nativeEvent.layout.width))();
+        leftLayoutRef.current?.measure((_x, _y, _w, _h, pX) =>
+          runOnUI(() => (leftWidth.value = pX))()
         );
-        rightLayoutRef.current?.measure((x) =>
-          runOnUI(() => (rightWidth.value = Math.max(rowWidth.value - x, 0)))()
+        rightLayoutRef.current?.measure((_x, _y, _w, _h, pX) =>
+          runOnUI(() => (rightWidth.value = rowWidth.value - pX))()
         );
       },
       [leftWidth, rightWidth, rowWidth]
