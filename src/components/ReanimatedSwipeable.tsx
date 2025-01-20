@@ -26,6 +26,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {
+  Dimensions,
   I18nManager,
   LayoutChangeEvent,
   StyleProp,
@@ -481,9 +482,18 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [rowWidth]
     );
 
+    // React docs: "call this function on every render, rather than caching the value"
+    const hiddenSwipeableOffset = Dimensions.get('window').width + 1;
+
     const leftActionAnimation = useAnimatedStyle(() => {
       return {
-        transform: [{ translateX: showLeftProgress.value === 0 ? -10000 : 0 }],
+        transform: [
+          {
+            translateX:
+              showLeftProgress.value === 0 ? -hiddenSwipeableOffset : 0,
+          },
+        ],
+        overflow: showLeftProgress.value === 0 ? 'hidden' : undefined,
       };
     });
 
@@ -514,7 +524,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const rightActionAnimation = useAnimatedStyle(() => {
       return {
-        transform: [{ translateX: showRightProgress.value === 0 ? 10000 : 0 }],
+        transform: [
+          {
+            translateX:
+              showRightProgress.value === 0 ? hiddenSwipeableOffset : 0,
+          },
+        ],
+        overflow: showRightProgress.value === 0 ? 'hidden' : undefined,
       };
     });
 
