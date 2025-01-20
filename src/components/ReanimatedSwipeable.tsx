@@ -482,7 +482,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [rowWidth]
     );
 
-    // React docs: "call this function on every render, rather than caching the value"
+    // As stated in `Dimensions.get` docstring, this function should be called on every render
+    // since dimensions may change (e.g. orientation change)
     const hiddenSwipeableOffset = Dimensions.get('window').width + 1;
 
     const leftActionAnimation = useAnimatedStyle(() => {
