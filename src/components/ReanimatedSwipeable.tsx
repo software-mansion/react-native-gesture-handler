@@ -22,7 +22,6 @@ import Animated, {
   interpolate,
   measure,
   runOnJS,
-  runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
@@ -464,22 +463,15 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
-    const leftLayoutRef = useAnimatedRef();
-    const rightLayoutRef = useAnimatedRef();
-
     const onRowLayout = useCallback(
       ({ nativeEvent }: LayoutChangeEvent) => {
         rowWidth.value = nativeEvent.layout.width;
-        runOnUI(() => {
-          'worklet';
-          const leftLayout = measure(leftLayoutRef);
-          const rightLayout = measure(rightLayoutRef);
-          leftWidth.value = leftLayout?.pageX ?? 0;
-          rightWidth.value = rowWidth.value - (rightLayout?.pageX ?? 0);
-        });
       },
-      [leftLayoutRef, rightLayoutRef, leftWidth, rightWidth, rowWidth]
+      [rowWidth]
     );
+
+    const leftLayoutRef = useAnimatedRef();
+    const rightLayoutRef = useAnimatedRef();
 
     const leftElement = useCallback(
       () => (
@@ -489,18 +481,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             appliedTranslation,
             swipeableMethods
           )}
-          <Animated.View
-            ref={leftLayoutRef}
-            onLayout={({ nativeEvent }) =>
-              (leftWidth.value = nativeEvent.layout.x)
-            }
-          />
+          <Animated.View ref={leftLayoutRef} />
         </Animated.View>
       ),
       [
         appliedTranslation,
         leftLayoutRef,
-        leftWidth,
         renderLeftActions,
         showLeftProgress,
         swipeableMethods,
@@ -515,23 +501,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             appliedTranslation,
             swipeableMethods
           )}
-          <Animated.View
-            ref={rightLayoutRef}
-            onLayout={({ nativeEvent }) => {
-              rightWidth.value = Math.max(
-                rowWidth.value - nativeEvent.layout.x,
-                0
-              );
-            }}
-          />
+          <Animated.View ref={rightLayoutRef} />
         </Animated.View>
       ),
       [
         appliedTranslation,
         renderRightActions,
         rightLayoutRef,
-        rightWidth,
-        rowWidth,
         showRightProgress,
         swipeableMethods,
       ]
@@ -608,6 +584,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           .enabled(enabled !== false)
           .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
           .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
+          .onStart(() => {
+            const leftLayout = measure(leftLayoutRef);
+            const rightLayout = measure(rightLayoutRef);
+            leftWidth.value = leftLayout?.pageX ?? 0;
+            rightWidth.value = rowWidth.value - (rightLayout?.pageX ?? 0);
+          })
           .onUpdate(
             (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
               userDrag.value = event.translationX;
@@ -648,9 +630,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         enableTrackpadTwoFingerGesture,
         enabled,
         handleRelease,
+        leftLayoutRef,
+        leftWidth,
         onSwipeableCloseStartDrag,
         onSwipeableOpenStartDrag,
+        rightLayoutRef,
+        rightWidth,
         rowState,
+        rowWidth,
         updateAnimatedEvent,
         userDrag,
       ]
@@ -697,7 +684,6 @@ export type SwipeableRef = ForwardedRef<SwipeableMethods>;
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    width: '100%',
   },
   leftActions: {
     ...StyleSheet.absoluteFillObject,
