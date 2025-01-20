@@ -22,6 +22,7 @@ import Animated, {
   interpolate,
   measure,
   runOnJS,
+  runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
@@ -446,17 +447,37 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       () => ({
         close() {
           'worklet';
-          animateRow(0);
+          if (_WORKLET) {
+            animateRow(0);
+            return;
+          }
+          runOnUI(() => {
+            animateRow(0);
+          });
         },
         openLeft() {
           'worklet';
-          updateElementWidths();
-          animateRow(leftWidth.value);
+          if (_WORKLET) {
+            updateElementWidths();
+            animateRow(leftWidth.value);
+            return;
+          }
+          runOnUI(() => {
+            updateElementWidths();
+            animateRow(leftWidth.value);
+          });
         },
         openRight() {
           'worklet';
-          updateElementWidths();
-          animateRow(-rightWidth.value);
+          if (_WORKLET) {
+            updateElementWidths();
+            animateRow(-rightWidth.value);
+            return;
+          }
+          runOnUI(() => {
+            updateElementWidths();
+            animateRow(-rightWidth.value);
+          });
         },
         reset() {
           'worklet';
