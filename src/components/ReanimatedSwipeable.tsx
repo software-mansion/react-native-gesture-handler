@@ -494,7 +494,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               showLeftProgress.value === 0 ? -hiddenSwipeableOffset : 0,
           },
         ],
-        overflow: showLeftProgress.value === 0 ? 'hidden' : undefined,
       };
     });
 
@@ -531,7 +530,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
               showRightProgress.value === 0 ? hiddenSwipeableOffset : 0,
           },
         ],
-        overflow: showRightProgress.value === 0 ? 'hidden' : undefined,
       };
     });
 
@@ -731,9 +729,11 @@ const styles = StyleSheet.create({
   leftActions: {
     ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+    overflow: 'hidden',
   },
   rightActions: {
     ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
+    overflow: 'hidden',
   },
 });
