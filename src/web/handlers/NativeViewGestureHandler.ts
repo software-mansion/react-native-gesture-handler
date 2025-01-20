@@ -55,10 +55,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     view.style['WebkitTouchCallout'] = 'auto';
   }
 
-  protected resetConfig(): void {
-    super.resetConfig();
-  }
-
   protected onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
@@ -83,7 +79,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
 
     this.begin();
-    if (this.buttonRole) {
+
+    const view = this.delegate.getView() as HTMLElement;
+    const isRNGHText = view.hasAttribute('rnghtext');
+
+    if (this.buttonRole || isRNGHText) {
       this.activate();
     }
   }

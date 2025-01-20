@@ -1,6 +1,7 @@
 ---
 id: testing
 title: Testing with Jest
+sidebar_position: 4
 ---
 
 ## Mocking native modules

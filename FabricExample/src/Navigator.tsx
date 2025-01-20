@@ -79,10 +79,8 @@ export default class Navigator {
     this.setCurrentRoute = setCurrentRoute;
 
     useEffect(() => {
-      BackHandler.addEventListener('hardwareBackPress', this.backHandler);
-      return () => {
-        BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
-      };
+      return BackHandler.addEventListener('hardwareBackPress', this.backHandler)
+        .remove;
     }, []);
 
     useEffect(() => {

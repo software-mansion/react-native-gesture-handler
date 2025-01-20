@@ -71,6 +71,7 @@
   [super touchesCancelled:touches withEvent:event];
 
   _activePointers = 0;
+  self.state = UIGestureRecognizerStateCancelled;
   [self reset];
 }
 

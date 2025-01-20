@@ -24,6 +24,7 @@ import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { MountRegistry } from '../mountRegistry';
 
 const UIManagerAny = UIManager as any;
 
@@ -262,6 +263,8 @@ export default function createHandler<
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete handlerIDToTag[handlerID];
       }
+
+      MountRegistry.gestureHandlerWillUnmount(this);
     }
 
     private onGestureHandlerEvent = (event: GestureEvent<U>) => {
@@ -373,6 +376,10 @@ export default function createHandler<
       }
 
       scheduleFlushOperations();
+
+      ghQueueMicrotask(() => {
+        MountRegistry.gestureHandlerWillMount(this);
+      });
     };
 
     private updateGestureHandler = (

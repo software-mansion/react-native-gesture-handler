@@ -36,7 +36,7 @@ The difference between `onEnd` and `onFinalize` is that the `onEnd` will be call
 
 ### Configuring the gestures
 
-The new gesture objects are configured in the builder-like pattern. Instead of properties, each gesture provides methods that allow for its customization. In most cases the names of the methods are the same as the relevant props, ot at least very similar. For example:
+The new gesture objects are configured in the builder-like pattern. Instead of properties, each gesture provides methods that allow for its customization. In most cases the names of the methods are the same as the relevant props, or at least very similar. For example:
 
 ```jsx
 return (

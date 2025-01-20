@@ -36,7 +36,8 @@ export function filterConfig(
   }
   return filteredConfig;
 }
-function transformIntoHandlerTags(handlerIDs: any) {
+
+export function transformIntoHandlerTags(handlerIDs: any) {
   handlerIDs = toArray(handlerIDs);
 
   if (Platform.OS === 'web') {

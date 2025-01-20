@@ -73,7 +73,6 @@
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-  [self reset];
 }
 
 #if TARGET_OS_OSX

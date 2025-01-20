@@ -115,7 +115,6 @@ static const BOOL defaultFeedbackOnActivation = NO;
 {
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-  [self reset];
 }
 
 - (void)handleForceWithTouches:(NSSet<RNGHUITouch *> *)touches

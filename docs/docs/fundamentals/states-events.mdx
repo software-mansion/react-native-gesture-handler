@@ -2,7 +2,7 @@
 id: states-events
 title: Gesture states & events
 sidebar_label: Gesture states & events
-sidebar_position: 6
+sidebar_position: 4
 ---
 
 Every gesture can be treated as ["state machine"](https://en.wikipedia.org/wiki/Finite-state_machine).
@@ -87,7 +87,3 @@ Is called when pointers are lifted from the screen. It may carry information abo
 ### `onPointerCancelled`
 
 Is called when there will be no more information about this pointer. It may be called because the gesture has ended or was interrupted. It may carry information about more than one pointer because the events are batched.
-
-### `onPointerChange`
-
-Is called before `onPointerDown`, `onPointerMove`, `onPointerUp` and `onPointerCancelled` with the same event, which may be useful in case you share logic between them. It may carry information about more than one pointer because the events are batched.

@@ -26,6 +26,7 @@
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+@property (nonatomic, assign) CGFloat borderRadius;
 @property (nonatomic) BOOL userEnabled;
 
 #if TARGET_OS_OSX && RCT_NEW_ARCH_ENABLED

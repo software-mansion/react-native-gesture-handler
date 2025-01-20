@@ -59,6 +59,11 @@ function App() {
 }
 ```
 
+
+## Remarks
+
+- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/pan-gesture).
+
 ## Config
 
 ### Properties specific to `HoverGesture`:
@@ -115,7 +120,3 @@ Object that contains additional information about `stylus`. It consists of the f
 - [`pressure`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pressure) - indicates the normalized pressure of the stylus.
 
 <BaseEventData />
-
-## Remarks
-
-- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/pan-gesture).

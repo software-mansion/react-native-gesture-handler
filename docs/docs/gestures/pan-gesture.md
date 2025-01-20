@@ -47,21 +47,63 @@ Gesture callback can be used for continuous tracking of the pan gesture. It prov
 
 <samp id="PanGestureBasicSrc">Pan Gesture</samp>
 
-## Reference
+## Example
 
 ```jsx
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
-function App() {
+const END_POSITION = 200;
+
+export default function App() {
+  const onLeft = useSharedValue(true);
+  const position = useSharedValue(0);
+
   // highlight-next-line
-  const pan = Gesture.Pan();
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      if (onLeft.value) {
+        position.value = e.translationX;
+      } else {
+        position.value = END_POSITION + e.translationX;
+      }
+    })
+    .onEnd((e) => {
+      if (position.value > END_POSITION / 2) {
+        position.value = withTiming(END_POSITION, { duration: 100 });
+        onLeft.value = false;
+      } else {
+        position.value = withTiming(0, { duration: 100 });
+        onLeft.value = true;
+      }
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: position.value }],
+  }));
 
   return (
-    <GestureDetector gesture={pan}>
-      <Animated.View />
+    // highlight-next-line
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={[styles.box, animatedStyle]} />
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
 ```
 
 ## Multi touch pan handling
@@ -200,62 +242,3 @@ Object that contains additional information about `stylus`. It consists of the f
 - [`pressure`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pressure) - indicates the normalized pressure of the stylus.
 
 <BaseEventData />
-
-## Example
-
-```jsx
-import { StyleSheet } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-
-const END_POSITION = 200;
-
-export default function App() {
-  const onLeft = useSharedValue(true);
-  const position = useSharedValue(0);
-
-  // highlight-next-line
-  const panGesture = Gesture.Pan()
-    .onUpdate((e) => {
-      if (onLeft.value) {
-        position.value = e.translationX;
-      } else {
-        position.value = END_POSITION + e.translationX;
-      }
-    })
-    .onEnd((e) => {
-      if (position.value > END_POSITION / 2) {
-        position.value = withTiming(END_POSITION, { duration: 100 });
-        onLeft.value = false;
-      } else {
-        position.value = withTiming(0, { duration: 100 });
-        onLeft.value = true;
-      }
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: position.value }],
-  }));
-
-  return (
-    // highlight-next-line
-    <GestureDetector gesture={panGesture}>
-      <Animated.View style={[styles.box, animatedStyle]} />
-    </GestureDetector>
-  );
-}
-
-const styles = StyleSheet.create({
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-```

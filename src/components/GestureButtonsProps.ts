@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { AccessibilityProps, StyleProp, ViewStyle } from 'react-native';
 import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 
-export interface RawButtonProps extends NativeViewGestureHandlerProps {
+export interface RawButtonProps
+  extends NativeViewGestureHandlerProps,
+    AccessibilityProps {
   /**
    * Defines if more than one button could be pressed simultaneously. By default
    * set true.

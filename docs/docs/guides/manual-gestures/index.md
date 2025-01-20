@@ -2,7 +2,7 @@
 id: manual-gestures
 title: Manual gestures
 sidebar_label: Manual gestures
-sidebar_position: 5
+sidebar_position: 2
 ---
 
 import Step, { Divider } from '@site/src/theme/Step';

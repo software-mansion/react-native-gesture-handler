@@ -26,10 +26,6 @@ export default class FlingGestureHandler extends GestureHandler {
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
-  public init(ref: number, propsRef: React.RefObject<unknown>): void {
-    super.init(ref, propsRef);
-  }
-
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
