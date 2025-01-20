@@ -44,7 +44,7 @@ export default function createNativeWrapper<P>(
       },
       {
         gestureHandlerProps: { ...config }, // Watch out not to modify config
-        childProps: {} as P,
+        childProps: { enabled: props.enabled } as P,
       }
     );
     const _ref = useRef<React.ComponentType<P>>();
