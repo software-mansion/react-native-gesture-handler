@@ -697,6 +697,7 @@ export type SwipeableRef = ForwardedRef<SwipeableMethods>;
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
+    width: '100%',
   },
   leftActions: {
     ...StyleSheet.absoluteFillObject,
