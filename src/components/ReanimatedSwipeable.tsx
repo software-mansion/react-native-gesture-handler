@@ -430,6 +430,17 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         ]
       );
 
+    const leftLayoutRef = useAnimatedRef();
+    const rightLayoutRef = useAnimatedRef();
+
+    const updateElementWidths = useCallback(() => {
+      'worklet';
+      const leftLayout = measure(leftLayoutRef);
+      const rightLayout = measure(rightLayoutRef);
+      leftWidth.value = leftLayout?.pageX ?? 0;
+      rightWidth.value = rowWidth.value - (rightLayout?.pageX ?? 0);
+    }, [leftLayoutRef, rightLayoutRef, leftWidth, rightWidth, rowWidth]);
+
     const swipeableMethods = useMemo<SwipeableMethods>(
       () => ({
         close() {
@@ -438,10 +449,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         },
         openLeft() {
           'worklet';
+          updateElementWidths();
           animateRow(leftWidth.value);
         },
         openRight() {
           'worklet';
+          updateElementWidths();
           animateRow(-rightWidth.value);
         },
         reset() {
@@ -453,13 +466,14 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         },
       }),
       [
+        animateRow,
+        updateElementWidths,
         leftWidth,
         rightWidth,
         userDrag,
         showLeftProgress,
         appliedTranslation,
         rowState,
-        animateRow,
       ]
     );
 
@@ -469,9 +483,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       },
       [rowWidth]
     );
-
-    const leftLayoutRef = useAnimatedRef();
-    const rightLayoutRef = useAnimatedRef();
 
     const leftElement = useCallback(
       () => (
@@ -584,12 +595,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           .enabled(enabled !== false)
           .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
           .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
-          .onStart(() => {
-            const leftLayout = measure(leftLayoutRef);
-            const rightLayout = measure(rightLayoutRef);
-            leftWidth.value = leftLayout?.pageX ?? 0;
-            rightWidth.value = rowWidth.value - (rightLayout?.pageX ?? 0);
-          })
+          .onStart(updateElementWidths)
           .onUpdate(
             (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
               userDrag.value = event.translationX;
@@ -630,15 +636,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         enableTrackpadTwoFingerGesture,
         enabled,
         handleRelease,
-        leftLayoutRef,
-        leftWidth,
         onSwipeableCloseStartDrag,
         onSwipeableOpenStartDrag,
-        rightLayoutRef,
-        rightWidth,
         rowState,
-        rowWidth,
         updateAnimatedEvent,
+        updateElementWidths,
         userDrag,
       ]
     );
