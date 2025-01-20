@@ -171,6 +171,21 @@ export class GestureHandlerWebDelegate
     this.setUserSelect(enabled);
     this.setTouchAction(enabled);
     this.setContextMenu(enabled);
+
+    if (enabled) {
+      this.eventManagers.forEach((manager) => {
+        // It may look like managers will be registered twice when handler is mounted for the first time.
+        // However, `init` method is called AFTER `updateGestureConfig` - it means that delegate has not
+        // been initialized yet, so this code won't be executed.
+        //
+        // Also, because we use defined functions, not lambdas, they will not be registered multiple times.
+        manager.registerListeners();
+      });
+    } else {
+      this.eventManagers.forEach((manager) => {
+        manager.unregisterListeners();
+      });
+    }
   }
 
   onBegin(): void {
