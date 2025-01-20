@@ -438,7 +438,8 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       const leftLayout = measure(leftLayoutRef);
       const rightLayout = measure(rightLayoutRef);
       leftWidth.value = leftLayout?.pageX ?? 0;
-      rightWidth.value = rowWidth.value - (rightLayout?.pageX ?? 0);
+      rightWidth.value =
+        rowWidth.value - (rightLayout?.pageX ?? rowWidth.value);
     }, [leftLayoutRef, rightLayoutRef, leftWidth, rightWidth, rowWidth]);
 
     const swipeableMethods = useMemo<SwipeableMethods>(
