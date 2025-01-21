@@ -380,6 +380,13 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
+  // BEGIN - RN Pressable Compatibility
+  const _onStartShouldSetResponder = remainingProps.onStartShouldSetResponder;
+  remainingProps.onStartShouldSetResponder = (params) =>
+    _onStartShouldSetResponder?.(params) || isPressableEnabled;
+
+  // END - RN Pressable Compatibility
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
