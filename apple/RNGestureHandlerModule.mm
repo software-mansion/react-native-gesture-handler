@@ -104,19 +104,14 @@ void decorateRuntime(jsi::Runtime &runtime)
           return jsi::Value::null();
         }
         auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+        if (dynamic_pointer_cast<const TextShadowNode>(shadowNode)) {
+          return jsi::Value(true);
+        }
+
         bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
-        bool isTextComponent = false;
-
-        if (auto v = dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode); v != nullptr) {
-          isTextComponent = true;
-        }
-
-        if (auto v = dynamic_pointer_cast<const TextShadowNode>(shadowNode); v != nullptr) {
-          isTextComponent = true;
-        }
-
-        return jsi::Value(isFormsStackingContext || isTextComponent);
+        return jsi::Value(isFormsStackingContext);
       });
   runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
 }
