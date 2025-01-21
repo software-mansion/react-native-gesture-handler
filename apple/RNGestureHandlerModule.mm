@@ -14,7 +14,6 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
 
-#import <react/renderer/components/text/ParagraphShadowNode.h>
 #import <react/renderer/components/text/TextShadowNode.h>
 #import <react/renderer/uimanager/primitives.h>
 #endif // RCT_NEW_ARCH_ENABLED
@@ -28,8 +27,6 @@
 #import "RNGestureHandlerStateManager.h"
 
 #import <React/RCTJSThread.h>
-
-#import <cstring>
 
 #ifdef RCT_NEW_ARCH_ENABLED
 using namespace facebook;
