@@ -25,6 +25,7 @@ void decorateRuntime(jsi::Runtime &runtime) {
                 bool isFormsStackingContext = shadowNode->getTraits().check(
                         ShadowNodeTraits::FormsStackingContext);
 
+                // This is done using component names instead of type checking because of duplicate symbols for RN types, which prevent RTTI from working.
                 const char *componentName = shadowNode->getComponentName();
                 bool isTextComponent = strcmp(componentName, "Paragraph") == 0 ||
                                             strcmp(componentName, "Text") == 0;
