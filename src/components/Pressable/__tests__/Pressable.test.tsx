@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable as RNPressable, Text } from 'react-native';
+import { Pressable as RNPressable, Text, View } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import RNGHPressable from '../Pressable';
 
@@ -14,15 +14,25 @@ const MyRNPressableComponent = ({
   onPress,
   disabled,
 }: MyComponentProps) => (
-  <RNPressable onPress={onPress} disabled={disabled}>
-    {children}
-  </RNPressable>
+  <View>
+    <RNPressable
+      accessibilityRole="button"
+      onPress={onPress}
+      disabled={disabled}>
+      {children}
+    </RNPressable>
+  </View>
 );
 
 const MyRNGHPressable = ({ children, onPress, disabled }: MyComponentProps) => (
-  <RNGHPressable onPress={onPress} disabled={disabled}>
-    {children}
-  </RNGHPressable>
+  <View>
+    <RNGHPressable
+      accessibilityRole="button"
+      onPress={onPress}
+      disabled={disabled}>
+      {children}
+    </RNGHPressable>
+  </View>
 );
 
 describe('Pressable', () => {
@@ -60,6 +70,10 @@ describe('Pressable', () => {
 
         fireEvent(screen.getByText('Pressable'), 'press');
         expect(onPressRN).not.toHaveBeenCalled();
+        // expect(screen.getByRole('button')).toBeDisabled();
+        // expect(screen.getByRole('button')).legacy_toHaveAccessibilityState({
+        //   disabled: true,
+        // });
 
         const onPressRNGN = jest.fn();
         render(
@@ -70,6 +84,11 @@ describe('Pressable', () => {
 
         fireEvent(screen.getByText('Pressable'), 'press');
         expect(onPressRNGN).not.toHaveBeenCalled();
+
+        // expect(screen.getByRole('button')).toBeDisabled();
+        // expect(screen.getByRole('button')).legacy_toHaveAccessibilityState({
+        //   disabled: true,
+        // });
       });
     });
   });
