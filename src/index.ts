@@ -1,3 +1,4 @@
+import _createNativeWrapper from './handlers/_createNativeWrapper';
 import { initialize } from './init';
 
 export { Directions } from './Directions';
@@ -162,5 +163,7 @@ export {
   enableExperimentalWebImplementation,
   enableLegacyWebImplementation,
 } from './EnableNewWebImplementation';
+
+export { _createNativeWrapper } from './handlers/_createNativeWrapper';
 
 initialize();
