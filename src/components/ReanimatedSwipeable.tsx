@@ -403,16 +403,17 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
             }
           );
 
-          const progressTarget = toValue === 0 ? 0 : 1;
+          const progressTarget = toValue === 0 ? 0 : 1 * Math.sign(toValue);
 
-          showLeftProgress.value =
-            showLeftProgress.value > 0
-              ? withSpring(progressTarget, progressSpringConfig)
-              : 0;
-          showRightProgress.value =
-            showRightProgress.value > 0
-              ? withSpring(progressTarget, progressSpringConfig)
-              : 0;
+          showLeftProgress.value = withSpring(
+            Math.max(progressTarget, 0),
+            progressSpringConfig
+          );
+
+          showRightProgress.value = withSpring(
+            Math.max(-progressTarget, 0),
+            progressSpringConfig
+          );
 
           dispatchImmediateEvents(frozenRowState, toValue);
 
