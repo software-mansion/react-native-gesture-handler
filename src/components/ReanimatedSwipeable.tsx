@@ -18,6 +18,7 @@ import {
 import type { PanGestureHandlerProps } from '../handlers/PanGestureHandler';
 import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
 import Animated, {
+  ReduceMotion,
   SharedValue,
   interpolate,
   measure,
@@ -363,11 +364,12 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           'worklet';
 
           const translationSpringConfig = {
-            duration: 1000,
-            dampingRatio: 0.9,
-            stiffness: 500,
+            mass: 2,
+            damping: 1000,
+            stiffness: 700,
             velocity: velocityX,
             overshootClamping: true,
+            reduceMotion: ReduceMotion.System,
             ...animationOptions,
           };
 
