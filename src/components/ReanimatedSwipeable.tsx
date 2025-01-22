@@ -432,16 +432,27 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       );
 
     const leftLayoutRef = useAnimatedRef();
+    const leftWrapperLayoutRef = useAnimatedRef();
     const rightLayoutRef = useAnimatedRef();
 
     const updateElementWidths = useCallback(() => {
       'worklet';
       const leftLayout = measure(leftLayoutRef);
+      const leftWrapperLayout = measure(leftWrapperLayoutRef);
       const rightLayout = measure(rightLayoutRef);
       leftWidth.value = leftLayout?.pageX ?? 0;
       rightWidth.value =
-        rowWidth.value - (rightLayout?.pageX ?? rowWidth.value);
-    }, [leftLayoutRef, rightLayoutRef, leftWidth, rightWidth, rowWidth]);
+        rowWidth.value -
+        (rightLayout?.pageX ?? rowWidth.value) +
+        (leftWrapperLayout?.pageX ?? 0);
+    }, [
+      leftLayoutRef,
+      leftWrapperLayoutRef,
+      rightLayoutRef,
+      leftWidth,
+      rightWidth,
+      rowWidth.value,
+    ]);
 
     const swipeableMethods = useMemo<SwipeableMethods>(
       () => ({
@@ -517,7 +528,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const leftElement = useCallback(
       () => (
-        <Animated.View style={[styles.leftActions, leftActionAnimation]}>
+        <Animated.View
+          ref={leftWrapperLayoutRef}
+          style={[styles.leftActions, leftActionAnimation]}>
           {renderLeftActions?.(
             showLeftProgress,
             appliedTranslation,
@@ -530,6 +543,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         appliedTranslation,
         leftActionAnimation,
         leftLayoutRef,
+        leftWrapperLayoutRef,
         renderLeftActions,
         showLeftProgress,
         swipeableMethods,
