@@ -29,7 +29,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {
-  Dimensions,
   I18nManager,
   LayoutChangeEvent,
   StyleProp,
@@ -509,16 +508,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     // As stated in `Dimensions.get` docstring, this function should be called on every render
     // since dimensions may change (e.g. orientation change)
-    const hiddenSwipeableOffset = Dimensions.get('window').width + 1;
 
     const leftActionAnimation = useAnimatedStyle(() => {
       return {
-        transform: [
-          {
-            translateX:
-              showLeftProgress.value === 0 ? -hiddenSwipeableOffset : 0,
-          },
-        ],
+        opacity: showLeftProgress.value === 0 ? 0 : 1,
       };
     });
 
@@ -545,12 +538,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const rightActionAnimation = useAnimatedStyle(() => {
       return {
-        transform: [
-          {
-            translateX:
-              showRightProgress.value === 0 ? hiddenSwipeableOffset : 0,
-          },
-        ],
+        opacity: showRightProgress.value === 0 ? 0 : 1,
       };
     });
 
