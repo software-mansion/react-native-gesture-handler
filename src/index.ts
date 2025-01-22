@@ -1,4 +1,3 @@
-import _createNativeWrapper from './handlers/_createNativeWrapper';
 import { initialize } from './init';
 
 export { Directions } from './Directions';
