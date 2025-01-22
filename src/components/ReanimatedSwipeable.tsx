@@ -453,7 +453,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           }
           runOnUI(() => {
             animateRow(0);
-          });
+          })();
         },
         openLeft() {
           'worklet';
@@ -465,7 +465,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           runOnUI(() => {
             updateElementWidths();
             animateRow(leftWidth.value);
-          });
+          })();
         },
         openRight() {
           'worklet';
@@ -477,7 +477,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           runOnUI(() => {
             updateElementWidths();
             animateRow(-rightWidth.value);
-          });
+          })();
         },
         reset() {
           'worklet';
