@@ -16,7 +16,8 @@ import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
 export const Text = forwardRef(
   (props: RNTextProps, ref: ForwardedRef<RNText>) => {
-    const { onPress, ...rest } = props;
+    const { onPress, onLongPress, ...rest } = props;
+
     const textRef = useRef<RNText | null>(null);
     const native = Gesture.Native().runOnJS(true);
 
@@ -50,10 +51,17 @@ export const Text = forwardRef(
       );
     }, []);
 
-    return (
+    return onPress || onLongPress ? (
       <GestureDetector gesture={native}>
-        <RNText onPress={onPress} ref={refHandler} {...rest} />
+        <RNText
+          onPress={onPress}
+          onLongPress={onLongPress}
+          ref={refHandler}
+          {...rest}
+        />
       </GestureDetector>
+    ) : (
+      <RNText ref={ref} {...rest} />
     );
   }
 );

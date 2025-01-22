@@ -29,6 +29,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {
+  Dimensions,
   I18nManager,
   LayoutChangeEvent,
   StyleProp,
@@ -406,11 +407,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           const progressTarget = toValue === 0 ? 0 : 1;
 
           showLeftProgress.value =
-            leftWidth.value > 0
+            showLeftProgress.value > 0
               ? withSpring(progressTarget, progressSpringConfig)
               : 0;
           showRightProgress.value =
-            rightWidth.value > 0
+            showRightProgress.value > 0
               ? withSpring(progressTarget, progressSpringConfig)
               : 0;
 
@@ -506,9 +507,24 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [rowWidth]
     );
 
+    // As stated in `Dimensions.get` docstring, this function should be called on every render
+    // since dimensions may change (e.g. orientation change)
+    const hiddenSwipeableOffset = Dimensions.get('window').width + 1;
+
+    const leftActionAnimation = useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            translateX:
+              showLeftProgress.value === 0 ? -hiddenSwipeableOffset : 0,
+          },
+        ],
+      };
+    });
+
     const leftElement = useCallback(
       () => (
-        <Animated.View style={[styles.leftActions]}>
+        <Animated.View style={[styles.leftActions, leftActionAnimation]}>
           {renderLeftActions?.(
             showLeftProgress,
             appliedTranslation,
@@ -519,6 +535,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ),
       [
         appliedTranslation,
+        leftActionAnimation,
         leftLayoutRef,
         renderLeftActions,
         showLeftProgress,
@@ -526,9 +543,20 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       ]
     );
 
+    const rightActionAnimation = useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            translateX:
+              showRightProgress.value === 0 ? hiddenSwipeableOffset : 0,
+          },
+        ],
+      };
+    });
+
     const rightElement = useCallback(
       () => (
-        <Animated.View style={[styles.rightActions]}>
+        <Animated.View style={[styles.rightActions, rightActionAnimation]}>
           {renderRightActions?.(
             showRightProgress,
             appliedTranslation,
@@ -540,6 +568,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [
         appliedTranslation,
         renderRightActions,
+        rightActionAnimation,
         rightLayoutRef,
         showRightProgress,
         swipeableMethods,
@@ -712,9 +741,11 @@ const styles = StyleSheet.create({
   leftActions: {
     ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+    overflow: 'hidden',
   },
   rightActions: {
     ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
+    overflow: 'hidden',
   },
 });
