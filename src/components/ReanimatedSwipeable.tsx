@@ -440,7 +440,9 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       const leftLayout = measure(leftLayoutRef);
       const leftWrapperLayout = measure(leftWrapperLayoutRef);
       const rightLayout = measure(rightLayoutRef);
-      leftWidth.value = leftLayout?.pageX ?? 0;
+      leftWidth.value =
+        (leftLayout?.pageX ?? 0) - (leftWrapperLayout?.pageX ?? 0);
+
       rightWidth.value =
         rowWidth.value -
         (rightLayout?.pageX ?? rowWidth.value) +
