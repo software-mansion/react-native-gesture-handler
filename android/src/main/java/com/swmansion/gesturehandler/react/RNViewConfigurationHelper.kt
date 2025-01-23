@@ -14,7 +14,7 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
   override fun getPointerEventsConfigForView(view: View): PointerEventsConfig {
     val pointerEvents: PointerEvents =
       if (view is ReactPointerEventsView) {
-        (view as ReactPointerEventsView).pointerEvents
+        (view as ReactPointerEventsView).getPointerEvents()
       } else PointerEvents.AUTO
 
     // Views that are disabled should never be the target of pointer events. However, their children
