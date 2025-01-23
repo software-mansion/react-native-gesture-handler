@@ -14,6 +14,7 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
 
+#import <react/renderer/components/text/ParagraphShadowNode.h>
 #import <react/renderer/components/text/TextShadowNode.h>
 #import <react/renderer/uimanager/primitives.h>
 #endif // RCT_NEW_ARCH_ENABLED
@@ -101,6 +102,10 @@ void decorateRuntime(jsi::Runtime &runtime)
           return jsi::Value::null();
         }
         auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+        if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
+          return jsi::Value(true);
+        }
 
         if (dynamic_pointer_cast<const TextShadowNode>(shadowNode)) {
           return jsi::Value(true);
