@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Animated, Platform, processColor, StyleSheet } from 'react-native';
 
-import createNativeWrapper from '../handlers/createNativeWrapper';
+import { _createNativeWrapper } from '../handlers/_createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
 import { State } from '../State';
 
@@ -19,10 +19,22 @@ import type {
   BorderlessButtonProps,
 } from './GestureButtonsProps';
 
-export const RawButton = createNativeWrapper(GestureHandlerButton, {
+export const RawButton = _createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
+
+const _InnerBaseButton = (props: BaseButtonProps) => {
+  const [lastActive, setLastActive] = useState(false);
+  const [longPressDetected, setLongPressDetected] = useState(false);
+  const [longPressTimeout, setLongPressTimeout] = useState<
+    ReturnType<typeof setTimeout> | undefined
+  >(undefined);
+
+  const delayLongPress = 600;
+
+  return <RawButton {...props} />;
+};
 
 class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
