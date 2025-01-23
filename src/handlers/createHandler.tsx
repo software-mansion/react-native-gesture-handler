@@ -25,6 +25,7 @@ import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
 import { MountRegistry } from '../mountRegistry';
+import { ReactElement } from 'react';
 
 const UIManagerAny = UIManager as any;
 
@@ -301,9 +302,8 @@ export default function createHandler<
       this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
-      // TODO(TS) fix ref type
-      const { ref }: any = child;
-      if (ref !== null) {
+      const ref = (child as ReactElement).props?.ref;
+      if (ref) {
         if (typeof ref === 'function') {
           ref(node);
         } else {
