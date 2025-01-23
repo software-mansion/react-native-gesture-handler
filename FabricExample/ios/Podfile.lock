@@ -1525,7 +1525,7 @@ PODS:
     - React-logger (= 0.78.0-rc.1)
     - React-perflogger (= 0.78.0-rc.1)
     - React-utils (= 0.78.0-rc.1)
-  - RNGestureHandler (2.22.0):
+  - RNGestureHandler (2.22.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1827,7 +1827,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: d8c8d73e775f7e367e65b629d0dedcb830e490d5
   ReactCodegen: 842fd6a5af6dcbf6b984e01bfcf7807cf9796926
   ReactCommon: c99ace9bc7fd37ab0860e05b84758770a5193861
-  RNGestureHandler: 0a9b5cfef2b12d8425da917647ece1bf6c43d400
+  RNGestureHandler: ab7b3143904577382d4e93f6d35d52f321660db6
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: d7af68bbe88ef55fd73754fe6942746eff12919c
 
