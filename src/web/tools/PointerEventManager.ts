@@ -3,7 +3,6 @@ import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { AdaptedEvent, EventTypes, Point } from '../interfaces';
 import {
   PointerTypeMapping,
-  calculateViewScale,
   tryExtractStylusData,
   isPointerInBounds,
 } from '../utils';
@@ -201,14 +200,11 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
-    const rect = this.view.getBoundingClientRect();
-    const { scaleX, scaleY } = calculateViewScale(this.view);
-
     return {
       x: event.clientX,
       y: event.clientY,
-      offsetX: (event.clientX - rect.left) / scaleX,
-      offsetY: (event.clientY - rect.top) / scaleY,
+      offsetX: event.offsetX,
+      offsetY: event.offsetY,
       pointerId: event.pointerId,
       eventType: eventType,
       pointerType:
