@@ -27,7 +27,7 @@ jobs:
       - name: Use latest stable Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '16.1'
       - name: Use Node.js 18
         uses: actions/setup-node@v2
         with:
