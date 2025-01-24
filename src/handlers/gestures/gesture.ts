@@ -426,6 +426,7 @@ export abstract class BaseGesture<
     return (
       this.config.runOnJS !== true &&
       !this.handlers.isWorklet.includes(false) &&
+      this.handlers.isWorklet.length > 0 &&
       !isRemoteDebuggingEnabled()
     );
   }
