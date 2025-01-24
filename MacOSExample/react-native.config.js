@@ -3,6 +3,12 @@ module.exports = {
     ios: {},
     android: {},
   },
-  dependencies: {},
+  dependencies: {
+    expo: {
+      platforms: {
+        ios: null,
+      },
+    },
+  },
   reactNativePath: './node_modules/react-native-macos',
 };
