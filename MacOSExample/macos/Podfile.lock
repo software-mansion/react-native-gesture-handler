@@ -935,6 +935,8 @@ PODS:
   - React-Mapbuffer (0.74.6):
     - glog
     - React-debug
+  - react-native-safe-area-context (4.14.1):
+    - React-Core
   - React-nativeconfig (0.74.6)
   - React-NativeModulesApple (0.74.6):
     - glog
@@ -1252,7 +1254,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.7.1):
+  - RNSVG (15.11.1):
     - React-Core
   - SocketRocket (0.7.0)
   - Yoga (0.0.0)
@@ -1290,6 +1292,7 @@ DEPENDENCIES:
   - React-jsitracing (from `../node_modules/react-native-macos/ReactCommon/hermes/executor/`)
   - React-logger (from `../node_modules/react-native-macos/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native-macos/ReactCommon`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native-macos/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native-macos/ReactCommon/reactperflogger`)
@@ -1382,6 +1385,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-macos/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../node_modules/react-native-macos/ReactCommon"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
     :path: "../node_modules/react-native-macos/ReactCommon"
   React-NativeModulesApple:
@@ -1472,6 +1477,7 @@ SPEC CHECKSUMS:
   React-jsitracing: cc6e6f741639f3951b7df43bd87cbfc16bdafc98
   React-logger: e249d9c4dc55980a66dfbc176b6779448052d83c
   React-Mapbuffer: 428d5628320b14d5570f269c73e5f331bff332b8
+  react-native-safe-area-context: 141eca0fd4e4191288dfc8b96a7c7e1c2983447a
   React-nativeconfig: 2a578599932a902996461427ee3cd6e70324a938
   React-NativeModulesApple: 1684e63fd5cf33c6e87781801b901d1847f319ed
   React-perflogger: 20f2c340ba77761ce791c46bee92a7dad00abd5e
@@ -1498,10 +1504,10 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
   RNGestureHandler: ae092c8f9da8d2c0f47257caadc8eadebd03fa90
   RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
-  RNSVG: 4590aa95758149fa27c5c83e54a6a466349a1688
+  RNSVG: 703242a230641638cf72d3891e57db0344d5208c
   SocketRocket: f6c6249082c011e6de2de60ed641ef8bbe0cfac9
   Yoga: 2b5a8ace4c52fd28c52de828b9a66aede21c3a9c
 
-PODFILE CHECKSUM: 3d6bcfcb4beca113bbf03f2652ec9272037c8111
+PODFILE CHECKSUM: 8401958f8789dfd2a222dabca4acdfee884fa032
 
 COCOAPODS: 1.15.2
