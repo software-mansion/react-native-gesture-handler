@@ -302,6 +302,7 @@ export default function createHandler<
       this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
+      // @ts-ignore Since React 19 ref is accessible as standard prop
       const ref = (child as ReactElement).props?.ref;
       if (ref) {
         if (typeof ref === 'function') {
