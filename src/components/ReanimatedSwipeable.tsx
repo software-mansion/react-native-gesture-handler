@@ -661,9 +661,6 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           .enabled(enabled !== false)
           .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
           .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
-          .simultaneousWithExternalGesture(
-            ...(simultaneousWithExternalGestures ?? [])
-          )
           .onStart(updateElementWidths)
           .onUpdate(
             (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
@@ -697,7 +694,10 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           )
           .onFinalize(() => {
             dragStarted.value = false;
-          }),
+          })
+          .simultaneousWithExternalGesture(
+            ...(simultaneousWithExternalGestures ?? [])
+          ),
       [
         dragOffsetFromLeftEdge,
         dragOffsetFromRightEdge,
