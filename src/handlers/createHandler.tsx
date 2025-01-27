@@ -303,6 +303,7 @@ export default function createHandler<
 
       const child = React.Children.only(this.props.children);
       // @ts-ignore Since React 19 ref is accessible as standard prop
+      // https://react.dev/blog/2024/04/25/react-19-upgrade-guide#deprecated-element-ref
       const ref = (child as ReactElement).props?.ref;
       if (ref) {
         if (typeof ref === 'function') {
