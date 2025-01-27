@@ -380,6 +380,8 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
+  const inJestEnv = typeof jest !== 'undefined';
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
@@ -390,7 +392,10 @@ export default function Pressable(props: PressableProps) {
         touchSoundDisabled={android_disableSound ?? undefined}
         rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
         rippleRadius={android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp]}>
+        style={[pointerStyle, styleProp]}
+        testOnly_onPress={inJestEnv ? onPress : undefined}
+        testOnly_onPressIn={inJestEnv ? onPressIn : undefined}
+        testOnly_onPressOut={inJestEnv ? onPressOut : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
