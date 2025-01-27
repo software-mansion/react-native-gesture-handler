@@ -205,10 +205,12 @@ export interface SwipeableProps
   childrenContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * An array of gesture objects containing the configuration and callbacks to be
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  simultaneousWithExternalGestures?: Exclude<GestureRef, number>[];
+  simultaneousWithExternalGesture?:
+    | Exclude<GestureRef, number>
+    | Exclude<GestureRef, number>[];
 }
 
 export interface SwipeableMethods {
@@ -254,7 +256,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       onSwipeableClose,
       renderLeftActions,
       renderRightActions,
-      simultaneousWithExternalGestures,
+      simultaneousWithExternalGesture,
       ...remainingProps
     } = props;
 
@@ -655,65 +657,72 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       [close, rowState]
     );
 
-    const panGesture = useMemo(
-      () =>
-        Gesture.Pan()
-          .enabled(enabled !== false)
-          .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
-          .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
-          .onStart(updateElementWidths)
-          .onUpdate(
-            (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
-              userDrag.value = event.translationX;
+    const panGesture = useMemo(() => {
+      const pan = Gesture.Pan()
+        .enabled(enabled !== false)
+        .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
+        .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
+        .onStart(updateElementWidths)
+        .onUpdate(
+          (event: GestureUpdateEvent<PanGestureHandlerEventPayload>) => {
+            userDrag.value = event.translationX;
 
-              const direction =
-                rowState.value === -1
-                  ? SwipeDirection.RIGHT
-                  : rowState.value === 1
-                    ? SwipeDirection.LEFT
-                    : event.translationX > 0
-                      ? SwipeDirection.RIGHT
-                      : SwipeDirection.LEFT;
+            const direction =
+              rowState.value === -1
+                ? SwipeDirection.RIGHT
+                : rowState.value === 1
+                  ? SwipeDirection.LEFT
+                  : event.translationX > 0
+                    ? SwipeDirection.RIGHT
+                    : SwipeDirection.LEFT;
 
-              if (!dragStarted.value) {
-                dragStarted.value = true;
-                if (rowState.value === 0 && onSwipeableOpenStartDrag) {
-                  runOnJS(onSwipeableOpenStartDrag)(direction);
-                } else if (onSwipeableCloseStartDrag) {
-                  runOnJS(onSwipeableCloseStartDrag)(direction);
-                }
+            if (!dragStarted.value) {
+              dragStarted.value = true;
+              if (rowState.value === 0 && onSwipeableOpenStartDrag) {
+                runOnJS(onSwipeableOpenStartDrag)(direction);
+              } else if (onSwipeableCloseStartDrag) {
+                runOnJS(onSwipeableCloseStartDrag)(direction);
               }
+            }
 
-              updateAnimatedEvent();
-            }
-          )
-          .onEnd(
-            (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
-              handleRelease(event);
-            }
-          )
-          .onFinalize(() => {
-            dragStarted.value = false;
-          })
-          .simultaneousWithExternalGesture(
-            ...(simultaneousWithExternalGestures ?? [])
-          ),
-      [
-        dragOffsetFromLeftEdge,
-        dragOffsetFromRightEdge,
-        dragStarted,
-        enableTrackpadTwoFingerGesture,
-        enabled,
-        handleRelease,
-        onSwipeableCloseStartDrag,
-        onSwipeableOpenStartDrag,
-        rowState,
-        updateAnimatedEvent,
-        updateElementWidths,
-        userDrag,
-        simultaneousWithExternalGestures,
-      ]
-    );
+            updateAnimatedEvent();
+          }
+        )
+        .onEnd(
+          (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+            handleRelease(event);
+          }
+        )
+        .onFinalize(() => {
+          dragStarted.value = false;
+        });
+
+      if (!simultaneousWithExternalGesture) {
+        return pan;
+      }
+
+      if (Array.isArray(simultaneousWithExternalGesture)) {
+        pan.simultaneousWithExternalGesture(...simultaneousWithExternalGesture);
+      } else {
+        pan.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
+      }
+
+      return pan;
+    }, [
+      dragOffsetFromLeftEdge,
+      dragOffsetFromRightEdge,
+      dragStarted,
+      enableTrackpadTwoFingerGesture,
+      enabled,
+      handleRelease,
+      onSwipeableCloseStartDrag,
+      onSwipeableOpenStartDrag,
+      rowState,
+      updateAnimatedEvent,
+      updateElementWidths,
+      userDrag,
+      simultaneousWithExternalGesture,
+    ]);
 
     useImperativeHandle(ref, () => swipeableMethods, [swipeableMethods]);
 
