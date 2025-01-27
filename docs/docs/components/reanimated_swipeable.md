@@ -128,9 +128,9 @@ style object for the container (`Animated.View`), for example to override `overf
 
 style object for the children container (`Animated.View`), for example to apply `flex: 1`.
 
-### `simultaneousWithExternalGesture`
+### `simultaneousWithExternalGestures`
 
-An optional gesture configuration that enables another gesture to be recognized simultaneously with the swipeable gesture. This is useful for allowing swipeable gestures to work simultaneously with other gestures.
+An optional gesture configuration that enable other gestures to be recognized simultaneously with the swipeable gesture. This is useful for allowing swipeable gestures to work simultaneously with other gestures.
 
 For example, to enable a pan gesture alongside the swipeable gesture:
 
@@ -138,7 +138,7 @@ For example, to enable a pan gesture alongside the swipeable gesture:
 const panGesture = Gesture.Pan();
 
 <GestureDetector gesture={panGesture}>
-  <ReanimatedSwipeable simultaneousWithExternalGesture={panGesture} />
+  <ReanimatedSwipeable simultaneousWithExternalGestures={[panGesture]} />
 </GestureDetector>
 ```
 
