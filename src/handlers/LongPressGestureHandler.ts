@@ -32,13 +32,23 @@ export interface LongPressGestureConfig {
   numberOfPointers?: number;
 }
 
+/**
+ * @deprecated LongPressGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.LongPress()` instead.
+ */
 export interface LongPressGestureHandlerProps
   extends BaseGestureHandlerProps<LongPressGestureHandlerEventPayload>,
     LongPressGestureConfig {}
 
 export const longPressHandlerName = 'LongPressGestureHandler';
 
+/**
+ * @deprecated LongPressGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.LongPress()` instead.
+ */
 export type LongPressGestureHandler = typeof LongPressGestureHandler;
+
+/**
+ * @deprecated LongPressGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.LongPress()` instead.
+ */
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const LongPressGestureHandler = createHandler<
   LongPressGestureHandlerProps,
