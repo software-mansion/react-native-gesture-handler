@@ -3,9 +3,10 @@ import type { GenericTouchableProps } from './GenericTouchableProps';
 
 export type TouchableNativeFeedbackExtraProps = {
   borderless?: boolean;
-  rippleColor?: number | null;
+  rippleColor?: number | string | null;
   rippleRadius?: number | null;
   foreground?: boolean;
+  exclusive?: boolean;
 };
 
 export type TouchableNativeFeedbackProps = RNTouchableNativeFeedbackProps &
