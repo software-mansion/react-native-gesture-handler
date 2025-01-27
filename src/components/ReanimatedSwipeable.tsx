@@ -205,7 +205,7 @@ export interface SwipeableProps
   childrenContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * A gesture object containing the configuration and callbacks to be
+   * An array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
   simultaneousWithExternalGestures?: Exclude<GestureRef, number>[];

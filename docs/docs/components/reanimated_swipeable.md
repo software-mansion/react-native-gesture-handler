@@ -130,7 +130,7 @@ style object for the children container (`Animated.View`), for example to apply 
 
 ### `simultaneousWithExternalGestures`
 
-An optional gesture configuration that enable other gestures to be recognized simultaneously with the swipeable gesture. This is useful for allowing swipeable gestures to work simultaneously with other gestures.
+An array of gesture configurations to be recognized simultaneously with the swipeable gesture. This is useful for allowing other gestures to work simultaneously with swipeable gesture handler.
 
 For example, to enable a pan gesture alongside the swipeable gesture:
 
