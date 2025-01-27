@@ -47,8 +47,8 @@ export default function createNativeWrapper<P>(
         childProps: { enabled: props.enabled } as P,
       }
     );
-    const _ref = useRef<React.ComponentType<P>>();
-    const _gestureHandlerRef = useRef<React.ComponentType<P>>();
+    const _ref = useRef<React.ComponentType<P>>(null);
+    const _gestureHandlerRef = useRef<React.ComponentType<P>>(null);
     useImperativeHandle(
       ref,
       // @ts-ignore TODO(TS) decide how nulls work in this context
