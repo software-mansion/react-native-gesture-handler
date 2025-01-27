@@ -645,18 +645,27 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
     const dragStarted = useSharedValue<boolean>(false);
 
-    const tapGesture = useMemo(
-      () =>
-        Gesture.Tap()
-          .shouldCancelWhenOutside(true)
-          .onStart(() => {
-            if (rowState.value !== 0) {
-              close();
-            }
-          }),
-      [close, rowState]
-    );
+    const tapGesture = useMemo(() => {
+      const tap = Gesture.Tap()
+        .shouldCancelWhenOutside(true)
+        .onStart(() => {
+          if (rowState.value !== 0) {
+            close();
+          }
+        });
 
+      if (!simultaneousWithExternalGesture) {
+        return tap;
+      }
+
+      if (Array.isArray(simultaneousWithExternalGesture)) {
+        tap.simultaneousWithExternalGesture(...simultaneousWithExternalGesture);
+      } else {
+        tap.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
+      }
+
+      return tap;
+    }, [close, rowState, simultaneousWithExternalGesture]);
     const panGesture = useMemo(() => {
       const pan = Gesture.Pan()
         .enabled(enabled !== false)
