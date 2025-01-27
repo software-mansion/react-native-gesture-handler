@@ -380,6 +380,8 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
+  // @ts-ignore Adding type definitions for @types/node causes multiple conflicts with react-native/types,
+  //            and as far as i know, there is no simple way of automatically resolving them.
   const inTestEnv = process.env.NODE_ENV === 'test';
 
   return (
