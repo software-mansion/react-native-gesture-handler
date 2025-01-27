@@ -666,6 +666,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
 
       return tap;
     }, [close, rowState, simultaneousWithExternalGesture]);
+
     const panGesture = useMemo(() => {
       const pan = Gesture.Pan()
         .enabled(enabled !== false)
