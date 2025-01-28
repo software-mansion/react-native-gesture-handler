@@ -8,7 +8,7 @@ export default function findNodeHandle(
   // TODO: Remove this once we remove old API.
   if (viewRef instanceof FlatList) {
     // @ts-ignore This is the only way to get the scroll ref from FlatList.
-    return viewRef._listRef._scrollRef;
+    return viewRef._listRef._scrollRef.firstChild;
   }
   // Old API assumes that child handler is HTMLElement.
   // However, if we nest handlers, we will get ref to another handler.
