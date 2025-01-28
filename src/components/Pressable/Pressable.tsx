@@ -20,7 +20,7 @@ import {
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { INT32_MAX } from '../../utils';
+import { INT32_MAX, isTestEnv } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
@@ -380,10 +380,6 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
-  // @ts-ignore Adding type definitions for @types/node causes multiple conflicts with react-native/types,
-  //            and as far as i know, there is no simple way of automatically resolving them.
-  const inTestEnv = process.env.NODE_ENV === 'test';
-
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
@@ -395,9 +391,9 @@ export default function Pressable(props: PressableProps) {
         rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
         rippleRadius={android_ripple?.radius ?? undefined}
         style={[pointerStyle, styleProp]}
-        testOnly_onPress={inTestEnv ? onPress : undefined}
-        testOnly_onPressIn={inTestEnv ? onPressIn : undefined}
-        testOnly_onPressOut={inTestEnv ? onPressOut : undefined}>
+        testOnly_onPress={isTestEnv() ? onPress : undefined}
+        testOnly_onPressIn={isTestEnv() ? onPressIn : undefined}
+        testOnly_onPressOut={isTestEnv() ? onPressOut : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
