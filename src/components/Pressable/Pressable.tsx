@@ -23,6 +23,7 @@ import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { INT32_MAX, isTestEnv } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
+const IS_TEST_ENV = isTestEnv();
 
 export default function Pressable(props: PressableProps) {
   const {
@@ -379,8 +380,6 @@ export default function Pressable(props: PressableProps) {
     typeof children === 'function'
       ? children({ pressed: pressedState })
       : children;
-
-  const IS_TEST_ENV = useMemo(() => isTestEnv(), []);
 
   return (
     <GestureDetector gesture={gesture}>
