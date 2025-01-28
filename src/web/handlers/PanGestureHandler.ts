@@ -257,8 +257,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.startX = this.lastX;
     this.startY = this.lastY;
 
-    if (this.tracker.trackedPointersCount > this.maxPointers) {
-      if (this.state === State.ACTIVE) {
+    if (this.tracker.getTrackedPointersCount() > this.maxPointers) {
+      if (this.currentState === State.ACTIVE) {
         this.cancel();
       } else {
         this.fail();
@@ -272,7 +272,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.stylusData = event.stylusData;
 
     super.onPointerUp(event);
-    if (this.state === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       const lastCoords = this.tracker.getAbsoluteCoordsAverage();
       this.lastX = lastCoords.x;
       this.lastY = lastCoords.y;
@@ -280,11 +280,11 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.tracker.trackedPointersCount === 0) {
+    if (this.tracker.getTrackedPointersCount() === 0) {
       this.clearActivationTimeout();
     }
 
-    if (this.state === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       this.end();
     } else {
       this.resetProgress();
@@ -308,8 +308,8 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (
       !(
-        this.state === State.ACTIVE &&
-        this.tracker.trackedPointersCount < this.minPointers
+        this.currentState === State.ACTIVE &&
+        this.tracker.getTrackedPointersCount() < this.minPointers
       )
     ) {
       this.checkBegan();
@@ -334,7 +334,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.shouldCancelWhenOutside) {
+    if (this.getShouldCancelWhenOutside()) {
       return;
     }
 
@@ -351,7 +351,7 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.checkBegan();
 
-    if (this.state === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       super.onPointerOutOfBounds(event);
     }
   }
@@ -360,10 +360,10 @@ export default class PanGestureHandler extends GestureHandler {
     clearTimeout(this.endWheelTimeout);
 
     this.endWheelTimeout = setTimeout(() => {
-      if (this.state === State.ACTIVE) {
+      if (this.currentState === State.ACTIVE) {
         this.end();
         this.tracker.removeFromTracker(event.pointerId);
-        this.state = State.UNDETERMINED;
+        this.currentState = State.UNDETERMINED;
       }
 
       this.wheelDevice = WheelDevice.UNDETERMINED;
@@ -378,7 +378,7 @@ export default class PanGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.state === State.UNDETERMINED) {
+    if (this.currentState === State.UNDETERMINED) {
       this.wheelDevice =
         event.wheelDeltaY! % 120 !== 0
           ? WheelDevice.TOUCHPAD
@@ -523,8 +523,8 @@ export default class PanGestureHandler extends GestureHandler {
 
   private tryBegin(event: AdaptedEvent): void {
     if (
-      this.state === State.UNDETERMINED &&
-      this.tracker.trackedPointersCount >= this.minPointers
+      this.currentState === State.UNDETERMINED &&
+      this.tracker.getTrackedPointersCount() >= this.minPointers
     ) {
       this.resetProgress();
       this.offsetX = 0;
@@ -547,7 +547,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   private checkBegan(): void {
-    if (this.state === State.BEGAN) {
+    if (this.currentState === State.BEGAN) {
       if (this.shouldFail()) {
         this.fail();
       } else if (this.shouldActivate()) {
@@ -557,7 +557,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   public activate(force = false): void {
-    if (this.state !== State.ACTIVE) {
+    if (this.currentState !== State.ACTIVE) {
       this.resetProgress();
     }
 
@@ -573,7 +573,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.state === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       return;
     }
 

@@ -121,28 +121,29 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private newPointerAction(): void {
-    if (this.state === State.UNDETERMINED) {
+    if (this.currentState === State.UNDETERMINED) {
       this.startFling();
     }
 
-    if (this.state !== State.BEGAN) {
+    if (this.currentState !== State.BEGAN) {
       return;
     }
 
     this.tryEndFling();
 
     if (
-      this.tracker.trackedPointersCount > this.maxNumberOfPointersSimultaneously
+      this.tracker.getTrackedPointersCount() >
+      this.maxNumberOfPointersSimultaneously
     ) {
       this.maxNumberOfPointersSimultaneously =
-        this.tracker.trackedPointersCount;
+        this.tracker.getTrackedPointersCount();
     }
   }
 
   private pointerMoveAction(event: AdaptedEvent): void {
     this.tracker.track(event);
 
-    if (this.state !== State.BEGAN) {
+    if (this.currentState !== State.BEGAN) {
       return;
     }
 
@@ -172,7 +173,7 @@ export default class FlingGestureHandler extends GestureHandler {
   }
 
   private onUp(event: AdaptedEvent): void {
-    if (this.state === State.BEGAN) {
+    if (this.currentState === State.BEGAN) {
       this.endFling();
     }
 

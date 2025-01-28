@@ -10,17 +10,12 @@ import type { GenericTouchableProps } from './GenericTouchableProps';
 import * as React from 'react';
 import { Component } from 'react';
 
-/**
- * @deprecated TouchableOpacity will be removed in the future version of Gesture Handler.
- */
 export type TouchableOpacityProps = RNTouchableOpacityProps &
   GenericTouchableProps & {
     useNativeAnimations?: boolean;
   };
 
 /**
- * @deprecated TouchableOpacity will be removed in the future version of Gesture Handler.
- *
  * TouchableOpacity bases on timing animation which has been used in RN's core
  */
 export default class TouchableOpacity extends Component<TouchableOpacityProps> {

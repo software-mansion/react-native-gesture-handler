@@ -22,8 +22,7 @@ export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
   private isInitialized = false;
-  private _view!: HTMLElement;
-
+  private view!: HTMLElement;
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
   private defaultViewStyles: DefaultViewStyles = {
@@ -31,10 +30,14 @@ export class GestureHandlerWebDelegate
     touchAction: '',
   };
 
+  getView(): HTMLElement {
+    return this.view;
+  }
+
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
       throw new Error(
-        `Cannot find HTML Element for handler ${handler.handlerTag}`
+        `Cannot find HTML Element for handler ${handler.getTag()}`
       );
     }
 
@@ -48,7 +51,7 @@ export class GestureHandlerWebDelegate
       touchAction: this.view.style.touchAction,
     };
 
-    const config = handler.config;
+    const config = handler.getConfig();
 
     this.setUserSelect(config.enabled);
     this.setTouchAction(config.enabled);
@@ -85,12 +88,12 @@ export class GestureHandlerWebDelegate
   }
 
   tryResetCursor() {
-    const config = this.gestureHandler.config;
+    const config = this.gestureHandler.getConfig();
 
     if (
       config.activeCursor &&
       config.activeCursor !== 'auto' &&
-      this.gestureHandler.state === State.ACTIVE
+      this.gestureHandler.getState() === State.ACTIVE
     ) {
       this.view.style.cursor = 'auto';
     }
@@ -129,7 +132,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setUserSelect(isHandlerEnabled: boolean) {
-    const { userSelect } = this.gestureHandler.config;
+    const { userSelect } = this.gestureHandler.getConfig();
 
     this.view.style['userSelect'] = isHandlerEnabled
       ? (userSelect ?? 'none')
@@ -141,7 +144,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setTouchAction(isHandlerEnabled: boolean) {
-    const { touchAction } = this.gestureHandler.config;
+    const { touchAction } = this.gestureHandler.getConfig();
 
     this.view.style['touchAction'] = isHandlerEnabled
       ? (touchAction ?? 'none')
@@ -154,7 +157,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setContextMenu(isHandlerEnabled: boolean) {
-    const config = this.gestureHandler.config;
+    const config = this.gestureHandler.getConfig();
 
     if (isHandlerEnabled) {
       this.addContextMenuListeners(config);
@@ -193,7 +196,7 @@ export class GestureHandlerWebDelegate
   }
 
   onActivate(): void {
-    const config = this.gestureHandler.config;
+    const config = this.gestureHandler.getConfig();
 
     if (
       (!this.view.style.cursor || this.view.style.cursor === 'auto') &&
@@ -221,12 +224,5 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
-  }
-
-  public get view() {
-    return this._view;
-  }
-  public set view(value: HTMLElement) {
-    this._view = value;
   }
 }

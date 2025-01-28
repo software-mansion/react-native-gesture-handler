@@ -82,9 +82,6 @@ export interface PanGestureConfig extends CommonPanProperties {
   failOffsetXEnd?: number;
 }
 
-/**
- * @deprecated PanGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Pan()` instead.
- */
 export interface PanGestureHandlerProps
   extends BaseGestureHandlerProps<PanGestureHandlerEventPayload>,
     CommonPanProperties {
@@ -135,14 +132,7 @@ export interface PanGestureHandlerProps
 
 export const panHandlerName = 'PanGestureHandler';
 
-/**
- * @deprecated PanGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Pan()` instead.
- */
 export type PanGestureHandler = typeof PanGestureHandler;
-
-/**
- * @deprecated PanGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Pan()` instead.
- */
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
 export const PanGestureHandler = createHandler<
   PanGestureHandlerProps,

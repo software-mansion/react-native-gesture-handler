@@ -14,13 +14,13 @@ export default class HoverGestureHandler extends GestureHandler {
   }
 
   protected onPointerMoveOver(event: AdaptedEvent): void {
-    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
+    GestureHandlerOrchestrator.getInstance().recordHandlerIfNotPresent(this);
 
     this.tracker.addToTracker(event);
     this.stylusData = event.stylusData;
     super.onPointerMoveOver(event);
 
-    if (this.state === State.UNDETERMINED) {
+    if (this.getState() === State.UNDETERMINED) {
       this.begin();
       this.activate();
     }

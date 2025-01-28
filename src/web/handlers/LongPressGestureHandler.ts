@@ -82,7 +82,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     super.onPointerAdd(event);
     this.tracker.addToTracker(event);
 
-    if (this.tracker.trackedPointersCount > this.numberOfPointers) {
+    if (this.tracker.getTrackedPointersCount() > this.numberOfPointers) {
       this.fail();
       return;
     }
@@ -111,7 +111,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.state === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       this.end();
     } else {
       this.fail();
@@ -123,15 +123,15 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (
-      this.tracker.trackedPointersCount < this.numberOfPointers &&
-      this.state !== State.ACTIVE
+      this.tracker.getTrackedPointersCount() < this.numberOfPointers &&
+      this.getState() !== State.ACTIVE
     ) {
       this.fail();
     }
   }
 
   private tryBegin(): void {
-    if (this.state !== State.UNDETERMINED) {
+    if (this.currentState !== State.UNDETERMINED) {
       return;
     }
 
@@ -142,7 +142,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   private tryActivate(): void {
-    if (this.tracker.trackedPointersCount !== this.numberOfPointers) {
+    if (this.tracker.getTrackedPointersCount() !== this.numberOfPointers) {
       return;
     }
 
@@ -166,7 +166,7 @@ export default class LongPressGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.state === State.ACTIVE) {
+    if (this.currentState === State.ACTIVE) {
       this.cancel();
     } else {
       this.fail();

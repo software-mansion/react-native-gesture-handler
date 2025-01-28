@@ -6,7 +6,7 @@ sidebar_position: 3
 ---
 
 :::warning
-The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out our [upgrading guide](/docs/guides/upgrading-to-2) for more information.
+Consider using the new [gestures API](/docs/gestures/gesture) instead. The old API is not actively supported and is not receiving the new features. Check out [RNGH 2.0 section in Introduction](/docs/#rngh-20) for more information.
 :::
 
 Gesture handlers can "communicate" with each other to support complex gestures and control how they _[activate](/docs/under-the-hood/state#active)_ in certain scenarios.

@@ -40,7 +40,7 @@ export default {
         handlerTag,
         new GestureClass(new GestureHandlerWebDelegate())
       );
-      InteractionManager.instance.configureInteractions(
+      InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         config as unknown as Config
       );
@@ -93,7 +93,7 @@ export default {
     if (isNewWebImplementationEnabled()) {
       NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
-      InteractionManager.instance.configureInteractions(
+      InteractionManager.getInstance().configureInteractions(
         NodeManager.getHandler(handlerTag),
         newConfig
       );

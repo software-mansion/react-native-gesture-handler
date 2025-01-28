@@ -5,7 +5,7 @@ import type IGestureHandler from '../handlers/IGestureHandler';
 import PointerTracker from './PointerTracker';
 
 export default class GestureHandlerOrchestrator {
-  private static _instance: GestureHandlerOrchestrator;
+  private static instance: GestureHandlerOrchestrator;
 
   private gestureHandlers: IGestureHandler[] = [];
   private awaitingHandlers: IGestureHandler[] = [];
@@ -26,9 +26,9 @@ export default class GestureHandlerOrchestrator {
 
   private cleanHandler(handler: IGestureHandler): void {
     handler.reset();
-    handler.active = false;
-    handler.awaiting = false;
-    handler.activationIndex = Number.MAX_VALUE;
+    handler.setActive(false);
+    handler.setAwaiting(false);
+    handler.setActivationIndex(Number.MAX_VALUE);
   }
 
   public removeHandlerFromOrchestrator(handler: IGestureHandler): void {
@@ -41,7 +41,7 @@ export default class GestureHandlerOrchestrator {
 
     if (indexInAwaitingHandlers >= 0) {
       this.awaitingHandlers.splice(indexInAwaitingHandlers, 1);
-      this.awaitingHandlersTags.delete(handler.handlerTag);
+      this.awaitingHandlersTags.delete(handler.getTag());
     }
   }
 
@@ -51,7 +51,7 @@ export default class GestureHandlerOrchestrator {
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       const handler = this.gestureHandlers[i];
 
-      if (this.isFinished(handler.state) && !handler.awaiting) {
+      if (this.isFinished(handler.getState()) && !handler.isAwaiting()) {
         this.cleanHandler(handler);
         handlersToRemove.add(handler);
       }
@@ -65,7 +65,7 @@ export default class GestureHandlerOrchestrator {
   private hasOtherHandlerToWaitFor(handler: IGestureHandler): boolean {
     const hasToWaitFor = (otherHandler: IGestureHandler) => {
       return (
-        !this.isFinished(otherHandler.state) &&
+        !this.isFinished(otherHandler.getState()) &&
         this.shouldHandlerWaitForOther(handler, otherHandler)
       );
     };
@@ -79,7 +79,7 @@ export default class GestureHandlerOrchestrator {
     const shouldBeCancelled = (otherHandler: IGestureHandler) => {
       return (
         this.shouldHandlerWaitForOther(handler, otherHandler) &&
-        otherHandler.state === State.END
+        otherHandler.getState() === State.END
       );
     };
 
@@ -97,7 +97,7 @@ export default class GestureHandlerOrchestrator {
       return;
     }
 
-    const handlerState = handler.state;
+    const handlerState = handler.getState();
 
     if (handlerState === State.CANCELLED || handlerState === State.FAILED) {
       return;
@@ -129,7 +129,7 @@ export default class GestureHandlerOrchestrator {
   private cleanupAwaitingHandlers(handler: IGestureHandler): void {
     const shouldWait = (otherHandler: IGestureHandler) => {
       return (
-        !otherHandler.awaiting &&
+        !otherHandler.isAwaiting() &&
         this.shouldHandlerWaitForOther(otherHandler, handler)
       );
     };
@@ -137,12 +137,12 @@ export default class GestureHandlerOrchestrator {
     for (const otherHandler of this.awaitingHandlers) {
       if (shouldWait(otherHandler)) {
         this.cleanHandler(otherHandler);
-        this.awaitingHandlersTags.delete(otherHandler.handlerTag);
+        this.awaitingHandlersTags.delete(otherHandler.getTag());
       }
     }
 
     this.awaitingHandlers = this.awaitingHandlers.filter((otherHandler) =>
-      this.awaitingHandlersTags.has(otherHandler.handlerTag)
+      this.awaitingHandlersTags.has(otherHandler.getTag())
     );
   }
 
@@ -152,7 +152,7 @@ export default class GestureHandlerOrchestrator {
     oldState: State,
     sendIfDisabled?: boolean
   ): void {
-    if (!handler.enabled && !sendIfDisabled) {
+    if (!handler.isEnabled() && !sendIfDisabled) {
       return;
     }
 
@@ -162,7 +162,7 @@ export default class GestureHandlerOrchestrator {
       for (const otherHandler of this.awaitingHandlers) {
         if (
           !this.shouldHandlerWaitForOther(otherHandler, handler) ||
-          !this.awaitingHandlersTags.has(otherHandler.handlerTag)
+          !this.awaitingHandlersTags.has(otherHandler.getTag())
         ) {
           continue;
         }
@@ -174,7 +174,7 @@ export default class GestureHandlerOrchestrator {
 
         otherHandler.cancel();
 
-        if (otherHandler.state === State.END) {
+        if (otherHandler.getState() === State.END) {
           // Handle edge case, where discrete gestures end immediately after activation thus
           // their state is set to END and when the gesture they are waiting for activates they
           // should be cancelled, however `cancel` was never sent as gestures were already in the END state.
@@ -182,14 +182,14 @@ export default class GestureHandlerOrchestrator {
           otherHandler.sendEvent(State.CANCELLED, State.BEGAN);
         }
 
-        otherHandler.awaiting = false;
+        otherHandler.setAwaiting(false);
       }
     }
 
     if (newState === State.ACTIVE) {
       this.tryActivate(handler);
     } else if (oldState === State.ACTIVE || oldState === State.END) {
-      if (handler.active) {
+      if (handler.isActive()) {
         handler.sendEvent(newState, oldState);
       } else if (
         oldState === State.ACTIVE &&
@@ -214,11 +214,11 @@ export default class GestureHandlerOrchestrator {
   }
 
   private makeActive(handler: IGestureHandler): void {
-    const currentState = handler.state;
+    const currentState = handler.getState();
 
-    handler.active = true;
-    handler.shouldResetProgress = true;
-    handler.activationIndex = this.activationIndex++;
+    handler.setActive(true);
+    handler.setShouldResetProgress(true);
+    handler.setActivationIndex(this.activationIndex++);
 
     for (let i = this.gestureHandlers.length - 1; i >= 0; --i) {
       if (this.shouldHandlerBeCancelledBy(this.gestureHandlers[i], handler)) {
@@ -228,7 +228,7 @@ export default class GestureHandlerOrchestrator {
 
     for (const otherHandler of this.awaitingHandlers) {
       if (this.shouldHandlerBeCancelledBy(otherHandler, handler)) {
-        otherHandler.awaiting = false;
+        otherHandler.setAwaiting(false);
       }
     }
 
@@ -241,11 +241,11 @@ export default class GestureHandlerOrchestrator {
       }
     }
 
-    if (!handler.awaiting) {
+    if (!handler.isAwaiting()) {
       return;
     }
 
-    handler.awaiting = false;
+    handler.setAwaiting(false);
 
     this.awaitingHandlers = this.awaitingHandlers.filter(
       (otherHandler) => otherHandler !== handler
@@ -258,10 +258,10 @@ export default class GestureHandlerOrchestrator {
     }
 
     this.awaitingHandlers.push(handler);
-    this.awaitingHandlersTags.add(handler.handlerTag);
+    this.awaitingHandlersTags.add(handler.getTag());
 
-    handler.awaiting = true;
-    handler.activationIndex = this.activationIndex++;
+    handler.setAwaiting(true);
+    handler.setActivationIndex(this.activationIndex++);
   }
 
   public recordHandlerIfNotPresent(handler: IGestureHandler): void {
@@ -271,9 +271,9 @@ export default class GestureHandlerOrchestrator {
 
     this.gestureHandlers.push(handler);
 
-    handler.active = false;
-    handler.awaiting = false;
-    handler.activationIndex = Number.MAX_SAFE_INTEGER;
+    handler.setActive(false);
+    handler.setAwaiting(false);
+    handler.setActivationIndex(Number.MAX_SAFE_INTEGER);
   }
 
   private shouldHandlerWaitForOther(
@@ -306,7 +306,7 @@ export default class GestureHandlerOrchestrator {
       return false;
     }
 
-    if (handler.awaiting || handler.state === State.ACTIVE) {
+    if (handler.isAwaiting() || handler.getState() === State.ACTIVE) {
       // For now it always returns false
       return handler.shouldBeCancelledByOther(otherHandler);
     }
@@ -316,7 +316,7 @@ export default class GestureHandlerOrchestrator {
 
     if (
       !PointerTracker.shareCommonPointers(handlerPointers, otherPointers) &&
-      handler.delegate.view !== otherHandler.delegate.view
+      handler.getDelegate().getView() !== otherHandler.getDelegate().getView()
     ) {
       return this.checkOverlap(handler, otherHandler);
     }
@@ -335,11 +335,11 @@ export default class GestureHandlerOrchestrator {
     // TODO: Find better way to handle that issue, for example by activation order and handler cancelling
 
     const isPointerWithinBothBounds = (pointer: number) => {
-      const point = handler.tracker.getLastAbsoluteCoords(pointer);
+      const point = handler.getTracker().getLastAbsoluteCoords(pointer);
 
       return (
-        handler.delegate.isPointerInBounds(point) &&
-        otherHandler.delegate.isPointerInBounds(point)
+        handler.getDelegate().isPointerInBounds(point) &&
+        otherHandler.getDelegate().isPointerInBounds(point)
       );
     };
 
@@ -361,8 +361,8 @@ export default class GestureHandlerOrchestrator {
   public cancelMouseAndPenGestures(currentHandler: IGestureHandler): void {
     this.gestureHandlers.forEach((handler: IGestureHandler) => {
       if (
-        handler.pointerType !== PointerType.MOUSE &&
-        handler.pointerType !== PointerType.STYLUS
+        handler.getPointerType() !== PointerType.MOUSE &&
+        handler.getPointerType() !== PointerType.STYLUS
       ) {
         return;
       }
@@ -377,16 +377,16 @@ export default class GestureHandlerOrchestrator {
         //
         // However, handler will receive manually created onPointerEnter that is triggered in EventManager in onPointerMove method.
         // There may be possibility to use that fact to make handler respond properly to first mouse click
-        handler.tracker.resetTracker();
+        handler.getTracker().resetTracker();
       }
     });
   }
 
-  public static get instance(): GestureHandlerOrchestrator {
-    if (!GestureHandlerOrchestrator._instance) {
-      GestureHandlerOrchestrator._instance = new GestureHandlerOrchestrator();
+  public static getInstance(): GestureHandlerOrchestrator {
+    if (!GestureHandlerOrchestrator.instance) {
+      GestureHandlerOrchestrator.instance = new GestureHandlerOrchestrator();
     }
 
-    return GestureHandlerOrchestrator._instance;
+    return GestureHandlerOrchestrator.instance;
   }
 }

@@ -3,7 +3,7 @@ import { State } from '../../State';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
-  private static _instance: InteractionManager;
+  private static instance: InteractionManager;
   private readonly waitForRelations: Map<number, number[]> = new Map();
   private readonly simultaneousRelations: Map<number, number[]> = new Map();
   private readonly blocksHandlersRelations: Map<number, number[]> = new Map();
@@ -13,7 +13,7 @@ export default class InteractionManager {
   private constructor() {}
 
   public configureInteractions(handler: IGestureHandler, config: Config) {
-    this.dropRelationsForHandlerWithTag(handler.handlerTag);
+    this.dropRelationsForHandlerWithTag(handler.getTag());
 
     if (config.waitFor) {
       const waitFor: number[] = [];
@@ -27,7 +27,7 @@ export default class InteractionManager {
         }
       });
 
-      this.waitForRelations.set(handler.handlerTag, waitFor);
+      this.waitForRelations.set(handler.getTag(), waitFor);
     }
 
     if (config.simultaneousHandlers) {
@@ -40,7 +40,7 @@ export default class InteractionManager {
         }
       });
 
-      this.simultaneousRelations.set(handler.handlerTag, simultaneousHandlers);
+      this.simultaneousRelations.set(handler.getTag(), simultaneousHandlers);
     }
 
     if (config.blocksHandlers) {
@@ -53,7 +53,7 @@ export default class InteractionManager {
         }
       });
 
-      this.blocksHandlersRelations.set(handler.handlerTag, blocksHandlers);
+      this.blocksHandlersRelations.set(handler.getTag(), blocksHandlers);
     }
   }
 
@@ -62,12 +62,12 @@ export default class InteractionManager {
     otherHandler: IGestureHandler
   ): boolean {
     const waitFor: number[] | undefined = this.waitForRelations.get(
-      handler.handlerTag
+      handler.getTag()
     );
 
     return (
       waitFor?.find((tag: number) => {
-        return tag === otherHandler.handlerTag;
+        return tag === otherHandler.getTag();
       }) !== undefined
     );
   }
@@ -77,11 +77,11 @@ export default class InteractionManager {
     otherHandler: IGestureHandler
   ): boolean {
     const simultaneousHandlers: number[] | undefined =
-      this.simultaneousRelations.get(handler.handlerTag);
+      this.simultaneousRelations.get(handler.getTag());
 
     return (
       simultaneousHandlers?.find((tag: number) => {
-        return tag === otherHandler.handlerTag;
+        return tag === otherHandler.getTag();
       }) !== undefined
     );
   }
@@ -91,12 +91,12 @@ export default class InteractionManager {
     otherHandler: IGestureHandler
   ): boolean {
     const waitFor: number[] | undefined = this.blocksHandlersRelations.get(
-      handler.handlerTag
+      handler.getTag()
     );
 
     return (
       waitFor?.find((tag: number) => {
-        return tag === otherHandler.handlerTag;
+        return tag === otherHandler.getTag();
       }) !== undefined
     );
   }
@@ -108,7 +108,7 @@ export default class InteractionManager {
     // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
     const isNativeHandler =
       otherHandler.constructor.name === 'NativeViewGestureHandler';
-    const isActive = otherHandler.state === State.ACTIVE;
+    const isActive = otherHandler.getState() === State.ACTIVE;
     const isButton = otherHandler.isButton?.() === true;
 
     return isNativeHandler && isActive && !isButton;
@@ -126,11 +126,11 @@ export default class InteractionManager {
     this.blocksHandlersRelations.clear();
   }
 
-  public static get instance(): InteractionManager {
-    if (!this._instance) {
-      this._instance = new InteractionManager();
+  public static getInstance(): InteractionManager {
+    if (!this.instance) {
+      this.instance = new InteractionManager();
     }
 
-    return this._instance;
+    return this.instance;
   }
 }

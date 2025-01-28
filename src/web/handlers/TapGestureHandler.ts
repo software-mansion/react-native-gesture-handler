@@ -195,8 +195,10 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private updateState(event: AdaptedEvent): void {
-    if (this.currentMaxNumberOfPointers < this.tracker.trackedPointersCount) {
-      this.currentMaxNumberOfPointers = this.tracker.trackedPointersCount;
+    if (
+      this.currentMaxNumberOfPointers < this.tracker.getTrackedPointersCount()
+    ) {
+      this.currentMaxNumberOfPointers = this.tracker.getTrackedPointersCount();
     }
 
     if (this.shouldFail()) {
@@ -204,7 +206,7 @@ export default class TapGestureHandler extends GestureHandler {
       return;
     }
 
-    switch (this.state) {
+    switch (this.currentState) {
       case State.UNDETERMINED:
         if (event.eventType === EventTypes.DOWN) {
           this.begin();
@@ -225,7 +227,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private trySettingPosition(event: AdaptedEvent): void {
-    if (this.state !== State.UNDETERMINED) {
+    if (this.currentState !== State.UNDETERMINED) {
       return;
     }
 
