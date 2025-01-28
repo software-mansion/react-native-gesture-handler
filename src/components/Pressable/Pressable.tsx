@@ -395,7 +395,8 @@ export default function Pressable(props: PressableProps) {
         style={[pointerStyle, styleProp]}
         testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
         testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
-        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}>
+        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
+        testOnly_onLongPress={IS_TEST_ENV ? onLongPress : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />

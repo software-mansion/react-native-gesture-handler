@@ -68,6 +68,12 @@ export interface RawButtonProps
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onPressOut?: Function | null;
+
+  /**
+   * Used for testing-library compatibility, not passed to the native component.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  testOnly_onLongPress?: Function | null;
 }
 interface ButtonWithRefProps {
   innerRef?: React.ForwardedRef<React.ComponentType<any>>;
