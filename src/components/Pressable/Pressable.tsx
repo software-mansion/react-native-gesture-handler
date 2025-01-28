@@ -380,6 +380,8 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
+  const IS_TEST_ENV = useMemo(() => isTestEnv(), []);
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
@@ -391,9 +393,9 @@ export default function Pressable(props: PressableProps) {
         rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
         rippleRadius={android_ripple?.radius ?? undefined}
         style={[pointerStyle, styleProp]}
-        testOnly_onPress={isTestEnv() ? onPress : undefined}
-        testOnly_onPressIn={isTestEnv() ? onPressIn : undefined}
-        testOnly_onPressOut={isTestEnv() ? onPressOut : undefined}>
+        testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
+        testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
+        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
