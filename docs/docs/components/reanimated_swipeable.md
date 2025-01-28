@@ -128,6 +128,22 @@ style object for the container (`Animated.View`), for example to override `overf
 
 style object for the children container (`Animated.View`), for example to apply `flex: 1`.
 
+### `simultaneousWithExternalGesture`
+
+A gesture configuration to be recognized simultaneously with the swipeable gesture. This is useful for allowing other gestures to work simultaneously with swipeable gesture handler.
+
+For example, to enable a pan gesture alongside the swipeable gesture:
+
+```jsx
+const panGesture = Gesture.Pan();
+
+<GestureDetector gesture={panGesture}>
+  <ReanimatedSwipeable simultaneousWithExternalGesture={panGesture} />
+</GestureDetector>
+```
+
+More details can be found in the [gesture composition documentation](../fundamentals/gesture-composition.md#simultaneouswithexternalgesture).
+
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads.

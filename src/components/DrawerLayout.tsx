@@ -44,20 +44,39 @@ const IDLE: DrawerState = 'Idle';
 const DRAGGING: DrawerState = 'Dragging';
 const SETTLING: DrawerState = 'Settling';
 
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export type DrawerPosition = 'left' | 'right';
 
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export type DrawerState = 'Idle' | 'Dragging' | 'Settling';
 
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export type DrawerType = 'front' | 'back' | 'slide';
 
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export type DrawerLockMode = 'unlocked' | 'locked-closed' | 'locked-open';
 
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export type DrawerKeyboardDismissMode = 'none' | 'on-drag';
 
 // Animated.AnimatedInterpolation has been converted to a generic type
 // in @types/react-native 0.70. This way we can maintain compatibility
 // with all versions of @types/react-native`
 type AnimatedInterpolation = ReturnType<Animated.Value['interpolate']>;
+
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export interface DrawerLayoutProps {
   /**
    * This attribute is present in the standard implementation already and is one
@@ -186,6 +205,9 @@ export interface DrawerLayoutProps {
   enableContextMenu?: boolean;
 }
 
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export type DrawerLayoutState = {
   dragX: Animated.Value;
   touchX: Animated.Value;
@@ -195,10 +217,17 @@ export type DrawerLayoutState = {
   drawerOpened: boolean;
 };
 
+/**
+ * @deprecated DrawerLayout is deprecated. Use Reanimated version of DrawerLayout instead.
+ */
 export type DrawerMovementOption = {
   velocity?: number;
   speed?: number;
 };
+
+/**
+ * @deprecated use Reanimated version of DrawerLayout instead
+ */
 export default class DrawerLayout extends Component<
   DrawerLayoutProps,
   DrawerLayoutState
