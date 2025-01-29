@@ -126,6 +126,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
+    super.onAfterUpdateTransaction(view)
+
     view.updateBackground()
   }
 
