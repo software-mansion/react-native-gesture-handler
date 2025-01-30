@@ -55,6 +55,12 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.useDrawableOnForeground = useDrawableOnForeground
   }
 
+  @ReactProp(name = "backgroundColor")
+  override fun setBackgroundColor(view: ButtonViewGroup, backgroundColor: Int) {
+    super.setBackgroundColor(view, backgroundColor)
+    view.setBackgroundColor(backgroundColor)
+  }
+
   @ReactProp(name = "borderless")
   override fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
     view.useBorderlessDrawable = useBorderlessDrawable
