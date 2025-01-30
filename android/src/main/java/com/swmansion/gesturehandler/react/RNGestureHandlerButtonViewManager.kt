@@ -57,7 +57,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
   @ReactProp(name = "backgroundColor")
   override fun setBackgroundColor(view: ButtonViewGroup, backgroundColor: Int) {
-    super.setBackgroundColor(view, backgroundColor)
     view.setBackgroundColor(backgroundColor)
   }
 
