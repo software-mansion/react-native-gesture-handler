@@ -20,7 +20,7 @@ import {
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { INT32_MAX } from '../../utils';
+import { INT32_MAX, isFabricUsed } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
@@ -380,6 +380,11 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
+  const fabricRippleColor = android_ripple?.color ?? defaultRippleColor;
+  const rippleColor = isFabricUsed()
+    ? fabricRippleColor
+    : processColor(fabricRippleColor);
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
@@ -388,7 +393,7 @@ export default function Pressable(props: PressableProps) {
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
         touchSoundDisabled={android_disableSound ?? undefined}
-        rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
+        rippleColor={rippleColor}
         rippleRadius={android_ripple?.radius ?? undefined}
         style={[pointerStyle, styleProp]}>
         {childrenProp}
