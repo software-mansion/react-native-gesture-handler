@@ -20,7 +20,7 @@ import {
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { INT32_MAX, isFabricUsed } from '../../utils';
+import { INT32_MAX, isFabric } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 
@@ -381,7 +381,7 @@ export default function Pressable(props: PressableProps) {
       : children;
 
   const fabricRippleColor = android_ripple?.color ?? defaultRippleColor;
-  const rippleColor = isFabricUsed()
+  const rippleColor = isFabric()
     ? fabricRippleColor
     : processColor(fabricRippleColor);
 

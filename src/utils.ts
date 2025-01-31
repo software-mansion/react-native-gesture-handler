@@ -40,13 +40,6 @@ export function isJestEnv(): boolean {
   return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
 }
 
-export function isFabricUsed(): boolean {
-  return (
-    // @ts-ignore global is untyped, but always present, nativeFabricUIManager will be present when running on fabric
-    hasProperty(global, 'nativeFabricUIManager') && !!nativeFabricUIManager
-  );
-}
-
 export function tagMessage(msg: string) {
   return `[react-native-gesture-handler] ${msg}`;
 }
