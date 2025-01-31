@@ -366,8 +366,6 @@ export default function Pressable(props: PressableProps) {
 
   const gesture = Gesture.Simultaneous(...gestures);
 
-  const defaultRippleColor = android_ripple ? undefined : 'transparent';
-
   // `cursor: 'pointer'` on `RNButton` crashes iOS
   const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
@@ -380,10 +378,17 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
-  const unprocessedRippleColor = android_ripple?.color ?? defaultRippleColor;
-  const rippleColor = isFabric()
-    ? unprocessedRippleColor
-    : processColor(unprocessedRippleColor);
+  const defaultRippleColor = useMemo(
+    () => (android_ripple ? undefined : 'transparent'),
+    [android_ripple]
+  );
+
+  const rippleColor = useMemo(() => {
+    const unprocessedRippleColor = android_ripple?.color ?? defaultRippleColor;
+    return isFabric()
+      ? unprocessedRippleColor
+      : processColor(unprocessedRippleColor);
+  }, [android_ripple?.color, defaultRippleColor]);
 
   return (
     <GestureDetector gesture={gesture}>
