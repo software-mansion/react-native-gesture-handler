@@ -380,10 +380,10 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
-  const fabricRippleColor = android_ripple?.color ?? defaultRippleColor;
+  const unprocessedRippleColor = android_ripple?.color ?? defaultRippleColor;
   const rippleColor = isFabric()
-    ? fabricRippleColor
-    : processColor(fabricRippleColor);
+    ? unprocessedRippleColor
+    : processColor(unprocessedRippleColor);
 
   return (
     <GestureDetector gesture={gesture}>
