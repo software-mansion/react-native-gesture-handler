@@ -36,7 +36,6 @@ export function hasProperty(object: object, key: string) {
 
 export function isJestEnv(): boolean {
   // @ts-ignore Do not use `@types/node` because it will prioritise Node types over RN types which breaks the types (ex. setTimeout) in React Native projects.
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
 }
 
