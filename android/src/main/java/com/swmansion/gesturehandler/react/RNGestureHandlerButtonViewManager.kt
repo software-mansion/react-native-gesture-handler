@@ -260,9 +260,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-      if (touchResponder != null && touchResponder !== this) {
-        return false
-      }
       if (super.onInterceptTouchEvent(ev)) {
         return true
       }
