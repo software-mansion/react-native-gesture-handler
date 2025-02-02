@@ -266,6 +266,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       if (super.onInterceptTouchEvent(ev)) {
         return true
       }
+      // We call `onTouchEvent` and wait until button changes state to `pressed`, if it's pressed
+      // we return true so that the gesture handler can activate.
       onTouchEvent(ev)
       return isPressed
     }
