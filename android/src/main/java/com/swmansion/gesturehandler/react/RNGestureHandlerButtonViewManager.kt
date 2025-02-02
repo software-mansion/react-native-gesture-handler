@@ -298,7 +298,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         lastAction = event.action
         return false
       }
-      
+
       val eventTime = event.eventTime
       val action = event.action
 
@@ -446,7 +446,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
     }
 
-        private fun tryGrabbingResponder(): Boolean {
+    private fun tryGrabbingResponder(): Boolean {
       if (isChildTouched()) {
         return false
       }
