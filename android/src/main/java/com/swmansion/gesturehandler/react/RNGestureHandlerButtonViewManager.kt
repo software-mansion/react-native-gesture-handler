@@ -260,11 +260,12 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+      if (touchResponder != null && touchResponder !== this) {
+        return false
+      }
       if (super.onInterceptTouchEvent(ev)) {
         return true
       }
-      // We call `onTouchEvent` and wait until button changes state to `pressed`, if it's pressed
-      // we return true so that the gesture handler can activate.
       onTouchEvent(ev)
       return isPressed
     }
@@ -288,6 +289,16 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
      * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+
+      if (touchResponder != null && touchResponder !== this) {
+        if (isPressed) {
+          setPressed(false)
+        }
+        lastEventTime = event.eventTime
+        lastAction = event.action
+        return false
+      }
+      
       val eventTime = event.eventTime
       val action = event.action
 
@@ -435,7 +446,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
     }
 
-    private fun tryGrabbingResponder(): Boolean {
+        private fun tryGrabbingResponder(): Boolean {
       if (isChildTouched()) {
         return false
       }
