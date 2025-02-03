@@ -16,7 +16,6 @@
     "@react-navigation/stack": "^6.3.17",
     "@swmansion/icons": "^0.0.1",
     "babel-plugin-module-resolver": "^5.0.2",
-    "hoist-non-react-statics": "^3.3.2",
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0",
     "react": "18.2.0",
