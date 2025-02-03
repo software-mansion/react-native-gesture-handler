@@ -20,9 +20,10 @@ import {
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { INT32_MAX } from '../../utils';
+import { INT32_MAX, isTestEnv } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
+const IS_TEST_ENV = isTestEnv();
 
 export default function Pressable(props: PressableProps) {
   const {
@@ -390,7 +391,11 @@ export default function Pressable(props: PressableProps) {
         touchSoundDisabled={android_disableSound ?? undefined}
         rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
         rippleRadius={android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp]}>
+        style={[pointerStyle, styleProp]}
+        testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
+        testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
+        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
+        testOnly_onLongPress={IS_TEST_ENV ? onLongPress : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />

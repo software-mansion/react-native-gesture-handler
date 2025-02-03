@@ -34,9 +34,9 @@ export function hasProperty(object: object, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
-export function isJestEnv(): boolean {
+export function isTestEnv(): boolean {
   // @ts-ignore Do not use `@types/node` because it will prioritise Node types over RN types which breaks the types (ex. setTimeout) in React Native projects.
-  return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
+  return hasProperty(global, 'process') && process.env.NODE_ENV === 'test';
 }
 
 export function tagMessage(msg: string) {

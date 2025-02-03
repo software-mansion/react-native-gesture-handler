@@ -1,9 +1,15 @@
+import { FlatList } from 'react-native';
 import type { GestureHandlerRef, SVGRef } from './web/interfaces';
 import { isRNSVGElement } from './web/utils';
 
 export default function findNodeHandle(
   viewRef: GestureHandlerRef | SVGRef | HTMLElement | SVGElement
 ): HTMLElement | SVGElement | number {
+  // TODO: Remove this once we remove old API.
+  if (viewRef instanceof FlatList) {
+    // @ts-ignore This is the only way to get the scroll ref from FlatList.
+    return viewRef._listRef._scrollRef.firstChild;
+  }
   // Old API assumes that child handler is HTMLElement.
   // However, if we nest handlers, we will get ref to another handler.
   // In that case, we want to recursively call findNodeHandle with new handler viewTag (which can also be ref to another handler).

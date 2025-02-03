@@ -466,7 +466,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       rightLayoutRef,
       leftWidth,
       rightWidth,
-      rowWidth.value,
+      rowWidth,
     ]);
 
     const swipeableMethods = useMemo<SwipeableMethods>(
