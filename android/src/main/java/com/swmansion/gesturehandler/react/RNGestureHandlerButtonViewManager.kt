@@ -288,18 +288,17 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
      * [com.swmansion.gesturehandler.NativeViewGestureHandler.onHandle]  */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+      val eventTime = event.eventTime
+      val action = event.action
 
       if (touchResponder != null && touchResponder !== this) {
         if (isPressed) {
           setPressed(false)
         }
-        lastEventTime = event.eventTime
-        lastAction = event.action
+        lastEventTime = eventTime
+        lastAction = action
         return false
       }
-
-      val eventTime = event.eventTime
-      val action = event.action
 
       if (event.action == MotionEvent.ACTION_CANCEL) {
         tryFreeingResponder()
