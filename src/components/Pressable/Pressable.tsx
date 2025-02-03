@@ -25,6 +25,8 @@ import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
+let IS_FABRIC: null | boolean = null;
+
 export default function Pressable(props: PressableProps) {
   const {
     testOnly_pressed,
@@ -379,15 +381,17 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
-  const isFabricValue = useMemo(() => isFabric(), []);
-
   const rippleColor = useMemo(() => {
+    if (IS_FABRIC === null) {
+      IS_FABRIC = isFabric();
+    }
+
     const defaultRippleColor = android_ripple ? undefined : 'transparent';
     const unprocessedRippleColor = android_ripple?.color ?? defaultRippleColor;
-    return isFabricValue
+    return IS_FABRIC
       ? unprocessedRippleColor
       : processColor(unprocessedRippleColor);
-  }, [android_ripple, isFabricValue]);
+  }, [android_ripple]);
 
   return (
     <GestureDetector gesture={gesture}>
