@@ -1,2 +1,5 @@
-export type { PressableProps } from './PressableProps';
+export type {
+  PressableProps,
+  PressableStateCallbackType,
+} from './PressableProps';
 export { default } from './Pressable';
