@@ -121,16 +121,16 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   };
 
   render() {
-    const { rippleColor, style, ...rest } = this.props;
+    const { rippleColor: unprocessedRippleColor, style, ...rest } = this.props;
 
-    const processedRippleColor = isFabric()
-      ? rippleColor
-      : processColor(rippleColor ?? undefined);
+    const rippleColor = isFabric()
+      ? unprocessedRippleColor
+      : processColor(unprocessedRippleColor ?? undefined);
 
     return (
       <RawButton
         ref={this.props.innerRef}
-        rippleColor={processedRippleColor}
+        rippleColor={rippleColor}
         style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
         {...rest}
         onGestureEvent={this.onGestureEvent}
