@@ -25,6 +25,8 @@ export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldActivateOnStart: false,
 });
 
+let IS_FABRIC: null | boolean = null;
+
 class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
     delayLongPress: 600,
@@ -123,7 +125,11 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   render() {
     const { rippleColor: unprocessedRippleColor, style, ...rest } = this.props;
 
-    const rippleColor = isFabric()
+    if (IS_FABRIC === null) {
+      IS_FABRIC = isFabric();
+    }
+
+    const rippleColor = IS_FABRIC
       ? unprocessedRippleColor
       : processColor(unprocessedRippleColor ?? undefined);
 
