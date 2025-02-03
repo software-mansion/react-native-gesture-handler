@@ -8,7 +8,6 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "start": "expo start --dev-client",
-    "test": "jest",
     "ts-check": "yarn tsc --noEmit",
     "lint-check": "yarn eslint App.tsx src/ && yarn prettier --check App.tsx src/",
     "postinstall": "expo prebuild"
@@ -55,17 +54,6 @@
   },
   "engines": {
     "node": ">=16"
-  },
-  "jest": {
-    "preset": "react-native",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   },
   "packageManager": "yarn@1.22.22"
 }
