@@ -93,9 +93,9 @@ RCT_EXPORT_MODULE()
 #ifdef RCT_NEW_ARCH_ENABLED
 void decorateRuntime(jsi::Runtime &runtime)
 {
-  auto isFormsStackingContext = jsi::Function::createFromHostFunction(
+  auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
       runtime,
-      jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
+      jsi::PropNameID::forAscii(runtime, "isViewFlatteningDisabled"),
       1,
       [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count) -> jsi::Value {
         if (!arguments[0].isObject()) {
@@ -111,11 +111,11 @@ void decorateRuntime(jsi::Runtime &runtime)
           return jsi::Value(true);
         }
 
-        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
+        bool isViewFlatteningDisabled = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
-        return jsi::Value(isFormsStackingContext);
+        return jsi::Value(isViewFlatteningDisabled);
       });
-  runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
+  runtime.global().setProperty(runtime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
