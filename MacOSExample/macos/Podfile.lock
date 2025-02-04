@@ -4,9 +4,9 @@ PODS:
   - FBLazyVector (0.74.6)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - hermes-engine (0.74.6):
-    - hermes-engine/Pre-built (= 0.74.6)
-  - hermes-engine/Pre-built (0.74.6)
+  - hermes-engine (0.74.7):
+    - hermes-engine/Pre-built (= 0.74.7)
+  - hermes-engine/Pre-built (0.74.7)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1166,7 +1166,7 @@ PODS:
     - React-utils (= 0.74.6)
   - RNCAsyncStorage (1.24.0):
     - React-Core
-  - RNGestureHandler (2.21.2):
+  - RNGestureHandler (2.22.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1443,11 +1443,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 0686b6af8cbd638c784fea5afb789be66699823c
-  DoubleConversion: 5b92c4507c560bb62e7aa1acdf2785ea3ff08b3b
+  DoubleConversion: acaf5db79676d2e9119015819153f0f99191de12
   FBLazyVector: 8f41053475f558b29633b434bd62929813a38560
   fmt: 03574da4b7ba40de39da59677ca66610ce8c4a02
-  glog: ba31c1afa7dcf1915a109861bccdb4421be6175b
-  hermes-engine: 2102c92e54a031a270fd1fe84169ec8a0901b7bd
+  glog: 6df0a3d6e2750a50609471fd1a01fd2948d405b5
+  hermes-engine: 21ea4e6a0b64854652c8c20cb815efdbb3131fdd
   RCT-Folly: 2edbb9597acadc2312235c7ad6243d49852047a3
   RCTDeprecation: 5f1d7e1f8ef6c53f0207e3ac0d0ca23575e8a6ab
   RCTRequired: 200cf97fbe1ff2c9573d9f7b2243b6bd9330b6b8
@@ -1496,11 +1496,11 @@ SPEC CHECKSUMS:
   React-utils: d1f30e28b14bea6aa6b009be03ab502bbf2cf5c6
   ReactCommon: 68cae4af53cf2d34e6a26c0099f434f170495dd1
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
-  RNGestureHandler: 280c8940cbc21ce8c189ddb4b32e2046c49f858f
+  RNGestureHandler: ae092c8f9da8d2c0f47257caadc8eadebd03fa90
   RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
   RNSVG: 4590aa95758149fa27c5c83e54a6a466349a1688
   SocketRocket: f6c6249082c011e6de2de60ed641ef8bbe0cfac9
-  Yoga: e0cc115eebe05a9f8da381a8de541b189f89f682
+  Yoga: 2b5a8ace4c52fd28c52de828b9a66aede21c3a9c
 
 PODFILE CHECKSUM: 3d6bcfcb4beca113bbf03f2652ec9272037c8111
 
