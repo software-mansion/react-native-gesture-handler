@@ -33,6 +33,16 @@ export default ({ config }) => ({
         cameraPermission: 'Allow RNGH example to access your camera',
       },
     ],
+    [
+      'expo-font',
+      {
+        fonts: [
+          './node_modules/@swmansion/icons/fonts/broken/swm-icons-broken.ttf',
+          './node_modules/@swmansion/icons/fonts/outline/swm-icons-outline.ttf',
+          './node_modules/@swmansion/icons/fonts/curved/swm-icons-curved.ttf',
+        ],
+      },
+    ],
   ],
   newArchEnabled: Boolean(Number(process.env.FABRIC_ENABLED)),
 });
