@@ -64,10 +64,24 @@
     return button.userEnabled;
   }
 
+  // Certain subviews such as RCTViewComponentView have been observed to have disabled
+  // accessibility gesture recognizers such as _UIAccessibilityHUDGateGestureRecognizer,
+  // ostensibly set by iOS. Such gesture recognizers cause us to return early, despite
+  // the returned view not actually responding to touches. This in turn breaks button
+  // touch handling. Therefore, as a bandaid we can check to ensure we don't return
+  // true here if the only gesture recognizers we have are all disabled.
+  BOOL hasEnabledGestureRecognizer = false;
+  for (UIGestureRecognizer *gestureRecognizer in view.gestureRecognizers) {
+    if (gestureRecognizer.isEnabled) {
+      hasEnabledGestureRecognizer = true;
+      break;
+    }
+  }
+
 #if !TARGET_OS_OSX
-  return [view isKindOfClass:[UIControl class]] || [view.gestureRecognizers count] > 0;
+  return [view isKindOfClass:[UIControl class]] || hasEnabledGestureRecognizer;
 #else
-  return [view isKindOfClass:[NSControl class]] || [view.gestureRecognizers count] > 0;
+  return [view isKindOfClass:[NSControl class]] || hasEnabledGestureRecognizer;
 #endif
 }
 
