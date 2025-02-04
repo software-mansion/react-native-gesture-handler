@@ -18,11 +18,14 @@ import type {
   BorderlessButtonWithRefProps,
   BorderlessButtonProps,
 } from './GestureButtonsProps';
+import { isFabric } from '../utils';
 
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
+
+let IS_FABRIC: null | boolean = null;
 
 class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
@@ -120,12 +123,20 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   };
 
   render() {
-    const { rippleColor, style, ...rest } = this.props;
+    const { rippleColor: unprocessedRippleColor, style, ...rest } = this.props;
+
+    if (IS_FABRIC === null) {
+      IS_FABRIC = isFabric();
+    }
+
+    const rippleColor = IS_FABRIC
+      ? unprocessedRippleColor
+      : processColor(unprocessedRippleColor ?? undefined);
 
     return (
       <RawButton
         ref={this.props.innerRef}
-        rippleColor={processColor(rippleColor)}
+        rippleColor={rippleColor}
         style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
         {...rest}
         onGestureEvent={this.onGestureEvent}
