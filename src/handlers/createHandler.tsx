@@ -8,7 +8,11 @@ import {
 import { customDirectEventTypes } from './customDirectEventTypes';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
-import { handlerIDToTag, registerOldGestureHandler } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  registerOldGestureHandler,
+  unregisterOldGestureHandler,
+} from './handlersRegistry';
 import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
@@ -255,6 +259,9 @@ export default function createHandler<
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       this.isMountedRef.current = false;
+      if (Platform.OS !== 'web') {
+        unregisterOldGestureHandler(this.handlerTag);
+      }
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
       scheduleFlushOperations();
       // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context

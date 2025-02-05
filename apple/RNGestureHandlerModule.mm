@@ -14,6 +14,8 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
 
+#import <react/renderer/components/text/ParagraphShadowNode.h>
+#import <react/renderer/components/text/TextShadowNode.h>
 #import <react/renderer/uimanager/primitives.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
@@ -91,19 +93,29 @@ RCT_EXPORT_MODULE()
 #ifdef RCT_NEW_ARCH_ENABLED
 void decorateRuntime(jsi::Runtime &runtime)
 {
-  auto isFormsStackingContext = jsi::Function::createFromHostFunction(
+  auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
       runtime,
-      jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
+      jsi::PropNameID::forAscii(runtime, "isViewFlatteningDisabled"),
       1,
       [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count) -> jsi::Value {
         if (!arguments[0].isObject()) {
           return jsi::Value::null();
         }
         auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
-        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
-        return jsi::Value(isFormsStackingContext);
+
+        if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
+          return jsi::Value(true);
+        }
+
+        if (dynamic_pointer_cast<const TextShadowNode>(shadowNode)) {
+          return jsi::Value(true);
+        }
+
+        bool isViewFlatteningDisabled = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
+
+        return jsi::Value(isViewFlatteningDisabled);
       });
-  runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
+  runtime.global().setProperty(runtime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
 }
 #endif // RCT_NEW_ARCH_ENABLED
 

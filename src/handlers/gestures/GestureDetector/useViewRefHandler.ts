@@ -6,7 +6,7 @@ import React, { useCallback } from 'react';
 import findNodeHandle from '../../../findNodeHandle';
 
 declare const global: {
-  isFormsStackingContext: (node: unknown) => boolean | null; // JSI function
+  isViewFlatteningDisabled: (node: unknown) => boolean | null; // JSI function
 };
 
 // Ref handler for the Wrap component attached under the GestureDetector.
@@ -35,9 +35,9 @@ export function useViewRefHandler(
         updateAttachedGestures(true);
       }
 
-      if (__DEV__ && isFabric() && global.isFormsStackingContext) {
+      if (__DEV__ && isFabric() && global.isViewFlatteningDisabled) {
         const node = getShadowNodeFromRef(ref);
-        if (global.isFormsStackingContext(node) === false) {
+        if (global.isViewFlatteningDisabled(node) === false) {
           console.error(
             tagMessage(
               'GestureDetector has received a child that may get view-flattened. ' +
