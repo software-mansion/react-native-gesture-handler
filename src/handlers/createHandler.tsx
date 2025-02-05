@@ -8,7 +8,11 @@ import {
 import { customDirectEventTypes } from './customDirectEventTypes';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
-import { handlerIDToTag, registerOldGestureHandler, unregisterOldGestureHandler } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  registerOldGestureHandler,
+  unregisterOldGestureHandler,
+} from './handlersRegistry';
 import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
@@ -255,7 +259,7 @@ export default function createHandler<
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       this.isMountedRef.current = false;
-      if (Platform.OS !== 'web')  {
+      if (Platform.OS !== 'web') {
         unregisterOldGestureHandler(this.handlerTag);
       }
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
