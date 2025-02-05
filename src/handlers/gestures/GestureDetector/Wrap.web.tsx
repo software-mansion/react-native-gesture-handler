@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import type { LegacyRef, PropsWithChildren } from 'react';
 import { tagMessage } from '../../../utils';
+import { RNSVGElements } from '../../../web/utils';
 
 export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
   ({ children }, ref) => {
@@ -9,7 +10,8 @@ export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
       const child: any = React.Children.only(children);
 
       const isRNSVGNode =
-        Object.getPrototypeOf(child?.type)?.name === 'WebShape';
+        Object.getPrototypeOf(child?.type)?.name === 'WebShape' ||
+        RNSVGElements.has(child.type.displayName);
 
       if (isRNSVGNode) {
         const clone = React.cloneElement(
