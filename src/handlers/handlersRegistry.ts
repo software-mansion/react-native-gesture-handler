@@ -25,6 +25,10 @@ export function registerOldGestureHandler(
   oldHandlers.set(handlerTag, handler);
 }
 
+export function unregisterOldGestureHandler(handlerTag: number) {
+  oldHandlers.delete(handlerTag);
+}
+
 export function unregisterHandler(handlerTag: number, testID?: string) {
   gestures.delete(handlerTag);
   if (isTestEnv() && testID) {
