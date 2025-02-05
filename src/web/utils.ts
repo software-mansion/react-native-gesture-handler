@@ -273,3 +273,15 @@ export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
     Object.hasOwn(viewRef, 'elementRef')
   );
 }
+
+// This function checks if given node is SVGElement. Unlike the function above, this one
+// operates on React Nodes, not DOM nodes.
+//
+// Second condition was introduced to handle case where SVG element was wrapped with
+// `createAnimatedComponent` from Reanimated.
+export function isRNSVGNode(node: any) {
+  return (
+    Object.getPrototypeOf(node?.type)?.name === 'WebShape' ||
+    RNSVGElements.has(node?.type?.displayName)
+  );
+}
