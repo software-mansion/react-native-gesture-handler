@@ -356,6 +356,11 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       );
     }, [isFromLeft, edgeWidth]);
 
+    const setStatusBarHidden = (
+      hidden: boolean,
+      animation?: StatusBarAnimation | undefined
+    ) => StatusBar.setHidden(hidden, animation);
+
     const animateDrawer = useCallback(
       (toValue: number, initialVelocity: number, animationSpeed?: number) => {
         'worklet';
@@ -366,7 +371,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         runOnJS(setDrawerState)(DrawerState.SETTLING);
 
         if (hideStatusBar) {
-          runOnJS(StatusBar.setHidden)(willShow, statusBarAnimation);
+          runOnJS(setStatusBarHidden)(willShow, statusBarAnimation);
         }
 
         const normalizedToValue = interpolate(
@@ -509,6 +514,8 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [drawerWidth, isFromLeft]
     );
 
+    const dismissKeyboard = () => Keyboard.dismiss();
+
     const panGesture = useMemo(() => {
       return Gesture.Pan()
         .activeCursor(activeCursor)
@@ -529,10 +536,10 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           emitStateChanged(DrawerState.DRAGGING, false);
           runOnJS(setDrawerState)(DrawerState.DRAGGING);
           if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
-            runOnJS(Keyboard.dismiss)();
+            runOnJS(dismissKeyboard)();
           }
           if (hideStatusBar) {
-            runOnJS(StatusBar.setHidden)(true, statusBarAnimation);
+            runOnJS(setStatusBarHidden)(true, statusBarAnimation);
           }
         })
         .onUpdate((event) => {
