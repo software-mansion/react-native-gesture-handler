@@ -1,8 +1,6 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 
-#include <react/renderer/components/text/ParagraphShadowNode.h>
-#include <react/renderer/components/text/TextShadowNode.h>
 #include <react/renderer/uimanager/primitives.h>
 
 using namespace facebook;
