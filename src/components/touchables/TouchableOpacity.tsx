@@ -11,7 +11,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 /**
- * @deprecated TouchableOpacity will be removed in the future version of Gesture Handler.
+ * @deprecated TouchableOpacity will be removed in the future version of Gesture Handler. Use Pressable instead.
  */
 export type TouchableOpacityProps = RNTouchableOpacityProps &
   GenericTouchableProps & {
@@ -19,7 +19,7 @@ export type TouchableOpacityProps = RNTouchableOpacityProps &
   };
 
 /**
- * @deprecated TouchableOpacity will be removed in the future version of Gesture Handler.
+ * @deprecated TouchableOpacity will be removed in the future version of Gesture Handler. Use Pressable instead.
  *
  * TouchableOpacity bases on timing animation which has been used in RN's core
  */
