@@ -20,9 +20,12 @@ import {
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { INT32_MAX } from '../../utils';
+import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
+const IS_TEST_ENV = isTestEnv();
+
+let IS_FABRIC: null | boolean = null;
 
 export default function Pressable(props: PressableProps) {
   const {
@@ -58,7 +61,7 @@ export default function Pressable(props: PressableProps) {
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
-      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : hitSlop ?? {},
+      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : (hitSlop ?? {}),
     [hitSlop]
   );
 
@@ -66,7 +69,7 @@ export default function Pressable(props: PressableProps) {
     () =>
       typeof pressRetentionOffset === 'number'
         ? numberAsInset(pressRetentionOffset)
-        : pressRetentionOffset ?? {},
+        : (pressRetentionOffset ?? {}),
     [pressRetentionOffset]
   );
 
@@ -352,7 +355,7 @@ export default function Pressable(props: PressableProps) {
 
   const isPressableEnabled = disabled !== true;
 
-  const gestures = [pressAndTouchGesture, hoverGesture, buttonGesture];
+  const gestures = [buttonGesture, pressAndTouchGesture, hoverGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
@@ -366,8 +369,6 @@ export default function Pressable(props: PressableProps) {
 
   const gesture = Gesture.Simultaneous(...gestures);
 
-  const defaultRippleColor = android_ripple ? undefined : 'transparent';
-
   // `cursor: 'pointer'` on `RNButton` crashes iOS
   const pointerStyle: StyleProp<ViewStyle> =
     Platform.OS === 'web' ? { cursor: 'pointer' } : {};
@@ -380,6 +381,18 @@ export default function Pressable(props: PressableProps) {
       ? children({ pressed: pressedState })
       : children;
 
+  const rippleColor = useMemo(() => {
+    if (IS_FABRIC === null) {
+      IS_FABRIC = isFabric();
+    }
+
+    const defaultRippleColor = android_ripple ? undefined : 'transparent';
+    const unprocessedRippleColor = android_ripple?.color ?? defaultRippleColor;
+    return IS_FABRIC
+      ? unprocessedRippleColor
+      : processColor(unprocessedRippleColor);
+  }, [android_ripple]);
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
@@ -388,9 +401,13 @@ export default function Pressable(props: PressableProps) {
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
         touchSoundDisabled={android_disableSound ?? undefined}
-        rippleColor={processColor(android_ripple?.color ?? defaultRippleColor)}
+        rippleColor={rippleColor}
         rippleRadius={android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp]}>
+        style={[pointerStyle, styleProp]}
+        testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
+        testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
+        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
+        testOnly_onLongPress={IS_TEST_ENV ? onLongPress : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />

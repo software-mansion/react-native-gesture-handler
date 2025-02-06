@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
@@ -16,24 +16,23 @@ export default class PinchGestureHandler extends GestureHandler {
 
   private scaleDetectorListener: ScaleGestureListener = {
     onScaleBegin: (detector: ScaleGestureDetector): boolean => {
-      this.startingSpan = detector.getCurrentSpan();
+      this.startingSpan = detector.currentSpan;
       return true;
     },
     onScale: (detector: ScaleGestureDetector): boolean => {
       const prevScaleFactor: number = this.scale;
-      this.scale *= detector.getScaleFactor(
-        this.tracker.getTrackedPointersCount()
+      this.scale *= detector.calculateScaleFactor(
+        this.tracker.trackedPointersCount
       );
 
-      const delta = detector.getTimeDelta();
+      const delta = detector.timeDelta;
       if (delta > 0) {
         this.velocity = (this.scale - prevScaleFactor) / delta;
       }
 
       if (
-        Math.abs(this.startingSpan - detector.getCurrentSpan()) >=
-          this.spanSlop &&
-        this.currentState === State.BEGAN
+        Math.abs(this.startingSpan - detector.currentSpan) >= this.spanSlop &&
+        this.state === State.BEGAN
       ) {
         this.activate();
       }
@@ -52,17 +51,13 @@ export default class PinchGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
 
-    this.setShouldCancelWhenOutside(false);
-  }
-
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+    this.shouldCancelWhenOutside = false;
   }
 
   protected transformNativeEvent() {
     return {
-      focalX: this.scaleGestureDetector.getFocusX(),
-      focalY: this.scaleGestureDetector.getFocusY(),
+      focalX: this.scaleGestureDetector.focusX,
+      focalY: this.scaleGestureDetector.focusY,
       velocity: this.velocity,
       scale: this.scale,
     };
@@ -85,12 +80,12 @@ export default class PinchGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
-    if (this.currentState !== State.ACTIVE) {
+    if (this.state !== State.ACTIVE) {
       return;
     }
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.end();
     } else {
       this.fail();
@@ -102,16 +97,13 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (
-      this.currentState === State.ACTIVE &&
-      this.tracker.getTrackedPointersCount() < 2
-    ) {
+    if (this.state === State.ACTIVE && this.tracker.trackedPointersCount < 2) {
       this.end();
     }
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
     this.tracker.track(event);
@@ -120,7 +112,7 @@ export default class PinchGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
     this.tracker.track(event);
@@ -130,7 +122,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   private tryBegin(): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 
@@ -139,7 +131,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   public activate(force?: boolean): void {
-    if (this.currentState !== State.ACTIVE) {
+    if (this.state !== State.ACTIVE) {
       this.resetProgress();
     }
 
@@ -151,7 +143,7 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected resetProgress(): void {
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       return;
     }
     this.velocity = 0;

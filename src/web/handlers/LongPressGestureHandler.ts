@@ -82,7 +82,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     super.onPointerAdd(event);
     this.tracker.addToTracker(event);
 
-    if (this.tracker.getTrackedPointersCount() > this.numberOfPointers) {
+    if (this.tracker.trackedPointersCount > this.numberOfPointers) {
       this.fail();
       return;
     }
@@ -101,11 +101,17 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.checkDistanceFail();
   }
 
+  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+    super.onPointerOutOfBounds(event);
+    this.tracker.track(event);
+    this.checkDistanceFail();
+  }
+
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.end();
     } else {
       this.fail();
@@ -117,15 +123,15 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (
-      this.tracker.getTrackedPointersCount() < this.numberOfPointers &&
-      this.getState() !== State.ACTIVE
+      this.tracker.trackedPointersCount < this.numberOfPointers &&
+      this.state !== State.ACTIVE
     ) {
       this.fail();
     }
   }
 
   private tryBegin(): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 
@@ -136,7 +142,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   }
 
   private tryActivate(): void {
-    if (this.tracker.getTrackedPointersCount() !== this.numberOfPointers) {
+    if (this.tracker.trackedPointersCount !== this.numberOfPointers) {
       return;
     }
 
@@ -160,7 +166,7 @@ export default class LongPressGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.cancel();
     } else {
       this.fail();

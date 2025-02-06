@@ -5,6 +5,7 @@
 #import <React/RCTInitializing.h>
 #import <rngesturehandler_codegen/rngesturehandler_codegen.h>
 
-@interface RNGestureHandlerModule : RCTEventEmitter <NativeRNGestureHandlerModuleSpec, RCTJSDispatcherModule, RCTInitializing>
+@interface RNGestureHandlerModule
+    : RCTEventEmitter <NativeRNGestureHandlerModuleSpec, RCTJSDispatcherModule, RCTInitializing>
 
 @end

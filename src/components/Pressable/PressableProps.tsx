@@ -1,22 +1,15 @@
 import {
-  ColorValue,
   AccessibilityProps,
   ViewProps,
   Insets,
   StyleProp,
   ViewStyle,
+  PressableStateCallbackType as RNPressableStateCallbackType,
+  PressableAndroidRippleConfig as RNPressableAndroidRippleConfig,
 } from 'react-native';
 
-export interface PressableStateCallbackType {
-  readonly pressed: boolean;
-}
-
-export interface PressableAndroidRippleConfig {
-  color?: null | ColorValue | undefined;
-  borderless?: null | boolean | undefined;
-  radius?: null | number | undefined;
-  foreground?: null | boolean | undefined;
-}
+export type PressableStateCallbackType = RNPressableStateCallbackType;
+export type PressableAndroidRippleConfig = RNPressableAndroidRippleConfig;
 
 export type InnerPressableEvent = {
   changedTouches: InnerPressableEvent[];

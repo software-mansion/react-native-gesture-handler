@@ -22,7 +22,8 @@ export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
   private isInitialized = false;
-  private view!: HTMLElement;
+  private _view!: HTMLElement;
+
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
   private defaultViewStyles: DefaultViewStyles = {
@@ -30,14 +31,10 @@ export class GestureHandlerWebDelegate
     touchAction: '',
   };
 
-  getView(): HTMLElement {
-    return this.view;
-  }
-
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
       throw new Error(
-        `Cannot find HTML Element for handler ${handler.getTag()}`
+        `Cannot find HTML Element for handler ${handler.handlerTag}`
       );
     }
 
@@ -51,7 +48,7 @@ export class GestureHandlerWebDelegate
       touchAction: this.view.style.touchAction,
     };
 
-    const config = handler.getConfig();
+    const config = handler.config;
 
     this.setUserSelect(config.enabled);
     this.setTouchAction(config.enabled);
@@ -88,12 +85,12 @@ export class GestureHandlerWebDelegate
   }
 
   tryResetCursor() {
-    const config = this.gestureHandler.getConfig();
+    const config = this.gestureHandler.config;
 
     if (
       config.activeCursor &&
       config.activeCursor !== 'auto' &&
-      this.gestureHandler.getState() === State.ACTIVE
+      this.gestureHandler.state === State.ACTIVE
     ) {
       this.view.style.cursor = 'auto';
     }
@@ -132,32 +129,32 @@ export class GestureHandlerWebDelegate
   }
 
   private setUserSelect(isHandlerEnabled: boolean) {
-    const { userSelect } = this.gestureHandler.getConfig();
+    const { userSelect } = this.gestureHandler.config;
 
     this.view.style['userSelect'] = isHandlerEnabled
-      ? userSelect ?? 'none'
+      ? (userSelect ?? 'none')
       : this.defaultViewStyles.userSelect;
 
     this.view.style['webkitUserSelect'] = isHandlerEnabled
-      ? userSelect ?? 'none'
+      ? (userSelect ?? 'none')
       : this.defaultViewStyles.userSelect;
   }
 
   private setTouchAction(isHandlerEnabled: boolean) {
-    const { touchAction } = this.gestureHandler.getConfig();
+    const { touchAction } = this.gestureHandler.config;
 
     this.view.style['touchAction'] = isHandlerEnabled
-      ? touchAction ?? 'none'
+      ? (touchAction ?? 'none')
       : this.defaultViewStyles.touchAction;
 
     // @ts-ignore This one disables default events on Safari
     this.view.style['WebkitTouchCallout'] = isHandlerEnabled
-      ? touchAction ?? 'none'
+      ? (touchAction ?? 'none')
       : this.defaultViewStyles.touchAction;
   }
 
   private setContextMenu(isHandlerEnabled: boolean) {
-    const config = this.gestureHandler.getConfig();
+    const config = this.gestureHandler.config;
 
     if (isHandlerEnabled) {
       this.addContextMenuListeners(config);
@@ -174,6 +171,21 @@ export class GestureHandlerWebDelegate
     this.setUserSelect(enabled);
     this.setTouchAction(enabled);
     this.setContextMenu(enabled);
+
+    if (enabled) {
+      this.eventManagers.forEach((manager) => {
+        // It may look like managers will be registered twice when handler is mounted for the first time.
+        // However, `init` method is called AFTER `updateGestureConfig` - it means that delegate has not
+        // been initialized yet, so this code won't be executed.
+        //
+        // Also, because we use defined functions, not lambdas, they will not be registered multiple times.
+        manager.registerListeners();
+      });
+    } else {
+      this.eventManagers.forEach((manager) => {
+        manager.unregisterListeners();
+      });
+    }
   }
 
   onBegin(): void {
@@ -181,7 +193,7 @@ export class GestureHandlerWebDelegate
   }
 
   onActivate(): void {
-    const config = this.gestureHandler.getConfig();
+    const config = this.gestureHandler.config;
 
     if (
       (!this.view.style.cursor || this.view.style.cursor === 'auto') &&
@@ -209,5 +221,12 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
+  }
+
+  public get view() {
+    return this._view;
+  }
+  public set view(value: HTMLElement) {
+    this._view = value;
   }
 }

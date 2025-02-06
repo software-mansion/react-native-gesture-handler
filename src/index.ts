@@ -102,6 +102,7 @@ export {
   FlatList,
   RefreshControl,
 } from './components/GestureComponents';
+export { Text } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   // Events
@@ -144,7 +145,10 @@ export type {
 
 export type { SwipeableProps } from './components/Swipeable';
 export { default as Swipeable } from './components/Swipeable';
-export type { PressableProps } from './components/Pressable';
+export type {
+  PressableProps,
+  PressableStateCallbackType,
+} from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
 
 export type {

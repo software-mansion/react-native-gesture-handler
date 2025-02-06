@@ -4,98 +4,129 @@ title: Installation
 sidebar_position: 2
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 ## Requirements
 
 | version   | `react-native` version |
 | --------- | ---------------------- |
+| 2.21.0+   | 0.74.0+                |
 | 2.18.0+   | 0.73.0+                |
 | 2.16.0+   | 0.68.0+                |
 | 2.14.0+   | 0.67.0+                |
 | 2.10.0+   | 0.64.0+                |
 | 2.0.0+    | 0.63.0+                |
-| 1.4.0+    | 0.60.0+                |
-| 1.1.0+    | 0.57.2+                |
-| &lt;1.1.0 | 0.50.0+                |
 
-It may be possible to use newer versions of react-native-gesture-handler on React Native with version <= 0.59 by reverse Jetifying.
-Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
+In order to fully utilize the [touch events](/docs/gestures/touch-events/) you also need to use `react-native-reanimated` 2.3.0 or newer.
 
-Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](/docs/gesture-handlers/interactions/) you need to use v16.3 of [React](https://reactjs.org/)
+Setting up `react-native-gesture-handler` is pretty straightforward:
 
-In order to fully utilize the [touch events](/docs/gestures/touch-events/) you also need to use `react-native-reanimated` 2.3.0-beta.4 or newer.
+### 1. Start with installing the package from npm:
 
-## [Expo](https://expo.dev)
+<Tabs groupId="package-managers">
+  <TabItem value="expo" label="EXPO" default>
 
-To use the version of react-native-gesture-handler that is compatible with your Expo project, run `npx expo install react-native-gesture-handler`.
+    npx expo install react-native-gesture-handler
 
-The Expo SDK incorporates the latest version of react-native-gesture-handler available at the time of each SDK release, so Expo apps might not always support all our latest features as soon as they are available.
+  </TabItem>
+  <TabItem value="npm" label="NPM">
 
-### Bare [React Native](https://reactnative.dev/)
+    npm install react-native-gesture-handler
 
-Since the library uses native support for handling gestures, it requires an extended installation to the norm. If you are starting a new project, initialize it with [`npx create-expo-app@latest`](https://docs.expo.dev/get-started/create-a-project/) since it comes pre-installed with react-native-gesture-handler.
+  </TabItem>
+  <TabItem value="yarn" label="YARN">
 
-## JS
+    yarn add react-native-gesture-handler
 
-First, install the library using `yarn`:
+  </TabItem>
+</Tabs>
 
-```bash
-yarn add react-native-gesture-handler
-```
+### 2. Wrap your app with `GestureHandlerRootView` component
 
-or with `npm` if you prefer:
-
-```bash
-npm install --save react-native-gesture-handler
-```
-
-After installation, wrap your entry point with `<GestureHandlerRootView>` or
-`gestureHandlerRootHOC`.
-
-For example:
-
-```js
+```jsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      {/* content */}
+    <GestureHandlerRootView>
+      <ActualApp />
     </GestureHandlerRootView>
   );
 }
 ```
 
-:::info
-If you use props such as `shouldCancelWhenOutside`, `simultaneousHandlers`, `waitFor` etc. with gesture handlers, the handlers need to be mounted under a single `GestureHandlerRootView`. So it's important to keep the `GestureHandlerRootView` as close to the actual root view as possible.
+If you don't provide anything to the `styles` prop, it will default to `flex: 1`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything. Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all gesture relations. The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
-Note that `GestureHandlerRootView` acts like a normal `View`. Also, gestures will only be recognized within the `GestureHandlerRootView` area. So if you want it to fill the screen, you will need to pass `{ flex: 1 }` like you'll need to do with a normal `View`. By default, it'll take the size of the content nested inside.
-:::
+If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway. In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones.
 
 :::tip
-If you're using gesture handler in your component library, you may want to wrap your library's code in the GestureHandlerRootView component. This will avoid extra configuration for the user.
+If you're using gesture handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
 :::
 
-### Linking
+### 3. Platform specific setup
 
-> **Important**: You only need to do this step if you're using React Native 0.59 or lower. Since v0.60, linking happens automatically.
+#### [Expo development build](https://docs.expo.dev/develop/development-builds/introduction/)
+
+When using an Expo development build, run prebuild to update the native code in the ios and android directories.
 
 ```bash
-react-native link react-native-gesture-handler
+npx expo prebuild
 ```
 
-## Fabric
+#### Android
 
-Starting with version 2.3.0, Gesture Handler now supports [Fabric](https://reactnative.dev/docs/fabric-renderer)!. To use Gesture Handler in your Fabric application you have to:
+Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in Modals you need to wrap Modal's content with `GestureHandlerRootView`:
 
-#### on iOS:
+```jsx
+import { Modal } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-Install pods using `RCT_NEW_ARCH_ENABLED=1 pod install` – this is the same command you run to prepare a Fabric build but you also need to run it after a new native library gets added.
+export function CustomModal({ children, ...rest }) {
+  return (
+    <Modal {...rest}>
+      <GestureHandlerRootView>
+        {children}
+      </GestureHandlerRootView>
+    </Modal>
+  );
+}
+```
 
-#### on Android:
 
-There are no additional steps required so long as your app is configured to build with Fabric – this is typically configured by setting `newArchEnabled=true` in `gradle.properties` file in your project.
+##### Kotlin
 
-### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
+Gesture Handler on Android is implemented in Kotlin. If you need to set a specific Kotlin version to be used by the library, set the `kotlinVersion` ext property in `android/build.gradle` file and RNGH will use that version:
+
+```groovy
+buildscript {
+    ext {
+        kotlinVersion = "1.6.21"
+    }
+}
+```
+
+#### iOS
+
+While developing for iOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
+
+```bash
+cd ios && pod install && cd ..
+```
+
+#### Web
+
+There is no additional configuration required for the web, however, since the Gesture Handler 2.10.0 the new web implementation is enabled by default. We recommend you to check if the gestures in your app are working as expected since their behavior should now resemble the native platforms. If you don't want to use the new implementation, you can still revert back to the legacy one by enabling it at the beginning of your `index.js` file:
+
+```js
+import { enableLegacyWebImplementation } from 'react-native-gesture-handler';
+
+enableLegacyWebImplementation(true);
+```
+
+Nonetheless, it's recommended to adapt to the new implementation, as the legacy one will be dropped in the next major release of Gesture Handler.
+
+#### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
 If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function). This can be done for example at the stage when you register your screens. Here's an example:
 
@@ -128,85 +159,3 @@ export function registerScreens() {
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
 
 Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function) as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
-
-## Android
-
-### Usage with modals on Android
-
-On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
-To fix that, components need to be wrapped with `gestureHandlerRootHOC` (it's no-op on iOS and web).
-
-For example:
-
-```js
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-
-const ExampleWithHoc = gestureHandlerRootHOC(() => (
-    <View>
-      <DraggableBox />
-    </View>
-  );
-);
-
-export default function Example() {
-  return (
-    <Modal>
-      <ExampleWithHoc />
-    </Modal>
-  );
-}
-```
-
-### Kotlin
-
-Since version `2.0.0` RNGH has been rewritten with Kotlin. The default version of the Kotlin plugin used in this library is `1.6.21`.
-
-If you need to use a different Kotlin version, set the `kotlinVersion` ext property in `android/build.gradle` file and RNGH will use that version:
-
-```
-buildscript {
-    ext {
-        ...
-        kotlinVersion = "1.6.21"
-    }
-}
-```
-
-The minimal version of the Kotlin plugin supported by RNGH is `1.4.10`.
-
-## iOS
-
-There is no additional configuration required on iOS except what follows in the next steps.
-
-If you're in a CocoaPods project (the default setup since React Native 0.60),
-make sure to install pods before you run your app:
-
-```bash
-cd ios && pod install
-```
-
-For React Native 0.61 or greater, add the library as the first import in your index.js file:
-
-```js
-import 'react-native-gesture-handler';
-```
-
-## Web
-
-There is no additional configuration required for the web, however, since the Gesture Handler 2.10.0 the new web implementation is enabled by default. It is recommended to check if the gestures in your app are working as expected since their behavior should now resemble the native platforms. If you don't want to use the new implementation, you can still revert back to the legacy one by enabling it at the beginning of your `index.js` file:
-
-```js
-import { enableLegacyWebImplementation } from 'react-native-gesture-handler';
-
-enableLegacyWebImplementation(true);
-```
-
-Nonetheless, it's recommended to adapt to the new implementation, as the legacy one will be dropped at some point in the future.
-
-If you want to start using the new implementation but don't want to upgrade Gesture Handler, you can enable it (starting with Gesture Handler 2.6.0) at the beginning of your `index.js` file:
-
-```js
-import { enableExperimentalWebImplementation } from 'react-native-gesture-handler';
-
-enableExperimentalWebImplementation(true);
-```

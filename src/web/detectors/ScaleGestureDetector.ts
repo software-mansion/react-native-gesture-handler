@@ -14,10 +14,10 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   public onScale: (detector: ScaleGestureDetector) => boolean;
   public onScaleEnd: (detector: ScaleGestureDetector) => void;
 
-  private focusX!: number;
-  private focusY!: number;
+  private _focusX!: number;
+  private _focusY!: number;
 
-  private currentSpan!: number;
+  private _currentSpan!: number;
   private prevSpan!: number;
   private initialSpan!: number;
 
@@ -29,7 +29,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   private spanSlop: number;
   private minSpan: number;
 
-  public constructor(callbacks: ScaleGestureListener) {
+  constructor(callbacks: ScaleGestureListener) {
     this.onScaleBegin = callbacks.onScaleBegin;
     this.onScale = callbacks.onScale;
     this.onScaleEnd = callbacks.onScaleEnd;
@@ -42,7 +42,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     this.currentTime = event.time;
 
     const action: EventTypes = event.eventType;
-    const numOfPointers = tracker.getTrackedPointersCount();
+    const numOfPointers = tracker.trackedPointersCount;
 
     const streamComplete: boolean =
       action === EventTypes.UP ||
@@ -86,7 +86,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     let devSumX = 0;
     let devSumY = 0;
 
-    tracker.getData().forEach((value, key) => {
+    tracker.trackedPointers.forEach((value, key) => {
       if (key === ignoredPointer) {
         return;
       }
@@ -105,8 +105,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     // Begin/end events
     const wasInProgress: boolean = this.inProgress;
-    this.focusX = focusX;
-    this.focusY = focusY;
+    this._focusX = focusX;
+    this._focusY = focusY;
 
     if (this.inProgress && (span < this.minSpan || configChanged)) {
       this.onScaleEnd(this);
@@ -115,7 +115,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     }
 
     if (configChanged) {
-      this.initialSpan = this.prevSpan = this.currentSpan = span;
+      this.initialSpan = this.prevSpan = this._currentSpan = span;
     }
 
     if (
@@ -123,7 +123,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
       span >= this.minSpan &&
       (wasInProgress || Math.abs(span - this.initialSpan) > this.spanSlop)
     ) {
-      this.prevSpan = this.currentSpan = span;
+      this.prevSpan = this._currentSpan = span;
       this.prevTime = this.currentTime;
       this.inProgress = this.onScaleBegin(this);
     }
@@ -133,7 +133,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
       return true;
     }
 
-    this.currentSpan = span;
+    this._currentSpan = span;
 
     if (this.inProgress && !this.onScale(this)) {
       return true;
@@ -145,27 +145,27 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     return true;
   }
 
-  public getCurrentSpan(): number {
-    return this.currentSpan;
-  }
-
-  public getFocusX(): number {
-    return this.focusX;
-  }
-
-  public getFocusY(): number {
-    return this.focusY;
-  }
-
-  public getTimeDelta(): number {
-    return this.currentTime - this.prevTime;
-  }
-
-  public getScaleFactor(numOfPointers: number): number {
+  public calculateScaleFactor(numOfPointers: number): number {
     if (numOfPointers < 2) {
       return 1;
     }
 
     return this.prevSpan > 0 ? this.currentSpan / this.prevSpan : 1;
+  }
+
+  public get currentSpan() {
+    return this._currentSpan;
+  }
+
+  public get focusX() {
+    return this._focusX;
+  }
+
+  public get focusY() {
+    return this._focusY;
+  }
+
+  public get timeDelta() {
+    return this.currentTime - this.prevTime;
   }
 }

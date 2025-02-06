@@ -47,6 +47,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   RNGestureHandlerRegistry *_registry;
   NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
   NSMutableDictionary<NSNumber *, NSNumber *> *_attachRetryCounter;
+  NSMutableSet *_droppedHandlers;
   RCTModuleRegistry *_moduleRegistry;
   RCTViewRegistry *_viewRegistry;
   id<RCTEventDispatcherProtocol> _eventDispatcher;
@@ -69,6 +70,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   _registry = [RNGestureHandlerRegistry new];
   _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
   _attachRetryCounter = [[NSMutableDictionary alloc] init];
+  _droppedHandlers = [NSMutableSet set];
 }
 
 - (void)createGestureHandler:(NSString *)handlerName tag:(NSNumber *)handlerTag config:(NSDictionary *)config
@@ -142,7 +144,9 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
       [_attachRetryCounter setObject:counter forKey:viewTag];
 
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self attachGestureHandler:handlerTag toViewWithTag:viewTag withActionType:actionType];
+        if (![_droppedHandlers containsObject:handlerTag]) {
+          [self attachGestureHandler:handlerTag toViewWithTag:viewTag withActionType:actionType];
+        }
       });
     }
 
@@ -178,6 +182,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 - (void)dropGestureHandler:(NSNumber *)handlerTag
 {
   [_registry dropHandlerWithTag:handlerTag];
+  [_droppedHandlers addObject:handlerTag];
 }
 
 - (void)dropAllGestureHandlers

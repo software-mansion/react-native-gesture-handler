@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
@@ -19,9 +19,9 @@ export default class RotationGestureHandler extends GestureHandler {
     onRotationBegin: (_detector: RotationGestureDetector): boolean => true,
     onRotation: (detector: RotationGestureDetector): boolean => {
       const previousRotation: number = this.rotation;
-      this.rotation += detector.getRotation();
+      this.rotation += detector.rotation;
 
-      const delta = detector.getTimeDelta();
+      const delta = detector.timeDelta;
 
       if (delta > 0) {
         this.velocity = (this.rotation - previousRotation) / delta;
@@ -29,7 +29,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
       if (
         Math.abs(this.rotation) >= ROTATION_RECOGNITION_THRESHOLD &&
-        this.currentState === State.BEGAN
+        this.state === State.BEGAN
       ) {
         this.activate();
       }
@@ -47,11 +47,7 @@ export default class RotationGestureHandler extends GestureHandler {
   public init(ref: number, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
-    this.setShouldCancelWhenOutside(false);
-  }
-
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+    this.shouldCancelWhenOutside = false;
   }
 
   protected transformNativeEvent() {
@@ -64,13 +60,13 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   public getAnchorX(): number {
-    const anchorX = this.rotationGestureDetector.getAnchorX();
+    const anchorX = this.rotationGestureDetector.anchorX;
 
     return anchorX ? anchorX : this.cachedAnchorX;
   }
 
   public getAnchorY(): number {
-    const anchorY = this.rotationGestureDetector.getAnchorY();
+    const anchorY = this.rotationGestureDetector.anchorY;
 
     return anchorY ? anchorY : this.cachedAnchorY;
   }
@@ -91,7 +87,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerMove(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
 
@@ -110,7 +106,7 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
-    if (this.tracker.getTrackedPointersCount() < 2) {
+    if (this.tracker.trackedPointersCount < 2) {
       return;
     }
 
@@ -133,11 +129,11 @@ export default class RotationGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
 
-    if (this.currentState !== State.ACTIVE) {
+    if (this.state !== State.ACTIVE) {
       return;
     }
 
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       this.end();
     } else {
       this.fail();
@@ -151,19 +147,15 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected tryBegin(): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 
     this.begin();
   }
 
-  public activate(_force?: boolean): void {
-    super.activate();
-  }
-
   protected onReset(): void {
-    if (this.currentState === State.ACTIVE) {
+    if (this.state === State.ACTIVE) {
       return;
     }
 

@@ -85,7 +85,60 @@
   }
   return inner;
 }
-#else
+
+- (void)setBorderRadius:(CGFloat)radius
+{
+  if (_borderRadius == radius) {
+    return;
+  }
+
+  _borderRadius = radius;
+  [self.layer setNeedsDisplay];
+}
+
+- (void)displayLayer:(CALayer *)layer
+{
+  if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
+    return;
+  }
+
+  const CGFloat radius = MAX(0, _borderRadius);
+  const CGSize size = self.bounds.size;
+  const CGFloat scaleFactor = RCTZeroIfNaN(MIN(1, size.width / (2 * radius)));
+  const CGFloat currentBorderRadius = radius * scaleFactor;
+  layer.cornerRadius = currentBorderRadius;
+}
+
+- (NSString *)accessibilityLabel
+{
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
+  }
+  return RNGHRecursiveAccessibilityLabel(self);
+}
+
+// Vendored from RCTView.m to infer accessibility label from children
+static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
+{
+  NSMutableString *str = [NSMutableString stringWithString:@""];
+  for (UIView *subview in view.subviews) {
+    NSString *label = subview.accessibilityLabel;
+    if (!label) {
+      label = RNGHRecursiveAccessibilityLabel(subview);
+    }
+    if (label && label.length > 0) {
+      if (str.length > 0) {
+        [str appendString:@" "];
+      }
+      [str appendString:label];
+    }
+  }
+  return str.length == 0 ? nil : str;
+}
+#endif
+
+#if TARGET_OS_OSX
 - (void)mountChildComponentView:(RNGHUIView *)childComponentView index:(NSInteger)index
 {
   if (childComponentView.superview != nil) {

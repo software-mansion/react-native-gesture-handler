@@ -153,6 +153,7 @@ android {
         exclude "**/libreact_render*.so"
         exclude "**/libreactnative.so"
         exclude "**/libjsi.so"
+        exclude "**/libc++_shared.so"
     }
 
     sourceSets.main {
@@ -164,6 +165,15 @@ android {
             } else {
                 srcDirs += 'common/src/main/java'
                 srcDirs += 'noreanimated/src/main/java'
+            }
+
+            if (REACT_NATIVE_MINOR_VERSION >= 77) {
+                // With RN 0.77, ViewManager related functions in the package has different signatures as they 
+                // are no longer nullable
+                srcDirs += 'package77/src/main/java'
+            } else {
+                // It's safe to delete this block once we drop support for RN 0.76
+                srcDirs += 'packageDeprecated/src/main/java'
             }
         }
     }

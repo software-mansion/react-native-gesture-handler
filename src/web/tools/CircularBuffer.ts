@@ -1,31 +1,27 @@
 export default class CircularBuffer<T> {
-  private bufferSize: number;
+  private capacity: number;
   private buffer: T[];
   private index: number;
-  private actualSize: number;
+  private _size: number;
 
   constructor(size: number) {
-    this.bufferSize = size;
+    this.capacity = size;
     this.buffer = new Array<T>(size);
     this.index = 0;
-    this.actualSize = 0;
-  }
-
-  public get size(): number {
-    return this.actualSize;
+    this._size = 0;
   }
 
   public push(element: T): void {
     this.buffer[this.index] = element;
-    this.index = (this.index + 1) % this.bufferSize;
-    this.actualSize = Math.min(this.actualSize + 1, this.bufferSize);
+    this.index = (this.index + 1) % this.capacity;
+    this._size = Math.min(this.size + 1, this.capacity);
   }
 
   public get(at: number): T {
-    if (this.actualSize === this.bufferSize) {
-      let index = (this.index + at) % this.bufferSize;
+    if (this._size === this.capacity) {
+      let index = (this.index + at) % this.capacity;
       if (index < 0) {
-        index += this.bufferSize;
+        index += this.capacity;
       }
 
       return this.buffer[index];
@@ -35,8 +31,12 @@ export default class CircularBuffer<T> {
   }
 
   public clear(): void {
-    this.buffer = new Array<T>(this.bufferSize);
+    this.buffer = new Array<T>(this.capacity);
     this.index = 0;
-    this.actualSize = 0;
+    this._size = 0;
+  }
+
+  public get size() {
+    return this._size;
   }
 }

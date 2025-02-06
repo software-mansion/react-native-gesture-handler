@@ -11,7 +11,7 @@ import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
-import { isJestEnv } from '../../../utils';
+import { isTestEnv } from '../../../utils';
 
 import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
 import { AttachedGestureState, GestureDetectorState } from './types';
@@ -23,6 +23,7 @@ import { useWebEventHandlers } from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
+import { useMountReactions } from './useMountReactions';
 
 function propagateDetectorConfig(
   props: GestureDetectorProps,
@@ -93,7 +94,7 @@ interface GestureDetectorProps {
  */
 export const GestureDetector = (props: GestureDetectorProps) => {
   const rootViewContext = useContext(GestureHandlerRootViewContext);
-  if (__DEV__ && !rootViewContext && !isJestEnv() && Platform.OS !== 'web') {
+  if (__DEV__ && !rootViewContext && !isTestEnv() && Platform.OS !== 'web') {
     throw new Error(
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
     );
@@ -173,6 +174,8 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       updateAttachedGestures();
     }
   }, [props]);
+
+  useMountReactions(updateAttachedGestures, preparedGesture);
 
   if (shouldUseReanimated) {
     return (

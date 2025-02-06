@@ -31,10 +31,6 @@ export default class TapGestureHandler extends GestureHandler {
 
   private tapsSoFar = 0;
 
-  public init(ref: number, propsRef: React.RefObject<unknown>): void {
-    super.init(ref, propsRef);
-  }
-
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
@@ -199,10 +195,8 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private updateState(event: AdaptedEvent): void {
-    if (
-      this.currentMaxNumberOfPointers < this.tracker.getTrackedPointersCount()
-    ) {
-      this.currentMaxNumberOfPointers = this.tracker.getTrackedPointersCount();
+    if (this.currentMaxNumberOfPointers < this.tracker.trackedPointersCount) {
+      this.currentMaxNumberOfPointers = this.tracker.trackedPointersCount;
     }
 
     if (this.shouldFail()) {
@@ -210,7 +204,7 @@ export default class TapGestureHandler extends GestureHandler {
       return;
     }
 
-    switch (this.currentState) {
+    switch (this.state) {
       case State.UNDETERMINED:
         if (event.eventType === EventTypes.DOWN) {
           this.begin();
@@ -231,7 +225,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   private trySettingPosition(event: AdaptedEvent): void {
-    if (this.currentState !== State.UNDETERMINED) {
+    if (this.state !== State.UNDETERMINED) {
       return;
     }
 

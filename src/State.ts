@@ -10,4 +10,4 @@ export const State = {
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; it can be used as a type and as a value
-export type State = typeof State[keyof typeof State];
+export type State = (typeof State)[keyof typeof State];
