@@ -1,3 +1,5 @@
+import { useLayoutEffect, useEffect } from 'react';
+
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -100,3 +102,6 @@ export function deepEqual(obj1: any, obj2: any) {
 }
 
 export const INT32_MAX = 2 ** 31 - 1;
+
+export const useSafeLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
