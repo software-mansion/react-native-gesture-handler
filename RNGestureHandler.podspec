@@ -35,7 +35,6 @@ Pod::Spec.new do |s|
       "react/renderer/textlayoutmanager/platform/ios",
       "react/renderer/components/textinput/platform/ios",
     ])
-    add_dependency(s, "React-rendererconsistency")
   end
 
 end
