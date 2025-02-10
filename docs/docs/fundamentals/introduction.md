@@ -78,6 +78,13 @@ If you've build something with this library you'd like to share, please contact 
 
   <div className="community-holder-container-item">
     <div className="community-imageHolder">
+      <img src="https://ca.slack-edge.com/T03Q9AMJJ-U06MQFHEY3V-6535cb89fc75-192" />
+    </div>
+    <div>Ignacy Łątka</div>
+  </div>
+
+  <div className="community-holder-container-item">
+    <div className="community-imageHolder">
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
     </div>
     <div>Krzysztof Magiera</div>
