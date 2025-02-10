@@ -256,6 +256,9 @@ const defaultProps = {
   statusBarAnimation: 'slide' as StatusBarAnimation,
 };
 
+const setStatusBarHidden = StatusBar.setHidden;
+const dismissKeyboard = Keyboard.dismiss;
+
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
     const [containerWidth, setContainerWidth] = useState(0);
@@ -355,11 +358,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           : { right: 0, width: edgeWidth }
       );
     }, [isFromLeft, edgeWidth]);
-
-    const setStatusBarHidden = (
-      hidden: boolean,
-      animation?: StatusBarAnimation | undefined
-    ) => StatusBar.setHidden(hidden, animation);
 
     const animateDrawer = useCallback(
       (toValue: number, initialVelocity: number, animationSpeed?: number) => {
@@ -513,8 +511,6 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       () => (isFromLeft ? { left: drawerWidth } : { right: drawerWidth }),
       [drawerWidth, isFromLeft]
     );
-
-    const dismissKeyboard = () => Keyboard.dismiss();
 
     const panGesture = useMemo(() => {
       return Gesture.Pan()
