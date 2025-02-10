@@ -4,12 +4,12 @@ import GenericTouchable from './GenericTouchable';
 import type { GenericTouchableProps } from './GenericTouchableProps';
 
 /**
- * @deprecated TouchableWithoutFeedback will be removed in the future version of Gesture Handler.
+ * @deprecated TouchableWithoutFeedback will be removed in the future version of Gesture Handler. Use Pressable instead.
  */
 export type TouchableWithoutFeedbackProps = GenericTouchableProps;
 
 /**
- * @deprecated TouchableWithoutFeedback will be removed in the future version of Gesture Handler.
+ * @deprecated TouchableWithoutFeedback will be removed in the future version of Gesture Handler. Use Pressable instead.
  */
 const TouchableWithoutFeedback = React.forwardRef<
   GenericTouchable,

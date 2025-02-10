@@ -296,6 +296,15 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       val eventTime = event.eventTime
       val action = event.action
 
+      if (touchResponder != null && touchResponder !== this && touchResponder!!.exclusive) {
+        if (isPressed) {
+          setPressed(false)
+        }
+        lastEventTime = eventTime
+        lastAction = action
+        return false
+      }
+
       if (event.action == MotionEvent.ACTION_CANCEL) {
         tryFreeingResponder()
       }
