@@ -68,9 +68,9 @@
   // accessibility gesture recognizers such as _UIAccessibilityHUDGateGestureRecognizer,
   // ostensibly set by iOS. Such gesture recognizers cause this function to return YES
   // even when the passed view is static text and does not respond to touches. This in
-  // turn prevents the button from receiving touches, breaking functionality. Therefore,
-  // as a bandaid we can count only the enabled gesture recognizers when determining
-  // whether a view should receive touches
+  // turn prevents the button from receiving touches, breaking functionality. To handle
+  // such case, we can count only the enabled gesture recognizers when determining
+  // whether a view should receive touches.
   NSPredicate *isEnabledPredicate = [NSPredicate predicateWithFormat:@"isEnabled == YES"];
   NSArray *enabledGestureRecognizers = [view.gestureRecognizers filteredArrayUsingPredicate:isEnabledPredicate];
 
