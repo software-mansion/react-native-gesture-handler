@@ -256,7 +256,7 @@ const defaultProps = {
   statusBarAnimation: 'slide' as StatusBarAnimation,
 };
 
-// StatusBar.setHidden and Keyboard.dismiss cannot be used directly in worklets, thus have to be copied beforehand.
+// StatusBar.setHidden and Keyboard.dismiss cannot be directly referenced in worklets.
 const setStatusBarHidden = StatusBar.setHidden;
 const dismissKeyboard = Keyboard.dismiss;
 
