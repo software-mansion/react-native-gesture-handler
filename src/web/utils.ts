@@ -233,7 +233,7 @@ function spherical2tilt(altitudeAngle: number, azimuthAngle: number) {
   return { tiltX, tiltY };
 }
 
-const RNSVGElements = [
+export const RNSVGElements = new Set([
   'Circle',
   'ClipPath',
   'Ellipse',
@@ -254,7 +254,7 @@ const RNSVGElements = [
   'Text',
   'TextPath',
   'Use',
-];
+]);
 
 // This function helps us determine whether given node is SVGElement or not. In our implementation of
 // findNodeHandle, we can encounter such element in 2 forms - SVG tag or ref to SVG Element. Since Gesture Handler
@@ -269,7 +269,19 @@ export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
   const componentClassName = Object.getPrototypeOf(viewRef).constructor.name;
 
   return (
-    RNSVGElements.indexOf(componentClassName) >= 0 &&
+    RNSVGElements.has(componentClassName) &&
     Object.hasOwn(viewRef, 'elementRef')
+  );
+}
+
+// This function checks if given node is SVGElement. Unlike the function above, this one
+// operates on React Nodes, not DOM nodes.
+//
+// Second condition was introduced to handle case where SVG element was wrapped with
+// `createAnimatedComponent` from Reanimated.
+export function isRNSVGNode(node: any) {
+  return (
+    Object.getPrototypeOf(node?.type)?.name === 'WebShape' ||
+    RNSVGElements.has(node?.type?.displayName)
   );
 }
