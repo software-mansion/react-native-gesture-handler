@@ -5,6 +5,9 @@
     "baseUrl": ".",
     "paths": {
       "react-native-gesture-handler": ["../src/index.ts"],
+      "react-native-gesture-handler/ReanimatedSwipeable": [
+        "../src/components/ReanimatedSwipeable.tsx"
+      ],
       "react-native-gesture-handler/jest-utils": ["../src/jestUtils/index.ts"]
     }
   },

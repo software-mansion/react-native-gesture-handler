@@ -256,6 +256,10 @@ const defaultProps = {
   statusBarAnimation: 'slide' as StatusBarAnimation,
 };
 
+// StatusBar.setHidden and Keyboard.dismiss cannot be directly referenced in worklets.
+const setStatusBarHidden = StatusBar.setHidden;
+const dismissKeyboard = Keyboard.dismiss;
+
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
     const [containerWidth, setContainerWidth] = useState(0);
@@ -366,7 +370,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         runOnJS(setDrawerState)(DrawerState.SETTLING);
 
         if (hideStatusBar) {
-          runOnJS(StatusBar.setHidden)(willShow, statusBarAnimation);
+          runOnJS(setStatusBarHidden)(willShow, statusBarAnimation);
         }
 
         const normalizedToValue = interpolate(
@@ -529,10 +533,10 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           emitStateChanged(DrawerState.DRAGGING, false);
           runOnJS(setDrawerState)(DrawerState.DRAGGING);
           if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
-            runOnJS(Keyboard.dismiss)();
+            runOnJS(dismissKeyboard)();
           }
           if (hideStatusBar) {
-            runOnJS(StatusBar.setHidden)(true, statusBarAnimation);
+            runOnJS(setStatusBarHidden)(true, statusBarAnimation);
           }
         })
         .onUpdate((event) => {

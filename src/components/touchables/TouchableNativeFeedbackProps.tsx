@@ -8,5 +8,8 @@ export type TouchableNativeFeedbackExtraProps = {
   foreground?: boolean;
 };
 
+/**
+ * @deprecated TouchableNativeFeedback will be removed in the future version of Gesture Handler. Use Pressable instead.
+ */
 export type TouchableNativeFeedbackProps = RNTouchableNativeFeedbackProps &
   GenericTouchableProps;

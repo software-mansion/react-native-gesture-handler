@@ -8,7 +8,11 @@ import {
 import { customDirectEventTypes } from './customDirectEventTypes';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
-import { handlerIDToTag, registerOldGestureHandler } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  registerOldGestureHandler,
+  unregisterOldGestureHandler,
+} from './handlersRegistry';
 import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
@@ -19,7 +23,7 @@ import {
 import { filterConfig, scheduleFlushOperations } from './utils';
 import findNodeHandle from '../findNodeHandle';
 import { ValueOf } from '../typeUtils';
-import { deepEqual, isFabric, isJestEnv, tagMessage } from '../utils';
+import { deepEqual, isFabric, isTestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
@@ -255,6 +259,9 @@ export default function createHandler<
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       this.isMountedRef.current = false;
+      if (Platform.OS !== 'web') {
+        unregisterOldGestureHandler(this.handlerTag);
+      }
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
       scheduleFlushOperations();
       // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
@@ -428,7 +435,7 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web') {
+      if (__DEV__ && !this.context && !isTestEnv() && Platform.OS !== 'web') {
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
@@ -539,7 +546,7 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
-          ...(isJestEnv()
+          ...(isTestEnv()
             ? {
                 handlerType: name,
                 handlerTag: this.handlerTag,
