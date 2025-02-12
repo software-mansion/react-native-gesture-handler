@@ -9,12 +9,9 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "ts-check": "yarn tsc --noEmit",
-    "lint-check": "yarn eslint src/ && yarn prettier --check src/",
-    "postinstall": "patch-package"
+    "lint-check": "yarn eslint src/ && yarn prettier --check src/"
   },
   "dependencies": {
-    "patch-package": "^6.5.0",
-    "postinstall-postinstall": "^2.1.0",
     "react": "18.3.1",
     "react-native": "0.77.0",
     "react-native-gesture-handler": "link:../"
