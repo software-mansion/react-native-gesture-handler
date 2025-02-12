@@ -23,7 +23,7 @@ jobs:
         working-directory: ['', example, FabricExample, MacOSExample, docs, e2e]
     concurrency:
       group: depcheck-${{ matrix.working-directory }}-${{ github.ref }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -40,4 +40,4 @@ jobs:
         run: npm install -g depcheck@1.4.7
       - name: Run dependency check
         working-directory: ${{ matrix.working-directory }}
-        run: yarn run depcheck
+        run: npx depcheck
