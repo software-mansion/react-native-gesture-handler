@@ -144,6 +144,12 @@ export interface DrawerLayoutProps {
   drawerType?: DrawerType;
 
   /**
+   * Speed of animation that will play when letting go, or dismissing the drawer.
+   * This will also be the default animation speed for programatic controlls.
+   */
+  animationSpeed?: number;
+
+  /**
    * Defines how far from the edge of the content view the gesture should
    * activate.
    */
@@ -288,6 +294,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       onDrawerClose,
       onDrawerOpen,
       onDrawerStateChanged,
+      animationSpeed: animationSpeedProp,
     } = props;
 
     const isFromLeft = drawerPosition === DrawerPosition.LEFT;
@@ -388,7 +395,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           {
             overshootClamping: true,
             velocity: normalizedInitialVelocity,
-            mass: animationSpeed ? 1 / animationSpeed : 1,
+            mass: animationSpeed
+              ? 1 / animationSpeed
+              : 1 / (animationSpeedProp ?? 1),
             damping: 40,
             stiffness: 500,
           },
