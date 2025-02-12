@@ -39,7 +39,7 @@
     "raw-loader": "^4.0.2",
     "react": "^17.0.2",
     "react-colorful": "^5.6.1",
-    "react-dom": "^19.0.0",
+    "react-dom": "^17.0.2",
     "react-draggable": "^4.4.5",
     "react-native": "^0.71.4",
     "react-native-gesture-handler": "^2.16.0",
