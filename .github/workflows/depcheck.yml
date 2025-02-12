@@ -2,8 +2,6 @@ name: Dependency Check
 on:
   pull_request:
     paths:
-      - '.github/workflows/depcheck.yml'
-      - '*'
       - 'example/*'
       - 'FabricExample/*'
       - 'MacOSExample/*'
