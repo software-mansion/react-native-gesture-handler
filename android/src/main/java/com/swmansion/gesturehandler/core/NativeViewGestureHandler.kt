@@ -313,6 +313,12 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     // inside a `<View />` component in JS). In such cases, calling `onTouchEvent` wouldn't work as those are
     // ignored by the wrapper view. Instead `dispatchTouchEvent` can be used, which causes the view to dispatch
     // the event to its children.
-    override fun sendTouchEvent(view: View?, event: MotionEvent) = view?.dispatchTouchEvent(event)
+    override fun sendTouchEvent(view: View?, event: MotionEvent): Boolean? {
+      return if ((view as ReactViewGroup).getChildAt(0) is ScrollView) {
+        view?.onTouchEvent(event)
+      } else {
+        view?.dispatchTouchEvent(event)
+      }
+    }
   }
 }
