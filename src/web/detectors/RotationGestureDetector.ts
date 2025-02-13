@@ -18,10 +18,10 @@ export default class RotationGestureDetector
   private previousTime = 0;
 
   private previousAngle = 0;
-  private rotation = 0;
+  private _rotation = 0;
 
-  private anchorX = 0;
-  private anchorY = 0;
+  private _anchorX = 0;
+  private _anchorY = 0;
 
   private isInProgress = false;
 
@@ -45,28 +45,28 @@ export default class RotationGestureDetector
     const vectorX: number = secondPointerCoords.x - firstPointerCoords.x;
     const vectorY: number = secondPointerCoords.y - firstPointerCoords.y;
 
-    this.anchorX = (firstPointerCoords.x + secondPointerCoords.x) / 2;
-    this.anchorY = (firstPointerCoords.y + secondPointerCoords.y) / 2;
+    this._anchorX = (firstPointerCoords.x + secondPointerCoords.x) / 2;
+    this._anchorY = (firstPointerCoords.y + secondPointerCoords.y) / 2;
 
     // Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
 
-    this.rotation = Number.isNaN(this.previousAngle)
+    this._rotation = Number.isNaN(this.previousAngle)
       ? 0
       : this.previousAngle - angle;
 
     this.previousAngle = angle;
 
     if (this.rotation > Math.PI) {
-      this.rotation -= Math.PI;
+      this._rotation -= Math.PI;
     } else if (this.rotation < -Math.PI) {
-      this.rotation += Math.PI;
+      this._rotation += Math.PI;
     }
 
     if (this.rotation > Math.PI / 2) {
-      this.rotation -= Math.PI;
+      this._rotation -= Math.PI;
     } else if (this.rotation < -Math.PI / 2) {
-      this.rotation += Math.PI;
+      this._rotation += Math.PI;
     }
   }
 
@@ -85,7 +85,7 @@ export default class RotationGestureDetector
       return;
     }
 
-    const pointerIDs: IterableIterator<number> = tracker.getData().keys();
+    const pointerIDs: IterableIterator<number> = tracker.trackedPointers.keys();
 
     this.keyPointers[0] = pointerIDs.next().value as number;
     this.keyPointers[1] = pointerIDs.next().value as number;
@@ -143,24 +143,24 @@ export default class RotationGestureDetector
     return true;
   }
 
-  public getTimeDelta(): number {
-    return this.currentTime + this.previousTime;
-  }
-
-  public getAnchorX(): number {
-    return this.anchorX;
-  }
-
-  public getAnchorY(): number {
-    return this.anchorY;
-  }
-
-  public getRotation(): number {
-    return this.rotation;
-  }
-
   public reset(): void {
     this.keyPointers = [NaN, NaN];
     this.isInProgress = false;
+  }
+
+  public get anchorX() {
+    return this._anchorX;
+  }
+
+  public get anchorY() {
+    return this._anchorY;
+  }
+
+  public get rotation() {
+    return this._rotation;
+  }
+
+  public get timeDelta() {
+    return this.currentTime + this.previousTime;
   }
 }

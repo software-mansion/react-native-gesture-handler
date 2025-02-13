@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { AccessibilityProps, StyleProp, ViewStyle } from 'react-native';
+import {
+  AccessibilityProps,
+  ColorValue,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 
 export interface RawButtonProps
@@ -16,7 +21,7 @@ export interface RawButtonProps
    *
    * Defines color of native ripple animation used since API level 21.
    */
-  rippleColor?: any; // it was present in BaseButtonProps before but is used here in code
+  rippleColor?: number | ColorValue | null;
 
   /**
    * Android only.
@@ -50,6 +55,30 @@ export interface RawButtonProps
    * Style object, use it to set additional styles.
    */
   style?: StyleProp<ViewStyle>;
+
+  /**
+   * Used for testing-library compatibility, not passed to the native component.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  testOnly_onPress?: Function | null;
+
+  /**
+   * Used for testing-library compatibility, not passed to the native component.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  testOnly_onPressIn?: Function | null;
+
+  /**
+   * Used for testing-library compatibility, not passed to the native component.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  testOnly_onPressOut?: Function | null;
+
+  /**
+   * Used for testing-library compatibility, not passed to the native component.
+   */
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  testOnly_onLongPress?: Function | null;
 }
 interface ButtonWithRefProps {
   innerRef?: React.ForwardedRef<React.ComponentType<any>>;
