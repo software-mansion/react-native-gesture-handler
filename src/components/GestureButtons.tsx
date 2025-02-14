@@ -1,140 +1,94 @@
-import React, { useState } from 'react';
-import { Animated, Platform, processColor, StyleSheet } from 'react-native';
-
+import React, { forwardRef } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 import { _createNativeWrapper } from '../handlers/_createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
-import { State } from '../State';
-
-import {
-  GestureEvent,
-  HandlerStateChangeEvent,
-} from '../handlers/gestureHandlerCommon';
-import type { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
 import type {
   BaseButtonWithRefProps,
-  BaseButtonProps,
   RectButtonWithRefProps,
-  RectButtonProps,
   BorderlessButtonWithRefProps,
-  BorderlessButtonProps,
 } from './GestureButtonsProps';
 import { isFabric } from '../utils';
+import { NativeViewGestureHandlerGestureEvent } from '../handlers/gestureHandlerTypesCompat';
+import Animated, {
+  processColor,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
+
+let IS_FABRIC: null | boolean = null;
 
 export const RawButton = _createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
 
-const _InnerBaseButton = (props: BaseButtonProps) => {
-  const [lastActive, setLastActive] = useState(false);
-  const [longPressDetected, setLongPressDetected] = useState(false);
-  const [longPressTimeout, setLongPressTimeout] = useState<
-    ReturnType<typeof setTimeout> | undefined
-  >(undefined);
+export const BaseButton = React.forwardRef(
+  (props: BaseButtonWithRefProps, ref: any) => {
+    let lastActive: boolean;
+    let longPressDetected: boolean;
+    let longPressTimeout: ReturnType<typeof setTimeout> | undefined;
 
-  const delayLongPress = 600;
+    const delayLongPress = props.delayLongPress ?? 600;
 
-  return <RawButton {...props} />;
-};
-let IS_FABRIC: null | boolean = null;
+    const onLongPress = () => {
+      longPressDetected = true;
+      props.onLongPress?.();
+    };
 
-class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
-  static defaultProps = {
-    delayLongPress: 600,
-  };
-
-  private lastActive: boolean;
-  private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
-  private longPressDetected: boolean;
-
-  constructor(props: BaseButtonProps) {
-    super(props);
-    this.lastActive = false;
-    this.longPressDetected = false;
-  }
-
-  private handleEvent = ({
-    nativeEvent,
-  }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
-    const { state, oldState, pointerInside } = nativeEvent;
-    const active = pointerInside && state === State.ACTIVE;
-
-    if (active !== this.lastActive && this.props.onActiveStateChange) {
-      this.props.onActiveStateChange(active);
-    }
-
-    if (
-      !this.longPressDetected &&
-      oldState === State.ACTIVE &&
-      state !== State.CANCELLED &&
-      this.lastActive &&
-      this.props.onPress
-    ) {
-      this.props.onPress(pointerInside);
-    }
-
-    if (
-      !this.lastActive &&
-      // NativeViewGestureHandler sends different events based on platform
-      state === (Platform.OS !== 'android' ? State.ACTIVE : State.BEGAN) &&
-      pointerInside
-    ) {
-      this.longPressDetected = false;
-      if (this.props.onLongPress) {
-        this.longPressTimeout = setTimeout(
-          this.onLongPress,
-          this.props.delayLongPress
-        );
+    const onBegin = (e: NativeViewGestureHandlerGestureEvent) => {
+      if (Platform.OS === 'android' && e.pointerInside) {
+        longPressDetected = false;
+        if (props.onLongPress) {
+          longPressTimeout = setTimeout(onLongPress, delayLongPress);
+        }
       }
-    } else if (
-      // Cancel longpress timeout if it's set and the finger moved out of the view
-      state === State.ACTIVE &&
-      !pointerInside &&
-      this.longPressTimeout !== undefined
-    ) {
-      clearTimeout(this.longPressTimeout);
-      this.longPressTimeout = undefined;
-    } else if (
-      // Cancel longpress timeout if it's set and the gesture has finished
-      this.longPressTimeout !== undefined &&
-      (state === State.END ||
-        state === State.CANCELLED ||
-        state === State.FAILED)
-    ) {
-      clearTimeout(this.longPressTimeout);
-      this.longPressTimeout = undefined;
-    }
 
-    this.lastActive = active;
-  };
+      lastActive = false;
+    };
 
-  private onLongPress = () => {
-    this.longPressDetected = true;
-    this.props.onLongPress?.();
-  };
+    const onStart = (e: NativeViewGestureHandlerGestureEvent) => {
+      props.onActiveStateChange?.(true);
 
-  // Normally, the parent would execute it's handler first, then forward the
-  // event to listeners. However, here our handler is virtually only forwarding
-  // events to listeners, so we reverse the order to keep the proper order of
-  // the callbacks (from "raw" ones to "processed").
-  private onHandlerStateChange = (
-    e: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
-  ) => {
-    this.props.onHandlerStateChange?.(e);
-    this.handleEvent(e);
-  };
+      if (Platform.OS !== 'android' && e.pointerInside) {
+        longPressDetected = false;
+        if (props.onLongPress) {
+          longPressTimeout = setTimeout(onLongPress, delayLongPress);
+        }
+      }
 
-  private onGestureEvent = (
-    e: GestureEvent<NativeViewGestureHandlerPayload>
-  ) => {
-    this.props.onGestureEvent?.(e);
-    this.handleEvent(
-      e as HandlerStateChangeEvent<NativeViewGestureHandlerPayload>
-    ); // TODO: maybe it is not correct
-  };
+      if (!e.pointerInside && longPressTimeout !== undefined) {
+        clearTimeout(longPressTimeout);
+        longPressTimeout = undefined;
+      }
 
-  render() {
-    const { rippleColor: unprocessedRippleColor, style, ...rest } = this.props;
+      lastActive = true;
+    };
+
+    const onEnd = (e: NativeViewGestureHandlerGestureEvent) => {
+      if (!longPressDetected && props.onPress) {
+        props.onPress(e.pointerInside);
+      }
+
+      if (lastActive) {
+        props.onActiveStateChange?.(false);
+      }
+
+      lastActive = false;
+    };
+
+    const onFinalize = (e: NativeViewGestureHandlerGestureEvent) => {
+      if (lastActive) {
+        props.onActiveStateChange?.(false);
+      }
+
+      if (longPressTimeout !== undefined) {
+        clearTimeout(longPressTimeout);
+        longPressTimeout = undefined;
+      }
+      lastActive = false;
+    };
+
+    const { rippleColor: unprocessedRippleColor, style, ...rest } = props;
 
     if (IS_FABRIC === null) {
       IS_FABRIC = isFabric();
@@ -146,21 +100,18 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
 
     return (
       <RawButton
-        ref={this.props.innerRef}
+        ref={ref}
         rippleColor={rippleColor}
         style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
         {...rest}
-        onGestureEvent={this.onGestureEvent}
-        onHandlerStateChange={this.onHandlerStateChange}
+        onBegin={onBegin}
+        onStart={onStart}
+        onEnd={onEnd}
+        onFinalize={onFinalize}
       />
     );
   }
-}
-
-export const BaseButton = React.forwardRef<
-  any,
-  Omit<BaseButtonProps, 'innerRef'>
->((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
+);
 
 const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
 
@@ -174,104 +125,83 @@ const btnStyles = StyleSheet.create({
   },
 });
 
-class InnerRectButton extends React.Component<RectButtonWithRefProps> {
-  static defaultProps = {
-    activeOpacity: 0.105,
-    underlayColor: 'black',
-  };
+export const RectButton = forwardRef(
+  (props: RectButtonWithRefProps, ref: any) => {
+    const activeOpacity = props.activeOpacity ?? 0.105;
+    const underlayColor = props.underlayColor ?? 'black';
 
-  private opacity: Animated.Value;
+    const opacity = useSharedValue<number>(0);
 
-  constructor(props: RectButtonProps) {
-    super(props);
-    this.opacity = new Animated.Value(0);
-  }
+    const onActiveStateChange = (active: boolean) => {
+      if (Platform.OS !== 'android') {
+        opacity.value = active ? activeOpacity : 0;
+      }
 
-  private onActiveStateChange = (active: boolean) => {
-    if (Platform.OS !== 'android') {
-      this.opacity.setValue(active ? this.props.activeOpacity! : 0);
-    }
+      props.onActiveStateChange?.(active);
+    };
 
-    this.props.onActiveStateChange?.(active);
-  };
-
-  render() {
-    const { children, style, ...rest } = this.props;
+    const { children, style, ...rest } = props;
 
     const resolvedStyle = StyleSheet.flatten(style ?? {});
+
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        opacity: opacity.value,
+      };
+    });
 
     return (
       <BaseButton
         {...rest}
-        ref={this.props.innerRef}
+        ref={ref}
         style={resolvedStyle}
-        onActiveStateChange={this.onActiveStateChange}>
+        onActiveStateChange={onActiveStateChange}>
         <Animated.View
           style={[
             btnStyles.underlay,
             {
-              opacity: this.opacity,
-              backgroundColor: this.props.underlayColor,
+              backgroundColor: underlayColor,
               borderRadius: resolvedStyle.borderRadius,
               borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
               borderTopRightRadius: resolvedStyle.borderTopRightRadius,
               borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
               borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
             },
+            animatedStyle,
           ]}
         />
         {children}
       </BaseButton>
     );
   }
-}
+);
 
-export const RectButton = React.forwardRef<
-  any,
-  Omit<RectButtonProps, 'innerRef'>
->((props, ref) => <InnerRectButton innerRef={ref} {...props} />);
+export const BorderlessButton = forwardRef(
+  (props: BorderlessButtonWithRefProps, ref: any) => {
+    const activeOpacity = props.activeOpacity ?? 0.3;
+    const opacity = useSharedValue<number>(1);
 
-class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps> {
-  static defaultProps = {
-    activeOpacity: 0.3,
-    borderless: true,
-  };
+    const onActiveStateChange = (active: boolean) => {
+      console.log('dupa');
+      if (Platform.OS !== 'android') {
+        opacity.value = active ? activeOpacity : 0;
+      }
 
-  private opacity: Animated.Value;
+      props.onActiveStateChange?.(active);
+    };
 
-  constructor(props: BorderlessButtonProps) {
-    super(props);
-    this.opacity = new Animated.Value(1);
-  }
-
-  private onActiveStateChange = (active: boolean) => {
-    if (Platform.OS !== 'android') {
-      this.opacity.setValue(active ? this.props.activeOpacity! : 1);
-    }
-
-    this.props.onActiveStateChange?.(active);
-  };
-
-  render() {
-    const { children, style, innerRef, ...rest } = this.props;
+    const { children, style, innerRef, ...rest } = props;
 
     return (
       <AnimatedBaseButton
         {...rest}
         // @ts-ignore We don't want `innerRef` to be accessible from public API.
         // However in this case we need to set it indirectly on `BaseButton`, hence we use ts-ignore
-        innerRef={innerRef}
-        onActiveStateChange={this.onActiveStateChange}
-        style={[style, Platform.OS === 'ios' && { opacity: this.opacity }]}>
+        innerRef={ref}
+        onActiveStateChange={onActiveStateChange}
+        style={[style, Platform.OS === 'ios' && { opacity: opacity.value }]}>
         {children}
       </AnimatedBaseButton>
     );
   }
-}
-
-export const BorderlessButton = React.forwardRef<
-  any,
-  Omit<BorderlessButtonProps, 'innerRef'>
->((props, ref) => <InnerBorderlessButton innerRef={ref} {...props} />);
-
-export { default as PureNativeButton } from './GestureHandlerButton';
+);
