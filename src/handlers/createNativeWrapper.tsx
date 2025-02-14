@@ -23,11 +23,8 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
   'enabled',
   'shouldCancelWhenOutside',
   'hitSlop',
-  'userSelect',
   'activeCursor',
   'mouseButton',
-  'enableContextMenu',
-  'touchAction',
 
   // Base Gesture Config
   'requireExternalGestureToFail',
