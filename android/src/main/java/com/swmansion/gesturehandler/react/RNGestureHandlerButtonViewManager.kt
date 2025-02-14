@@ -3,7 +3,6 @@ package com.swmansion.gesturehandler.react
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.util.TypedValue
 import android.view.KeyEvent
@@ -66,7 +65,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
   @ReactProp(name = "backgroundColor")
   override fun setBackgroundColor(view: ButtonViewGroup, backgroundColor: Int) {
-    view.setBackgroundColor(backgroundColor)
+    view.backgroundColor = backgroundColor
   }
 
   @ReactProp(name = "borderless")
@@ -226,7 +225,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     var exclusive = true
 
-    private var _backgroundColor = Color.TRANSPARENT
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
@@ -246,10 +244,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     private inline fun withBackgroundUpdate(block: () -> Unit) {
       block()
       needBackgroundUpdate = true
-    }
-
-    override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
-      _backgroundColor = color
     }
 
     override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
