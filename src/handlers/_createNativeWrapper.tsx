@@ -2,11 +2,12 @@ import * as React from 'react';
 import { useImperativeHandle, useRef } from 'react';
 
 import {
+  NativeViewGestureConfig,
   nativeViewGestureHandlerProps,
-  NativeViewGestureHandlerProps,
 } from './NativeViewGestureHandler';
 
-import { Gesture, GestureDetector } from '..';
+import { Gesture, GestureDetector, NativeViewGestureHandlerPayload } from '..';
+import { BaseGestureConfig, Callbacks } from './gestures/gesture';
 
 /*
  * This array should consist of:
@@ -53,11 +54,14 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
 
 export function _createNativeWrapper<P>(
   Component: React.ComponentType<P>,
-  config: Readonly<NativeViewGestureHandlerProps> = {}
+  config: Readonly<BaseGestureConfig & NativeViewGestureConfig> = {}
 ) {
   const ComponentWrapper = React.forwardRef<
     React.ComponentType<any>,
-    P & NativeViewGestureHandlerProps
+    P &
+      BaseGestureConfig &
+      NativeViewGestureConfig &
+      Callbacks<NativeViewGestureHandlerPayload>
   >((props, ref) => {
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(

@@ -8,14 +8,18 @@ import type {
   BorderlessButtonWithRefProps,
 } from './GestureButtonsProps';
 import { isFabric } from '../utils';
-import { NativeViewGestureHandlerGestureEvent } from '../handlers/gestureHandlerTypesCompat';
 import Animated, {
   processColor,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
+import { GestureStateChangeEvent } from '../handlers/gestureHandlerCommon';
 
 let IS_FABRIC: null | boolean = null;
+
+type CallbackEventType =
+  GestureStateChangeEvent<NativeViewGestureHandlerPayload>;
 
 export const RawButton = _createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
@@ -35,7 +39,7 @@ export const BaseButton = React.forwardRef(
       props.onLongPress?.();
     };
 
-    const onBegin = (e: NativeViewGestureHandlerGestureEvent) => {
+    const onBegin = (e: CallbackEventType) => {
       if (Platform.OS === 'android' && e.pointerInside) {
         longPressDetected = false;
         if (props.onLongPress) {
@@ -46,7 +50,7 @@ export const BaseButton = React.forwardRef(
       lastActive = false;
     };
 
-    const onStart = (e: NativeViewGestureHandlerGestureEvent) => {
+    const onStart = (e: CallbackEventType) => {
       props.onActiveStateChange?.(true);
 
       if (Platform.OS !== 'android' && e.pointerInside) {
@@ -64,7 +68,7 @@ export const BaseButton = React.forwardRef(
       lastActive = true;
     };
 
-    const onEnd = (e: NativeViewGestureHandlerGestureEvent) => {
+    const onEnd = (e: CallbackEventType) => {
       if (!longPressDetected && props.onPress) {
         props.onPress(e.pointerInside);
       }
@@ -76,7 +80,7 @@ export const BaseButton = React.forwardRef(
       lastActive = false;
     };
 
-    const onFinalize = (e: NativeViewGestureHandlerGestureEvent) => {
+    const onFinalize = (e: CallbackEventType) => {
       if (lastActive) {
         props.onActiveStateChange?.(false);
       }

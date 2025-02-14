@@ -123,6 +123,40 @@ export abstract class Gesture {
   abstract prepare(): void;
 }
 
+export interface Callbacks<EventPayloadT> {
+  /**
+   * Set the callback that is being called when given gesture handler starts receiving touches.
+   * At the moment of this callback the handler is in `BEGAN` state and we don't know yet if it will recognize the gesture at all.
+   * @param callback
+   */
+  onBegin: (event: GestureStateChangeEvent<EventPayloadT>) => void;
+
+  /**
+   * Set the callback that is being called when the gesture is recognized by the handler and it transitions to the `ACTIVE` state.
+   * @param callback
+   */
+  onStart: (event: GestureStateChangeEvent<EventPayloadT>) => void;
+
+  /**
+   * Set the callback that is being called when the gesture that was recognized by the handler finishes and handler reaches `END` state.
+   * It will be called only if the handler was previously in the `ACTIVE` state.
+   * @param callback
+   */
+  onEnd: (
+    event: GestureStateChangeEvent<EventPayloadT>,
+    success: boolean
+  ) => void;
+
+  /**
+   * Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
+   * @param callback
+   */
+  onFinalize: (
+    event: GestureStateChangeEvent<EventPayloadT>,
+    success: boolean
+  ) => void;
+}
+
 let nextGestureId = 0;
 export abstract class BaseGesture<
   EventPayloadT extends Record<string, unknown>,
