@@ -35,11 +35,8 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.Butt
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
-  private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
-
-  init {
-    mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
-  }
+  private val mDelegate: ViewManagerDelegate<ButtonViewGroup> =
+    RNGestureHandlerButtonManagerDelegate(this)
 
   private fun borderRadiusFromDynamic(view: ButtonViewGroup, value: Dynamic): LengthPercentage? {
     var borderRadius = LengthPercentage.setFromDynamic(DynamicFromObject(value))
@@ -199,7 +196,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.isSoundEffectsEnabled = !touchSoundDisabled
   }
 
-  override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? {
+  override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup> {
     return mDelegate
   }
 
