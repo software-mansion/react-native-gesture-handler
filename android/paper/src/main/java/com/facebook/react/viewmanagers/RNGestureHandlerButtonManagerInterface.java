@@ -11,6 +11,7 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Dynamic;
 
 public interface RNGestureHandlerButtonManagerInterface<T extends View> {
   void setExclusive(T view, boolean value);
@@ -20,6 +21,11 @@ public interface RNGestureHandlerButtonManagerInterface<T extends View> {
   void setRippleColor(T view, @Nullable Integer value);
   void setRippleRadius(T view, int value);
   void setTouchSoundDisabled(T view, boolean value);
+  void setBorderRadius(T view, Dynamic value);
+  void setBorderTopLeftRadius(T view, Dynamic value);
+  void setBorderTopRightRadius(T view, Dynamic value);
+  void setBorderBottomLeftRadius(T view, Dynamic value);
+  void setBorderBottomRightRadius(T view, Dynamic value);
   void setBorderWidth(T view, float value);
   void setBorderLeftWidth(T view, float value);
   void setBorderRightWidth(T view, float value);

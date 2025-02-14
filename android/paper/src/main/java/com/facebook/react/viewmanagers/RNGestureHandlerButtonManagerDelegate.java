@@ -12,6 +12,7 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ColorPropConverter;
+import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -43,6 +44,21 @@ public class RNGestureHandlerButtonManagerDelegate<T extends View, U extends Bas
         break;
       case "touchSoundDisabled":
         mViewManager.setTouchSoundDisabled(view, value == null ? false : (boolean) value);
+        break;
+      case "borderRadius":
+        mViewManager.setBorderRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderTopLeftRadius":
+        mViewManager.setBorderTopLeftRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderTopRightRadius":
+        mViewManager.setBorderTopRightRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderBottomLeftRadius":
+        mViewManager.setBorderBottomLeftRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderBottomRightRadius":
+        mViewManager.setBorderBottomRightRadius(view, new DynamicFromObject(value));
         break;
       case "borderWidth":
         mViewManager.setBorderWidth(view, value == null ? 0f : ((Double) value).floatValue());
