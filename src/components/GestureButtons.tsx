@@ -80,7 +80,7 @@ export const BaseButton = React.forwardRef(
       lastActive = false;
     };
 
-    const onFinalize = (e: CallbackEventType) => {
+    const onFinalize = () => {
       if (lastActive) {
         props.onActiveStateChange?.(false);
       }
