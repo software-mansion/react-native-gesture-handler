@@ -19,6 +19,7 @@ import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
+import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
@@ -103,37 +104,37 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
   @ReactProp(name = "borderWidth")
   override fun setBorderWidth(view: ButtonViewGroup, borderWidth: Float) {
-    view.setBorderWidth(Spacing.ALL, borderWidth)
+    view.setBorderWidth(Spacing.ALL, PixelUtil.toPixelFromDIP(borderWidth))
   }
 
-  @ReactProp(name = "borderStartWidth")
-  override fun setBorderLeftWidth(view: ButtonViewGroup, borderStartWidth: Float) {
-    view.setBorderWidth(Spacing.LEFT, borderStartWidth)
+  @ReactProp(name = "borderLeftWidth")
+  override fun setBorderLeftWidth(view: ButtonViewGroup, borderLeftWidth: Float) {
+    view.setBorderWidth(Spacing.LEFT, PixelUtil.toPixelFromDIP(borderLeftWidth))
   }
 
   @ReactProp(name = "borderRightWidth")
   override fun setBorderRightWidth(view: ButtonViewGroup, borderRightWidth: Float) {
-    view.setBorderWidth(Spacing.RIGHT, borderRightWidth)
+    view.setBorderWidth(Spacing.RIGHT, PixelUtil.toPixelFromDIP(borderRightWidth))
   }
 
   @ReactProp(name = "borderTopWidth")
   override fun setBorderTopWidth(view: ButtonViewGroup, borderTopWidth: Float) {
-    view.setBorderWidth(Spacing.TOP, borderTopWidth)
+    view.setBorderWidth(Spacing.TOP, PixelUtil.toPixelFromDIP(borderTopWidth))
   }
 
   @ReactProp(name = "borderBottomWidth")
   override fun setBorderBottomWidth(view: ButtonViewGroup, borderBottomWidth: Float) {
-    view.setBorderWidth(Spacing.BOTTOM, borderBottomWidth)
+    view.setBorderWidth(Spacing.BOTTOM, PixelUtil.toPixelFromDIP(borderBottomWidth))
   }
 
   @ReactProp(name = "borderStartWidth")
   override fun setBorderStartWidth(view: ButtonViewGroup, borderStartWidth: Float) {
-    view.setBorderWidth(Spacing.START, borderStartWidth)
+    view.setBorderWidth(Spacing.START, PixelUtil.toPixelFromDIP(borderStartWidth))
   }
 
   @ReactProp(name = "borderEndWidth")
   override fun setBorderEndWidth(view: ButtonViewGroup, borderEndWidth: Float) {
-    view.setBorderWidth(Spacing.END, borderEndWidth)
+    view.setBorderWidth(Spacing.END, PixelUtil.toPixelFromDIP(borderEndWidth))
   }
 
   @ReactProp(name = "borderColor")
