@@ -47,8 +47,44 @@ public class RNGestureHandlerButtonManagerDelegate<T extends View, U extends Bas
       case "borderWidth":
         mViewManager.setBorderWidth(view, value == null ? 0f : ((Double) value).floatValue());
         break;
+      case "borderLeftWidth":
+        mViewManager.setBorderLeftWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderRightWidth":
+        mViewManager.setBorderRightWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderTopWidth":
+        mViewManager.setBorderTopWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderBottomWidth":
+        mViewManager.setBorderBottomWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderStartWidth":
+        mViewManager.setBorderStartWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderEndWidth":
+        mViewManager.setBorderEndWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
       case "borderColor":
         mViewManager.setBorderColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderLeftColor":
+        mViewManager.setBorderLeftColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderRightColor":
+        mViewManager.setBorderRightColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderTopColor":
+        mViewManager.setBorderTopColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderBottomColor":
+        mViewManager.setBorderBottomColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderStartColor":
+        mViewManager.setBorderStartColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderEndColor":
+        mViewManager.setBorderEndColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       case "borderStyle":
         mViewManager.setBorderStyle(view, value == null ? "solid" : (String) value);
