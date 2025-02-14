@@ -14,8 +14,23 @@ interface NativeProps extends ViewProps {
   rippleColor?: ColorValue;
   rippleRadius?: Int32;
   touchSoundDisabled?: WithDefault<boolean, false>;
+
   borderWidth?: Float;
+  borderLeftWidth?: Float;
+  borderRightWidth?: Float;
+  borderTopWidth?: Float;
+  borderBottomWidth?: Float;
+  borderStartWidth?: Float;
+  borderEndWidth?: Float;
+
   borderColor?: ColorValue;
+  borderLeftColor?: ColorValue;
+  borderRightColor?: ColorValue;
+  borderTopColor?: ColorValue;
+  borderBottomColor?: ColorValue;
+  borderStartColor?: ColorValue;
+  borderEndColor?: ColorValue;
+
   borderStyle?: WithDefault<string, 'solid'>;
 }
 
