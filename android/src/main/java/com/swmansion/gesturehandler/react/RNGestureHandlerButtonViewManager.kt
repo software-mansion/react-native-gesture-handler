@@ -14,6 +14,7 @@ import android.view.ViewParent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
 import com.facebook.react.R
+import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.LengthPercentage
@@ -40,8 +41,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
   }
 
-  private fun borderRadiusFromDynamic(view: ButtonViewGroup, value: Float): LengthPercentage? {
-    var borderRadius = LengthPercentage.setFromDynamic(DynamicFromObject(value.toDouble()))
+  private fun borderRadiusFromDynamic(view: ButtonViewGroup, value: Dynamic): LengthPercentage? {
+    var borderRadius = LengthPercentage.setFromDynamic(DynamicFromObject(value))
 
     if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC &&
       borderRadius != null &&
@@ -79,27 +80,27 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   }
 
   @ReactProp(name = "borderRadius")
-  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
+  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Dynamic) {
     view.setBorderRadius(BorderRadiusProp.BORDER_RADIUS, borderRadiusFromDynamic(view, borderRadius))
   }
 
   @ReactProp(name = "borderTopLeftRadius")
-  override fun setBorderTopLeftRadius(view: ButtonViewGroup, borderTopLeftRadius: Float) {
+  override fun setBorderTopLeftRadius(view: ButtonViewGroup, borderTopLeftRadius: Dynamic) {
     view.setBorderRadius(BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, borderRadiusFromDynamic(view, borderTopLeftRadius))
   }
 
   @ReactProp(name = "borderTopRightRadius")
-  override fun setBorderTopRightRadius(view: ButtonViewGroup, borderTopRightRadius: Float) {
+  override fun setBorderTopRightRadius(view: ButtonViewGroup, borderTopRightRadius: Dynamic) {
     view.setBorderRadius(BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, borderRadiusFromDynamic(view, borderTopRightRadius))
   }
 
   @ReactProp(name = "borderBottomLeftRadius")
-  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, borderBottomLeftRadius: Float) {
+  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, borderBottomLeftRadius: Dynamic) {
     view.setBorderRadius(BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, borderRadiusFromDynamic(view, borderBottomLeftRadius))
   }
 
   @ReactProp(name = "borderBottomRightRadius")
-  override fun setBorderBottomRightRadius(view: ButtonViewGroup, borderBottomRightRadius: Float) {
+  override fun setBorderBottomRightRadius(view: ButtonViewGroup, borderBottomRightRadius: Dynamic) {
     view.setBorderRadius(BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, borderRadiusFromDynamic(view, borderBottomRightRadius))
   }
 
