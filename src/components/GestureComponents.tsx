@@ -20,8 +20,6 @@ import {
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
-import { _createNativeWrapper } from '../handlers/_createNativeWrapper';
-
 import {
   NativeViewGestureHandlerProps,
   nativeViewProps,
@@ -29,14 +27,14 @@ import {
 
 import { toArray } from '../utils';
 
-export const RefreshControl = _createNativeWrapper(RNRefreshControl, {
+export const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
   shouldCancelWhenOutside: false,
 });
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
-const GHScrollView = _createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
+const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   RNScrollView,
   {
     disallowInterruption: true,
@@ -76,7 +74,7 @@ export const ScrollView = React.forwardRef<
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ScrollView = typeof GHScrollView & RNScrollView;
 
-export const Switch = _createNativeWrapper<RNSwitchProps>(RNSwitch, {
+export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
   disallowInterruption: true,
@@ -84,7 +82,7 @@ export const Switch = _createNativeWrapper<RNSwitchProps>(RNSwitch, {
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Switch = typeof Switch & RNSwitch;
 
-export const TextInput = _createNativeWrapper<RNTextInputProps>(RNTextInput);
+export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
 

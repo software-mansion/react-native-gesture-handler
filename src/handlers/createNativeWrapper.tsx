@@ -2,10 +2,12 @@ import * as React from 'react';
 import { useImperativeHandle, useRef } from 'react';
 
 import {
-  NativeViewGestureHandler,
-  NativeViewGestureHandlerProps,
-  nativeViewProps,
+  NativeViewGestureConfig,
+  nativeViewGestureHandlerProps,
 } from './NativeViewGestureHandler';
+
+import { Gesture, GestureDetector, NativeViewGestureHandlerPayload } from '..';
+import { BaseGestureConfig, Callbacks } from './gestures/gesture';
 
 /*
  * This array should consist of:
@@ -15,18 +17,51 @@ import {
  *   - 'onGestureHandlerStateChange'
  */
 const NATIVE_WRAPPER_PROPS_FILTER = [
-  ...nativeViewProps,
-  'onGestureHandlerEvent',
-  'onGestureHandlerStateChange',
+  ...nativeViewGestureHandlerProps,
+
+  // Common Gesture config
+  'enabled',
+  'shouldCancelWhenOutside',
+  'hitSlop',
+  'userSelect',
+  'activeCursor',
+  'mouseButton',
+  'enableContextMenu',
+  'touchAction',
+
+  // Base Gesture Config
+  'requireExternalGestureToFail',
+  'simultaneousWithExternalGesture',
+  'blocksExternalGesture',
+  'needsPointerData',
+  'manualActivation',
+  'runOnJS',
+  'withTestId',
+  'cancelsTouchesInView',
+
+  // Callbacks
+  'onBegin',
+  'onStart',
+  'onEnd',
+  'onFinalize',
+  'onUpdate',
+  'onChange',
+  'onTouchesDown',
+  'onTouchesMove',
+  'onTouchesUp',
+  'onTouchesCancelled',
 ] as const;
 
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
-  config: Readonly<NativeViewGestureHandlerProps> = {}
+  config: Readonly<BaseGestureConfig & NativeViewGestureConfig> = {}
 ) {
   const ComponentWrapper = React.forwardRef<
     React.ComponentType<any>,
-    P & NativeViewGestureHandlerProps
+    P &
+      BaseGestureConfig &
+      NativeViewGestureConfig &
+      Callbacks<NativeViewGestureHandlerPayload>
   >((props, ref) => {
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
@@ -44,15 +79,19 @@ export default function createNativeWrapper<P>(
       },
       {
         gestureHandlerProps: { ...config }, // Watch out not to modify config
-        childProps: {
-          enabled: props.enabled,
-          hitSlop: props.hitSlop,
-          testID: props.testID,
-        } as P,
+        childProps: { enabled: props.enabled } as P,
       }
     );
     const _ref = useRef<React.ComponentType<P>>();
-    const _gestureHandlerRef = useRef<React.ComponentType<P>>();
+    const _gestureHandlerRef = useRef();
+
+    const native = Gesture.Native().withRef(_gestureHandlerRef);
+
+    for (const [key, value] of Object.entries(gestureHandlerProps)) {
+      // @ts-ignore FIXME(TS)
+      native[key](value);
+    }
+
     useImperativeHandle(
       ref,
       // @ts-ignore TODO(TS) decide how nulls work in this context
@@ -69,12 +108,9 @@ export default function createNativeWrapper<P>(
       [_ref, _gestureHandlerRef]
     );
     return (
-      <NativeViewGestureHandler
-        {...gestureHandlerProps}
-        // @ts-ignore TODO(TS)
-        ref={_gestureHandlerRef}>
+      <GestureDetector gesture={native}>
         <Component {...childProps} ref={_ref} />
-      </NativeViewGestureHandler>
+      </GestureDetector>
     );
   });
 

@@ -165,6 +165,4 @@ export {
   enableLegacyWebImplementation,
 } from './EnableNewWebImplementation';
 
-export { _createNativeWrapper } from './handlers/_createNativeWrapper';
-
 initialize();

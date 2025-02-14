@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { _createNativeWrapper } from '../handlers/_createNativeWrapper';
+import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
 import type {
   BaseButtonWithRefProps,
@@ -21,7 +21,7 @@ let IS_FABRIC: null | boolean = null;
 type CallbackEventType =
   GestureStateChangeEvent<NativeViewGestureHandlerPayload>;
 
-export const RawButton = _createNativeWrapper(GestureHandlerButton, {
+export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
