@@ -377,6 +377,7 @@ interface MainScreenItemProps {
 function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
   return (
     <RectButton
+      runOnJS={true}
       enabled={enabled}
       style={[styles.button, !enabled && styles.unavailableExample]}
       onPress={() => onPressItem(name)}>
