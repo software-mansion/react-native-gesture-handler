@@ -111,6 +111,13 @@ export interface BaseButtonProps extends RawButtonProps {
    * Defaults to 600.
    */
   delayLongPress?: number;
+
+  /**
+   * When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called.
+   * This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
+   * Defaults to `false`.
+   */
+  runOnJS?: boolean;
 }
 export interface BaseButtonWithRefProps
   extends BaseButtonProps,
