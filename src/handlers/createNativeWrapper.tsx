@@ -1,53 +1,43 @@
-import * as React from 'react';
-import { useImperativeHandle, useRef } from 'react';
-
+import React, { useImperativeHandle, useRef } from 'react';
 import {
   NativeViewGestureConfig,
   nativeViewGestureHandlerProps,
 } from './NativeViewGestureHandler';
-
 import { Gesture, GestureDetector, NativeViewGestureHandlerPayload } from '..';
 import { BaseGestureConfig, Callbacks } from './gestures/gesture';
 
-/*
- * This array should consist of:
- *   - All keys in propTypes from NativeGestureHandler
- *     (and all keys in GestureHandlerPropTypes)
- *   - 'onGestureHandlerEvent'
- *   - 'onGestureHandlerStateChange'
- */
-const NATIVE_WRAPPER_PROPS_FILTER = [
-  ...nativeViewGestureHandlerProps,
-
-  // Common Gesture config
+const commonConfig = [
   'enabled',
   'shouldCancelWhenOutside',
   'hitSlop',
   'activeCursor',
   'mouseButton',
-
-  // Base Gesture Config
   'requireExternalGestureToFail',
   'simultaneousWithExternalGesture',
   'blocksExternalGesture',
-  'needsPointerData',
-  'manualActivation',
   'runOnJS',
   'withTestId',
   'cancelsTouchesInView',
+] as const;
 
-  // Callbacks
+const callbacks = [
   'onBegin',
   'onStart',
   'onEnd',
   'onFinalize',
-  'onUpdate',
-  'onChange',
   'onTouchesDown',
   'onTouchesMove',
   'onTouchesUp',
   'onTouchesCancelled',
 ] as const;
+
+const NATIVE_WRAPPER_PROPS_FILTER = [
+  ...nativeViewGestureHandlerProps,
+  ...commonConfig,
+  ...callbacks,
+] as const;
+
+type NativeConfig = (typeof NATIVE_WRAPPER_PROPS_FILTER)[number];
 
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
@@ -85,8 +75,9 @@ export default function createNativeWrapper<P>(
     const native = Gesture.Native().withRef(_gestureHandlerRef);
 
     for (const [key, value] of Object.entries(gestureHandlerProps)) {
-      // @ts-ignore FIXME(TS)
-      native[key](value);
+      // @ts-ignore `value` type is inferred as `never`. In reality there's wide range
+      // of types that can be passed here, like `boolean`, `number`, or functions.
+      native[key as NativeConfig](value);
     }
 
     useImperativeHandle(
