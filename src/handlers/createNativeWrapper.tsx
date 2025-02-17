@@ -31,13 +31,15 @@ const callbacks = [
   'onTouchesCancelled',
 ] as const;
 
-const NATIVE_WRAPPER_PROPS_FILTER = [
+const NATIVE_WRAPPER_PROPS = [
   ...nativeViewGestureHandlerProps,
   ...commonConfig,
   ...callbacks,
 ] as const;
 
-type NativeConfig = (typeof NATIVE_WRAPPER_PROPS_FILTER)[number];
+type NativeConfig = (typeof NATIVE_WRAPPER_PROPS)[number];
+
+const PROPS_FILTER = new Set<string>(NATIVE_WRAPPER_PROPS);
 
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
@@ -53,9 +55,7 @@ export default function createNativeWrapper<P>(
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
       (res, key) => {
-        // TS being overly protective with it's types, see https://github.com/microsoft/TypeScript/issues/26255#issuecomment-458013731 for more info
-        const allowedKeys: readonly string[] = NATIVE_WRAPPER_PROPS_FILTER;
-        if (allowedKeys.includes(key)) {
+        if (PROPS_FILTER.has(key)) {
           // @ts-ignore FIXME(TS)
           res.gestureHandlerProps[key] = props[key];
         } else {
