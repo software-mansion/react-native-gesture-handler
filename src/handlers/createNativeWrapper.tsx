@@ -56,7 +56,6 @@ export default function createNativeWrapper<P>(
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
       (res, key) => {
         if (PROPS_FILTER.has(key)) {
-          // @ts-ignore FIXME(TS)
           res.gestureHandlerProps[key] = props[key];
         } else {
           // @ts-ignore FIXME(TS)
