@@ -837,7 +837,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val DIRECTION_DOWN = 8
     const val ACTION_TYPE_REANIMATED_WORKLET = 1
     const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
-    const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
+    const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3 // %% remove?
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1

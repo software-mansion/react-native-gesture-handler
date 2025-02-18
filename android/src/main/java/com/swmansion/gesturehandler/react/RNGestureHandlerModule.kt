@@ -551,15 +551,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
           useTopPrefixedName = BuildConfig.REACT_NATIVE_MINOR_VERSION >= 71
         )
         sendEventForNativeAnimatedEvent(event)
-      } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {
-        // JS function, Animated.event with useNativeDriver: false using old API
-        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-          val data = RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
-          sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
-        } else {
-          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory.createEventBuilder(handler))
-          sendEventForDirectEvent(event)
-        }
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
         // JS function, Animated.event with useNativeDriver: false using new API
         val data = RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
@@ -581,17 +572,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       // Reanimated worklet
       val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
       sendEventForReanimated(event)
-    } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT ||
-      handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API
+    } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
     ) {
-      // JS function or Animated.event with useNativeDriver: false with old API
-      if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-        val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
-        sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
-      } else {
-        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
-        sendEventForDirectEvent(event)
-      }
+      val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
+      sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
     } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
       // JS function or Animated.event with useNativeDriver: false with new API
       val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
@@ -623,13 +607,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   private fun <T : Event<T>>sendEventForReanimated(event: T) {
     // Delivers the event to Reanimated.
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      // Send event directly to Reanimated
-      reanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
-    } else {
-      // In the old architecture, Reanimated subscribes for specific direct events.
-      sendEventForDirectEvent(event)
-    }
+    reanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
   }
 
   private fun sendEventForNativeAnimatedEvent(event: RNGestureHandlerEvent) {
@@ -637,11 +615,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     // TODO: send event directly to NativeAnimated[Turbo]Module
     // ReactContext.dispatchEvent is an extension function, depending on the architecture it will
     // dispatch event using UIManagerModule or FabricUIManager.
-    reactApplicationContext.dispatchEvent(event)
-  }
-
-  private fun <T : Event<T>>sendEventForDirectEvent(event: T) {
-    // Delivers the event to JS as a direct event. This method is called only on Paper.
     reactApplicationContext.dispatchEvent(event)
   }
 

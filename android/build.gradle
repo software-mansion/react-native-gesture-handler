@@ -168,14 +168,6 @@ android {
                 srcDirs += 'noreanimated/src/main/java'
             }
 
-            if (isNewArchitectureEnabled()) {
-                srcDirs += 'fabric/src/main/java'
-            } else {
-                // this folder also includes files from codegen so the library can compile with
-                // codegen turned off
-                srcDirs += 'paper/src/main/java'
-            }
-
             if (REACT_NATIVE_MINOR_VERSION >= 77) {
                 // With RN 0.77, ViewManager related functions in the package has different signatures as they 
                 // are no longer nullable

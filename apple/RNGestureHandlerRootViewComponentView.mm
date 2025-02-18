@@ -1,5 +1,3 @@
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #import <React/RCTFabricComponentsPlugins.h>
 
 Class<RCTComponentViewProtocol> RNGestureHandlerRootViewCls(void)
@@ -17,5 +15,3 @@ Class<RCTComponentViewProtocol> RNGestureHandlerRootViewCls(void)
   // TODO: remove this file once `excludedPlatforms` option properly disables generating ShadowNode
   return nil;
 }
-
-#endif // RCT_NEW_ARCH_ENABLED

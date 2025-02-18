@@ -9,13 +9,8 @@
 
 @interface RNGestureHandlerManager : NSObject
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (nonnull instancetype)initWithModuleRegistry:(nonnull RCTModuleRegistry *)moduleRegistry
                                   viewRegistry:(nonnull RCTViewRegistry *)viewRegistry;
-#else
-- (nonnull instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager
-                          eventDispatcher:(nonnull id<RCTEventDispatcherProtocol>)eventDispatcher;
-#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)createGestureHandler:(nonnull NSString *)handlerName
                          tag:(nonnull NSNumber *)handlerTag

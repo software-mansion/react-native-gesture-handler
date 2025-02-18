@@ -44,5 +44,5 @@ export default ({ config }) => ({
       },
     ],
   ],
-  newArchEnabled: Boolean(Number(process.env.FABRIC_ENABLED)),
+  newArchEnabled: 1,
 });

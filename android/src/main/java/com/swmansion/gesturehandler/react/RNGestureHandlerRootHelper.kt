@@ -40,6 +40,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
     with(registry) {
       registerHandler(jsGestureHandler)
+      // %% is this also called on NEW API? Can this be changed?
       attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API)
     }
     module.registerRootHelper(this)
