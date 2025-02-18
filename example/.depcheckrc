@@ -1,0 +1,2 @@
+ignores: ["eslint-plugin-prettier", "expo-font", "postinstall-postinstall"]
+quiet: true
