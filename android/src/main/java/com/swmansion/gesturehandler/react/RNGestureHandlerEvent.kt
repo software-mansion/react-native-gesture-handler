@@ -18,22 +18,13 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var coalescingKey: Short = 0
 
-  // On the new architecture, native animated expects event names prefixed with `top` instead of `on`,
-  // since we know when the native animated node is the target of the event we can use the different
-  // event name where appropriate.
-  // TODO: This is a workaround not as solution, but doing this properly would require a total overhaul of
-  // how GH sends events (which needs to be done, but maybe wait until the RN's apis stop changing)
-  private var useTopPrefixedName: Boolean = false
-
   private fun <T : GestureHandler<T>> init(
     handler: T,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
-    useNativeAnimatedName: Boolean
   ) {
     val view = handler.view!!
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
     this.dataBuilder = dataBuilder
-    this.useTopPrefixedName = useNativeAnimatedName
     coalescingKey = handler.eventCoalescingKey
   }
 
@@ -42,7 +33,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (useTopPrefixedName) NATIVE_ANIMATED_EVENT_NAME else EVENT_NAME
+  override fun getEventName() = NATIVE_ANIMATED_EVENT_NAME
 
   override fun canCoalesce() = true
 
@@ -59,10 +50,9 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
-      useTopPrefixedName: Boolean = false
     ): RNGestureHandlerEvent =
       (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
-        init(handler, dataBuilder, useTopPrefixedName)
+        init(handler, dataBuilder)
       }
 
     fun createEventData(
