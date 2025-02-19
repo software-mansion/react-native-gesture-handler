@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -48,6 +50,10 @@ export function tagMessage(msg: string) {
 export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
+}
+
+export function isReact19() {
+  return React.version.startsWith('19.');
 }
 
 export function isRemoteDebuggingEnabled(): boolean {

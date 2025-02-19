@@ -14,8 +14,26 @@ export type TouchableWithoutFeedbackProps = GenericTouchableProps;
 const TouchableWithoutFeedback = React.forwardRef<
   GenericTouchable,
   PropsWithChildren<TouchableWithoutFeedbackProps>
->((props, ref) => <GenericTouchable ref={ref} {...props} />);
+>(
+  (
+    {
+      delayLongPress = 600,
+      extraButtonProps = {
+        rippleColor: 'transparent',
+        exclusive: true,
+      },
+      ...rest
+    },
 
-TouchableWithoutFeedback.defaultProps = GenericTouchable.defaultProps;
+    ref
+  ) => (
+    <GenericTouchable
+      ref={ref}
+      delayLongPress={delayLongPress}
+      extraButtonProps={extraButtonProps}
+      {...rest}
+    />
+  )
+);
 
 export default TouchableWithoutFeedback;
