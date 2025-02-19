@@ -5,7 +5,7 @@ import type {
   Insets,
 } from 'react-native';
 import type { UserSelect } from '../../handlers/gestureHandlerCommon';
-import type { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedbackProps';
+import { ExtraButtonProps } from './ExtraButtonProps';
 
 export interface GenericTouchableProps
   extends Omit<TouchableWithoutFeedbackProps, 'hitSlop'> {
@@ -24,5 +24,5 @@ export interface GenericTouchableProps
   containerStyle?: StyleProp<ViewStyle>;
   hitSlop?: Insets | number;
   userSelect?: UserSelect;
-  extraButtonProps?: TouchableNativeFeedbackExtraProps;
+  extraButtonProps?: ExtraButtonProps;
 }
