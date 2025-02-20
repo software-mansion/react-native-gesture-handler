@@ -11,6 +11,7 @@ import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uimanager.ViewManager
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorViewManager
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
 
@@ -27,6 +28,9 @@ class RNGestureHandlerPackage : BaseReactPackage(), ViewManagerOnDemandReactPack
       },
       RNGestureHandlerButtonViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
         RNGestureHandlerButtonViewManager()
+      },
+      RNGestureHandlerDetectorViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
+        RNGestureHandlerDetectorViewManager()
       }
     )
   }
@@ -34,7 +38,8 @@ class RNGestureHandlerPackage : BaseReactPackage(), ViewManagerOnDemandReactPack
   override fun createViewManagers(reactContext: ReactApplicationContext) =
     listOf<ViewManager<*, *>>(
       RNGestureHandlerRootViewManager(),
-      RNGestureHandlerButtonViewManager()
+      RNGestureHandlerButtonViewManager(),
+      RNGestureHandlerDetectorViewManager()
     )
 
   override fun getViewManagerNames(reactContext: ReactApplicationContext) =

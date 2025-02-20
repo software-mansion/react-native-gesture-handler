@@ -166,4 +166,7 @@ export {
   enableLegacyWebImplementation,
 } from './EnableNewWebImplementation';
 
+export type { NativeDetectorProps } from './NativeDetector';
+export { NativeDetector } from './NativeDetector';
+
 initialize();
