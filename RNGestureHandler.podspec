@@ -24,6 +24,12 @@ Pod::Spec.new do |s|
     "OTHER_CFLAGS" => "$(inherited) " + compilation_metadata_generation_flag
   }
 
+  s.subspec "shared" do |ss|
+    ss.source_files         = ["shared/**/*.{cpp,h}"]
+    ss.header_dir           = "RNGestureHandlerShared"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/shared\"" }
+  end
+
   if defined?(install_modules_dependencies()) != nil
     install_modules_dependencies(s);
   else

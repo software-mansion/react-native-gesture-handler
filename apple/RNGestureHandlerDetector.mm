@@ -5,7 +5,7 @@
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 
-#import <react/renderer/components/rngesturehandler_codegen/ComponentDescriptors.h>
+#import <RNGestureHandlerShared/RNGestureHandlerDetectorComponentDescriptor.h>
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>

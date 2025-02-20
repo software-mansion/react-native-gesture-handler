@@ -42,6 +42,7 @@
     "android/package77/",
     "android/packageDeprecated/",
     "apple/",
+    "shared/",
     "Swipeable/",
     "ReanimatedSwipeable/",
     "jest-utils/",
