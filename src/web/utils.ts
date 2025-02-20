@@ -280,6 +280,10 @@ export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
 // Second condition was introduced to handle case where SVG element was wrapped with
 // `createAnimatedComponent` from Reanimated.
 export function isRNSVGNode(node: any) {
+  if (node.ref?.rngh) {
+    return false;
+  }
+
   return (
     Object.getPrototypeOf(node?.type)?.name === 'WebShape' ||
     RNSVGElements.has(node?.type?.displayName)

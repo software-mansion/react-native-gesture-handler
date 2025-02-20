@@ -35,6 +35,8 @@ export const Text = forwardRef(
       }
     };
 
+    refHandler.rngh = true;
+
     useEffect(() => {
       if (Platform.OS !== 'web') {
         return;
