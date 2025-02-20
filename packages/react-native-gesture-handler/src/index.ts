@@ -161,4 +161,7 @@ export type {
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
 
+export type { NativeDetectorProps } from './NativeDetector';
+export { NativeDetector } from './NativeDetector';
+
 initialize();
