@@ -6,4 +6,6 @@ export interface NativeProps extends ViewProps {
   handlerTags: Int32[];
 }
 
-export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector');
+export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector', {
+  interfaceOnly: true,
+});
