@@ -29,20 +29,30 @@ export default function createNativeWrapper<P>(
     P & NativeViewGestureHandlerProps
   >((props, ref) => {
     // Filter out props that should be passed to gesture handler wrapper
-    const gestureHandlerProps = Object.keys(props).reduce(
+    const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
       (res, key) => {
         // TS being overly protective with it's types, see https://github.com/microsoft/TypeScript/issues/26255#issuecomment-458013731 for more info
         const allowedKeys: readonly string[] = NATIVE_WRAPPER_PROPS_FILTER;
         if (allowedKeys.includes(key)) {
           // @ts-ignore FIXME(TS)
-          res[key] = props[key];
+          res.gestureHandlerProps[key] = props[key];
+        } else {
+          // @ts-ignore FIXME(TS)
+          res.childProps[key] = props[key];
         }
         return res;
       },
-      { ...config } // Watch out not to modify config
+      {
+        gestureHandlerProps: { ...config }, // Watch out not to modify config
+        childProps: {
+          enabled: props.enabled,
+          hitSlop: props.hitSlop,
+          testID: props.testID,
+        } as P,
+      }
     );
-    const _ref = useRef<React.ComponentType<P>>();
-    const _gestureHandlerRef = useRef<React.ComponentType<P>>();
+    const _ref = useRef<React.ComponentType<P>>(null);
+    const _gestureHandlerRef = useRef<React.ComponentType<P>>(null);
     useImperativeHandle(
       ref,
       // @ts-ignore TODO(TS) decide how nulls work in this context
@@ -63,7 +73,7 @@ export default function createNativeWrapper<P>(
         {...gestureHandlerProps}
         // @ts-ignore TODO(TS)
         ref={_gestureHandlerRef}>
-        <Component {...props} ref={_ref} />
+        <Component {...childProps} ref={_ref} />
       </NativeViewGestureHandler>
     );
   });

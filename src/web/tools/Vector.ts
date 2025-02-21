@@ -30,7 +30,7 @@ export default class Vector {
     return new Vector(velocity.x, velocity.y);
   }
 
-  get magnitude() {
+  public get magnitude() {
     return this._magnitude;
   }
 

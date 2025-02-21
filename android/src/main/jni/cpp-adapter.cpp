@@ -7,9 +7,9 @@ using namespace facebook;
 using namespace react;
 
 void decorateRuntime(jsi::Runtime &runtime) {
-    auto isFormsStackingContext = jsi::Function::createFromHostFunction(
+    auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
             runtime,
-            jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
+            jsi::PropNameID::forAscii(runtime, "isViewFlatteningDisabled"),
             1,
             [](jsi::Runtime &runtime,
                const jsi::Value &thisValue,
@@ -20,21 +20,28 @@ void decorateRuntime(jsi::Runtime &runtime) {
                 }
 
                 auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
-                bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
+                bool isViewFlatteningDisabled = shadowNode->getTraits().check(
+                        ShadowNodeTraits::FormsStackingContext);
 
-                return jsi::Value(isFormsStackingContext);
+                // This is done using component names instead of type checking because
+                // of duplicate symbols for RN types, which prevent RTTI from working.
+                const char *componentName = shadowNode->getComponentName();
+                bool isTextComponent = strcmp(componentName, "Paragraph") == 0 ||
+                                       strcmp(componentName, "Text") == 0;
+
+                return jsi::Value(isViewFlatteningDisabled || isTextComponent);
             });
     runtime.global().setProperty(
-            runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
+            runtime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_swmansion_gesturehandler_react_RNGestureHandlerModule_decorateRuntime(
-    JNIEnv *env,
-    jobject clazz,
-    jlong jsiPtr) {
-  jsi::Runtime *runtime = reinterpret_cast<jsi::Runtime *>(jsiPtr);
-  if (runtime) {
-    decorateRuntime(*runtime);
-  }
+        JNIEnv *env,
+        jobject clazz,
+        jlong jsiPtr) {
+    jsi::Runtime *runtime = reinterpret_cast<jsi::Runtime *>(jsiPtr);
+    if (runtime) {
+        decorateRuntime(*runtime);
+    }
 }

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -34,9 +36,9 @@ export function hasProperty(object: object, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
-export function isJestEnv(): boolean {
+export function isTestEnv(): boolean {
   // @ts-ignore Do not use `@types/node` because it will prioritise Node types over RN types which breaks the types (ex. setTimeout) in React Native projects.
-  return hasProperty(global, 'process') && !!process.env.JEST_WORKER_ID;
+  return hasProperty(global, 'process') && process.env.NODE_ENV === 'test';
 }
 
 export function tagMessage(msg: string) {
@@ -48,6 +50,10 @@ export function tagMessage(msg: string) {
 export function isFabric(): boolean {
   // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
   return !!global?.nativeFabricUIManager;
+}
+
+export function isReact19() {
+  return React.version.startsWith('19.');
 }
 
 export function isRemoteDebuggingEnabled(): boolean {
