@@ -35,6 +35,11 @@ export const Text = forwardRef(
       }
     };
 
+    // This is a special case for `Text` component. After https://github.com/software-mansion/react-native-gesture-handler/pull/3379 we check for
+    // `displayName` field. However, `Text` from RN has this field set to `Text`, but is also present in `RNSVGElements` set.
+    // We don't want to treat our `Text` as the one from `SVG`, therefore we add special field to ref.
+    refHandler.rngh = true;
+
     useEffect(() => {
       if (Platform.OS !== 'web') {
         return;

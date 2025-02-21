@@ -14,7 +14,7 @@ import Swipeable, {
 
 interface LeftActionProps {
   dragX: SharedValue<number>;
-  swipeableRef: React.RefObject<SwipeableMethods>;
+  swipeableRef: React.RefObject<SwipeableMethods | null>;
 }
 const LeftAction = ({ dragX, swipeableRef }: LeftActionProps) => {
   const animatedStyle = useAnimatedStyle(() => ({
@@ -38,12 +38,12 @@ const LeftAction = ({ dragX, swipeableRef }: LeftActionProps) => {
 const renderLeftActions = (
   _: any,
   progress: SharedValue<number>,
-  swipeableRef: React.RefObject<SwipeableMethods>
+  swipeableRef: React.RefObject<SwipeableMethods | null>
 ) => <LeftAction dragX={progress} swipeableRef={swipeableRef} />;
 
 interface RightActionProps {
   dragX: SharedValue<number>;
-  swipeableRef: React.RefObject<SwipeableMethods>;
+  swipeableRef: React.RefObject<SwipeableMethods | null>;
 }
 const RightAction = ({ dragX, swipeableRef }: RightActionProps) => {
   const animatedStyle = useAnimatedStyle(() => ({
@@ -67,7 +67,7 @@ const RightAction = ({ dragX, swipeableRef }: RightActionProps) => {
 const renderRightActions = (
   _: any,
   progress: SharedValue<number>,
-  swipeableRef: React.RefObject<SwipeableMethods>
+  swipeableRef: React.RefObject<SwipeableMethods | null>
 ) => <RightAction dragX={progress} swipeableRef={swipeableRef} />;
 interface GmailStyleSwipeableRowProps {
   children?: ReactNode;

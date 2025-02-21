@@ -29,4 +29,12 @@ Pod::Spec.new do |s|
   else
     s.dependency "React-Core"
   end
+
+  if ENV['USE_FRAMEWORKS'] != nil && ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    add_dependency(s, "React-FabricComponents", :additional_framework_paths => [
+      "react/renderer/textlayoutmanager/platform/ios",
+      "react/renderer/components/textinput/platform/ios",
+    ])
+  end
+
 end

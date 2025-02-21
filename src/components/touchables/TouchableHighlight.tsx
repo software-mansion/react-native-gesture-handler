@@ -20,13 +20,13 @@ interface State {
 }
 
 /**
- * @deprecated TouchableHighlight will be removed in the future version of Gesture Handler.
+ * @deprecated TouchableHighlight will be removed in the future version of Gesture Handler. Use Pressable instead.
  */
 export type TouchableHighlightProps = RNTouchableHighlightProps &
   GenericTouchableProps;
 
 /**
- * @deprecated TouchableHighlight will be removed in the future version of Gesture Handler.
+ * @deprecated TouchableHighlight will be removed in the future version of Gesture Handler. Use Pressable instead.
  *
  * TouchableHighlight follows RN's implementation
  */

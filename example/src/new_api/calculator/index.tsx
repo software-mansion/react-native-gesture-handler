@@ -60,7 +60,7 @@ interface OutputProps {
 
 function Output({ offset, expression, history }: OutputProps) {
   const layout = useRef({});
-  const scrollView = useRef<ScrollView>();
+  const scrollView = useRef<ScrollView>(null);
   const drag = useSharedValue(0);
   const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);

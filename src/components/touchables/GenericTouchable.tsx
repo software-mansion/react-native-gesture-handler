@@ -10,7 +10,6 @@ import {
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlerCommon';
 import type { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
-import type { TouchableNativeFeedbackExtraProps } from './TouchableNativeFeedbackProps';
 import type { GenericTouchableProps } from './GenericTouchableProps';
 
 /**
@@ -29,7 +28,6 @@ export const TOUCHABLE_STATE = {
 type TouchableState = (typeof TOUCHABLE_STATE)[keyof typeof TOUCHABLE_STATE];
 
 interface InternalProps {
-  extraButtonProps: TouchableNativeFeedbackExtraProps;
   onStateChange?: (oldState: TouchableState, newState: TouchableState) => void;
 }
 

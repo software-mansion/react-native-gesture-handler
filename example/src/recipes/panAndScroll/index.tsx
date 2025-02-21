@@ -16,8 +16,8 @@ const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;
 
 type Props = {
-  tapRef: React.RefObject<TapGestureHandler>;
-  panRef: React.RefObject<PanGestureHandler>;
+  tapRef: React.RefObject<TapGestureHandler | null>;
+  panRef: React.RefObject<PanGestureHandler | null>;
 };
 
 export class TapOrPan extends Component<Props> {

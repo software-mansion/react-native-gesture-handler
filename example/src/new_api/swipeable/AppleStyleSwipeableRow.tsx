@@ -18,7 +18,7 @@ interface AppleStyleSwipeableRowProps {
 
 interface LeftActionsProps {
   dragX: SharedValue<number>;
-  swipeableRef: React.RefObject<SwipeableMethods>;
+  swipeableRef: React.RefObject<SwipeableMethods | null>;
 }
 
 const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
@@ -48,7 +48,7 @@ const LeftAction = ({ dragX, swipeableRef }: LeftActionsProps) => {
 const renderLeftActions = (
   _: any,
   progress: SharedValue<number>,
-  swipeableRef: React.RefObject<SwipeableMethods>
+  swipeableRef: React.RefObject<SwipeableMethods | null>
 ) => <LeftAction dragX={progress} swipeableRef={swipeableRef} />;
 
 interface RightActionProps {
@@ -57,7 +57,7 @@ interface RightActionProps {
   x: number;
   progress: SharedValue<number>;
   totalWidth: number;
-  swipeableRef: React.RefObject<SwipeableMethods>;
+  swipeableRef: React.RefObject<SwipeableMethods | null>;
 }
 
 const RightAction = ({
@@ -95,7 +95,7 @@ const RightAction = ({
 const renderRightActions = (
   _: any,
   progress: SharedValue<number>,
-  swipeableRef: React.RefObject<SwipeableMethods>
+  swipeableRef: React.RefObject<SwipeableMethods | null>
 ) => (
   <View style={styles.rightActionsView}>
     <RightAction

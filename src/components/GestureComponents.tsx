@@ -142,7 +142,7 @@ export const FlatList = React.forwardRef((props, ref) => {
       RefAttributes<FlatList<ItemT>> &
       NativeViewGestureHandlerProps
   >,
-  ref: ForwardedRef<FlatList<ItemT>>
+  ref?: ForwardedRef<FlatList<ItemT>>
 ) => ReactElement | null;
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type FlatList<ItemT = any> = typeof FlatList & RNFlatList<ItemT>;

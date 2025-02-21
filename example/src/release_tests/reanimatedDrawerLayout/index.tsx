@@ -72,7 +72,8 @@ export default function ReanimatedDrawerExample() {
       renderNavigationView={() => <DrawerPage />}
       drawerPosition={side}
       drawerType={type}
-      drawerLockMode={lock}>
+      drawerLockMode={lock}
+      hideStatusBar={true}>
       <View style={styles.innerContainer}>
         <GestureDetector gesture={tapGesture}>
           <View style={styles.box}>
