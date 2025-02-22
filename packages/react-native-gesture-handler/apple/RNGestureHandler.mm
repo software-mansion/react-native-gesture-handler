@@ -1,7 +1,9 @@
 #import "RNGestureHandler.h"
 #import "RNManualActivationRecognizer.h"
 
+#import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import "Handlers/RNNativeViewHandler.h"
+#import "RNGestureHandlerDetector.h"
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
@@ -287,7 +289,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (view.reactTag == nil) {
+  if (recognizer.view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector) {
     return;
   }
 
@@ -298,6 +300,20 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state
 {
   _state = state;
+
+  if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
+    RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
+
+    facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange data = {
+        .state = static_cast<int>(_state),
+        .oldState = static_cast<int>(_lastState),
+    };
+
+    [detector dispatchStateChangeEvent:data];
+    _lastState = state;
+    return;
+  }
+
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
