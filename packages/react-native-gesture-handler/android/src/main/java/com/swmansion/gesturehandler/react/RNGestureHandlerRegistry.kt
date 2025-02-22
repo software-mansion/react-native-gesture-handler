@@ -24,7 +24,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   fun attachHandlerToView(handlerTag: Int, viewTag: Int, actionType: Int): Boolean {
     val handler = handlers[handlerTag]
     return handler?.let {
-      detachHandler(handler)
+      detachHandlerInternal(handler)
       handler.actionType = actionType
       registerHandlerForViewWithTag(viewTag, handler)
       true
@@ -48,7 +48,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  private fun detachHandler(handler: GestureHandler) {
+  private fun detachHandlerInternal(handler: GestureHandler) {
     val attachedToView = attachedTo[handler.tag]
     if (attachedToView != null) {
       attachedTo.remove(handler.tag)
@@ -72,9 +72,16 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
+  fun detachHandler(handlerTag: Int) {
+    handlers[handlerTag]?.let {
+      detachHandlerInternal(it)
+    }
+  }
+
+  @Synchronized
   fun dropHandler(handlerTag: Int) {
     handlers[handlerTag]?.let {
-      detachHandler(it)
+      detachHandlerInternal(it)
       handlers.remove(handlerTag)
     }
   }
