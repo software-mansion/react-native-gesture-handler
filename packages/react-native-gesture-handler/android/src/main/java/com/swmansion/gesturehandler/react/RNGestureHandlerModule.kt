@@ -24,7 +24,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext),
   TurboModuleWithJSIBindings {
 
-  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
@@ -203,6 +202,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   companion object {
     const val NAME = "RNGestureHandlerModule"
+    // TODO: this is likely to break compared to keeping it on module
+    val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
 
     init {
       SoLoader.loadLibrary("gesturehandler")
