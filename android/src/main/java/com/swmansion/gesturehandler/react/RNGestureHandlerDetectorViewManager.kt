@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.react
 
+import android.util.Log
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
@@ -30,7 +31,7 @@ class RNGestureHandlerDetectorViewManager :
     const val REACT_CLASS = "RNGestureHandlerDetector"
   }
 
-  override fun setHandlerTags(view: RNGestureHandlerDetectorView?, value: ReadableArray?) {
-
+  override fun setHandlerTags(view: RNGestureHandlerDetectorView, value: ReadableArray?) {
+    view.setHandlerTags(value)
   }
 }
