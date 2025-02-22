@@ -1,16 +1,17 @@
 import React from 'react';
-import type { NativeProps } from './specs/RNGestureHandlerDetectorNativeComponent';
 import RNGestureHandlerDetectorNativeComponent from './specs/RNGestureHandlerDetectorNativeComponent';
 import { StyleSheet } from 'react-native';
+import { NativeGesture } from './useGesture';
 
-export interface NativeDetectorProps extends NativeProps {
+export interface NativeDetectorProps {
   children?: React.ReactNode;
+  gesture: NativeGesture;
 }
 
-export function NativeDetector({ handlerTags, children }: NativeDetectorProps) {
+export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   return (
     <RNGestureHandlerDetectorNativeComponent
-      handlerTags={handlerTags}
+      handlerTags={[gesture.tag]}
       style={styles.detector}>
       {children}
     </RNGestureHandlerDetectorNativeComponent>
