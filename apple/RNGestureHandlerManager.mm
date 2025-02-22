@@ -11,7 +11,6 @@
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerActionType.h"
-#import "RNGestureHandlerRegistry.h"
 #import "RNGestureHandlerState.h"
 #import "RNRootViewGestureRecognizer.h"
 
@@ -63,6 +62,11 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
+- (RNGestureHandlerRegistry *)registry
+{
+  return _registry;
+}
+
 - (instancetype)initWithModuleRegistry:(RCTModuleRegistry *)moduleRegistry viewRegistry:(RCTViewRegistry *)viewRegistry
 {
   if ((self = [super init])) {

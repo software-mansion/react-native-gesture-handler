@@ -169,4 +169,7 @@ export {
 export type { NativeDetectorProps } from './NativeDetector';
 export { NativeDetector } from './NativeDetector';
 
+export * from './useGesture';
+export type * from './useGesture';
+
 initialize();
