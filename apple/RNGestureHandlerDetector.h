@@ -8,9 +8,14 @@
 
 #import <React/RCTViewComponentView.h>
 
+#import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RNGestureHandlerDetector : RCTViewComponentView
+
+- (void)dispatchStateChangeEvent:
+    (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event;
 
 @end
 
