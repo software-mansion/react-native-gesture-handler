@@ -20,7 +20,6 @@
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
-#import "RNGestureHandlerManager.h"
 #import "RNGestureHandlerState.h"
 
 #import "RNGestureHandlerButton.h"
@@ -47,8 +46,6 @@ using namespace react;
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 @implementation RNGestureHandlerModule {
-  RNGestureHandlerManager *_manager;
-
   // Oparations called after views have been updated.
   NSMutableArray<GestureHandlerOperation> *_operations;
 
@@ -61,6 +58,14 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+
+static RNGestureHandlerManager *_manager;
+
++ (RNGestureHandlerManager *)handlerManager
+{
+  return _manager;
+}
+
 #endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_MODULE()
@@ -219,7 +224,7 @@ RCT_EXPORT_MODULE()
 
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
     for (GestureHandlerOperation operation in operations) {
-      operation(self->_manager);
+      operation(_manager);
     }
   }];
 #endif // RCT_NEW_ARCH_ENABLED
