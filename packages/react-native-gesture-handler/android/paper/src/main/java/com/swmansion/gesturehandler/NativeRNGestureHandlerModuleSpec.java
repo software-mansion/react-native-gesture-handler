@@ -51,6 +51,10 @@ public abstract class NativeRNGestureHandlerModuleSpec extends ReactContextBaseJ
 
   @ReactMethod
   @DoNotStrip
+  public abstract void detachGestureHandler(double handlerTag);
+
+  @ReactMethod
+  @DoNotStrip
   public abstract void updateGestureHandler(double handlerTag, ReadableMap newConfig);
 
   @ReactMethod

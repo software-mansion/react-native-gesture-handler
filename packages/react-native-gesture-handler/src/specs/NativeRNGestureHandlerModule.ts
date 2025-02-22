@@ -18,6 +18,8 @@ export interface Spec extends TurboModule {
     newView: Double,
     actionType: Double
   ) => void;
+  // TODO: implement on web (and mac?)
+  detachGestureHandler: (handlerTag: Double) => void;
   // eslint-disable-next-line @typescript-eslint/ban-types
   updateGestureHandler: (handlerTag: Double, newConfig: Object) => void;
   dropGestureHandler: (handlerTag: Double) => void;
