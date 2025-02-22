@@ -333,7 +333,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     ManualGestureHandlerFactory(),
     HoverGestureHandlerFactory(),
   )
-  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
@@ -602,6 +601,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       // JS function or Animated.event with useNativeDriver: false with new API
       val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
       sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+    } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+      val view = handler.view
+      if (view is RNGestureHandlerDetectorView) {
+        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
+        view.dispatchStateChangeEvent(event, newState, oldState)
+      }
     }
   }
 
@@ -700,6 +705,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     private const val KEY_PAN_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
     private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
     private const val KEY_DIRECTION = "direction"
+
+    val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
 
     private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
       if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
