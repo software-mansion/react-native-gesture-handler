@@ -1,6 +1,12 @@
+/* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
-import { SafeAreaView, Platform } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Button, SafeAreaView, View } from 'react-native';
+import {
+  GestureHandlerRootView,
+  NativeDetector,
+  RawButton,
+  useGesture,
+} from 'react-native-gesture-handler';
 
 import Navigator from './Navigator';
 
@@ -48,12 +54,37 @@ Stack.setRoutes({
 });
 
 export default function App() {
+  const [visible, setVisible] = React.useState(true);
+  const tap = useGesture('TapGestureHandler', {
+    numberOfTaps: 2,
+  });
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView
-        style={[{ flex: 1 }, Platform.OS === 'android' && { paddingTop: 50 }]}>
-        <Stack.Navigator initialRouteName="home" />
-      </SafeAreaView>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: 'white', paddingTop: 150 }}>
+      <Button
+        title="Toggle"
+        onPress={() => {
+          setVisible(!visible);
+        }}
+      />
+
+      {visible && (
+        <NativeDetector gesture={tap}>
+          <View
+            style={{
+              width: 150,
+              height: 150,
+              backgroundColor: 'blue',
+              opacity: 0.5,
+              borderWidth: 10,
+              borderColor: 'green',
+              marginTop: 20,
+              marginLeft: 40,
+            }}
+          />
+        </NativeDetector>
+      )}
     </GestureHandlerRootView>
   );
 }

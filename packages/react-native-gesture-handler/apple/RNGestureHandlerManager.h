@@ -3,6 +3,7 @@
 #import <React/RCTBridgeModule.h>
 
 #import "RNGestureHandler.h"
+#import "RNGestureHandlerRegistry.h"
 
 @class RCTUIManager;
 @class RCTEventDispatcher;
@@ -10,6 +11,8 @@
 @interface RNGestureHandlerManager : NSObject
 
 #ifdef RCT_NEW_ARCH_ENABLED
+@property (nonatomic, strong, readonly, nonnull) RNGestureHandlerRegistry *registry;
+
 - (nonnull instancetype)initWithModuleRegistry:(nonnull RCTModuleRegistry *)moduleRegistry
                                   viewRegistry:(nonnull RCTViewRegistry *)viewRegistry;
 #else
