@@ -11,6 +11,9 @@ export interface NativeDetectorProps {
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   return (
     <RNGestureHandlerDetectorNativeComponent
+      onGestureHandlerStateChange={(event) => {
+        console.log('onGestureHandlerStateChange', event.nativeEvent);
+      }}
       handlerTags={[gesture.tag]}
       style={styles.detector}>
       {children}
