@@ -27,6 +27,8 @@
 
 - (void)updateGestureHandler:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 
+- (void)detachGestureHandler:(nonnull NSNumber *)handlerTag;
+
 - (void)dropGestureHandler:(nonnull NSNumber *)handlerTag;
 
 - (void)dropAllGestureHandlers;

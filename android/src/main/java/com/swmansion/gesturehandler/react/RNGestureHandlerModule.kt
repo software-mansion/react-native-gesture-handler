@@ -415,6 +415,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun dropGestureHandler(handlerTagDouble: Double) {
     val handlerTag = handlerTagDouble.toInt()
+    registry.detachHandler(handlerTag)
+  }
+
+  @ReactMethod
+  override fun detachGestureHandler(handlerTagDouble: Double) {
+    val handlerTag = handlerTagDouble.toInt()
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     registry.dropHandler(handlerTag)
   }

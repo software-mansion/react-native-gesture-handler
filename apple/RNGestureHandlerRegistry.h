@@ -15,6 +15,7 @@
 - (void)attachHandlerWithTag:(nonnull NSNumber *)handlerTag
                       toView:(nonnull RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType;
+- (void)detachHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropAllHandlers;
 

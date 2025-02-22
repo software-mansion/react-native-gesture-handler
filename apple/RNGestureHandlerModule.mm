@@ -183,6 +183,13 @@ RCT_EXPORT_METHOD(updateGestureHandler : (double)handlerTag newConfig : (NSDicti
   }];
 }
 
+RCT_EXPORT_METHOD(detachGestureHandler : (double)handlerTag)
+{
+  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+    [manager detachGestureHandler:[NSNumber numberWithDouble:handlerTag]];
+  }];
+}
+
 RCT_EXPORT_METHOD(dropGestureHandler : (double)handlerTag)
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
