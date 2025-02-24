@@ -50,9 +50,28 @@ const outerStyle = ({ pressed }: PressableStateCallbackType) => [
 
 function GesturizedBoxes() {
   return (
-    <GesturizedPressable style={outerStyle} testID="outer">
-      <GesturizedPressable style={middleStyle} testID="middle">
-        <GesturizedPressable style={innerStyle} testID="inner" />
+    <GesturizedPressable
+      style={outerStyle}
+      testID="outer"
+      onPressIn={() => console.log('[outer] onPressIn')}
+      onPressOut={() => console.log('[outer] onPressOut')}
+      onPress={() => console.log('[outer] onPress')}
+      onLongPress={() => console.log('[outer] onLongPress')}>
+      <GesturizedPressable
+        style={middleStyle}
+        testID="middle"
+        onPressIn={() => console.log('[middle] onPressIn')}
+        onPressOut={() => console.log('[middle] onPressOut')}
+        onPress={() => console.log('[middle] onPress')}
+        onLongPress={() => console.log('[middle] onLongPress')}>
+        <GesturizedPressable
+          style={innerStyle}
+          testID="inner"
+          onPressIn={() => console.log('[inner] onPressIn')}
+          onPressOut={() => console.log('[inner] onPressOut')}
+          onPress={() => console.log('[inner] onPress')}
+          onLongPress={() => console.log('[inner] onLongPress')}
+        />
       </GesturizedPressable>
     </GesturizedPressable>
   );
