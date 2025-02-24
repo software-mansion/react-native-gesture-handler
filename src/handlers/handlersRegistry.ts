@@ -1,4 +1,4 @@
-import { isJestEnv } from '../utils';
+import { isTestEnv } from '../utils';
 import { GestureType } from './gestures/gesture';
 import { GestureEvent, HandlerStateChangeEvent } from './gestureHandlerCommon';
 
@@ -13,7 +13,7 @@ export function registerHandler(
   testID?: string
 ) {
   gestures.set(handlerTag, handler);
-  if (isJestEnv() && testID) {
+  if (isTestEnv() && testID) {
     testIDs.set(testID, handlerTag);
   }
 }
@@ -25,9 +25,13 @@ export function registerOldGestureHandler(
   oldHandlers.set(handlerTag, handler);
 }
 
+export function unregisterOldGestureHandler(handlerTag: number) {
+  oldHandlers.delete(handlerTag);
+}
+
 export function unregisterHandler(handlerTag: number, testID?: string) {
   gestures.delete(handlerTag);
-  if (isJestEnv() && testID) {
+  if (isTestEnv() && testID) {
     testIDs.delete(testID);
   }
 }
