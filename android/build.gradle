@@ -45,9 +45,9 @@ def resolveReactNativeDirectory() {
     }
 
     throw new Exception(
-        "[react-native-gesture-handler] Unable to resolve react-native location in " +
-            "node_modules. You should add project extension property (in app/build.gradle) " +
-            "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
+            "[react-native-gesture-handler] Unable to resolve react-native location in " +
+                    "node_modules. You should add project extension property (in app/build.gradle) " +
+                    "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
     )
 }
 
@@ -69,7 +69,9 @@ def shouldUseCommonInterfaceFromReanimated() {
         def json = new JsonSlurper().parseText(inputFile.text)
         def reanimatedVersion = json.version as String
         def (major, minor, patch) = reanimatedVersion.tokenize('.')
-        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) || Integer.parseInt(major) >= 3
+        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) == 3 && Integer.parseInt(patch) >= 2) ||
+                (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) ||
+                Integer.parseInt(major) >= 3
     } else {
         return false
     }
@@ -133,14 +135,14 @@ android {
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
         if (isNewArchitectureEnabled()) {
-            var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
+            var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
             externalNativeBuild {
                 cmake {
                     cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
                     arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
-                        "-DANDROID_STL=c++_shared"
-                    abiFilters (*reactNativeArchitectures())
+                            "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
+                            "-DANDROID_STL=c++_shared"
+                    abiFilters(*reactNativeArchitectures())
                 }
             }
         }
@@ -225,12 +227,13 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     implementation 'com.facebook.react:react-native:+' // from node_modules
-    
+
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation (rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
-            exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
+        implementation(rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
+            exclude group: 'com.facebook.fbjni'
+            // resolves "Duplicate class com.facebook.jni.CppException"
         }
     }
 
