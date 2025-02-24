@@ -138,6 +138,24 @@ export default function Pressable(props: PressableProps) {
 
   const pressOutHandler = useCallback(
     (event: PressableEvent) => {
+      if (!isTouchPropagationAllowed.current) {
+        hasPassedBoundsChecks.current = false;
+        isPressCallbackEnabled.current = true;
+        deferredEventPayload.current = null;
+
+        if (longPressTimeoutRef.current) {
+          clearTimeout(longPressTimeoutRef.current);
+          longPressTimeoutRef.current = null;
+        }
+
+        if (pressDelayTimeoutRef.current) {
+          clearTimeout(pressDelayTimeoutRef.current);
+          pressDelayTimeoutRef.current = null;
+        }
+
+        return;
+      }
+
       if (
         !hasPassedBoundsChecks.current ||
         event.nativeEvent.touches.length >
@@ -340,7 +358,9 @@ export default function Pressable(props: PressableProps) {
 
           if (shouldPreventNativeEffects.current) {
             shouldPreventNativeEffects.current = false;
-            return;
+            if (!handlingOnTouchesDown.current) {
+              return;
+            }
           }
 
           isTouchPropagationAllowed.current = true;
