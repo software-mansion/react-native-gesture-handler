@@ -23,12 +23,19 @@ import {
 import { filterConfig, scheduleFlushOperations } from './utils';
 import findNodeHandle from '../findNodeHandle';
 import { ValueOf } from '../typeUtils';
-import { deepEqual, isFabric, isTestEnv, tagMessage } from '../utils';
+import {
+  deepEqual,
+  isFabric,
+  isReact19,
+  isTestEnv,
+  tagMessage,
+} from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
 import { MountRegistry } from '../mountRegistry';
+import { ReactElement } from 'react';
 
 const UIManagerAny = UIManager as any;
 
@@ -308,14 +315,18 @@ export default function createHandler<
       this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
-      // TODO(TS) fix ref type
-      const { ref }: any = child;
-      if (ref !== null) {
-        if (typeof ref === 'function') {
-          ref(node);
-        } else {
-          ref.current = node;
-        }
+      // @ts-ignore Since React 19 ref is accessible as standard prop
+      // https://react.dev/blog/2024/04/25/react-19-upgrade-guide#deprecated-element-ref
+      const ref = isReact19() ? (child as ReactElement).props?.ref : child?.ref;
+
+      if (!ref) {
+        return;
+      }
+
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        ref.current = node;
       }
     };
 
