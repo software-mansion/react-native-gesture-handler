@@ -49,19 +49,19 @@ class RNSVGHitTester {
       // hitTest(view, ...) should only be called after isSvgElement(view) returns true
       // Consequently, `view` will always be either SvgView or VirtualView
 
+      val pressIsInBounds =
+        posX in 0.0..view.width.toDouble() &&
+          posY in 0.0..view.height.toDouble()
+
       if (view is SvgView) {
         val childrenIds = view.children.map { it.id }
 
         val hasChildBeenPressed = pressedId in childrenIds
 
-        val pressIsInBounds =
-          posX in 0.0..view.width.toDouble() &&
-            posY in 0.0..view.height.toDouble()
-
         return (hasBeenPressed || hasChildBeenPressed) && pressIsInBounds
       }
 
-      return hasBeenPressed
+      return hasBeenPressed && pressIsInBounds
     }
   }
 }
