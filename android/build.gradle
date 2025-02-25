@@ -69,9 +69,7 @@ def shouldUseCommonInterfaceFromReanimated() {
         def json = new JsonSlurper().parseText(inputFile.text)
         def reanimatedVersion = json.version as String
         def (major, minor, patch) = reanimatedVersion.tokenize('.')
-        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) == 3 && Integer.parseInt(patch) >= 2) ||
-                (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) ||
-                Integer.parseInt(major) >= 3
+        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) || Integer.parseInt(major) >= 3
     } else {
         return false
     }
@@ -88,7 +86,9 @@ def shouldUseCommonInterfaceFromRNSVG() {
     def json = new JsonSlurper().parseText(inputFile.text)
     def rnsvgVersion = json.version as String
     def (major, minor, patch) = rnsvgVersion.tokenize('.')
-    return (Integer.parseInt(major) == 15 && Integer.parseInt(minor) >= 11) || Integer.parseInt(major) > 15
+    return (Integer.parseInt(major) == 15 && Integer.parseInt(minor) == 11 && Integer.parseInt(patch) >= 2) ||
+            (Integer.parseInt(major) == 15 && Integer.parseInt(minor) > 11) ||
+            Integer.parseInt(major) > 15
 }
 
 def reactNativeArchitectures() {
