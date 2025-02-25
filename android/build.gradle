@@ -76,7 +76,7 @@ def shouldUseCommonInterfaceFromReanimated() {
 }
 
 def shouldUseCommonInterfaceFromRNSVG() {
-    // common interface compatible with react-native-svg >= 15.11.0
+    // common interface compatible with react-native-svg >= 15.11.2
     def rnsvg = rootProject.subprojects.find { it.name == 'react-native-svg' }
     if (rnsvg == null) {
         return false
