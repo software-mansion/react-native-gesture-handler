@@ -35,7 +35,7 @@ You will need to have an Android or iOS device or emulator connected.
 
 ## React Native Support
 
-In general, `react-native-gesture-handler` supports the three latest stable releases of `react-native`.
+`react-native-gesture-handler` supports the three latest minor releases of `react-native`.
 
 | version | react-native version |
 | ------- | -------------------- |

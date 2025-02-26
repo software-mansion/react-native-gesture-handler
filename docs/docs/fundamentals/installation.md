@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 
 ## Requirements
 
-In general, `react-native-gesture-handler` supports the three latest stable releases of `react-native`.
+`react-native-gesture-handler` supports the three latest minor releases of `react-native`.
 
 | version | `react-native` version |
 | ------- | ---------------------- |
@@ -88,9 +88,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export function CustomModal({ children, ...rest }) {
   return (
     <Modal {...rest}>
-      <GestureHandlerRootView>
-        {children}
-      </GestureHandlerRootView>
+      <GestureHandlerRootView>{children}</GestureHandlerRootView>
     </Modal>
   );
 }
