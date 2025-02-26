@@ -18,7 +18,6 @@ import {
   baseGestureHandlerWithDetectorProps,
 } from '../../gestureHandlerCommon';
 import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
-import { getReactNativeVersion } from '../../../getReactNativeVersion';
 import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
@@ -133,14 +132,11 @@ export function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
-    const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const wrapType =
-      REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
-        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ref._reactInternals.elementType
-        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ref._reactInternalFiber.elementType;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      ref._reactInternals.elementType;
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let instance =
       RNRenderer.findHostInstance_DEPRECATED(
