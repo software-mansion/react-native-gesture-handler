@@ -88,7 +88,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export function CustomModal({ children, ...rest }) {
   return (
     <Modal {...rest}>
-      <GestureHandlerRootView>{children}</GestureHandlerRootView>
+      <GestureHandlerRootView>
+        {children}
+      </GestureHandlerRootView>
     </Modal>
   );
 }
