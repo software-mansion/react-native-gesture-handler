@@ -45,9 +45,9 @@ def resolveReactNativeDirectory() {
     }
 
     throw new Exception(
-        "[react-native-gesture-handler] Unable to resolve react-native location in " +
-            "node_modules. You should add project extension property (in app/build.gradle) " +
-            "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
+            "[react-native-gesture-handler] Unable to resolve react-native location in " +
+                    "node_modules. You should add project extension property (in app/build.gradle) " +
+                    "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
     )
 }
 
@@ -73,6 +73,22 @@ def shouldUseCommonInterfaceFromReanimated() {
     } else {
         return false
     }
+}
+
+def shouldUseCommonInterfaceFromRNSVG() {
+    // common interface compatible with react-native-svg >= 15.11.2
+    def rnsvg = rootProject.subprojects.find { it.name == 'react-native-svg' }
+    if (rnsvg == null) {
+        return false
+    }
+
+    def inputFile = new File(rnsvg.projectDir, '../package.json')
+    def json = new JsonSlurper().parseText(inputFile.text)
+    def rnsvgVersion = json.version as String
+    def (major, minor, patch) = rnsvgVersion.tokenize('.')
+    return (Integer.parseInt(major) == 15 && Integer.parseInt(minor) == 11 && Integer.parseInt(patch) >= 2) ||
+            (Integer.parseInt(major) == 15 && Integer.parseInt(minor) > 11) ||
+            Integer.parseInt(major) > 15
 }
 
 def reactNativeArchitectures() {
@@ -119,15 +135,15 @@ android {
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
         if (isNewArchitectureEnabled()) {
-            var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
+            var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
             externalNativeBuild {
                 cmake {
                     cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
                     arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
-                        "-DANDROID_STL=c++_shared",
-                        "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-                    abiFilters (*reactNativeArchitectures())
+                            "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
+                            "-DANDROID_STL=c++_shared",
+                            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+                    abiFilters(*reactNativeArchitectures())
                 }
             }
         }
@@ -168,13 +184,19 @@ android {
                 srcDirs += 'noreanimated/src/main/java'
             }
 
+            if (shouldUseCommonInterfaceFromRNSVG()) {
+                srcDirs += 'svg/src/main/java'
+            } else {
+                srcDirs += 'nosvg/src/main/java'
+            }
+
             if (isNewArchitectureEnabled()) {
                 srcDirs += 'fabric/src/main/java'
             } else {
                 // 'paper/src/main/java' includes files from codegen so the library can compile with
                 // codegen turned off
                 
-                if (REACT_NATIVE_MINOR_VERSION > 77){
+                if (REACT_NATIVE_MINOR_VERSION > 77) {
                     srcDirs += 'paper/src/main/java'
                 } else {
                     srcDirs += 'paper77/src/main/java'
@@ -211,13 +233,18 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     implementation 'com.facebook.react:react-native:+' // from node_modules
-    
+
 
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
-        implementation (rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
-            exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
+        implementation(rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
+            // resolves "Duplicate class com.facebook.jni.CppException"
+            exclude group: 'com.facebook.fbjni'
         }
+    }
+
+    if (shouldUseCommonInterfaceFromRNSVG()) {
+        implementation rootProject.subprojects.find { it.name == 'react-native-svg' }
     }
 
     implementation 'androidx.appcompat:appcompat:1.2.0'

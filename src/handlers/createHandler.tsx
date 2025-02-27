@@ -77,12 +77,8 @@ UIManagerAny.genericDirectEventTypes = {
   ...UIManagerAny.genericDirectEventTypes,
   ...customGHEventsConfig,
 };
-// In newer versions of RN the `genericDirectEventTypes` is located in the object
-// returned by UIManager.getViewManagerConfig('getConstants') or in older RN UIManager.getConstants(), we need to add it there as well to make
-// it compatible with RN 61+
-const UIManagerConstants =
-  UIManagerAny.getViewManagerConfig?.('getConstants') ??
-  UIManagerAny.getConstants?.();
+
+const UIManagerConstants = UIManagerAny.getViewManagerConfig?.('getConstants');
 
 if (UIManagerConstants) {
   UIManagerConstants.genericDirectEventTypes = {
