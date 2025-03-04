@@ -231,6 +231,54 @@ const Pressable = forwardRef(
       (delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
       (unstable_pressDelay ?? 0);
 
+    const innerPressableRef = useRef<View>(null);
+
+    const measureCallback = useCallback(
+      (width: number, height: number, event: GestureTouchEvent) => {
+        if (
+          !isTouchWithinInset(
+            {
+              width,
+              height,
+            },
+            normalizedHitSlop,
+            event.changedTouches.at(-1)
+          ) ||
+          hasPassedBoundsChecks.current ||
+          cancelledMidPress.current
+        ) {
+          cancelledMidPress.current = false;
+          onEndHandlingTouchesDown.current = null;
+          handlingOnTouchesDown.current = false;
+          return;
+        }
+
+        hasPassedBoundsChecks.current = true;
+
+        // In case of multiple touches, the first one starts long press gesture
+        if (longPressTimeoutRef.current === null) {
+          // Start long press gesture timer
+          longPressTimeoutRef.current = setTimeout(
+            () => activateLongPress(event),
+            longPressMinDuration
+          );
+        }
+
+        if (unstable_pressDelay) {
+          pressDelayTimeoutRef.current = setTimeout(() => {
+            pressInHandler(gestureTouchToPressableEvent(event));
+          }, unstable_pressDelay);
+        } else {
+          pressInHandler(gestureTouchToPressableEvent(event));
+        }
+
+        onEndHandlingTouchesDown.current?.();
+        onEndHandlingTouchesDown.current = null;
+        handlingOnTouchesDown.current = false;
+      },
+      []
+    );
+
     const pressAndTouchGesture = useMemo(
       () =>
         Gesture.LongPress()
@@ -239,50 +287,17 @@ const Pressable = forwardRef(
           .cancelsTouchesInView(false)
           .onTouchesDown((event) => {
             handlingOnTouchesDown.current = true;
-            (pressableRef as RefObject<View>).current?.measure(
-              (_x, _y, width, height) => {
-                if (
-                  !isTouchWithinInset(
-                    {
-                      width,
-                      height,
-                    },
-                    normalizedHitSlop,
-                    event.changedTouches.at(-1)
-                  ) ||
-                  hasPassedBoundsChecks.current ||
-                  cancelledMidPress.current
-                ) {
-                  cancelledMidPress.current = false;
-                  onEndHandlingTouchesDown.current = null;
-                  handlingOnTouchesDown.current = false;
-                  return;
+            if (pressableRef) {
+              (pressableRef as RefObject<View>).current?.measure(
+                (_x, _y, width, height) => {
+                  measureCallback(width, height, event);
                 }
-
-                hasPassedBoundsChecks.current = true;
-
-                // In case of multiple touches, the first one starts long press gesture
-                if (longPressTimeoutRef.current === null) {
-                  // Start long press gesture timer
-                  longPressTimeoutRef.current = setTimeout(
-                    () => activateLongPress(event),
-                    longPressMinDuration
-                  );
-                }
-
-                if (unstable_pressDelay) {
-                  pressDelayTimeoutRef.current = setTimeout(() => {
-                    pressInHandler(gestureTouchToPressableEvent(event));
-                  }, unstable_pressDelay);
-                } else {
-                  pressInHandler(gestureTouchToPressableEvent(event));
-                }
-
-                onEndHandlingTouchesDown.current?.();
-                onEndHandlingTouchesDown.current = null;
-                handlingOnTouchesDown.current = false;
-              }
-            );
+              );
+            } else {
+              innerPressableRef.current?.measure((_x, _y, width, height) => {
+                measureCallback(width, height, event);
+              });
+            }
           })
           .onTouchesUp((event) => {
             if (handlingOnTouchesDown.current) {
@@ -427,7 +442,7 @@ const Pressable = forwardRef(
       <GestureDetector gesture={gesture}>
         <NativeButton
           {...remainingProps}
-          ref={pressableRef}
+          ref={pressableRef ?? innerPressableRef}
           hitSlop={appliedHitSlop}
           enabled={isPressableEnabled}
           touchSoundDisabled={android_disableSound ?? undefined}
