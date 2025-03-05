@@ -36,7 +36,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
   private longPressDetected: boolean;
 
-  constructor(props: BaseButtonProps) {
+  constructor(props: BaseButtonWithRefProps) {
     super(props);
     this.lastActive = false;
     this.longPressDetected = false;
@@ -146,12 +146,18 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   }
 }
 
+const AnimatedInnerBaseButton =
+  Animated.createAnimatedComponent<typeof InnerBaseButton>(InnerBaseButton);
+
 export const BaseButton = React.forwardRef<
   any,
   Omit<BaseButtonProps, 'innerRef'>
 >((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
-const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
+const AnimatedBaseButton = React.forwardRef<
+  any,
+  Omit<BaseButtonProps, 'innerRef'>
+>((props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />);
 
 const btnStyles = StyleSheet.create({
   underlay: {
@@ -171,7 +177,7 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
 
   private opacity: Animated.Value;
 
-  constructor(props: RectButtonProps) {
+  constructor(props: RectButtonWithRefProps) {
     super(props);
     this.opacity = new Animated.Value(0);
   }
@@ -228,7 +234,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
 
   private opacity: Animated.Value;
 
-  constructor(props: BorderlessButtonProps) {
+  constructor(props: BorderlessButtonWithRefProps) {
     super(props);
     this.opacity = new Animated.Value(1);
   }
