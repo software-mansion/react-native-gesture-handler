@@ -338,6 +338,7 @@ const Pressable = forwardRef(
         pressInHandler,
         pressOutHandler,
         unstable_pressDelay,
+        pressableRef,
       ]
     );
 
