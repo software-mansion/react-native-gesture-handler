@@ -154,10 +154,9 @@ export const BaseButton = React.forwardRef<
   Omit<BaseButtonProps, 'innerRef'>
 >((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
-const AnimatedBaseButton = React.forwardRef<
-  any,
-  Omit<BaseButtonProps, 'innerRef'>
->((props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />);
+const AnimatedBaseButton = React.forwardRef<any, BaseButtonWithRefProps>(
+  (props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />
+);
 
 const btnStyles = StyleSheet.create({
   underlay: {
@@ -253,8 +252,6 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
     return (
       <AnimatedBaseButton
         {...rest}
-        // @ts-ignore We don't want `innerRef` to be accessible from public API.
-        // However in this case we need to set it indirectly on `BaseButton`, hence we use ts-ignore
         innerRef={innerRef}
         onActiveStateChange={this.onActiveStateChange}
         style={[style, Platform.OS === 'ios' && { opacity: this.opacity }]}>
