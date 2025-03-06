@@ -8,7 +8,11 @@ import {
 import { customDirectEventTypes } from './customDirectEventTypes';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
-import { handlerIDToTag, registerOldGestureHandler } from './handlersRegistry';
+import {
+  handlerIDToTag,
+  registerOldGestureHandler,
+  unregisterOldGestureHandler,
+} from './handlersRegistry';
 import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
@@ -19,12 +23,19 @@ import {
 import { filterConfig, scheduleFlushOperations } from './utils';
 import findNodeHandle from '../findNodeHandle';
 import { ValueOf } from '../typeUtils';
-import { deepEqual, isFabric, isJestEnv, tagMessage } from '../utils';
+import {
+  deepEqual,
+  isFabric,
+  isReact19,
+  isTestEnv,
+  tagMessage,
+} from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
 import { MountRegistry } from '../mountRegistry';
+import { ReactElement } from 'react';
 
 const UIManagerAny = UIManager as any;
 
@@ -66,12 +77,8 @@ UIManagerAny.genericDirectEventTypes = {
   ...UIManagerAny.genericDirectEventTypes,
   ...customGHEventsConfig,
 };
-// In newer versions of RN the `genericDirectEventTypes` is located in the object
-// returned by UIManager.getViewManagerConfig('getConstants') or in older RN UIManager.getConstants(), we need to add it there as well to make
-// it compatible with RN 61+
-const UIManagerConstants =
-  UIManagerAny.getViewManagerConfig?.('getConstants') ??
-  UIManagerAny.getConstants?.();
+
+const UIManagerConstants = UIManagerAny.getViewManagerConfig?.('getConstants');
 
 if (UIManagerConstants) {
   UIManagerConstants.genericDirectEventTypes = {
@@ -255,6 +262,9 @@ export default function createHandler<
     componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       this.isMountedRef.current = false;
+      if (Platform.OS !== 'web') {
+        unregisterOldGestureHandler(this.handlerTag);
+      }
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
       scheduleFlushOperations();
       // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
@@ -301,14 +311,18 @@ export default function createHandler<
       this.viewNode = node;
 
       const child = React.Children.only(this.props.children);
-      // TODO(TS) fix ref type
-      const { ref }: any = child;
-      if (ref !== null) {
-        if (typeof ref === 'function') {
-          ref(node);
-        } else {
-          ref.current = node;
-        }
+      // @ts-ignore Since React 19 ref is accessible as standard prop
+      // https://react.dev/blog/2024/04/25/react-19-upgrade-guide#deprecated-element-ref
+      const ref = isReact19() ? (child as ReactElement).props?.ref : child?.ref;
+
+      if (!ref) {
+        return;
+      }
+
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        ref.current = node;
       }
     };
 
@@ -428,7 +442,7 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isJestEnv() && Platform.OS !== 'web') {
+      if (__DEV__ && !this.context && !isTestEnv() && Platform.OS !== 'web') {
         throw new Error(
           name +
             ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
@@ -539,7 +553,7 @@ export default function createHandler<
         {
           ref: this.refHandler,
           collapsable: false,
-          ...(isJestEnv()
+          ...(isTestEnv()
             ? {
                 handlerType: name,
                 handlerTag: this.handlerTag,

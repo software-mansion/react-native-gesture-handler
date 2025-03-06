@@ -55,6 +55,11 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.useDrawableOnForeground = useDrawableOnForeground
   }
 
+  @ReactProp(name = "backgroundColor")
+  override fun setBackgroundColor(view: ButtonViewGroup, backgroundColor: Int) {
+    view.setBackgroundColor(backgroundColor)
+  }
+
   @ReactProp(name = "borderless")
   override fun setBorderless(view: ButtonViewGroup, useBorderlessDrawable: Boolean) {
     view.useBorderlessDrawable = useBorderlessDrawable
@@ -290,6 +295,15 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     override fun onTouchEvent(event: MotionEvent): Boolean {
       val eventTime = event.eventTime
       val action = event.action
+
+      if (touchResponder != null && touchResponder !== this && touchResponder!!.exclusive) {
+        if (isPressed) {
+          setPressed(false)
+        }
+        lastEventTime = eventTime
+        lastAction = action
+        return false
+      }
 
       if (event.action == MotionEvent.ACTION_CANCEL) {
         tryFreeingResponder()
