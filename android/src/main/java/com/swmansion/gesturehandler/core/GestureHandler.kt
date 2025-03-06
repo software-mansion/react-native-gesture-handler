@@ -775,6 +775,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
   fun reset() {
+    onReset()
     view = null
     orchestrator = null
     Arrays.fill(trackedPointerIDs, -1)
@@ -782,7 +783,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointersCount = 0
     trackedPointers.fill(null)
     touchEventType = RNGestureHandlerTouchEvent.EVENT_UNDETERMINED
-    onReset()
   }
 
   fun withMarkedAsInBounds(closure: () -> Unit) {
