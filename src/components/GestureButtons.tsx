@@ -154,9 +154,10 @@ export const BaseButton = React.forwardRef<
   Omit<BaseButtonProps, 'innerRef'>
 >((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
-const AnimatedBaseButton = React.forwardRef<any, BaseButtonWithRefProps>(
-  (props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />
-);
+const AnimatedBaseButton = React.forwardRef<
+  React.ComponentType,
+  BaseButtonWithRefProps
+>((props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />);
 
 const btnStyles = StyleSheet.create({
   underlay: {
@@ -221,7 +222,7 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
 }
 
 export const RectButton = React.forwardRef<
-  any,
+  React.ComponentType,
   Omit<RectButtonProps, 'innerRef'>
 >((props, ref) => <InnerRectButton innerRef={ref} {...props} />);
 
@@ -262,7 +263,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
 }
 
 export const BorderlessButton = React.forwardRef<
-  any,
+  React.ComponentType,
   Omit<BorderlessButtonProps, 'innerRef'>
 >((props, ref) => <InnerBorderlessButton innerRef={ref} {...props} />);
 
