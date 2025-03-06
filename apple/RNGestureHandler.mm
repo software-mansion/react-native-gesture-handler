@@ -273,7 +273,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
-  if (state != _lastState) {
+  if (state != _lastState || state == RNGestureHandlerStateActive) {
     // don't send change events from END to FAILED or CANCELLED, this may happen when gesture is ended in `onTouchesUp`
     // callback
     if (_lastState == RNGestureHandlerStateEnd &&
