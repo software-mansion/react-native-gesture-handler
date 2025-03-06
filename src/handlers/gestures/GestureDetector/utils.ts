@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { isJestEnv, tagMessage } from '../../../utils';
+import { isTestEnv, tagMessage } from '../../../utils';
 import { GestureRef, BaseGesture, GestureType } from '../gesture';
 
 import { flingGestureHandlerProps } from '../../FlingGestureHandler';
@@ -18,7 +18,6 @@ import {
   baseGestureHandlerWithDetectorProps,
 } from '../../gestureHandlerCommon';
 import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
-import { getReactNativeVersion } from '../../../getReactNativeVersion';
 import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
@@ -100,7 +99,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
   // If none of the callbacks are worklets and the gesture is not explicitly marked with
   // `.runOnJS(true)` show a warning
-  if (areAllNotWorklets && !isJestEnv()) {
+  if (areAllNotWorklets && !isTestEnv()) {
     console.warn(
       tagMessage(
         `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`
@@ -133,14 +132,11 @@ export function validateDetectorChildren(ref: any) {
   //         /       \
   //   NativeView  NativeView
   if (__DEV__ && Platform.OS !== 'web') {
-    const REACT_NATIVE_VERSION = getReactNativeVersion();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const wrapType =
-      REACT_NATIVE_VERSION.minor > 63 || REACT_NATIVE_VERSION.major > 0
-        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ref._reactInternals.elementType
-        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ref._reactInternalFiber.elementType;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      ref._reactInternals.elementType;
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     let instance =
       RNRenderer.findHostInstance_DEPRECATED(

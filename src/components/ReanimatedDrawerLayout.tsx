@@ -144,6 +144,12 @@ export interface DrawerLayoutProps {
   drawerType?: DrawerType;
 
   /**
+   * Speed of animation that will play when letting go, or dismissing the drawer.
+   * This will also be the default animation speed for programatic controlls.
+   */
+  animationSpeed?: number;
+
+  /**
    * Defines how far from the edge of the content view the gesture should
    * activate.
    */
@@ -256,6 +262,10 @@ const defaultProps = {
   statusBarAnimation: 'slide' as StatusBarAnimation,
 };
 
+// StatusBar.setHidden and Keyboard.dismiss cannot be directly referenced in worklets.
+const setStatusBarHidden = StatusBar.setHidden;
+const dismissKeyboard = Keyboard.dismiss;
+
 const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
   function DrawerLayout(props: DrawerLayoutProps, ref) {
     const [containerWidth, setContainerWidth] = useState(0);
@@ -288,6 +298,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       onDrawerClose,
       onDrawerOpen,
       onDrawerStateChanged,
+      animationSpeed: animationSpeedProp,
     } = props;
 
     const isFromLeft = drawerPosition === DrawerPosition.LEFT;
@@ -366,7 +377,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         runOnJS(setDrawerState)(DrawerState.SETTLING);
 
         if (hideStatusBar) {
-          runOnJS(StatusBar.setHidden)(willShow, statusBarAnimation);
+          runOnJS(setStatusBarHidden)(willShow, statusBarAnimation);
         }
 
         const normalizedToValue = interpolate(
@@ -388,7 +399,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           {
             overshootClamping: true,
             velocity: normalizedInitialVelocity,
-            mass: animationSpeed ? 1 / animationSpeed : 1,
+            mass: animationSpeed
+              ? 1 / animationSpeed
+              : 1 / (animationSpeedProp ?? 1),
             damping: 40,
             stiffness: 500,
           },
@@ -529,10 +542,10 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           emitStateChanged(DrawerState.DRAGGING, false);
           runOnJS(setDrawerState)(DrawerState.DRAGGING);
           if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
-            runOnJS(Keyboard.dismiss)();
+            runOnJS(dismissKeyboard)();
           }
           if (hideStatusBar) {
-            runOnJS(StatusBar.setHidden)(true, statusBarAnimation);
+            runOnJS(setStatusBarHidden)(true, statusBarAnimation);
           }
         })
         .onUpdate((event) => {
