@@ -276,7 +276,13 @@ const Pressable = forwardRef(
         onEndHandlingTouchesDown.current = null;
         handlingOnTouchesDown.current = false;
       },
-      []
+      [
+        activateLongPress,
+        longPressMinDuration,
+        normalizedHitSlop,
+        pressInHandler,
+        unstable_pressDelay,
+      ]
     );
 
     const pressAndTouchGesture = useMemo(
@@ -331,15 +337,7 @@ const Pressable = forwardRef(
 
             pressOutHandler(gestureTouchToPressableEvent(event));
           }),
-      [
-        activateLongPress,
-        longPressMinDuration,
-        normalizedHitSlop,
-        pressInHandler,
-        pressOutHandler,
-        unstable_pressDelay,
-        pressableRef,
-      ]
+      [pressableRef, measureCallback, pressOutHandler]
     );
 
     // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
