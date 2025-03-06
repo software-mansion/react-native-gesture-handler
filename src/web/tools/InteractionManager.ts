@@ -102,7 +102,7 @@ export default class InteractionManager {
   }
 
   public shouldHandlerBeCancelledBy(
-    _handler: IGestureHandler,
+    handler: IGestureHandler,
     otherHandler: IGestureHandler
   ): boolean {
     // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
@@ -110,6 +110,14 @@ export default class InteractionManager {
       otherHandler.constructor.name === 'NativeViewGestureHandler';
     const isActive = otherHandler.state === State.ACTIVE;
     const isButton = otherHandler.isButton?.() === true;
+
+    if (
+      this.blocksHandlersRelations
+        .get(handler.handlerTag)
+        ?.includes(otherHandler.handlerTag)
+    ) {
+      return false;
+    }
 
     return isNativeHandler && isActive && !isButton;
   }
