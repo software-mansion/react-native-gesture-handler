@@ -150,7 +150,7 @@ const AnimatedInnerBaseButton =
   Animated.createAnimatedComponent<typeof InnerBaseButton>(InnerBaseButton);
 
 export const BaseButton = React.forwardRef<
-  any,
+  React.ComponentType,
   Omit<BaseButtonProps, 'innerRef'>
 >((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
