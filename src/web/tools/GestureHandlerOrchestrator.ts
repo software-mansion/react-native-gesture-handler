@@ -307,7 +307,6 @@ export default class GestureHandlerOrchestrator {
     }
 
     if (handler.awaiting || handler.state === State.ACTIVE) {
-      // For now it always returns false
       return handler.shouldBeCancelledByOther(otherHandler);
     }
 
