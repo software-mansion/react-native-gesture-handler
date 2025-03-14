@@ -364,6 +364,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     x = adaptedTransformedEvent.x
     y = adaptedTransformedEvent.y
     numberOfPointers = adaptedTransformedEvent.pointerCount
+    val wasWithinBounds = isWithinBounds
     isWithinBounds = isWithinBounds(view, x, y)
     if (shouldCancelWhenOutside && !isWithinBounds) {
       if (state == STATE_ACTIVE) {
@@ -387,6 +388,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       sourceEvent.action == MotionEvent.ACTION_HOVER_EXIT
     ) {
       onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
+    } else if (sourceEvent.action == MotionEvent.ACTION_MOVE && state == STATE_ACTIVE && wasWithinBounds != isWithinBounds) {
+      orchestrator!!.onHandlerStateChange(this, state, state)
     } else {
       onHandle(adaptedTransformedEvent, adaptedSourceEvent)
     }
