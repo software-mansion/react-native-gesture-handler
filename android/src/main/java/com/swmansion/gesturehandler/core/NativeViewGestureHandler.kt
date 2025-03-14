@@ -161,6 +161,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   override fun onReset() {
+    if (state == STATE_FAILED && view != null) {
+      onCancel()
+    }
     this.hook = defaultHook
   }
 
