@@ -935,6 +935,8 @@ PODS:
   - React-Mapbuffer (0.74.6):
     - glog
     - React-debug
+  - react-native-safe-area-context (4.14.1):
+    - React-Core
   - React-nativeconfig (0.74.6)
   - React-NativeModulesApple (0.74.6):
     - glog
@@ -1252,7 +1254,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.7.1):
+  - RNSVG (15.11.2):
     - React-Core
   - SocketRocket (0.7.0)
   - Yoga (0.0.0)
@@ -1290,6 +1292,7 @@ DEPENDENCIES:
   - React-jsitracing (from `../node_modules/react-native-macos/ReactCommon/hermes/executor/`)
   - React-logger (from `../node_modules/react-native-macos/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native-macos/ReactCommon`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native-macos/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native-macos/ReactCommon/reactperflogger`)
@@ -1382,6 +1385,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-macos/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../node_modules/react-native-macos/ReactCommon"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
     :path: "../node_modules/react-native-macos/ReactCommon"
   React-NativeModulesApple:
@@ -1443,10 +1448,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 0686b6af8cbd638c784fea5afb789be66699823c
-  DoubleConversion: acaf5db79676d2e9119015819153f0f99191de12
+  DoubleConversion: 5b92c4507c560bb62e7aa1acdf2785ea3ff08b3b
   FBLazyVector: 8f41053475f558b29633b434bd62929813a38560
   fmt: 03574da4b7ba40de39da59677ca66610ce8c4a02
-  glog: 6df0a3d6e2750a50609471fd1a01fd2948d405b5
+  glog: ba31c1afa7dcf1915a109861bccdb4421be6175b
   hermes-engine: 21ea4e6a0b64854652c8c20cb815efdbb3131fdd
   RCT-Folly: 2edbb9597acadc2312235c7ad6243d49852047a3
   RCTDeprecation: 5f1d7e1f8ef6c53f0207e3ac0d0ca23575e8a6ab
@@ -1472,6 +1477,7 @@ SPEC CHECKSUMS:
   React-jsitracing: cc6e6f741639f3951b7df43bd87cbfc16bdafc98
   React-logger: e249d9c4dc55980a66dfbc176b6779448052d83c
   React-Mapbuffer: 428d5628320b14d5570f269c73e5f331bff332b8
+  react-native-safe-area-context: 141eca0fd4e4191288dfc8b96a7c7e1c2983447a
   React-nativeconfig: 2a578599932a902996461427ee3cd6e70324a938
   React-NativeModulesApple: 1684e63fd5cf33c6e87781801b901d1847f319ed
   React-perflogger: 20f2c340ba77761ce791c46bee92a7dad00abd5e
@@ -1498,7 +1504,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
   RNGestureHandler: 8a0741a2044b05d14bdc65f66b3d0cf77c7ec5e9
   RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
-  RNSVG: 4590aa95758149fa27c5c83e54a6a466349a1688
+  RNSVG: e451741721b9fd3db71b06aafe9335d09a189692
   SocketRocket: f6c6249082c011e6de2de60ed641ef8bbe0cfac9
   Yoga: 2b5a8ace4c52fd28c52de828b9a66aede21c3a9c
 
