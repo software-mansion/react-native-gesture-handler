@@ -186,7 +186,7 @@ export default function createHandler<
     static displayName = name;
     static contextType = GestureHandlerRootViewContext;
 
-    private handlerTag: number;
+    private handlerTag = -1;
     private config: Record<string, unknown>;
     private propsRef: React.MutableRefObject<unknown>;
     private isMountedRef: React.MutableRefObject<boolean | null>;
@@ -196,7 +196,6 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag = getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       this.isMountedRef = React.createRef();
@@ -329,6 +328,7 @@ export default function createHandler<
     private createGestureHandler = (
       newConfig: Readonly<Record<string, unknown>>
     ) => {
+      this.handlerTag = getNextHandlerTag();
       this.config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
