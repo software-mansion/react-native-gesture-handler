@@ -1,5 +1,4 @@
 import type IGestureHandler from '../handlers/IGestureHandler';
-import { State } from '../../State';
 import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
@@ -108,7 +107,7 @@ export default class InteractionManager {
     // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
     const isNativeHandler =
       otherHandler.constructor.name === 'NativeViewGestureHandler';
-    const isActive = otherHandler.state === State.ACTIVE;
+    const isActive = otherHandler.active;
     const isButton = otherHandler.isButton?.() === true;
 
     return isNativeHandler && isActive && !isButton;
