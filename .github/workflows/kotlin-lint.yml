@@ -36,7 +36,7 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install node dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Restore build from cache
         uses: actions/cache@v4
