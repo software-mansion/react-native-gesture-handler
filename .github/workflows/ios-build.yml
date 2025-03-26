@@ -35,7 +35,7 @@ jobs:
           cache: 'yarn'
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
-        run: yarn
+        run: yarn install --immutable
       - name: Install pods
         working-directory: ${{ matrix.working-directory }}/ios
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
