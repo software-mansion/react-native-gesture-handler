@@ -50,7 +50,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView"
     )
-    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(
+      RNGestureHandlerModule::class.java
+    )!!
     with(module) {
       registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)
@@ -58,17 +60,28 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   internal inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
-    override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+
+    private fun handleEvent(event: MotionEvent) {
       val currentState = state
+
       // we shouldn't stop intercepting events when there is an active handler already, which could happen when
       // adding a new pointer to the screen after a handler activates
       if (currentState == STATE_UNDETERMINED && (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)) {
         begin()
         shouldIntercept = false
       }
-      if (event.actionMasked == MotionEvent.ACTION_UP) {
+
+      if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_HOVER_EXIT) {
         end()
       }
+    }
+
+    override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+      handleEvent(event)
+    }
+
+    override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {
+      handleEvent(event)
     }
 
     override fun onCancel() {
