@@ -50,9 +50,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView"
     )
-    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(
-      RNGestureHandlerModule::class.java
-    )!!
+    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
     with(module) {
       registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)
@@ -60,7 +58,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   internal inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
-
     private fun handleEvent(event: MotionEvent) {
       val currentState = state
 
