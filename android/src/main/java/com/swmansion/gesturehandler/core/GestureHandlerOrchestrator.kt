@@ -471,11 +471,15 @@ class GestureHandlerOrchestrator(
     return found
   }
 
+  // We don't want to extract gestures other than hover when processing hover events.
+  // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
+  // so we need to pass them into RootViewGestureHandler, otherwise press and hold
+  // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
   private fun shouldHandlerSkipHoverEvents(handler: GestureHandler<*>, action: Int): Boolean {
     val shouldSkipEvents =
       handler !is HoverGestureHandler && handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
 
-    return action in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE) && shouldSkipEvents
+    return shouldSkipEvents && action in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE)
   }
 
   private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
@@ -488,10 +492,6 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          // We don't want to extract gestures other than hover when processing hover events.
-          // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
-          // so we need to pass them into RootViewGestureHandler, otherwise press and hold
-          // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
           if (shouldHandlerSkipHoverEvents(handler, event.action)) {
             continue
           }

@@ -73,13 +73,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       }
     }
 
-    override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
-      handleEvent(event)
-    }
+    override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) = handleEvent(event)
 
-    override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {
-      handleEvent(event)
-    }
+    override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) = handleEvent(event)
 
     override fun onCancel() {
       shouldIntercept = true
