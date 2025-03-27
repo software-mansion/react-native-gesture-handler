@@ -56,6 +56,7 @@ const Pressable = forwardRef(
       android_disableSound,
       android_ripple,
       disabled,
+      accessible,
       ...remainingProps
     } = props;
 
@@ -442,6 +443,7 @@ const Pressable = forwardRef(
         <NativeButton
           {...remainingProps}
           ref={pressableRef ?? innerPressableRef}
+          accessible={accessible !== false}
           hitSlop={appliedHitSlop}
           enabled={isPressableEnabled}
           touchSoundDisabled={android_disableSound ?? undefined}
