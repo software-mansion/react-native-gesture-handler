@@ -57,6 +57,7 @@ const Pressable = forwardRef(
       android_ripple,
       disabled,
       accessible,
+      simultaneousWithExternalGesture,
       ...remainingProps
     } = props;
 
@@ -406,6 +407,20 @@ const Pressable = forwardRef(
       gesture.runOnJS(true);
       gesture.hitSlop(appliedHitSlop);
       gesture.shouldCancelWhenOutside(Platform.OS === 'web' ? false : true);
+
+      if (!simultaneousWithExternalGesture) {
+        continue;
+      }
+
+      if (Array.isArray(simultaneousWithExternalGesture)) {
+        gesture.simultaneousWithExternalGesture(
+          ...simultaneousWithExternalGesture
+        );
+      } else {
+        gesture.simultaneousWithExternalGesture(
+          simultaneousWithExternalGesture
+        );
+      }
     }
 
     // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
