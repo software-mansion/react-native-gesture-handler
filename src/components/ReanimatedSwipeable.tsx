@@ -9,7 +9,6 @@ import React, {
   useImperativeHandle,
   useMemo,
 } from 'react';
-import { GestureRef } from '../handlers/gestures/gesture';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
@@ -209,25 +208,19 @@ export interface SwipeableProps
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  simultaneousWithExternalGesture?:
-    | Exclude<GestureRef, number>
-    | Exclude<GestureRef, number>[];
+  simultaneousWithExternalGesture?: RelationPropType;
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  requireExternalGestureToFail?:
-    | Exclude<GestureRef, number>
-    | Exclude<GestureRef, number>[];
+  requireExternalGestureToFail?: RelationPropType;
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  blocksExternalGesture?:
-    | Exclude<GestureRef, number>
-    | Exclude<GestureRef, number>[];
+  blocksExternalGesture?: RelationPropType;
 }
 
 export interface SwipeableMethods {
