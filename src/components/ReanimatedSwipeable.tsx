@@ -38,6 +38,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { applyRelationProp, RelationPropName, RelationPropType } from './utils';
 
 const DRAG_TOSS = 0.05;
 
@@ -211,6 +212,22 @@ export interface SwipeableProps
   simultaneousWithExternalGesture?:
     | Exclude<GestureRef, number>
     | Exclude<GestureRef, number>[];
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the swipeable's gesture handler.
+   */
+  requireExternalGestureToFail?:
+    | Exclude<GestureRef, number>
+    | Exclude<GestureRef, number>[];
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the swipeable's gesture handler.
+   */
+  blocksExternalGesture?:
+    | Exclude<GestureRef, number>
+    | Exclude<GestureRef, number>[];
 }
 
 export interface SwipeableMethods {
@@ -257,8 +274,16 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       renderLeftActions,
       renderRightActions,
       simultaneousWithExternalGesture,
+      requireExternalGestureToFail,
+      blocksExternalGesture,
       ...remainingProps
     } = props;
+
+    const relationProps = {
+      simultaneousWithExternalGesture,
+      requireExternalGestureToFail,
+      blocksExternalGesture,
+    };
 
     const rowState = useSharedValue<number>(0);
 
@@ -654,15 +679,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           }
         });
 
-      if (!simultaneousWithExternalGesture) {
-        return tap;
-      }
-
-      if (Array.isArray(simultaneousWithExternalGesture)) {
-        tap.simultaneousWithExternalGesture(...simultaneousWithExternalGesture);
-      } else {
-        tap.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
-      }
+      Object.entries(relationProps).forEach(([key, value]) => {
+        applyRelationProp(
+          tap,
+          key as RelationPropName,
+          value as RelationPropType
+        );
+      });
 
       return tap;
     }, [close, rowState, simultaneousWithExternalGesture]);
@@ -707,15 +730,13 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           dragStarted.value = false;
         });
 
-      if (!simultaneousWithExternalGesture) {
-        return pan;
-      }
-
-      if (Array.isArray(simultaneousWithExternalGesture)) {
-        pan.simultaneousWithExternalGesture(...simultaneousWithExternalGesture);
-      } else {
-        pan.simultaneousWithExternalGesture(simultaneousWithExternalGesture);
-      }
+      Object.entries(relationProps).forEach(([key, value]) => {
+        applyRelationProp(
+          pan,
+          key as RelationPropName,
+          value as RelationPropType
+        );
+      });
 
       return pan;
     }, [
