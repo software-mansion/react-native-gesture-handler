@@ -421,11 +421,11 @@ const Pressable = forwardRef(
       gesture.hitSlop(appliedHitSlop);
       gesture.shouldCancelWhenOutside(Platform.OS === 'web' ? false : true);
 
-      Object.entries(relationProps).forEach(([key, value]) => {
+      Object.entries(relationProps).forEach(([relationName, relation]) => {
         applyRelationProp(
           gesture,
-          key as RelationPropName,
-          value as RelationPropType
+          relationName as RelationPropName,
+          relation as RelationPropType
         );
       });
     }

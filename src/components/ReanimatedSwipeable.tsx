@@ -679,11 +679,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           }
         });
 
-      Object.entries(relationProps).forEach(([key, value]) => {
+      Object.entries(relationProps).forEach(([relationName, relation]) => {
         applyRelationProp(
           tap,
-          key as RelationPropName,
-          value as RelationPropType
+          relationName as RelationPropName,
+          relation as RelationPropType
         );
       });
 
@@ -730,11 +730,11 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           dragStarted.value = false;
         });
 
-      Object.entries(relationProps).forEach(([key, value]) => {
+      Object.entries(relationProps).forEach(([relationName, relation]) => {
         applyRelationProp(
           pan,
-          key as RelationPropName,
-          value as RelationPropType
+          relationName as RelationPropName,
+          relation as RelationPropType
         );
       });
 
