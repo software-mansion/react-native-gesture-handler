@@ -148,4 +148,20 @@ export interface PressableProps
   simultaneousWithExternalGesture?:
     | Exclude<GestureRef, number>
     | Exclude<GestureRef, number>[];
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  requireExternalGestureToFail?:
+    | Exclude<GestureRef, number>
+    | Exclude<GestureRef, number>[];
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  blocksExternalGesture?:
+    | Exclude<GestureRef, number>
+    | Exclude<GestureRef, number>[];
 }

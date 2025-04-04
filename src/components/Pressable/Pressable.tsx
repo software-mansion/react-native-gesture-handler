@@ -29,6 +29,11 @@ import {
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
+import {
+  applyRelationProp,
+  RelationPropName,
+  RelationPropType,
+} from '../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -58,8 +63,16 @@ const Pressable = forwardRef(
       disabled,
       accessible,
       simultaneousWithExternalGesture,
+      requireExternalGestureToFail,
+      blocksExternalGesture,
       ...remainingProps
     } = props;
+
+    const relationProps = {
+      simultaneousWithExternalGesture,
+      requireExternalGestureToFail,
+      blocksExternalGesture,
+    };
 
     const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
@@ -408,19 +421,13 @@ const Pressable = forwardRef(
       gesture.hitSlop(appliedHitSlop);
       gesture.shouldCancelWhenOutside(Platform.OS === 'web' ? false : true);
 
-      if (!simultaneousWithExternalGesture) {
-        continue;
-      }
-
-      if (Array.isArray(simultaneousWithExternalGesture)) {
-        gesture.simultaneousWithExternalGesture(
-          ...simultaneousWithExternalGesture
+      Object.entries(relationProps).forEach(([key, value]) => {
+        applyRelationProp(
+          gesture,
+          key as RelationPropName,
+          value as RelationPropType
         );
-      } else {
-        gesture.simultaneousWithExternalGesture(
-          simultaneousWithExternalGesture
-        );
-      }
+      });
     }
 
     // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
