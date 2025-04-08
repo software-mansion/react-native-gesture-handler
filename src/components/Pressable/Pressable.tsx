@@ -29,6 +29,11 @@ import {
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
+import {
+  applyRelationProp,
+  RelationPropName,
+  RelationPropType,
+} from '../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -57,8 +62,17 @@ const Pressable = forwardRef(
       android_ripple,
       disabled,
       accessible,
+      simultaneousWithExternalGesture,
+      requireExternalGestureToFail,
+      blocksExternalGesture,
       ...remainingProps
     } = props;
+
+    const relationProps = {
+      simultaneousWithExternalGesture,
+      requireExternalGestureToFail,
+      blocksExternalGesture,
+    };
 
     const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
@@ -406,6 +420,14 @@ const Pressable = forwardRef(
       gesture.runOnJS(true);
       gesture.hitSlop(appliedHitSlop);
       gesture.shouldCancelWhenOutside(Platform.OS === 'web' ? false : true);
+
+      Object.entries(relationProps).forEach(([relationName, relation]) => {
+        applyRelationProp(
+          gesture,
+          relationName as RelationPropName,
+          relation as RelationPropType
+        );
+      });
     }
 
     // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
