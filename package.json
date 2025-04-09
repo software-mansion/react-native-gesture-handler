@@ -82,7 +82,7 @@
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/invariant": "^2.2.37",
     "@types/jest": "^27.0.3",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.0.12",
     "@types/react-test-renderer": "^19.0.0",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
