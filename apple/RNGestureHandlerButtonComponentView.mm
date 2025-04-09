@@ -101,6 +101,100 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<RNGestureHandlerButtonComponentDescriptor>();
 }
 
+#if TARGET_OS_IOS
+// Taken from
+// https://github.com/facebook/react-native/blob/b226049a4a28ea3f7f32266269fb76340c324d42/packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm#L343
+- (void)setAccessibilityProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
+{
+  const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
+  const auto &newButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
+
+  if (!oldProps || oldButtonProps.accessible != newButtonProps.accessible) {
+    _buttonView.isAccessibilityElement = newButtonProps.accessible;
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityLabel != newButtonProps.accessibilityLabel) {
+    _buttonView.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityLabel);
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityLanguage != newButtonProps.accessibilityLanguage) {
+    _buttonView.accessibilityLanguage = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityLanguage);
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityHint != newButtonProps.accessibilityHint) {
+    _buttonView.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityHint);
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityViewIsModal != newButtonProps.accessibilityViewIsModal) {
+    _buttonView.accessibilityViewIsModal = newButtonProps.accessibilityViewIsModal;
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityElementsHidden != newButtonProps.accessibilityElementsHidden) {
+    _buttonView.accessibilityElementsHidden = newButtonProps.accessibilityElementsHidden;
+  }
+
+  if (!oldProps ||
+      oldButtonProps.accessibilityShowsLargeContentViewer != newButtonProps.accessibilityShowsLargeContentViewer) {
+    if (@available(iOS 13.0, *)) {
+      if (newButtonProps.accessibilityShowsLargeContentViewer) {
+        _buttonView.showsLargeContentViewer = YES;
+        UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+        [_buttonView addInteraction:interaction];
+      } else {
+        _buttonView.showsLargeContentViewer = NO;
+      }
+    }
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityLargeContentTitle != newButtonProps.accessibilityLargeContentTitle) {
+    if (@available(iOS 13.0, *)) {
+      _buttonView.largeContentTitle = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityLargeContentTitle);
+    }
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityTraits != newButtonProps.accessibilityTraits) {
+    _buttonView.accessibilityTraits =
+        RCTUIAccessibilityTraitsFromAccessibilityTraits(newButtonProps.accessibilityTraits);
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityState != newButtonProps.accessibilityState) {
+    _buttonView.accessibilityTraits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
+    const auto accessibilityState = newButtonProps.accessibilityState.value_or(AccessibilityState{});
+    if (accessibilityState.selected) {
+      _buttonView.accessibilityTraits |= UIAccessibilityTraitSelected;
+    }
+    if (accessibilityState.disabled) {
+      _buttonView.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    }
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityIgnoresInvertColors != newButtonProps.accessibilityIgnoresInvertColors) {
+    _buttonView.accessibilityIgnoresInvertColors = newButtonProps.accessibilityIgnoresInvertColors;
+  }
+
+  if (!oldProps || oldButtonProps.accessibilityValue != newButtonProps.accessibilityValue) {
+    if (newButtonProps.accessibilityValue.text.has_value()) {
+      _buttonView.accessibilityValue = RCTNSStringFromStringNilIfEmpty(newButtonProps.accessibilityValue.text.value());
+    } else if (
+        newButtonProps.accessibilityValue.now.has_value() && newButtonProps.accessibilityValue.min.has_value() &&
+        newButtonProps.accessibilityValue.max.has_value()) {
+      CGFloat val = (CGFloat)(newButtonProps.accessibilityValue.now.value()) /
+          (newButtonProps.accessibilityValue.max.value() - newButtonProps.accessibilityValue.min.value());
+      _buttonView.accessibilityValue = [NSNumberFormatter localizedStringFromNumber:@(val)
+                                                                        numberStyle:NSNumberFormatterPercentStyle];
+      ;
+    } else {
+      _buttonView.accessibilityValue = nil;
+    }
+  }
+
+  if (!oldProps || oldButtonProps.testId != newButtonProps.testId) {
+    UIView *accessibilityView = (UIView *)_buttonView;
+    accessibilityView.accessibilityIdentifier = RCTNSStringFromString(newButtonProps.testId);
+  }
+}
+#endif
+
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
@@ -108,6 +202,7 @@ using namespace facebook::react;
   _buttonView.userEnabled = newProps.enabled;
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;
+  [self setAccessibilityProps:props oldProps:oldProps];
 #endif
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
       -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);

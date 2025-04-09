@@ -6,8 +6,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import java.util.*
-import kotlin.collections.HashSet
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
@@ -470,6 +470,17 @@ class GestureHandlerOrchestrator(
     return found
   }
 
+  // We don't want to extract gestures other than hover when processing hover events.
+  // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
+  // so we need to pass them into RootViewGestureHandler, otherwise press and hold
+  // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
+  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler<*>, action: Int): Boolean {
+    val shouldSkipHoverEvents =
+      handler !is HoverGestureHandler && handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
+
+    return shouldSkipHoverEvents && action in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE)
+  }
+
   private fun recordViewHandlersForPointer(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean {
     var found = false
     handlerRegistry.getHandlersForView(view)?.let {
@@ -480,8 +491,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          // we don't want to extract gestures other than hover when processing hover events
-          if (event.action in listOf(MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE) && handler !is HoverGestureHandler) {
+          if (shouldHandlerSkipHoverEvents(handler, event.action)) {
             continue
           }
 

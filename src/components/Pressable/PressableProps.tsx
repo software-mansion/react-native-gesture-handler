@@ -7,6 +7,7 @@ import {
   PressableStateCallbackType as RNPressableStateCallbackType,
   PressableAndroidRippleConfig as RNPressableAndroidRippleConfig,
 } from 'react-native';
+import { RelationPropType } from '../utils';
 
 export type PressableStateCallbackType = RNPressableStateCallbackType;
 export type PressableAndroidRippleConfig = RNPressableAndroidRippleConfig;
@@ -139,4 +140,22 @@ export interface PressableProps
    * Duration (in milliseconds) to wait after press down before calling onPressIn.
    */
   unstable_pressDelay?: number;
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  simultaneousWithExternalGesture?: RelationPropType;
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  requireExternalGestureToFail?: RelationPropType;
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  blocksExternalGesture?: RelationPropType;
 }

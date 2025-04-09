@@ -36,7 +36,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   private longPressTimeout: ReturnType<typeof setTimeout> | undefined;
   private longPressDetected: boolean;
 
-  constructor(props: BaseButtonProps) {
+  constructor(props: BaseButtonWithRefProps) {
     super(props);
     this.lastActive = false;
     this.longPressDetected = false;
@@ -146,12 +146,18 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   }
 }
 
+const AnimatedInnerBaseButton =
+  Animated.createAnimatedComponent<typeof InnerBaseButton>(InnerBaseButton);
+
 export const BaseButton = React.forwardRef<
-  any,
+  React.ComponentType,
   Omit<BaseButtonProps, 'innerRef'>
 >((props, ref) => <InnerBaseButton innerRef={ref} {...props} />);
 
-const AnimatedBaseButton = Animated.createAnimatedComponent(BaseButton);
+const AnimatedBaseButton = React.forwardRef<
+  React.ComponentType,
+  BaseButtonWithRefProps
+>((props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />);
 
 const btnStyles = StyleSheet.create({
   underlay: {
@@ -171,7 +177,7 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
 
   private opacity: Animated.Value;
 
-  constructor(props: RectButtonProps) {
+  constructor(props: RectButtonWithRefProps) {
     super(props);
     this.opacity = new Animated.Value(0);
   }
@@ -216,7 +222,7 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
 }
 
 export const RectButton = React.forwardRef<
-  any,
+  React.ComponentType,
   Omit<RectButtonProps, 'innerRef'>
 >((props, ref) => <InnerRectButton innerRef={ref} {...props} />);
 
@@ -228,7 +234,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
 
   private opacity: Animated.Value;
 
-  constructor(props: BorderlessButtonProps) {
+  constructor(props: BorderlessButtonWithRefProps) {
     super(props);
     this.opacity = new Animated.Value(1);
   }
@@ -247,8 +253,6 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
     return (
       <AnimatedBaseButton
         {...rest}
-        // @ts-ignore We don't want `innerRef` to be accessible from public API.
-        // However in this case we need to set it indirectly on `BaseButton`, hence we use ts-ignore
         innerRef={innerRef}
         onActiveStateChange={this.onActiveStateChange}
         style={[style, Platform.OS === 'ios' && { opacity: this.opacity }]}>
@@ -259,7 +263,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
 }
 
 export const BorderlessButton = React.forwardRef<
-  any,
+  React.ComponentType,
   Omit<BorderlessButtonProps, 'innerRef'>
 >((props, ref) => <InnerBorderlessButton innerRef={ref} {...props} />);
 

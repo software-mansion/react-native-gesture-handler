@@ -77,12 +77,8 @@ UIManagerAny.genericDirectEventTypes = {
   ...UIManagerAny.genericDirectEventTypes,
   ...customGHEventsConfig,
 };
-// In newer versions of RN the `genericDirectEventTypes` is located in the object
-// returned by UIManager.getViewManagerConfig('getConstants') or in older RN UIManager.getConstants(), we need to add it there as well to make
-// it compatible with RN 61+
-const UIManagerConstants =
-  UIManagerAny.getViewManagerConfig?.('getConstants') ??
-  UIManagerAny.getConstants?.();
+
+const UIManagerConstants = UIManagerAny.getViewManagerConfig?.('getConstants');
 
 if (UIManagerConstants) {
   UIManagerConstants.genericDirectEventTypes = {
@@ -190,7 +186,7 @@ export default function createHandler<
     static displayName = name;
     static contextType = GestureHandlerRootViewContext;
 
-    private handlerTag: number;
+    private handlerTag = -1;
     private config: Record<string, unknown>;
     private propsRef: React.MutableRefObject<unknown>;
     private isMountedRef: React.MutableRefObject<boolean | null>;
@@ -200,7 +196,6 @@ export default function createHandler<
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
-      this.handlerTag = getNextHandlerTag();
       this.config = {};
       this.propsRef = React.createRef();
       this.isMountedRef = React.createRef();
@@ -333,6 +328,7 @@ export default function createHandler<
     private createGestureHandler = (
       newConfig: Readonly<Record<string, unknown>>
     ) => {
+      this.handlerTag = getNextHandlerTag();
       this.config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
