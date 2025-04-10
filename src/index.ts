@@ -169,7 +169,18 @@ export {
 export type { NativeDetectorProps } from './NativeDetector';
 export { NativeDetector } from './NativeDetector';
 
-export * from './useGesture';
-export type * from './useGesture';
+export {
+  useTap,
+  usePan,
+  useFling,
+  useForceTouch,
+  useHover,
+  useLongPress,
+  useManual,
+  useNative,
+  usePinch,
+  useRotation,
+} from './handlers/gesturesV3/hooks';
+export * from './handlers/gesturesV3/useGesture';
 
 initialize();

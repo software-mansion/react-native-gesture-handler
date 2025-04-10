@@ -1,14 +1,17 @@
 import React from 'react';
 import RNGestureHandlerDetectorNativeComponent from './specs/RNGestureHandlerDetectorNativeComponent';
 import { StyleSheet } from 'react-native';
-import { NativeGesture } from './useGesture';
+import { _NativeGesture } from './handlers/gesturesV3/types';
 
-export interface NativeDetectorProps {
+export interface NativeDetectorProps<TConfig> {
+  gesture: _NativeGesture<TConfig>;
   children?: React.ReactNode;
-  gesture: NativeGesture;
 }
 
-export function NativeDetector({ gesture, children }: NativeDetectorProps) {
+export function NativeDetector<TConfig>({
+  gesture,
+  children,
+}: NativeDetectorProps<TConfig>) {
   return (
     <RNGestureHandlerDetectorNativeComponent
       onGestureHandlerStateChange={(event) => {
