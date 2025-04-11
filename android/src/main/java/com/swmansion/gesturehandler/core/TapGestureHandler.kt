@@ -176,39 +176,39 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
 
     override fun configure(handler: TapGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
-      if (config.hasKey(KEY_TAP_NUMBER_OF_TAPS)) {
-        handler.setNumberOfTaps(config.getInt(KEY_TAP_NUMBER_OF_TAPS))
+      if (config.hasKey(KEY_NUMBER_OF_TAPS)) {
+        handler.setNumberOfTaps(config.getInt(KEY_NUMBER_OF_TAPS))
       }
-      if (config.hasKey(KEY_TAP_MAX_DURATION_MS)) {
-        handler.setMaxDurationMs(config.getInt(KEY_TAP_MAX_DURATION_MS).toLong())
+      if (config.hasKey(KEY_MAX_DURATION_MS)) {
+        handler.setMaxDurationMs(config.getInt(KEY_MAX_DURATION_MS).toLong())
       }
-      if (config.hasKey(KEY_TAP_MAX_DELAY_MS)) {
-        handler.setMaxDelayMs(config.getInt(KEY_TAP_MAX_DELAY_MS).toLong())
+      if (config.hasKey(KEY_MAX_DELAY_MS)) {
+        handler.setMaxDelayMs(config.getInt(KEY_MAX_DELAY_MS).toLong())
       }
-      if (config.hasKey(KEY_TAP_MAX_DELTA_X)) {
-        handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_X)))
+      if (config.hasKey(KEY_MAX_DELTA_X)) {
+        handler.setMaxDx(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DELTA_X)))
       }
-      if (config.hasKey(KEY_TAP_MAX_DELTA_Y)) {
-        handler.setMaxDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DELTA_Y)))
+      if (config.hasKey(KEY_MAX_DELTA_Y)) {
+        handler.setMaxDy(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DELTA_Y)))
       }
-      if (config.hasKey(KEY_TAP_MAX_DIST)) {
-        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_TAP_MAX_DIST)))
+      if (config.hasKey(KEY_MAX_DIST)) {
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DIST)))
       }
-      if (config.hasKey(KEY_TAP_MIN_POINTERS)) {
-        handler.setMinNumberOfPointers(config.getInt(KEY_TAP_MIN_POINTERS))
+      if (config.hasKey(KEY_MIN_POINTERS)) {
+        handler.setMinNumberOfPointers(config.getInt(KEY_MIN_POINTERS))
       }
     }
 
     override fun createEventBuilder(handler: TapGestureHandler) = TapGestureHandlerEventDataBuilder(handler)
 
     companion object {
-      private const val KEY_TAP_NUMBER_OF_TAPS = "numberOfTaps"
-      private const val KEY_TAP_MAX_DURATION_MS = "maxDurationMs"
-      private const val KEY_TAP_MAX_DELAY_MS = "maxDelayMs"
-      private const val KEY_TAP_MAX_DELTA_X = "maxDeltaX"
-      private const val KEY_TAP_MAX_DELTA_Y = "maxDeltaY"
-      private const val KEY_TAP_MAX_DIST = "maxDist"
-      private const val KEY_TAP_MIN_POINTERS = "minPointers"
+      private const val KEY_NUMBER_OF_TAPS = "numberOfTaps"
+      private const val KEY_MAX_DURATION_MS = "maxDurationMs"
+      private const val KEY_MAX_DELAY_MS = "maxDelayMs"
+      private const val KEY_MAX_DELTA_X = "maxDeltaX"
+      private const val KEY_MAX_DELTA_Y = "maxDeltaY"
+      private const val KEY_MAX_DIST = "maxDist"
+      private const val KEY_MIN_POINTERS = "minPointers"
     }
   }
 

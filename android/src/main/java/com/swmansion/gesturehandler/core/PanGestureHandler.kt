@@ -324,117 +324,117 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     override fun configure(handler: PanGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
       var hasCustomActivationCriteria = false
-      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_START)) {
+      if (config.hasKey(KEY_ACTIVE_OFFSET_X_START)) {
         handler.setActiveOffsetXStart(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_ACTIVE_OFFSET_X_START
+            KEY_ACTIVE_OFFSET_X_START
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_END)) {
+      if (config.hasKey(KEY_ACTIVE_OFFSET_X_END)) {
         handler.setActiveOffsetXEnd(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_ACTIVE_OFFSET_X_END
+            KEY_ACTIVE_OFFSET_X_END
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_START)) {
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_X_START)) {
         handler.setFailOffsetXStart(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_FAIL_OFFSET_RANGE_X_START
+            KEY_FAIL_OFFSET_RANGE_X_START
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_END)) {
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_X_END)) {
         handler.setFailOffsetXEnd(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_FAIL_OFFSET_RANGE_X_END
+            KEY_FAIL_OFFSET_RANGE_X_END
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_START)) {
+      if (config.hasKey(KEY_ACTIVE_OFFSET_Y_START)) {
         handler.setActiveOffsetYStart(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_ACTIVE_OFFSET_Y_START
+            KEY_ACTIVE_OFFSET_Y_START
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_END)) {
+      if (config.hasKey(KEY_ACTIVE_OFFSET_Y_END)) {
         handler.setActiveOffsetYEnd(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_ACTIVE_OFFSET_Y_END
+            KEY_ACTIVE_OFFSET_Y_END
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)) {
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_Y_START)) {
         handler.setFailOffsetYStart(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_FAIL_OFFSET_RANGE_Y_START
+            KEY_FAIL_OFFSET_RANGE_Y_START
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)) {
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_Y_END)) {
         handler.setFailOffsetYEnd(
           PixelUtil.toPixelFromDIP(config.getDouble(
-            KEY_PAN_FAIL_OFFSET_RANGE_Y_END
+            KEY_FAIL_OFFSET_RANGE_Y_END
           )))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_MIN_VELOCITY)) {
+      if (config.hasKey(KEY_MIN_VELOCITY)) {
         // This value is actually in DPs/ms, but we can use the same function as for converting
         // from DPs to pixels as the unit we're converting is in the numerator
-        handler.setMinVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY)))
+        handler.setMinVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_VELOCITY)))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_MIN_VELOCITY_X)) {
-        handler.setMinVelocityX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_X)))
+      if (config.hasKey(KEY_MIN_VELOCITY_X)) {
+        handler.setMinVelocityX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_VELOCITY_X)))
         hasCustomActivationCriteria = true
       }
-      if (config.hasKey(KEY_PAN_MIN_VELOCITY_Y)) {
-        handler.setMinVelocityY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_Y)))
+      if (config.hasKey(KEY_MIN_VELOCITY_Y)) {
+        handler.setMinVelocityY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_VELOCITY_Y)))
         hasCustomActivationCriteria = true
       }
 
       // PanGestureHandler sets minDist by default, if there are custom criteria specified we want
       // to reset that setting and use provided criteria instead.
-      if (config.hasKey(KEY_PAN_MIN_DIST)) {
-        handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DIST)))
+      if (config.hasKey(KEY_MIN_DIST)) {
+        handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_DIST)))
       } else if (hasCustomActivationCriteria) {
         handler.setMinDist(Float.MAX_VALUE)
       }
-      if (config.hasKey(KEY_PAN_MIN_POINTERS)) {
-        handler.setMinPointers(config.getInt(KEY_PAN_MIN_POINTERS))
+      if (config.hasKey(KEY_MIN_POINTERS)) {
+        handler.setMinPointers(config.getInt(KEY_MIN_POINTERS))
       }
-      if (config.hasKey(KEY_PAN_MAX_POINTERS)) {
-        handler.setMaxPointers(config.getInt(KEY_PAN_MAX_POINTERS))
+      if (config.hasKey(KEY_MAX_POINTERS)) {
+        handler.setMaxPointers(config.getInt(KEY_MAX_POINTERS))
       }
-      if (config.hasKey(KEY_PAN_AVG_TOUCHES)) {
-        handler.setAverageTouches(config.getBoolean(KEY_PAN_AVG_TOUCHES))
+      if (config.hasKey(KEY_AVG_TOUCHES)) {
+        handler.setAverageTouches(config.getBoolean(KEY_AVG_TOUCHES))
       }
-      if (config.hasKey(KEY_PAN_ACTIVATE_AFTER_LONG_PRESS)) {
-        handler.setActivateAfterLongPress(config.getInt(KEY_PAN_ACTIVATE_AFTER_LONG_PRESS).toLong())
+      if (config.hasKey(KEY_ACTIVATE_AFTER_LONG_PRESS)) {
+        handler.setActivateAfterLongPress(config.getInt(KEY_ACTIVATE_AFTER_LONG_PRESS).toLong())
       }
     }
 
     override fun createEventBuilder(handler: PanGestureHandler) = PanGestureHandlerEventDataBuilder(handler)
 
     companion object {
-      private const val KEY_PAN_ACTIVE_OFFSET_X_START = "activeOffsetXStart"
-      private const val KEY_PAN_ACTIVE_OFFSET_X_END = "activeOffsetXEnd"
-      private const val KEY_PAN_FAIL_OFFSET_RANGE_X_START = "failOffsetXStart"
-      private const val KEY_PAN_FAIL_OFFSET_RANGE_X_END = "failOffsetXEnd"
-      private const val KEY_PAN_ACTIVE_OFFSET_Y_START = "activeOffsetYStart"
-      private const val KEY_PAN_ACTIVE_OFFSET_Y_END = "activeOffsetYEnd"
-      private const val KEY_PAN_FAIL_OFFSET_RANGE_Y_START = "failOffsetYStart"
-      private const val KEY_PAN_FAIL_OFFSET_RANGE_Y_END = "failOffsetYEnd"
-      private const val KEY_PAN_MIN_DIST = "minDist"
-      private const val KEY_PAN_MIN_VELOCITY = "minVelocity"
-      private const val KEY_PAN_MIN_VELOCITY_X = "minVelocityX"
-      private const val KEY_PAN_MIN_VELOCITY_Y = "minVelocityY"
-      private const val KEY_PAN_MIN_POINTERS = "minPointers"
-      private const val KEY_PAN_MAX_POINTERS = "maxPointers"
-      private const val KEY_PAN_AVG_TOUCHES = "avgTouches"
-      private const val KEY_PAN_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
+      private const val KEY_ACTIVE_OFFSET_X_START = "activeOffsetXStart"
+      private const val KEY_ACTIVE_OFFSET_X_END = "activeOffsetXEnd"
+      private const val KEY_FAIL_OFFSET_RANGE_X_START = "failOffsetXStart"
+      private const val KEY_FAIL_OFFSET_RANGE_X_END = "failOffsetXEnd"
+      private const val KEY_ACTIVE_OFFSET_Y_START = "activeOffsetYStart"
+      private const val KEY_ACTIVE_OFFSET_Y_END = "activeOffsetYEnd"
+      private const val KEY_FAIL_OFFSET_RANGE_Y_START = "failOffsetYStart"
+      private const val KEY_FAIL_OFFSET_RANGE_Y_END = "failOffsetYEnd"
+      private const val KEY_MIN_DIST = "minDist"
+      private const val KEY_MIN_VELOCITY = "minVelocity"
+      private const val KEY_MIN_VELOCITY_X = "minVelocityX"
+      private const val KEY_MIN_VELOCITY_Y = "minVelocityY"
+      private const val KEY_MIN_POINTERS = "minPointers"
+      private const val KEY_MAX_POINTERS = "maxPointers"
+      private const val KEY_AVG_TOUCHES = "avgTouches"
+      private const val KEY_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
     }
   }
 

@@ -177,21 +177,21 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
     override fun configure(handler: NativeViewGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
-      if (config.hasKey(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)) {
+      if (config.hasKey(KEY_SHOULD_ACTIVATE_ON_START)) {
         handler.setShouldActivateOnStart(
-          config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)
+          config.getBoolean(KEY_SHOULD_ACTIVATE_ON_START)
         )
       }
-      if (config.hasKey(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION)) {
-        handler.setDisallowInterruption(config.getBoolean(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION))
+      if (config.hasKey(KEY_DISALLOW_INTERRUPTION)) {
+        handler.setDisallowInterruption(config.getBoolean(KEY_DISALLOW_INTERRUPTION))
       }
     }
 
     override fun createEventBuilder(handler: NativeViewGestureHandler) = NativeGestureHandlerEventDataBuilder(handler)
 
     companion object {
-      private const val KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
-      private const val KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "disallowInterruption"
+      private const val KEY_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
+      private const val KEY_DISALLOW_INTERRUPTION = "disallowInterruption"
     }
   }
 

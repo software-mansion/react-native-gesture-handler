@@ -186,11 +186,11 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
 
     override fun configure(handler: LongPressGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
-      if (config.hasKey(KEY_LONG_PRESS_MIN_DURATION_MS)) {
-        handler.minDurationMs = config.getInt(KEY_LONG_PRESS_MIN_DURATION_MS).toLong()
+      if (config.hasKey(KEY_MIN_DURATION_MS)) {
+        handler.minDurationMs = config.getInt(KEY_MIN_DURATION_MS).toLong()
       }
-      if (config.hasKey(KEY_LONG_PRESS_MAX_DIST)) {
-        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)))
+      if (config.hasKey(KEY_MAX_DIST)) {
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DIST)))
       }
       if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
         handler.setNumberOfPointers(config.getInt(KEY_NUMBER_OF_POINTERS))
@@ -200,8 +200,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     override fun createEventBuilder(handler: LongPressGestureHandler) = LongPressGestureHandlerEventDataBuilder(handler)
 
     companion object {
-      private const val KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs"
-      private const val KEY_LONG_PRESS_MAX_DIST = "maxDist"
+      private const val KEY_MIN_DURATION_MS = "minDurationMs"
+      private const val KEY_MAX_DIST = "maxDist"
       private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
     }
   }
