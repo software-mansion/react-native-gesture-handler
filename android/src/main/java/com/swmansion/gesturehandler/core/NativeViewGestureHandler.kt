@@ -1,11 +1,13 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ScrollView
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.views.scroll.ReactHorizontalScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
@@ -13,6 +15,7 @@ import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+import com.swmansion.gesturehandler.react.eventbuilders.NativeGestureHandlerEventDataBuilder
 import com.swmansion.gesturehandler.react.isScreenReaderOn
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
@@ -162,6 +165,34 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   override fun onReset() {
     this.hook = defaultHook
+  }
+
+  class Factory : GestureHandler.Factory<NativeViewGestureHandler>() {
+    override val type = NativeViewGestureHandler::class.java
+    override val name = "NativeViewGestureHandler"
+
+    override fun create(context: Context?): NativeViewGestureHandler {
+      return NativeViewGestureHandler()
+    }
+
+    override fun configure(handler: NativeViewGestureHandler, config: ReadableMap) {
+      super.configure(handler, config)
+      if (config.hasKey(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)) {
+        handler.setShouldActivateOnStart(
+          config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)
+        )
+      }
+      if (config.hasKey(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION)) {
+        handler.setDisallowInterruption(config.getBoolean(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION))
+      }
+    }
+
+    override fun createEventBuilder(handler: NativeViewGestureHandler) = NativeGestureHandlerEventDataBuilder(handler)
+
+    companion object {
+      private const val KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
+      private const val KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION = "disallowInterruption"
+    }
   }
 
   companion object {

@@ -11,12 +11,15 @@ import android.view.MotionEvent.PointerProperties
 import android.view.View
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
+import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -821,6 +824,96 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     get() = lastAbsolutePositionX + lastEventOffsetX - windowOffset[0]
   val lastPositionInWindowY: Float
     get() = lastAbsolutePositionY + lastEventOffsetY - windowOffset[1]
+
+  abstract class Factory<T : GestureHandler<T>> {
+    abstract val type: Class<T>
+    abstract val name: String
+    abstract fun create(context: Context?): T
+    open fun configure(handler: T, config: ReadableMap) {
+      handler.resetConfig()
+      if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
+        handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE))
+      }
+      if (config.hasKey(KEY_ENABLED)) {
+        handler.setEnabled(config.getBoolean(KEY_ENABLED))
+      }
+      if (config.hasKey(KEY_HIT_SLOP)) {
+        handleHitSlopProperty(handler, config)
+      }
+      if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
+        handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
+      }
+      if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
+        handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
+      }
+      if (config.hasKey(KEY_MOUSE_BUTTON)) {
+        handler.setMouseButton(config.getInt(KEY_MOUSE_BUTTON))
+      }
+    }
+
+    abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
+
+    companion object {
+      private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
+      private const val KEY_ENABLED = "enabled"
+      private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
+      private const val KEY_MANUAL_ACTIVATION = "manualActivation"
+      private const val KEY_MOUSE_BUTTON = "mouseButton"
+      private const val KEY_HIT_SLOP = "hitSlop"
+      private const val KEY_HIT_SLOP_LEFT = "left"
+      private const val KEY_HIT_SLOP_TOP = "top"
+      private const val KEY_HIT_SLOP_RIGHT = "right"
+      private const val KEY_HIT_SLOP_BOTTOM = "bottom"
+      private const val KEY_HIT_SLOP_VERTICAL = "vertical"
+      private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
+      private const val KEY_HIT_SLOP_WIDTH = "width"
+      private const val KEY_HIT_SLOP_HEIGHT = "height"
+
+      private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
+        if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
+          val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
+          handler.setHitSlop(hitSlop, hitSlop, hitSlop, hitSlop, GestureHandler.HIT_SLOP_NONE, GestureHandler.HIT_SLOP_NONE)
+        } else {
+          val hitSlop = config.getMap(KEY_HIT_SLOP)!!
+          var left = GestureHandler.HIT_SLOP_NONE
+          var top = GestureHandler.HIT_SLOP_NONE
+          var right = GestureHandler.HIT_SLOP_NONE
+          var bottom = GestureHandler.HIT_SLOP_NONE
+          var width = GestureHandler.HIT_SLOP_NONE
+          var height = GestureHandler.HIT_SLOP_NONE
+          if (hitSlop.hasKey(KEY_HIT_SLOP_HORIZONTAL)) {
+            val horizontalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HORIZONTAL))
+            right = horizontalPad
+            left = right
+          }
+          if (hitSlop.hasKey(KEY_HIT_SLOP_VERTICAL)) {
+            val verticalPad = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_VERTICAL))
+            bottom = verticalPad
+            top = bottom
+          }
+          if (hitSlop.hasKey(KEY_HIT_SLOP_LEFT)) {
+            left = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_LEFT))
+          }
+          if (hitSlop.hasKey(KEY_HIT_SLOP_TOP)) {
+            top = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_TOP))
+          }
+          if (hitSlop.hasKey(KEY_HIT_SLOP_RIGHT)) {
+            right = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_RIGHT))
+          }
+          if (hitSlop.hasKey(KEY_HIT_SLOP_BOTTOM)) {
+            bottom = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_BOTTOM))
+          }
+          if (hitSlop.hasKey(KEY_HIT_SLOP_WIDTH)) {
+            width = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_WIDTH))
+          }
+          if (hitSlop.hasKey(KEY_HIT_SLOP_HEIGHT)) {
+            height = PixelUtil.toPixelFromDIP(hitSlop.getDouble(KEY_HIT_SLOP_HEIGHT))
+          }
+          handler.setHitSlop(left, top, right, bottom, width, height)
+        }
+      }
+    }
+  }
 
   companion object {
     const val STATE_UNDETERMINED = 0

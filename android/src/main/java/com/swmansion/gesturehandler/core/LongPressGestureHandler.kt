@@ -5,6 +5,9 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.view.MotionEvent
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.PixelUtil
+import com.swmansion.gesturehandler.react.eventbuilders.LongPressGestureHandlerEventDataBuilder
 
 class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler>() {
   var minDurationMs = DEFAULT_MIN_DURATION_MS
@@ -171,6 +174,36 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   override fun onReset() {
     super.onReset()
     currentPointers = 0
+  }
+
+  class Factory : GestureHandler.Factory<LongPressGestureHandler>() {
+    override val type = LongPressGestureHandler::class.java
+    override val name = "LongPressGestureHandler"
+
+    override fun create(context: Context?): LongPressGestureHandler {
+      return LongPressGestureHandler((context)!!)
+    }
+
+    override fun configure(handler: LongPressGestureHandler, config: ReadableMap) {
+      super.configure(handler, config)
+      if (config.hasKey(KEY_LONG_PRESS_MIN_DURATION_MS)) {
+        handler.minDurationMs = config.getInt(KEY_LONG_PRESS_MIN_DURATION_MS).toLong()
+      }
+      if (config.hasKey(KEY_LONG_PRESS_MAX_DIST)) {
+        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_LONG_PRESS_MAX_DIST)))
+      }
+      if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
+        handler.setNumberOfPointers(config.getInt(KEY_NUMBER_OF_POINTERS))
+      }
+    }
+
+    override fun createEventBuilder(handler: LongPressGestureHandler) = LongPressGestureHandlerEventDataBuilder(handler)
+
+    companion object {
+      private const val KEY_LONG_PRESS_MIN_DURATION_MS = "minDurationMs"
+      private const val KEY_LONG_PRESS_MAX_DIST = "maxDist"
+      private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
+    }
   }
 
   companion object {

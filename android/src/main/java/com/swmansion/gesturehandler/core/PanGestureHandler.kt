@@ -6,8 +6,11 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
+import com.swmansion.gesturehandler.react.eventbuilders.PanGestureHandlerEventDataBuilder
 
 class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
   var velocityX = 0f
@@ -308,6 +311,131 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   override fun resetProgress() {
     startX = lastX
     startY = lastY
+  }
+
+  class Factory : GestureHandler.Factory<PanGestureHandler>() {
+    override val type = PanGestureHandler::class.java
+    override val name = "PanGestureHandler"
+
+    override fun create(context: Context?): PanGestureHandler {
+      return PanGestureHandler(context)
+    }
+
+    override fun configure(handler: PanGestureHandler, config: ReadableMap) {
+      super.configure(handler, config)
+      var hasCustomActivationCriteria = false
+      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_START)) {
+        handler.setActiveOffsetXStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_ACTIVE_OFFSET_X_START
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_END)) {
+        handler.setActiveOffsetXEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_ACTIVE_OFFSET_X_END
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_START)) {
+        handler.setFailOffsetXStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_FAIL_OFFSET_RANGE_X_START
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_END)) {
+        handler.setFailOffsetXEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_FAIL_OFFSET_RANGE_X_END
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_START)) {
+        handler.setActiveOffsetYStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_ACTIVE_OFFSET_Y_START
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_END)) {
+        handler.setActiveOffsetYEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_ACTIVE_OFFSET_Y_END
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)) {
+        handler.setFailOffsetYStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_FAIL_OFFSET_RANGE_Y_START
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)) {
+        handler.setFailOffsetYEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(
+            KEY_PAN_FAIL_OFFSET_RANGE_Y_END
+          )))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_MIN_VELOCITY)) {
+        // This value is actually in DPs/ms, but we can use the same function as for converting
+        // from DPs to pixels as the unit we're converting is in the numerator
+        handler.setMinVelocity(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY)))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_MIN_VELOCITY_X)) {
+        handler.setMinVelocityX(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_X)))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_PAN_MIN_VELOCITY_Y)) {
+        handler.setMinVelocityY(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_VELOCITY_Y)))
+        hasCustomActivationCriteria = true
+      }
+
+      // PanGestureHandler sets minDist by default, if there are custom criteria specified we want
+      // to reset that setting and use provided criteria instead.
+      if (config.hasKey(KEY_PAN_MIN_DIST)) {
+        handler.setMinDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_MIN_DIST)))
+      } else if (hasCustomActivationCriteria) {
+        handler.setMinDist(Float.MAX_VALUE)
+      }
+      if (config.hasKey(KEY_PAN_MIN_POINTERS)) {
+        handler.setMinPointers(config.getInt(KEY_PAN_MIN_POINTERS))
+      }
+      if (config.hasKey(KEY_PAN_MAX_POINTERS)) {
+        handler.setMaxPointers(config.getInt(KEY_PAN_MAX_POINTERS))
+      }
+      if (config.hasKey(KEY_PAN_AVG_TOUCHES)) {
+        handler.setAverageTouches(config.getBoolean(KEY_PAN_AVG_TOUCHES))
+      }
+      if (config.hasKey(KEY_PAN_ACTIVATE_AFTER_LONG_PRESS)) {
+        handler.setActivateAfterLongPress(config.getInt(KEY_PAN_ACTIVATE_AFTER_LONG_PRESS).toLong())
+      }
+    }
+
+    override fun createEventBuilder(handler: PanGestureHandler) = PanGestureHandlerEventDataBuilder(handler)
+
+    companion object {
+      private const val KEY_PAN_ACTIVE_OFFSET_X_START = "activeOffsetXStart"
+      private const val KEY_PAN_ACTIVE_OFFSET_X_END = "activeOffsetXEnd"
+      private const val KEY_PAN_FAIL_OFFSET_RANGE_X_START = "failOffsetXStart"
+      private const val KEY_PAN_FAIL_OFFSET_RANGE_X_END = "failOffsetXEnd"
+      private const val KEY_PAN_ACTIVE_OFFSET_Y_START = "activeOffsetYStart"
+      private const val KEY_PAN_ACTIVE_OFFSET_Y_END = "activeOffsetYEnd"
+      private const val KEY_PAN_FAIL_OFFSET_RANGE_Y_START = "failOffsetYStart"
+      private const val KEY_PAN_FAIL_OFFSET_RANGE_Y_END = "failOffsetYEnd"
+      private const val KEY_PAN_MIN_DIST = "minDist"
+      private const val KEY_PAN_MIN_VELOCITY = "minVelocity"
+      private const val KEY_PAN_MIN_VELOCITY_X = "minVelocityX"
+      private const val KEY_PAN_MIN_VELOCITY_Y = "minVelocityY"
+      private const val KEY_PAN_MIN_POINTERS = "minPointers"
+      private const val KEY_PAN_MAX_POINTERS = "maxPointers"
+      private const val KEY_PAN_AVG_TOUCHES = "avgTouches"
+      private const val KEY_PAN_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
+    }
   }
 
   companion object {
