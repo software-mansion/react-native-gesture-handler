@@ -25,6 +25,7 @@ export function useGesture(
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
 
+  // TODO: useIsomorphicLayoutEffect?
   useLayoutEffect(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
     RNGestureHandlerModule.flushOperations();
