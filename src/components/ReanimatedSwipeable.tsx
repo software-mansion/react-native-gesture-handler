@@ -361,7 +361,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           runOnJS(onSwipeableWillOpen)(SwipeDirection.RIGHT);
         } else if (toValue < 0 && onSwipeableWillOpen) {
           runOnJS(onSwipeableWillOpen)(SwipeDirection.LEFT);
-        } else if (onSwipeableWillClose) {
+        } else if (rowState.value !== 0 && onSwipeableWillClose) {
           runOnJS(onSwipeableWillClose)(
             fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
           );
@@ -377,7 +377,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
           runOnJS(onSwipeableOpen)(SwipeDirection.RIGHT);
         } else if (toValue < 0 && onSwipeableOpen) {
           runOnJS(onSwipeableOpen)(SwipeDirection.LEFT);
-        } else if (onSwipeableClose) {
+        } else if (rowState.value !== 0 && onSwipeableClose) {
           runOnJS(onSwipeableClose)(
             fromValue > 0 ? SwipeDirection.LEFT : SwipeDirection.RIGHT
           );
