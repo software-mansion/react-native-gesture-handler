@@ -1504,9 +1504,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNGestureHandler/shared (= 2.23.1)
+    - RNGestureHandler/shared (= 2.25.0)
     - Yoga
-  - RNGestureHandler/shared (2.23.1):
+  - RNGestureHandler/shared (2.25.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1518,9 +1518,12 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
+    - React-renderercss
     - React-rendererdebug
     - React-utils
     - ReactCodegen
