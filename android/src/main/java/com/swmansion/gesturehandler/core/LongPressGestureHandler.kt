@@ -184,8 +184,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       return LongPressGestureHandler((context)!!)
     }
 
-    override fun configure(handler: LongPressGestureHandler, config: ReadableMap) {
-      super.configure(handler, config)
+    override fun setConfig(handler: LongPressGestureHandler, config: ReadableMap) {
+      super.setConfig(handler, config)
       if (config.hasKey(KEY_MIN_DURATION_MS)) {
         handler.minDurationMs = config.getInt(KEY_MIN_DURATION_MS).toLong()
       }

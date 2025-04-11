@@ -174,8 +174,8 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
       return TapGestureHandler()
     }
 
-    override fun configure(handler: TapGestureHandler, config: ReadableMap) {
-      super.configure(handler, config)
+    override fun setConfig(handler: TapGestureHandler, config: ReadableMap) {
+      super.setConfig(handler, config)
       if (config.hasKey(KEY_NUMBER_OF_TAPS)) {
         handler.setNumberOfTaps(config.getInt(KEY_NUMBER_OF_TAPS))
       }

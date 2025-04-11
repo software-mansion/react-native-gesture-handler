@@ -89,7 +89,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
         registry.registerHandler(handler)
         interactionManager.configureInteractions(handler, config)
-        handlerFactory.configure(handler, config)
+        handlerFactory.setConfig(handler, config)
         return
       }
     }
@@ -129,7 +129,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       if (factory != null) {
         interactionManager.dropRelationsForHandlerWithTag(handlerTag)
         interactionManager.configureInteractions(handler, config)
-        factory.configure(handler, config)
+        factory.setConfig(handler, config)
       }
     }
   }

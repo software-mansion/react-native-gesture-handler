@@ -829,7 +829,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     abstract val type: Class<T>
     abstract val name: String
     abstract fun create(context: Context?): T
-    open fun configure(handler: T, config: ReadableMap) {
+    open fun setConfig(handler: T, config: ReadableMap) {
       handler.resetConfig()
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE))

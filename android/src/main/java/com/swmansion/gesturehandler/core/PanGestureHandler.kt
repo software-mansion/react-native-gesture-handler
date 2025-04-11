@@ -321,8 +321,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return PanGestureHandler(context)
     }
 
-    override fun configure(handler: PanGestureHandler, config: ReadableMap) {
-      super.configure(handler, config)
+    override fun setConfig(handler: PanGestureHandler, config: ReadableMap) {
+      super.setConfig(handler, config)
       var hasCustomActivationCriteria = false
       if (config.hasKey(KEY_ACTIVE_OFFSET_X_START)) {
         handler.setActiveOffsetXStart(
