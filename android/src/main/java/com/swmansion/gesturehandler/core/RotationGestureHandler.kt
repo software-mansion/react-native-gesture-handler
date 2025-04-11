@@ -18,10 +18,6 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   var anchorY: Float = Float.NaN
     private set
 
-  init {
-    setShouldCancelWhenOutside(false)
-  }
-
   private val gestureListener: OnRotationGestureListener = object : OnRotationGestureListener {
     override fun onRotation(detector: RotationGestureDetector): Boolean {
       val prevRotation: Double = rotation

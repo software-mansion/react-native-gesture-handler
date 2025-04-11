@@ -20,32 +20,26 @@ import com.swmansion.gesturehandler.react.isScreenReaderOn
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
-  var disallowInterruption = false
-    private set
-
-  private var hook: NativeViewGestureHandlerHook = defaultHook
-
-  init {
-    setShouldCancelWhenOutside(true)
-  }
-
-  override fun resetConfig() {
-    super.resetConfig()
-    shouldActivateOnStart = false
-    disallowInterruption = false
-  }
-
-  fun setShouldActivateOnStart(shouldActivateOnStart: Boolean) = apply {
-    this.shouldActivateOnStart = shouldActivateOnStart
-  }
 
   /**
    * Set this to `true` when wrapping native components that are supposed to be an exclusive
    * target for a touch stream. Like for example switch or slider component which when activated
    * aren't supposed to be cancelled by scrollview or other container that may also handle touches.
    */
-  fun setDisallowInterruption(disallowInterruption: Boolean) = apply {
-    this.disallowInterruption = disallowInterruption
+  var disallowInterruption = false
+    private set
+
+  private var hook: NativeViewGestureHandlerHook = defaultHook
+
+  init {
+    shouldCancelWhenOutside = true
+  }
+
+  override fun resetConfig() {
+    super.resetConfig()
+    shouldActivateOnStart = DEFAULT_SHOULD_ACTIVATE_ON_START
+    disallowInterruption = DEFAULT_DISALLOW_INTERRUPTION
+    shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
@@ -178,12 +172,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     override fun setConfig(handler: NativeViewGestureHandler, config: ReadableMap) {
       super.setConfig(handler, config)
       if (config.hasKey(KEY_SHOULD_ACTIVATE_ON_START)) {
-        handler.setShouldActivateOnStart(
-          config.getBoolean(KEY_SHOULD_ACTIVATE_ON_START)
-        )
+        handler.shouldActivateOnStart = config.getBoolean(KEY_SHOULD_ACTIVATE_ON_START)
       }
       if (config.hasKey(KEY_DISALLOW_INTERRUPTION)) {
-        handler.setDisallowInterruption(config.getBoolean(KEY_DISALLOW_INTERRUPTION))
+        handler.disallowInterruption = config.getBoolean(KEY_DISALLOW_INTERRUPTION)
       }
     }
 
@@ -196,6 +188,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   companion object {
+    private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
+    private const val DEFAULT_SHOULD_ACTIVATE_ON_START = false
+    private const val DEFAULT_DISALLOW_INTERRUPTION = false
+
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)
 

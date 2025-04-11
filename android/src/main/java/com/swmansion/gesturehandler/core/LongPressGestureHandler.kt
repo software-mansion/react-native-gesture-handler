@@ -13,8 +13,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   var minDurationMs = DEFAULT_MIN_DURATION_MS
   val duration: Int
     get() = (previousTime - startTime).toInt()
-  private val defaultMaxDistSq: Float
-  private var maxDistSq: Float
+  private val defaultMaxDist: Float
+  private var maxDist: Float
   private var numberOfPointersRequired: Int
   private var startX = 0f
   private var startY = 0f
@@ -24,28 +24,19 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   private var currentPointers = 0
 
   init {
-    setShouldCancelWhenOutside(true)
+    shouldCancelWhenOutside = true
 
-    val defaultMaxDist = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
-    defaultMaxDistSq = defaultMaxDist * defaultMaxDist
-    maxDistSq = defaultMaxDistSq
+    val systemDefaultMaxDist = DEFAULT_MAX_DIST_DP * context.resources.displayMetrics.density
+    defaultMaxDist = systemDefaultMaxDist
+    maxDist = defaultMaxDist
     numberOfPointersRequired = 1
   }
 
   override fun resetConfig() {
     super.resetConfig()
     minDurationMs = DEFAULT_MIN_DURATION_MS
-    maxDistSq = defaultMaxDistSq
-  }
-
-  fun setMaxDist(maxDist: Float): LongPressGestureHandler {
-    maxDistSq = maxDist * maxDist
-    return this
-  }
-
-  fun setNumberOfPointers(numberOfPointers: Int): LongPressGestureHandler {
-    numberOfPointersRequired = numberOfPointers
-    return this
+    maxDist = defaultMaxDist
+    shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
   private fun getAverageCoords(ev: MotionEvent, excludePointer: Boolean = false): Pair<Float, Float> {
@@ -144,7 +135,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       val deltaY = y - startY
       val distSq = deltaX * deltaX + deltaY * deltaY
 
-      if (distSq > maxDistSq) {
+      if (distSq > maxDist * maxDist) {
         if (state == STATE_ACTIVE) {
           cancel()
         } else {
@@ -190,10 +181,10 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         handler.minDurationMs = config.getInt(KEY_MIN_DURATION_MS).toLong()
       }
       if (config.hasKey(KEY_MAX_DIST)) {
-        handler.setMaxDist(PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DIST)))
+        handler.maxDist = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DIST))
       }
       if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
-        handler.setNumberOfPointers(config.getInt(KEY_NUMBER_OF_POINTERS))
+        handler.numberOfPointers = config.getInt(KEY_NUMBER_OF_POINTERS)
       }
     }
 
@@ -207,6 +198,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
   }
 
   companion object {
+    private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
     private const val DEFAULT_MIN_DURATION_MS: Long = 500
     private const val DEFAULT_MAX_DIST_DP = 10f
   }

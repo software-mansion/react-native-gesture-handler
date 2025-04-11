@@ -38,10 +38,6 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       return true
     }
 
-    init {
-      setShouldCancelWhenOutside(false)
-    }
-
     override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
       startingSpan = detector.currentSpan
       return true

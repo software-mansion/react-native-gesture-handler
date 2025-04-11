@@ -39,7 +39,17 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var isWithinBounds = false
     private set
   var isEnabled = true
-    private set
+    private set(enabled) {
+      // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
+      // handlers to be cancelled on re-render because that's the moment when the config is updated.
+      // If the enabled prop "changed" from true to true the handler would get cancelled.
+      if (view != null && isEnabled != enabled) {
+        // If view is set then handler is in "active" state. In that case we want to "cancel" handler
+        // when it changes enabled state so that it gets cleared from the orchestrator
+        UiThreadUtil.runOnUiThread { cancel() }
+      }
+      field = enabled
+    }
   var actionType = 0
 
   var changedTouchesPayload: WritableArray? = null
@@ -65,9 +75,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   private var lastEventOffsetX = 0f
   private var lastEventOffsetY = 0f
-  private var shouldCancelWhenOutside = false
   var numberOfPointers = 0
-    private set
+    protected set
+  protected var shouldCancelWhenOutside = false
   protected var orchestrator: GestureHandlerOrchestrator? = null
   private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
@@ -103,11 +113,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   open fun resetConfig() {
-    needsPointerData = false
-    manualActivation = false
-    shouldCancelWhenOutside = false
-    isEnabled = true
-    hitSlop = null
+    needsPointerData = DEFAULT_NEEDS_POINTER_DATA
+    manualActivation = DEFAULT_MANUAL_ACTIVATION
+    shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
+    isEnabled = DEFAULT_IS_ENABLED
+    hitSlop = DEFAULT_HIT_SLOP
+    mouseButton = DEFAULT_MOUSE_BUTTON
   }
 
   fun hasCommonPointers(other: GestureHandler<*>): Boolean {
@@ -118,24 +129,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
     return false
   }
-
-  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
-
-  fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
-    // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
-    // handlers to be cancelled on re-render because that's the moment when the config is updated.
-    // If the enabled prop "changed" from true to true the handler would get cancelled.
-    if (view != null && isEnabled != enabled) {
-      // If view is set then handler is in "active" state. In that case we want to "cancel" handler
-      // when it changes enabled state so that it gets cleared from the orchestrator
-      UiThreadUtil.runOnUiThread { cancel() }
-    }
-    isEnabled = enabled
-  }
-
-  fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
     leftPad: Float,
@@ -166,10 +159,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT =
     applySelf { interactionController = controller }
-
-  fun setMouseButton(mouseButton: Int) = apply {
-    this.mouseButton = mouseButton
-  }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
     check(!(this.view != null || this.orchestrator != null)) { "Already prepared or hasn't been reset" }
@@ -832,10 +821,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     open fun setConfig(handler: T, config: ReadableMap) {
       handler.resetConfig()
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
-        handler.setShouldCancelWhenOutside(config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE))
+        handler.shouldCancelWhenOutside = config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)
       }
       if (config.hasKey(KEY_ENABLED)) {
-        handler.setEnabled(config.getBoolean(KEY_ENABLED))
+        handler.isEnabled = config.getBoolean(KEY_ENABLED)
       }
       if (config.hasKey(KEY_HIT_SLOP)) {
         handleHitSlopProperty(handler, config)
@@ -844,10 +833,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
       }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
-        handler.setManualActivation(config.getBoolean(KEY_MANUAL_ACTIVATION))
+        handler.manualActivation = config.getBoolean(KEY_MANUAL_ACTIVATION)
       }
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
-        handler.setMouseButton(config.getInt(KEY_MOUSE_BUTTON))
+        handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
       }
     }
 
@@ -916,6 +905,13 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   companion object {
+    private const val DEFAULT_NEEDS_POINTER_DATA = false
+    private const val DEFAULT_MANUAL_ACTIVATION = false
+    private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = false
+    private const val DEFAULT_IS_ENABLED = true
+    private val DEFAULT_HIT_SLOP = null
+    private const val DEFAULT_MOUSE_BUTTON = 0
+
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1
     const val STATE_BEGAN = 2
