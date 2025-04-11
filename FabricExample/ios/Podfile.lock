@@ -1677,9 +1677,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNGestureHandler/shared (= 2.23.1)
+    - RNGestureHandler/shared (= 2.25.0)
     - Yoga
-  - RNGestureHandler/shared (2.23.1):
+  - RNGestureHandler/shared (2.25.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1691,9 +1691,12 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
+    - React-renderercss
     - React-rendererdebug
     - React-utils
     - ReactCodegen
@@ -1997,9 +2000,9 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 7f5052913dd72a0e84ca95973f9f8bc97f2c5b95
   ReactCodegen: 16700ce5938fd79c1ff4c5b5735f10830f2e6bd3
   ReactCommon: 1257efa9d0b07517d8b79bb4055eaefac1204807
-  RNGestureHandler: 95c4fe88f8fa10a891089521e7b2666db04b78c1
+  RNGestureHandler: 67d75727fb5bc28645b711944ddc75006d4f11b7
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: 76eca883712bbdd12fcc754f2342f3ca307adb44
+  Yoga: 7fb3f48a328f20ea5d5eecd862e91798bd76b255
 
 PODFILE CHECKSUM: d42e92008e98fe107445c7108b66a452b97ce9ef
 
