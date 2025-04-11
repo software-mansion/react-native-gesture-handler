@@ -3,7 +3,7 @@
   "version": "2.25.0",
   "description": "Declarative API exposing native platform touch and gesture system to React Native",
   "scripts": {
-    "prepare": "bob build && husky install",
+    "postinstall": "bob build && husky install",
     "test": "jest",
     "build": "yarn tsc -p tsconfig.build.json",
     "precommit": "lint-staged",
