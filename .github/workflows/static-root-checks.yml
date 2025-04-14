@@ -12,6 +12,8 @@ jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
+    env:
+      RNGH_DIR: 'packages/react-native-gesture-handler'
     concurrency:
       group: static-root-${{ github.ref }}
       cancel-in-progress: true
@@ -26,8 +28,10 @@ jobs:
       - name: Install node dependencies
         run: yarn
       - name: Check types
+        working-directory: ${{ env.RNGH_DIR }}
         run: yarn tsc --noEmit
       - name: Lint
+        working-directory: ${{ env.RNGH_DIR }}
         run: yarn lint:js-root
       - name: Check for circular dependencies
         run: yarn circular-dependency-check
