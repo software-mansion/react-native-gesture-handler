@@ -34,4 +34,5 @@ jobs:
         working-directory: ${{ env.RNGH_DIR }}
         run: yarn lint:js-root
       - name: Check for circular dependencies
+        working-directory: ${{ env.RNGH_DIR }}
         run: yarn circular-dependency-check
