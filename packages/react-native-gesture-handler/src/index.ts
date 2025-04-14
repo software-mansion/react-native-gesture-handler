@@ -167,3 +167,5 @@ export {
 } from './EnableNewWebImplementation';
 
 initialize();
+
+test;
