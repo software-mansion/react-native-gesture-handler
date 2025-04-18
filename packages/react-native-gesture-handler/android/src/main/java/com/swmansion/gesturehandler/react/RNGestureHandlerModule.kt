@@ -41,10 +41,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForName<T>(handlerName)
       ?: throw JSApplicationIllegalArgumentException("Invalid handler name $handlerName")
 
-    val handler = handlerFactory.create(reactApplicationContext).apply {
-      tag = handlerTag
-      setOnTouchEventListener(eventDispatcher)
-    }
+    val handler = handlerFactory.create(reactApplicationContext, handlerTag)
+    handler.setOnTouchEventListener(eventDispatcher)
     registry.registerHandler(handler)
     interactionManager.configureInteractions(handler, config)
     handlerFactory.setConfig(handler, config)
