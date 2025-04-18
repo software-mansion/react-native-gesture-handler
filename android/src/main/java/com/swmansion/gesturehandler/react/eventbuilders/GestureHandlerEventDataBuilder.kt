@@ -3,7 +3,7 @@ package com.swmansion.gesturehandler.react.eventbuilders
 import com.facebook.react.bridge.WritableMap
 import com.swmansion.gesturehandler.core.GestureHandler
 
-abstract class GestureHandlerEventDataBuilder<T : GestureHandler<T>>(handler: T) {
+abstract class GestureHandlerEventDataBuilder<T : GestureHandler>(handler: T) {
   private val numberOfPointers: Int
   private val handlerTag: Int
   private val state: Int
