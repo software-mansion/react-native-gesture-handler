@@ -17,16 +17,15 @@ import com.swmansion.gesturehandler.core.GestureHandler
 @Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
-  NativeRNGestureHandlerModuleSpec(reactContext),
-  GestureHandlerStateManager {
+  NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
 
-  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
+  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
-
   override fun getName() = NAME
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> createGestureHandlerHelper(
     handlerName: String,
     handlerTag: Int,
@@ -34,22 +33,28 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   ) {
     if (registry.getHandler(handlerTag) !== null) {
       throw IllegalStateException(
-        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.",
+        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors."
       )
     }
 
     val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForName<T>(handlerName)
       ?: throw JSApplicationIllegalArgumentException("Invalid handler name $handlerName")
 
-    val handler = handlerFactory.create(reactApplicationContext, handlerTag)
-    handler.setOnTouchEventListener(eventDispatcher)
+    val handler = handlerFactory.create(reactApplicationContext).apply {
+      tag = handlerTag
+      setOnTouchEventListener(eventDispatcher)
+    }
     registry.registerHandler(handler)
     interactionManager.configureInteractions(handler, config)
     handlerFactory.setConfig(handler, config)
   }
 
   @ReactMethod
-  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
+  override fun createGestureHandler(
+    handlerName: String,
+    handlerTagDouble: Double,
+    config: ReadableMap,
+  ) {
     val handlerTag = handlerTagDouble.toInt()
 
     createGestureHandlerHelper(handlerName, handlerTag, config)
@@ -71,11 +76,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
-    val handler = registry.getHandler(handlerTag) as T? ?: return
-    val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
-    interactionManager.dropRelationsForHandlerWithTag(handlerTag)
-    interactionManager.configureInteractions(handler, config)
-    factory.setConfig(handler, config)
+    val handler = registry.getHandler(handlerTag) as T?
+    if (handler != null) {
+      val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
+      interactionManager.dropRelationsForHandlerWithTag(handlerTag)
+      interactionManager.configureInteractions(handler, config)
+      factory.setConfig(handler, config)
+    }
   }
 
   @ReactMethod
@@ -100,10 +107,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun handleClearJSResponder() = Unit
+  override fun handleClearJSResponder() {
+  }
 
   @ReactMethod
-  override fun flushOperations() = Unit
+  override fun flushOperations() {
+  }
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
     registry.getHandler(handlerTag)?.let { handler ->
@@ -153,7 +162,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
     synchronized(roots) {
-      assert(root !in roots) { "Root helper$root already registered" }
+      if (root in roots) {
+        throw IllegalStateException("Root helper$root already registered")
+      }
       roots.add(root)
     }
   }
