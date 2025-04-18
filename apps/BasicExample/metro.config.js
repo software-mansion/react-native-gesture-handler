@@ -4,7 +4,6 @@ const { mergeConfig } = require('metro-config');
 const path = require('path');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
 const escape = require('escape-string-regexp');
-const gestureHandlerPackage = require('../../packages/react-native-gesture-handler/package.json');
 
 // Gesture handler tries to require 'react-native-reanimated' inside a try...catch
 // block. In root directory, we have reanimated installed but FabricExample doesn't.
