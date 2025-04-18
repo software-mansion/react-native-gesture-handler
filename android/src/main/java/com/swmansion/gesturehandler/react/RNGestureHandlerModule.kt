@@ -32,7 +32,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     handlerTag: Int,
     config: ReadableMap,
   ) {
-
     if (registry.getHandler(handlerTag) !== null) {
       throw IllegalStateException(
         "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors."
@@ -109,12 +108,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun handleClearJSResponder() {
-  }
+  override fun handleClearJSResponder() = Unit
 
   @ReactMethod
-  override fun flushOperations() {
-  }
+  override fun flushOperations() = Unit
 
   override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
     registry.getHandler(handlerTag)?.let { handler ->
