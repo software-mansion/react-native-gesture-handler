@@ -20,11 +20,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext),
   GestureHandlerStateManager {
 
+  private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
-
   override fun getName() = NAME
 
   private fun <T : GestureHandler<T>> createGestureHandlerHelper(
@@ -41,8 +41,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForName<T>(handlerName)
       ?: throw JSApplicationIllegalArgumentException("Invalid handler name $handlerName")
 
-    val handler = handlerFactory.create(reactApplicationContext, handlerTag)
-    handler.setOnTouchEventListener(eventDispatcher)
+    val handler = handlerFactory.create(reactApplicationContext).apply {
+      tag = handlerTag
+      setOnTouchEventListener(eventDispatcher)
+    }
     registry.registerHandler(handler)
     interactionManager.configureInteractions(handler, config)
     handlerFactory.setConfig(handler, config)
