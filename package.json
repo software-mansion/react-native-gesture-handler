@@ -7,6 +7,7 @@
     "apps/BasicExample"
   ],
   "scripts": {
+    "postinstall": "husky",
     "ts-check": "cd ./packages/react-native-gesture-handler && yarn tsc --noEmit"
   },
   "devDependencies": {
