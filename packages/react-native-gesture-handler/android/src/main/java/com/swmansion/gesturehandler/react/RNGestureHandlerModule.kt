@@ -20,10 +20,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext),
   GestureHandlerStateManager {
 
-  private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
+  private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
+
   override fun getName() = NAME
 
   @Suppress("UNCHECKED_CAST")
