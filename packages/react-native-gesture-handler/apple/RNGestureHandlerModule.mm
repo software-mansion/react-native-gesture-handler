@@ -52,12 +52,11 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   // Oparations called after views have been updated.
   NSMutableArray<GestureHandlerOperation> *_operations;
 
-  jsi::Runtime *_runtime;
+  jsi::Runtime *_rnRuntime;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
-@synthesize dispatchToJSThread = _dispatchToJSThread;
 #endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_MODULE()
@@ -93,18 +92,19 @@ RCT_EXPORT_MODULE()
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
-- (void)installJSIBindingsWithRuntime:(jsi::Runtime &)runtime
+- (void)installJSIBindingsWithRuntime:(jsi::Runtime &)rnRuntime
 {
-  _runtime = &runtime;
+  _rnRuntime = &rnRuntime;
   auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
-      runtime,
-      jsi::PropNameID::forAscii(runtime, "isViewFlatteningDisabled"),
+      rnRuntime,
+      jsi::PropNameID::forAscii(rnRuntime, "isViewFlatteningDisabled"),
       1,
-      [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count) -> jsi::Value {
+      [](jsi::Runtime &rnRuntime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count)
+          -> jsi::Value {
         if (!arguments[0].isObject()) {
           return jsi::Value::null();
         }
-        auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+        auto shadowNode = shadowNodeFromValue(rnRuntime, arguments[0]);
 
         if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
           return jsi::Value(true);
@@ -118,7 +118,7 @@ RCT_EXPORT_MODULE()
 
         return jsi::Value(isViewFlatteningDisabled);
       });
-  runtime.global().setProperty(runtime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
+  rnRuntime.global().setProperty(rnRuntime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
@@ -128,7 +128,7 @@ RCT_EXPORT_MODULE()
   _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
                                                         viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
-  _runtime = nullptr;
+  _rnRuntime = nullptr;
 }
 #else
 - (void)setBridge:(RCTBridge *)bridge
@@ -146,46 +146,34 @@ RCT_EXPORT_MODULE()
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installUIRuntimeBindings)
 {
-  auto runtime = _runtime;
+  jsi::Runtime &rt = *_rnRuntime;
 
-  dispatch_block_t block = ^{
-    auto arrayBufferValue = runtime->global()
-                                .getProperty(*runtime, "_WORKLET_RUNTIME")
-                                .getObject(*runtime)
-                                .getArrayBuffer(*runtime)
-                                .data(*runtime);
-    uintptr_t *uiAddr = reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
-    jsi::Runtime *uiRuntime = reinterpret_cast<jsi::Runtime *>(*uiAddr);
+  const auto arrayBufferValue =
+      rt.global().getProperty(rt, "_WORKLET_RUNTIME").getObject(rt).getArrayBuffer(rt).data(rt);
+  const auto uiRuntimeAddress = reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
+  jsi::Runtime &uiRuntime = *reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
 
-    __weak RNGestureHandlerModule *weakSelf = self;
+  __weak RNGestureHandlerModule *weakSelf = self;
 
-    auto setGestureStateNew = jsi::Function::createFromHostFunction(
-        *uiRuntime,
-        jsi::PropNameID::forAscii(*uiRuntime, "_setGestureStateNew"),
-        2,
-        [weakSelf](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count)
-            -> jsi::Value {
-          if (count == 2) {
-            auto handlerTag = (int)arguments[0].asNumber();
-            auto state = (int)arguments[1].asNumber();
+  auto setGestureStateNew = jsi::Function::createFromHostFunction(
+      uiRuntime,
+      jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateNew"),
+      2,
+      [weakSelf](jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
+        if (count == 2) {
+          const auto handlerTag = static_cast<int>(args[0].asNumber());
+          const auto state = static_cast<int>(args[1].asNumber());
 
-            // TODO: expose to JS and dispatch to UI thread if called on JS?
-            RNGestureHandlerModule *strongSelf = weakSelf;
-            if (strongSelf != nullptr) {
-              [strongSelf setGestureState:state forHandler:handlerTag];
-            }
+          // TODO: expose to JS and dispatch to UI thread if called on JS?
+          RNGestureHandlerModule *strongSelf = weakSelf;
+          if (strongSelf != nullptr) {
+            [strongSelf setGestureState:state forHandler:handlerTag];
           }
-          return jsi::Value::undefined();
-        });
+        }
+        return jsi::Value::undefined();
+      });
 
-    uiRuntime->global().setProperty(*uiRuntime, "_setGestureStateNew", std::move(setGestureStateNew));
-  };
-
-  if (_dispatchToJSThread) {
-    _dispatchToJSThread(block);
-  } else {
-    [self.bridge dispatchBlock:block queue:RCTJSThread];
-  }
+  uiRuntime.global().setProperty(uiRuntime, "_setGestureStateNew", std::move(setGestureStateNew));
 
   return @true;
 }
