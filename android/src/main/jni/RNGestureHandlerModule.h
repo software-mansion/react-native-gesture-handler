@@ -18,7 +18,7 @@ namespace gesturehandler {
 
     private:
         friend HybridBase;
-        jsi::Runtime* runtime = nullptr;
+        jsi::Runtime* rnRuntime = nullptr;
 
         jni::global_ref<RNGestureHandlerModule::javaobject> javaPart_;
         explicit RNGestureHandlerModule(jni::alias_ref<RNGestureHandlerModule::javaobject> jThis);
@@ -28,4 +28,4 @@ namespace gesturehandler {
         void decorateRuntime(jsi::Runtime& runtime);
         void decorateUIRuntime();
     };
-} // namespace newarchtricks
+} // namespace gesturehandler
