@@ -42,10 +42,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForName<T>(handlerName)
       ?: throw JSApplicationIllegalArgumentException("Invalid handler name $handlerName")
 
-    val handler = handlerFactory.create(reactApplicationContext).apply {
-      tag = handlerTag
-      setOnTouchEventListener(eventDispatcher)
-    }
+    val handler = handlerFactory.create(reactApplicationContext, handlerTag)
+    handler.setOnTouchEventListener(eventDispatcher)
     registry.registerHandler(handler)
     interactionManager.configureInteractions(handler, config)
     handlerFactory.setConfig(handler, config)
@@ -74,13 +72,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
-    val handler = registry.getHandler(handlerTag) as T?
-    if (handler != null) {
-      val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
-      interactionManager.dropRelationsForHandlerWithTag(handlerTag)
-      interactionManager.configureInteractions(handler, config)
-      factory.setConfig(handler, config)
-    }
+    val handler = registry.getHandler(handlerTag) as T? ?: return
+    val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
+    interactionManager.dropRelationsForHandlerWithTag(handlerTag)
+    interactionManager.configureInteractions(handler, config)
+    factory.setConfig(handler, config)
   }
 
   @ReactMethod
@@ -158,9 +154,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   fun registerRootHelper(root: RNGestureHandlerRootHelper) {
     synchronized(roots) {
-      if (root in roots) {
-        throw IllegalStateException("Root helper$root already registered")
-      }
+      assert(root !in roots) { "Root helper$root already registered" }
       roots.add(root)
     }
   }
