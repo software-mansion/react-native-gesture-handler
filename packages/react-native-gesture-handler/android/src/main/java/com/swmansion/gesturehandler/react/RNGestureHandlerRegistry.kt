@@ -8,17 +8,17 @@ import com.swmansion.gesturehandler.core.GestureHandlerRegistry
 import java.util.*
 
 class RNGestureHandlerRegistry : GestureHandlerRegistry {
-  private val handlers = SparseArray<GestureHandler<*>>()
+  private val handlers = SparseArray<GestureHandler>()
   private val attachedTo = SparseArray<Int?>()
-  private val handlersForView = SparseArray<ArrayList<GestureHandler<*>>>()
+  private val handlersForView = SparseArray<ArrayList<GestureHandler>>()
 
   @Synchronized
-  fun registerHandler(handler: GestureHandler<*>) {
+  fun registerHandler(handler: GestureHandler) {
     handlers.put(handler.tag, handler)
   }
 
   @Synchronized
-  fun getHandler(handlerTag: Int): GestureHandler<*>? = handlers[handlerTag]
+  fun getHandler(handlerTag: Int): GestureHandler? = handlers[handlerTag]
 
   @Synchronized
   fun attachHandlerToView(handlerTag: Int, viewTag: Int, actionType: Int): Boolean {
@@ -32,7 +32,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  private fun registerHandlerForViewWithTag(viewTag: Int, handler: GestureHandler<*>) {
+  private fun registerHandlerForViewWithTag(viewTag: Int, handler: GestureHandler) {
     check(attachedTo[handler.tag] == null) { "Handler $handler already attached" }
     attachedTo.put(handler.tag, viewTag)
     var listToAdd = handlersForView[viewTag]
@@ -48,7 +48,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  private fun detachHandler(handler: GestureHandler<*>) {
+  private fun detachHandler(handler: GestureHandler) {
     val attachedToView = attachedTo[handler.tag]
     if (attachedToView != null) {
       attachedTo.remove(handler.tag)
@@ -87,8 +87,8 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler<*>>? = handlersForView[viewTag]
+  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler>? = handlersForView[viewTag]
 
   @Synchronized
-  override fun getHandlersForView(view: View): ArrayList<GestureHandler<*>>? = getHandlersForViewWithTag(view.id)
+  override fun getHandlersForView(view: View): ArrayList<GestureHandler>? = getHandlersForViewWithTag(view.id)
 }

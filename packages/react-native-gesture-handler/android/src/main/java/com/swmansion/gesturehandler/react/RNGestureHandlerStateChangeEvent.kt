@@ -19,7 +19,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   private var newState: Int = GestureHandler.STATE_UNDETERMINED
   private var oldState: Int = GestureHandler.STATE_UNDETERMINED
 
-  private fun <T : GestureHandler<T>> init(
+  private fun <T : GestureHandler> init(
     handler: T,
     newState: Int,
     oldState: Int,
@@ -56,7 +56,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
       TOUCH_EVENTS_POOL_SIZE,
     )
 
-    fun <T : GestureHandler<T>> obtain(
+    fun <T : GestureHandler> obtain(
       handler: T,
       newState: Int,
       oldState: Int,

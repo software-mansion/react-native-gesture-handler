@@ -17,7 +17,8 @@ import com.swmansion.gesturehandler.core.GestureHandler
 @Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
-  NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
+  NativeRNGestureHandlerModuleSpec(reactContext),
+  GestureHandlerStateManager {
 
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
@@ -26,14 +27,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   override fun getName() = NAME
 
-  private fun <T : GestureHandler<T>> createGestureHandlerHelper(
+  private fun <T : GestureHandler> createGestureHandlerHelper(
     handlerName: String,
     handlerTag: Int,
     config: ReadableMap,
   ) {
     if (registry.getHandler(handlerTag) !== null) {
       throw IllegalStateException(
-        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors."
+        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.",
       )
     }
 
@@ -41,21 +42,17 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       ?: throw JSApplicationIllegalArgumentException("Invalid handler name $handlerName")
 
     val handler = handlerFactory.create(reactApplicationContext, handlerTag)
-    handler.setOnTouchEventListener(eventDispatcher)
+    handler.onTouchEventListener = eventDispatcher
     registry.registerHandler(handler)
     interactionManager.configureInteractions(handler, config)
     handlerFactory.setConfig(handler, config)
   }
 
   @ReactMethod
-  override fun createGestureHandler(
-    handlerName: String,
-    handlerTagDouble: Double,
-    config: ReadableMap,
-  ) {
+  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
-    createGestureHandlerHelper(handlerName, handlerTag, config)
+    createGestureHandlerHelper<GestureHandler>(handlerName, handlerTag, config)
   }
 
   @ReactMethod
@@ -72,10 +69,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  @Suppress("UNCHECKED_CAST")
-  private fun <T : GestureHandler<T>> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
-    val handler = registry.getHandler(handlerTag) as T? ?: return
-    val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
+  private fun <T : GestureHandler> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
+    val handler = registry.getHandler(handlerTag) ?: return
+    val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler<GestureHandler>(handler) ?: return
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     interactionManager.configureInteractions(handler, config)
     factory.setConfig(handler, config)
@@ -85,7 +81,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
-    updateGestureHandlerHelper(handlerTag, config)
+    updateGestureHandlerHelper<GestureHandler>(handlerTag, config)
   }
 
   @ReactMethod

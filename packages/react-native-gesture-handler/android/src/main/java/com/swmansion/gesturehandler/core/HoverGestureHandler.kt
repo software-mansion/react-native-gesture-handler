@@ -10,13 +10,13 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
 import com.swmansion.gesturehandler.react.eventbuilders.HoverGestureHandlerEventDataBuilder
 
-class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
+class HoverGestureHandler : GestureHandler() {
   private var handler: Handler? = null
   private var finishRunnable = Runnable { finish() }
   var stylusData: StylusData = StylusData()
     private set
 
-  private infix fun isAncestorOf(other: GestureHandler<*>): Boolean {
+  private infix fun isAncestorOf(other: GestureHandler): Boolean {
     var current: View? = other.view
 
     while (current != null) {
@@ -50,7 +50,7 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
     return null
   }
 
-  override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
+  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean {
     if (handler is HoverGestureHandler && !(handler isAncestorOf this)) {
       return isViewDisplayedOverAnother(handler.view!!, this.view!!)!!
     }
@@ -58,7 +58,7 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
     return super.shouldBeCancelledBy(handler)
   }
 
-  override fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
+  override fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
     if (handler is HoverGestureHandler) {
       if (!(this isAncestorOf handler) && !(handler isAncestorOf this)) {
         isViewDisplayedOverAnother(this.view!!, handler.view!!)?.let {
@@ -70,10 +70,8 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
     return super.shouldRequireToWaitForFailure(handler)
   }
 
-  override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
-    if (handler is HoverGestureHandler &&
-      (this isAncestorOf handler || handler isAncestorOf this)
-    ) {
+  override fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean {
+    if (handler is HoverGestureHandler && (this isAncestorOf handler || handler isAncestorOf this)) {
       return true
     }
 
