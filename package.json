@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "packages/react-native-gesture-handler"
+    "packages/react-native-gesture-handler",
+    "apps/BasicExample"
   ],
   "scripts": {
     "ts-check": "cd ./packages/react-native-gesture-handler && yarn tsc --noEmit"
