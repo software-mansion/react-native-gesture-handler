@@ -61,7 +61,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
   internal inner class RootViewGestureHandler(handlerTag: Int) : GestureHandler<RootViewGestureHandler>() {
     init {
-        this.tag = handlerTag
+      this.tag = handlerTag
     }
 
     private fun handleEvent(event: MotionEvent) {
