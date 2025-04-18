@@ -25,10 +25,10 @@ object RNGestureHandlerFactoryUtil {
   )
 
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): GestureHandler.Factory<T>? =
-    handlerFactories.firstOrNull { it.type == handler.javaClass } as GestureHandler.Factory<T>?
+  fun <T : GestureHandler> findFactoryForHandler(handler: GestureHandler): GestureHandler.Factory<GestureHandler>? =
+    handlerFactories.firstOrNull { it.type == handler.javaClass } as GestureHandler.Factory<GestureHandler>?
 
   @Suppress("UNCHECKED_CAST")
-  fun <T : GestureHandler<T>> findFactoryForName(handlerName: String): GestureHandler.Factory<T>? =
-    handlerFactories.firstOrNull { it.name == handlerName } as GestureHandler.Factory<T>?
+  fun <T : GestureHandler> findFactoryForName(handlerName: String): GestureHandler.Factory<GestureHandler>? =
+    handlerFactories.firstOrNull { it.name == handlerName } as GestureHandler.Factory<GestureHandler>?
 }

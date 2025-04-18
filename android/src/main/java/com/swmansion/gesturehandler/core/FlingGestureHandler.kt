@@ -8,7 +8,7 @@ import android.view.VelocityTracker
 import com.facebook.react.bridge.ReadableMap
 import com.swmansion.gesturehandler.react.eventbuilders.FlingGestureHandlerEventDataBuilder
 
-class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
+class FlingGestureHandler : GestureHandler() {
   var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
   var direction = DEFAULT_DIRECTION
 

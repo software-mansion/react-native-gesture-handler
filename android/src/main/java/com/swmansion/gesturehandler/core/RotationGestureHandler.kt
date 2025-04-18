@@ -7,7 +7,7 @@ import com.swmansion.gesturehandler.core.RotationGestureDetector.OnRotationGestu
 import com.swmansion.gesturehandler.react.eventbuilders.RotationGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
-class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
+class RotationGestureHandler : GestureHandler() {
   private var rotationGestureDetector: RotationGestureDetector? = null
   var rotation = 0.0
     private set
