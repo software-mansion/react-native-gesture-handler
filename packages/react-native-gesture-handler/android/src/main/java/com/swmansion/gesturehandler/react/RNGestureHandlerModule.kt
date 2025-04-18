@@ -27,7 +27,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   override fun getName() = NAME
 
-  @Suppress("UNCHECKED_CAST")
   private fun <T : GestureHandler<T>> createGestureHandlerHelper(
     handlerName: String,
     handlerTag: Int,
