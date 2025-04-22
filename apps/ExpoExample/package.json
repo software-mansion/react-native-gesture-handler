@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~5.0.2",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/slider": "4.5.6",
     "@react-native-community/viewpager": "5.0.11",
@@ -20,15 +21,19 @@
     "expo-camera": "~16.1.1",
     "expo-status-bar": "~2.2.1",
     "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-native": "0.79.0",
     "react-native-gesture-handler": "workspace:*",
     "react-native-reanimated": "3.17.4",
     "react-native-safe-area-context": "5.3.0",
-    "react-native-svg": "15.11.2"
+    "react-native-svg": "15.11.2",
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+    "@types/react-dom": "^19",
+    "@types/react-native-web": "^0",
     "typescript": "~5.8.3"
   },
   "private": true,
