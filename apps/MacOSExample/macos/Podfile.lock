@@ -1209,6 +1209,8 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
+  - react-native-safe-area-context (5.3.0):
+    - React-Core
   - React-NativeModulesApple (0.78.3):
     - glog
     - React-callinvoker
@@ -1480,6 +1482,8 @@ PODS:
     - React-logger (= 0.78.3)
     - React-perflogger (= 0.78.3)
     - React-utils (= 0.78.3)
+  - RNCAsyncStorage (2.1.2):
+    - React-Core
   - RNGestureHandler (2.25.0):
     - DoubleConversion
     - glog
@@ -1610,6 +1614,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNSVG (15.11.2):
+    - React-Core
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -1652,6 +1658,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native-macos/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native-macos/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native-macos/ReactCommon/reactperflogger`)
   - React-performancetimeline (from `../node_modules/react-native-macos/ReactCommon/react/performance/timeline`)
@@ -1679,8 +1686,10 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native-macos/ReactCommon`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - SocketRocket (from `../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec`)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
 
@@ -1757,6 +1766,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-macos/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -1811,10 +1822,14 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native-macos/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   SocketRocket:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec"
   Yoga:
@@ -1857,6 +1872,7 @@ SPEC CHECKSUMS:
   React-logger: 403502d548fbc097ab2c5a783ca98f5e84390bad
   React-Mapbuffer: 3815edc6553967769cdd5e9127284926416270f0
   React-microtasksnativemodule: 67e75d6d737a78daaee8ea4300ddb555ef0909b0
+  react-native-safe-area-context: fdb0a66feac038cb6eb1edafcf2ccee2b5cf0284
   React-NativeModulesApple: b575fb27ea57ed5be05928d26ebae10ec2784a43
   React-perflogger: 3756bfe3ff8cc8fffed3c51dce34cef861d4b82a
   React-performancetimeline: c4678b2226a660268cc478662ffc43a2ab1b5d30
@@ -1884,8 +1900,10 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: a12262458b50521ba56afb93f4cc875732f9d643
   ReactCodegen: 3d30536e47f328f0a297d897cb789e46a092c2a6
   ReactCommon: 0f22e3dd34a8215b8482778898f6e1e95572c498
+  RNCAsyncStorage: b9f5f78da5d16a853fe3dc22e8268d932fc45a83
   RNGestureHandler: 3aebdd5727d76b567572472b9e52c29536ee0eef
   RNReanimated: 4099396c5ecf90a7d06aa23989fab9230a99cae0
+  RNSVG: 4c63b12b7b5761063bca4f20dd228f6a8370f614
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: f89a870053f1a8fbee8c98e35a1b9eff44ce2015
 
