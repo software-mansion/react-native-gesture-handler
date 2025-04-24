@@ -5,7 +5,8 @@
   "workspaces": [
     "packages/react-native-gesture-handler",
     "apps/BasicExample",
-    "apps/ExpoExample"
+    "apps/ExpoExample",
+    "apps/MacOSExample"
   ],
   "scripts": {
     "postinstall": "husky",
