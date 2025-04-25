@@ -3,10 +3,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/android-build.yml'
-      - 'android/**'
-      - 'Common/**'
-      - 'example/android/**'
-      - 'FabricExample/android/**'
+      - 'packages/react-native-gesture-handler/android/**'
+      - 'apps/BasicExample/android/**'
   push:
     branches:
       - main
@@ -15,11 +13,8 @@ jobs:
   build:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        working-directory: [example, FabricExample]
     concurrency:
-      group: android-${{ matrix.working-directory }}-${{ github.ref }}
+      group: android-{{ github.ref }}
       cancel-in-progress: true
     steps:
       - name: checkout
@@ -35,8 +30,8 @@ jobs:
           node-version: 18
           cache: 'yarn'
       - name: Install node dependencies
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: apps/BasicExample
         run: yarn
       - name: Build app
-        working-directory: ${{ matrix.working-directory }}/android
+        working-directory: apps/BasicExample/android
         run: ./gradlew assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
