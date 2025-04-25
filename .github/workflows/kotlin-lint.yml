@@ -2,7 +2,7 @@ name: Kotlin Lint
 on:
   pull_request:
     paths:
-      - 'android/**'
+      - 'packages/react-native-gesture-handler/android/**'
   push:
     branches:
       - main
@@ -44,9 +44,9 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            android/build
-            android/.gradle
-          key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'android/build.gradle') }}
+            packages/react-native-gesture-handler/android/build
+            packages/react-native-gesture-handler/android/.gradle
+          key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('packages/react-native-gesture-handler/**/*.gradle*', 'packages/react-native-gesture-handler/**/gradle-wrapper.properties', 'packages/react-native-gesture-handler/android/build.gradle') }}
 
       - name: Lint
-        run: yarn lint:android
+        run: yarn workspace packages/react-native-gesture-handler lint:android
