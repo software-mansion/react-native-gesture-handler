@@ -49,4 +49,4 @@ jobs:
           key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('packages/react-native-gesture-handler/**/*.gradle*', 'packages/react-native-gesture-handler/**/gradle-wrapper.properties', 'packages/react-native-gesture-handler/android/build.gradle') }}
 
       - name: Lint
-        run: yarn workspace packages/react-native-gesture-handler lint:android
+        run: yarn workspace react-native-gesture-handler lint:android
