@@ -151,7 +151,8 @@ static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
       [str appendString:label];
     }
   }
-  return str.length == 0 ? nil : str;
+
+  return str;
 }
 #endif
 
