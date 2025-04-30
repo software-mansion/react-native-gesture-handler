@@ -13,7 +13,6 @@ let Reanimated:
   | {
       default: {
         // Slightly modified definition copied from 'react-native-reanimated'
-        // eslint-disable-next-line @typescript-eslint/ban-types
         createAnimatedComponent<P extends object>(
           component: ComponentClass<P>,
           options?: unknown

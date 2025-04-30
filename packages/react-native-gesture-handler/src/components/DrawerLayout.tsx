@@ -561,6 +561,7 @@ export default class DrawerLayout extends Component<
     });
   };
 
+  // eslint-disable-next-line @eslint-react/no-unused-class-component-members
   openDrawer = (options: DrawerMovementOption = {}) => {
     this.animateDrawer(
       // TODO: decide if it should be null or undefined is the proper value

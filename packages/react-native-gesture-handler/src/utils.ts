@@ -31,7 +31,6 @@ export function withPrevAndCurrent<T, Transformed>(
   return transformedArr;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export function hasProperty(object: object, key: string) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }

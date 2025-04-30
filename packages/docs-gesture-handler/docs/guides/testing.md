@@ -102,7 +102,7 @@ it('sends events with additional data to handlers', () => {
     { state: State.END, translationX: 30 },
   ]);
 
-  expect(panHandlers.active).toBeCalledTimes(3);
+  expect(panHandlers.active).toHaveBeenCalledTimes(3);
   expect(panHandlers.active).toHaveBeenLastCalledWith(
     expect.objectContaining({ translationX: 20 })
   );

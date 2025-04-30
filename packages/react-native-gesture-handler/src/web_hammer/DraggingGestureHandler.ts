@@ -1,4 +1,4 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable @eslint-community/eslint-comments/no-unlimited-disable */
 /* eslint-disable */
 import GestureHandler, { HammerInputExt } from './GestureHandler';
 import { PixelRatio } from 'react-native';

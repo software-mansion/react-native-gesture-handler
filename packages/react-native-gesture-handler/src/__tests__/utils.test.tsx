@@ -1,7 +1,7 @@
 import { withPrevAndCurrent } from '../utils';
 
 describe('withPrevAndCurrent', () => {
-  it('returns transformed elements', () => {
+  test('returns transformed elements', () => {
     const concat = (prev: string | null, current: number) =>
       `${prev ?? '0'}${current}`;
     expect(withPrevAndCurrent([1, 2, 3, 4], concat)).toEqual([

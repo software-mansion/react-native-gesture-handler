@@ -26,6 +26,8 @@
       "warn",
       { "assertFunctionNames": ["expect*", "assert*"] }
     ],
+    "jest/no-conditional-expect": "warn",
+
     // temporary, remove after we type internals better
     "@typescript-eslint/restrict-template-expressions": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
@@ -41,6 +43,8 @@
     "import/named": "off",
     "react/sort-comp": "off",
     "react/no-unused-prop-types": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "@typescript-eslint/no-floating-promises": "warn",
     "@eslint-react/no-missing-component-display-name": "warn",
     "@eslint-react/no-nested-components": "warn",
     "@eslint-react/no-nested-component-definitions": "warn",

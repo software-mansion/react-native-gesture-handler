@@ -1,4 +1,4 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable @eslint-community/eslint-comments/no-unlimited-disable */
 /* eslint-disable */
 import GestureHandler from './GestureHandler';
 import { TEST_MAX_IF_NOT_NAN } from './utils';
