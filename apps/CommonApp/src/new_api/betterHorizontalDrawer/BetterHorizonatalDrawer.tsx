@@ -555,8 +555,10 @@ export const DrawerLayout = ({
     };
 
     if (typeof ref === 'function') {
+      // @ts-ignore ref is function
       ref(controller);
     } else {
+      // @ts-ignore ref is not undefined
       ref.current = controller;
     }
   }

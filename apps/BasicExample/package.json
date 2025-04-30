@@ -8,6 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
+    "ts-check": "yarn tsc --noEmit",
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
@@ -27,7 +28,7 @@
     "@react-native/metro-config": "0.79.0",
     "@react-native/typescript-config": "0.79.0",
     "@types/jest": "^29.5.13",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.0.12",
     "@types/react-test-renderer": "^19.0.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",

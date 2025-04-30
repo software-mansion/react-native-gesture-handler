@@ -1,15 +1,26 @@
 import React from 'react';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions, CameraViewProps } from 'expo-camera';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedProps } from 'react-native-reanimated';
+import Animated, {
+  AnimateProps,
+  useAnimatedProps,
+} from 'react-native-reanimated';
 
 const AnimatedCameraView = Animated.createAnimatedComponent(CameraView);
 
-const Camera = ({ ref, ...props }) => {
+interface CameraProps extends Omit<CameraViewProps, 'zoom'> {
+  ref?: React.RefObject<
+    React.Component<AnimateProps<CameraViewProps>, any, any>
+  >;
+  zoom: Animated.SharedValue<number>;
+}
+
+const Camera = ({ ref, ...props }: CameraProps) => {
   const [permission, requestPermission] = useCameraPermissions();
 
   const animatedProps = useAnimatedProps(() => {
     return {
+      // @ts-ignore zoom value is correct
       zoom: props.zoom.value - 1,
     };
   });

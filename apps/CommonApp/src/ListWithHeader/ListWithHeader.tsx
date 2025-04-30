@@ -97,6 +97,7 @@ interface ScrollComponentWithOffsetProps extends ScrollViewProps {
   scrollOffset: SharedValue<number>;
   animatedScrollEnabled: SharedValue<boolean>;
   dragGesture: GestureType;
+  ref?: React.RefObject<Animated.ScrollView | null>;
 }
 
 const ScrollComponentWithOffset = ({
@@ -116,7 +117,9 @@ const ScrollComponentWithOffset = ({
   );
 
   useEffect(() => {
-    ref.current = scrollRef.current;
+    if (ref) {
+      ref.current = scrollRef.current;
+    }
   }, [ref, scrollRef]);
 
   const scrollProps = useAnimatedProps(() => {
