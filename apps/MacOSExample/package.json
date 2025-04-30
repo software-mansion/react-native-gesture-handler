@@ -14,7 +14,7 @@
     "react-native": "0.78.0",
     "react-native-gesture-handler": "workspace:*",
     "react-native-macos": "^0.78.0-0",
-    "react-native-reanimated": "3.17.4"
+    "react-native-reanimated": "3.17.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
