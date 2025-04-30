@@ -21,8 +21,8 @@
     "react-native": "0.78.0",
     "react-native-gesture-handler": "workspace:*",
     "react-native-macos": "^0.78.0-0",
-    "react-native-reanimated": "3.17.4",
-    "react-native-safe-area-context": "5.3.0",
+    "react-native-reanimated": "3.17.5",
+    "react-native-safe-area-context": "5.4.0",
     "react-native-svg": "15.11.2"
   },
   "devDependencies": {

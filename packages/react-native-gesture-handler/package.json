@@ -100,7 +100,7 @@
     "react": "19.0.0",
     "react-native": "0.79.0",
     "react-native-builder-bob": "^0.39.0",
-    "react-native-reanimated": "3.17.4",
+    "react-native-reanimated": "3.17.5",
     "react-test-renderer": "19.0.0",
     "release-it": "^13.6.5",
     "typescript": "5.0.4"
