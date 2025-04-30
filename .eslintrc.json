@@ -62,6 +62,7 @@
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-redundant-type-constituents": "warn",
     "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-misused-promises": "warn",
     "@eslint-react/no-array-index-key": "warn",
     "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": "warn",
     "@eslint-react/hooks-extra/prefer-use-state-lazy-initialization": "warn",
