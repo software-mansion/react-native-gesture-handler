@@ -26,14 +26,11 @@ jobs:
         with:
           node-version: 18
           cache: 'yarn'
-      - name: Install root node dependencies
+      - name: Install node dependencies
         run: yarn --immutable && yarn prepare
-      - name: Install ${{ matrix.working-directory }} app node dependencies
-        working-directory: ${{ matrix.working-directory }}
-        run: yarn
       - name: Check types
         working-directory: ${{ matrix.working-directory }}
-        run: yarn tsc --noEmit
+        run: yarn ts-check
       - name: Lint
         working-directory: ${{ matrix.working-directory }}
-        run: yarn lint-check
+        run: yarn lint-js

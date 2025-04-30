@@ -26,13 +26,13 @@ jobs:
           node-version: 18
           cache: 'yarn'
       - name: Install node dependencies
-        run: yarn
+        run: yarn --immutable && yarn prepare
       - name: Check types
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn tsc --noEmit
+        run: yarn ts-check
       - name: Lint
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn lint:js-root
+        run: yarn lint-js
       - name: Check for circular dependencies
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn circular-dependency-check
