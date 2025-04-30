@@ -8,9 +8,11 @@ import {
   TextInput,
 } from 'react-native';
 
-import { RectButton } from 'react-native-gesture-handler';
-
-import { DrawerLayout, DrawerType } from 'react-native-gesture-handler';
+import {
+  RectButton,
+  DrawerLayout,
+  DrawerType,
+} from 'react-native-gesture-handler';
 
 const TYPES: DrawerType[] = ['front', 'back', 'back', 'slide'];
 const PARALLAX = [false, false, true, false];

@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const GH = require('../../new_api/hoverable_icons/gh.png');
 
 export default function StylusData() {
@@ -24,7 +25,6 @@ export default function StylusData() {
       rotationYFactor.value = e.stylusData.tiltX;
       rotationXFactor.value = e.stylusData.tiltY;
     })
-    .onStart(() => {})
     .onChange((e) => {
       if (!e.stylusData) {
         return;

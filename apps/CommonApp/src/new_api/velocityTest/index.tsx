@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     width: BOX_SIZE,
     height: BOX_SIZE,
     borderRadius: BOX_SIZE / 2,
-    //@ts-expect-error
+    // @ts-expect-error `grab` is correct value for `cursor` property
     cursor: 'grab',
   },
 });

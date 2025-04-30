@@ -13,9 +13,12 @@
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
+    "@react-navigation/elements": "^2.3.8",
     "@swmansion/icons": "^0.0.1",
     "react": "19.0.0",
     "react-native": "0.79.0",
+    "react-native-gesture-handler": "workspace:*",
+    "react-native-reanimated": "^3.17.4",
     "react-native-safe-area-context": "^5.4.0"
   },
   "devDependencies": {
@@ -32,7 +35,6 @@
     "@types/jest": "^29.5.13",
     "@types/react": "^19.0.0",
     "@types/react-test-renderer": "^19.0.0",
-    "eslint": "^8.19.0",
     "jest": "^29.6.3",
     "prettier": "2.8.8",
     "react-test-renderer": "19.0.0",

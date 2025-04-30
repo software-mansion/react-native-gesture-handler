@@ -134,10 +134,6 @@ class PanResponderExample extends Component<{}, { style: CircleStyles }> {
 }
 
 export default class Example extends Component {
-  onClick = () => {
-    // eslint-disable-next-line no-alert
-    window.alert("I'm so touched");
-  };
   render() {
     return (
       <ScrollView style={styles.scrollView}>

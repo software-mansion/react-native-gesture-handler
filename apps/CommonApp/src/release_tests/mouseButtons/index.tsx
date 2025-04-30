@@ -27,6 +27,7 @@ function Test({ name, gestureHandlers }: TestProps) {
         ]}>
         {gestureHandlers.map((handler, index) => {
           return (
+            // eslint-disable-next-line @eslint-react/no-array-index-key
             <GestureDetector gesture={handler} key={index}>
               <View style={[styles.box, { backgroundColor: COLORS[index] }]} />
             </GestureDetector>
