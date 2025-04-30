@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, BackHandler } from 'react-native';
 
@@ -55,7 +54,7 @@ export default class Navigator {
 
   goBack() {
     if (this.history.length === 1) {
-      throw "Can't go back, no history";
+      throw new Error("Can't go back, no history");
     }
     this.history.pop();
     this.setCurrentRoute(this.history[this.history.length - 1]);
@@ -79,6 +78,7 @@ export default class Navigator {
     this.setCurrentRoute = setCurrentRoute;
 
     useEffect(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       return BackHandler.addEventListener('hardwareBackPress', this.backHandler)
         .remove;
     }, []);
