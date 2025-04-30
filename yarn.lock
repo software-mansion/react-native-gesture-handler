@@ -5269,7 +5269,6 @@ __metadata:
     "@types/jest": "npm:^29.5.13"
     "@types/react": "npm:^19.0.0"
     "@types/react-test-renderer": "npm:^19.0.0"
-    eslint: "npm:^8.19.0"
     jest: "npm:^29.6.3"
     prettier: "npm:2.8.8"
     react: "npm:19.0.0"
@@ -5301,11 +5300,12 @@ __metadata:
     "@types/jest": "npm:^29.5.13"
     "@types/react": "npm:^19.0.0"
     "@types/react-test-renderer": "npm:^19.0.0"
-    eslint: "npm:^8.19.0"
     jest: "npm:^29.6.3"
     prettier: "npm:2.8.8"
     react: "npm:19.0.0"
     react-native: "npm:0.79.0"
+    react-native-gesture-handler: "workspace:*"
+    react-native-reanimated: "npm:^3.17.4"
     react-native-safe-area-context: "npm:^5.4.0"
     react-test-renderer: "npm:19.0.0"
     typescript: "npm:5.0.4"
@@ -5336,7 +5336,6 @@ __metadata:
     "@types/jest": "npm:^29.5.13"
     "@types/react": "npm:^19.0.0"
     "@types/react-test-renderer": "npm:^19.0.0"
-    eslint: "npm:^8.19.0"
     jest: "npm:^29.6.3"
     prettier: "npm:2.8.8"
     react: "npm:19.0.0"
@@ -8004,7 +8003,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-satya164@npm:^3.1.8":
+"eslint-config-satya164@npm:3.3.0, eslint-config-satya164@npm:^3.1.8":
   version: 3.3.0
   resolution: "eslint-config-satya164@npm:3.3.0"
   dependencies:
@@ -8104,6 +8103,24 @@ __metadata:
   peerDependencies:
     eslint: ^8.56.0 || ^9.0.0-0
   checksum: 10c0/7da1010fa8313778c5144e3cf5e4e6393ea7392a3b54a31c5f3314b4f9e2d05635e2c8ed23c9175e1b2a0542b64ac37e0c16e014ec518d88fd87af42342d5dee
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-jest@npm:27.4.3":
+  version: 27.4.3
+  resolution: "eslint-plugin-jest@npm:27.4.3"
+  dependencies:
+    "@typescript-eslint/utils": "npm:^5.10.0"
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^5.0.0 || ^6.0.0
+    eslint: ^7.0.0 || ^8.0.0
+    jest: "*"
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+    jest:
+      optional: true
+  checksum: 10c0/289bda4156ce791085ae0cbde2df1cf556567a7a2493240ba71486a3f630c46dd6f5a890afc850c1f8651b99fc86997556be78766b0d02a40d49e86820e07f75
   languageName: node
   linkType: hard
 
@@ -8370,7 +8387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.30.1":
+"eslint-plugin-react@npm:^7.30.1, eslint-plugin-react@npm:^7.37.5":
   version: 7.37.5
   resolution: "eslint-plugin-react@npm:7.37.5"
   dependencies:
@@ -8523,7 +8540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.19.0":
+"eslint@npm:^8.57.0":
   version: 8.57.1
   resolution: "eslint@npm:8.57.1"
   dependencies:
@@ -14967,12 +14984,14 @@ __metadata:
   resolution: "react-native-gesture-handler-monorepo@workspace:."
   dependencies:
     "@types/react": "npm:^19.0.12"
-    "@typescript-eslint/eslint-plugin": "npm:^4.33.0"
-    "@typescript-eslint/parser": "npm:^4.33.0"
-    eslint: "npm:^7.32.0"
-    eslint-config-satya164: "npm:^3.1.8"
+    "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
+    "@typescript-eslint/parser": "npm:^6.9.0"
+    eslint: "npm:^8.57.0"
+    eslint-config-satya164: "npm:3.3.0"
     eslint-import-resolver-babel-module: "npm:^5.2.0"
-    eslint-plugin-prettier: "npm:^5.2.1"
+    eslint-plugin-jest: "npm:27.4.3"
+    eslint-plugin-prettier: "npm:^5.0.1"
+    eslint-plugin-react: "npm:^7.37.5"
     husky: "npm:^8.0.1"
     lint-staged: "npm:^12.3.2"
     prettier: "npm:3.3.3"
@@ -15086,7 +15105,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.17.5":
+"react-native-reanimated@npm:3.17.5, react-native-reanimated@npm:^3.17.4":
   version: 3.17.5
   resolution: "react-native-reanimated@npm:3.17.5"
   dependencies:

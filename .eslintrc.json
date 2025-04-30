@@ -15,7 +15,7 @@
     "project": ["./tsconfig.json"]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
-  "plugins": ["jest"],
+  "plugins": ["react", "jest"],
   "ignorePatterns": ["packages/react-native-gesture-handler/lib/**/*"],
   "rules": {
     // removed in new jest-eslint-plugin, referenced in satya config
@@ -31,7 +31,9 @@
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-call": "warn",
     "@typescript-eslint/no-unsafe-assignment": "warn",
+    "@typescript-eslint/no-unsafe-argument": "warn",
     "@typescript-eslint/no-unsafe-return": "warn",
+    "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/ban-types": "warn",
 
     // common
@@ -39,6 +41,9 @@
     "import/named": "off",
     "react/sort-comp": "off",
     "react/no-unused-prop-types": "warn",
+    "@eslint-react/no-missing-component-display-name": "warn",
+    "@eslint-react/no-nested-components": "warn",
+    "@eslint-react/no-nested-component-definitions": "warn",
     "prefer-const": [
       "error",
       {
@@ -49,6 +54,12 @@
       "error",
       { "argsIgnorePattern": "^_" }
     ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-redundant-type-constituents": "warn",
+    "@typescript-eslint/no-empty-function": "error",
+    "@eslint-react/no-array-index-key": "warn",
+    "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": "warn",
+    "@eslint-react/hooks-extra/prefer-use-state-lazy-initialization": "warn",
     "no-redeclare": "off",
     "@typescript-eslint/no-redeclare": "error",
     "no-use-before-define": "off",
@@ -61,6 +72,7 @@
       }
     ],
     "curly": "error",
-    "spaced-comment": "error"
+    "spaced-comment": "error",
+    "no-alert": "warn"
   }
 }
