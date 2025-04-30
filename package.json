@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "postinstall": "husky",
-    "ts-check": "cd ./packages/react-native-gesture-handler && yarn tsc --noEmit"
+    "ts-check": "cd ./packages/react-native-gesture-handler && yarn tsc --noEmit",
+    "lint-js": "yarn workspaces foreach --all --parallel --topological-dev run lint-js"
   },
   "devDependencies": {
     "@types/react": "^19.0.12",
