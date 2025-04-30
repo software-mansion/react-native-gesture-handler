@@ -27,7 +27,7 @@
     "husky": "^8.0.1",
     "lint-staged": "^12.3.2",
     "prettier": "3.3.3",
-    "typescript": "5.0.4"
+    "typescript": "~5.8.3"
   },
   "packageManager": "yarn@4.7.0"
 }
