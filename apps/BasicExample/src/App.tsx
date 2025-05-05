@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Navigator from './Navigator';
@@ -49,8 +49,9 @@ Stack.setRoutes({
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1, paddingTop: 50 }}>
-      <SafeAreaView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView
+        style={[{ flex: 1 }, Platform.OS === 'android' && { paddingTop: 50 }]}>
         <Stack.Navigator initialRouteName="home" />
       </SafeAreaView>
     </GestureHandlerRootView>
