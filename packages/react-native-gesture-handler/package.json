@@ -8,7 +8,7 @@
     "build": "yarn tsc -p tsconfig.build.json",
     "precommit": "lint-staged",
     "ts-check": "yarn tsc --noEmit",
-    "format:js": "prettier --write --list-different './{src,example,FabricExample,MacOSExample}/**/*.{js,jsx,ts,tsx}'",
+    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
     "format:android": "node ./scripts/format-android.js",
     "format:apple": "find apple/ -iname *.h -o -iname *.m -o -iname *.cpp -o -iname *.mm | xargs clang-format -i",
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",

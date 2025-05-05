@@ -9,7 +9,8 @@
     "start": "react-native start",
     "test": "jest",
     "ts-check": "yarn tsc --noEmit",
-    "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'"
+    "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
+    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "react": "19.0.0",
