@@ -20,7 +20,6 @@ const Camera = ({ ref, ...props }: CameraProps) => {
 
   const animatedProps = useAnimatedProps(() => {
     return {
-      // @ts-ignore zoom value is correct
       zoom: props.zoom.value - 1,
     };
   });
