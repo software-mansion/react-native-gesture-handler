@@ -3,11 +3,10 @@
   "version": "2.25.0",
   "description": "Declarative API exposing native platform touch and gesture system to React Native",
   "scripts": {
-    "prepare": "bob build && husky install",
+    "postinstall": "bob build",
     "test": "jest",
     "build": "yarn tsc -p tsconfig.build.json",
     "precommit": "lint-staged",
-    "release": "npm login && release-it",
     "ts-check": "yarn tsc --noEmit",
     "format:js": "prettier --write --list-different './{src,example,FabricExample,MacOSExample}/**/*.{js,jsx,ts,tsx}'",
     "format:android": "node ./scripts/format-android.js",
@@ -110,12 +109,6 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
-  },
-  "lint-staged": {
-    "./{src,example,FabricExample,MacOSExample}/**/*.{ts,tsx}": "yarn format:js",
-    "android/**/*.kt": "yarn format:android",
-    "apple/**/*.{h,m,mm,cpp}": "yarn format:apple",
-    "src/specs/*.ts": "yarn sync-architectures"
   },
   "release-it": {
     "hooks": {

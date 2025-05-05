@@ -13787,9 +13787,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@workspace:.":
+"react-native-gesture-handler-monorepo@workspace:.":
   version: 0.0.0-use.local
-  resolution: "react-native-gesture-handler@workspace:."
+  resolution: "react-native-gesture-handler-monorepo@workspace:."
+  dependencies:
+    "@types/react": "npm:^19.0.12"
+    "@typescript-eslint/eslint-plugin": "npm:^4.33.0"
+    "@typescript-eslint/parser": "npm:^4.33.0"
+    eslint: "npm:^7.32.0"
+    eslint-config-satya164: "npm:^3.1.8"
+    eslint-import-resolver-babel-module: "npm:^5.2.0"
+    eslint-plugin-prettier: "npm:^5.2.1"
+    husky: "npm:^8.0.1"
+    lint-staged: "npm:^12.3.2"
+    prettier: "npm:3.3.3"
+    typescript: "npm:5.0.4"
+  languageName: unknown
+  linkType: soft
+
+"react-native-gesture-handler@workspace:packages/react-native-gesture-handler":
+  version: 0.0.0-use.local
+  resolution: "react-native-gesture-handler@workspace:packages/react-native-gesture-handler"
   dependencies:
     "@babel/core": "npm:^7.25.2"
     "@babel/preset-env": "npm:^7.25.3"
