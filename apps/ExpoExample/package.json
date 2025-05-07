@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "npx expo prebuild"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.2",

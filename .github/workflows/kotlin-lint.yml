@@ -14,6 +14,8 @@ jobs:
     concurrency:
       group: kotlin-lint-${{ github.ref }}
       cancel-in-progress: true
+    env:
+      WORKING_DIRECTORY: 'packages/react-native-gesture-handler'
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -44,9 +46,9 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            packages/react-native-gesture-handler/android/build
-            packages/react-native-gesture-handler/android/.gradle
-          key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('packages/react-native-gesture-handler/**/*.gradle*', 'packages/react-native-gesture-handler/**/gradle-wrapper.properties', 'packages/react-native-gesture-handler/android/build.gradle') }}
+            ${{ env.WORKING_DIRECTORY }}/android/build
+            ${{ env.WORKING_DIRECTORY }}/android/.gradle
+          key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('${{ env.WORKING_DIRECTORY }}/**/*.gradle*', '${{ env.WORKING_DIRECTORY }}/**/gradle-wrapper.properties', '${{ env.WORKING_DIRECTORY }}/android/build.gradle') }}
 
       - name: Lint
         run: yarn workspace react-native-gesture-handler lint:android
