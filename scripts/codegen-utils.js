@@ -1,32 +1,39 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const packageJSON = require('../package.json');
+const packageJSON = require('../packages/react-native-gesture-handler/package.json');
 
 const ERROR_PREFIX = 'react-native-gesture-handler';
-const ROOT_DIR = path.resolve(__dirname, '..');
+const ROOT_DIR = path.resolve(
+  __dirname,
+  '../packages/react-native-gesture-handler'
+);
 const ANDROID_DIR = path.resolve(ROOT_DIR, 'android');
 const GENERATED_DIR = path.resolve(ANDROID_DIR, 'build/generated');
 const OLD_ARCH_DIR = path.resolve(ANDROID_DIR, 'paper/src/main');
 const SPECS_DIR = path.resolve(ROOT_DIR, packageJSON.codegenConfig.jsSrcsDir);
 const PACKAGE_NAME = packageJSON.codegenConfig.android.javaPackageName;
-const RN_DIR = path.resolve(ROOT_DIR, 'node_modules/react-native');
+const RN_DIR = path.resolve(__dirname, '../node_modules/react-native');
 const RN_CODEGEN_DIR = path.resolve(
-  ROOT_DIR,
-  'node_modules/@react-native/codegen'
+  __dirname,
+  '../node_modules/@react-native/codegen'
 );
 
 const SOURCE_FOLDER = 'java/com/facebook/react/viewmanagers';
-const GH_SOURCE_FOLDER = 'java/com/swmansion/gesturehandler'
+const GH_SOURCE_FOLDER = 'java/com/swmansion/gesturehandler';
 
 const SOURCE_FOLDERS = [
-  {codegenPath: `${GENERATED_DIR}/source/codegen/${SOURCE_FOLDER}`, oldArchPath: `${OLD_ARCH_DIR}/${SOURCE_FOLDER}`},
-  {codegenPath: `${GENERATED_DIR}/source/codegen/${GH_SOURCE_FOLDER}`, oldArchPath: `${OLD_ARCH_DIR}/${GH_SOURCE_FOLDER}`},
-]
+  {
+    codegenPath: `${GENERATED_DIR}/source/codegen/${SOURCE_FOLDER}`,
+    oldArchPath: `${OLD_ARCH_DIR}/${SOURCE_FOLDER}`,
+  },
+  {
+    codegenPath: `${GENERATED_DIR}/source/codegen/${GH_SOURCE_FOLDER}`,
+    oldArchPath: `${OLD_ARCH_DIR}/${GH_SOURCE_FOLDER}`,
+  },
+];
 
-const BLACKLISTED_FILES = new Set([
-  'ReactContextExtensions.kt',
-]);
+const BLACKLISTED_FILES = new Set(['ReactContextExtensions.kt']);
 
 function exec(command) {
   console.log(`[${ERROR_PREFIX}]> ` + command);
@@ -34,13 +41,13 @@ function exec(command) {
 }
 
 function readdirSync(dir) {
-  return fs.readdirSync(dir).filter(file => !BLACKLISTED_FILES.has(file));
+  return fs.readdirSync(dir).filter((file) => !BLACKLISTED_FILES.has(file));
 }
 
 function fixOldArchJavaForRN72Compat(dir) {
   // see https://github.com/rnmapbox/maps/issues/3193
   const files = readdirSync(dir);
-  files.forEach(file => {
+  files.forEach((file) => {
     const filePath = path.join(dir, file);
     const fileExtension = path.extname(file);
     if (fileExtension === '.java') {
@@ -82,12 +89,12 @@ async function generateCodegen() {
 async function generateCodegenJavaOldArch() {
   await generateCodegen();
 
-  SOURCE_FOLDERS.forEach(({codegenPath, oldArchPath}) => {
+  SOURCE_FOLDERS.forEach(({ codegenPath, oldArchPath }) => {
     const generatedFiles = readdirSync(codegenPath);
     const oldArchFiles = readdirSync(oldArchPath);
-    const existingFilesSet = new Set(oldArchFiles.map(fileName => fileName));
+    const existingFilesSet = new Set(oldArchFiles.map((fileName) => fileName));
 
-    generatedFiles.forEach(generatedFile => {
+    generatedFiles.forEach((generatedFile) => {
       if (!existingFilesSet.has(generatedFile)) {
         console.warn(
           `[${ERROR_PREFIX}] ${generatedFile} not found in paper dir, if it's used on Android you need to copy it manually and implement yourself before using auto-copy feature.`
@@ -101,7 +108,7 @@ async function generateCodegenJavaOldArch() {
       );
     }
 
-    oldArchFiles.forEach(file => {
+    oldArchFiles.forEach((file) => {
       if (!fs.existsSync(`${codegenPath}/${file}`)) {
         console.warn(
           `[${ERROR_PREFIX}] ${file} file does not exist in codegen artifacts source destination. Please check if you still need this interface/delagete.`
@@ -127,9 +134,9 @@ function compareFileAtTwoPaths(filename, firstPath, secondPath) {
 async function checkCodegenIntegrity() {
   await generateCodegen();
 
-  SOURCE_FOLDERS.forEach(({codegenPath, oldArchPath}) => {
+  SOURCE_FOLDERS.forEach(({ codegenPath, oldArchPath }) => {
     const oldArchFiles = readdirSync(oldArchPath);
-    oldArchFiles.forEach(file => {
+    oldArchFiles.forEach((file) => {
       compareFileAtTwoPaths(file, codegenPath, oldArchPath);
     });
   });
