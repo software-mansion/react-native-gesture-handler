@@ -147,6 +147,7 @@
 				514201472437B4B30078DB4F /* Resources */,
 				381D8A6E24576A4E00465D17 /* Bundle React Native code and images */,
 				6D0EC1752E57E7826E33BE11 /* [CP] Copy Pods Resources */,
+				D01A669245645FE4195DB892 /* [CP-User] Generate metadata for clangd */,
 			);
 			buildRules = (
 			);
@@ -298,6 +299,17 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MacOSExample-macOS/Pods-MacOSExample-macOS-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		D01A669245645FE4195DB892 /* [CP-User] Generate metadata for clangd */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = true;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "[CP-User] Generate metadata for clangd";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "../../../scripts/clangd-generate-xcode-metadata.sh";
 		};
 /* End PBXShellScriptBuildPhase section */
 
