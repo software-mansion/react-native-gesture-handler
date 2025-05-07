@@ -6,7 +6,8 @@
     "packages/react-native-gesture-handler",
     "apps/BasicExample",
     "apps/ExpoExample",
-    "apps/MacOSExample"
+    "apps/MacOSExample",
+    "apps/CommonApp"
   ],
   "scripts": {
     "postinstall": "husky",

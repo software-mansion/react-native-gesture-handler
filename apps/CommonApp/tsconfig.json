@@ -4,7 +4,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "CommonApp": ["../CommonApp/index.ts"],
+      "@/*": ["./*"],
       "react-native-gesture-handler": [
         "../../packages/react-native-gesture-handler/index.ts"
       ],
@@ -16,6 +16,5 @@
       ]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "App.tsx"],
-  "exclude": ["metro.config.js", "android", "ios", ".bundle", "node_modules"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.ts"]
 }
