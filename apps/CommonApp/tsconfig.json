@@ -4,7 +4,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./*"],
       "react-native-gesture-handler": [
         "../../packages/react-native-gesture-handler/index.ts"
       ],
