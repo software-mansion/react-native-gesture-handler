@@ -38,6 +38,7 @@ jobs:
         working-directory: ${{ matrix.working-directory }}
         run: yarn install --immutable && yarn postinstall
       - name: Install pods
+        if: ${{ matrix.working-directory == 'apps/BasicExample' }}
         working-directory: ${{ matrix.working-directory }}/ios
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
       - name: Build app
