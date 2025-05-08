@@ -12,18 +12,19 @@ import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
-  private var _enabled = false
+  private var enabled = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    _enabled = !hasGestureHandlerEnabledRootView(this)
-    if (!_enabled) {
+    enabled = !hasGestureHandlerEnabledRootView(this)
+    if (!enabled) {
       Log.i(
         ReactConstants.TAG,
-        "[GESTURE HANDLER] Gesture handler is already enabled for a parent view"
+        "[GESTURE HANDLER] Gesture handler is already enabled for a parent view",
       )
     }
-    if (_enabled && rootHelper == null) {
+    if (enabled && rootHelper == null) {
       rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this)
     }
   }
@@ -32,18 +33,20 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.tearDown()
   }
 
-  override fun dispatchTouchEvent(ev: MotionEvent) =
-    if (_enabled && rootHelper!!.dispatchTouchEvent(ev)) {
-      true
-    } else super.dispatchTouchEvent(ev)
+  override fun dispatchTouchEvent(ev: MotionEvent) = if (enabled && rootHelper!!.dispatchTouchEvent(ev)) {
+    true
+  } else {
+    super.dispatchTouchEvent(ev)
+  }
 
-  override fun dispatchGenericMotionEvent(event: MotionEvent) =
-    if (_enabled && rootHelper!!.dispatchTouchEvent(event)) {
-      true
-    } else super.dispatchGenericMotionEvent(event)
+  override fun dispatchGenericMotionEvent(event: MotionEvent) = if (enabled && rootHelper!!.dispatchTouchEvent(event)) {
+    true
+  } else {
+    super.dispatchGenericMotionEvent(event)
+  }
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    if (_enabled) {
+    if (enabled) {
       rootHelper!!.requestDisallowInterceptTouchEvent()
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)

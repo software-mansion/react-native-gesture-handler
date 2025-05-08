@@ -72,13 +72,13 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       // as it means the other handler has turned active and returning `true` would prevent it from
       // interrupting the current handler
       false
-    } else state == STATE_ACTIVE && canBeInterrupted && (!hook.shouldCancelRootViewGestureHandlerIfNecessary() || handler.tag > 0)
+    } else {
+      state == STATE_ACTIVE && canBeInterrupted && (!hook.shouldCancelRootViewGestureHandlerIfNecessary() || handler.tag > 0)
+    }
     // otherwise we can only return `true` if already in an active state
   }
 
-  override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
-    return !disallowInterruption
-  }
+  override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean = !disallowInterruption
 
   override fun onPrepare() {
     when (val view = view) {
@@ -165,8 +165,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   companion object {
-    private fun tryIntercept(view: View, event: MotionEvent) =
-      view is ViewGroup && view.onInterceptTouchEvent(event)
+    private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
 
     private val defaultHook = object : NativeViewGestureHandlerHook {}
   }
@@ -222,7 +221,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     fun sendTouchEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
   }
 
-  private class TextViewHook() : NativeViewGestureHandlerHook {
+  private class TextViewHook : NativeViewGestureHandlerHook {
     override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
 
     // We have to explicitly check for ReactTextView, since its `isPressed` flag is not set to `true`,
@@ -232,7 +231,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   private class EditTextHook(
     private val handler: NativeViewGestureHandler,
-    private val editText: ReactEditText
+    private val editText: ReactEditText,
   ) : NativeViewGestureHandlerHook {
     private var startX = 0f
     private var startY = 0f
@@ -252,8 +251,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     // recognize alongside every handler besides RootViewGestureHandler, which is a private inner class
     // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
     // also if other handler is NativeViewGestureHandler then don't override the default implementation
-    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) =
-      handler.tag > 0 && handler !is NativeViewGestureHandler
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = handler.tag > 0 && handler !is NativeViewGestureHandler
 
     override fun wantsToHandleEventBeforeActivation() = true
 
@@ -270,7 +268,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
 
   private class SwipeRefreshLayoutHook(
     private val handler: NativeViewGestureHandler,
-    private val swipeRefreshLayout: ReactSwipeRefreshLayout
+    private val swipeRefreshLayout: ReactSwipeRefreshLayout,
   ) : NativeViewGestureHandlerHook {
     override fun wantsToHandleEventBeforeActivation() = true
 

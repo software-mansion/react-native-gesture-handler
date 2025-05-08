@@ -30,10 +30,12 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     rootView = findRootViewTag(wrappedView)
     Log.i(
       ReactConstants.TAG,
-      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView"
+      "[GESTURE HANDLER] Initialize gesture handler for root view $rootView",
     )
     orchestrator = GestureHandlerOrchestrator(
-      wrappedView, registry, RNViewConfigurationHelper()
+      wrappedView,
+      registry,
+      RNViewConfigurationHelper(),
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
@@ -48,7 +50,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   fun tearDown() {
     Log.i(
       ReactConstants.TAG,
-      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView"
+      "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView",
     )
     val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
     with(module) {
@@ -122,8 +124,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   /*package*/
-  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
   // We want to keep order of parameters, so instead of removing viewTag we suppress the warning
+  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
   fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
     if (blockNativeResponder) {
       UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }

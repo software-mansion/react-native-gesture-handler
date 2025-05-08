@@ -5,7 +5,7 @@ spotless {
         target "**/*.kt"
         ktlint().editorConfigOverride([indent_size: 2])
         trimTrailingWhitespace()
-        indentWithSpaces()
+        leadingTabsToSpaces()
         endWithNewline()
     }
 }

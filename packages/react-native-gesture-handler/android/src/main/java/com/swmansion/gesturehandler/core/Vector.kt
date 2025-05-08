@@ -19,13 +19,9 @@ class Vector(val x: Double, val y: Double) {
     unitY = if (isMagnitudeSufficient) y / magnitude else 0.0
   }
 
-  private fun computeSimilarity(vector: Vector): Double {
-    return unitX * vector.unitX + unitY * vector.unitY
-  }
+  private fun computeSimilarity(vector: Vector): Double = unitX * vector.unitX + unitY * vector.unitY
 
-  fun isSimilar(vector: Vector, threshold: Double): Boolean {
-    return computeSimilarity(vector) > threshold
-  }
+  fun isSimilar(vector: Vector, threshold: Double): Boolean = computeSimilarity(vector) > threshold
 
   companion object {
     private val VECTOR_LEFT: Vector = Vector(-1.0, 0.0)
@@ -41,18 +37,17 @@ class Vector(val x: Double, val y: Double) {
     private val VECTOR_ZERO: Vector = Vector(0.0, 0.0)
     private const val MINIMAL_RECOGNIZABLE_MAGNITUDE = 0.1
 
-    fun fromDirection(direction: Int): Vector =
-      when (direction) {
-        DIRECTION_LEFT -> VECTOR_LEFT
-        DIRECTION_RIGHT -> VECTOR_RIGHT
-        DIRECTION_UP -> VECTOR_UP
-        DIRECTION_DOWN -> VECTOR_DOWN
-        DiagonalDirections.DIRECTION_RIGHT_UP -> VECTOR_RIGHT_UP
-        DiagonalDirections.DIRECTION_RIGHT_DOWN -> VECTOR_RIGHT_DOWN
-        DiagonalDirections.DIRECTION_LEFT_UP -> VECTOR_LEFT_UP
-        DiagonalDirections.DIRECTION_LEFT_DOWN -> VECTOR_LEFT_DOWN
-        else -> VECTOR_ZERO
-      }
+    fun fromDirection(direction: Int): Vector = when (direction) {
+      DIRECTION_LEFT -> VECTOR_LEFT
+      DIRECTION_RIGHT -> VECTOR_RIGHT
+      DIRECTION_UP -> VECTOR_UP
+      DIRECTION_DOWN -> VECTOR_DOWN
+      DiagonalDirections.DIRECTION_RIGHT_UP -> VECTOR_RIGHT_UP
+      DiagonalDirections.DIRECTION_RIGHT_DOWN -> VECTOR_RIGHT_DOWN
+      DiagonalDirections.DIRECTION_LEFT_UP -> VECTOR_LEFT_UP
+      DiagonalDirections.DIRECTION_LEFT_DOWN -> VECTOR_LEFT_DOWN
+      else -> VECTOR_ZERO
+    }
 
     fun fromVelocity(tracker: VelocityTracker): Vector {
       tracker.computeCurrentVelocity(1000)

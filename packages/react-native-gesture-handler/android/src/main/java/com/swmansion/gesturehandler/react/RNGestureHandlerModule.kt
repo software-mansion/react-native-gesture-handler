@@ -49,7 +49,8 @@ import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDa
 @Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
-  NativeRNGestureHandlerModuleSpec(reactContext), GestureHandlerStateManager {
+  NativeRNGestureHandlerModuleSpec(reactContext),
+  GestureHandlerStateManager {
   private abstract class HandlerFactory<T : GestureHandler<T>> {
     abstract val type: Class<T>
     abstract val name: String
@@ -83,15 +84,13 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = NativeViewGestureHandler::class.java
     override val name = "NativeViewGestureHandler"
 
-    override fun create(context: Context?): NativeViewGestureHandler {
-      return NativeViewGestureHandler()
-    }
+    override fun create(context: Context?): NativeViewGestureHandler = NativeViewGestureHandler()
 
     override fun configure(handler: NativeViewGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
       if (config.hasKey(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)) {
         handler.setShouldActivateOnStart(
-          config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START)
+          config.getBoolean(KEY_NATIVE_VIEW_SHOULD_ACTIVATE_ON_START),
         )
       }
       if (config.hasKey(KEY_NATIVE_VIEW_DISALLOW_INTERRUPTION)) {
@@ -106,9 +105,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = TapGestureHandler::class.java
     override val name = "TapGestureHandler"
 
-    override fun create(context: Context?): TapGestureHandler {
-      return TapGestureHandler()
-    }
+    override fun create(context: Context?): TapGestureHandler = TapGestureHandler()
 
     override fun configure(handler: TapGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -142,9 +139,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = LongPressGestureHandler::class.java
     override val name = "LongPressGestureHandler"
 
-    override fun create(context: Context?): LongPressGestureHandler {
-      return LongPressGestureHandler((context)!!)
-    }
+    override fun create(context: Context?): LongPressGestureHandler = LongPressGestureHandler((context)!!)
 
     override fun configure(handler: LongPressGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -166,9 +161,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = PanGestureHandler::class.java
     override val name = "PanGestureHandler"
 
-    override fun create(context: Context?): PanGestureHandler {
-      return PanGestureHandler(context)
-    }
+    override fun create(context: Context?): PanGestureHandler = PanGestureHandler(context)
 
     override fun configure(handler: PanGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -248,9 +241,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = PinchGestureHandler::class.java
     override val name = "PinchGestureHandler"
 
-    override fun create(context: Context?): PinchGestureHandler {
-      return PinchGestureHandler()
-    }
+    override fun create(context: Context?): PinchGestureHandler = PinchGestureHandler()
 
     override fun createEventBuilder(handler: PinchGestureHandler) = PinchGestureHandlerEventDataBuilder(handler)
   }
@@ -259,9 +250,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = FlingGestureHandler::class.java
     override val name = "FlingGestureHandler"
 
-    override fun create(context: Context?): FlingGestureHandler {
-      return FlingGestureHandler()
-    }
+    override fun create(context: Context?): FlingGestureHandler = FlingGestureHandler()
 
     override fun configure(handler: FlingGestureHandler, config: ReadableMap) {
       super.configure(handler, config)
@@ -280,9 +269,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = RotationGestureHandler::class.java
     override val name = "RotationGestureHandler"
 
-    override fun create(context: Context?): RotationGestureHandler {
-      return RotationGestureHandler()
-    }
+    override fun create(context: Context?): RotationGestureHandler = RotationGestureHandler()
 
     override fun createEventBuilder(handler: RotationGestureHandler) = RotationGestureHandlerEventDataBuilder(handler)
   }
@@ -291,9 +278,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = ManualGestureHandler::class.java
     override val name = "ManualGestureHandler"
 
-    override fun create(context: Context?): ManualGestureHandler {
-      return ManualGestureHandler()
-    }
+    override fun create(context: Context?): ManualGestureHandler = ManualGestureHandler()
 
     override fun createEventBuilder(handler: ManualGestureHandler) = ManualGestureHandlerEventDataBuilder(handler)
   }
@@ -302,9 +287,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     override val type = HoverGestureHandler::class.java
     override val name = "HoverGestureHandler"
 
-    override fun create(context: Context?): HoverGestureHandler {
-      return HoverGestureHandler()
-    }
+    override fun create(context: Context?): HoverGestureHandler = HoverGestureHandler()
 
     override fun createEventBuilder(handler: HoverGestureHandler) = HoverGestureHandlerEventDataBuilder(handler)
   }
@@ -345,10 +328,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     handlerTag: Int,
     config: ReadableMap,
   ) {
-
     if (registry.getHandler(handlerTag) !== null) {
       throw IllegalStateException(
-        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors."
+        "Handler with tag $handlerTag already exists. Please ensure that no Gesture instance is used across multiple GestureDetectors.",
       )
     }
 
@@ -463,24 +445,22 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   private external fun decorateRuntime(jsiPtr: Long)
 
-  override fun getConstants(): Map<String, Any> {
-    return mapOf(
-      "State" to mapOf(
-        "UNDETERMINED" to GestureHandler.STATE_UNDETERMINED,
-        "BEGAN" to GestureHandler.STATE_BEGAN,
-        "ACTIVE" to GestureHandler.STATE_ACTIVE,
-        "CANCELLED" to GestureHandler.STATE_CANCELLED,
-        "FAILED" to GestureHandler.STATE_FAILED,
-        "END" to GestureHandler.STATE_END
-      ),
-      "Direction" to mapOf(
-        "RIGHT" to GestureHandler.DIRECTION_RIGHT,
-        "LEFT" to GestureHandler.DIRECTION_LEFT,
-        "UP" to GestureHandler.DIRECTION_UP,
-        "DOWN" to GestureHandler.DIRECTION_DOWN
-      )
-    )
-  }
+  override fun getConstants(): Map<String, Any> = mapOf(
+    "State" to mapOf(
+      "UNDETERMINED" to GestureHandler.STATE_UNDETERMINED,
+      "BEGAN" to GestureHandler.STATE_BEGAN,
+      "ACTIVE" to GestureHandler.STATE_ACTIVE,
+      "CANCELLED" to GestureHandler.STATE_CANCELLED,
+      "FAILED" to GestureHandler.STATE_FAILED,
+      "END" to GestureHandler.STATE_END,
+    ),
+    "Direction" to mapOf(
+      "RIGHT" to GestureHandler.DIRECTION_RIGHT,
+      "LEFT" to GestureHandler.DIRECTION_LEFT,
+      "UP" to GestureHandler.DIRECTION_UP,
+      "DOWN" to GestureHandler.DIRECTION_DOWN,
+    ),
+  )
 
   override fun invalidate() {
     registry.dropAllHandlers()
@@ -526,8 +506,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @Suppress("UNCHECKED_CAST")
-  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? =
-    handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
+  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? = handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
 
   private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T) {
     // triggers onUpdate and onChange callbacks on the JS side
@@ -548,7 +527,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         val event = RNGestureHandlerEvent.obtain(
           handler,
           handlerFactory.createEventBuilder(handler),
-          true
+          true,
         )
         sendEventForNativeAnimatedEvent(event)
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {
@@ -606,8 +585,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE ||
-      handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null
+    if (handler.state == GestureHandler.STATE_BEGAN ||
+      handler.state == GestureHandler.STATE_ACTIVE ||
+      handler.state == GestureHandler.STATE_UNDETERMINED ||
+      handler.view != null
     ) {
       if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
         // Reanimated worklet
@@ -621,7 +602,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  private fun <T : Event<T>>sendEventForReanimated(event: T) {
+  private fun <T : Event<T>> sendEventForReanimated(event: T) {
     // Delivers the event to Reanimated.
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Send event directly to Reanimated
@@ -640,7 +621,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     reactApplicationContext.dispatchEvent(event)
   }
 
-  private fun <T : Event<T>>sendEventForDirectEvent(event: T) {
+  private fun <T : Event<T>> sendEventForDirectEvent(event: T) {
     // Delivers the event to JS as a direct event. This method is called only on Paper.
     reactApplicationContext.dispatchEvent(event)
   }

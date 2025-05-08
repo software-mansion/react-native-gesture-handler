@@ -76,8 +76,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   @Suppress("UNCHECKED_CAST")
   protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
 
-  protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
-    self().apply { block() }
+  protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT = self().apply { block() }
 
   // properties set and accessed only by the orchestrator
   var activationIndex = 0
@@ -116,8 +115,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return false
   }
 
-  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
+  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT = applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
 
   fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
     // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
@@ -131,8 +129,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isEnabled = enabled
   }
 
-  fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.manualActivation = manualActivation }
+  fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT = applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
     leftPad: Float,
@@ -157,12 +154,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     require(!(hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad))) { "When height is set one of top or bottom pads need to be defined" }
   }
 
-  fun setHitSlop(padding: Float): ConcreteGestureHandlerT {
-    return setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
-  }
+  fun setHitSlop(padding: Float): ConcreteGestureHandlerT = setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
 
-  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT =
-    applySelf { interactionController = controller }
+  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT = applySelf { interactionController = controller }
 
   fun setMouseButton(mouseButton: Int) = apply {
     this.mouseButton = mouseButton
@@ -189,13 +183,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   protected open fun onPrepare() {}
 
-  private fun getActivity(context: Context?): Activity? =
-    when (context) {
-      is ReactContext -> context.currentActivity
-      is Activity -> context
-      is ContextWrapper -> getActivity(context.baseContext)
-      else -> null
-    }
+  private fun getActivity(context: Context?): Activity? = when (context) {
+    is ReactContext -> context.currentActivity
+    is Activity -> context
+    is ContextWrapper -> getActivity(context.baseContext)
+    else -> null
+  }
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
@@ -308,7 +301,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         event.deviceId,
         event.edgeFlags,
         event.source,
-        event.flags
+        event.flags,
       )
     } catch (e: IllegalArgumentException) {
       throw AdaptEventException(this, event, e)
@@ -322,7 +315,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   class AdaptEventException(
     handler: GestureHandler<*>,
     event: MotionEvent,
-    e: IllegalArgumentException
+    e: IllegalArgumentException,
   ) : Exception(
     """
     handler: ${handler::class.simpleName}
@@ -336,7 +329,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
     while handling event: $event
     """.trimIndent(),
-    e
+    e,
   )
 
   fun handle(transformedEvent: MotionEvent, sourceEvent: MotionEvent) {
@@ -570,13 +563,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onStateChange(newState, oldState)
   }
 
-  fun wantEvents(): Boolean {
-    return isEnabled &&
-      state != STATE_FAILED &&
-      state != STATE_CANCELLED &&
-      state != STATE_END &&
-      trackedPointersIDsCount > 0
-  }
+  fun wantEvents(): Boolean = isEnabled &&
+    state != STATE_FAILED &&
+    state != STATE_CANCELLED &&
+    state != STATE_END &&
+    trackedPointersIDsCount > 0
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
     if (handler === this) {
@@ -690,9 +681,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   /*
-  * Returns true if the view this handler is attached to is a descendant of the view the other handler
-  * is attached to and false otherwise.
-  */
+   * Returns true if the view this handler is attached to is a descendant of the view the other handler
+   * is attached to and false otherwise.
+   */
   fun isDescendantOf(of: GestureHandler<*>): Boolean {
     var view = this.view?.parent as? View
     while (view != null) {
@@ -767,12 +758,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
    *
    * This method modifies and transforms the received point.
    */
-  protected fun transformPoint(point: PointF): PointF {
-    return orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
-      point.x = Float.NaN
-      point.y = Float.NaN
-      point
-    }
+  protected fun transformPoint(point: PointF): PointF = orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+    point.x = Float.NaN
+    point.y = Float.NaN
+    point
   }
   fun reset() {
     view = null
@@ -865,9 +854,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     private var nextEventCoalescingKey: Short = 0
-    private fun hitSlopSet(value: Float): Boolean {
-      return !java.lang.Float.isNaN(value)
-    }
+    private fun hitSlopSet(value: Float): Boolean = !java.lang.Float.isNaN(value)
 
     fun stateToString(state: Int): String? {
       when (state) {
@@ -887,6 +874,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     var x: Float,
     var y: Float,
     var absoluteX: Float,
-    var absoluteY: Float
+    var absoluteY: Float,
   )
 }

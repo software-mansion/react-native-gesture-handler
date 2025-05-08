@@ -59,10 +59,9 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
       newState: Int,
       oldState: Int,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
-    ): RNGestureHandlerStateChangeEvent =
-      (EVENTS_POOL.acquire() ?: RNGestureHandlerStateChangeEvent()).apply {
-        init(handler, newState, oldState, dataBuilder)
-      }
+    ): RNGestureHandlerStateChangeEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerStateChangeEvent()).apply {
+      init(handler, newState, oldState, dataBuilder)
+    }
 
     fun createEventData(
       dataBuilder: GestureHandlerEventDataBuilder<*>,
