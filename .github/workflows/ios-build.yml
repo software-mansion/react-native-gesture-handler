@@ -3,10 +3,9 @@ on:
   pull_request:
     paths:
       - '.github/workflows/ios-build.yml'
-      - 'RNGestureHandler.podspec'
-      - 'apple/**'
-      - 'example/ios/**'
-      - 'FabricExample/ios/**'
+      - 'packages/react-native-gesture-handler/RNGestureHandler.podspec'
+      - 'packages/react-native-gesture-handler/apple/**'
+      - 'apps/BasicExample/ios/**'
   push:
     branches:
       - main
@@ -17,10 +16,12 @@ jobs:
     runs-on: macos-14
     strategy:
       matrix:
-        working-directory: [example, FabricExample]
+        working-directory: [apps/BasicExample, apps/ExpoExample]
     concurrency:
       group: ios-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
+    env:
+      WORKING_DIRECTORY: apps/BasicExample
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -35,8 +36,9 @@ jobs:
           cache: 'yarn'
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
-        run: yarn install --immutable
+        run: yarn install --immutable && yarn postinstall
       - name: Install pods
+        if: ${{ matrix.working-directory == 'apps/BasicExample' }}
         working-directory: ${{ matrix.working-directory }}/ios
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
       - name: Build app

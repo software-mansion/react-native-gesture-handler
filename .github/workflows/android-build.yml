@@ -3,10 +3,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/android-build.yml'
-      - 'android/**'
-      - 'Common/**'
-      - 'example/android/**'
-      - 'FabricExample/android/**'
+      - 'packages/react-native-gesture-handler/android/**'
+      - 'apps/BasicExample/android/**'
   push:
     branches:
       - main
@@ -17,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        working-directory: [example, FabricExample]
+        working-directory: [apps/BasicExample, apps/ExpoExample]
     concurrency:
       group: android-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
@@ -36,7 +34,7 @@ jobs:
           cache: 'yarn'
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
-        run: yarn
+        run: yarn install --immutable && yarn postinstall
       - name: Build app
         working-directory: ${{ matrix.working-directory }}/android
         run: ./gradlew assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
