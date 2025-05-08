@@ -36,7 +36,7 @@ jobs:
           cache: 'yarn'
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
-        run: yarn install --immutable && yarn postinstall
+        run: yarn install --immutable
       - name: Install pods
         if: ${{ matrix.working-directory == 'apps/BasicExample' }}
         working-directory: ${{ matrix.working-directory }}/ios
