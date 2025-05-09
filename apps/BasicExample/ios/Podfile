@@ -5,6 +5,10 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: ["../../../node_modules"]},
   )', __dir__]).strip
 
+require_relative '../../../scripts/clangd-add-xcode-step.rb'
+
+ENV['GH_EXAMPLE_APP_NAME'] = 'BasicExample'
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -32,4 +36,6 @@ target 'BasicExample' do
       # :ccache_enabled => true
     )
   end
+
+  add_clangd_generation_step()
 end

@@ -1,7 +1,10 @@
 require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../../../scripts/clangd-add-xcode-step.rb'
 
 prepare_react_native_project!
+
+ENV['GH_EXAMPLE_APP_NAME'] = 'MacOSExample'
 
 target 'MacOSExample-macOS' do
   platform :macos, '11.0'
@@ -21,4 +24,6 @@ target 'MacOSExample-macOS' do
   post_install do |installer|
     react_native_post_install(installer)
   end
+
+  add_clangd_generation_step()
 end
