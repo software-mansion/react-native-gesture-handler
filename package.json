@@ -11,20 +11,24 @@
   ],
   "scripts": {
     "postinstall": "husky",
-    "ts-check": "cd ./packages/react-native-gesture-handler && yarn tsc --noEmit"
+    "ts-check": "yarn workspaces foreach --all --parallel --topological-dev run ts-check",
+    "lint-js": "yarn workspaces foreach --all --parallel --topological-dev run lint-js",
+    "format-js": "yarn workspaces foreach --all --parallel --topological-dev run format-js"
   },
   "devDependencies": {
     "@types/react": "^19.0.12",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
-    "eslint": "^7.32.0",
-    "eslint-config-satya164": "^3.1.8",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "eslint": "^8.57.0",
+    "eslint-config-satya164": "3.3.0",
     "eslint-import-resolver-babel-module": "^5.2.0",
-    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-jest": "27.4.3",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react": "^7.37.5",
     "husky": "^8.0.1",
     "lint-staged": "^12.3.2",
     "prettier": "3.3.3",
-    "typescript": "5.0.4"
+    "typescript": "~5.8.3"
   },
   "packageManager": "yarn@4.7.0"
 }

@@ -12,10 +12,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Platform, StyleSheet } from 'react-native';
 
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const SVG = require('./svg.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const FREEZE = require('./freeze.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const REA = require('./rea.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const GH = require('./gh.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const SCREENS = require('./screens.png');
 
 const images = [GH, REA, SCREENS, SVG, FREEZE];

@@ -11,10 +11,6 @@ interface PressBoxProps {
   setDuration?: (duration: number) => void;
 }
 
-interface ExampleState {
-  longPressDuration: number;
-}
-
 export class PressBox extends Component<PressBoxProps> {
   private doubleTapRef = React.createRef<TapGestureHandler>();
   private onSingleTap = (event: TapGestureHandlerStateChangeEvent) => {
@@ -45,16 +41,7 @@ export class PressBox extends Component<PressBoxProps> {
   }
 }
 
-export default class Example extends Component<
-  Record<string, never>,
-  ExampleState
-> {
-  constructor(props: Record<string, never>) {
-    super(props);
-
-    this.state = { longPressDuration: 0 };
-  }
-
+export default class Example extends Component<Record<string, never>> {
   render() {
     return <PressBox />;
   }
@@ -68,8 +55,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'plum',
     margin: 10,
     zIndex: 200,
-  },
-  text: {
-    marginLeft: 20,
   },
 });

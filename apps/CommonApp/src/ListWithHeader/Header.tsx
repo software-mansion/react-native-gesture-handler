@@ -13,7 +13,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { COLORS } from '../common';
 
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const SIGNET = require('./signet.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const TEXT = require('./text.png');
 
 export const HEADER_HEIGHT =

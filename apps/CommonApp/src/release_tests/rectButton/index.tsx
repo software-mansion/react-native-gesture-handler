@@ -71,6 +71,7 @@ type ButtonProps = {
 function Button({ style, text }: ButtonProps) {
   const rectButtonStyles = [styles.button, style];
 
+  // eslint-disable-next-line no-alert
   const onPress = () => alert(`Pressed ${text}!`);
 
   return (

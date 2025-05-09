@@ -431,6 +431,7 @@ export default function createHandler<
       }
     }
 
+    // eslint-disable-next-line @eslint-react/no-unused-class-component-members
     setNativeProps(updates: any) {
       const mergedProps = { ...this.props, ...updates };
       const newConfig = filterConfig(

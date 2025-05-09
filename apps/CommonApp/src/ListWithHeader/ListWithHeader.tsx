@@ -97,46 +97,50 @@ interface ScrollComponentWithOffsetProps extends ScrollViewProps {
   scrollOffset: SharedValue<number>;
   animatedScrollEnabled: SharedValue<boolean>;
   dragGesture: GestureType;
+  ref?: React.RefObject<Animated.ScrollView | null>;
 }
 
-const ScrollComponentWithOffset = React.forwardRef(
-  (props: ScrollComponentWithOffsetProps, ref: any) => {
-    const scrollRef = useAnimatedRef<Animated.ScrollView>();
-    const scrollViewOffset = useScrollViewOffset(scrollRef);
+const ScrollComponentWithOffset = ({
+  ref,
+  ...props
+}: ScrollComponentWithOffsetProps) => {
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollViewOffset = useScrollViewOffset(scrollRef);
 
-    useAnimatedReaction(
-      () => {
-        return scrollViewOffset.value;
-      },
-      (offset) => {
-        props.scrollOffset.value = offset;
-      }
-    );
+  useAnimatedReaction(
+    () => {
+      return scrollViewOffset.value;
+    },
+    (offset) => {
+      props.scrollOffset.value = offset;
+    }
+  );
 
-    useEffect(() => {
+  useEffect(() => {
+    if (ref) {
       ref.current = scrollRef.current;
-    }, [ref, scrollRef]);
+    }
+  }, [ref, scrollRef]);
 
-    const scrollProps = useAnimatedProps(() => {
-      return {
-        scrollEnabled: props.animatedScrollEnabled.value,
-      };
-    });
+  const scrollProps = useAnimatedProps(() => {
+    return {
+      scrollEnabled: props.animatedScrollEnabled.value,
+    };
+  });
 
-    const scrollGesture = Gesture.Native()
-      .disallowInterruption(true)
-      .simultaneousWithExternalGesture(props.dragGesture);
+  const scrollGesture = Gesture.Native()
+    .disallowInterruption(true)
+    .simultaneousWithExternalGesture(props.dragGesture);
 
-    return (
-      <GestureDetector gesture={scrollGesture}>
-        <Animated.ScrollView
-          {...props}
-          ref={scrollRef}
-          contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
-          scrollEventThrottle={1}
-          animatedProps={scrollProps}
-        />
-      </GestureDetector>
-    );
-  }
-);
+  return (
+    <GestureDetector gesture={scrollGesture}>
+      <Animated.ScrollView
+        {...props}
+        ref={scrollRef}
+        contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
+        scrollEventThrottle={1}
+        animatedProps={scrollProps}
+      />
+    </GestureDetector>
+  );
+};

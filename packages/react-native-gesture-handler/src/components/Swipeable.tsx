@@ -482,11 +482,13 @@ export default class Swipeable extends Component<
     this.animateRow(this.currentOffset(), 0);
   };
 
+  // eslint-disable-next-line @eslint-react/no-unused-class-component-members
   openLeft = () => {
     const { leftWidth = 0 } = this.state;
     this.animateRow(this.currentOffset(), leftWidth);
   };
 
+  // eslint-disable-next-line @eslint-react/no-unused-class-component-members
   openRight = () => {
     const { rowWidth = 0 } = this.state;
     const { rightOffset = rowWidth } = this.state;
@@ -494,6 +496,7 @@ export default class Swipeable extends Component<
     this.animateRow(this.currentOffset(), -rightWidth);
   };
 
+  // eslint-disable-next-line @eslint-react/no-unused-class-component-members
   reset = () => {
     const { dragX, rowTranslation } = this.state;
     dragX.setValue(0);

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   Text,
   View,
@@ -13,7 +13,7 @@ import {
   StackNavigationProp,
   StackScreenProps,
 } from '@react-navigation/stack';
-import {NavigationContainer, ParamListBase} from '@react-navigation/native';
+import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import {
   GestureHandlerRootView,
   RectButton,
@@ -24,7 +24,7 @@ import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
 import DoubleDraggable from './src/release_tests/doubleDraggable';
 import GesturizedPressable from './src/release_tests/gesturizedPressable';
-import {ComboWithGHScroll} from './src/release_tests/combo';
+import { ComboWithGHScroll } from './src/release_tests/combo';
 import {
   TouchablesIndex,
   TouchableExample,
@@ -43,10 +43,10 @@ import TwoFingerPan from './src/release_tests/twoFingerPan';
 import SvgCompatibility from './src/release_tests/svg';
 import NestedText from './src/release_tests/nestedText';
 
-import {PinchableBox} from './src/recipes/scaleAndRotate';
+import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
 
-import {BottomSheet} from './src/showcase/bottomSheet';
+import { BottomSheet } from './src/showcase/bottomSheet';
 import Swipeables from './src/showcase/swipeable';
 import ChatHeads from './src/showcase/chatHeads';
 
@@ -79,8 +79,8 @@ import Pressable from './src/new_api/pressable';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
-import {ListWithHeader} from './src/ListWithHeader';
-import {COLORS} from './src/common';
+import { ListWithHeader } from './src/ListWithHeader';
+import { COLORS } from './src/common';
 
 import MacosDraggable from './src/simple/draggable';
 import Tap from './src/simple/tap';
@@ -88,7 +88,7 @@ import LongPressExample from './src/simple/longPress';
 import ManualExample from './src/simple/manual';
 import SimpleFling from './src/simple/fling';
 
-import {Icon} from '@swmansion/icons';
+import { Icon } from '@swmansion/icons';
 
 interface Example {
   name: string;
@@ -103,23 +103,23 @@ interface ExamplesSection {
 const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',
-    data: [{name: 'Empty Example', component: EmptyExample}],
+    data: [{ name: 'Empty Example', component: EmptyExample }],
   },
   {
     sectionTitle: 'New api',
     data: [
-      {name: 'Ball with velocity', component: VelocityTest},
-      {name: 'Camera', component: Camera},
-      {name: 'Transformations', component: Transformations},
-      {name: 'Overlap', component: Overlap},
-      {name: 'Bottom Sheet', component: BottomSheetNewApi},
-      {name: 'Calculator', component: Calculator},
-      {name: 'Chat Heads', component: ChatHeadsNewApi},
-      {name: 'Drag and drop', component: DragNDrop},
-      {name: 'New Swipeable', component: Swipeable},
-      {name: 'Pressable', component: Pressable},
-      {name: 'Hover', component: Hover},
-      {name: 'Hoverable icons', component: HoverableIcons},
+      { name: 'Ball with velocity', component: VelocityTest },
+      { name: 'Camera', component: Camera },
+      { name: 'Transformations', component: Transformations },
+      { name: 'Overlap', component: Overlap },
+      { name: 'Bottom Sheet', component: BottomSheetNewApi },
+      { name: 'Calculator', component: Calculator },
+      { name: 'Chat Heads', component: ChatHeadsNewApi },
+      { name: 'Drag and drop', component: DragNDrop },
+      { name: 'New Swipeable', component: Swipeable },
+      { name: 'Pressable', component: Pressable },
+      { name: 'Hover', component: Hover },
+      { name: 'Hoverable icons', component: HoverableIcons },
       {
         name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
         component: BetterHorizontalDrawer,
@@ -133,11 +133,11 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Basic examples',
     data: [
-      {name: 'Draggable', component: Draggable},
-      {name: 'Multitap', component: MultiTap},
-      {name: 'Bouncing box', component: BouncingBox},
-      {name: 'Pan responder', component: PanResponder},
-      {name: 'Horizontal drawer', component: HorizontalDrawer},
+      { name: 'Draggable', component: Draggable },
+      { name: 'Multitap', component: MultiTap },
+      { name: 'Bouncing box', component: BouncingBox },
+      { name: 'Pan responder', component: PanResponder },
+      { name: 'Horizontal drawer', component: HorizontalDrawer },
       {
         name: 'Pager & drawer',
         component: PagerAndDrawer,
@@ -148,22 +148,22 @@ const EXAMPLES: ExamplesSection[] = [
         component: ForceTouch,
         unsupportedPlatforms: new Set(['web', 'android', 'macos']),
       },
-      {name: 'Fling', component: Fling},
+      { name: 'Fling', component: Fling },
     ],
   },
   {
     sectionTitle: 'Recipes',
     data: [
-      {name: 'Pinch & rotate', component: PinchableBox},
-      {name: 'Pan & scroll', component: PanAndScroll},
+      { name: 'Pinch & rotate', component: PinchableBox },
+      { name: 'Pan & scroll', component: PanAndScroll },
     ],
   },
   {
     sectionTitle: 'Showcase',
     data: [
-      {name: 'Bottom sheet', component: BottomSheet},
-      {name: 'Swipeables', component: Swipeables},
-      {name: 'Chat heads', component: ChatHeads},
+      { name: 'Bottom sheet', component: BottomSheet },
+      { name: 'Swipeables', component: Swipeables },
+      { name: 'Chat heads', component: ChatHeads },
     ],
   },
   {
@@ -194,33 +194,33 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Svg integration with Gesture Handler',
         component: SvgCompatibility,
       },
-      {name: 'Double pinch & rotate', component: DoublePinchRotate},
-      {name: 'Double draggable', component: DoubleDraggable},
-      {name: 'Rows', component: Rows},
-      {name: 'Nested Fling', component: NestedFling},
+      { name: 'Double pinch & rotate', component: DoublePinchRotate },
+      { name: 'Double draggable', component: DoubleDraggable },
+      { name: 'Rows', component: Rows },
+      { name: 'Nested Fling', component: NestedFling },
       {
         name: 'Combo',
         component: ComboWithGHScroll,
         unsupportedPlatforms: new Set(['web']),
       },
-      {name: 'Touchables', component: TouchablesIndex as React.ComponentType},
-      {name: 'MouseButtons', component: MouseButtons},
+      { name: 'Touchables', component: TouchablesIndex as React.ComponentType },
+      { name: 'MouseButtons', component: MouseButtons },
       {
         name: 'ContextMenu',
         component: ContextMenu,
         unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
       },
-      {name: 'PointerType', component: PointerType},
-      {name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout},
-      {name: 'Swipeable Reanimation', component: SwipeableReanimation},
-      {name: 'RectButton (borders)', component: RectButtonBorders},
-      {name: 'Gesturized pressable', component: GesturizedPressable},
+      { name: 'PointerType', component: PointerType },
+      { name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout },
+      { name: 'Swipeable Reanimation', component: SwipeableReanimation },
+      { name: 'RectButton (borders)', component: RectButtonBorders },
+      { name: 'Gesturized pressable', component: GesturizedPressable },
       {
         name: 'Web styles reset',
         component: WebStylesResetExample,
         unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
       },
-      {name: 'Stylus data', component: StylusData},
+      { name: 'Stylus data', component: StylusData },
       {
         name: 'Two finger Pan',
         component: TwoFingerPan,
@@ -236,11 +236,11 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Simple',
     data: [
-      {name: 'Simple Draggable', component: MacosDraggable},
-      {name: 'Tap', component: Tap},
-      {name: 'LongPress', component: LongPressExample},
-      {name: 'Manual', component: ManualExample},
-      {name: 'Simple Fling', component: SimpleFling},
+      { name: 'Simple Draggable', component: MacosDraggable },
+      { name: 'Tap', component: Tap },
+      { name: 'LongPress', component: LongPressExample },
+      { name: 'Manual', component: ManualExample },
+      { name: 'Simple Fling', component: SimpleFling },
     ],
   },
 ];
@@ -250,7 +250,7 @@ const LAST_EXAMPLE_KEY = 'lastExample';
 
 type RootStackParamList = {
   Home: undefined;
-  TouchableExample: {item: string};
+  TouchableExample: { item: string };
 } & {
   [Screen: string]: undefined;
 };
@@ -277,17 +277,19 @@ export default function App() {
           }}>
           <Stack.Screen
             name="Home"
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
             component={MainScreen}
           />
-          {EXAMPLES.flatMap(({data}) => data).flatMap(({name, component}) => (
-            <Stack.Screen
-              key={name}
-              name={name}
-              getComponent={() => component}
-              options={{title: name}}
-            />
-          ))}
+          {EXAMPLES.flatMap(({ data }) => data).flatMap(
+            ({ name, component }) => (
+              <Stack.Screen
+                key={name}
+                name={name}
+                getComponent={() => component}
+                options={{ title: name }}
+              />
+            )
+          )}
           <Stack.Screen name="TouchableExample" component={TouchableExample} />
         </Stack.Navigator>
       </NavigationContainer>
@@ -297,20 +299,20 @@ export default function App() {
 
 function navigate(
   navigation: StackNavigationProp<ParamListBase>,
-  dest: string,
+  dest: string
 ) {
   AsyncStorage.setItem(LAST_EXAMPLE_KEY, dest);
   navigation.navigate(dest);
 }
 
-function MainScreen({navigation}: StackScreenProps<ParamListBase>) {
+function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   useEffect(() => {
     AsyncStorage.multiGet([OPEN_LAST_EXAMPLE_KEY, LAST_EXAMPLE_KEY]).then(
       ([openLastExample, lastExample]) => {
         if (openLastExample[1] === 'true' && lastExample[1]) {
           navigate(navigation, lastExample[1]);
         }
-      },
+      }
     );
     // we only want to run this effect once
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -321,16 +323,16 @@ function MainScreen({navigation}: StackScreenProps<ParamListBase>) {
       <ListWithHeader
         style={styles.list}
         sections={EXAMPLES}
-        keyExtractor={example => example.name}
+        keyExtractor={(example) => example.name}
         ListHeaderComponent={OpenLastExampleSetting}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <MainScreenItem
             name={item.name}
-            onPressItem={name => navigate(navigation, name)}
+            onPressItem={(name) => navigate(navigation, name)}
             enabled={!item.unsupportedPlatforms?.has(Platform.OS)}
           />
         )}
-        renderSectionHeader={({section: {sectionTitle}}) => (
+        renderSectionHeader={({ section: { sectionTitle } }) => (
           <Text style={styles.sectionTitle}>{sectionTitle}</Text>
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -343,7 +345,7 @@ function OpenLastExampleSetting() {
   const [openLastExample, setOpenLastExample] = React.useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(OPEN_LAST_EXAMPLE_KEY).then(value => {
+    AsyncStorage.getItem(OPEN_LAST_EXAMPLE_KEY).then((value) => {
       setOpenLastExample(value === 'true');
     });
   }, []);
@@ -380,7 +382,7 @@ interface MainScreenItemProps {
   enabled: boolean;
 }
 
-function MainScreenItem({name, onPressItem, enabled}: MainScreenItemProps) {
+function MainScreenItem({ name, onPressItem, enabled }: MainScreenItemProps) {
   return (
     <RectButton
       enabled={enabled}
@@ -400,7 +402,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.offWhite,
   },
   sectionTitle: {
-    ...(Platform.OS !== 'macos' ? {backgroundColor: '#f8f9ff'} : {}),
+    ...(Platform.OS !== 'macos' ? { backgroundColor: '#f8f9ff' } : {}),
     ...Platform.select({
       ios: {
         fontSize: 17,
@@ -447,7 +449,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS !== 'macos'
       ? {
           shadowColor: '#000',
-          shadowOffset: {width: 0, height: 2},
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
           shadowRadius: 3.84,
         }

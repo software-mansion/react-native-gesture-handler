@@ -11,7 +11,7 @@ export function getShadowNodeFromRef(ref: unknown) {
   // Load findHostInstance_DEPRECATED lazily because it may not be available before render
   if (findHostInstance_DEPRECATED === undefined) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const ReactFabric = require('react-native/Libraries/Renderer/shims/ReactFabric');
       // Since RN 0.77 ReactFabric exports findHostInstance_DEPRECATED in default object so we're trying to
       // access it first, then fallback on named export
@@ -31,7 +31,7 @@ export function getShadowNodeFromRef(ref: unknown) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       getInternalInstanceHandleFromPublicInstance =
-        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
           .getInternalInstanceHandleFromPublicInstance ??
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return

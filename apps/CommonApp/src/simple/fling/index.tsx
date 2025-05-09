@@ -45,7 +45,6 @@ export default function FlingExample() {
   });
 
   const g = Gesture.Fling()
-    // eslint-disable-next-line no-bitwise
     .direction(Directions.LEFT | Directions.UP)
     .onBegin(() => {
       console.log('onBegin');

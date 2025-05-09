@@ -31,7 +31,7 @@ export const DrawerLayoutAndroid = () => {
 export const RefreshControl = createNativeWrapper(View);
 
 export const FlatList = React.forwardRef(
-  <ItemT extends any>(props: FlatListProps<ItemT>, ref: any) => (
+  <ItemT,>(props: FlatListProps<ItemT>, ref: any) => (
     <RNFlatList
       ref={ref}
       {...props}
