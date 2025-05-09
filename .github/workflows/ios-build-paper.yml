@@ -28,8 +28,8 @@ jobs:
           node-version: 18
           cache: 'yarn'
       - name: Install node dependencies
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: PAPER_ENABLED=1 yarn install --immutable
       - name: Build app
-        working-directory: ${{ matrix.working-directory }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn ios
