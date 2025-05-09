@@ -69,7 +69,9 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   }
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
-    if (handler is HoverGestureHandler && (this isAncestorOf handler || handler isAncestorOf this)) {
+    if (handler is HoverGestureHandler &&
+      (this isAncestorOf handler || handler isAncestorOf this)
+    ) {
       return true
     }
 
@@ -110,7 +112,10 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
       }
 
       this.state == STATE_UNDETERMINED &&
-        (event.action == MotionEvent.ACTION_HOVER_MOVE || event.action == MotionEvent.ACTION_HOVER_ENTER) -> {
+        (
+          event.action == MotionEvent.ACTION_HOVER_MOVE ||
+            event.action == MotionEvent.ACTION_HOVER_ENTER
+          ) -> {
         begin()
         activate()
       }

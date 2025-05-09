@@ -4,7 +4,8 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.LongPressGestureHandler
 
-class LongPressGestureHandlerEventDataBuilder(handler: LongPressGestureHandler) : GestureHandlerEventDataBuilder<LongPressGestureHandler>(handler) {
+class LongPressGestureHandlerEventDataBuilder(handler: LongPressGestureHandler) :
+  GestureHandlerEventDataBuilder<LongPressGestureHandler>(handler) {
   private val x: Float
   private val y: Float
   private val absoluteX: Float

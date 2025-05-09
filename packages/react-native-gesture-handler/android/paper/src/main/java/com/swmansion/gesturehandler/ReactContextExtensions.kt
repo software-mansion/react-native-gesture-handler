@@ -8,6 +8,9 @@ fun ReactContext.dispatchEvent(event: Event<*>) {
   try {
     this.getNativeModule(UIManagerModule::class.java)!!.eventDispatcher.dispatchEvent(event)
   } catch (e: NullPointerException) {
-    throw Exception("Couldn't get an instance of UIManagerModule. Gesture Handler is unable to send an event.", e)
+    throw Exception(
+      "Couldn't get an instance of UIManagerModule. Gesture Handler is unable to send an event.",
+      e,
+    )
   }
 }

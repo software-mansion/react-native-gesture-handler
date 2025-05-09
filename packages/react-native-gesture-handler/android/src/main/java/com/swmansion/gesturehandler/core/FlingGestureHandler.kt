@@ -39,10 +39,7 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
     val velocityVector = Vector.fromVelocity(velocityTracker!!)
 
-    fun getVelocityAlignment(
-      direction: Int,
-      maxDeviationCosine: Double,
-    ): Boolean = (
+    fun getVelocityAlignment(direction: Int, maxDeviationCosine: Double): Boolean = (
       (this.direction and direction) == direction &&
         velocityVector.isSimilar(Vector.fromDirection(direction), maxDeviationCosine)
       )

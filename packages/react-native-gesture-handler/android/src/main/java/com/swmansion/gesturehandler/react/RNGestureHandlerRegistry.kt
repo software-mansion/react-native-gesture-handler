@@ -18,9 +18,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  fun getHandler(handlerTag: Int): GestureHandler<*>? {
-    return handlers[handlerTag]
-  }
+  fun getHandler(handlerTag: Int): GestureHandler<*>? = handlers[handlerTag]
 
   @Synchronized
   fun attachHandlerToView(handlerTag: Int, viewTag: Int, actionType: Int): Boolean {
@@ -89,12 +87,8 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler<*>>? {
-    return handlersForView[viewTag]
-  }
+  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler<*>>? = handlersForView[viewTag]
 
   @Synchronized
-  override fun getHandlersForView(view: View): ArrayList<GestureHandler<*>>? {
-    return getHandlersForViewWithTag(view.id)
-  }
+  override fun getHandlersForView(view: View): ArrayList<GestureHandler<*>>? = getHandlersForViewWithTag(view.id)
 }

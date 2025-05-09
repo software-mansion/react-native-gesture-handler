@@ -52,26 +52,27 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   companion object {
     const val EVENT_NAME = "onGestureHandlerStateChange"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
-    private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerStateChangeEvent>(TOUCH_EVENTS_POOL_SIZE)
+    private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerStateChangeEvent>(
+      TOUCH_EVENTS_POOL_SIZE,
+    )
 
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       newState: Int,
       oldState: Int,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
-    ): RNGestureHandlerStateChangeEvent =
-      (EVENTS_POOL.acquire() ?: RNGestureHandlerStateChangeEvent()).apply {
-        init(handler, newState, oldState, dataBuilder)
-      }
-
-    fun createEventData(
-      dataBuilder: GestureHandlerEventDataBuilder<*>,
-      newState: Int,
-      oldState: Int,
-    ): WritableMap = Arguments.createMap().apply {
-      dataBuilder.buildEventData(this)
-      putInt("state", newState)
-      putInt("oldState", oldState)
+    ): RNGestureHandlerStateChangeEvent = (
+      EVENTS_POOL.acquire()
+        ?: RNGestureHandlerStateChangeEvent()
+      ).apply {
+      init(handler, newState, oldState, dataBuilder)
     }
+
+    fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>, newState: Int, oldState: Int): WritableMap =
+      Arguments.createMap().apply {
+        dataBuilder.buildEventData(this)
+        putInt("state", newState)
+        putInt("oldState", oldState)
+      }
   }
 }

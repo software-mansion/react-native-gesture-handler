@@ -15,7 +15,9 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
     val pointerEvents: PointerEvents =
       if (view is ReactPointerEventsView) {
         (view as ReactPointerEventsView).pointerEvents
-      } else PointerEvents.AUTO
+      } else {
+        PointerEvents.AUTO
+      }
 
     // Views that are disabled should never be the target of pointer events. However, their children
     // can be because some views (SwipeRefreshLayout) use enabled but still have children that can
@@ -36,10 +38,10 @@ class RNViewConfigurationHelper : ViewConfigurationHelper {
     }
   }
 
-  override fun getChildInDrawingOrderAtIndex(parent: ViewGroup, index: Int): View {
-    return if (parent is ReactViewGroup) {
-      parent.getChildAt(parent.getZIndexMappedChildIndex(index))
-    } else parent.getChildAt(index)
+  override fun getChildInDrawingOrderAtIndex(parent: ViewGroup, index: Int): View = if (parent is ReactViewGroup) {
+    parent.getChildAt(parent.getZIndexMappedChildIndex(index))
+  } else {
+    parent.getChildAt(index)
   }
 
   override fun isViewClippingChildren(view: ViewGroup) = when {
