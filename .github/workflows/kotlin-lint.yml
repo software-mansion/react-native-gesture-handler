@@ -1,21 +1,25 @@
 name: Kotlin Lint
+
 on:
   pull_request:
     paths:
-      - 'packages/react-native-gesture-handler/android/**'
+      - packages/react-native-gesture-handler/android/**
   push:
     branches:
       - main
   workflow_dispatch:
+
 jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: ubuntu-latest
+    env:
+      WORKING_DIRECTORY: packages/react-native-gesture-handler
     concurrency:
       group: kotlin-lint-${{ github.ref }}
       cancel-in-progress: true
-    env:
-      WORKING_DIRECTORY: 'packages/react-native-gesture-handler'
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -23,14 +27,14 @@ jobs:
       - name: Use Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'oracle'
-          java-version: '17'
+          distribution: oracle
+          java-version: 17
 
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: yarn
 
       - uses: actions/cache@v4
         with:

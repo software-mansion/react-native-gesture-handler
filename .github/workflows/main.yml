@@ -8,7 +8,9 @@ on:
 jobs:
   publish:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out
         uses: actions/checkout@v1
