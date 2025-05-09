@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 import React, {
+  Ref,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -114,7 +115,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   const webEventHandlersRef = useWebEventHandlers();
   // Store state in ref to prevent unnecessary renders
-  const state = useRef<GestureDetectorState>({
+  const state = useRef<
+    GestureDetectorState 
+    & { viewRef: { props: { reanimatedContext?: { current: number } } } | null }
+  >({
     firstRender: true,
     viewRef: null,
     previousViewTag: -1,
@@ -150,7 +154,13 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
   useLayoutEffect(() => {
-    const viewTag = findNodeHandle(state.viewRef) as number;
+    let viewTag = -1;
+    const reanimatedContext = state.viewRef?.props.reanimatedContext;
+    if (reanimatedContext && reanimatedContext.current > 0) {
+      viewTag = reanimatedContext.current;
+    } else {
+      viewTag = findNodeHandle(state.viewRef) as number;
+    }
     preparedGesture.isMounted = true;
 
     attachHandlers({
@@ -186,6 +196,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
       </AnimatedWrap>
     );
   } else {
-    return <Wrap ref={refHandler}>{props.children}</Wrap>;
+    return <Wrap ref={refHandler as Ref<Wrap>}>{props.children}</Wrap>;
   }
 };

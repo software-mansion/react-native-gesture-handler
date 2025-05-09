@@ -6,6 +6,7 @@ export class Wrap extends React.Component<{
   onGestureHandlerEvent?: unknown;
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?: React.ReactNode;
+  reanimatedContext?: { current: number };
 }> {
   render() {
     try {
@@ -17,7 +18,10 @@ export class Wrap extends React.Component<{
       const child: any = React.Children.only(this.props.children);
       return React.cloneElement(
         child,
-        { collapsable: false },
+        { 
+          collapsable: false,
+          reanimatedContext: this.props.reanimatedContext,
+        },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         child.props.children
       );
