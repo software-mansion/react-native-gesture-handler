@@ -7,7 +7,7 @@ import android.view.ViewConfiguration
 import com.swmansion.gesturehandler.react.eventbuilders.PinchGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
-class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
+class PinchGestureHandler : GestureHandler() {
   var scale = 0.0
     private set
   var velocity = 0.0

@@ -20,9 +20,9 @@ class GestureHandlerOrchestrator(
    * traversing view hierarchy and looking for gesture handlers.
    */
   var minimumAlphaForTraversal = DEFAULT_MIN_ALPHA_FOR_TRAVERSAL
-  private val gestureHandlers = arrayListOf<GestureHandler<*>>()
-  private val awaitingHandlers = arrayListOf<GestureHandler<*>>()
-  private val preparedHandlers = arrayListOf<GestureHandler<*>>()
+  private val gestureHandlers = arrayListOf<GestureHandler>()
+  private val awaitingHandlers = arrayListOf<GestureHandler>()
+  private val preparedHandlers = arrayListOf<GestureHandler>()
 
   // In `onHandlerStateChange` method we iterate through `awaitingHandlers`, but calling `tryActivate` may modify this list.
   // To avoid `ConcurrentModificationException` we iterate through copy. There is one more problem though - if handler was
@@ -82,16 +82,16 @@ class GestureHandlerOrchestrator(
     finishedHandlersCleanupScheduled = false
   }
 
-  private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>) =
+  private fun hasOtherHandlerToWaitFor(handler: GestureHandler) =
     gestureHandlers.any { !isFinished(it.state) && shouldHandlerWaitForOther(handler, it) }
 
-  private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) =
+  private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler) =
     gestureHandlers.any { shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END }
 
-  private fun shouldBeCancelledByActiveHandler(handler: GestureHandler<*>) =
+  private fun shouldBeCancelledByActiveHandler(handler: GestureHandler) =
     gestureHandlers.any { handler.hasCommonPointers(it) && it.state == GestureHandler.STATE_ACTIVE && !canRunSimultaneously(handler, it) && handler.isDescendantOf(it) }
 
-  private fun tryActivate(handler: GestureHandler<*>) {
+  private fun tryActivate(handler: GestureHandler) {
     // If we are waiting for a gesture that has successfully finished, we should cancel handler
     if (shouldBeCancelledByFinishedHandler(handler) || shouldBeCancelledByActiveHandler(handler)) {
       handler.cancel()
@@ -120,7 +120,7 @@ class GestureHandlerOrchestrator(
   }
 
   /*package*/
-  fun onHandlerStateChange(handler: GestureHandler<*>, newState: Int, prevState: Int) {
+  fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
@@ -178,7 +178,7 @@ class GestureHandlerOrchestrator(
     scheduleFinishedHandlersCleanup()
   }
 
-  private fun makeActive(handler: GestureHandler<*>) {
+  private fun makeActive(handler: GestureHandler) {
     val currentState = handler.state
     with(handler) {
       isAwaiting = false
@@ -253,7 +253,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun deliverEventToGestureHandler(handler: GestureHandler<*>, sourceEvent: MotionEvent) {
+  private fun deliverEventToGestureHandler(handler: GestureHandler, sourceEvent: MotionEvent) {
     if (!isViewAttachedUnderWrapper(handler.view)) {
       handler.cancel()
       return
@@ -404,7 +404,7 @@ class GestureHandlerOrchestrator(
     return point
   }
 
-  private fun addAwaitingHandler(handler: GestureHandler<*>) {
+  private fun addAwaitingHandler(handler: GestureHandler) {
     if (awaitingHandlers.contains(handler)) {
       return
     }
@@ -418,7 +418,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun recordHandlerIfNotPresent(handler: GestureHandler<*>, view: View) {
+  private fun recordHandlerIfNotPresent(handler: GestureHandler, view: View) {
     if (gestureHandlers.contains(handler)) {
       return
     }
@@ -474,7 +474,7 @@ class GestureHandlerOrchestrator(
   // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
   // so we need to pass them into RootViewGestureHandler, otherwise press and hold
   // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
-  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler<*>, action: Int): Boolean {
+  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, action: Int): Boolean {
     val shouldSkipHoverEvents =
       handler !is HoverGestureHandler && handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
 
@@ -629,7 +629,7 @@ class GestureHandlerOrchestrator(
     private val matrixTransformCoords = FloatArray(2)
     private val inverseMatrix = Matrix()
     private val tempCoords = FloatArray(2)
-    private val handlersComparator = Comparator<GestureHandler<*>> { a, b ->
+    private val handlersComparator = Comparator<GestureHandler> { a, b ->
       return@Comparator if (a.isActive && b.isActive || a.isAwaiting && b.isAwaiting) {
         // both A and B are either active or awaiting activation, in which case we prefer one that
         // has activated (or turned into "awaiting" state) earlier
@@ -683,17 +683,17 @@ class GestureHandlerOrchestrator(
     private fun isTransformedTouchPointInView(x: Float, y: Float, child: View) =
       x in 0f..child.width.toFloat() && y in 0f..child.height.toFloat()
 
-    private fun shouldHandlerWaitForOther(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
+    private fun shouldHandlerWaitForOther(handler: GestureHandler, other: GestureHandler): Boolean {
       return handler !== other && (
         handler.shouldWaitForHandlerFailure(other) ||
           other.shouldRequireToWaitForFailure(handler)
         )
     }
 
-    private fun canRunSimultaneously(a: GestureHandler<*>, b: GestureHandler<*>) =
+    private fun canRunSimultaneously(a: GestureHandler, b: GestureHandler) =
       a === b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
 
-    private fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, other: GestureHandler<*>): Boolean {
+    private fun shouldHandlerBeCancelledBy(handler: GestureHandler, other: GestureHandler): Boolean {
       if (!handler.hasCommonPointers(other)) {
         // if two handlers share no common pointer one can never trigger cancel for the other
         return false

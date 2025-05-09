@@ -12,7 +12,7 @@ import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 import com.swmansion.gesturehandler.react.eventbuilders.PanGestureHandlerEventDataBuilder
 
-class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
+class PanGestureHandler(context: Context?) : GestureHandler() {
   var velocityX = 0f
     private set
   var velocityY = 0f

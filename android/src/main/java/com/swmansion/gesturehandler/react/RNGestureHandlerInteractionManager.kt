@@ -25,7 +25,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     }
   }
 
-  fun configureInteractions(handler: GestureHandler<*>, config: ReadableMap) {
+  fun configureInteractions(handler: GestureHandler, config: ReadableMap) {
     handler.setInteractionController(this)
     if (config.hasKey(KEY_WAIT_FOR)) {
       val tags = convertHandlerTagsArray(config, KEY_WAIT_FOR)
@@ -41,15 +41,15 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     }
   }
 
-  override fun shouldWaitForHandlerFailure(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) =
+  override fun shouldWaitForHandlerFailure(handler: GestureHandler, otherHandler: GestureHandler) =
     waitForRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   override fun shouldRequireHandlerToWaitForFailure(
-    handler: GestureHandler<*>,
-    otherHandler: GestureHandler<*>,
+    handler: GestureHandler,
+    otherHandler: GestureHandler,
   ) = blockingRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
-  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
+  override fun shouldHandlerBeCancelledBy(handler: GestureHandler, otherHandler: GestureHandler): Boolean {
     if (otherHandler is NativeViewGestureHandler) {
       return otherHandler.disallowInterruption
     }
@@ -61,8 +61,8 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     return false
   }
   override fun shouldRecognizeSimultaneously(
-    handler: GestureHandler<*>,
-    otherHandler: GestureHandler<*>,
+    handler: GestureHandler,
+    otherHandler: GestureHandler,
   ) = simultaneousRelations[handler.tag]?.any { tag -> tag == otherHandler.tag } ?: false
 
   fun reset() {
