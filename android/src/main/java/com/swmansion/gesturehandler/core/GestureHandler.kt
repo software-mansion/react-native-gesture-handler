@@ -657,6 +657,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun fail() {
     if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+      onFail()
       moveToState(STATE_FAILED)
     }
   }
@@ -710,6 +711,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
   protected open fun onCancel() {}
+  protected open fun onFail() {}
 
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
