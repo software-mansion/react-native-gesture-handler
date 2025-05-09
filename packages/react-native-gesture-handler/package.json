@@ -6,7 +6,6 @@
     "postinstall": "bob build",
     "test": "jest",
     "build": "yarn tsc -p tsconfig.build.json",
-    "precommit": "lint-staged",
     "ts-check": "yarn tsc --noEmit",
     "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
     "format:js": "yarn format-js",
@@ -104,19 +103,11 @@
     "react-native-builder-bob": "^0.39.0",
     "react-native-reanimated": "3.17.5",
     "react-test-renderer": "19.0.0",
-    "release-it": "^13.6.5",
     "typescript": "~5.8.3"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
-  },
-  "release-it": {
-    "hooks": {
-      "before:git:bump": [
-        "# check if version corresponds to changes in native files  \n if git diff --name-only ${latestVersion} HEAD | egrep \"(android/.*)|(ios/.*)\" -q; then egrep '\\.0$' -q <<< ${version}; else test $? -eq 1; fi"
-      ]
-    }
   },
   "react-native-builder-bob": {
     "source": "src",

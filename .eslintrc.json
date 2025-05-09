@@ -19,6 +19,7 @@
   "plugins": ["react", "jest"],
   "ignorePatterns": [
     "packages/react-native-gesture-handler/lib/**/*",
+    "packages/react-native-gesture-handler/src/specs/*NativeComponent.js",
     "**/*.config.js",
     "scripts/*.js"
   ],
