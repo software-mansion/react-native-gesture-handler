@@ -2,7 +2,7 @@ name: Test Android build (Paper)
 on:
   pull_request:
     paths:
-      - '.github/workflows/android-build.yml'
+      - '.github/workflows/android-build-paper.yml'
       - 'packages/react-native-gesture-handler/android/**'
   push:
     branches:

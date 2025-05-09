@@ -2,10 +2,9 @@ name: Test iOS build (paper)
 on:
   pull_request:
     paths:
-      - '.github/workflows/ios-build.yml'
+      - '.github/workflows/ios-build-paper.yml'
       - 'packages/react-native-gesture-handler/RNGestureHandler.podspec'
       - 'packages/react-native-gesture-handler/apple/**'
-      - 'apps/BasicExample/ios/**'
   push:
     branches:
       - main
