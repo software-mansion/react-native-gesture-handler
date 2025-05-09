@@ -167,35 +167,51 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       super.configure(handler, config)
       var hasCustomActivationCriteria = false
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_START)) {
-        handler.setActiveOffsetXStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_START)))
+        handler.setActiveOffsetXStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_START)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_X_END)) {
-        handler.setActiveOffsetXEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_END)))
+        handler.setActiveOffsetXEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_X_END)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_START)) {
-        handler.setFailOffsetXStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_START)))
+        handler.setFailOffsetXStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_START)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_X_END)) {
-        handler.setFailOffsetXEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_END)))
+        handler.setFailOffsetXEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_X_END)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_START)) {
-        handler.setActiveOffsetYStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_START)))
+        handler.setActiveOffsetYStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_START)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_ACTIVE_OFFSET_Y_END)) {
-        handler.setActiveOffsetYEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_END)))
+        handler.setActiveOffsetYEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_ACTIVE_OFFSET_Y_END)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)) {
-        handler.setFailOffsetYStart(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)))
+        handler.setFailOffsetYStart(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_START)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)) {
-        handler.setFailOffsetYEnd(PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)))
+        handler.setFailOffsetYEnd(
+          PixelUtil.toPixelFromDIP(config.getDouble(KEY_PAN_FAIL_OFFSET_RANGE_Y_END)),
+        )
         hasCustomActivationCriteria = true
       }
       if (config.hasKey(KEY_PAN_MIN_VELOCITY)) {
@@ -350,11 +366,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun createGestureHandler(
-    handlerName: String,
-    handlerTagDouble: Double,
-    config: ReadableMap,
-  ) {
+  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
     createGestureHandlerHelper(handlerName, handlerTag, config)
@@ -506,7 +518,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @Suppress("UNCHECKED_CAST")
-  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? = handlerFactories.firstOrNull { it.type == handler.javaClass } as HandlerFactory<T>?
+  private fun <T : GestureHandler<T>> findFactoryForHandler(handler: GestureHandler<T>): HandlerFactory<T>? =
+    handlerFactories.firstOrNull {
+      it.type ==
+        handler.javaClass
+    } as HandlerFactory<T>?
 
   private fun <T : GestureHandler<T>> onHandlerUpdate(handler: T) {
     // triggers onUpdate and onChange callbacks on the JS side
@@ -520,7 +536,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
       if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
         // Reanimated worklet
-        val event = RNGestureHandlerEvent.obtain(handler, handlerFactory.createEventBuilder(handler))
+        val event = RNGestureHandlerEvent.obtain(
+          handler,
+          handlerFactory.createEventBuilder(handler),
+        )
         sendEventForReanimated(event)
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT) {
         // Animated with useNativeDriver: true
@@ -533,10 +552,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {
         // JS function, Animated.event with useNativeDriver: false using old API
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-          val data = RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
+          val data = RNGestureHandlerEvent.createEventData(
+            handlerFactory.createEventBuilder(handler),
+          )
           sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
         } else {
-          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory.createEventBuilder(handler))
+          val event = RNGestureHandlerEvent.obtain(
+            handler,
+            handlerFactory.createEventBuilder(handler),
+          )
           sendEventForDirectEvent(event)
         }
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
@@ -558,22 +582,40 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
     if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
       // Reanimated worklet
-      val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
+      val event = RNGestureHandlerStateChangeEvent.obtain(
+        handler,
+        newState,
+        oldState,
+        handlerFactory.createEventBuilder(handler),
+      )
       sendEventForReanimated(event)
     } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT ||
       handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API
     ) {
       // JS function or Animated.event with useNativeDriver: false with old API
       if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-        val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
+        val data = RNGestureHandlerStateChangeEvent.createEventData(
+          handlerFactory.createEventBuilder(handler),
+          newState,
+          oldState,
+        )
         sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
       } else {
-        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
+        val event = RNGestureHandlerStateChangeEvent.obtain(
+          handler,
+          newState,
+          oldState,
+          handlerFactory.createEventBuilder(handler),
+        )
         sendEventForDirectEvent(event)
       }
     } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
       // JS function or Animated.event with useNativeDriver: false with new API
-      val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
+      val data = RNGestureHandlerStateChangeEvent.createEventData(
+        handlerFactory.createEventBuilder(handler),
+        newState,
+        oldState,
+      )
       sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
     }
   }
@@ -679,7 +721,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
       if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
         val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
-        handler.setHitSlop(hitSlop, hitSlop, hitSlop, hitSlop, GestureHandler.HIT_SLOP_NONE, GestureHandler.HIT_SLOP_NONE)
+        handler.setHitSlop(
+          hitSlop,
+          hitSlop,
+          hitSlop,
+          hitSlop,
+          GestureHandler.HIT_SLOP_NONE,
+          GestureHandler.HIT_SLOP_NONE,
+        )
       } else {
         val hitSlop = config.getMap(KEY_HIT_SLOP)!!
         var left = GestureHandler.HIT_SLOP_NONE

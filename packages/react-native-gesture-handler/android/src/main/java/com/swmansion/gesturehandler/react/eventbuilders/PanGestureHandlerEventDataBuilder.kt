@@ -5,7 +5,8 @@ import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.PanGestureHandler
 import com.swmansion.gesturehandler.core.StylusData
 
-class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) : GestureHandlerEventDataBuilder<PanGestureHandler>(handler) {
+class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) :
+  GestureHandlerEventDataBuilder<PanGestureHandler>(handler) {
   private val x: Float
   private val y: Float
   private val absoluteX: Float

@@ -4,7 +4,8 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.FlingGestureHandler
 
-class FlingGestureHandlerEventDataBuilder(handler: FlingGestureHandler) : GestureHandlerEventDataBuilder<FlingGestureHandler>(handler) {
+class FlingGestureHandlerEventDataBuilder(handler: FlingGestureHandler) :
+  GestureHandlerEventDataBuilder<FlingGestureHandler>(handler) {
   private val x: Float
   private val y: Float
   private val absoluteX: Float

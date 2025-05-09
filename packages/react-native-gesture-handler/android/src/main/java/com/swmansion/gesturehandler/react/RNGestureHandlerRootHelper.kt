@@ -25,7 +25,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
     check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
-    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(
+      RNGestureHandlerModule::class.java,
+    )!!
     val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
@@ -42,7 +44,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
     with(registry) {
       registerHandler(jsGestureHandler)
-      attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API)
+      attachHandlerToView(
+        jsGestureHandler.tag,
+        wrappedViewTag,
+        GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API,
+      )
     }
     module.registerRootHelper(this)
   }
@@ -52,7 +58,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView",
     )
-    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(RNGestureHandlerModule::class.java)!!
+    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(
+      RNGestureHandlerModule::class.java,
+    )!!
     with(module) {
       registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)
@@ -65,12 +73,16 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
       // we shouldn't stop intercepting events when there is an active handler already, which could happen when
       // adding a new pointer to the screen after a handler activates
-      if (currentState == STATE_UNDETERMINED && (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)) {
+      if (currentState == STATE_UNDETERMINED &&
+        (!shouldIntercept || orchestrator?.isAnyHandlerActive() != true)
+      ) {
         begin()
         shouldIntercept = false
       }
 
-      if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_HOVER_EXIT) {
+      if (event.actionMasked == MotionEvent.ACTION_UP ||
+        event.actionMasked == MotionEvent.ACTION_HOVER_EXIT
+      ) {
         end()
       }
     }

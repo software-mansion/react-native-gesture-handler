@@ -64,9 +64,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
       init(handler, dataBuilder, useTopPrefixedName)
     }
 
-    fun createEventData(
-      dataBuilder: GestureHandlerEventDataBuilder<*>,
-    ): WritableMap = Arguments.createMap().apply {
+    fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>): WritableMap = Arguments.createMap().apply {
       dataBuilder.buildEventData(this)
     }
   }

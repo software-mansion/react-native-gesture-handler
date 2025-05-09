@@ -40,14 +40,15 @@ class RNGestureHandlerPackage :
 
   override fun getViewManagerNames(reactContext: ReactApplicationContext?) = viewManagers.keys.toList()
 
-  override fun getViewManagers(reactContext: ReactApplicationContext?): MutableList<ModuleSpec> = viewManagers.values.toMutableList()
+  override fun getViewManagers(reactContext: ReactApplicationContext?): MutableList<ModuleSpec> =
+    viewManagers.values.toMutableList()
 
-  override fun createViewManager(
-    reactContext: ReactApplicationContext?,
-    viewManagerName: String?,
-  ) = viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
+  override fun createViewManager(reactContext: ReactApplicationContext?, viewManagerName: String?) =
+    viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
 
-  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? = if (name == RNGestureHandlerModule.NAME) {
+  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? = if (name ==
+    RNGestureHandlerModule.NAME
+  ) {
     RNGestureHandlerModule(reactContext)
   } else {
     null

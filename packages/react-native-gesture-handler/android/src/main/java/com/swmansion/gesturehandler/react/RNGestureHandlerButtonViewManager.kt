@@ -44,7 +44,10 @@ class RNGestureHandlerButtonViewManager :
   private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
 
   init {
-    mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
+    mDelegate =
+      RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(
+        this,
+      )
   }
 
   override fun getName() = REACT_CLASS
@@ -239,8 +242,19 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun buildBorderStyle(): PathEffect? = when (borderStyle) {
-      "dotted" -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0f)
-      "dashed" -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0f)
+      "dotted" -> DashPathEffect(
+        floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth),
+        0f,
+      )
+      "dashed" -> DashPathEffect(
+        floatArrayOf(
+          borderWidth * 3,
+          borderWidth * 3,
+          borderWidth * 3,
+          borderWidth * 3,
+        ),
+        0f,
+      )
       else -> null
     }
 
@@ -308,7 +322,10 @@ class RNGestureHandlerButtonViewManager :
       }
 
       // always true when lastEventTime or lastAction have default value (-1)
-      if (lastEventTime != eventTime || lastAction != action || action == MotionEvent.ACTION_CANCEL) {
+      if (lastEventTime != eventTime ||
+        lastAction != action ||
+        action == MotionEvent.ACTION_CANCEL
+      ) {
         lastEventTime = eventTime
         lastAction = action
         return super.onTouchEvent(event)
@@ -323,7 +340,15 @@ class RNGestureHandlerButtonViewManager :
         colorDrawable.setCornerRadii(buildBorderRadii())
       }
 
-      val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable, borderDrawable) else arrayOf(colorDrawable, borderDrawable))
+      val layerDrawable = LayerDrawable(
+        if (selectable !=
+          null
+        ) {
+          arrayOf(colorDrawable, selectable, borderDrawable)
+        } else {
+          arrayOf(colorDrawable, borderDrawable)
+        },
+      )
       background = layerDrawable
     }
 
@@ -424,7 +449,10 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun canBegin(event: MotionEvent): Boolean {
-      if (event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+      if (event.action == MotionEvent.ACTION_CANCEL ||
+        event.action == MotionEvent.ACTION_UP ||
+        event.actionMasked == MotionEvent.ACTION_POINTER_UP
+      ) {
         return false
       }
 
@@ -518,7 +546,8 @@ class RNGestureHandlerButtonViewManager :
       }
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
-      val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
+      val canBePressedAlongsideOther =
+        !exclusive && touchResponder?.exclusive != true && !isChildTouched()
 
       if (!pressed || touchResponder === this || canBePressedAlongsideOther) {
         // we set pressed state only for current responder or any non-exclusive button when responder

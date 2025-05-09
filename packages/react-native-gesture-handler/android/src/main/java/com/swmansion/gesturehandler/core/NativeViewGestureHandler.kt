@@ -73,7 +73,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       // interrupting the current handler
       false
     } else {
-      state == STATE_ACTIVE && canBeInterrupted && (!hook.shouldCancelRootViewGestureHandlerIfNecessary() || handler.tag > 0)
+      state == STATE_ACTIVE &&
+        canBeInterrupted &&
+        (!hook.shouldCancelRootViewGestureHandlerIfNecessary() || handler.tag > 0)
     }
     // otherwise we can only return `true` if already in an active state
   }
@@ -229,10 +231,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     override fun canActivate(view: View) = view is ReactTextView
   }
 
-  private class EditTextHook(
-    private val handler: NativeViewGestureHandler,
-    private val editText: ReactEditText,
-  ) : NativeViewGestureHandlerHook {
+  private class EditTextHook(private val handler: NativeViewGestureHandler, private val editText: ReactEditText) :
+    NativeViewGestureHandlerHook {
     private var startX = 0f
     private var startY = 0f
     private var touchSlopSquared: Int
@@ -243,7 +243,9 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
 
     override fun afterGestureEnd(event: MotionEvent) {
-      if ((event.x - startX) * (event.x - startX) + (event.y - startY) * (event.y - startY) < touchSlopSquared) {
+      if ((event.x - startX) * (event.x - startX) + (event.y - startY) * (event.y - startY) <
+        touchSlopSquared
+      ) {
         editText.requestFocusFromJS()
       }
     }
@@ -251,7 +253,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     // recognize alongside every handler besides RootViewGestureHandler, which is a private inner class
     // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
     // also if other handler is NativeViewGestureHandler then don't override the default implementation
-    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = handler.tag > 0 && handler !is NativeViewGestureHandler
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) =
+      handler.tag > 0 && handler !is NativeViewGestureHandler
 
     override fun wantsToHandleEventBeforeActivation() = true
 
