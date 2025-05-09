@@ -10,7 +10,9 @@
     "test": "jest",
     "ts-check": "yarn tsc --noEmit",
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
-    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'"
+    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
+    "clean": "rm -rf node_modules && cd ios && rm -rf Pods Podfile.lock",
+    "pods": "cd ios && bundle install && bundle exec pod install"
   },
   "dependencies": {
     "react": "19.0.0",

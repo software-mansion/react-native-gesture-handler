@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "clean": "rm -rf node_modules && cd macos && rm -rf Pods Podfile.lock",
+    "pods": "cd macos && bundle install && bundle exec pod install"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
