@@ -19,7 +19,8 @@
   "plugins": ["react", "jest"],
   "ignorePatterns": [
     "packages/react-native-gesture-handler/lib/**/*",
-    "**/*.config.js"
+    "**/*.config.js",
+    "scripts/*.js"
   ],
   "rules": {
     // removed in new jest-eslint-plugin, referenced in satya config
