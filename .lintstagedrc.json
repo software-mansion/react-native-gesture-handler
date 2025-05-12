@@ -2,5 +2,5 @@
   "**/*.{ts,tsx}": ["prettier --write", "eslint"],
   "packages/react-native-gesture-handler/android/**/*.kt": "yarn format:android",
   "packages/react-native-gesture-handler/apple/**/*.{h,m,mm,cpp}": "yarn format:apple",
-  "packages/react-native-gesture-handler/src/specs/*.ts": "yarn architectures:sync"
+  "packages/react-native-gesture-handler/src/specs/*.ts": "yarn sync-architectures"
 }
