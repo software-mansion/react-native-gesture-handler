@@ -4,9 +4,9 @@ on:
     branches:
       - main
     paths:
-      - src/specs/**
-      - package.json
-      - FabricExample/package.json
+      - packages/react-native-gesture-handler/src/specs/**
+      - packages/react-native-gesture-handler/package.json
+      - apps/BasicExample/package.json
       - .github/workflows/check-archs-consistency.yml
   push:
     branches:
