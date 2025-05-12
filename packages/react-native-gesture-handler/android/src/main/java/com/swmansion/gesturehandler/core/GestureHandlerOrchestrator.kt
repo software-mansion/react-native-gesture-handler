@@ -86,13 +86,11 @@ class GestureHandlerOrchestrator(
   }
 
   private fun hasOtherHandlerToWaitFor(handler: GestureHandler<*>) = gestureHandlers.any {
-    !isFinished(it.state) &&
-      shouldHandlerWaitForOther(handler, it)
+    !isFinished(it.state) && shouldHandlerWaitForOther(handler, it)
   }
 
   private fun shouldBeCancelledByFinishedHandler(handler: GestureHandler<*>) = gestureHandlers.any {
-    shouldHandlerWaitForOther(handler, it) &&
-      it.state == GestureHandler.STATE_END
+    shouldHandlerWaitForOther(handler, it) && it.state == GestureHandler.STATE_END
   }
 
   private fun shouldBeCancelledByActiveHandler(handler: GestureHandler<*>) = gestureHandlers.any {

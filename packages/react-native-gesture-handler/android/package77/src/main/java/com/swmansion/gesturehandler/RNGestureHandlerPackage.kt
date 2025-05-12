@@ -33,10 +33,8 @@ class RNGestureHandlerPackage :
     )
   }
 
-  override fun createViewManagers(reactContext: ReactApplicationContext) = listOf<ViewManager<*, *>>(
-    RNGestureHandlerRootViewManager(),
-    RNGestureHandlerButtonViewManager(),
-  )
+  override fun createViewManagers(reactContext: ReactApplicationContext) =
+    listOf<ViewManager<*, *>>(RNGestureHandlerRootViewManager(), RNGestureHandlerButtonViewManager())
 
   override fun getViewManagerNames(reactContext: ReactApplicationContext) = viewManagers.keys.toList()
 
@@ -46,13 +44,12 @@ class RNGestureHandlerPackage :
   override fun createViewManager(reactContext: ReactApplicationContext, viewManagerName: String) =
     viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
 
-  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? = if (name ==
-    RNGestureHandlerModule.NAME
-  ) {
-    RNGestureHandlerModule(reactContext)
-  } else {
-    null
-  }
+  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
+    if (name == RNGestureHandlerModule.NAME) {
+      RNGestureHandlerModule(reactContext)
+    } else {
+      null
+    }
 
   override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
     try {

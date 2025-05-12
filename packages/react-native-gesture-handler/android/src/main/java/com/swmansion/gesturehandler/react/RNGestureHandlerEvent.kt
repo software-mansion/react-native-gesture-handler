@@ -42,7 +42,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (useTopPrefixedName) NATIVE_ANIMATED_EVENT_NAME else EVENT_NAME
+  override fun getEventName() = if (useTopPrefixedName) {
+    NATIVE_ANIMATED_EVENT_NAME
+  } else {
+    EVENT_NAME
+  }
 
   override fun canCoalesce() = true
 

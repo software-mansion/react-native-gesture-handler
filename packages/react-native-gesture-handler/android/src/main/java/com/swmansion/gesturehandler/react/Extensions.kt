@@ -12,8 +12,5 @@ val ReactContext.deviceEventEmitter: DeviceEventManagerModule.RCTDeviceEventEmit
 val ReactContext.UIManager: UIManagerModule
   get() = this.getNativeModule(UIManagerModule::class.java)!!
 
-fun Context.isScreenReaderOn() = (
-  getSystemService(
-    Context.ACCESSIBILITY_SERVICE,
-  ) as AccessibilityManager
-  ).isTouchExplorationEnabled
+fun Context.isScreenReaderOn() =
+  (getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager).isTouchExplorationEnabled

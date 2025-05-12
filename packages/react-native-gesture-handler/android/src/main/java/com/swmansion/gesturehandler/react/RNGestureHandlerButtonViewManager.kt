@@ -324,9 +324,7 @@ class RNGestureHandlerButtonViewManager :
       }
 
       val layerDrawable = LayerDrawable(
-        if (selectable !=
-          null
-        ) {
+        if (selectable != null) {
           arrayOf(colorDrawable, selectable, borderDrawable)
         } else {
           arrayOf(colorDrawable, borderDrawable)

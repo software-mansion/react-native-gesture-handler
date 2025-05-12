@@ -118,8 +118,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT = applySelf {
-    this.shouldCancelWhenOutside =
-      shouldCancelWhenOutside
+    this.shouldCancelWhenOutside = shouldCancelWhenOutside
   }
 
   fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
@@ -135,8 +134,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT = applySelf {
-    this.manualActivation =
-      manualActivation
+    this.manualActivation = manualActivation
   }
 
   fun setHitSlop(
@@ -174,8 +172,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
 
   fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT = applySelf {
-    interactionController =
-      controller
+    interactionController = controller
   }
 
   fun setMouseButton(mouseButton: Int) = apply {
@@ -268,9 +265,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersIDsCount ==
-          1
-        ) {
+        if (trackedPointersIDsCount == 1) {
           MotionEvent.ACTION_DOWN
         } else {
           MotionEvent.ACTION_POINTER_DOWN
@@ -282,7 +277,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersIDsCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
+        if (trackedPointersIDsCount == 1) {
+          MotionEvent.ACTION_UP
+        } else {
+          MotionEvent.ACTION_POINTER_UP
+        }
       } else {
         MotionEvent.ACTION_MOVE
       }

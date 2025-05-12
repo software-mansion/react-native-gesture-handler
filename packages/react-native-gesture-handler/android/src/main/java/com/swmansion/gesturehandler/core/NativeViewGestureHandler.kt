@@ -243,8 +243,8 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
 
     override fun afterGestureEnd(event: MotionEvent) {
-      if ((event.x - startX) * (event.x - startX) + (event.y - startY) * (event.y - startY) <
-        touchSlopSquared
+      if (
+        (event.x - startX) * (event.x - startX) + (event.y - startY) * (event.y - startY) < touchSlopSquared
       ) {
         editText.requestFocusFromJS()
       }

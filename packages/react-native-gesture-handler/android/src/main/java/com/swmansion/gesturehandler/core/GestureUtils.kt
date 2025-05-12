@@ -5,9 +5,7 @@ import kotlin.math.cos
 
 object GestureUtils {
   fun getLastPointerX(event: MotionEvent, averageTouches: Boolean): Float {
-    val excludeIndex = if (event.actionMasked ==
-      MotionEvent.ACTION_POINTER_UP
-    ) {
+    val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       event.actionIndex
     } else {
       -1
