@@ -12,19 +12,18 @@ import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
-  private var enabled = false
+  private var rootViewEnabled = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
-
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    enabled = !hasGestureHandlerEnabledRootView(this)
-    if (!enabled) {
+    rootViewEnabled = !hasGestureHandlerEnabledRootView(this)
+    if (!rootViewEnabled) {
       Log.i(
         ReactConstants.TAG,
         "[GESTURE HANDLER] Gesture handler is already enabled for a parent view",
       )
     }
-    if (enabled && rootHelper == null) {
+    if (rootViewEnabled && rootHelper == null) {
       rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this)
     }
   }
@@ -33,24 +32,21 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.tearDown()
   }
 
-  override fun dispatchTouchEvent(ev: MotionEvent) = if (enabled &&
-    rootHelper!!.dispatchTouchEvent(ev)
-  ) {
+  override fun dispatchTouchEvent(ev: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(ev)) {
     true
   } else {
     super.dispatchTouchEvent(ev)
   }
 
-  override fun dispatchGenericMotionEvent(event: MotionEvent) = if (enabled &&
-    rootHelper!!.dispatchTouchEvent(event)
-  ) {
-    true
-  } else {
-    super.dispatchGenericMotionEvent(event)
-  }
+  override fun dispatchGenericMotionEvent(event: MotionEvent) =
+    if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
+      true
+    } else {
+      super.dispatchGenericMotionEvent(event)
+    }
 
   override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    if (enabled) {
+    if (rootViewEnabled) {
       rootHelper!!.requestDisallowInterceptTouchEvent()
     }
     super.requestDisallowInterceptTouchEvent(disallowIntercept)
