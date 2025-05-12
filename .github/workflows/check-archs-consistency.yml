@@ -1,12 +1,12 @@
 name: Test consistency between Paper & Fabric
-on: 
+on:
   pull_request:
     branches:
       - main
-    paths: 
-      - src/specs/**
-      - package.json
-      - FabricExample/package.json
+    paths:
+      - packages/react-native-gesture-handler/src/specs/**
+      - packages/react-native-gesture-handler/package.json
+      - apps/BasicExample/package.json
       - .github/workflows/check-archs-consistency.yml
   push:
     branches:
