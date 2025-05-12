@@ -15,8 +15,6 @@ jobs:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
 
     runs-on: ubuntu-latest
-    env:
-      WORKING_DIRECTORY: packages/react-native-gesture-handler
     concurrency:
       group: static-root-${{ github.ref }}
       cancel-in-progress: true
@@ -35,13 +33,10 @@ jobs:
         run: yarn --immutable
 
       - name: Check types
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn ts-check
+        run: yarn workspace react-native-gesture-handler ts-check
 
       - name: Lint
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn lint-js
+        run: yarn workspace react-native-gesture-handler lint-js
 
       - name: Check for circular dependencies
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn circular-dependency:check
+        run: yarn workspace react-native-gesture-handler circular-dependency-check
