@@ -15,9 +15,9 @@
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:js": "yarn lint-js",
     "lint:android": "./android/gradlew -p android spotlessCheck -q",
-    "circular-dependency:check": "yarn madge --extensions js,ts,tsx --circular src",
-    "architectures:consistency-check": "node ../../scripts/codegen-check-consistency.js",
-    "architectures:sync": "node ../../scripts/codegen-sync-archs.js"
+    "circular-dependency-check": "yarn madge --extensions js,ts,tsx --circular src",
+    "architectures-consistency-check": "node ../../scripts/codegen-check-consistency.js",
+    "sync-architectures": "node ../../scripts/codegen-sync-archs.js"
   },
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
