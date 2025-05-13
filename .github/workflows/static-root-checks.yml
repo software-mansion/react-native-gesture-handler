@@ -35,4 +35,4 @@ jobs:
         run: yarn lint-js
       - name: Check for circular dependencies
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: yarn circular-dependency:check
+        run: yarn workspace react-native-gesture-handler circular-dependency-check
