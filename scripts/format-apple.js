@@ -1,11 +1,9 @@
 const { exit } = require('process');
-const path = require('path');
 const { exec, spawn } = require('child_process');
+const path = require('path');
 
 function runFormatter(files) {
   const command = `yarn clang-format -i ${files}`;
-
-  console.log(`Running command: ${command}`);
 
   exec(command, (error, stdout) => {
     if (error) {
@@ -16,10 +14,12 @@ function runFormatter(files) {
   });
 }
 
-// takes file as parameter passed by lint-staged (optional)
-let files = process.argv[2];
+const argc = process.argv.length;
 
-if (!files) {
+if (argc >= 2) {
+  const files = process.argv.slice(2).join(' ');
+  runFormatter(files);
+} else {
   const find = spawn('find', [
     path.join(__dirname, '../packages/react-native-gesture-handler/apple'),
     '-iname',
@@ -40,6 +40,4 @@ if (!files) {
 
     runFormatter(files);
   });
-} else {
-  runFormatter(files);
 }
