@@ -1,5 +1,5 @@
 {
-  "version-1.x/docs": [
+  "docs": [
     {
       "collapsed": true,
       "type": "category",
@@ -7,23 +7,23 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-1.x/getting-started"
+          "id": "getting-started"
         },
         {
           "type": "doc",
-          "id": "version-1.x/about-handlers"
+          "id": "about-handlers"
         },
         {
           "type": "doc",
-          "id": "version-1.x/state"
+          "id": "state"
         },
         {
           "type": "doc",
-          "id": "version-1.x/interactions"
+          "id": "interactions"
         },
         {
           "type": "doc",
-          "id": "version-1.x/example"
+          "id": "example"
         }
       ]
     },
@@ -39,43 +39,43 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/common-gh"
+              "id": "api/gesture-handlers/common-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/pan-gh"
+              "id": "api/gesture-handlers/pan-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/tap-gh"
+              "id": "api/gesture-handlers/tap-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/longpress-gh"
+              "id": "api/gesture-handlers/longpress-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/rotation-gh"
+              "id": "api/gesture-handlers/rotation-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/fling-gh"
+              "id": "api/gesture-handlers/fling-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/pinch-gh"
+              "id": "api/gesture-handlers/pinch-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/force-gh"
+              "id": "api/gesture-handlers/force-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/nativeview-gh"
+              "id": "api/gesture-handlers/nativeview-gh"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/gesture-handlers/create-native-wrapper"
+              "id": "api/gesture-handlers/create-native-wrapper"
             }
           ]
         },
@@ -86,19 +86,19 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-1.x/api/components/buttons"
+              "id": "api/components/buttons"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/components/swipeable"
+              "id": "api/components/swipeable"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/components/touchables"
+              "id": "api/components/touchables"
             },
             {
               "type": "doc",
-              "id": "version-1.x/api/components/drawer-layout"
+              "id": "api/components/drawer-layout"
             }
           ]
         }
@@ -111,19 +111,19 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-1.x/contributing"
+          "id": "contributing"
         },
         {
           "type": "doc",
-          "id": "version-1.x/troubleshooting"
+          "id": "troubleshooting"
         },
         {
           "type": "doc",
-          "id": "version-1.x/resources"
+          "id": "resources"
         },
         {
           "type": "doc",
-          "id": "version-1.x/credits"
+          "id": "credits"
         }
       ]
     }
