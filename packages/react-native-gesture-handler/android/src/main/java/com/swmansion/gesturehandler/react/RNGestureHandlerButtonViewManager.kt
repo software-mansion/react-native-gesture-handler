@@ -38,7 +38,9 @@ import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
-class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
+class RNGestureHandlerButtonViewManager :
+  ViewGroupManager<ButtonViewGroup>(),
+  RNGestureHandlerButtonManagerInterface<ButtonViewGroup> {
   private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
 
   init {
@@ -136,9 +138,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     view.updateBackground()
   }
 
-  override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? {
-    return mDelegate
-  }
+  override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
 
   class ButtonViewGroup(context: Context?) :
     ViewGroup(context),
@@ -200,7 +200,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
     var exclusive = true
 
-    private var _backgroundColor = Color.TRANSPARENT
+    private var buttonBackgroundColor = Color.TRANSPARENT
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
@@ -238,16 +238,14 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         .toFloatArray()
     }
 
-    private fun buildBorderStyle(): PathEffect? {
-      return when (borderStyle) {
-        "dotted" -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0f)
-        "dashed" -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0f)
-        else -> null
-      }
+    private fun buildBorderStyle(): PathEffect? = when (borderStyle) {
+      "dotted" -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0f)
+      "dashed" -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0f)
+      else -> null
     }
 
     override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
-      _backgroundColor = color
+      buttonBackgroundColor = color
     }
 
     override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
@@ -325,7 +323,13 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
         colorDrawable.setCornerRadii(buildBorderRadii())
       }
 
-      val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable, borderDrawable) else arrayOf(colorDrawable, borderDrawable))
+      val layerDrawable = LayerDrawable(
+        if (selectable != null) {
+          arrayOf(colorDrawable, selectable, borderDrawable)
+        } else {
+          arrayOf(colorDrawable, borderDrawable)
+        },
+      )
       background = layerDrawable
     }
 
@@ -335,7 +339,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
       needBackgroundUpdate = false
 
-      if (_backgroundColor == Color.TRANSPARENT) {
+      if (buttonBackgroundColor == Color.TRANSPARENT) {
         // reset background
         background = null
       }
@@ -355,13 +359,13 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
 
       if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         foreground = selectable
-        if (_backgroundColor != Color.TRANSPARENT) {
-          updateBackgroundColor(_backgroundColor, borderDrawable, null)
+        if (buttonBackgroundColor != Color.TRANSPARENT) {
+          updateBackgroundColor(buttonBackgroundColor, borderDrawable, null)
         }
-      } else if (_backgroundColor == Color.TRANSPARENT && rippleColor == null) {
+      } else if (buttonBackgroundColor == Color.TRANSPARENT && rippleColor == null) {
         background = LayerDrawable(arrayOf(selectable, borderDrawable))
       } else {
-        updateBackgroundColor(_backgroundColor, borderDrawable, selectable)
+        updateBackgroundColor(buttonBackgroundColor, borderDrawable, selectable)
       }
     }
 
@@ -405,7 +409,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       val drawable = RippleDrawable(
         colorStateList,
         null,
-        if (useBorderlessDrawable) null else ShapeDrawable(RectShape())
+        if (useBorderlessDrawable) null else ShapeDrawable(RectShape()),
       )
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null) {
@@ -426,7 +430,10 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     }
 
     override fun canBegin(event: MotionEvent): Boolean {
-      if (event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+      if (event.action == MotionEvent.ACTION_CANCEL ||
+        event.action == MotionEvent.ACTION_UP ||
+        event.actionMasked == MotionEvent.ACTION_POINTER_UP
+      ) {
         return false
       }
 
@@ -488,7 +495,6 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
       return if (!isChildTouched()) {
-
         if (context.isScreenReaderOn()) {
           findGestureHandlerRootView()?.activateNativeHandlers(this)
         } else if (receivedKeyEvent) {

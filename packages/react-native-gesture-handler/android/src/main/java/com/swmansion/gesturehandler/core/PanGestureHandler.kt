@@ -262,14 +262,19 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       } else {
         fail()
       }
-    } else if (action == MotionEvent.ACTION_POINTER_DOWN && sourceEvent.pointerCount > maxPointers) {
+    } else if (action == MotionEvent.ACTION_POINTER_DOWN &&
+      sourceEvent.pointerCount > maxPointers
+    ) {
       // When new finger is placed down (POINTER_DOWN) we check if MAX_POINTERS is not exceeded
       if (state == STATE_ACTIVE) {
         cancel()
       } else {
         fail()
       }
-    } else if (action == MotionEvent.ACTION_POINTER_UP && state == STATE_ACTIVE && sourceEvent.pointerCount < minPointers) {
+    } else if (action == MotionEvent.ACTION_POINTER_UP &&
+      state == STATE_ACTIVE &&
+      sourceEvent.pointerCount < minPointers
+    ) {
       // When finger is lifted up (POINTER_UP) and the number of pointers falls below MIN_POINTERS
       // threshold, we only want to take an action when the handler has already activated. Otherwise
       // we can still expect more fingers to be placed on screen and fulfill MIN_POINTERS criteria.

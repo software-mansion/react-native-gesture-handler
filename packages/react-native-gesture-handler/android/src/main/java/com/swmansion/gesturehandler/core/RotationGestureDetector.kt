@@ -81,7 +81,9 @@ class RotationGestureDetector(private val gestureListener: OnRotationGestureList
 
     rotation = if (previousAngle.isNaN()) {
       0.0
-    } else previousAngle - angle
+    } else {
+      previousAngle - angle
+    }
 
     previousAngle = angle
     if (rotation > Math.PI) {

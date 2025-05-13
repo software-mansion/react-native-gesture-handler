@@ -4,7 +4,8 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.PinchGestureHandler
 
-class PinchGestureHandlerEventDataBuilder(handler: PinchGestureHandler) : GestureHandlerEventDataBuilder<PinchGestureHandler>(handler) {
+class PinchGestureHandlerEventDataBuilder(handler: PinchGestureHandler) :
+  GestureHandlerEventDataBuilder<PinchGestureHandler>(handler) {
   private val scale: Double
   private val focalX: Float
   private val focalY: Float

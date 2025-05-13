@@ -4,7 +4,8 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.TapGestureHandler
 
-class TapGestureHandlerEventDataBuilder(handler: TapGestureHandler) : GestureHandlerEventDataBuilder<TapGestureHandler>(handler) {
+class TapGestureHandlerEventDataBuilder(handler: TapGestureHandler) :
+  GestureHandlerEventDataBuilder<TapGestureHandler>(handler) {
   private val x: Float
   private val y: Float
   private val absoluteX: Float
