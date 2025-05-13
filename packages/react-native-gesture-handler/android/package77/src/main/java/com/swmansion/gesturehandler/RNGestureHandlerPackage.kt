@@ -16,10 +16,12 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
 
 @ReactModuleList(
   nativeModules = [
-    RNGestureHandlerModule::class
-  ]
+    RNGestureHandlerModule::class,
+  ],
 )
-class RNGestureHandlerPackage : BaseReactPackage(), ViewManagerOnDemandReactPackage {
+class RNGestureHandlerPackage :
+  BaseReactPackage(),
+  ViewManagerOnDemandReactPackage {
   private val viewManagers: Map<String, ModuleSpec> by lazy {
     mapOf(
       RNGestureHandlerRootViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
@@ -27,34 +29,27 @@ class RNGestureHandlerPackage : BaseReactPackage(), ViewManagerOnDemandReactPack
       },
       RNGestureHandlerButtonViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec {
         RNGestureHandlerButtonViewManager()
-      }
+      },
     )
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext) =
-    listOf<ViewManager<*, *>>(
-      RNGestureHandlerRootViewManager(),
-      RNGestureHandlerButtonViewManager()
-    )
+    listOf<ViewManager<*, *>>(RNGestureHandlerRootViewManager(), RNGestureHandlerButtonViewManager())
 
-  override fun getViewManagerNames(reactContext: ReactApplicationContext) =
-    viewManagers.keys.toList()
+  override fun getViewManagerNames(reactContext: ReactApplicationContext) = viewManagers.keys.toList()
 
   override fun getViewManagers(reactContext: ReactApplicationContext): MutableList<ModuleSpec> =
     viewManagers.values.toMutableList()
 
-  override fun createViewManager(
-    reactContext: ReactApplicationContext,
-    viewManagerName: String
-  ) = viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
+  override fun createViewManager(reactContext: ReactApplicationContext, viewManagerName: String) =
+    viewManagers[viewManagerName]?.provider?.get() as? ViewManager<*, *>
 
-  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
-    return if (name == RNGestureHandlerModule.NAME) {
+  override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
+    if (name == RNGestureHandlerModule.NAME) {
       RNGestureHandlerModule(reactContext)
     } else {
       null
     }
-  }
 
   override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
     try {
@@ -72,8 +67,8 @@ class RNGestureHandlerPackage : BaseReactPackage(), ViewManagerOnDemandReactPack
             reactModule.canOverrideExistingModule,
             reactModule.needsEagerInit,
             reactModule.isCxxModule,
-            true
-          )
+            true,
+          ),
         )
       }
     } catch (e: InstantiationException) {

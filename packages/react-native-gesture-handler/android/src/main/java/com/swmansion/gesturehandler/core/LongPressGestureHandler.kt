@@ -101,7 +101,13 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       }
     }
 
-    if (state == STATE_BEGAN && currentPointers == numberOfPointersRequired && (sourceEvent.actionMasked == MotionEvent.ACTION_DOWN || sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN)) {
+    if (state == STATE_BEGAN &&
+      currentPointers == numberOfPointersRequired &&
+      (
+        sourceEvent.actionMasked == MotionEvent.ACTION_DOWN ||
+          sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN
+        )
+    ) {
       handler = Handler(Looper.getMainLooper())
       if (minDurationMs > 0) {
         handler!!.postDelayed({ activate() }, minDurationMs)
@@ -109,7 +115,9 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         activate()
       }
     }
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP || sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_RELEASE) {
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP ||
+      sourceEvent.actionMasked == MotionEvent.ACTION_BUTTON_RELEASE
+    ) {
       currentPointers--
 
       handler?.let {

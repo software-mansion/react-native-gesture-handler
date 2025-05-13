@@ -3,9 +3,9 @@ apply plugin: "com.diffplug.spotless"
 spotless {
     kotlin {
         target "**/*.kt"
-        ktlint().editorConfigOverride([indent_size: 2])
+        ktlint().editorConfigOverride([indent_size: 2, max_line_length: 120])
         trimTrailingWhitespace()
-        indentWithSpaces()
+        leadingTabsToSpaces()
         endWithNewline()
     }
 }

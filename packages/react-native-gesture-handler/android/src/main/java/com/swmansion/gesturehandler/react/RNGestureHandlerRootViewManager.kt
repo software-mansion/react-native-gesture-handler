@@ -22,9 +22,7 @@ class RNGestureHandlerRootViewManager :
     mDelegate = RNGestureHandlerRootViewManagerDelegate<RNGestureHandlerRootView, RNGestureHandlerRootViewManager>(this)
   }
 
-  override fun getDelegate(): ViewManagerDelegate<RNGestureHandlerRootView> {
-    return mDelegate
-  }
+  override fun getDelegate(): ViewManagerDelegate<RNGestureHandlerRootView> = mDelegate
 
   override fun getName() = REACT_CLASS
 
@@ -42,7 +40,7 @@ class RNGestureHandlerRootViewManager :
     RNGestureHandlerEvent.EVENT_NAME to
       mutableMapOf("registrationName" to RNGestureHandlerEvent.EVENT_NAME),
     RNGestureHandlerStateChangeEvent.EVENT_NAME to
-      mutableMapOf("registrationName" to RNGestureHandlerStateChangeEvent.EVENT_NAME)
+      mutableMapOf("registrationName" to RNGestureHandlerStateChangeEvent.EVENT_NAME),
   )
 
   companion object {

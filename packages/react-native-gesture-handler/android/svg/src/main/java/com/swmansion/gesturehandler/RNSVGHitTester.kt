@@ -27,9 +27,7 @@ class RNSVGHitTester {
       return rootSvgView
     }
 
-    fun isSvgElement(view: Any): Boolean {
-      return (view is VirtualView || view is SvgView)
-    }
+    fun isSvgElement(view: Any): Boolean = (view is VirtualView || view is SvgView)
 
     fun hitTest(view: View, posX: Float, posY: Float): Boolean {
       val rootSvgView = getRootSvgView(view)

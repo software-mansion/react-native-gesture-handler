@@ -4,7 +4,8 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.RotationGestureHandler
 
-class RotationGestureHandlerEventDataBuilder(handler: RotationGestureHandler) : GestureHandlerEventDataBuilder<RotationGestureHandler>(handler) {
+class RotationGestureHandlerEventDataBuilder(handler: RotationGestureHandler) :
+  GestureHandlerEventDataBuilder<RotationGestureHandler>(handler) {
   private val rotation: Double
   private val anchorX: Float
   private val anchorY: Float

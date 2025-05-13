@@ -7,7 +7,7 @@ import com.swmansion.reanimated.ReanimatedModule
 class ReanimatedEventDispatcher {
   private var reanimatedModule: ReanimatedModule? = null
 
-  fun <T : Event<T>>sendEvent(event: T, reactApplicationContext: ReactContext) {
+  fun <T : Event<T>> sendEvent(event: T, reactApplicationContext: ReactContext) {
     if (reanimatedModule == null) {
       reanimatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)
     }
