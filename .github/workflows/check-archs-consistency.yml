@@ -37,4 +37,4 @@ jobs:
         run: yarn
 
       - name: Check Android Paper & Fabric generated interfaces consistency
-        run: yarn architectures:consistency-check
+        run: yarn workspace react-native-gesture-handler architectures-consistency-check
