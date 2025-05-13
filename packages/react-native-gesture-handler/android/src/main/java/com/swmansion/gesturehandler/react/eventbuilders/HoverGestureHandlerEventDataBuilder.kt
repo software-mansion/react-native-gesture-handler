@@ -5,7 +5,8 @@ import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.StylusData
 
-class HoverGestureHandlerEventDataBuilder(handler: HoverGestureHandler) : GestureHandlerEventDataBuilder<HoverGestureHandler>(handler) {
+class HoverGestureHandlerEventDataBuilder(handler: HoverGestureHandler) :
+  GestureHandlerEventDataBuilder<HoverGestureHandler>(handler) {
   private val x: Float
   private val y: Float
   private val absoluteX: Float

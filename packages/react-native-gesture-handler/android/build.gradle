@@ -12,7 +12,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         classpath("com.android.tools.build:gradle:7.2.1")
-        classpath("com.diffplug.spotless:spotless-plugin-gradle:6.7.2")
+        classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.3")
     }
 }
 

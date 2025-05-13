@@ -76,8 +76,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   @Suppress("UNCHECKED_CAST")
   protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
 
-  protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
-    self().apply { block() }
+  protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT = self().apply {
+    block()
+  }
 
   // properties set and accessed only by the orchestrator
   var activationIndex = 0
@@ -116,8 +117,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return false
   }
 
-  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.shouldCancelWhenOutside = shouldCancelWhenOutside }
+  fun setShouldCancelWhenOutside(shouldCancelWhenOutside: Boolean): ConcreteGestureHandlerT = applySelf {
+    this.shouldCancelWhenOutside = shouldCancelWhenOutside
+  }
 
   fun setEnabled(enabled: Boolean): ConcreteGestureHandlerT = applySelf {
     // Don't cancel handler when not changing the value of the isEnabled, executing it always caused
@@ -131,8 +133,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isEnabled = enabled
   }
 
-  fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.manualActivation = manualActivation }
+  fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT = applySelf {
+    this.manualActivation = manualActivation
+  }
 
   fun setHitSlop(
     leftPad: Float,
@@ -151,25 +154,35 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     hitSlop!![HIT_SLOP_BOTTOM_IDX] = bottomPad
     hitSlop!![HIT_SLOP_WIDTH_IDX] = width
     hitSlop!![HIT_SLOP_HEIGHT_IDX] = height
-    require(!(hitSlopSet(width) && hitSlopSet(leftPad) && hitSlopSet(rightPad))) { "Cannot have all of left, right and width defined" }
-    require(!(hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad))) { "When width is set one of left or right pads need to be defined" }
-    require(!(hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad))) { "Cannot have all of top, bottom and height defined" }
-    require(!(hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad))) { "When height is set one of top or bottom pads need to be defined" }
+    require(!(hitSlopSet(width) && hitSlopSet(leftPad) && hitSlopSet(rightPad))) {
+      "Cannot have all of left, right and width defined"
+    }
+    require(!(hitSlopSet(width) && !hitSlopSet(leftPad) && !hitSlopSet(rightPad))) {
+      "When width is set one of left or right pads need to be defined"
+    }
+    require(!(hitSlopSet(height) && hitSlopSet(bottomPad) && hitSlopSet(topPad))) {
+      "Cannot have all of top, bottom and height defined"
+    }
+    require(!(hitSlopSet(height) && !hitSlopSet(bottomPad) && !hitSlopSet(topPad))) {
+      "When height is set one of top or bottom pads need to be defined"
+    }
   }
 
-  fun setHitSlop(padding: Float): ConcreteGestureHandlerT {
-    return setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
-  }
+  fun setHitSlop(padding: Float): ConcreteGestureHandlerT =
+    setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
 
-  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT =
-    applySelf { interactionController = controller }
+  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT = applySelf {
+    interactionController = controller
+  }
 
   fun setMouseButton(mouseButton: Int) = apply {
     this.mouseButton = mouseButton
   }
 
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
-    check(!(this.view != null || this.orchestrator != null)) { "Already prepared or hasn't been reset" }
+    check(!(this.view != null || this.orchestrator != null)) {
+      "Already prepared or hasn't been reset"
+    }
     Arrays.fill(trackedPointerIDs, -1)
     trackedPointersIDsCount = 0
     state = STATE_UNDETERMINED
@@ -189,13 +202,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   protected open fun onPrepare() {}
 
-  private fun getActivity(context: Context?): Activity? =
-    when (context) {
-      is ReactContext -> context.currentActivity
-      is Activity -> context
-      is ContextWrapper -> getActivity(context.baseContext)
-      else -> null
-    }
+  private fun getActivity(context: Context?): Activity? = when (context) {
+    is ReactContext -> context.currentActivity
+    is Activity -> context
+    is ContextWrapper -> getActivity(context.baseContext)
+    else -> null
+  }
 
   private fun findNextLocalPointerId(): Int {
     var localPointerId = 0
@@ -253,7 +265,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersIDsCount == 1) MotionEvent.ACTION_DOWN else MotionEvent.ACTION_POINTER_DOWN
+        if (trackedPointersIDsCount == 1) {
+          MotionEvent.ACTION_DOWN
+        } else {
+          MotionEvent.ACTION_POINTER_DOWN
+        }
       } else {
         MotionEvent.ACTION_MOVE
       }
@@ -261,7 +277,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       actionIndex = event.actionIndex
       val actionPointer = event.getPointerId(actionIndex)
       action = if (trackedPointerIDs[actionPointer] != -1) {
-        if (trackedPointersIDsCount == 1) MotionEvent.ACTION_UP else MotionEvent.ACTION_POINTER_UP
+        if (trackedPointersIDsCount == 1) {
+          MotionEvent.ACTION_UP
+        } else {
+          MotionEvent.ACTION_POINTER_UP
+        }
       } else {
         MotionEvent.ACTION_MOVE
       }
@@ -289,7 +309,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
     // introduced in 1.11.0, remove if crashes are not reported
     if (pointerProps.isEmpty() || pointerCoords.isEmpty()) {
-      throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
+      throw IllegalStateException(
+        "pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}",
+      )
     }
 
     val result: MotionEvent
@@ -308,7 +330,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         event.deviceId,
         event.edgeFlags,
         event.source,
-        event.flags
+        event.flags,
       )
     } catch (e: IllegalArgumentException) {
       throw AdaptEventException(this, event, e)
@@ -319,12 +341,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   // exception to help debug https://github.com/software-mansion/react-native-gesture-handler/issues/1188
-  class AdaptEventException(
-    handler: GestureHandler<*>,
-    event: MotionEvent,
-    e: IllegalArgumentException
-  ) : Exception(
-    """
+  class AdaptEventException(handler: GestureHandler<*>, event: MotionEvent, e: IllegalArgumentException) :
+    Exception(
+      """
     handler: ${handler::class.simpleName}
     state: ${handler.state}
     view: ${handler.view}
@@ -335,9 +354,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     trackedPointersCount: ${handler.trackedPointersIDsCount}
     trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
     while handling event: $event
-    """.trimIndent(),
-    e
-  )
+      """.trimIndent(),
+      e,
+    )
 
   fun handle(transformedEvent: MotionEvent, sourceEvent: MotionEvent) {
     if (!isEnabled ||
@@ -378,7 +397,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
     lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
 
-    if (sourceEvent.action == MotionEvent.ACTION_DOWN || sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER || sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE) {
+    if (sourceEvent.action == MotionEvent.ACTION_DOWN ||
+      sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
+      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE
+    ) {
       setPointerType(sourceEvent)
     }
 
@@ -473,10 +495,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun updatePointerData(event: MotionEvent, sourceEvent: MotionEvent) {
-    if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+    if (event.actionMasked == MotionEvent.ACTION_DOWN ||
+      event.actionMasked == MotionEvent.ACTION_POINTER_DOWN
+    ) {
       dispatchTouchDownEvent(event, sourceEvent)
       dispatchTouchMoveEvent(event, sourceEvent)
-    } else if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+    } else if (event.actionMasked == MotionEvent.ACTION_UP ||
+      event.actionMasked == MotionEvent.ACTION_POINTER_UP
+    ) {
       dispatchTouchMoveEvent(event, sourceEvent)
       dispatchTouchUpEvent(event, sourceEvent)
     } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
@@ -554,7 +580,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // if there are tracked pointers and the gesture is about to end, send event cancelling all pointers
-    if (trackedPointersCount > 0 && (newState == STATE_END || newState == STATE_CANCELLED || newState == STATE_FAILED)) {
+    if (trackedPointersCount > 0 &&
+      (newState == STATE_END || newState == STATE_CANCELLED || newState == STATE_FAILED)
+    ) {
       cancelPointers()
     }
 
@@ -570,13 +598,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     onStateChange(newState, oldState)
   }
 
-  fun wantEvents(): Boolean {
-    return isEnabled &&
-      state != STATE_FAILED &&
-      state != STATE_CANCELLED &&
-      state != STATE_END &&
-      trackedPointersIDsCount > 0
-  }
+  fun wantEvents(): Boolean = isEnabled &&
+    state != STATE_FAILED &&
+    state != STATE_CANCELLED &&
+    state != STATE_END &&
+    trackedPointersIDsCount > 0
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
     if (handler === this) {
@@ -657,7 +683,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun cancel() {
-    if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN || this.isAwaiting) {
+    if (state == STATE_ACTIVE ||
+      state == STATE_UNDETERMINED ||
+      state == STATE_BEGAN ||
+      this.isAwaiting
+    ) {
       onCancel()
       moveToState(STATE_CANCELLED)
     }
@@ -690,9 +720,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   /*
-  * Returns true if the view this handler is attached to is a descendant of the view the other handler
-  * is attached to and false otherwise.
-  */
+   * Returns true if the view this handler is attached to is a descendant of the view the other handler
+   * is attached to and false otherwise.
+   */
   fun isDescendantOf(of: GestureHandler<*>): Boolean {
     var view = this.view?.parent as? View
     while (view != null) {
@@ -733,9 +763,15 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
     with(sourceEvent) {
       // To use actionButton, we need API >= 23.
-      if (getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE &&
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+      ) {
         // While using mouse, we want to ignore default events for touch.
-        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
+        if (action == MotionEvent.ACTION_DOWN ||
+          action == MotionEvent.ACTION_UP ||
+          action == MotionEvent.ACTION_POINTER_UP ||
+          action == MotionEvent.ACTION_POINTER_DOWN
+        ) {
           return@shouldActivateWithMouse false
         }
 
@@ -750,7 +786,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         }
       } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         // We do not fully support mouse below API 23, so we will ignore BUTTON events.
-        if (action == MotionEvent.ACTION_BUTTON_PRESS || action == MotionEvent.ACTION_BUTTON_RELEASE) {
+        if (action == MotionEvent.ACTION_BUTTON_PRESS ||
+          action == MotionEvent.ACTION_BUTTON_RELEASE
+        ) {
           return@shouldActivateWithMouse false
         }
       }
@@ -767,13 +805,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
    *
    * This method modifies and transforms the received point.
    */
-  protected fun transformPoint(point: PointF): PointF {
-    return orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+  protected fun transformPoint(point: PointF): PointF =
+    orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
       point.x = Float.NaN
       point.y = Float.NaN
       point
     }
-  }
   fun reset() {
     view = null
     orchestrator = null
@@ -865,9 +902,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     private var nextEventCoalescingKey: Short = 0
-    private fun hitSlopSet(value: Float): Boolean {
-      return !java.lang.Float.isNaN(value)
-    }
+    private fun hitSlopSet(value: Float): Boolean = !java.lang.Float.isNaN(value)
 
     fun stateToString(state: Int): String? {
       when (state) {
@@ -887,6 +922,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     var x: Float,
     var y: Float,
     var absoluteX: Float,
-    var absoluteY: Float
+    var absoluteY: Float,
   )
 }

@@ -16,7 +16,7 @@ data class StylusData(
   val tiltY: Double = 0.0,
   val altitudeAngle: Double = 0.0,
   val azimuthAngle: Double = 0.0,
-  val pressure: Double = -1.0
+  val pressure: Double = -1.0,
 ) {
   fun toReadableMap(): ReadableMap {
     val stylusDataObject = Arguments.createMap().apply {

@@ -5,7 +5,11 @@ import kotlin.math.cos
 
 object GestureUtils {
   fun getLastPointerX(event: MotionEvent, averageTouches: Boolean): Float {
-    val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) event.actionIndex else -1
+    val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+      event.actionIndex
+    } else {
+      -1
+    }
     return if (averageTouches) {
       var sum = 0f
       var count = 0
@@ -26,7 +30,13 @@ object GestureUtils {
   }
 
   fun getLastPointerY(event: MotionEvent, averageTouches: Boolean): Float {
-    val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) event.actionIndex else -1
+    val excludeIndex = if (event.actionMasked ==
+      MotionEvent.ACTION_POINTER_UP
+    ) {
+      event.actionIndex
+    } else {
+      -1
+    }
     return if (averageTouches) {
       var sum = 0f
       var count = 0
@@ -46,6 +56,5 @@ object GestureUtils {
     }
   }
 
-  fun coneToDeviation(angle: Double): Double =
-    cos(Math.toRadians(angle / 2.0))
+  fun coneToDeviation(angle: Double): Double = cos(Math.toRadians(angle / 2.0))
 }

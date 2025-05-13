@@ -28,7 +28,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   private fun <T : GestureHandler<T>> init(
     handler: T,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
-    useNativeAnimatedName: Boolean
+    useNativeAnimatedName: Boolean,
   ) {
     val view = handler.view!!
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
@@ -42,7 +42,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (useTopPrefixedName) NATIVE_ANIMATED_EVENT_NAME else EVENT_NAME
+  override fun getEventName() = if (useTopPrefixedName) {
+    NATIVE_ANIMATED_EVENT_NAME
+  } else {
+    EVENT_NAME
+  }
 
   override fun canCoalesce() = true
 
@@ -59,15 +63,12 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
-      useTopPrefixedName: Boolean = false
-    ): RNGestureHandlerEvent =
-      (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
-        init(handler, dataBuilder, useTopPrefixedName)
-      }
+      useTopPrefixedName: Boolean = false,
+    ): RNGestureHandlerEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
+      init(handler, dataBuilder, useTopPrefixedName)
+    }
 
-    fun createEventData(
-      dataBuilder: GestureHandlerEventDataBuilder<*>
-    ): WritableMap = Arguments.createMap().apply {
+    fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>): WritableMap = Arguments.createMap().apply {
       dataBuilder.buildEventData(this)
     }
   }
