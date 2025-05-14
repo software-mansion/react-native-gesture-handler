@@ -29,7 +29,7 @@
     "@emotion/styled": "^11.14.0",
     "@mdx-js/react": "^3.0.0",
     "@mui/material": "^7.1.0",
-    "@swmansion/t-rex-ui": "file:./t-rex.tgz",
+    "@swmansion/t-rex-ui": "1.0.0",
     "@vercel/og": "^0.6.2",
     "prism-react-renderer": "^2.1.0",
     "babel-polyfill": "^6.26.0",
