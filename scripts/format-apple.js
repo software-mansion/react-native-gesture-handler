@@ -16,7 +16,7 @@ function runFormatter(files) {
 
 const argc = process.argv.length;
 
-if (argc >= 2) {
+if (argc > 2) {
   const files = process.argv.slice(2).join(' ');
   runFormatter(files);
 } else {
