@@ -13,10 +13,11 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@react-native/new-app-screen": "0.80.0-rc.1",
     "patch-package": "^6.5.0",
     "postinstall-postinstall": "^2.1.0",
-    "react": "19.0.0",
-    "react-native": "0.79.0",
+    "react": "19.1.0",
+    "react-native": "0.80.0-rc.1",
     "react-native-gesture-handler": "link:../"
   },
   "devDependencies": {
@@ -26,17 +27,17 @@
     "@react-native-community/cli": "18.0.0",
     "@react-native-community/cli-platform-android": "18.0.0",
     "@react-native-community/cli-platform-ios": "18.0.0",
-    "@react-native/babel-preset": "0.79.0",
-    "@react-native/eslint-config": "0.79.0",
-    "@react-native/metro-config": "0.79.0",
-    "@react-native/typescript-config": "0.79.0",
+    "@react-native/babel-preset": "0.80.0-rc.1",
+    "@react-native/eslint-config": "0.80.0-rc.1",
+    "@react-native/metro-config": "0.80.0-rc.1",
+    "@react-native/typescript-config": "0.80.0-rc.1",
     "@types/jest": "^29.5.13",
-    "@types/react": "^19.0.12",
-    "@types/react-test-renderer": "^19.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-test-renderer": "^19.1.0",
     "eslint": "^8.19.0",
     "jest": "^29.2.1",
     "prettier": "2.7.1",
-    "react-test-renderer": "19.0.0",
+    "react-test-renderer": "19.1.0",
     "typescript": "5.0.4"
   },
   "engines": {
