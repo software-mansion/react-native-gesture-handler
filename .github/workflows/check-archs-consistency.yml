@@ -1,33 +1,40 @@
 name: Test consistency between Paper & Fabric
+
 on:
   pull_request:
     branches:
       - main
     paths:
+      - .github/workflows/check-archs-consistency.yml
       - packages/react-native-gesture-handler/src/specs/**
       - packages/react-native-gesture-handler/package.json
       - apps/BasicExample/package.json
-      - .github/workflows/check-archs-consistency.yml
   push:
     branches:
       - main
   workflow_dispatch:
 
 jobs:
+  if: github.repository == 'software-mansion/react-native-gesture-handler'
+
   check:
     runs-on: ubuntu-latest
     concurrency:
       group: check-archs-consistency-${{ github.ref }}
       cancel-in-progress: true
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: yarn
+
       - name: Install node dependencies
         run: yarn
+
       - name: Check Android Paper & Fabric generated interfaces consistency
         run: yarn workspace react-native-gesture-handler architectures-consistency-check

@@ -10,7 +10,11 @@
     "test": "jest",
     "ts-check": "yarn tsc --noEmit",
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
-    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'"
+    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
+    "clean-android": "rm -rf android/.gradle android/.kotlin android/build",
+    "clean-ios": "rm -rf ios/build ios/Pods ios/Podfile.lock",
+    "clean": "rm -rf node_modules && yarn clean-android && yarn clean-ios",
+    "pods": "cd ios && bundle install && bundle exec pod install"
   },
   "dependencies": {
     "react": "19.0.0",

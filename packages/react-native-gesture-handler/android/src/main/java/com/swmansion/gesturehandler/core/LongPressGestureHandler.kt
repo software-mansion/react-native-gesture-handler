@@ -101,7 +101,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       }
     }
 
-    if (state == STATE_BEGAN && currentPointers == numberOfPointersRequired &&
+    if (state == STATE_BEGAN &&
+      currentPointers == numberOfPointersRequired &&
       (
         sourceEvent.actionMasked == MotionEvent.ACTION_DOWN ||
           sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_DOWN

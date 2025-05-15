@@ -10,10 +10,10 @@ Before running application you need to install all dependencies. To do that:
 
 ### Android
 
-You can run this application by `yarn run android` or from Android Studio.
+You can run this application by `yarn android` or from Android Studio.
 
 ### iOS
 
 To run on iOS first go to `BasicExample/ios` and run `pod install`.
 
-Then in `BasicExample` run `yarn run ios` or run application from Xcode.
+Then in `BasicExample` run `yarn ios` or run application from Xcode.
