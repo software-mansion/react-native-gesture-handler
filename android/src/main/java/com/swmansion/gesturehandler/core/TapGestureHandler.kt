@@ -11,7 +11,7 @@ import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
-class TapGestureHandler : GestureHandler<TapGestureHandler>() {
+class TapGestureHandler : GestureHandler() {
   private var maxDeltaX = MAX_VALUE_IGNORE
   private var maxDeltaY = MAX_VALUE_IGNORE
   private var maxDist = MAX_VALUE_IGNORE
