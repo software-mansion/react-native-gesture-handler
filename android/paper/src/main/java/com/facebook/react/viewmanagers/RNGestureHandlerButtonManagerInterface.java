@@ -11,6 +11,7 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
 public interface RNGestureHandlerButtonManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
@@ -21,7 +22,24 @@ public interface RNGestureHandlerButtonManagerInterface<T extends View> extends 
   void setRippleColor(T view, @Nullable Integer value);
   void setRippleRadius(T view, int value);
   void setTouchSoundDisabled(T view, boolean value);
+  void setBorderRadius(T view, Dynamic value);
+  void setBorderTopLeftRadius(T view, Dynamic value);
+  void setBorderTopRightRadius(T view, Dynamic value);
+  void setBorderBottomLeftRadius(T view, Dynamic value);
+  void setBorderBottomRightRadius(T view, Dynamic value);
   void setBorderWidth(T view, float value);
+  void setBorderLeftWidth(T view, float value);
+  void setBorderRightWidth(T view, float value);
+  void setBorderTopWidth(T view, float value);
+  void setBorderBottomWidth(T view, float value);
+  void setBorderStartWidth(T view, float value);
+  void setBorderEndWidth(T view, float value);
   void setBorderColor(T view, @Nullable Integer value);
+  void setBorderLeftColor(T view, @Nullable Integer value);
+  void setBorderRightColor(T view, @Nullable Integer value);
+  void setBorderTopColor(T view, @Nullable Integer value);
+  void setBorderBottomColor(T view, @Nullable Integer value);
+  void setBorderStartColor(T view, @Nullable Integer value);
+  void setBorderEndColor(T view, @Nullable Integer value);
   void setBorderStyle(T view, @Nullable String value);
 }

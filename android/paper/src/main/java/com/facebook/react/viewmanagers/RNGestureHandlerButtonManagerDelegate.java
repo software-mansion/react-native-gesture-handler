@@ -12,6 +12,7 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ColorPropConverter;
+import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -44,11 +45,62 @@ public class RNGestureHandlerButtonManagerDelegate<T extends View, U extends Bas
       case "touchSoundDisabled":
         mViewManager.setTouchSoundDisabled(view, value == null ? false : (boolean) value);
         break;
+      case "borderRadius":
+        mViewManager.setBorderRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderTopLeftRadius":
+        mViewManager.setBorderTopLeftRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderTopRightRadius":
+        mViewManager.setBorderTopRightRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderBottomLeftRadius":
+        mViewManager.setBorderBottomLeftRadius(view, new DynamicFromObject(value));
+        break;
+      case "borderBottomRightRadius":
+        mViewManager.setBorderBottomRightRadius(view, new DynamicFromObject(value));
+        break;
       case "borderWidth":
         mViewManager.setBorderWidth(view, value == null ? 0f : ((Double) value).floatValue());
         break;
+      case "borderLeftWidth":
+        mViewManager.setBorderLeftWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderRightWidth":
+        mViewManager.setBorderRightWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderTopWidth":
+        mViewManager.setBorderTopWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderBottomWidth":
+        mViewManager.setBorderBottomWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderStartWidth":
+        mViewManager.setBorderStartWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case "borderEndWidth":
+        mViewManager.setBorderEndWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
       case "borderColor":
         mViewManager.setBorderColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderLeftColor":
+        mViewManager.setBorderLeftColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderRightColor":
+        mViewManager.setBorderRightColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderTopColor":
+        mViewManager.setBorderTopColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderBottomColor":
+        mViewManager.setBorderBottomColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderStartColor":
+        mViewManager.setBorderStartColor(view, ColorPropConverter.getColor(value, view.getContext()));
+        break;
+      case "borderEndColor":
+        mViewManager.setBorderEndColor(view, ColorPropConverter.getColor(value, view.getContext()));
         break;
       case "borderStyle":
         mViewManager.setBorderStyle(view, value == null ? "solid" : (String) value);
