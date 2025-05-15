@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "clean": "rm -rf node_modules && cd macos && rm -rf Pods Podfile.lock",
+    "clean": "rm -rf node_modules && cd macos && rm -rf build Pods Podfile.lock",
     "pods": "cd macos && bundle install && bundle exec pod install"
   },
   "dependencies": {
