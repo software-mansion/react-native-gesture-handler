@@ -12,14 +12,16 @@
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "format-js": "prettier --write --list-different App.tsx './src/**/*.{js,jsx,ts,tsx}'"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
     "@swmansion/icons": "^0.0.1",
-    "react": "19.0.0",
-    "react-native": "0.79.0",
     "react-native-gesture-handler": "workspace:*",
     "react-native-reanimated": "^3.17.4",
     "react-native-safe-area-context": "^5.4.0"
@@ -57,5 +59,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "installConfig": {
+    "selfReferences": false
   }
 }
