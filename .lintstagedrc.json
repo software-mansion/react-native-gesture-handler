@@ -1,5 +1,5 @@
 {
-  "apps/BasicExample/package.json": "node scripts/check-rn-versions.js",
+  "{apps/BasicExample,packages/react-native-gesture-handler}/package.json": "node scripts/check-rn-versions.js",
   "**/*.{ts,tsx}": ["prettier --write", "eslint"],
   "packages/react-native-gesture-handler/android/**/*.kt": [
     "node scripts/check-android-dirs.js",
