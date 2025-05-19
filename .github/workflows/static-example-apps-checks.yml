@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - apps/basic-example/**'
-      - apps/CommonApp/**
+      - apps/common-app/**
   push:
     branches:
       - main
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        working-directory: [apps/basic-example, apps/CommonApp]
+        working-directory: [apps/basic-example, apps/common-app]
     concurrency:
       group: typescript-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true

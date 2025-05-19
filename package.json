@@ -7,7 +7,7 @@
     "apps/basic-example",
     "apps/ExpoExample",
     "apps/MacOSExample",
-    "apps/CommonApp"
+    "apps/common-app"
   ],
   "scripts": {
     "postinstall": "husky",
