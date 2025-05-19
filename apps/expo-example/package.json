@@ -20,6 +20,7 @@
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
     "@swmansion/icons": "^0.0.1",
+    "common-app": "workspace:*",
     "expo": "~53.0.0-preview.7",
     "expo-camera": "~16.1.1",
     "expo-status-bar": "~2.2.1",

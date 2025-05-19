@@ -6161,7 +6161,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"common-app@workspace:apps/common-app":
+"common-app@workspace:*, common-app@workspace:apps/common-app":
   version: 0.0.0-use.local
   resolution: "common-app@workspace:apps/common-app"
   dependencies:
@@ -8024,6 +8024,7 @@ __metadata:
     "@types/react": "npm:^19.0.12"
     "@types/react-dom": "npm:^19"
     "@types/react-native-web": "npm:^0"
+    common-app: "workspace:*"
     expo: "npm:~53.0.0-preview.7"
     expo-camera: "npm:~16.1.1"
     expo-status-bar: "npm:~2.2.1"
@@ -11250,6 +11251,7 @@ __metadata:
     "@types/jest": "npm:^29.5.13"
     "@types/react": "npm:^19.0.12"
     "@types/react-test-renderer": "npm:^19.0.0"
+    common-app: "workspace:*"
     jest: "npm:^29.6.3"
     react: "npm:19.0.0"
     react-native: "npm:0.78.0"
