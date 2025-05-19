@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "postinstall": "yarn pods",
     "macos": "npx react-native-macos run-macos",
     "lint": "eslint .",
     "start": "react-native start",
