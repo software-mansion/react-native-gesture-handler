@@ -6,7 +6,7 @@ on:
       - .github/workflows/macos-build.yml
       - packages/react-native-gesture-handler/RNGestureHandler.podspec
       - packages/react-native-gesture-handler/apple/**
-      - apps/MacOSExample/macos/**
+      - apps/macos-example/macos/**
   push:
     branches:
       - main
@@ -18,7 +18,7 @@ jobs:
 
     runs-on: macos-15
     env:
-      WORKING_DIRECTORY: apps/MacOSExample
+      WORKING_DIRECTORY: apps/macos-example
     concurrency:
       group: macos-${{ github.ref }}
       cancel-in-progress: true

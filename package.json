@@ -6,7 +6,7 @@
     "packages/react-native-gesture-handler",
     "apps/basic-example",
     "apps/expo-example",
-    "apps/MacOSExample",
+    "apps/macos-example",
     "apps/common-app"
   ],
   "scripts": {
