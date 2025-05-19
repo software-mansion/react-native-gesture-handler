@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        working-directory: [apps/basic-example, apps/ExpoExample]
+        working-directory: [apps/basic-example, apps/expo-example]
     concurrency:
       group: android-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true

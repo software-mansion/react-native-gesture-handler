@@ -19,7 +19,7 @@ jobs:
     runs-on: macos-14
     strategy:
       matrix:
-        working-directory: [apps/basic-example, apps/ExpoExample]
+        working-directory: [apps/basic-example, apps/expo-example]
     concurrency:
       group: ios-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true

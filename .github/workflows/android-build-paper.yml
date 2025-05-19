@@ -16,7 +16,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      WORKING_DIRECTORY: apps/ExpoExample
+      WORKING_DIRECTORY: apps/expo-example
     concurrency:
       group: android-paper-${{ github.ref }}
       cancel-in-progress: true

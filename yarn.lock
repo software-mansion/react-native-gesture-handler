@@ -8045,6 +8045,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-example@workspace:apps/expo-example":
+  version: 0.0.0-use.local
+  resolution: "expo-example@workspace:apps/expo-example"
+  dependencies:
+    "@babel/core": "npm:^7.25.2"
+    "@expo/metro-runtime": "npm:~5.0.2"
+    "@react-native-async-storage/async-storage": "npm:2.1.2"
+    "@react-native-community/slider": "npm:4.5.6"
+    "@react-native-community/viewpager": "npm:5.0.11"
+    "@react-navigation/elements": "npm:^2.3.8"
+    "@react-navigation/native": "npm:^7.1.6"
+    "@react-navigation/stack": "npm:^7.2.10"
+    "@swmansion/icons": "npm:^0.0.1"
+    "@types/react": "npm:^19.0.12"
+    "@types/react-dom": "npm:^19"
+    "@types/react-native-web": "npm:^0"
+    expo: "npm:~53.0.0-preview.7"
+    expo-camera: "npm:~16.1.1"
+    expo-status-bar: "npm:~2.2.1"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-native: "npm:0.79.0"
+    react-native-gesture-handler: "workspace:*"
+    react-native-reanimated: "npm:3.17.5"
+    react-native-safe-area-context: "npm:5.4.0"
+    react-native-svg: "npm:15.11.2"
+    react-native-web: "npm:^0.20.0"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "expo-file-system@npm:~18.1.10":
   version: 18.1.10
   resolution: "expo-file-system@npm:18.1.10"
@@ -8157,37 +8188,6 @@ __metadata:
   checksum: 10c0/7c8392fd3805b2b208da67de2757d23688674799efb58e918a61d4c294a60a79951b82d4d772bab961bad9b1402278a486408fa11c105e0552373554ba434ed1
   languageName: node
   linkType: hard
-
-"expoexample@workspace:apps/ExpoExample":
-  version: 0.0.0-use.local
-  resolution: "expoexample@workspace:apps/ExpoExample"
-  dependencies:
-    "@babel/core": "npm:^7.25.2"
-    "@expo/metro-runtime": "npm:~5.0.2"
-    "@react-native-async-storage/async-storage": "npm:2.1.2"
-    "@react-native-community/slider": "npm:4.5.6"
-    "@react-native-community/viewpager": "npm:5.0.11"
-    "@react-navigation/elements": "npm:^2.3.8"
-    "@react-navigation/native": "npm:^7.1.6"
-    "@react-navigation/stack": "npm:^7.2.10"
-    "@swmansion/icons": "npm:^0.0.1"
-    "@types/react": "npm:^19.0.12"
-    "@types/react-dom": "npm:^19"
-    "@types/react-native-web": "npm:^0"
-    expo: "npm:~53.0.0-preview.7"
-    expo-camera: "npm:~16.1.1"
-    expo-status-bar: "npm:~2.2.1"
-    react: "npm:19.0.0"
-    react-dom: "npm:19.0.0"
-    react-native: "npm:0.79.0"
-    react-native-gesture-handler: "workspace:*"
-    react-native-reanimated: "npm:3.17.5"
-    react-native-safe-area-context: "npm:5.4.0"
-    react-native-svg: "npm:15.11.2"
-    react-native-web: "npm:^0.20.0"
-    typescript: "npm:~5.8.3"
-  languageName: unknown
-  linkType: soft
 
 "exponential-backoff@npm:^3.1.1":
   version: 3.1.2
