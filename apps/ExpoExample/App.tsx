@@ -1,3 +1,3 @@
-import App from 'CommonApp';
+import App from 'common-app';
 
 export default App;
