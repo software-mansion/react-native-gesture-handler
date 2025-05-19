@@ -4,7 +4,7 @@
   "private": true,
   "workspaces": [
     "packages/react-native-gesture-handler",
-    "apps/BasicExample",
+    "apps/basic-example",
     "apps/ExpoExample",
     "apps/MacOSExample",
     "apps/CommonApp"

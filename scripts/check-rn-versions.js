@@ -3,7 +3,7 @@ const path = require('path');
 
 const basicExamplePackageJsonPath = path.join(
   __dirname,
-  '../apps/BasicExample/package.json'
+  '../apps/basic-example/package.json'
 );
 const basicExamplePackageJson = require(basicExamplePackageJsonPath);
 

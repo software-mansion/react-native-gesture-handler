@@ -3,7 +3,7 @@ name: Test TypeScript and Lint
 on:
   pull_request:
     paths:
-      - apps/BasicExample/**'
+      - apps/basic-example/**'
       - apps/CommonApp/**
   push:
     branches:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        working-directory: [apps/BasicExample, apps/CommonApp]
+        working-directory: [apps/basic-example, apps/CommonApp]
     concurrency:
       group: typescript-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
