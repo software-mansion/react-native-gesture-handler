@@ -23,7 +23,7 @@ jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
 
-    runs-on: macos-14
+    runs-on: macos-15
     env:
       YARN_ENABLE_HARDENED_MODE: 1
 
