@@ -26,11 +26,13 @@ target_include_directories(
 )
 
 find_package(ReactAndroid REQUIRED CONFIG)
+find_package(fbjni REQUIRED CONFIG)
 if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
   target_link_libraries(
     ${PACKAGE_NAME}
     ReactAndroid::reactnative
     ReactAndroid::jsi
+    fbjni::fbjni
   )
 elseif (ReactAndroid_VERSION_MINOR GREATER_EQUAL 75)
   target_link_libraries(
