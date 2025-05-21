@@ -8,7 +8,7 @@ on:
       - .github/workflows/check-archs-consistency.yml
       - packages/react-native-gesture-handler/src/specs/**
       - packages/react-native-gesture-handler/package.json
-      - apps/BasicExample/package.json
+      - apps/basic-example/package.json
   push:
     branches:
       - main

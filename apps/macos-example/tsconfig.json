@@ -4,7 +4,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "CommonApp": ["../CommonApp/index.ts"],
+      "common-app": ["../common-app/index.ts"],
       "react-native-gesture-handler": [
         "../../packages/react-native-gesture-handler/index.ts"
       ],

@@ -4,10 +4,10 @@
   "private": true,
   "workspaces": [
     "packages/react-native-gesture-handler",
-    "apps/BasicExample",
-    "apps/ExpoExample",
-    "apps/MacOSExample",
-    "apps/CommonApp"
+    "apps/basic-example",
+    "apps/expo-example",
+    "apps/macos-example",
+    "apps/common-app"
   ],
   "scripts": {
     "postinstall": "husky",

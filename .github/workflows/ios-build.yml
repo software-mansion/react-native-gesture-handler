@@ -6,7 +6,7 @@ on:
       - .github/workflows/ios-build.yml
       - packages/react-native-gesture-handler/RNGestureHandler.podspec
       - packages/react-native-gesture-handler/apple/**
-      - apps/BasicExample/ios/**
+      - apps/basic-example/ios/**
   push:
     branches:
       - main
@@ -17,11 +17,9 @@ jobs:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
 
     runs-on: macos-14
-    env:
-      WORKING_DIRECTORY: apps/BasicExample
     strategy:
       matrix:
-        working-directory: [apps/BasicExample, apps/ExpoExample]
+        working-directory: [apps/basic-example, apps/expo-example]
     concurrency:
       group: ios-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
@@ -46,7 +44,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Install pods
-        if: ${{ matrix.working-directory == 'apps/BasicExample' }}
+        if: ${{ matrix.working-directory == 'apps/basic-example' }}
         working-directory: ${{ matrix.working-directory }}/ios
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
 

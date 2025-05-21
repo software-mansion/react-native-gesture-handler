@@ -4354,11 +4354,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.15.18
-  resolution: "@types/node@npm:22.15.18"
+  version: 22.15.19
+  resolution: "@types/node@npm:22.15.19"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10c0/e23178c568e2dc6b93b6aa3b8dfb45f9556e527918c947fe7406a4c92d2184c7396558912400c3b1b8d0fa952ec63819aca2b8e4d3545455fc6f1e9623e09ca6
+  checksum: 10c0/8ef52fa1a91b1c8891616d46f3921a9f3c65ad1c6bb62db7899c8c28643c13bf9d607a2403b1e5aceb3e6fa6749efc9e0ba5c39618a4872da6946437b0edbfbe
   languageName: node
   linkType: hard
 
@@ -4917,125 +4917,6 @@ __metadata:
   checksum: 10c0/57b7360f685576f32233e0b837ce7ab3bc0eb8ebfa04e1e1161c3a8576dc3235a6004a21561ccc4dc847fadb3b805a6f5d0d47aa51edaea349f1cf643a22fdf7
   languageName: node
   linkType: hard
-
-"BasicExample@workspace:apps/BasicExample":
-  version: 0.0.0-use.local
-  resolution: "BasicExample@workspace:apps/BasicExample"
-  dependencies:
-    "@babel/core": "npm:^7.25.2"
-    "@babel/preset-env": "npm:^7.25.3"
-    "@babel/runtime": "npm:^7.25.0"
-    "@react-native-community/cli": "npm:18.0.0"
-    "@react-native-community/cli-platform-android": "npm:18.0.0"
-    "@react-native-community/cli-platform-ios": "npm:18.0.0"
-    "@react-native/babel-preset": "npm:0.79.0"
-    "@react-native/eslint-config": "npm:0.79.0"
-    "@react-native/metro-config": "npm:0.79.0"
-    "@react-native/typescript-config": "npm:0.79.0"
-    "@types/jest": "npm:^29.5.13"
-    "@types/react": "npm:^19.0.12"
-    "@types/react-test-renderer": "npm:^19.0.0"
-    "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
-    "@typescript-eslint/parser": "npm:^6.9.0"
-    eslint: "npm:^8.57.0"
-    eslint-config-satya164: "npm:3.3.0"
-    eslint-import-resolver-babel-module: "npm:^5.2.0"
-    eslint-plugin-jest: "npm:27.4.3"
-    eslint-plugin-prettier: "npm:^5.0.1"
-    eslint-plugin-react: "npm:^7.37.5"
-    jest: "npm:^29.6.3"
-    prettier: "npm:3.3.3"
-    react: "npm:19.0.0"
-    react-native: "npm:0.79.0"
-    react-native-gesture-handler: "workspace:*"
-    react-test-renderer: "npm:19.0.0"
-    typescript: "npm:~5.8.3"
-  languageName: unknown
-  linkType: soft
-
-"CommonApp@workspace:apps/CommonApp":
-  version: 0.0.0-use.local
-  resolution: "CommonApp@workspace:apps/CommonApp"
-  dependencies:
-    "@babel/core": "npm:^7.25.2"
-    "@babel/preset-env": "npm:^7.25.3"
-    "@babel/runtime": "npm:^7.25.0"
-    "@react-native-async-storage/async-storage": "npm:^2.1.2"
-    "@react-native-community/cli": "npm:18.0.0"
-    "@react-native-community/cli-platform-android": "npm:18.0.0"
-    "@react-native-community/cli-platform-ios": "npm:18.0.0"
-    "@react-native-community/slider": "npm:4.5.6"
-    "@react-native-community/viewpager": "npm:5.0.11"
-    "@react-native/babel-preset": "npm:0.79.0"
-    "@react-native/eslint-config": "npm:0.79.0"
-    "@react-native/metro-config": "npm:0.79.0"
-    "@react-native/typescript-config": "npm:0.79.0"
-    "@react-navigation/elements": "npm:^2.3.8"
-    "@react-navigation/native": "npm:^7.1.6"
-    "@react-navigation/stack": "npm:^7.2.10"
-    "@swmansion/icons": "npm:^0.0.1"
-    "@types/jest": "npm:^29.5.13"
-    "@types/react": "npm:^19.0.12"
-    "@types/react-test-renderer": "npm:^19.0.0"
-    "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
-    "@typescript-eslint/parser": "npm:^6.9.0"
-    eslint: "npm:^8.57.0"
-    eslint-config-satya164: "npm:3.3.0"
-    eslint-import-resolver-babel-module: "npm:^5.2.0"
-    eslint-plugin-jest: "npm:27.4.3"
-    eslint-plugin-prettier: "npm:^5.0.1"
-    eslint-plugin-react: "npm:^7.37.5"
-    expo-camera: "npm:~16.1.1"
-    jest: "npm:^29.6.3"
-    prettier: "npm:3.3.3"
-    react-native-gesture-handler: "workspace:*"
-    react-native-reanimated: "npm:^3.17.4"
-    react-native-safe-area-context: "npm:^5.4.0"
-    react-native-svg: "npm:15.11.2"
-    react-test-renderer: "npm:19.0.0"
-    typescript: "npm:~5.8.3"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  languageName: unknown
-  linkType: soft
-
-"MacOSExample@workspace:apps/MacOSExample":
-  version: 0.0.0-use.local
-  resolution: "MacOSExample@workspace:apps/MacOSExample"
-  dependencies:
-    "@babel/core": "npm:^7.25.2"
-    "@babel/preset-env": "npm:^7.25.3"
-    "@babel/runtime": "npm:^7.25.0"
-    "@react-native-async-storage/async-storage": "npm:2.1.2"
-    "@react-native-community/cli": "npm:15.0.1"
-    "@react-native-community/cli-platform-android": "npm:15.0.1"
-    "@react-native-community/cli-platform-ios": "npm:15.0.1"
-    "@react-native-community/slider": "npm:4.5.6"
-    "@react-native-community/viewpager": "npm:5.0.11"
-    "@react-native/babel-preset": "npm:0.78.0"
-    "@react-native/eslint-config": "npm:0.78.0"
-    "@react-native/metro-config": "npm:0.78.0"
-    "@react-native/typescript-config": "npm:0.78.0"
-    "@react-navigation/elements": "npm:^2.3.8"
-    "@react-navigation/native": "npm:^7.1.6"
-    "@react-navigation/stack": "npm:^7.2.10"
-    "@swmansion/icons": "npm:^0.0.1"
-    "@types/jest": "npm:^29.5.13"
-    "@types/react": "npm:^19.0.12"
-    "@types/react-test-renderer": "npm:^19.0.0"
-    jest: "npm:^29.6.3"
-    react: "npm:19.0.0"
-    react-native: "npm:0.78.0"
-    react-native-gesture-handler: "workspace:*"
-    react-native-macos: "npm:^0.78.0-0"
-    react-native-reanimated: "npm:3.17.5"
-    react-native-safe-area-context: "npm:5.4.0"
-    react-native-svg: "npm:15.11.2"
-    react-test-renderer: "npm:19.0.0"
-    typescript: "npm:~5.8.3"
-  languageName: unknown
-  linkType: soft
 
 "abbrev@npm:^3.0.0":
   version: 3.0.1
@@ -5664,6 +5545,41 @@ __metadata:
   languageName: node
   linkType: hard
 
+"basic-example@workspace:apps/basic-example":
+  version: 0.0.0-use.local
+  resolution: "basic-example@workspace:apps/basic-example"
+  dependencies:
+    "@babel/core": "npm:^7.25.2"
+    "@babel/preset-env": "npm:^7.25.3"
+    "@babel/runtime": "npm:^7.25.0"
+    "@react-native-community/cli": "npm:18.0.0"
+    "@react-native-community/cli-platform-android": "npm:18.0.0"
+    "@react-native-community/cli-platform-ios": "npm:18.0.0"
+    "@react-native/babel-preset": "npm:0.79.0"
+    "@react-native/eslint-config": "npm:0.79.0"
+    "@react-native/metro-config": "npm:0.79.0"
+    "@react-native/typescript-config": "npm:0.79.0"
+    "@types/jest": "npm:^29.5.13"
+    "@types/react": "npm:^19.0.12"
+    "@types/react-test-renderer": "npm:^19.0.0"
+    "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
+    "@typescript-eslint/parser": "npm:^6.9.0"
+    eslint: "npm:^8.57.0"
+    eslint-config-satya164: "npm:3.3.0"
+    eslint-import-resolver-babel-module: "npm:^5.2.0"
+    eslint-plugin-jest: "npm:27.4.3"
+    eslint-plugin-prettier: "npm:^5.0.1"
+    eslint-plugin-react: "npm:^7.37.5"
+    jest: "npm:^29.6.3"
+    prettier: "npm:3.3.3"
+    react: "npm:19.0.0"
+    react-native: "npm:0.79.0"
+    react-native-gesture-handler: "workspace:*"
+    react-test-renderer: "npm:19.0.0"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "better-opn@npm:~3.0.2":
   version: 3.0.2
   resolution: "better-opn@npm:3.0.2"
@@ -6244,6 +6160,53 @@ __metadata:
   checksum: 10c0/5f7784fbda2aaec39e89eb46f06a999e00224b3763dc65976e05929ec486e174fe9aac2655f03ba6a5e83875bd173be5283dc19309b7c65954701c02025b3c1d
   languageName: node
   linkType: hard
+
+"common-app@workspace:*, common-app@workspace:apps/common-app":
+  version: 0.0.0-use.local
+  resolution: "common-app@workspace:apps/common-app"
+  dependencies:
+    "@babel/core": "npm:^7.25.2"
+    "@babel/preset-env": "npm:^7.25.3"
+    "@babel/runtime": "npm:^7.25.0"
+    "@react-native-async-storage/async-storage": "npm:^2.1.2"
+    "@react-native-community/cli": "npm:18.0.0"
+    "@react-native-community/cli-platform-android": "npm:18.0.0"
+    "@react-native-community/cli-platform-ios": "npm:18.0.0"
+    "@react-native-community/slider": "npm:4.5.6"
+    "@react-native-community/viewpager": "npm:5.0.11"
+    "@react-native/babel-preset": "npm:0.79.0"
+    "@react-native/eslint-config": "npm:0.79.0"
+    "@react-native/metro-config": "npm:0.79.0"
+    "@react-native/typescript-config": "npm:0.79.0"
+    "@react-navigation/elements": "npm:^2.3.8"
+    "@react-navigation/native": "npm:^7.1.6"
+    "@react-navigation/stack": "npm:^7.2.10"
+    "@swmansion/icons": "npm:^0.0.1"
+    "@types/jest": "npm:^29.5.13"
+    "@types/react": "npm:^19.0.12"
+    "@types/react-test-renderer": "npm:^19.0.0"
+    "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
+    "@typescript-eslint/parser": "npm:^6.9.0"
+    eslint: "npm:^8.57.0"
+    eslint-config-satya164: "npm:3.3.0"
+    eslint-import-resolver-babel-module: "npm:^5.2.0"
+    eslint-plugin-jest: "npm:27.4.3"
+    eslint-plugin-prettier: "npm:^5.0.1"
+    eslint-plugin-react: "npm:^7.37.5"
+    expo-camera: "npm:~16.1.1"
+    jest: "npm:^29.6.3"
+    prettier: "npm:3.3.3"
+    react-native-gesture-handler: "workspace:*"
+    react-native-reanimated: "npm:^3.17.4"
+    react-native-safe-area-context: "npm:^5.4.0"
+    react-native-svg: "npm:15.11.2"
+    react-test-renderer: "npm:19.0.0"
+    typescript: "npm:~5.8.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
 
 "commondir@npm:^1.0.1":
   version: 1.0.1
@@ -8045,6 +8008,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-example@workspace:apps/expo-example":
+  version: 0.0.0-use.local
+  resolution: "expo-example@workspace:apps/expo-example"
+  dependencies:
+    "@babel/core": "npm:^7.25.2"
+    "@expo/metro-runtime": "npm:~5.0.2"
+    "@react-native-async-storage/async-storage": "npm:2.1.2"
+    "@react-native-community/slider": "npm:4.5.6"
+    "@react-native-community/viewpager": "npm:5.0.11"
+    "@react-navigation/elements": "npm:^2.3.8"
+    "@react-navigation/native": "npm:^7.1.6"
+    "@react-navigation/stack": "npm:^7.2.10"
+    "@swmansion/icons": "npm:^0.0.1"
+    "@types/react": "npm:^19.0.12"
+    "@types/react-dom": "npm:^19"
+    "@types/react-native-web": "npm:^0"
+    common-app: "workspace:*"
+    expo: "npm:~53.0.0-preview.7"
+    expo-camera: "npm:~16.1.1"
+    expo-status-bar: "npm:~2.2.1"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-native: "npm:0.79.0"
+    react-native-gesture-handler: "workspace:*"
+    react-native-reanimated: "npm:3.17.5"
+    react-native-safe-area-context: "npm:5.4.0"
+    react-native-svg: "npm:15.11.2"
+    react-native-web: "npm:^0.20.0"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "expo-file-system@npm:~18.1.10":
   version: 18.1.10
   resolution: "expo-file-system@npm:18.1.10"
@@ -8157,37 +8152,6 @@ __metadata:
   checksum: 10c0/7c8392fd3805b2b208da67de2757d23688674799efb58e918a61d4c294a60a79951b82d4d772bab961bad9b1402278a486408fa11c105e0552373554ba434ed1
   languageName: node
   linkType: hard
-
-"expoexample@workspace:apps/ExpoExample":
-  version: 0.0.0-use.local
-  resolution: "expoexample@workspace:apps/ExpoExample"
-  dependencies:
-    "@babel/core": "npm:^7.25.2"
-    "@expo/metro-runtime": "npm:~5.0.2"
-    "@react-native-async-storage/async-storage": "npm:2.1.2"
-    "@react-native-community/slider": "npm:4.5.6"
-    "@react-native-community/viewpager": "npm:5.0.11"
-    "@react-navigation/elements": "npm:^2.3.8"
-    "@react-navigation/native": "npm:^7.1.6"
-    "@react-navigation/stack": "npm:^7.2.10"
-    "@swmansion/icons": "npm:^0.0.1"
-    "@types/react": "npm:^19.0.12"
-    "@types/react-dom": "npm:^19"
-    "@types/react-native-web": "npm:^0"
-    expo: "npm:~53.0.0-preview.7"
-    expo-camera: "npm:~16.1.1"
-    expo-status-bar: "npm:~2.2.1"
-    react: "npm:19.0.0"
-    react-dom: "npm:19.0.0"
-    react-native: "npm:0.79.0"
-    react-native-gesture-handler: "workspace:*"
-    react-native-reanimated: "npm:3.17.5"
-    react-native-safe-area-context: "npm:5.4.0"
-    react-native-svg: "npm:15.11.2"
-    react-native-web: "npm:^0.20.0"
-    typescript: "npm:~5.8.3"
-  languageName: unknown
-  linkType: soft
 
 "exponential-backoff@npm:^3.1.1":
   version: 3.1.2
@@ -11262,6 +11226,44 @@ __metadata:
   checksum: 10c0/89b2ef2ef45f543011e38737b8a8622a2f8998cddf0e5437174ef8f1f70a8b9d14a918ab3e232cb3ba343b7abddffa667f0b59075b2b80e6b4d63c3de6127482
   languageName: node
   linkType: hard
+
+"macos-example@workspace:apps/macos-example":
+  version: 0.0.0-use.local
+  resolution: "macos-example@workspace:apps/macos-example"
+  dependencies:
+    "@babel/core": "npm:^7.25.2"
+    "@babel/preset-env": "npm:^7.25.3"
+    "@babel/runtime": "npm:^7.25.0"
+    "@react-native-async-storage/async-storage": "npm:2.1.2"
+    "@react-native-community/cli": "npm:15.0.1"
+    "@react-native-community/cli-platform-android": "npm:15.0.1"
+    "@react-native-community/cli-platform-ios": "npm:15.0.1"
+    "@react-native-community/slider": "npm:4.5.6"
+    "@react-native-community/viewpager": "npm:5.0.11"
+    "@react-native/babel-preset": "npm:0.78.0"
+    "@react-native/eslint-config": "npm:0.78.0"
+    "@react-native/metro-config": "npm:0.78.0"
+    "@react-native/typescript-config": "npm:0.78.0"
+    "@react-navigation/elements": "npm:^2.3.8"
+    "@react-navigation/native": "npm:^7.1.6"
+    "@react-navigation/stack": "npm:^7.2.10"
+    "@swmansion/icons": "npm:^0.0.1"
+    "@types/jest": "npm:^29.5.13"
+    "@types/react": "npm:^19.0.12"
+    "@types/react-test-renderer": "npm:^19.0.0"
+    common-app: "workspace:*"
+    jest: "npm:^29.6.3"
+    react: "npm:19.0.0"
+    react-native: "npm:0.78.0"
+    react-native-gesture-handler: "workspace:*"
+    react-native-macos: "npm:^0.78.0-0"
+    react-native-reanimated: "npm:3.17.5"
+    react-native-safe-area-context: "npm:5.4.0"
+    react-native-svg: "npm:15.11.2"
+    react-test-renderer: "npm:19.0.0"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
 
 "madge@npm:^6.1.0":
   version: 6.1.0
@@ -15265,12 +15267,11 @@ __metadata:
   linkType: hard
 
 "synckit@npm:^0.11.0":
-  version: 0.11.5
-  resolution: "synckit@npm:0.11.5"
+  version: 0.11.6
+  resolution: "synckit@npm:0.11.6"
   dependencies:
     "@pkgr/core": "npm:^0.2.4"
-    tslib: "npm:^2.8.1"
-  checksum: 10c0/49cbd90c3f0ebe7ea6af2fe359e93ef737983b9aaaa605d63c3bf6ba7b31fd2d201e0d8c09f099a11d5ed2d5a7bf3a2ee865708f7f6795646317aac1266517aa
+  checksum: 10c0/51c0e41c025b90cc68a7b304fbfe873cc77b3ddc99e92ab33fbd42f4fbd1ee65fc7d9affd8eedcac43644658399244aa521e19fb18d7b4e66898d0e2c0cc8d9b
   languageName: node
   linkType: hard
 
@@ -15484,9 +15485,9 @@ __metadata:
   linkType: hard
 
 "ts-pattern@npm:^5.7.0":
-  version: 5.7.0
-  resolution: "ts-pattern@npm:5.7.0"
-  checksum: 10c0/6a49d2b502a916def7b07ed66d5675aaf5159dd09b9dbdb334ebfc464af6307e33ae9fbec8ece9182f7ae6a9b2589087da5924d35a74bd52323c3f3745b15d1e
+  version: 5.7.1
+  resolution: "ts-pattern@npm:5.7.1"
+  checksum: 10c0/815592dcc8058c90f2329ca88ab4377eb89d794520055fb9a937424babeb87be29f60ad51505206e4ac130b7cbc70ae7c0b3c615469e7f379b7c749c0911265f
   languageName: node
   linkType: hard
 
@@ -15509,7 +15510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.6.2, tslib@npm:^2.8.1":
+"tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.6.2":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62

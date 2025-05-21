@@ -307,11 +307,13 @@ function navigate(
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   useEffect(() => {
-    AsyncStorage.multiGet([OPEN_LAST_EXAMPLE_KEY, LAST_EXAMPLE_KEY]).then(
+    void AsyncStorage.multiGet([OPEN_LAST_EXAMPLE_KEY, LAST_EXAMPLE_KEY]).then(
       ([openLastExample, lastExample]) => {
         if (openLastExample[1] === 'true' && lastExample[1]) {
           navigate(navigation, lastExample[1]);
         }
+
+        return;
       }
     );
     // we only want to run this effect once
@@ -345,8 +347,9 @@ function OpenLastExampleSetting() {
   const [openLastExample, setOpenLastExample] = React.useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(OPEN_LAST_EXAMPLE_KEY).then((value) => {
+    void AsyncStorage.getItem(OPEN_LAST_EXAMPLE_KEY).then((value) => {
       setOpenLastExample(value === 'true');
+      return;
     });
   }, []);
 

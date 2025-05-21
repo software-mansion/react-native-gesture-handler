@@ -1,5 +1,5 @@
 {
-  "name": "expoexample",
+  "name": "expo-example",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -8,6 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "paper": "rm -rf android ios && PAPER_ENABLED=1 npx expo prebuild",
     "clean": "rm -rf node_modules android ios"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
     "@swmansion/icons": "^0.0.1",
+    "common-app": "workspace:*",
     "expo": "~53.0.0-preview.7",
     "expo-camera": "~16.1.1",
     "expo-status-bar": "~2.2.1",
