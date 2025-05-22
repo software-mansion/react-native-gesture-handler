@@ -1,5 +1,4 @@
 {
-  "name": "test_ci",
   "main": "../lib/commonjs/components/DrawerLayout",
   "module": "../lib/module/components/DrawerLayout",
   "react-native": "../src/components/DrawerLayout",
