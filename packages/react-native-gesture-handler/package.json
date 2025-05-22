@@ -3,9 +3,8 @@
   "version": "2.25.0",
   "description": "Declarative API exposing native platform touch and gesture system to React Native",
   "scripts": {
-    "postinstall": "bob build",
     "test": "jest",
-    "build": "yarn tsc -p tsconfig.build.json",
+    "build": "yarn tsc -p tsconfig.build.json && bob build",
     "ts-check": "yarn tsc --noEmit",
     "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
     "format:js": "yarn format-js",
