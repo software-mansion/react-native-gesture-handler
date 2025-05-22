@@ -1,8 +1,10 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.graphics.PointF
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.core.RotationGestureDetector.OnRotationGestureListener
+import com.swmansion.gesturehandler.react.eventbuilders.RotationGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
@@ -15,10 +17,6 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     private set
   var anchorY: Float = Float.NaN
     private set
-
-  init {
-    setShouldCancelWhenOutside(false)
-  }
 
   private val gestureListener: OnRotationGestureListener = object : OnRotationGestureListener {
     override fun onRotation(detector: RotationGestureDetector): Boolean {
@@ -85,6 +83,15 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
   override fun resetProgress() {
     velocity = 0.0
     rotation = 0.0
+  }
+
+  class Factory : GestureHandler.Factory<RotationGestureHandler>() {
+    override val type = RotationGestureHandler::class.java
+    override val name = "RotationGestureHandler"
+
+    override fun create(context: Context?): RotationGestureHandler = RotationGestureHandler()
+
+    override fun createEventBuilder(handler: RotationGestureHandler) = RotationGestureHandlerEventDataBuilder(handler)
   }
 
   companion object {

@@ -1,8 +1,10 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.ViewConfiguration
+import com.swmansion.gesturehandler.react.eventbuilders.PinchGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
@@ -34,10 +36,6 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
         activate()
       }
       return true
-    }
-
-    init {
-      setShouldCancelWhenOutside(false)
     }
 
     override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
@@ -99,5 +97,14 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   override fun resetProgress() {
     velocity = 0.0
     scale = 1.0
+  }
+
+  class Factory : GestureHandler.Factory<PinchGestureHandler>() {
+    override val type = PinchGestureHandler::class.java
+    override val name = "PinchGestureHandler"
+
+    override fun create(context: Context?): PinchGestureHandler = PinchGestureHandler()
+
+    override fun createEventBuilder(handler: PinchGestureHandler) = PinchGestureHandlerEventDataBuilder(handler)
   }
 }

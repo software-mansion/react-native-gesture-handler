@@ -1,9 +1,12 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
+import com.facebook.react.bridge.ReadableMap
+import com.swmansion.gesturehandler.react.eventbuilders.FlingGestureHandlerEventDataBuilder
 
 class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
   var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED
@@ -121,6 +124,30 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
     event.offsetLocation(offsetX, offsetY)
     tracker!!.addMovement(event)
     event.offsetLocation(-offsetX, -offsetY)
+  }
+
+  class Factory : GestureHandler.Factory<FlingGestureHandler>() {
+    override val type = FlingGestureHandler::class.java
+    override val name = "FlingGestureHandler"
+
+    override fun create(context: Context?): FlingGestureHandler = FlingGestureHandler()
+
+    override fun setConfig(handler: FlingGestureHandler, config: ReadableMap) {
+      super.setConfig(handler, config)
+      if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
+        handler.numberOfPointersRequired = config.getInt(KEY_NUMBER_OF_POINTERS)
+      }
+      if (config.hasKey(KEY_DIRECTION)) {
+        handler.direction = config.getInt(KEY_DIRECTION)
+      }
+    }
+
+    override fun createEventBuilder(handler: FlingGestureHandler) = FlingGestureHandlerEventDataBuilder(handler)
+
+    companion object {
+      private const val KEY_NUMBER_OF_POINTERS = "numberOfPointers"
+      private const val KEY_DIRECTION = "direction"
+    }
   }
 
   companion object {
