@@ -124,11 +124,6 @@
       ]
     ]
   },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/",
-    "src/specs/*NativeComponent.js"
-  ],
   "codegenConfig": {
     "name": "rngesturehandler_codegen",
     "type": "all",
