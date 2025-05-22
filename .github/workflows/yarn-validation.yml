@@ -49,6 +49,7 @@ jobs:
             packages/react-native-gesture-handler/ReanimatedDrawerLayout/package.json
             packages/react-native-gesture-handler/Swipeable/package.json
             packages/react-native-gesture-handler/ReanimatedSwipeable/package.json
+            packages/react-native-gesture-handler/jest-utils/package.json
 
       - name: Get list of changed directories
         id: changed-dirs
