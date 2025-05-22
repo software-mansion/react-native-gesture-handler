@@ -42,9 +42,13 @@ jobs:
         uses: tj-actions/changed-files@v46
         with:
           files: |
-            apps/*/package.json
-            packages/*/package.json
+            **/package.json
             **/yarn.lock
+          files_ignore: |
+            packages/react-native-gesture-handler/DrawerLayout/package.json
+            packages/react-native-gesture-handler/ReanimatedDrawerLayout/package.json
+            packages/react-native-gesture-handler/Swipeable/package.json
+            packages/react-native-gesture-handler/ReanimatedSwipeable/package.json
 
       - name: Get list of changed directories
         id: changed-dirs
