@@ -42,7 +42,9 @@ jobs:
         uses: tj-actions/changed-files@v46
         with:
           files: |
-            **/package.json
+            apps/**/package.json
+            packages/docs-gesture-handler/package.json
+            packages/react-native-gesture-handler/package.json
             **/yarn.lock
 
       - name: Get list of changed directories
