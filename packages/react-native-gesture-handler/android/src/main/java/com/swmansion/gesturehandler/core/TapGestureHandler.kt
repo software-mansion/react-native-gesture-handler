@@ -1,16 +1,20 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
+import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private var maxDeltaX = MAX_VALUE_IGNORE
   private var maxDeltaY = MAX_VALUE_IGNORE
-  private var maxDistSq = MAX_VALUE_IGNORE
+  private var maxDist = MAX_VALUE_IGNORE
   private var maxDurationMs = DEFAULT_MAX_DURATION_MS
   private var maxDelayMs = DEFAULT_MAX_DELAY_MS
   private var numberOfTaps = DEFAULT_NUMBER_OF_TAPS
@@ -27,46 +31,19 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
   private val failDelayed = Runnable { fail() }
 
   init {
-    setShouldCancelWhenOutside(true)
+    shouldCancelWhenOutside = true
   }
 
   override fun resetConfig() {
     super.resetConfig()
     maxDeltaX = MAX_VALUE_IGNORE
     maxDeltaY = MAX_VALUE_IGNORE
-    maxDistSq = MAX_VALUE_IGNORE
+    maxDist = MAX_VALUE_IGNORE
     maxDurationMs = DEFAULT_MAX_DURATION_MS
     maxDelayMs = DEFAULT_MAX_DELAY_MS
     numberOfTaps = DEFAULT_NUMBER_OF_TAPS
     minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS
-  }
-
-  fun setNumberOfTaps(numberOfTaps: Int) = apply {
-    this.numberOfTaps = numberOfTaps
-  }
-
-  fun setMaxDelayMs(maxDelayMs: Long) = apply {
-    this.maxDelayMs = maxDelayMs
-  }
-
-  fun setMaxDurationMs(maxDurationMs: Long) = apply {
-    this.maxDurationMs = maxDurationMs
-  }
-
-  fun setMaxDx(deltaX: Float) = apply {
-    maxDeltaX = deltaX
-  }
-
-  fun setMaxDy(deltaY: Float) = apply {
-    maxDeltaY = deltaY
-  }
-
-  fun setMaxDist(maxDist: Float) = apply {
-    maxDistSq = maxDist * maxDist
-  }
-
-  fun setMinNumberOfPointers(minNumberOfPointers: Int) = apply {
-    this.minNumberOfPointers = minNumberOfPointers
+    shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
   private fun startTap() {
@@ -101,7 +78,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
       return true
     }
     val dist = dy * dy + dx * dx
-    return maxDistSq != MAX_VALUE_IGNORE && dist > maxDistSq
+    return maxDist != MAX_VALUE_IGNORE && dist > maxDist * maxDist
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
@@ -162,11 +139,56 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     handler?.removeCallbacksAndMessages(null)
   }
 
+  class Factory : GestureHandler.Factory<TapGestureHandler>() {
+    override val type = TapGestureHandler::class.java
+    override val name = "TapGestureHandler"
+
+    override fun create(context: Context?): TapGestureHandler = TapGestureHandler()
+
+    override fun setConfig(handler: TapGestureHandler, config: ReadableMap) {
+      super.setConfig(handler, config)
+      if (config.hasKey(KEY_NUMBER_OF_TAPS)) {
+        handler.numberOfTaps = config.getInt(KEY_NUMBER_OF_TAPS)
+      }
+      if (config.hasKey(KEY_MAX_DURATION_MS)) {
+        handler.maxDurationMs = config.getInt(KEY_MAX_DURATION_MS).toLong()
+      }
+      if (config.hasKey(KEY_MAX_DELAY_MS)) {
+        handler.maxDelayMs = config.getInt(KEY_MAX_DELAY_MS).toLong()
+      }
+      if (config.hasKey(KEY_MAX_DELTA_X)) {
+        handler.maxDeltaX = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DELTA_X))
+      }
+      if (config.hasKey(KEY_MAX_DELTA_Y)) {
+        handler.maxDeltaY = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DELTA_Y))
+      }
+      if (config.hasKey(KEY_MAX_DIST)) {
+        handler.maxDist = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MAX_DIST))
+      }
+      if (config.hasKey(KEY_MIN_POINTERS)) {
+        handler.minNumberOfPointers = config.getInt(KEY_MIN_POINTERS)
+      }
+    }
+
+    override fun createEventBuilder(handler: TapGestureHandler) = TapGestureHandlerEventDataBuilder(handler)
+
+    companion object {
+      private const val KEY_NUMBER_OF_TAPS = "numberOfTaps"
+      private const val KEY_MAX_DURATION_MS = "maxDurationMs"
+      private const val KEY_MAX_DELAY_MS = "maxDelayMs"
+      private const val KEY_MAX_DELTA_X = "maxDeltaX"
+      private const val KEY_MAX_DELTA_Y = "maxDeltaY"
+      private const val KEY_MAX_DIST = "maxDist"
+      private const val KEY_MIN_POINTERS = "minPointers"
+    }
+  }
+
   companion object {
     private const val MAX_VALUE_IGNORE = Float.MIN_VALUE
     private const val DEFAULT_MAX_DURATION_MS: Long = 500
     private const val DEFAULT_MAX_DELAY_MS: Long = 200
     private const val DEFAULT_NUMBER_OF_TAPS = 1
     private const val DEFAULT_MIN_NUMBER_OF_POINTERS = 1
+    private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
   }
 }

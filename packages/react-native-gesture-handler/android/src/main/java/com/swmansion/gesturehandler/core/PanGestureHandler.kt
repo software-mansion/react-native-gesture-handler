@@ -6,8 +6,11 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
+import com.swmansion.gesturehandler.react.eventbuilders.PanGestureHandlerEventDataBuilder
 
 class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
   var velocityX = 0f
@@ -19,8 +22,8 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   val translationY: Float
     get() = lastY - startY + offsetY
 
-  private val defaultMinDistSq: Float
-  private var minDistSq = MAX_VALUE_IGNORE
+  private val defaultMinDist: Float
+  private var minDist = MAX_VALUE_IGNORE
   private var activeOffsetXStart = MIN_VALUE_IGNORE
   private var activeOffsetXEnd = MAX_VALUE_IGNORE
   private var failOffsetXStart = MAX_VALUE_IGNORE
@@ -29,9 +32,13 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   private var activeOffsetYEnd = MAX_VALUE_IGNORE
   private var failOffsetYStart = MAX_VALUE_IGNORE
   private var failOffsetYEnd = MIN_VALUE_IGNORE
+
+  /**
+   * in pixels per second
+   */
   private var minVelocityX = MIN_VALUE_IGNORE
   private var minVelocityY = MIN_VALUE_IGNORE
-  private var minVelocitySq = MIN_VALUE_IGNORE
+  private var minVelocity = MIN_VALUE_IGNORE
   private var minPointers = DEFAULT_MIN_POINTERS
   private var maxPointers = DEFAULT_MAX_POINTERS
   private var startX = 0f
@@ -62,96 +69,28 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
    */
   init {
     val vc = ViewConfiguration.get(context!!)
-    val touchSlop = vc.scaledTouchSlop
-    defaultMinDistSq = (touchSlop * touchSlop).toFloat()
-    minDistSq = defaultMinDistSq
+    defaultMinDist = vc.scaledTouchSlop.toFloat()
+    minDist = defaultMinDist
   }
 
   override fun resetConfig() {
     super.resetConfig()
-    activeOffsetXStart = MIN_VALUE_IGNORE
-    activeOffsetXEnd = MAX_VALUE_IGNORE
-    failOffsetXStart = MAX_VALUE_IGNORE
-    failOffsetXEnd = MIN_VALUE_IGNORE
-    activeOffsetYStart = MIN_VALUE_IGNORE
-    activeOffsetYEnd = MAX_VALUE_IGNORE
-    failOffsetYStart = MAX_VALUE_IGNORE
-    failOffsetYEnd = MIN_VALUE_IGNORE
-    minVelocityX = MIN_VALUE_IGNORE
-    minVelocityY = MIN_VALUE_IGNORE
-    minVelocitySq = MIN_VALUE_IGNORE
-    minDistSq = defaultMinDistSq
+    activeOffsetXStart = DEFAULT_ACTIVE_OFFSET_X_START
+    activeOffsetXEnd = DEFAULT_ACTIVE_OFFSET_X_END
+    failOffsetXStart = DEFAULT_FAIL_OFFSET_X_START
+    failOffsetXEnd = DEFAULT_FAIL_OFFSET_X_END
+    activeOffsetYStart = DEFAULT_ACTIVE_OFFSET_Y_START
+    activeOffsetYEnd = DEFAULT_ACTIVE_OFFSET_Y_END
+    failOffsetYStart = DEFAULT_FAIL_OFFSET_Y_START
+    failOffsetYEnd = DEFAULT_FAIL_OFFSET_Y_END
+    minVelocityX = DEFAULT_MIN_VELOCITY_X
+    minVelocityY = DEFAULT_MIN_VELOCITY_Y
+    minVelocity = DEFAULT_MIN_VELOCITY
+    minDist = defaultMinDist
     minPointers = DEFAULT_MIN_POINTERS
     maxPointers = DEFAULT_MAX_POINTERS
     activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
-    averageTouches = false
-  }
-
-  fun setActiveOffsetXStart(activeOffsetXStart: Float) = apply {
-    this.activeOffsetXStart = activeOffsetXStart
-  }
-
-  fun setActiveOffsetXEnd(activeOffsetXEnd: Float) = apply {
-    this.activeOffsetXEnd = activeOffsetXEnd
-  }
-
-  fun setFailOffsetXStart(failOffsetXStart: Float) = apply {
-    this.failOffsetXStart = failOffsetXStart
-  }
-
-  fun setFailOffsetXEnd(failOffsetXEnd: Float) = apply {
-    this.failOffsetXEnd = failOffsetXEnd
-  }
-
-  fun setActiveOffsetYStart(activeOffsetYStart: Float) = apply {
-    this.activeOffsetYStart = activeOffsetYStart
-  }
-
-  fun setActiveOffsetYEnd(activeOffsetYEnd: Float) = apply {
-    this.activeOffsetYEnd = activeOffsetYEnd
-  }
-
-  fun setFailOffsetYStart(failOffsetYStart: Float) = apply {
-    this.failOffsetYStart = failOffsetYStart
-  }
-
-  fun setFailOffsetYEnd(failOffsetYEnd: Float) = apply {
-    this.failOffsetYEnd = failOffsetYEnd
-  }
-
-  fun setMinDist(minDist: Float) = apply {
-    minDistSq = minDist * minDist
-  }
-
-  fun setMinPointers(minPointers: Int) = apply {
-    this.minPointers = minPointers
-  }
-
-  fun setMaxPointers(maxPointers: Int) = apply {
-    this.maxPointers = maxPointers
-  }
-
-  fun setAverageTouches(averageTouches: Boolean) = apply {
-    this.averageTouches = averageTouches
-  }
-
-  fun setActivateAfterLongPress(time: Long) = apply {
-    this.activateAfterLongPress = time
-  }
-
-  /**
-   * @param minVelocity in pixels per second
-   */
-  fun setMinVelocity(minVelocity: Float) = apply {
-    minVelocitySq = minVelocity * minVelocity
-  }
-
-  fun setMinVelocityX(minVelocityX: Float) = apply {
-    this.minVelocityX = minVelocityX
-  }
-
-  fun setMinVelocityY(minVelocityY: Float) = apply {
-    this.minVelocityY = minVelocityY
+    averageTouches = DEFAULT_AVERAGE_TOUCHES
   }
 
   private fun shouldActivate(): Boolean {
@@ -170,7 +109,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return true
     }
     val distSq = dx * dx + dy * dy
-    if (minDistSq != MIN_VALUE_IGNORE && distSq >= minDistSq) {
+    if (minDist != MIN_VALUE_IGNORE && distSq >= minDist * minDist) {
       return true
     }
     val vx = velocityX
@@ -186,14 +125,14 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       return true
     }
     val velocitySq = vx * vx + vy * vy
-    return minVelocitySq != MIN_VALUE_IGNORE && velocitySq >= minVelocitySq
+    return minVelocity != MIN_VALUE_IGNORE && velocitySq >= minVelocity * minVelocity
   }
 
   private fun shouldFail(): Boolean {
     val dx = lastX - startX + offsetX
     val dy = lastY - startY + offsetY
 
-    if (activateAfterLongPress > 0 && dx * dx + dy * dy > defaultMinDistSq) {
+    if (activateAfterLongPress > 0 && dx * dx + dy * dy > defaultMinDist * defaultMinDist) {
       handler?.removeCallbacksAndMessages(null)
       return true
     }
@@ -315,12 +254,163 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     startY = lastY
   }
 
+  class Factory : GestureHandler.Factory<PanGestureHandler>() {
+    override val type = PanGestureHandler::class.java
+    override val name = "PanGestureHandler"
+
+    override fun create(context: Context?): PanGestureHandler = PanGestureHandler(context)
+
+    override fun setConfig(handler: PanGestureHandler, config: ReadableMap) {
+      super.setConfig(handler, config)
+      var hasCustomActivationCriteria = false
+      if (config.hasKey(KEY_ACTIVE_OFFSET_X_START)) {
+        handler.activeOffsetXStart =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_ACTIVE_OFFSET_X_START,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_ACTIVE_OFFSET_X_END)) {
+        handler.activeOffsetXEnd =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_ACTIVE_OFFSET_X_END,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_X_START)) {
+        handler.failOffsetXStart =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_FAIL_OFFSET_RANGE_X_START,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_X_END)) {
+        handler.failOffsetXEnd =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_FAIL_OFFSET_RANGE_X_END,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_ACTIVE_OFFSET_Y_START)) {
+        handler.activeOffsetYStart =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_ACTIVE_OFFSET_Y_START,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_ACTIVE_OFFSET_Y_END)) {
+        handler.activeOffsetYEnd =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_ACTIVE_OFFSET_Y_END,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_Y_START)) {
+        handler.failOffsetYStart =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_FAIL_OFFSET_RANGE_Y_START,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_FAIL_OFFSET_RANGE_Y_END)) {
+        handler.failOffsetYEnd =
+          PixelUtil.toPixelFromDIP(
+            config.getDouble(
+              KEY_FAIL_OFFSET_RANGE_Y_END,
+            ),
+          )
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_MIN_VELOCITY)) {
+        // This value is actually in DPs/ms, but we can use the same function as for converting
+        // from DPs to pixels as the unit we're converting is in the numerator
+        handler.minVelocity = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_VELOCITY))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_MIN_VELOCITY_X)) {
+        handler.minVelocityX = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_VELOCITY_X))
+        hasCustomActivationCriteria = true
+      }
+      if (config.hasKey(KEY_MIN_VELOCITY_Y)) {
+        handler.minVelocityY = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_VELOCITY_Y))
+        hasCustomActivationCriteria = true
+      }
+
+      // PanGestureHandler sets minDist by default, if there are custom criteria specified we want
+      // to reset that setting and use provided criteria instead.
+      if (config.hasKey(KEY_MIN_DIST)) {
+        handler.minDist = PixelUtil.toPixelFromDIP(config.getDouble(KEY_MIN_DIST))
+      } else if (hasCustomActivationCriteria) {
+        handler.minDist = Float.MAX_VALUE
+      }
+      if (config.hasKey(KEY_MIN_POINTERS)) {
+        handler.minPointers = config.getInt(KEY_MIN_POINTERS)
+      }
+      if (config.hasKey(KEY_MAX_POINTERS)) {
+        handler.maxPointers = config.getInt(KEY_MAX_POINTERS)
+      }
+      if (config.hasKey(KEY_AVG_TOUCHES)) {
+        handler.averageTouches = config.getBoolean(KEY_AVG_TOUCHES)
+      }
+      if (config.hasKey(KEY_ACTIVATE_AFTER_LONG_PRESS)) {
+        handler.activateAfterLongPress = config.getInt(KEY_ACTIVATE_AFTER_LONG_PRESS).toLong()
+      }
+    }
+
+    override fun createEventBuilder(handler: PanGestureHandler) = PanGestureHandlerEventDataBuilder(handler)
+
+    companion object {
+      private const val KEY_ACTIVE_OFFSET_X_START = "activeOffsetXStart"
+      private const val KEY_ACTIVE_OFFSET_X_END = "activeOffsetXEnd"
+      private const val KEY_FAIL_OFFSET_RANGE_X_START = "failOffsetXStart"
+      private const val KEY_FAIL_OFFSET_RANGE_X_END = "failOffsetXEnd"
+      private const val KEY_ACTIVE_OFFSET_Y_START = "activeOffsetYStart"
+      private const val KEY_ACTIVE_OFFSET_Y_END = "activeOffsetYEnd"
+      private const val KEY_FAIL_OFFSET_RANGE_Y_START = "failOffsetYStart"
+      private const val KEY_FAIL_OFFSET_RANGE_Y_END = "failOffsetYEnd"
+      private const val KEY_MIN_DIST = "minDist"
+      private const val KEY_MIN_VELOCITY = "minVelocity"
+      private const val KEY_MIN_VELOCITY_X = "minVelocityX"
+      private const val KEY_MIN_VELOCITY_Y = "minVelocityY"
+      private const val KEY_MIN_POINTERS = "minPointers"
+      private const val KEY_MAX_POINTERS = "maxPointers"
+      private const val KEY_AVG_TOUCHES = "avgTouches"
+      private const val KEY_ACTIVATE_AFTER_LONG_PRESS = "activateAfterLongPress"
+    }
+  }
+
   companion object {
     private const val MIN_VALUE_IGNORE = Float.MAX_VALUE
     private const val MAX_VALUE_IGNORE = Float.MIN_VALUE
     private const val DEFAULT_MIN_POINTERS = 1
     private const val DEFAULT_MAX_POINTERS = 10
     private const val DEFAULT_ACTIVATE_AFTER_LONG_PRESS = 0L
+    private const val DEFAULT_AVERAGE_TOUCHES = false
+    private const val DEFAULT_ACTIVE_OFFSET_X_START = MIN_VALUE_IGNORE
+    private const val DEFAULT_ACTIVE_OFFSET_X_END = MAX_VALUE_IGNORE
+    private const val DEFAULT_FAIL_OFFSET_X_START = MAX_VALUE_IGNORE
+    private const val DEFAULT_FAIL_OFFSET_X_END = MIN_VALUE_IGNORE
+    private const val DEFAULT_ACTIVE_OFFSET_Y_START = MIN_VALUE_IGNORE
+    private const val DEFAULT_ACTIVE_OFFSET_Y_END = MAX_VALUE_IGNORE
+    private const val DEFAULT_FAIL_OFFSET_Y_START = MAX_VALUE_IGNORE
+    private const val DEFAULT_FAIL_OFFSET_Y_END = MIN_VALUE_IGNORE
+    private const val DEFAULT_MIN_VELOCITY_X = MIN_VALUE_IGNORE
+    private const val DEFAULT_MIN_VELOCITY_Y = MIN_VALUE_IGNORE
+    private const val DEFAULT_MIN_VELOCITY = MIN_VALUE_IGNORE
 
     /**
      * This method adds movement to {@class VelocityTracker} first resetting offset of the event so

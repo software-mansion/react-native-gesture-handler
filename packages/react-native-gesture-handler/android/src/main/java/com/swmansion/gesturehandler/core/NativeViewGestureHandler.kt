@@ -1,11 +1,13 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ScrollView
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.views.scroll.ReactHorizontalScrollView
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
@@ -13,36 +15,31 @@ import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+import com.swmansion.gesturehandler.react.eventbuilders.NativeGestureHandlerEventDataBuilder
 import com.swmansion.gesturehandler.react.isScreenReaderOn
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
-  var disallowInterruption = false
-    private set
-
-  private var hook: NativeViewGestureHandlerHook = defaultHook
-
-  init {
-    setShouldCancelWhenOutside(true)
-  }
-
-  override fun resetConfig() {
-    super.resetConfig()
-    shouldActivateOnStart = false
-    disallowInterruption = false
-  }
-
-  fun setShouldActivateOnStart(shouldActivateOnStart: Boolean) = apply {
-    this.shouldActivateOnStart = shouldActivateOnStart
-  }
 
   /**
    * Set this to `true` when wrapping native components that are supposed to be an exclusive
    * target for a touch stream. Like for example switch or slider component which when activated
    * aren't supposed to be cancelled by scrollview or other container that may also handle touches.
    */
-  fun setDisallowInterruption(disallowInterruption: Boolean) = apply {
-    this.disallowInterruption = disallowInterruption
+  var disallowInterruption = false
+    private set
+
+  private var hook: NativeViewGestureHandlerHook = defaultHook
+
+  init {
+    shouldCancelWhenOutside = true
+  }
+
+  override fun resetConfig() {
+    super.resetConfig()
+    shouldActivateOnStart = DEFAULT_SHOULD_ACTIVATE_ON_START
+    disallowInterruption = DEFAULT_DISALLOW_INTERRUPTION
+    shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
@@ -166,7 +163,35 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     this.hook = defaultHook
   }
 
+  class Factory : GestureHandler.Factory<NativeViewGestureHandler>() {
+    override val type = NativeViewGestureHandler::class.java
+    override val name = "NativeViewGestureHandler"
+
+    override fun create(context: Context?): NativeViewGestureHandler = NativeViewGestureHandler()
+
+    override fun setConfig(handler: NativeViewGestureHandler, config: ReadableMap) {
+      super.setConfig(handler, config)
+      if (config.hasKey(KEY_SHOULD_ACTIVATE_ON_START)) {
+        handler.shouldActivateOnStart = config.getBoolean(KEY_SHOULD_ACTIVATE_ON_START)
+      }
+      if (config.hasKey(KEY_DISALLOW_INTERRUPTION)) {
+        handler.disallowInterruption = config.getBoolean(KEY_DISALLOW_INTERRUPTION)
+      }
+    }
+
+    override fun createEventBuilder(handler: NativeViewGestureHandler) = NativeGestureHandlerEventDataBuilder(handler)
+
+    companion object {
+      private const val KEY_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
+      private const val KEY_DISALLOW_INTERRUPTION = "disallowInterruption"
+    }
+  }
+
   companion object {
+    private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
+    private const val DEFAULT_SHOULD_ACTIVATE_ON_START = false
+    private const val DEFAULT_DISALLOW_INTERRUPTION = false
+
     private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
 
     private val defaultHook = object : NativeViewGestureHandlerHook {}

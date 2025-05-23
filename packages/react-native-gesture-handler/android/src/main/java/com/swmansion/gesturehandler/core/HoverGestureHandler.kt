@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.core
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
+import com.swmansion.gesturehandler.react.eventbuilders.HoverGestureHandlerEventDataBuilder
 
 class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
   private var handler: Handler? = null
@@ -133,6 +135,15 @@ class HoverGestureHandler : GestureHandler<HoverGestureHandler>() {
       STATE_BEGAN -> fail()
       STATE_ACTIVE -> end()
     }
+  }
+
+  class Factory : GestureHandler.Factory<HoverGestureHandler>() {
+    override val type = HoverGestureHandler::class.java
+    override val name = "HoverGestureHandler"
+
+    override fun create(context: Context?): HoverGestureHandler = HoverGestureHandler()
+
+    override fun createEventBuilder(handler: HoverGestureHandler) = HoverGestureHandlerEventDataBuilder(handler)
   }
 
   companion object {
