@@ -10,7 +10,8 @@
     "apps/common-app"
   ],
   "scripts": {
-    "postinstall": "husky",
+    "postinstall": "yarn build",
+    "build": "husky && yarn workspaces foreach --all --parallel --topological-dev run build",
     "ts-check": "yarn workspaces foreach --all --parallel --topological-dev run ts-check",
     "lint-js": "yarn workspaces foreach --all --parallel --topological-dev run lint-js",
     "format-js": "yarn workspaces foreach --all --parallel --topological-dev run format-js",
