@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib/typescript",
+    "paths": {
+      "react-native-gesture-handler": ["./src"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
+}

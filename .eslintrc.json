@@ -1,26 +1,27 @@
 {
+  "root": true,
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "satya164"
   ],
   "settings": {
-    "react": { "version": "16" },
+    "react": { "version": "19" },
     "import/resolver": {
       "babel-module": {}
     }
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": [
-      "./tsconfig.json",
-      "./example/tsconfig.json",
-      "./FabricExample/tsconfig.json"
-    ]
+    "project": ["./tsconfig.json"]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
-  "plugins": ["jest"],
-  "ignorePatterns": ["lib/**/*"],
+  "plugins": ["react", "jest"],
+  "ignorePatterns": [
+    "packages/react-native-gesture-handler/lib/**/*",
+    "**/*.config.js",
+    "scripts/*.js"
+  ],
   "rules": {
     // removed in new jest-eslint-plugin, referenced in satya config
     "jest/no-truthy-falsy": "off",
@@ -30,12 +31,16 @@
       "warn",
       { "assertFunctionNames": ["expect*", "assert*"] }
     ],
+    "jest/no-conditional-expect": "warn",
+
     // temporary, remove after we type internals better
     "@typescript-eslint/restrict-template-expressions": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-call": "warn",
     "@typescript-eslint/no-unsafe-assignment": "warn",
+    "@typescript-eslint/no-unsafe-argument": "warn",
     "@typescript-eslint/no-unsafe-return": "warn",
+    "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/ban-types": "warn",
 
     // common
@@ -43,6 +48,11 @@
     "import/named": "off",
     "react/sort-comp": "off",
     "react/no-unused-prop-types": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@eslint-react/no-missing-component-display-name": "warn",
+    "@eslint-react/no-nested-components": "warn",
+    "@eslint-react/no-nested-component-definitions": "warn",
     "prefer-const": [
       "error",
       {
@@ -53,6 +63,13 @@
       "error",
       { "argsIgnorePattern": "^_" }
     ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-redundant-type-constituents": "warn",
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-misused-promises": "warn",
+    "@eslint-react/no-array-index-key": "warn",
+    "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": "warn",
+    "@eslint-react/hooks-extra/prefer-use-state-lazy-initialization": "warn",
     "no-redeclare": "off",
     "@typescript-eslint/no-redeclare": "error",
     "no-use-before-define": "off",
@@ -65,6 +82,7 @@
       }
     ],
     "curly": "error",
-    "spaced-comment": "error"
+    "spaced-comment": "error",
+    "no-alert": "warn"
   }
 }

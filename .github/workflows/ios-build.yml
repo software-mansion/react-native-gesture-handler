@@ -1,44 +1,53 @@
 name: Test iOS build
+
 on:
   pull_request:
     paths:
-      - '.github/workflows/ios-build.yml'
-      - 'RNGestureHandler.podspec'
-      - 'apple/**'
-      - 'example/ios/**'
-      - 'FabricExample/ios/**'
+      - .github/workflows/ios-build.yml
+      - packages/react-native-gesture-handler/RNGestureHandler.podspec
+      - packages/react-native-gesture-handler/apple/**
+      - apps/basic-example/ios/**
   push:
     branches:
       - main
   workflow_dispatch:
+
 jobs:
   build:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: macos-14
     strategy:
       matrix:
-        working-directory: [example, FabricExample]
+        working-directory: [apps/basic-example, apps/expo-example]
     concurrency:
       group: ios-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: Use latest stable Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.1'
+
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: yarn
+
       - name: Install node dependencies
         working-directory: ${{ matrix.working-directory }}
         run: yarn install --immutable
+
       - name: Install pods
+        if: ${{ matrix.working-directory == 'apps/basic-example' }}
         working-directory: ${{ matrix.working-directory }}/ios
         run: bundle install && NO_FLIPPER=1 bundle exec pod install
+
       - name: Build app
         working-directory: ${{ matrix.working-directory }}
         run: npx react-native run-ios

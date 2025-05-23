@@ -1,39 +1,44 @@
 name: Test TypeScript and Lint
+
 on:
   pull_request:
     paths:
-      - 'example/**'
-      - 'FabricExample/**'
+      - apps/basic-example/**'
+      - apps/common-app/**
   push:
     branches:
       - main
   workflow_dispatch:
+
 jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        working-directory: [example, FabricExample]
+        working-directory: [apps/basic-example, apps/common-app]
     concurrency:
       group: typescript-${{ matrix.working-directory }}-${{ github.ref }}
       cancel-in-progress: true
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'yarn'
-      - name: Install root node dependencies
-        run: yarn --immutable && yarn prepare
-      - name: Install ${{ matrix.working-directory }} app node dependencies
-        working-directory: ${{ matrix.working-directory }}
-        run: yarn
+          cache: yarn
+
+      - name: Install node dependencies
+        run: yarn --immutable
+
       - name: Check types
         working-directory: ${{ matrix.working-directory }}
-        run: yarn tsc --noEmit
+        run: yarn ts-check
+
       - name: Lint
         working-directory: ${{ matrix.working-directory }}
-        run: yarn lint-check
+        run: yarn lint-js

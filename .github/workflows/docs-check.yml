@@ -3,29 +3,34 @@ name: Check documentation
 on:
   pull_request:
     paths:
-      - 'docs/**'
+      - packages/docs-gesture-handler/**
   workflow_dispatch:
 
 jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: ubuntu-latest
+    env:
+      WORKING_DIRECTORY: packages/docs-gesture-handler
     concurrency:
       group: docs-check-${{ github.ref }}
       cancel-in-progress: true
-    env:
-      WORKING_DIRECTORY: docs
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: yarn
+
       - name: Install node dependencies
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn
+
       - name: Generate docs
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn build
