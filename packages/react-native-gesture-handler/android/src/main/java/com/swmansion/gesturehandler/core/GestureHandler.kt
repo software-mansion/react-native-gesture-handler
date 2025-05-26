@@ -685,6 +685,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun fail() {
     if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+      onFail()
       moveToState(STATE_FAILED)
     }
   }
@@ -738,6 +739,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
   protected open fun onCancel() {}
+  protected open fun onFail() {}
 
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
@@ -852,7 +854,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   abstract class Factory<T : GestureHandler<T>> {
     abstract val type: Class<T>
     abstract val name: String
-    abstract fun create(context: Context?): T
+
+    protected abstract fun create(context: Context?): T
+
+    fun create(context: Context?, handlerTag: Int): T = create(context).also { it.tag = handlerTag }
+
     open fun setConfig(handler: T, config: ReadableMap) {
       handler.resetConfig()
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {

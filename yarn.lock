@@ -8279,12 +8279,12 @@ __metadata:
     "@types/react-dom": "npm:^19"
     "@types/react-native-web": "npm:^0"
     common-app: "workspace:*"
-    expo: "npm:~53.0.0-preview.7"
+    expo: "npm:^53.0.9"
     expo-camera: "npm:~16.1.1"
     expo-status-bar: "npm:~2.2.1"
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
-    react-native: "npm:0.79.0"
+    react-native: "npm:0.79.2"
     react-native-gesture-handler: "workspace:*"
     react-native-reanimated: "npm:3.17.5"
     react-native-safe-area-context: "npm:5.4.0"
@@ -8366,7 +8366,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:~53.0.0-preview.7":
+"expo@npm:^53.0.9":
   version: 53.0.9
   resolution: "expo@npm:53.0.9"
   dependencies:
@@ -14053,7 +14053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:*":
+"react-native@npm:*, react-native@npm:0.79.2":
   version: 0.79.2
   resolution: "react-native@npm:0.79.2"
   dependencies:

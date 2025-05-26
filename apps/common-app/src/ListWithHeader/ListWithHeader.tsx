@@ -4,6 +4,7 @@ import {
   ScrollViewProps,
   SectionList,
   SectionListProps,
+  StyleSheet,
 } from 'react-native';
 import Animated, {
   SharedValue,
@@ -73,9 +74,22 @@ export function ListWithHeader<ItemT, SectionT>(
     };
   });
 
+  const contentContainerStyle =
+    StyleSheet.flatten(props.contentContainerStyle) || {};
+  if (typeof contentContainerStyle.paddingTop !== 'number') {
+    contentContainerStyle.paddingTop = 0;
+    console.error(
+      'ListWithHeader: contentContainerStyle.paddingTop should be a number.'
+    );
+  }
+
   return (
     <GestureDetector gesture={dragGesture}>
-      <Animated.View style={[{ flex: 1 }, containerProps]}>
+      <Animated.View
+        style={[
+          { flex: 1, marginTop: contentContainerStyle.paddingTop },
+          containerProps,
+        ]}>
         <Header scrollOffset={scrollOffset} />
         <SectionList
           {...props}
@@ -137,7 +151,10 @@ const ScrollComponentWithOffset = ({
       <Animated.ScrollView
         {...props}
         ref={scrollRef}
-        contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
+        contentContainerStyle={[
+          props.contentContainerStyle,
+          { paddingTop: HEADER_HEIGHT },
+        ]}
         scrollEventThrottle={1}
         animatedProps={scrollProps}
       />
