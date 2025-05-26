@@ -10,7 +10,8 @@ import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.OnTouchEventListener
 import com.swmansion.gesturehandler.dispatchEvent
 
-class RNGestureHandlerEventDispatcher(private val reactApplicationContext: ReactApplicationContext) : OnTouchEventListener {
+class RNGestureHandlerEventDispatcher(private val reactApplicationContext: ReactApplicationContext) :
+  OnTouchEventListener {
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
 
   override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
@@ -28,37 +29,49 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
   private fun <T : GestureHandler<T>> dispatchHandlerUpdateEvent(handler: T) {
     // triggers onUpdate and onChange callbacks on the JS side
 
-    if (handler.tag < 0) {
-      // root containers use negative tags, we don't need to dispatch events for them to the JS
+    // root containers use negative tags, we don't need to dispatch events for them to the JS
+    if (handler.tag < 0 || handler.state != GestureHandler.STATE_ACTIVE) {
       return
     }
-    if (handler.state == GestureHandler.STATE_ACTIVE) {
-      val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
 
-      if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
+    val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
+    when (handler.actionType) {
+      GestureHandler.ACTION_TYPE_REANIMATED_WORKLET -> {
         // Reanimated worklet
-        val event = RNGestureHandlerEvent.obtain(handler, handlerFactory.createEventBuilder(handler))
+        val event = RNGestureHandlerEvent.obtain(
+          handler,
+          handlerFactory.createEventBuilder(handler),
+        )
         sendEventForReanimated(event)
-      } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT) {
+      }
+      GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT -> {
         // Animated with useNativeDriver: true
         val event = RNGestureHandlerEvent.obtain(
           handler,
           handlerFactory.createEventBuilder(handler),
-          true
+          true,
         )
         sendEventForNativeAnimatedEvent(event)
-      } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {
+      }
+      GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API -> {
         // JS function, Animated.event with useNativeDriver: false using old API
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-          val data = RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
+          val data = RNGestureHandlerEvent.createEventData(
+            handlerFactory.createEventBuilder(handler),
+          )
           sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
         } else {
-          val event = RNGestureHandlerEvent.obtain(handler, handlerFactory.createEventBuilder(handler))
+          val event = RNGestureHandlerEvent.obtain(
+            handler,
+            handlerFactory.createEventBuilder(handler),
+          )
           sendEventForDirectEvent(event)
         }
-      } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
+      }
+      GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
         // JS function, Animated.event with useNativeDriver: false using new API
-        val data = RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
+        val data =
+          RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
     }
@@ -73,25 +86,45 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     }
     val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
 
-    if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
-      // Reanimated worklet
-      val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
-      sendEventForReanimated(event)
-    } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT ||
-      handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API
-    ) {
-      // JS function or Animated.event with useNativeDriver: false with old API
-      if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-        val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
-        sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
-      } else {
-        val event = RNGestureHandlerStateChangeEvent.obtain(handler, newState, oldState, handlerFactory.createEventBuilder(handler))
-        sendEventForDirectEvent(event)
+    when (handler.actionType) {
+      GestureHandler.ACTION_TYPE_REANIMATED_WORKLET -> {
+        // Reanimated worklet
+        val event = RNGestureHandlerStateChangeEvent.obtain(
+          handler,
+          newState,
+          oldState,
+          handlerFactory.createEventBuilder(handler),
+        )
+        sendEventForReanimated(event)
       }
-    } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
-      // JS function or Animated.event with useNativeDriver: false with new API
-      val data = RNGestureHandlerStateChangeEvent.createEventData(handlerFactory.createEventBuilder(handler), newState, oldState)
-      sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+      GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API -> {
+        // JS function or Animated.event with useNativeDriver: false with old API
+        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+          val data = RNGestureHandlerStateChangeEvent.createEventData(
+            handlerFactory.createEventBuilder(handler),
+            newState,
+            oldState,
+          )
+          sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+        } else {
+          val event = RNGestureHandlerStateChangeEvent.obtain(
+            handler,
+            newState,
+            oldState,
+            handlerFactory.createEventBuilder(handler),
+          )
+          sendEventForDirectEvent(event)
+        }
+      }
+      GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
+        // JS function or Animated.event with useNativeDriver: false with new API
+        val data = RNGestureHandlerStateChangeEvent.createEventData(
+          handlerFactory.createEventBuilder(handler),
+          newState,
+          oldState,
+        )
+        sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+      }
     }
   }
 
@@ -102,14 +135,22 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    if (handler.state == GestureHandler.STATE_BEGAN || handler.state == GestureHandler.STATE_ACTIVE ||
-      handler.state == GestureHandler.STATE_UNDETERMINED || handler.view != null
+
+    if (handler.state != GestureHandler.STATE_BEGAN &&
+      handler.state != GestureHandler.STATE_ACTIVE &&
+      handler.state != GestureHandler.STATE_UNDETERMINED &&
+      handler.view == null
     ) {
-      if (handler.actionType == GestureHandler.ACTION_TYPE_REANIMATED_WORKLET) {
+      return
+    }
+
+    when (handler.actionType) {
+      GestureHandler.ACTION_TYPE_REANIMATED_WORKLET -> {
         // Reanimated worklet
         val event = RNGestureHandlerTouchEvent.obtain(handler)
         sendEventForReanimated(event)
-      } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API) {
+      }
+      GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
         // JS function, Animated.event with useNativeDriver: false with new API
         val data = RNGestureHandlerTouchEvent.createEventData(handler)
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
@@ -117,7 +158,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     }
   }
 
-  private fun <T : Event<T>>sendEventForReanimated(event: T) {
+  private fun <T : Event<T>> sendEventForReanimated(event: T) {
     // Delivers the event to Reanimated.
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Send event directly to Reanimated
@@ -136,7 +177,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     reactApplicationContext.dispatchEvent(event)
   }
 
-  private fun <T : Event<T>>sendEventForDirectEvent(event: T) {
+  private fun <T : Event<T>> sendEventForDirectEvent(event: T) {
     // Delivers the event to JS as a direct event. This method is called only on Paper.
     reactApplicationContext.dispatchEvent(event)
   }
