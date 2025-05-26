@@ -269,6 +269,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
       simultaneousWithExternalGesture,
       requireExternalGestureToFail,
       blocksExternalGesture,
+      hitSlop,
       ...remainingProps
     } = props;
 
@@ -763,6 +764,7 @@ const Swipeable = forwardRef<SwipeableMethods, SwipeableProps>(
         <Animated.View
           {...remainingProps}
           onLayout={onRowLayout}
+          hitSlop={hitSlop ?? undefined}
           style={[styles.container, containerStyle]}>
           {leftElement()}
           {rightElement()}
