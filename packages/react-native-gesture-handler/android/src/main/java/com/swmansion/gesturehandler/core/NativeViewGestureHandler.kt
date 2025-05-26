@@ -150,7 +150,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
   }
 
-  override fun onCancel() {
+  private fun dispatchCancelEventToView() {
     val time = SystemClock.uptimeMillis()
     val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
       action = MotionEvent.ACTION_CANCEL
@@ -158,6 +158,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     hook.sendTouchEvent(view, event)
     event.recycle()
   }
+
+  override fun onCancel() = dispatchCancelEventToView()
+
+  override fun onFail() = dispatchCancelEventToView()
 
   override fun onReset() {
     this.hook = defaultHook
