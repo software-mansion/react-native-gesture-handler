@@ -1,13 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Platform,
-  Dimensions,
-  StatusBar,
-  SafeAreaView,
-} from 'react-native';
+import { Text, View, StyleSheet, Platform, Dimensions } from 'react-native';
 import {
   createStackNavigator,
   StackNavigationProp,
@@ -19,6 +11,7 @@ import {
   RectButton,
   Switch,
 } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OverflowParent from './src/release_tests/overflowParent';
 import DoublePinchRotate from './src/release_tests/doubleScalePinchAndRotate';
@@ -260,7 +253,6 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function App() {
   return (
     <GestureHandlerRootView>
-      <StatusBar barStyle="dark-content" />
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -306,6 +298,8 @@ function navigate(
 }
 
 function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
+  const insets = useSafeAreaInsets();
+
   useEffect(() => {
     void AsyncStorage.multiGet([OPEN_LAST_EXAMPLE_KEY, LAST_EXAMPLE_KEY]).then(
       ([openLastExample, lastExample]) => {
@@ -321,12 +315,16 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ListWithHeader
         style={styles.list}
         sections={EXAMPLES}
         keyExtractor={(example) => example.name}
         ListHeaderComponent={OpenLastExampleSetting}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom,
+          paddingTop: insets.top,
+        }}
         renderItem={({ item }) => (
           <MainScreenItem
             name={item.name}
@@ -339,7 +337,7 @@ function MainScreen({ navigation }: StackScreenProps<ParamListBase>) {
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
