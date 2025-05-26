@@ -1,0 +1,55 @@
+{
+  "name": "macos-example",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "macos": "npx react-native-macos run-macos",
+    "lint": "eslint .",
+    "start": "react-native start",
+    "test": "jest",
+    "clean": "rm -rf node_modules && cd macos && rm -rf build Pods Podfile.lock",
+    "pods": "cd macos && bundle install && bundle exec pod install"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-community/slider": "4.5.6",
+    "@react-native-community/viewpager": "5.0.11",
+    "@react-navigation/elements": "^2.3.8",
+    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/stack": "^7.2.10",
+    "@swmansion/icons": "^0.0.1",
+    "common-app": "workspace:*",
+    "react": "19.0.0",
+    "react-native": "0.78.0",
+    "react-native-gesture-handler": "workspace:*",
+    "react-native-macos": "^0.78.0-0",
+    "react-native-reanimated": "3.17.5",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-svg": "15.11.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
+    "@react-native-community/cli": "15.0.1",
+    "@react-native-community/cli-platform-android": "15.0.1",
+    "@react-native-community/cli-platform-ios": "15.0.1",
+    "@react-native/babel-preset": "0.78.0",
+    "@react-native/eslint-config": "0.78.0",
+    "@react-native/metro-config": "0.78.0",
+    "@react-native/typescript-config": "0.78.0",
+    "@types/jest": "^29.5.13",
+    "@types/react": "^19.0.12",
+    "@types/react-test-renderer": "^19.0.0",
+    "jest": "^29.6.3",
+    "react-test-renderer": "19.0.0",
+    "typescript": "~5.8.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces",
+    "selfReferences": false
+  }
+}

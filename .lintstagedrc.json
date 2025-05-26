@@ -1,0 +1,10 @@
+{
+  "{apps/basic-example,packages/react-native-gesture-handler}/package.json": "node scripts/check-rn-versions.js",
+  "**/*.{ts,tsx}": ["prettier --write", "eslint"],
+  "packages/react-native-gesture-handler/android/**/*.kt": [
+    "node scripts/check-android-dirs.js",
+    "yarn format:android"
+  ],
+  "packages/react-native-gesture-handler/apple/**/*.{h,m,mm,cpp}": "yarn format:apple",
+  "packages/react-native-gesture-handler/src/specs/*.ts": "yarn sync-architectures"
+}

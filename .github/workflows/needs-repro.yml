@@ -1,4 +1,5 @@
 name: Check for reproduction
+
 on:
   issues:
     types: [opened, edited]
@@ -8,15 +9,17 @@ on:
 jobs:
   main:
     if: ${{ github.repository == 'software-mansion/react-native-gesture-handler' && !contains(github.event.issue.labels.*.name, 'Maintainer issue') }}
+
     runs-on: ubuntu-latest
     concurrency:
       group: needs-repro-${{ github.event.issue.number }}
       cancel-in-progress: true
+
     steps:
       - name: Checkout Actions
         uses: actions/checkout@v4
         with:
-          repository: 'software-mansion-labs/swmansion-bot'
+          repository: software-mansion-labs/swmansion-bot
           ref: stable
 
       - uses: actions/cache@v4

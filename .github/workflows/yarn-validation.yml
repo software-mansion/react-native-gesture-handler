@@ -1,10 +1,9 @@
 name: Yarn validation
-env:
-  YARN_ENABLE_HARDENED_MODE: 1
+
 on:
   pull_request:
     paths:
-      - '.github/workflows/yarn-validation.yml'
+      - .github/workflows/yarn-validation.yml
       - '**/package.json'
       - '**/yarn.lock'
   merge_group:
@@ -14,7 +13,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/yarn-validation.yml'
+      - .github/workflows/yarn-validation.yml
       - '**/package.json'
       - '**/yarn.lock'
   workflow_call:
@@ -23,10 +22,15 @@ on:
 jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: ubuntu-latest
+    env:
+      YARN_ENABLE_HARDENED_MODE: 1
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Use Node.js
         uses: actions/setup-node@v4
 
@@ -40,6 +44,13 @@ jobs:
           files: |
             **/package.json
             **/yarn.lock
+          files_ignore: |
+            packages/react-native-gesture-handler/DrawerLayout/package.json
+            packages/react-native-gesture-handler/ReanimatedDrawerLayout/package.json
+            packages/react-native-gesture-handler/Swipeable/package.json
+            packages/react-native-gesture-handler/ReanimatedSwipeable/package.json
+            packages/react-native-gesture-handler/jest-utils/package.json
+
       - name: Get list of changed directories
         id: changed-dirs
         run: |
@@ -51,6 +62,7 @@ jobs:
           done
           ECHOLIST=($(echo "${ECHOLIST[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
           echo "dirList=${ECHOLIST[*]}" >> $GITHUB_OUTPUT
+
       - name: Perform yarn install in changed directories
         working-directory: ${{ github.workspace }}
         run: |
