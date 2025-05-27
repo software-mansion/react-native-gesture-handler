@@ -14,19 +14,19 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
   OnTouchEventListener {
   private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
 
-  override fun <T : GestureHandler<T>> onHandlerUpdate(handler: T, event: MotionEvent) {
+  override fun <T : GestureHandler> onHandlerUpdate(handler: T, event: MotionEvent) {
     this.dispatchHandlerUpdateEvent(handler)
   }
 
-  override fun <T : GestureHandler<T>> onStateChange(handler: T, newState: Int, oldState: Int) {
+  override fun <T : GestureHandler> onStateChange(handler: T, newState: Int, oldState: Int) {
     this.dispatchStateChangeEvent(handler, newState, oldState)
   }
 
-  override fun <T : GestureHandler<T>> onTouchEvent(handler: T) {
+  override fun <T : GestureHandler> onTouchEvent(handler: T) {
     this.dispatchTouchEvent(handler)
   }
 
-  private fun <T : GestureHandler<T>> dispatchHandlerUpdateEvent(handler: T) {
+  private fun <T : GestureHandler> dispatchHandlerUpdateEvent(handler: T) {
     // triggers onUpdate and onChange callbacks on the JS side
 
     // root containers use negative tags, we don't need to dispatch events for them to the JS
@@ -34,7 +34,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       return
     }
 
-    val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
+    val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForHandler<GestureHandler>(handler) ?: return
     when (handler.actionType) {
       GestureHandler.ACTION_TYPE_REANIMATED_WORKLET -> {
         // Reanimated worklet
@@ -77,14 +77,14 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     }
   }
 
-  private fun <T : GestureHandler<T>> dispatchStateChangeEvent(handler: T, newState: Int, oldState: Int) {
+  private fun <T : GestureHandler> dispatchStateChangeEvent(handler: T, newState: Int, oldState: Int) {
     // triggers onBegin, onStart, onEnd, onFinalize callbacks on the JS side
 
     if (handler.tag < 0) {
       // root containers use negative tags, we don't need to dispatch events for them to the JS
       return
     }
-    val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForHandler(handler) ?: return
+    val handlerFactory = RNGestureHandlerFactoryUtil.findFactoryForHandler<GestureHandler>(handler) ?: return
 
     when (handler.actionType) {
       GestureHandler.ACTION_TYPE_REANIMATED_WORKLET -> {
@@ -128,7 +128,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     }
   }
 
-  private fun <T : GestureHandler<T>> dispatchTouchEvent(handler: T) {
+  private fun <T : GestureHandler> dispatchTouchEvent(handler: T) {
     // triggers onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled callbacks on the JS side
 
     if (handler.tag < 0) {
