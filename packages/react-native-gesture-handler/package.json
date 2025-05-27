@@ -15,7 +15,7 @@
     "lint:android": "./android/gradlew -p android spotlessCheck -q",
     "circular-dependency-check": "yarn madge --extensions js,ts,tsx --circular src",
     "architectures-consistency-check": "node ../../scripts/codegen-check-consistency.js",
-    "sync-architectures": "node ../../scripts/codegen-sync-archs.js",
+    "sync:architectures": "node ../../scripts/codegen-sync-archs.js",
     "clean": "rm -rf node_modules android/build android/.cxx",
     "prepack": "cp ../../README.md ./README.md",
     "postpack": "rm ./README.md"
