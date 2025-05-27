@@ -9,9 +9,11 @@ else()
 endif()
 
 set(PACKAGE_NAME "gesturehandler")
+set(RNGH_DIR "../../../../")
 set(REACT_ANDROID_DIR "${REACT_NATIVE_DIR}/ReactAndroid")
 
 file(GLOB_RECURSE gesture_handler_SRCS CONFIGURE_DEPENDS ./*.cpp)
+file(GLOB_RECURSE gesture_handler_shared_SRCS CONFIGURE_DEPENDS "${RNGH_DIR}/shared/*.cpp")
 
 include(${REACT_ANDROID_DIR}/cmake-utils/folly-flags.cmake)
 add_compile_options(${folly_FLAGS})
@@ -19,12 +21,14 @@ add_compile_options(${folly_FLAGS})
 add_library(${PACKAGE_NAME}
   SHARED
   ${gesture_handler_SRCS}
+  ${gesture_handler_shared_SRCS}
 )
 
 target_include_directories(
   ${PACKAGE_NAME}
   PUBLIC
   ./
+  "${RNGH_DIR}/shared"
   PRIVATE
   "${REACT_NATIVE_DIR}/ReactCommon"
 )
