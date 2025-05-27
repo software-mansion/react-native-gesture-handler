@@ -208,6 +208,18 @@ RCT_EXPORT_METHOD(flushOperations)
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
+  if (RCTIsMainQueue()) {
+    [self setGestureStateSynchronously:state forHandler:handlerTag];
+  } else {
+    RCTExecuteOnMainQueue(^{
+      RCTAssertMainQueue();
+      [self setGestureStateSynchronously:state forHandler:handlerTag];
+    });
+  }
+}
+
+- (void)setGestureStateSynchronously:(int)state forHandler:(int)handlerTag
+{
   RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
 
   if (handler != nil) {

@@ -7,6 +7,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
@@ -118,6 +119,18 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @DoNotStrip
   @Suppress("unused")
   fun setGestureHandlerState(handlerTag: Int, newState: Int) {
+    if (UiThreadUtil.isOnUiThread()) {
+      setGestureStateSync(handlerTag, newState)
+    } else {
+      UiThreadUtil.runOnUiThread {
+        setGestureStateSync(handlerTag, newState)
+      }
+    }
+  }
+
+  private fun setGestureStateSync(handlerTag: Int, newState: Int) {
+    UiThreadUtil.assertOnUiThread()
+
     registry.getHandler(handlerTag)?.let { handler ->
       when (newState) {
         GestureHandler.STATE_ACTIVE -> handler.activate(force = true)
