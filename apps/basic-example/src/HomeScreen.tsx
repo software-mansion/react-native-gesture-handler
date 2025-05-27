@@ -1,27 +1,12 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  PanGestureHandler,
-  PanGestureHandlerStateChangeEvent,
-  State,
-} from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-import { isFabric, isHermes } from './utils';
 import { COLORS } from './colors';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-
-declare const performance: {
-  now: () => number;
-};
-
-interface GestureDetectorDemoProps {
-  color: string;
-}
 
 export default function HomeScreen() {
   const pressed = useSharedValue(false);
@@ -103,16 +88,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  bold: {
-    fontWeight: 'bold',
-  },
-  text: {
-    marginVertical: 3,
-  },
-  demo: {
-    marginVertical: 3,
-    alignItems: 'center',
   },
   box: {
     width: 50,
