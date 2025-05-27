@@ -14160,6 +14160,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-reanimated@npm:4.0.0-beta.4":
+  version: 4.0.0-beta.4
+  resolution: "react-native-reanimated@npm:4.0.0-beta.4"
+  dependencies:
+    react-native-is-edge-to-edge: "npm:1.1.7"
+    semver: "npm:^7.7.1"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+    react: "*"
+    react-native: "*"
+    react-native-worklets: ">=0.3.0"
+  checksum: 10c0/5a88b0ed7f54cde7cb42876f65f35905b13ce6a192060e4993f4fec11b6a844f06f2fc5cb6252c364fd2f0648b6e1925f8b7c1322b5dcc40b2baa4923b4a93cd
+  languageName: node
+  linkType: hard
+
 "react-native-safe-area-context@npm:5.4.0":
   version: 5.4.0
   resolution: "react-native-safe-area-context@npm:5.4.0"
