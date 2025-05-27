@@ -1,8 +1,8 @@
 #pragma once
+#include <jsi/jsi.h>
 
 namespace gesturehandler {
 using namespace facebook;
-using namespace facebook::react;
 
 class RuntimeDecorator {
  public:
