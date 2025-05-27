@@ -75,7 +75,7 @@ namespace gesturehandler {
 
         auto setGestureStateNew = jsi::Function::createFromHostFunction(
                 uiRuntime,
-                jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateNew"),
+                jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateModern"),
                 2,
                 [&](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
                     if (count == 2) {
@@ -88,6 +88,6 @@ namespace gesturehandler {
                     return jsi::Value::undefined();
                 });
 
-        uiRuntime.global().setProperty(uiRuntime, "_setGestureStateNew", std::move(setGestureStateNew));
+        uiRuntime.global().setProperty(uiRuntime, "_setGestureStateModern", std::move(setGestureStateNew));
     }
 } // namespace gesturehandler
