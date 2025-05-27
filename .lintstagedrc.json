@@ -6,5 +6,5 @@
     "yarn format:android"
   ],
   "packages/react-native-gesture-handler/apple/**/*.{h,m,mm,cpp}": "yarn format:apple",
-  "packages/react-native-gesture-handler/src/specs/*.ts": "yarn sync-architectures"
+  "packages/react-native-gesture-handler/src/specs/*.ts": "yarn sync:architectures"
 }
