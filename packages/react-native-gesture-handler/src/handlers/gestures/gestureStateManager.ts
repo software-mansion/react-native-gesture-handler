@@ -1,6 +1,4 @@
-import { Reanimated } from './reanimatedWrapper';
 import { State } from '../../State';
-import { tagMessage } from '../../utils';
 
 export interface GestureStateManagerType {
   begin: () => void;
@@ -9,32 +7,19 @@ export interface GestureStateManagerType {
   end: () => void;
 }
 
-const warningMessage = tagMessage(
-  'react-native-reanimated is required in order to use synchronous state management'
-);
-
-// Check if reanimated module is available, but look for useSharedValue as conditional
-// require of reanimated can sometimes return content of `utils.ts` file (?)
-const REANIMATED_AVAILABLE = Reanimated?.useSharedValue !== undefined;
-const setGestureState_DEPRECATED = Reanimated?.setGestureState;
-
-// ui runtime global
+// declare methods to keep the TS happy
 declare const globalThis: {
-  _setGestureStateSync: (handlerTag: number, state: State) => void;
+  _setGestureStateSync?: (handlerTag: number, state: State) => void;
+  _setGestureStateAsync?: (handlerTag: number, state: State) => void;
 };
 
 const wrappedSetGestureState = (handlerTag: number, state: State) => {
   'worklet';
 
-  if (REANIMATED_AVAILABLE) {
-    // When Reanimated is available, setGestureState should be defined
-    if (globalThis._setGestureStateSync) {
-      globalThis._setGestureStateSync(handlerTag, state);
-    } else if (setGestureState_DEPRECATED) {
-      setGestureState_DEPRECATED(handlerTag, state);
-    }
-  } else {
-    console.warn(warningMessage);
+  if (globalThis._setGestureStateSync) {
+    globalThis._setGestureStateSync(handlerTag, state);
+  } else if (globalThis._setGestureStateAsync) {
+    globalThis._setGestureStateAsync(handlerTag, state);
   }
 };
 
