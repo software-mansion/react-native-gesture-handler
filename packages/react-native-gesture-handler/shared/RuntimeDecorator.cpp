@@ -8,90 +8,113 @@
 #include "RuntimeDecorator.h"
 
 namespace gesturehandler {
-    using namespace facebook;
-    using namespace facebook::react;
+using namespace facebook;
+using namespace facebook::react;
 
-    void RuntimeDecorator::installJSRuntimeBindings(jsi::Runtime& rnRuntime, std::function<void(int, int)>&& setGestureState) {
-      auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
-          rnRuntime,
-          jsi::PropNameID::forAscii(rnRuntime, "_isViewFlatteningDisabled"),
-          1,
-          [](jsi::Runtime &runtime,
-             const jsi::Value &,
-             const jsi::Value *args,
-             size_t count) -> jsi::Value {
-              if (!args[0].isObject()) {
-                return jsi::Value::null();
-              }
+void RuntimeDecorator::installJSRuntimeBindings(
+    jsi::Runtime &rnRuntime,
+    std::function<void(int, int)> &&setGestureState) {
+  auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
+      rnRuntime,
+      jsi::PropNameID::forAscii(rnRuntime, "_isViewFlatteningDisabled"),
+      1,
+      [](jsi::Runtime &runtime,
+         const jsi::Value &,
+         const jsi::Value *args,
+         size_t count) -> jsi::Value {
+        if (!args[0].isObject()) {
+          return jsi::Value::null();
+        }
 
-              const auto shadowNode = shadowNodeFromValue(runtime, args[0]);
-               
+        const auto shadowNode = shadowNodeFromValue(runtime, args[0]);
+
 #ifndef ANDROID
-              if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
-                return jsi::Value(true);
-              }
+        if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
+          return jsi::Value(true);
+        }
 
-              if (dynamic_pointer_cast<const TextShadowNode>(shadowNode)) {
-                return jsi::Value(true);
-              }
+        if (dynamic_pointer_cast<const TextShadowNode>(shadowNode)) {
+          return jsi::Value(true);
+        }
 #endif
-               
-              const auto isViewFlatteningDisabled = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
 
-              // This is done using component names instead of type checking because
-              // of duplicate symbols for RN types, which prevent RTTI from working.
-              const auto componentName = shadowNode->getComponentName();
-              const auto isTextComponent = strcmp(componentName, "Paragraph") == 0 || strcmp(componentName, "Text") == 0;
+        const auto isViewFlatteningDisabled = shadowNode->getTraits().check(
+            ShadowNodeTraits::FormsStackingContext);
 
-              return jsi::Value(isViewFlatteningDisabled || isTextComponent);
-          });
+        // This is done using component names instead of type checking because
+        // of duplicate symbols for RN types, which prevent RTTI from working.
+        const auto componentName = shadowNode->getComponentName();
+        const auto isTextComponent = strcmp(componentName, "Paragraph") == 0 ||
+            strcmp(componentName, "Text") == 0;
 
-      rnRuntime.global().setProperty(
-          rnRuntime, "_isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
-      
-      auto setGestureStateAsync = jsi::Function::createFromHostFunction(
-                                                                        rnRuntime,
-          jsi::PropNameID::forAscii(rnRuntime, "_setGestureStateAsync"),
-          2,
-          [setGestureState](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
-              if (count == 2) {
-                const auto handlerTag = static_cast<int>(args[0].asNumber());
-                const auto state = static_cast<int>(args[1].asNumber());
+        return jsi::Value(isViewFlatteningDisabled || isTextComponent);
+      });
 
-                setGestureState(handlerTag, state);
-              }
-              return jsi::Value::undefined();
-          });
+  rnRuntime.global().setProperty(
+      rnRuntime,
+      "_isViewFlatteningDisabled",
+      std::move(isViewFlatteningDisabled));
 
-      rnRuntime.global().setProperty(rnRuntime, "_setGestureStateAsync", std::move(setGestureStateAsync));
-    }
+  auto setGestureStateAsync = jsi::Function::createFromHostFunction(
+      rnRuntime,
+      jsi::PropNameID::forAscii(rnRuntime, "_setGestureStateAsync"),
+      2,
+      [setGestureState](
+          jsi::Runtime &rt,
+          const jsi::Value &,
+          const jsi::Value *args,
+          size_t count) -> jsi::Value {
+        if (count == 2) {
+          const auto handlerTag = static_cast<int>(args[0].asNumber());
+          const auto state = static_cast<int>(args[1].asNumber());
 
-    bool RuntimeDecorator::installUIRuntimeBindings(jsi::Runtime& rnRuntime, std::function<void(int, int)>&& setGestureState) {
-      const auto runtimeHolder = rnRuntime.global().getProperty(rnRuntime, "_WORKLET_RUNTIME");
+          setGestureState(handlerTag, state);
+        }
+        return jsi::Value::undefined();
+      });
 
-      if (runtimeHolder.isUndefined()) {
-        return false;
-      }
+  rnRuntime.global().setProperty(
+      rnRuntime, "_setGestureStateAsync", std::move(setGestureStateAsync));
+}
 
-      const auto arrayBufferValue = runtimeHolder.getObject(rnRuntime).getArrayBuffer(rnRuntime).data(rnRuntime);
-      const auto uiRuntimeAddress = reinterpret_cast<uintptr_t*>(&arrayBufferValue[0]);
-      jsi::Runtime &uiRuntime = *reinterpret_cast<jsi::Runtime*>(*uiRuntimeAddress);
+bool RuntimeDecorator::installUIRuntimeBindings(
+    jsi::Runtime &rnRuntime,
+    std::function<void(int, int)> &&setGestureState) {
+  const auto runtimeHolder =
+      rnRuntime.global().getProperty(rnRuntime, "_WORKLET_RUNTIME");
 
-      auto setGestureStateSync = jsi::Function::createFromHostFunction(
-          uiRuntime,
-          jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateSync"),
-          2,
-          [setGestureState](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
-              if (count == 2) {
-                const auto handlerTag = static_cast<int>(args[0].asNumber());
-                const auto state = static_cast<int>(args[1].asNumber());
+  if (runtimeHolder.isUndefined()) {
+    return false;
+  }
 
-                setGestureState(handlerTag, state);
-              }
-              return jsi::Value::undefined();
-          });
+  const auto arrayBufferValue =
+      runtimeHolder.getObject(rnRuntime).getArrayBuffer(rnRuntime).data(
+          rnRuntime);
+  const auto uiRuntimeAddress =
+      reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
+  jsi::Runtime &uiRuntime =
+      *reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
 
-      uiRuntime.global().setProperty(uiRuntime, "_setGestureStateSync", std::move(setGestureStateSync));
-      return true;
-    }
+  auto setGestureStateSync = jsi::Function::createFromHostFunction(
+      uiRuntime,
+      jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateSync"),
+      2,
+      [setGestureState](
+          jsi::Runtime &rt,
+          const jsi::Value &,
+          const jsi::Value *args,
+          size_t count) -> jsi::Value {
+        if (count == 2) {
+          const auto handlerTag = static_cast<int>(args[0].asNumber());
+          const auto state = static_cast<int>(args[1].asNumber());
+
+          setGestureState(handlerTag, state);
+        }
+        return jsi::Value::undefined();
+      });
+
+  uiRuntime.global().setProperty(
+      uiRuntime, "_setGestureStateSync", std::move(setGestureStateSync));
+  return true;
+}
 } // namespace gesturehandler
