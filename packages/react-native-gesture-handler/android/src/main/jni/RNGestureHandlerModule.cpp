@@ -66,10 +66,16 @@ namespace gesturehandler {
             rnRuntime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
     }
 
-    void RNGestureHandlerModule::decorateUIRuntime() {
+    bool RNGestureHandlerModule::decorateUIRuntime() {
         // TODO: make sure we are on JS?
         jsi::Runtime &rt = *rnRuntime;
-        const auto arrayBufferValue = rt.global().getProperty(rt, "_WORKLET_RUNTIME").getObject(rt).getArrayBuffer(rt).data(rt);
+        const auto runtimeHolder = rt.global().getProperty(rt, "_WORKLET_RUNTIME");
+
+        if (runtimeHolder.isUndefined()) {
+          return false;
+        }
+
+        const auto arrayBufferValue = runtimeHolder.getObject(rt).getArrayBuffer(rt).data(rt);
         const auto uiRuntimeAddress = reinterpret_cast<uintptr_t*>(&arrayBufferValue[0]);
         jsi::Runtime &uiRuntime = *reinterpret_cast<jsi::Runtime*>(*uiRuntimeAddress);
 
@@ -89,5 +95,6 @@ namespace gesturehandler {
                 });
 
         uiRuntime.global().setProperty(uiRuntime, "_setGestureStateModern", std::move(setGestureStateNew));
+        return true;
     }
 } // namespace gesturehandler

@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react
 
-import android.util.Log
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactRootView
@@ -31,6 +30,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @DoNotStrip
   @Suppress("unused")
   private var mHybridData: HybridData = initHybrid()
+  private var uiRuntimeDecorated = false
 
   override fun getName() = NAME
 
@@ -57,6 +57,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   @ReactMethod
   override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
+    if (!uiRuntimeDecorated) {
+      uiRuntimeDecorated = decorateUIRuntime()
+    }
+
     val handlerTag = handlerTagDouble.toInt()
 
     createGestureHandlerHelper<GestureHandler>(handlerName, handlerTag, config)
@@ -111,6 +115,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun flushOperations() = Unit
 
+  @DoNotStrip
+  @Suppress("unused")
   fun setGestureHandlerState(handlerTag: Int, newState: Int) {
     registry.getHandler(handlerTag)?.let { handler ->
       when (newState) {
@@ -125,15 +131,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   private external fun initHybrid(): HybridData
   private external fun getBindingsInstallerCxx(): BindingsInstallerHolder
-  private external fun decorateUIRuntime()
+  private external fun decorateUIRuntime(): Boolean
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  override fun installUIRuntimeBindings(): Boolean {
-    decorateUIRuntime()
-    return true
-  }
 
   override fun invalidate() {
     registry.dropAllHandlers()

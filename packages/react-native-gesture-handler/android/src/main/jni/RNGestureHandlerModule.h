@@ -26,6 +26,6 @@ namespace gesturehandler {
 
         void setGestureState(int handlerTag, int state);
         void decorateRuntime(jsi::Runtime& runtime);
-        void decorateUIRuntime();
+        bool decorateUIRuntime();
     };
 } // namespace gesturehandler

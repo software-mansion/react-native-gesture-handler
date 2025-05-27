@@ -53,6 +53,7 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   NSMutableArray<GestureHandlerOperation> *_operations;
 
   jsi::Runtime *_rnRuntime;
+  bool _uiRuntimeDecorated;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -144,12 +145,17 @@ RCT_EXPORT_MODULE()
 #endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installUIRuntimeBindings)
+- (bool)installUIRuntimeBindings
 {
   jsi::Runtime &rt = *_rnRuntime;
 
-  const auto arrayBufferValue =
-      rt.global().getProperty(rt, "_WORKLET_RUNTIME").getObject(rt).getArrayBuffer(rt).data(rt);
+  const auto runtimeHolder = rt.global().getProperty(rt, "_WORKLET_RUNTIME");
+
+  if (runtimeHolder.isUndefined()) {
+    return false;
+  }
+
+  const auto arrayBufferValue = runtimeHolder.getObject(rt).getArrayBuffer(rt).data(rt);
   const auto uiRuntimeAddress = reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
   jsi::Runtime &uiRuntime = *reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
 
@@ -175,7 +181,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installUIRuntimeBindings)
 
   uiRuntime.global().setProperty(uiRuntime, "_setGestureStateModern", std::move(setGestureStateNew));
 
-  return @true;
+  return true;
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
@@ -184,6 +190,10 @@ RCT_EXPORT_METHOD(createGestureHandler
                   : (double)handlerTag config
                   : (NSDictionary *)config)
 {
+  if (!_uiRuntimeDecorated) {
+    _uiRuntimeDecorated = [self installUIRuntimeBindings];
+  }
+
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
