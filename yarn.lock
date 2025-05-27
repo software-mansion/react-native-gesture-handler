@@ -5575,6 +5575,8 @@ __metadata:
     react: "npm:19.0.0"
     react-native: "npm:0.79.0"
     react-native-gesture-handler: "workspace:*"
+    react-native-reanimated: "npm:4.0.0-beta.4"
+    react-native-worklets: "npm:^0.3.0"
     react-test-renderer: "npm:19.0.0"
     typescript: "npm:~5.8.3"
   languageName: unknown
@@ -13734,6 +13736,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-reanimated@npm:4.0.0-beta.4":
+  version: 4.0.0-beta.4
+  resolution: "react-native-reanimated@npm:4.0.0-beta.4"
+  dependencies:
+    react-native-is-edge-to-edge: "npm:1.1.7"
+    semver: "npm:^7.7.1"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+    react: "*"
+    react-native: "*"
+    react-native-worklets: ">=0.3.0"
+  checksum: 10c0/5a88b0ed7f54cde7cb42876f65f35905b13ce6a192060e4993f4fec11b6a844f06f2fc5cb6252c364fd2f0648b6e1925f8b7c1322b5dcc40b2baa4923b4a93cd
+  languageName: node
+  linkType: hard
+
 "react-native-safe-area-context@npm:5.4.0":
   version: 5.4.0
   resolution: "react-native-safe-area-context@npm:5.4.0"
@@ -13797,6 +13814,28 @@ __metadata:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
   checksum: 10c0/266c16c67ccc4114864cf4facac14c3736412c937af8cf031eaaa618e801723f2c4aac5bf2d680536bbbe95602b97c13a819e775602884e900dd1362bbe2f3f5
+  languageName: node
+  linkType: hard
+
+"react-native-worklets@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "react-native-worklets@npm:0.3.0"
+  dependencies:
+    "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
+    "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
+    "@babel/plugin-transform-classes": "npm:^7.0.0-0"
+    "@babel/plugin-transform-nullish-coalescing-operator": "npm:^7.0.0-0"
+    "@babel/plugin-transform-optional-chaining": "npm:^7.0.0-0"
+    "@babel/plugin-transform-shorthand-properties": "npm:^7.0.0-0"
+    "@babel/plugin-transform-template-literals": "npm:^7.0.0-0"
+    "@babel/plugin-transform-unicode-regex": "npm:^7.0.0-0"
+    "@babel/preset-typescript": "npm:^7.16.7"
+    convert-source-map: "npm:^2.0.0"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/db57580495699969035f9e04d66d0254ac4e819fe0ebbe3705e7e9cbc6b486753531631ee7d9cf94bfb75f685a587867f46a9525d83bf683faef7831961cf840
   languageName: node
   linkType: hard
 
@@ -14495,7 +14534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.1.3, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0":
+"semver@npm:^7.1.3, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.7.1":
   version: 7.7.2
   resolution: "semver@npm:7.7.2"
   bin:
