@@ -14,7 +14,7 @@ namespace gesturehandler {
     void RuntimeDecorator::installJSRuntimeBindings(jsi::Runtime& rnRuntime) {
       auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
           rnRuntime,
-          jsi::PropNameID::forAscii(rnRuntime, "isViewFlatteningDisabled"),
+          jsi::PropNameID::forAscii(rnRuntime, "_isViewFlatteningDisabled"),
           1,
           [](jsi::Runtime &runtime,
              const jsi::Value &,
@@ -47,7 +47,7 @@ namespace gesturehandler {
           });
 
       rnRuntime.global().setProperty(
-          rnRuntime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
+          rnRuntime, "_isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
     }
 
     bool RuntimeDecorator::installUIRuntimeBindings(jsi::Runtime& rnRuntime, std::function<void(int, int)>&& setGestureState) {
