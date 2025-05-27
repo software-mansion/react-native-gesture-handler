@@ -16,11 +16,11 @@ const warningMessage = tagMessage(
 // Check if reanimated module is available, but look for useSharedValue as conditional
 // require of reanimated can sometimes return content of `utils.ts` file (?)
 const REANIMATED_AVAILABLE = Reanimated?.useSharedValue !== undefined;
-const setGestureState = Reanimated?.setGestureState;
+const setGestureState_DEPRECATED = Reanimated?.setGestureState;
 
 // ui runtime global
-declare const global: {
-  _setGestureStateNew: (handlerTag: number, state: State) => void;
+declare const globalThis: {
+  _setGestureStateModern: (handlerTag: number, state: State) => void;
 };
 
 const wrappedSetGestureState = (handlerTag: number, state: State) => {
@@ -28,10 +28,10 @@ const wrappedSetGestureState = (handlerTag: number, state: State) => {
 
   if (REANIMATED_AVAILABLE) {
     // When Reanimated is available, setGestureState should be defined
-    if (global._setGestureStateNew) {
-      global._setGestureStateNew(handlerTag, state);
-    } else if (setGestureState) {
-      setGestureState(handlerTag, state);
+    if (globalThis._setGestureStateModern) {
+      globalThis._setGestureStateModern(handlerTag, state);
+    } else if (setGestureState_DEPRECATED) {
+      setGestureState_DEPRECATED(handlerTag, state);
     }
   } else {
     console.warn(warningMessage);
