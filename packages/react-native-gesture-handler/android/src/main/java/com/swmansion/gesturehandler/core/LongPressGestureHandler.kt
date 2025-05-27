@@ -9,7 +9,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.react.eventbuilders.LongPressGestureHandlerEventDataBuilder
 
-class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestureHandler>() {
+class LongPressGestureHandler(context: Context) : GestureHandler() {
   var minDurationMs = DEFAULT_MIN_DURATION_MS
   val duration: Int
     get() = (previousTime - startTime).toInt()

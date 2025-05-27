@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.react.eventbuilders.ManualGestureHandlerEventDataBuilder
 
-class ManualGestureHandler : GestureHandler<ManualGestureHandler>() {
+class ManualGestureHandler : GestureHandler() {
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       begin()

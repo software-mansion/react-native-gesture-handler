@@ -25,7 +25,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   // how GH sends events (which needs to be done, but maybe wait until the RN's apis stop changing)
   private var useTopPrefixedName: Boolean = false
 
-  private fun <T : GestureHandler<T>> init(
+  private fun <T : GestureHandler> init(
     handler: T,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     useNativeAnimatedName: Boolean,
@@ -60,7 +60,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerEvent>(TOUCH_EVENTS_POOL_SIZE)
 
-    fun <T : GestureHandler<T>> obtain(
+    fun <T : GestureHandler> obtain(
       handler: T,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
       useTopPrefixedName: Boolean = false,

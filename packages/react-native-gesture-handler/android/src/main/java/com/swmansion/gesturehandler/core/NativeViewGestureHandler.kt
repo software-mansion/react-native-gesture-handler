@@ -18,7 +18,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
 import com.swmansion.gesturehandler.react.eventbuilders.NativeGestureHandlerEventDataBuilder
 import com.swmansion.gesturehandler.react.isScreenReaderOn
 
-class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
+class NativeViewGestureHandler : GestureHandler() {
   private var shouldActivateOnStart = false
 
   /**
@@ -42,7 +42,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
-  override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
+  override fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean {
     // if the gesture is marked by user as simultaneous with other or the hook return true
     hook.shouldRecognizeSimultaneously(handler)?.let {
       return@shouldRecognizeSimultaneously it
@@ -77,7 +77,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     // otherwise we can only return `true` if already in an active state
   }
 
-  override fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean = !disallowInterruption
+  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = !disallowInterruption
 
   override fun onPrepare() {
     when (val view = view) {
@@ -225,7 +225,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
      * @return Boolean value signalling whether the gesture can be recognized simultaneously with
      * other (handler). Returning false doesn't necessarily prevent it from happening.
      */
-    fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean? = null
+    fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean? = null
 
     /**
      * shouldActivateOnStart and tryIntercept have priority over this method
@@ -253,7 +253,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   private class TextViewHook : NativeViewGestureHandlerHook {
-    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler) = false
 
     // We have to explicitly check for ReactTextView, since its `isPressed` flag is not set to `true`,
     // in contrast to e.g. Touchable
@@ -282,7 +282,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     // recognize alongside every handler besides RootViewGestureHandler, which is a private inner class
     // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
     // also if other handler is NativeViewGestureHandler then don't override the default implementation
-    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) =
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler) =
       handler.tag > 0 && handler !is NativeViewGestureHandler
 
     override fun wantsToHandleEventBeforeActivation() = true
