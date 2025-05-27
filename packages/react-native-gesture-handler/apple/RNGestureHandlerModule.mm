@@ -14,9 +14,9 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
+#endif // RCT_NEW_ARCH_ENABLED
 
 #import "RuntimeDecorator.h"
-#endif // RCT_NEW_ARCH_ENABLED
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
@@ -26,10 +26,11 @@
 #import "RNGestureHandlerButton.h"
 
 #import <React/RCTJSThread.h>
+#import <jsi/jsi.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
 using namespace gesturehandler;
 using namespace facebook;
+#ifdef RCT_NEW_ARCH_ENABLED
 using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
 
@@ -51,7 +52,7 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   // Oparations called after views have been updated.
   NSMutableArray<GestureHandlerOperation> *_operations;
 
-  jsi::Runtime *_rnRuntime;
+  facebook::jsi::Runtime *_rnRuntime;
   bool _uiRuntimeDecorated;
 }
 
@@ -128,7 +129,6 @@ RCT_EXPORT_MODULE()
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (bool)installUIRuntimeBindings
 {
   __weak RNGestureHandlerModule *weakSelf = self;
@@ -140,7 +140,6 @@ RCT_EXPORT_MODULE()
     }
   });
 }
-#endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_METHOD(createGestureHandler
                   : (nonnull NSString *)handlerName handlerTag
