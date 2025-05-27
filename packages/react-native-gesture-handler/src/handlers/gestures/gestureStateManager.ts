@@ -20,7 +20,7 @@ const setGestureState_DEPRECATED = Reanimated?.setGestureState;
 
 // ui runtime global
 declare const globalThis: {
-  _setGestureStateModern: (handlerTag: number, state: State) => void;
+  _setGestureStateSync: (handlerTag: number, state: State) => void;
 };
 
 const wrappedSetGestureState = (handlerTag: number, state: State) => {
@@ -28,8 +28,8 @@ const wrappedSetGestureState = (handlerTag: number, state: State) => {
 
   if (REANIMATED_AVAILABLE) {
     // When Reanimated is available, setGestureState should be defined
-    if (globalThis._setGestureStateModern) {
-      globalThis._setGestureStateModern(handlerTag, state);
+    if (globalThis._setGestureStateSync) {
+      globalThis._setGestureStateSync(handlerTag, state);
     } else if (setGestureState_DEPRECATED) {
       setGestureState_DEPRECATED(handlerTag, state);
     }
