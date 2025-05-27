@@ -94,6 +94,7 @@ RCT_EXPORT_MODULE()
 
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)installJSIBindingsWithRuntime:(jsi::Runtime &)rnRuntime
+                          callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callinvoker
 {
   _rnRuntime = &rnRuntime;
   auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
