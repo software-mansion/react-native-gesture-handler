@@ -23,7 +23,7 @@ import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataB
 import java.lang.IllegalStateException
 import java.util.*
 
-open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
+open class GestureHandler {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var trackedPointersIDsCount = 0
   private val windowOffset = IntArray(2) { 0 }
@@ -79,19 +79,12 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     protected set
   protected var shouldCancelWhenOutside = false
   protected var orchestrator: GestureHandlerOrchestrator? = null
-  private var onTouchEventListener: OnTouchEventListener? = null
+  var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
   var pointerType: Int = POINTER_TYPE_OTHER
     private set
 
   protected var mouseButton = 0
-
-  @Suppress("UNCHECKED_CAST")
-  protected fun self(): ConcreteGestureHandlerT = this as ConcreteGestureHandlerT
-
-  protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT = self().apply {
-    block()
-  }
 
   // properties set and accessed only by the orchestrator
   var activationIndex = 0
@@ -100,16 +93,16 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   var shouldResetProgress = false
 
   open fun dispatchStateChange(newState: Int, prevState: Int) {
-    onTouchEventListener?.onStateChange(self(), newState, prevState)
+    onTouchEventListener?.onStateChange(this, newState, prevState)
   }
 
   open fun dispatchHandlerUpdate(event: MotionEvent) {
-    onTouchEventListener?.onHandlerUpdate(self(), event)
+    onTouchEventListener?.onHandlerUpdate(this, event)
   }
 
   open fun dispatchTouchEvent() {
     if (changedTouchesPayload != null) {
-      onTouchEventListener?.onTouchEvent(self())
+      onTouchEventListener?.onTouchEvent(this)
     }
   }
 
@@ -122,7 +115,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     mouseButton = DEFAULT_MOUSE_BUTTON
   }
 
-  fun hasCommonPointers(other: GestureHandler<*>): Boolean {
+  fun hasCommonPointers(other: GestureHandler): Boolean {
     for (i in trackedPointerIDs.indices) {
       if (trackedPointerIDs[i] != -1 && other.trackedPointerIDs[i] != -1) {
         return true
@@ -131,14 +124,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return false
   }
 
-  fun setHitSlop(
-    leftPad: Float,
-    topPad: Float,
-    rightPad: Float,
-    bottomPad: Float,
-    width: Float,
-    height: Float,
-  ): ConcreteGestureHandlerT = applySelf {
+  fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float) {
     if (hitSlop == null) {
       hitSlop = FloatArray(6)
     }
@@ -162,10 +148,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  fun setHitSlop(padding: Float): ConcreteGestureHandlerT =
-    setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
+  fun setHitSlop(padding: Float) = setHitSlop(padding, padding, padding, padding, HIT_SLOP_NONE, HIT_SLOP_NONE)
 
-  fun setInteractionController(controller: GestureHandlerInteractionController?): ConcreteGestureHandlerT = applySelf {
+  fun setInteractionController(controller: GestureHandlerInteractionController?) {
     interactionController = controller
   }
 
@@ -331,7 +316,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   // exception to help debug https://github.com/software-mansion/react-native-gesture-handler/issues/1188
-  class AdaptEventException(handler: GestureHandler<*>, event: MotionEvent, e: IllegalArgumentException) :
+  class AdaptEventException(handler: GestureHandler, event: MotionEvent, e: IllegalArgumentException) :
     Exception(
       """
     handler: ${handler::class.simpleName}
@@ -594,7 +579,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     state != STATE_END &&
     trackedPointersIDsCount > 0
 
-  open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
+  open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
     if (handler === this) {
       return false
     }
@@ -602,7 +587,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return interactionController?.shouldRequireHandlerToWaitForFailure(this, handler) ?: false
   }
 
-  fun shouldWaitForHandlerFailure(handler: GestureHandler<*>): Boolean {
+  fun shouldWaitForHandlerFailure(handler: GestureHandler): Boolean {
     if (handler === this) {
       return false
     }
@@ -610,7 +595,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return interactionController?.shouldWaitForHandlerFailure(this, handler) ?: false
   }
 
-  open fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
+  open fun shouldRecognizeSimultaneously(handler: GestureHandler): Boolean {
     if (handler === this) {
       return true
     }
@@ -618,7 +603,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     return interactionController?.shouldRecognizeSimultaneously(this, handler) ?: false
   }
 
-  open fun shouldBeCancelledBy(handler: GestureHandler<*>): Boolean {
+  open fun shouldBeCancelledBy(handler: GestureHandler): Boolean {
     if (handler === this) {
       return false
     }
@@ -685,6 +670,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
 
   fun fail() {
     if (state == STATE_ACTIVE || state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+      onFail()
       moveToState(STATE_FAILED)
     }
   }
@@ -713,7 +699,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
    * Returns true if the view this handler is attached to is a descendant of the view the other handler
    * is attached to and false otherwise.
    */
-  fun isDescendantOf(of: GestureHandler<*>): Boolean {
+  fun isDescendantOf(of: GestureHandler): Boolean {
     var view = this.view?.parent as? View
     while (view != null) {
       if (view == of.view) {
@@ -738,6 +724,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
   protected open fun onCancel() {}
+  protected open fun onFail() {}
 
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
@@ -829,11 +816,6 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
-  fun setOnTouchEventListener(listener: OnTouchEventListener?): GestureHandler<*> {
-    onTouchEventListener = listener
-    return this
-  }
-
   override fun toString(): String {
     val viewString = if (view == null) null else view!!.javaClass.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
@@ -849,10 +831,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   val lastPositionInWindowY: Float
     get() = lastAbsolutePositionY + lastEventOffsetY - windowOffset[1]
 
-  abstract class Factory<T : GestureHandler<T>> {
+  abstract class Factory<T : GestureHandler> {
     abstract val type: Class<T>
     abstract val name: String
-    abstract fun create(context: Context?): T
+
+    protected abstract fun create(context: Context?): T
+
+    fun create(context: Context?, handlerTag: Int): T = create(context).also { it.tag = handlerTag }
+
     open fun setConfig(handler: T, config: ReadableMap) {
       handler.resetConfig()
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
@@ -893,7 +879,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
 
-      private fun handleHitSlopProperty(handler: GestureHandler<*>, config: ReadableMap) {
+      private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
           val hitSlop = PixelUtil.toPixelFromDIP(config.getDouble(KEY_HIT_SLOP))
           handler.setHitSlop(

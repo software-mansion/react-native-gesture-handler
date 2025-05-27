@@ -16,7 +16,7 @@ import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
   private val orchestrator: GestureHandlerOrchestrator?
-  private val jsGestureHandler: GestureHandler<*>?
+  private val jsGestureHandler: GestureHandler?
   val rootView: ViewGroup
   private var shouldIntercept = false
   private var passingTouch = false
@@ -24,10 +24,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   init {
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
-    check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
-    val module = (context as ThemedReactContext).reactApplicationContext.getNativeModule(
-      RNGestureHandlerModule::class.java,
-    )!!
+    assert(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
+    val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
     val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
@@ -41,15 +39,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
-    jsGestureHandler = RootViewGestureHandler().apply { tag = -wrappedViewTag }
-    with(registry) {
-      registerHandler(jsGestureHandler)
-      attachHandlerToView(
-        jsGestureHandler.tag,
-        wrappedViewTag,
-        GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API,
-      )
-    }
+    jsGestureHandler = RootViewGestureHandler(handlerTag = -wrappedViewTag)
+    registry.registerHandler(jsGestureHandler)
+    registry.attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API)
     module.registerRootHelper(this)
   }
 
@@ -67,7 +59,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  internal inner class RootViewGestureHandler : GestureHandler<RootViewGestureHandler>() {
+  internal inner class RootViewGestureHandler(handlerTag: Int) : GestureHandler() {
+    init {
+      this.tag = handlerTag
+    }
+
     private fun handleEvent(event: MotionEvent) {
       val currentState = state
 

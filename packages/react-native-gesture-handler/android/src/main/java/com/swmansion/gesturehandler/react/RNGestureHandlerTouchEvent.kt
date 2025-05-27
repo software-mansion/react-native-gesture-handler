@@ -10,7 +10,7 @@ import com.swmansion.gesturehandler.core.GestureHandler
 class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerTouchEvent>() {
   private var extraData: WritableMap? = null
   private var coalescingKey: Short = 0
-  private fun <T : GestureHandler<T>> init(handler: T) {
+  private fun <T : GestureHandler> init(handler: T) {
     val view = handler.view!!
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
     extraData = createEventData(handler)
@@ -42,14 +42,12 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
       TOUCH_EVENTS_POOL_SIZE,
     )
 
-    fun <T : GestureHandler<T>> obtain(handler: T): RNGestureHandlerTouchEvent = (
-      EVENTS_POOL.acquire()
-        ?: RNGestureHandlerTouchEvent()
-      ).apply {
-      init(handler)
-    }
+    fun <T : GestureHandler> obtain(handler: T): RNGestureHandlerTouchEvent =
+      (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
+        init(handler)
+      }
 
-    fun <T : GestureHandler<T>> createEventData(handler: T): WritableMap = Arguments.createMap().apply {
+    fun <T : GestureHandler> createEventData(handler: T): WritableMap = Arguments.createMap().apply {
       putInt("handlerTag", handler.tag)
       putInt("state", handler.state)
       putInt("numberOfTouches", handler.trackedPointersCount)
