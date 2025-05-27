@@ -28,7 +28,9 @@ namespace gesturehandler {
         return jni::make_local(
             BindingsInstallerHolder::newObjectCxxArgs([&](jsi::Runtime& runtime) {
                 this->rnRuntime = &runtime;
-                RuntimeDecorator::installJSRuntimeBindings(runtime);
+                RuntimeDecorator::installJSRuntimeBindings(runtime, [&](int handlerTag, int state) {
+                    this->setGestureState(handlerTag, state);
+                });
             })
         );
     }

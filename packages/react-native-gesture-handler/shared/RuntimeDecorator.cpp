@@ -11,7 +11,7 @@ namespace gesturehandler {
     using namespace facebook;
     using namespace facebook::react;
 
-    void RuntimeDecorator::installJSRuntimeBindings(jsi::Runtime& rnRuntime) {
+    void RuntimeDecorator::installJSRuntimeBindings(jsi::Runtime& rnRuntime, std::function<void(int, int)>&& setGestureState) {
       auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
           rnRuntime,
           jsi::PropNameID::forAscii(rnRuntime, "_isViewFlatteningDisabled"),
@@ -48,6 +48,22 @@ namespace gesturehandler {
 
       rnRuntime.global().setProperty(
           rnRuntime, "_isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
+      
+      auto setGestureStateAsync = jsi::Function::createFromHostFunction(
+                                                                        rnRuntime,
+          jsi::PropNameID::forAscii(rnRuntime, "_setGestureStateAsync"),
+          2,
+          [setGestureState](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
+              if (count == 2) {
+                const auto handlerTag = static_cast<int>(args[0].asNumber());
+                const auto state = static_cast<int>(args[1].asNumber());
+
+                setGestureState(handlerTag, state);
+              }
+              return jsi::Value::undefined();
+          });
+
+      rnRuntime.global().setProperty(rnRuntime, "_setGestureStateAsync", std::move(setGestureStateAsync));
     }
 
     bool RuntimeDecorator::installUIRuntimeBindings(jsi::Runtime& rnRuntime, std::function<void(int, int)>&& setGestureState) {
@@ -70,7 +86,6 @@ namespace gesturehandler {
                 const auto handlerTag = static_cast<int>(args[0].asNumber());
                 const auto state = static_cast<int>(args[1].asNumber());
 
-                // TODO: expose to JS and dispatch to UI thread if called on JS?
                 setGestureState(handlerTag, state);
               }
               return jsi::Value::undefined();
