@@ -164,7 +164,7 @@ RCT_EXPORT_MODULE()
 
   auto setGestureStateNew = jsi::Function::createFromHostFunction(
       uiRuntime,
-      jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateModern"),
+      jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateSync"),
       2,
       [weakSelf](jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
         if (count == 2) {
@@ -180,7 +180,7 @@ RCT_EXPORT_MODULE()
         return jsi::Value::undefined();
       });
 
-  uiRuntime.global().setProperty(uiRuntime, "_setGestureStateModern", std::move(setGestureStateNew));
+  uiRuntime.global().setProperty(uiRuntime, "_setGestureStateSync", std::move(setGestureStateNew));
 
   return true;
 }
