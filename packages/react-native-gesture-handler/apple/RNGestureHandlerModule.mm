@@ -157,7 +157,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installUIRuntimeBindings)
 
   auto setGestureStateNew = jsi::Function::createFromHostFunction(
       uiRuntime,
-      jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateNew"),
+      jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateModern"),
       2,
       [weakSelf](jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
         if (count == 2) {
@@ -173,7 +173,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installUIRuntimeBindings)
         return jsi::Value::undefined();
       });
 
-  uiRuntime.global().setProperty(uiRuntime, "_setGestureStateNew", std::move(setGestureStateNew));
+  uiRuntime.global().setProperty(uiRuntime, "_setGestureStateModern", std::move(setGestureStateNew));
 
   return @true;
 }
