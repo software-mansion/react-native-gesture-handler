@@ -15,9 +15,7 @@
 #import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 
-#import <react/renderer/components/text/ParagraphShadowNode.h>
-#import <react/renderer/components/text/TextShadowNode.h>
-#import <react/renderer/uimanager/primitives.h>
+#import "RuntimeDecorator.h"
 #endif // RCT_NEW_ARCH_ENABLED
 
 #import "RNGestureHandler.h"
@@ -30,6 +28,7 @@
 #import <React/RCTJSThread.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
+using namespace gesturehandler;
 using namespace facebook;
 using namespace react;
 #endif // RCT_NEW_ARCH_ENABLED
@@ -97,30 +96,7 @@ RCT_EXPORT_MODULE()
                           callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callinvoker
 {
   _rnRuntime = &rnRuntime;
-  auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
-      rnRuntime,
-      jsi::PropNameID::forAscii(rnRuntime, "isViewFlatteningDisabled"),
-      1,
-      [](jsi::Runtime &rnRuntime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count)
-          -> jsi::Value {
-        if (!arguments[0].isObject()) {
-          return jsi::Value::null();
-        }
-        auto shadowNode = shadowNodeFromValue(rnRuntime, arguments[0]);
-
-        if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
-          return jsi::Value(true);
-        }
-
-        if (dynamic_pointer_cast<const TextShadowNode>(shadowNode)) {
-          return jsi::Value(true);
-        }
-
-        bool isViewFlatteningDisabled = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
-
-        return jsi::Value(isViewFlatteningDisabled);
-      });
-  rnRuntime.global().setProperty(rnRuntime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
+  RuntimeDecorator::installJSRuntimeBindings(rnRuntime);
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
@@ -148,41 +124,14 @@ RCT_EXPORT_MODULE()
 #ifdef RCT_NEW_ARCH_ENABLED
 - (bool)installUIRuntimeBindings
 {
-  jsi::Runtime &rt = *_rnRuntime;
-
-  const auto runtimeHolder = rt.global().getProperty(rt, "_WORKLET_RUNTIME");
-
-  if (runtimeHolder.isUndefined()) {
-    return false;
-  }
-
-  const auto arrayBufferValue = runtimeHolder.getObject(rt).getArrayBuffer(rt).data(rt);
-  const auto uiRuntimeAddress = reinterpret_cast<uintptr_t *>(&arrayBufferValue[0]);
-  jsi::Runtime &uiRuntime = *reinterpret_cast<jsi::Runtime *>(*uiRuntimeAddress);
-
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  auto setGestureStateNew = jsi::Function::createFromHostFunction(
-      uiRuntime,
-      jsi::PropNameID::forAscii(uiRuntime, "_setGestureStateSync"),
-      2,
-      [weakSelf](jsi::Runtime &runtime, const jsi::Value &, const jsi::Value *args, size_t count) -> jsi::Value {
-        if (count == 2) {
-          const auto handlerTag = static_cast<int>(args[0].asNumber());
-          const auto state = static_cast<int>(args[1].asNumber());
-
-          // TODO: expose to JS and dispatch to UI thread if called on JS?
-          RNGestureHandlerModule *strongSelf = weakSelf;
-          if (strongSelf != nullptr) {
-            [strongSelf setGestureState:state forHandler:handlerTag];
-          }
-        }
-        return jsi::Value::undefined();
-      });
-
-  uiRuntime.global().setProperty(uiRuntime, "_setGestureStateSync", std::move(setGestureStateNew));
-
-  return true;
+  return RuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, [weakSelf](int handlerTag, int state) {
+    RNGestureHandlerModule *strongSelf = weakSelf;
+    if (strongSelf != nullptr) {
+      [strongSelf setGestureState:state forHandler:handlerTag];
+    }
+  });
 }
 #endif // RCT_NEW_ARCH_ENABLED
 
