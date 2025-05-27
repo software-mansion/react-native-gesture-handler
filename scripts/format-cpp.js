@@ -23,7 +23,7 @@ if (argc > 2) {
 } else {
   const pattern = path.join(
     __dirname,
-    '../packages/react-native-gesture-handler/{shared,android}/**/*.{h,cpp}'
+    '../packages/react-native-gesture-handler/{shared,android/src}/**/*.{h,cpp}'
   );
 
   glob(pattern, (err, filesArray) => {

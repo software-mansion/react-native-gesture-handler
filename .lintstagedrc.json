@@ -6,6 +6,6 @@
     "yarn format:android"
   ],
   "packages/react-native-gesture-handler/apple/**/*.{h,m,mm,cpp}": "yarn format:apple",
-  "packages/react-native-gesture-handler/{shared,android}/**/*.{h,cpp}": "yarn format:cpp",
+  "packages/react-native-gesture-handler/{shared,android/src}/**/*.{h,cpp}": "yarn format:cpp",,
   "packages/react-native-gesture-handler/src/specs/*.ts": "yarn workspace react-native-gesture-handler sync-architectures"
 }
