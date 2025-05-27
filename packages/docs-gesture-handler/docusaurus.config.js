@@ -113,6 +113,7 @@ const config = {
           'All trademarks and copyrights belong to their respective owners.',
       },
       prism: {
+        additionalLanguages: ['bash'],
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
@@ -131,10 +132,8 @@ const config = {
         name: 'react-native-reanimated/docusaurus-plugin',
         configureWebpack(config, isServer, utils) {
           const processMock = !isServer ? { process: { env: {} } } : {};
-
           const raf = require('raf');
           raf.polyfill();
-
           return {
             mergeStrategy: {
               'resolve.extensions': 'prepend',
@@ -143,14 +142,17 @@ const config = {
               new webpack.DefinePlugin({
                 ...processMock,
                 __DEV__: 'false',
-                setImmediate: () => {},
               }),
             ],
             module: {
               rules: [
                 {
-                  test: /\.txt/,
+                  test: /\.txt$/,
                   type: 'asset/source',
+                },
+                {
+                  test: /\.tsx?$/,
+                  use: 'babel-loader',
                 },
               ],
             },
