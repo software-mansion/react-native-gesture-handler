@@ -96,7 +96,14 @@ RCT_EXPORT_MODULE()
                           callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callinvoker
 {
   _rnRuntime = &rnRuntime;
-  RuntimeDecorator::installJSRuntimeBindings(rnRuntime);
+  __weak RNGestureHandlerModule *weakSelf = self;
+
+  RuntimeDecorator::installJSRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
+    RNGestureHandlerModule *strongSelf = weakSelf;
+    if (strongSelf != nullptr) {
+      [strongSelf setGestureState:state forHandler:handlerTag];
+    }
+  });
 }
 #endif // RCT_NEW_ARCH_ENABLED
 

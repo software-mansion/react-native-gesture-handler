@@ -6,7 +6,7 @@ namespace gesturehandler {
 
     class RuntimeDecorator {
     public:
-        static void installJSRuntimeBindings(jsi::Runtime& rnRuntime);
+        static void installJSRuntimeBindings(jsi::Runtime& rnRuntime, std::function<void(int, int)>&& setGestureState);
         static bool installUIRuntimeBindings(jsi::Runtime& rnRuntime, std::function<void(int, int)>&& setGestureState);
     };
 } // namespace gesturehandler
