@@ -7,6 +7,7 @@ const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_MAX_DELAY_MS = 500;
 const DEFAULT_NUMBER_OF_TAPS = 1;
 const DEFAULT_MIN_NUMBER_OF_POINTERS = 1;
+const DEFAULT_MAX_NUMBER_OF_TAPS = 1;
 
 export default class TapGestureHandler extends GestureHandler {
   private maxDeltaX = Number.MIN_SAFE_INTEGER;
@@ -16,6 +17,7 @@ export default class TapGestureHandler extends GestureHandler {
   private maxDelayMs = DEFAULT_MAX_DELAY_MS;
 
   private numberOfTaps = DEFAULT_NUMBER_OF_TAPS;
+  private maxNumberOfTaps = DEFAULT_MAX_NUMBER_OF_TAPS;
   private minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   private currentMaxNumberOfPointers = 1;
 
@@ -36,6 +38,10 @@ export default class TapGestureHandler extends GestureHandler {
 
     if (this.config.numberOfTaps !== undefined) {
       this.numberOfTaps = this.config.numberOfTaps;
+    }
+
+    if (this.config.maxNumberOfTaps !== undefined) {
+      this.maxNumberOfTaps = this.config.maxNumberOfTaps;
     }
 
     if (this.config.maxDurationMs !== undefined) {
@@ -72,6 +78,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.maxDurationMs = DEFAULT_MAX_DURATION_MS;
     this.maxDelayMs = DEFAULT_MAX_DELAY_MS;
     this.numberOfTaps = DEFAULT_NUMBER_OF_TAPS;
+    this.maxNumberOfTaps = DEFAULT_MAX_NUMBER_OF_TAPS;
     this.minNumberOfPointers = DEFAULT_MIN_NUMBER_OF_POINTERS;
   }
 
@@ -89,13 +96,20 @@ export default class TapGestureHandler extends GestureHandler {
   private endTap(): void {
     this.clearTimeouts();
 
-    if (
-      ++this.tapsSoFar === this.numberOfTaps &&
-      this.currentMaxNumberOfPointers >= this.minNumberOfPointers
-    ) {
+    if (this.tapsSoFar < this.numberOfTaps) {
+      if (
+        ++this.tapsSoFar === this.numberOfTaps &&
+        this.currentMaxNumberOfPointers >= this.minNumberOfPointers
+      ) {
+        this.activate();
+      } else {
+        this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs);
+      }
+    } else if (this.tapsSoFar < this.maxNumberOfTaps) {
+      this.tapsSoFar++;
       this.activate();
     } else {
-      this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs);
+      this.fail();
     }
   }
 

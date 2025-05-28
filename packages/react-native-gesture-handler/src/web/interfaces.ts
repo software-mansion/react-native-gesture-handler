@@ -71,6 +71,7 @@ export interface Config extends Record<string, ConfigArgs> {
   numberOfPointers?: number;
   minDurationMs?: number;
   numberOfTaps?: number;
+  maxNumberOfTaps?: number;
   maxDurationMs?: number;
   maxDelayMs?: number;
   maxDeltaX?: number;

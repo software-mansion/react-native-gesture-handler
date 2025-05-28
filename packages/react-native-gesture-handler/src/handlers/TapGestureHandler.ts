@@ -9,6 +9,7 @@ export const tapGestureHandlerProps = [
   'maxDurationMs',
   'maxDelayMs',
   'numberOfTaps',
+  'maxNumberOfTaps',
   'maxDeltaX',
   'maxDeltaY',
   'maxDist',
@@ -40,6 +41,12 @@ export interface TapGestureConfig {
    * is 1.
    */
   numberOfTaps?: number;
+
+  /**
+   * Maximum number of sequential taps before the handler finalizes the gesture.
+   * To track unlimited number of taps, set to `Math.Infinity`.The default value is 1.
+   */
+  maxNumberOfTaps?: number;
 
   /**
    * Maximum distance, expressed in points, that defines how far the finger is
