@@ -115,8 +115,6 @@ export const BaseButton = (props: BaseButtonProps) => {
   );
 };
 
-export const AnimatedBaseButton = BaseButton;
-
 const btnStyles = StyleSheet.create({
   underlay: {
     position: 'absolute',
@@ -191,12 +189,12 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
   const { children, style, ref, ...rest } = props;
 
   return (
-    <AnimatedBaseButton
+    <BaseButton
       {...rest}
       ref={ref}
       onActiveStateChange={onActiveStateChange}
       style={[style, Platform.OS === 'ios' && { opacity: opacity.value }]}>
       {children}
-    </AnimatedBaseButton>
+    </BaseButton>
   );
 };
