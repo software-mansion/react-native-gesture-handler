@@ -11,10 +11,6 @@ It makes touch interactions and gesture tracking not only smooth, but also depen
 
 Check [getting started](https://docs.swmansion.com/react-native-gesture-handler/docs/#installation) section of our docs for the detailed installation instructions.
 
-## Fabric
-
-To learn how to use `react-native-gesture-handler` with Fabric architecture, head over to [Fabric README](README-Fabric.md). Instructions on how to run Fabric Example within this repo can be found in the [FabricExample README](FabricExample/README.md).
-
 ## Documentation
 
 Check out our dedicated documentation page for info about this library, API reference and more: [https://docs.swmansion.com/react-native-gesture-handler/docs/](https://docs.swmansion.com/react-native-gesture-handler/docs/)
@@ -35,8 +31,11 @@ You will need to have an Android or iOS device or emulator connected.
 
 ## React Native Support
 
+`react-native-gesture-handler` supports the three latest minor releases of `react-native`.
+
 | version | react-native version |
 | ------- | -------------------- |
+| 2.24.0+ | 0.75.0+              |
 | 2.21.0+ | 0.74.0+              |
 | 2.18.0+ | 0.73.0+              |
 | 2.16.0+ | 0.68.0+              |

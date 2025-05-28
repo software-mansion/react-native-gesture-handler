@@ -8,7 +8,9 @@ on:
 jobs:
   publish:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out
         uses: actions/checkout@v1
@@ -17,13 +19,13 @@ jobs:
         run: >-
           git config --local user.email "action@github.com"
           && git config --local user.name "GitHub Action"
-          && cd docs
+          && cd packages/docs-gesture-handler
           && yarn
           && yarn build
 
       - name: Publish generated content to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
-          FOLDER: docs/build
+          FOLDER: packages/docs-gesture-handler/build
           BRANCH: gh-pages
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,57 @@
+{
+  "name": "basic-example",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "lint": "eslint .",
+    "start": "react-native start",
+    "test": "jest",
+    "ts-check": "yarn tsc --noEmit",
+    "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
+    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
+    "clean-android": "rm -rf android/.gradle android/.kotlin android/build",
+    "clean-ios": "rm -rf ios/build ios/Pods ios/Podfile.lock",
+    "clean": "rm -rf node_modules && yarn clean-android && yarn clean-ios",
+    "pods": "cd ios && bundle install && bundle exec pod install"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "react-native": "0.79.0",
+    "react-native-gesture-handler": "workspace:*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
+    "@react-native-community/cli": "18.0.0",
+    "@react-native-community/cli-platform-android": "18.0.0",
+    "@react-native-community/cli-platform-ios": "18.0.0",
+    "@react-native/babel-preset": "0.79.0",
+    "@react-native/eslint-config": "0.79.0",
+    "@react-native/metro-config": "0.79.0",
+    "@react-native/typescript-config": "0.79.0",
+    "@types/jest": "^29.5.13",
+    "@types/react": "^19.0.12",
+    "@types/react-test-renderer": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "eslint": "^8.57.0",
+    "eslint-config-satya164": "3.3.0",
+    "eslint-import-resolver-babel-module": "^5.2.0",
+    "eslint-plugin-jest": "27.4.3",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react": "^7.37.5",
+    "jest": "^29.6.3",
+    "prettier": "3.3.3",
+    "react-test-renderer": "19.0.0",
+    "typescript": "~5.8.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "installConfig": {
+    "selfReferences": false
+  }
+}

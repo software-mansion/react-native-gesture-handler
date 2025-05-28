@@ -1,0 +1,46 @@
+name: Test iOS build (paper)
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ios-build-paper.yml
+      - packages/react-native-gesture-handler/RNGestureHandler.podspec
+      - packages/react-native-gesture-handler/apple/**
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: macos-14
+    env:
+      WORKING_DIRECTORY: apps/expo-example
+    concurrency:
+      group: ios-paper-${{ matrix.working-directory }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.1'
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install node dependencies
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: PAPER_ENABLED=1 yarn install --immutable
+
+      - name: Build app
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npx react-native run-ios
