@@ -283,6 +283,7 @@ abstract class GestureHandler {
     this.propsRef = propsRef;
     this.ref = ref;
 
+    // @ts-ignore
     this.view = findNodeHandle(ref);
 
     // When the browser starts handling the gesture (e.g. scrolling), it sends a pointercancel event and stops

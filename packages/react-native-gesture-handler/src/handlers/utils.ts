@@ -60,7 +60,7 @@ export function findNodeHandle(
   if (Platform.OS === 'web') {
     return node;
   }
-  return findNodeHandleRN(node);
+  return findNodeHandleRN(node) ?? null;
 }
 let flushOperationsScheduled = false;
 

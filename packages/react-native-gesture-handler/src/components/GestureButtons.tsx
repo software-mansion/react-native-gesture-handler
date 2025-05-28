@@ -156,7 +156,7 @@ export const BaseButton = React.forwardRef<
 
 const AnimatedBaseButton = React.forwardRef<
   React.ComponentType,
-  BaseButtonWithRefProps
+  Animated.AnimatedProps<BaseButtonWithRefProps>
 >((props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />);
 
 const btnStyles = StyleSheet.create({
@@ -193,7 +193,7 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
   render() {
     const { children, style, ...rest } = this.props;
 
-    const resolvedStyle = StyleSheet.flatten(style ?? {});
+    const resolvedStyle = StyleSheet.flatten(style) ?? {};
 
     return (
       <BaseButton

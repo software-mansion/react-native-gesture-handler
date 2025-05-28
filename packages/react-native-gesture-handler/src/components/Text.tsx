@@ -15,7 +15,10 @@ import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
 export const Text = forwardRef(
-  (props: RNTextProps, ref: ForwardedRef<RNText>) => {
+  (
+    props: RNTextProps,
+    ref: ForwardedRef<React.ComponentRef<typeof RNText>>
+  ) => {
     const { onPress, onLongPress, ...rest } = props;
 
     const textRef = useRef<RNText | null>(null);
@@ -46,7 +49,7 @@ export const Text = forwardRef(
       }
 
       const textElement = ref
-        ? (ref as RefObject<RNText>).current
+        ? (ref as RefObject<React.ComponentRef<typeof RNText>>).current
         : textRef.current;
 
       // At this point we are sure that textElement is div in HTML tree
