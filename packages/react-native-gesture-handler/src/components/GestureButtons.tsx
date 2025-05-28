@@ -1,11 +1,11 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
 import type {
-  BaseButtonWithRefProps,
-  RectButtonWithRefProps,
-  BorderlessButtonWithRefProps,
+  BaseButtonProps,
+  BorderlessButtonProps,
+  RectButtonProps,
 } from './GestureButtonsProps';
 import { isFabric } from '../utils';
 import Animated, {
@@ -26,101 +26,96 @@ export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldActivateOnStart: false,
 });
 
-export const BaseButton = React.forwardRef(
-  (props: BaseButtonWithRefProps, ref: any) => {
-    let lastActive: boolean;
-    let longPressDetected: boolean;
-    let longPressTimeout: ReturnType<typeof setTimeout> | undefined;
+export const BaseButton = (props: BaseButtonProps) => {
+  let lastActive: boolean;
+  let longPressDetected: boolean;
+  let longPressTimeout: ReturnType<typeof setTimeout> | undefined;
 
-    const delayLongPress = props.delayLongPress ?? 600;
+  const delayLongPress = props.delayLongPress ?? 600;
 
-    const onLongPress = () => {
-      longPressDetected = true;
-      props.onLongPress?.();
-    };
+  const onLongPress = () => {
+    longPressDetected = true;
+    props.onLongPress?.();
+  };
 
-    const onBegin = (e: CallbackEventType) => {
-      if (Platform.OS === 'android' && e.pointerInside) {
-        longPressDetected = false;
-        if (props.onLongPress) {
-          longPressTimeout = setTimeout(onLongPress, delayLongPress);
-        }
+  const onBegin = (e: CallbackEventType) => {
+    if (Platform.OS === 'android' && e.pointerInside) {
+      longPressDetected = false;
+      if (props.onLongPress) {
+        longPressTimeout = setTimeout(onLongPress, delayLongPress);
       }
-
-      lastActive = false;
-    };
-
-    const onStart = (e: CallbackEventType) => {
-      props.onActiveStateChange?.(true);
-
-      if (Platform.OS !== 'android' && e.pointerInside) {
-        longPressDetected = false;
-        if (props.onLongPress) {
-          longPressTimeout = setTimeout(onLongPress, delayLongPress);
-        }
-      }
-
-      if (!e.pointerInside && longPressTimeout !== undefined) {
-        clearTimeout(longPressTimeout);
-        longPressTimeout = undefined;
-      }
-
-      lastActive = true;
-    };
-
-    const onEnd = (e: CallbackEventType) => {
-      if (!longPressDetected && props.onPress) {
-        props.onPress(e.pointerInside);
-      }
-
-      if (lastActive) {
-        props.onActiveStateChange?.(false);
-      }
-
-      lastActive = false;
-    };
-
-    const onFinalize = () => {
-      if (lastActive) {
-        props.onActiveStateChange?.(false);
-      }
-
-      if (longPressTimeout !== undefined) {
-        clearTimeout(longPressTimeout);
-        longPressTimeout = undefined;
-      }
-      lastActive = false;
-    };
-
-    const { rippleColor: unprocessedRippleColor, style, ...rest } = props;
-
-    if (IS_FABRIC === null) {
-      IS_FABRIC = isFabric();
     }
 
-    const rippleColor = IS_FABRIC
-      ? unprocessedRippleColor
-      : processColor(unprocessedRippleColor ?? undefined);
+    lastActive = false;
+  };
 
-    return (
-      <RawButton
-        ref={ref}
-        rippleColor={rippleColor}
-        style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
-        {...rest}
-        onBegin={onBegin}
-        onStart={onStart}
-        onEnd={onEnd}
-        onFinalize={onFinalize}
-      />
-    );
+  const onStart = (e: CallbackEventType) => {
+    props.onActiveStateChange?.(true);
+
+    if (Platform.OS !== 'android' && e.pointerInside) {
+      longPressDetected = false;
+      if (props.onLongPress) {
+        longPressTimeout = setTimeout(onLongPress, delayLongPress);
+      }
+    }
+
+    if (!e.pointerInside && longPressTimeout !== undefined) {
+      clearTimeout(longPressTimeout);
+      longPressTimeout = undefined;
+    }
+
+    lastActive = true;
+  };
+
+  const onEnd = (e: CallbackEventType) => {
+    if (!longPressDetected && props.onPress) {
+      props.onPress(e.pointerInside);
+    }
+
+    if (lastActive) {
+      props.onActiveStateChange?.(false);
+    }
+
+    lastActive = false;
+  };
+
+  const onFinalize = () => {
+    if (lastActive) {
+      props.onActiveStateChange?.(false);
+    }
+
+    if (longPressTimeout !== undefined) {
+      clearTimeout(longPressTimeout);
+      longPressTimeout = undefined;
+    }
+    lastActive = false;
+  };
+
+  const { rippleColor: unprocessedRippleColor, style, ref, ...rest } = props;
+
+  if (IS_FABRIC === null) {
+    IS_FABRIC = isFabric();
   }
-);
 
-const AnimatedBaseButton = React.forwardRef<
-  React.ComponentType,
-  BaseButtonWithRefProps
->((props, ref) => <AnimatedInnerBaseButton innerRef={ref} {...props} />);
+  const rippleColor = IS_FABRIC
+    ? unprocessedRippleColor
+    : processColor(unprocessedRippleColor ?? undefined);
+
+  return (
+    <RawButton
+      ref={ref}
+      rippleColor={rippleColor}
+      style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
+      {...rest}
+      onBegin={onBegin}
+      onStart={onStart}
+      onEnd={onEnd}
+      onFinalize={onFinalize}
+    />
+  );
+};
+
+export const AnimatedBaseButton = BaseButton;
 
 const btnStyles = StyleSheet.create({
   underlay: {
@@ -132,83 +127,76 @@ const btnStyles = StyleSheet.create({
   },
 });
 
-export const RectButton = forwardRef(
-  (props: RectButtonWithRefProps, ref: any) => {
-    const activeOpacity = props.activeOpacity ?? 0.105;
-    const underlayColor = props.underlayColor ?? 'black';
+export const RectButton = (props: RectButtonProps) => {
+  const activeOpacity = props.activeOpacity ?? 0.105;
+  const underlayColor = props.underlayColor ?? 'black';
 
-    const opacity = useSharedValue<number>(0);
+  const opacity = useSharedValue<number>(0);
 
-    const onActiveStateChange = (active: boolean) => {
-      if (Platform.OS !== 'android') {
-        opacity.value = active ? activeOpacity : 0;
-      }
+  const onActiveStateChange = (active: boolean) => {
+    if (Platform.OS !== 'android') {
+      opacity.value = active ? activeOpacity : 0;
+    }
 
-      props.onActiveStateChange?.(active);
+    props.onActiveStateChange?.(active);
+  };
+
+  const { children, style, ref, ...rest } = props;
+
+  const resolvedStyle = StyleSheet.flatten(style ?? {});
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
     };
+  });
 
-    const { children, style, ...rest } = props;
+  return (
+    <BaseButton
+      {...rest}
+      ref={ref}
+      style={resolvedStyle}
+      onActiveStateChange={onActiveStateChange}>
+      <Animated.View
+        style={[
+          btnStyles.underlay,
+          {
+            backgroundColor: underlayColor,
+            borderRadius: resolvedStyle.borderRadius,
+            borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
+            borderTopRightRadius: resolvedStyle.borderTopRightRadius,
+            borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
+            borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
+          },
+          animatedStyle,
+        ]}
+      />
+      {children}
+    </BaseButton>
+  );
+};
 
-    const resolvedStyle = StyleSheet.flatten(style ?? {});
+export const BorderlessButton = (props: BorderlessButtonProps) => {
+  const activeOpacity = props.activeOpacity ?? 0.3;
+  const opacity = useSharedValue<number>(1);
 
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        opacity: opacity.value,
-      };
-    });
+  const onActiveStateChange = (active: boolean) => {
+    if (Platform.OS !== 'android') {
+      opacity.value = active ? activeOpacity : 0;
+    }
 
-    return (
-      <BaseButton
-        {...rest}
-        ref={ref}
-        style={resolvedStyle}
-        onActiveStateChange={onActiveStateChange}>
-        <Animated.View
-          style={[
-            btnStyles.underlay,
-            {
-              backgroundColor: underlayColor,
-              borderRadius: resolvedStyle.borderRadius,
-              borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
-              borderTopRightRadius: resolvedStyle.borderTopRightRadius,
-              borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
-              borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
-            },
-            animatedStyle,
-          ]}
-        />
-        {children}
-      </BaseButton>
-    );
-  }
-);
+    props.onActiveStateChange?.(active);
+  };
 
-export const BorderlessButton = forwardRef(
-  (props: BorderlessButtonWithRefProps, ref: any) => {
-    const activeOpacity = props.activeOpacity ?? 0.3;
-    const opacity = useSharedValue<number>(1);
+  const { children, style, ref, ...rest } = props;
 
-    const onActiveStateChange = (active: boolean) => {
-      console.log('dupa');
-      if (Platform.OS !== 'android') {
-        opacity.value = active ? activeOpacity : 0;
-      }
-
-      props.onActiveStateChange?.(active);
-    };
-
-    const { children, style, innerRef, ...rest } = props;
-
-    return (
-      <AnimatedBaseButton
-        {...rest}
-        // @ts-ignore We don't want `innerRef` to be accessible from public API.
-        // However in this case we need to set it indirectly on `BaseButton`, hence we use ts-ignore
-        innerRef={ref}
-        onActiveStateChange={onActiveStateChange}
-        style={[style, Platform.OS === 'ios' && { opacity: opacity.value }]}>
-        {children}
-      </AnimatedBaseButton>
-    );
-  }
-);
+  return (
+    <AnimatedBaseButton
+      {...rest}
+      ref={ref}
+      onActiveStateChange={onActiveStateChange}
+      style={[style, Platform.OS === 'ios' && { opacity: opacity.value }]}>
+      {children}
+    </AnimatedBaseButton>
+  );
+};

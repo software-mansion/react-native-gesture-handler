@@ -1,14 +1,15 @@
-import * as React from 'react';
 import {
   AccessibilityProps,
   ColorValue,
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+import type { NativeViewGestureConfig } from '../handlers/NativeViewGestureHandler';
+import { BaseGestureConfig } from '../handlers/gestures/gesture';
 
 export interface RawButtonProps
-  extends NativeViewGestureHandlerProps,
+  extends BaseGestureConfig,
+    NativeViewGestureConfig,
     AccessibilityProps {
   /**
    * Defines if more than one button could be pressed simultaneously. By default
@@ -80,9 +81,6 @@ export interface RawButtonProps
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onLongPress?: Function | null;
 }
-interface ButtonWithRefProps {
-  innerRef?: React.ForwardedRef<React.ComponentType<any>>;
-}
 
 export interface BaseButtonProps extends RawButtonProps {
   /**
@@ -119,9 +117,6 @@ export interface BaseButtonProps extends RawButtonProps {
    */
   runOnJS?: boolean;
 }
-export interface BaseButtonWithRefProps
-  extends BaseButtonProps,
-    ButtonWithRefProps {}
 
 export interface RectButtonProps extends BaseButtonProps {
   /**
@@ -136,10 +131,6 @@ export interface RectButtonProps extends BaseButtonProps {
    */
   activeOpacity?: number;
 }
-export interface RectButtonWithRefProps
-  extends RectButtonProps,
-    ButtonWithRefProps {}
-
 export interface BorderlessButtonProps extends BaseButtonProps {
   /**
    * iOS only.
@@ -148,6 +139,3 @@ export interface BorderlessButtonProps extends BaseButtonProps {
    */
   activeOpacity?: number;
 }
-export interface BorderlessButtonWithRefProps
-  extends BorderlessButtonProps,
-    ButtonWithRefProps {}

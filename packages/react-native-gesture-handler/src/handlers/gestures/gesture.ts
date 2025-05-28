@@ -43,7 +43,7 @@ export type GestureRef =
 export interface BaseGestureConfig
   extends CommonGestureConfig,
     Record<string, unknown> {
-  ref?: React.MutableRefObject<GestureType | undefined>;
+  ref?: React.RefObject<GestureType | undefined>;
   requireToFail?: GestureRef[];
   simultaneousWith?: GestureRef[];
   blocksHandlers?: GestureRef[];
