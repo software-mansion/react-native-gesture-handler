@@ -725,10 +725,11 @@ class GestureHandlerOrchestrator(
       x in 0f..child.width.toFloat() && y in 0f..child.height.toFloat()
 
     private fun shouldHandlerWaitForOther(handler: GestureHandler, other: GestureHandler): Boolean =
-      handler !== other && (
-        handler.shouldWaitForHandlerFailure(other) ||
-          other.shouldRequireToWaitForFailure(handler)
-        )
+      handler !== other &&
+        (
+          handler.shouldWaitForHandlerFailure(other) ||
+            other.shouldRequireToWaitForFailure(handler)
+          )
 
     private fun canRunSimultaneously(a: GestureHandler, b: GestureHandler) =
       a === b || a.shouldRecognizeSimultaneously(b) || b.shouldRecognizeSimultaneously(a)
