@@ -23,6 +23,8 @@ const commonConfig = [
 const callbacks = [
   'onBegin',
   'onStart',
+  'onChange',
+  'onUpdate',
   'onEnd',
   'onFinalize',
   'onTouchesDown',
@@ -45,13 +47,12 @@ export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
   config: Readonly<BaseGestureConfig & NativeViewGestureConfig> = {}
 ) {
-  const ComponentWrapper = React.forwardRef<
-    React.ComponentType<any>,
-    P &
+  const ComponentWrapper = (
+    props: P &
       BaseGestureConfig &
       NativeViewGestureConfig &
       Callbacks<NativeViewGestureHandlerPayload>
-  >((props, ref) => {
+  ) => {
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
       (res, key) => {
@@ -72,6 +73,7 @@ export default function createNativeWrapper<P>(
         } as P,
       }
     );
+
     const _ref = useRef<React.ComponentType<P>>(null);
     const _gestureHandlerRef = useRef(null);
 
@@ -85,7 +87,7 @@ export default function createNativeWrapper<P>(
     }
 
     useImperativeHandle(
-      ref,
+      props.ref,
       // @ts-ignore TODO(TS) decide how nulls work in this context
       () => {
         const node = _gestureHandlerRef.current;
@@ -104,7 +106,7 @@ export default function createNativeWrapper<P>(
         <Component {...childProps} ref={_ref} />
       </GestureDetector>
     );
-  });
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   ComponentWrapper.displayName =
