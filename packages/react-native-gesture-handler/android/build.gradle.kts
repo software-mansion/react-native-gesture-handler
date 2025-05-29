@@ -3,7 +3,7 @@ import java.io.File
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    kotlin("android")
 }
 
 if (isNewArchitectureEnabled()) {
@@ -147,8 +147,8 @@ dependencies {
         implementation(project(":react-native-svg"))
     }
 
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("androidx.core:core-ktx:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.core:core-ktx:1.16.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${project.findProperty("kotlinVersion") ?: project.property("RNGH_kotlinVersion")}")
 }
 
