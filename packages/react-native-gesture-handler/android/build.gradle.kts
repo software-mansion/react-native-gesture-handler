@@ -2,15 +2,19 @@ import java.util.Properties
 import java.io.File
 
 plugins {
-    id("com.android.library")
-    kotlin("android")
+        id("com.android.library")
+        id("org.jetbrains.kotlin.android")
+        id("com.diffplug.spotless") version "7.0.4"
+}
+
+repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
 }
 
 if (isNewArchitectureEnabled()) {
     apply(plugin = "com.facebook.react")
-}
-if (project == rootProject) {
-    apply(from = "spotless.gradle")
 }
 
 fun safeExtGet(prop: String, fallback: Any?): Any? =
@@ -164,7 +168,7 @@ fun getExternalLibVersion(project: Project): Triple<Int, Int, Int> {
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 fun shouldUseCommonInterfaceFromReanimated(): Boolean {
     val reanimated = rootProject.subprojects.find { it.name == "react-native-reanimated" } ?: return false
-    val (major, minor, patch) = getExternalLibVersion(reanimated)
+    val (major, minor, _) = getExternalLibVersion(reanimated)
 
     return (major == 2 && minor >= 3) || major >= 3
 }
@@ -225,4 +229,14 @@ fun buildListOfJavaSrcDirs(): List<String> {
     }
 
     return dirs
+}
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        ktlint().editorConfigOverride(mapOf("indent_size" to "2", "max_line_length" to "120"))
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+        endWithNewline()
+    }
 }
