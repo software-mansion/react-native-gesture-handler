@@ -2,15 +2,9 @@ import java.util.Properties
 import java.io.File
 
 plugins {
-        id("com.android.library")
-        id("org.jetbrains.kotlin.android")
-        id("com.diffplug.spotless") version "7.0.4"
-}
-
-repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("com.diffplug.spotless") version "7.0.4"
 }
 
 if (isNewArchitectureEnabled()) {
