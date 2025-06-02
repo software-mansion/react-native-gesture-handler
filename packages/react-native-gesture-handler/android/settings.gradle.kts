@@ -20,3 +20,4 @@ dependencyResolutionManagement {
 }
 
 include("lib")
+project(":lib").projectDir.mkdirs()

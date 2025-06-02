@@ -131,6 +131,8 @@ android {
     sourceSets["main"].java.srcDirs(buildListOfJavaSrcDirs())
 
     if (isGHExampleApp()) {
+        val androidDir = project.projectDir
+        
         tasks.withType<com.android.build.gradle.tasks.ExternalNativeBuildJsonTask>().configureEach {
             doLast {
                 val hashRegex = """/Debug/([^/]+)/logs""".toRegex()
@@ -144,14 +146,12 @@ android {
                 val archResults = archRegex.find(path)
                 val arch = archResults?.groups?.get(1)?.value
 
-                val rootDir = File(project.projectDir, "../../..")
-                val generated = File(project.projectDir, ".cxx/Debug/$hash/$arch/compile_commands.json")
-                
-                if (generated != null) {
-                    val output = File(rootDir, "compile_commands.json")
-                    output.writeText(generated.readText())
-                    println("Generated clangd metadata.")
-                }
+                val rootDir = File(androidDir, "../../..")
+                val generated = File(androidDir, ".cxx/Debug/$hash/$arch/compile_commands.json")
+                val output = File(rootDir, "compile_commands.json")
+                output.writeText(generated.readText())
+
+                println("Generated clangd metadata.")
             }
         }
     }
