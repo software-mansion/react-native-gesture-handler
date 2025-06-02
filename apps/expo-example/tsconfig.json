@@ -6,7 +6,7 @@
     "paths": {
       "common-app": ["../common-app/index.ts"],
       "react-native-gesture-handler": [
-        "../../packages/react-native-gesture-handler/index.ts"
+        "../../packages/react-native-gesture-handler/src"
       ],
       "react-native-gesture-handler/ReanimatedSwipeable": [
         "../../packages/react-native-gesture-handler/src/components/ReanimatedSwipeable.tsx"
