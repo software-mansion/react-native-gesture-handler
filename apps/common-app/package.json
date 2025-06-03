@@ -23,7 +23,7 @@
     "@react-navigation/stack": "^7.2.10",
     "@swmansion/icons": "^0.0.1",
     "react-native-gesture-handler": "workspace:*",
-    "react-native-reanimated": "^3.17.4",
+    "react-native-reanimated": "3.18.0",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.10.0"
   },
