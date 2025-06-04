@@ -188,12 +188,9 @@ android {
 
     sourceSets.main {
         java {
-            // Include "common/" only when it's not provided by Reanimated to mitigate
-            // multiple definitions of the same class preventing build
             if (shouldUseCommonInterfaceFromReanimated()) {
                 srcDirs += 'reanimated/src/main/java'
             } else {
-                srcDirs += 'common/src/main/java'
                 srcDirs += 'noreanimated/src/main/java'
             }
 
