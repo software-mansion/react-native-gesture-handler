@@ -45,6 +45,7 @@ def resolveReactNativeDirectory() {
             commandLine("node", "--print", "require.resolve('react-native/package.json')")
         }.standardOutput.asText.get().trim()
     )
+
     if (reactNativePackage.exists()) {
         return reactNativePackage.parentFile
     }
@@ -59,6 +60,7 @@ def resolveReactNativeDirectory() {
 if (isNewArchitectureEnabled()) {
     apply plugin: 'com.facebook.react'
 }
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -140,10 +142,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 21)
+        minSdkVersion safeExtGet('minSdkVersion', 24)
         targetSdkVersion safeExtGet('targetSdkVersion', 33)
-        versionCode 1
-        versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
