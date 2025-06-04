@@ -208,12 +208,7 @@ android {
             } else {
                 // 'paper/src/main/java' includes files from codegen so the library can compile with
                 // codegen turned off
-                
-                if (REACT_NATIVE_MINOR_VERSION > 77) {
-                    srcDirs += 'paper/src/main/java'
-                } else {
-                    srcDirs += 'paper77/src/main/java'
-                }
+                srcDirs += 'paper/src/main/java'
             }
         }
     }
