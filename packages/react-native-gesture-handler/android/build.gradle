@@ -66,34 +66,42 @@ if (project == rootProject) {
     apply from: "spotless.gradle"
 }
 
+def getExternalLibVersion(project){
+    def inputFile = new File(project.projectDir, "../package.json")
+    def json = new JsonSlurper().parseText(inputFile.text)
+    def libVerision = json.version as String
+    def (major, minor, patch) = libVerision.tokenize('.')
+
+    return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patch)]
+}
+
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
     def reanimated = rootProject.subprojects.find { it.name == 'react-native-reanimated' }
-    if (reanimated != null) {
-        def inputFile = new File(reanimated.projectDir, '../package.json')
-        def json = new JsonSlurper().parseText(inputFile.text)
-        def reanimatedVersion = json.version as String
-        def (major, minor, patch) = reanimatedVersion.tokenize('.')
-        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) || Integer.parseInt(major) >= 3
-    } else {
+
+    if (reanimated == null) {
         return false
     }
+
+    def (major, minor, patch) = getExternalLibVersion(reanimated)
+    
+    return (major == 2 && minor >= 3) || major >= 3
 }
 
 def shouldUseCommonInterfaceFromRNSVG() {
     // common interface compatible with react-native-svg >= 15.11.2
     def rnsvg = rootProject.subprojects.find { it.name == 'react-native-svg' }
+
     if (rnsvg == null) {
         return false
     }
 
-    def inputFile = new File(rnsvg.projectDir, '../package.json')
-    def json = new JsonSlurper().parseText(inputFile.text)
-    def rnsvgVersion = json.version as String
-    def (major, minor, patch) = rnsvgVersion.tokenize('.')
-    return (Integer.parseInt(major) == 15 && Integer.parseInt(minor) == 11 && Integer.parseInt(patch) >= 2) ||
-            (Integer.parseInt(major) == 15 && Integer.parseInt(minor) > 11) ||
-            Integer.parseInt(major) > 15
+    def (major, minor, patch) = getExternalLibVersion(rnsvg)
+
+
+    return (major == 15 && minor == 11 && patch >= 2) ||
+            (major == 15 && minor > 11) ||
+            major > 15
 }
 
 def reactNativeArchitectures() {
