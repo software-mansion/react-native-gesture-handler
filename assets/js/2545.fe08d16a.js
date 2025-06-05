@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_native_gesture_handler_docs=self.webpackChunkreact_native_gesture_handler_docs||[]).push([[2545],{2545:(e,a,r)=>{r.r(a),r.d(a,{DocSearchModal:()=>c.a});var c=r(9776)}}]);

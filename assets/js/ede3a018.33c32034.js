@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkreact_native_gesture_handler_docs=self.webpackChunkreact_native_gesture_handler_docs||[]).push([[8504],{1641:(e,t,a)=>{a.r(t),a.d(t,{default:()=>s});var l=a(6540),n=a(6588),r=a(5435),c=a(1441);function s(){const e=(0,n.Ay)();return l.createElement(r.A,null,l.createElement("h2",null,"Global data"),l.createElement(c.A,{src:e,collapseDepth:3}))}}}]);

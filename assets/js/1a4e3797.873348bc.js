@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkreact_native_gesture_handler_docs=self.webpackChunkreact_native_gesture_handler_docs||[]).push([[2138],{6893:(e,s,t)=>{t.r(s),t.d(s,{default:()=>a});const a=t(4206).g}}]);
