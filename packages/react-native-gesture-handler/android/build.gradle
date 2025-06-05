@@ -74,7 +74,10 @@ def getExternalLibVersion(project){
     def libVerision = json.version as String
     def (major, minor, patch) = libVerision.tokenize('.')
 
-    return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patch)]
+    // Handle cases where version is a pre-release one, e.g. "2.3.0-alpha.1"
+    def patchVersion = patch.find(/(\d+)/) ? patch.find(/(\d+)/) : "0"
+
+    return [Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(patchVersion)]
 }
 
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
