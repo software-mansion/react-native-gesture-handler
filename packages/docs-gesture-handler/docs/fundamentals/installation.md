@@ -29,19 +29,19 @@ Setting up `react-native-gesture-handler` is pretty straightforward:
 
 <Tabs groupId="package-managers">
   <TabItem value="expo" label="EXPO" default>
-
+    ```bash
     npx expo install react-native-gesture-handler
-
+    ```
   </TabItem>
   <TabItem value="npm" label="NPM">
-
+    ```bash
     npm install react-native-gesture-handler
-
+    ```
   </TabItem>
   <TabItem value="yarn" label="YARN">
-
+    ```bash
     yarn add react-native-gesture-handler
-
+    ```
   </TabItem>
 </Tabs>
 
