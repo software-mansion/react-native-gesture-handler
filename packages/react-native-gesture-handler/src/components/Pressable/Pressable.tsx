@@ -231,8 +231,8 @@ const Pressable = forwardRef(
           return;
         }
 
-        if (hasPassedBoundsChecks.current) {
-          onLongPress?.(gestureTouchToPressableEvent(event));
+        if (hasPassedBoundsChecks.current && onLongPress) {
+          onLongPress(gestureTouchToPressableEvent(event));
           isPressCallbackEnabled.current = false;
         }
 
