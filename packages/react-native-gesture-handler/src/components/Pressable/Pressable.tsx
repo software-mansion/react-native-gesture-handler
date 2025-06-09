@@ -41,7 +41,10 @@ const IS_TEST_ENV = isTestEnv();
 let IS_FABRIC: null | boolean = null;
 
 const Pressable = forwardRef(
-  (props: PressableProps, pressableRef: ForwardedRef<View>) => {
+  (
+    props: PressableProps,
+    pressableRef: ForwardedRef<React.ComponentRef<typeof View>>
+  ) => {
     const {
       testOnly_pressed,
       hitSlop,
@@ -228,8 +231,8 @@ const Pressable = forwardRef(
           return;
         }
 
-        if (hasPassedBoundsChecks.current) {
-          onLongPress?.(gestureTouchToPressableEvent(event));
+        if (hasPassedBoundsChecks.current && onLongPress) {
+          onLongPress(gestureTouchToPressableEvent(event));
           isPressCallbackEnabled.current = false;
         }
 
@@ -246,7 +249,7 @@ const Pressable = forwardRef(
       (delayLongPress ?? DEFAULT_LONG_PRESS_DURATION) +
       (unstable_pressDelay ?? 0);
 
-    const innerPressableRef = useRef<View>(null);
+    const innerPressableRef = useRef<React.ComponentRef<typeof View>>(null);
 
     const measureCallback = useCallback(
       (width: number, height: number, event: GestureTouchEvent) => {
@@ -309,11 +312,11 @@ const Pressable = forwardRef(
           .onTouchesDown((event) => {
             handlingOnTouchesDown.current = true;
             if (pressableRef) {
-              (pressableRef as RefObject<View>).current?.measure(
-                (_x, _y, width, height) => {
-                  measureCallback(width, height, event);
-                }
-              );
+              (
+                pressableRef as RefObject<React.ComponentRef<typeof View>>
+              ).current?.measure((_x, _y, width, height) => {
+                measureCallback(width, height, event);
+              });
             } else {
               innerPressableRef.current?.measure((_x, _y, width, height) => {
                 measureCallback(width, height, event);

@@ -280,8 +280,10 @@ export default class DrawerLayout extends Component<
   private onGestureEvent?: (
     event: GestureEvent<PanGestureHandlerEventPayload>
   ) => void;
-  private accessibilityIsModalView = React.createRef<View>();
-  private pointerEventsView = React.createRef<View>();
+  private accessibilityIsModalView =
+    React.createRef<React.ComponentRef<typeof View>>();
+  private pointerEventsView =
+    React.createRef<React.ComponentRef<typeof View>>();
   private panGestureHandler = React.createRef<PanGestureHandler | null>();
   private drawerShown = false;
 
