@@ -1,52 +1,58 @@
 name: Kotlin Lint
+
 on:
   pull_request:
     paths:
-      - 'android/**'
+      - packages/react-native-gesture-handler/android/**
   push:
     branches:
       - main
   workflow_dispatch:
+
 jobs:
   check:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
+
     runs-on: ubuntu-latest
+    env:
+      WORKING_DIRECTORY: packages/react-native-gesture-handler
     concurrency:
       group: kotlin-lint-${{ github.ref }}
       cancel-in-progress: true
+
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Use Java 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          distribution: 'oracle'
-          java-version: '17'
+          distribution: oracle
+          java-version: 17
 
       - name: Use Node.js 18
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'yarn'
+          cache: yarn
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install node dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Restore build from cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            android/build
-            android/.gradle
-          key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'android/build.gradle') }}
+            ${{ env.WORKING_DIRECTORY }}/android/build
+            ${{ env.WORKING_DIRECTORY }}/android/.gradle
+          key: ${{ runner.os }}-kotlin-lint-gradle-${{ hashFiles('${{ env.WORKING_DIRECTORY }}/**/*.gradle*', '${{ env.WORKING_DIRECTORY }}/**/gradle-wrapper.properties', '${{ env.WORKING_DIRECTORY }}/android/build.gradle') }}
 
       - name: Lint
-        run: yarn lint:android
+        run: yarn workspace react-native-gesture-handler lint:android

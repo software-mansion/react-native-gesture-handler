@@ -13,13 +13,10 @@
     "target": "esnext",
     "declaration": true,
     "declarationMap": false,
-    "outDir": "lib/typescript",
-
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
     "noUnusedParameters": true,
     "noUnusedLocals": true
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
+  }
 }

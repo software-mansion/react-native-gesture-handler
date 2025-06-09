@@ -1,0 +1,131 @@
+{
+  "docs": [
+    {
+      "collapsed": true,
+      "type": "category",
+      "label": "Basics",
+      "items": [
+        {
+          "type": "doc",
+          "id": "getting-started"
+        },
+        {
+          "type": "doc",
+          "id": "about-handlers"
+        },
+        {
+          "type": "doc",
+          "id": "state"
+        },
+        {
+          "type": "doc",
+          "id": "interactions"
+        },
+        {
+          "type": "doc",
+          "id": "example"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "category",
+      "label": "API reference",
+      "items": [
+        {
+          "collapsed": true,
+          "type": "category",
+          "label": "Gesture handlers",
+          "items": [
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/common-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/pan-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/tap-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/longpress-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/rotation-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/fling-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/pinch-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/force-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/nativeview-gh"
+            },
+            {
+              "type": "doc",
+              "id": "api/gesture-handlers/create-native-wrapper"
+            }
+          ]
+        },
+        {
+          "collapsed": true,
+          "type": "category",
+          "label": "Components",
+          "items": [
+            {
+              "type": "doc",
+              "id": "api/components/buttons"
+            },
+            {
+              "type": "doc",
+              "id": "api/components/swipeable"
+            },
+            {
+              "type": "doc",
+              "id": "api/components/touchables"
+            },
+            {
+              "type": "doc",
+              "id": "api/components/drawer-layout"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "type": "category",
+      "label": "Other",
+      "items": [
+        {
+          "type": "doc",
+          "id": "contributing"
+        },
+        {
+          "type": "doc",
+          "id": "troubleshooting"
+        },
+        {
+          "type": "doc",
+          "id": "resources"
+        },
+        {
+          "type": "doc",
+          "id": "credits"
+        }
+      ]
+    }
+  ]
+}

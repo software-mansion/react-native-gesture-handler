@@ -1,4 +1,5 @@
 name: Check for stale issues
+
 on:
   schedule:
     - cron: '37 21 * * *' # at 21:37 every day
@@ -12,14 +13,15 @@ jobs:
   main:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Actions
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          repository: 'software-mansion-labs/swmansion-bot'
+          repository: software-mansion-labs/swmansion-bot
           ref: stable
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
@@ -30,5 +32,5 @@ jobs:
       - name: Close when stale
         uses: ./close-when-stale
         with:
-          close-when-stale-label: 'Close when stale'
+          close-when-stale-label: Close when stale
           days-to-close: 20
