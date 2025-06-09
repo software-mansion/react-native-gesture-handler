@@ -48,7 +48,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  private fun detachHandlerInternal(handler: GestureHandler<*>) {
+  private fun detachHandlerInternal(handler: GestureHandler) {
     val attachedToView = attachedTo[handler.tag]
     if (attachedToView != null) {
       attachedTo.remove(handler.tag)

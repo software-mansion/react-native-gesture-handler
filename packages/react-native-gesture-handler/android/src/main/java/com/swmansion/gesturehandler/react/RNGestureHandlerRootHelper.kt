@@ -26,7 +26,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     val wrappedViewTag = wrappedView.id
     check(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
-    val registry = module.registry
+    val registry = RNGestureHandlerModule.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
       ReactConstants.TAG,
