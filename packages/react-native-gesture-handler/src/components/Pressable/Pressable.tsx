@@ -455,7 +455,7 @@ const Pressable = forwardRef(
         IS_FABRIC = isFabric();
       }
 
-      const defaultRippleColor = android_ripple ? undefined : 'transparent';
+      const defaultRippleColor = android_ripple ? undefined : Number(0x00000000); // transparent
       const unprocessedRippleColor =
         android_ripple?.color ?? defaultRippleColor;
       return IS_FABRIC
