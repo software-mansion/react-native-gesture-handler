@@ -16,7 +16,9 @@
     "circular-dependency-check": "yarn madge --extensions js,ts,tsx --circular src",
     "architectures-consistency-check": "node ../../scripts/codegen-check-consistency.js",
     "sync-architectures": "node ../../scripts/codegen-sync-archs.js",
-    "clean": "rm -rf node_modules android/build android/.cxx"
+    "clean": "rm -rf node_modules android/build android/.cxx",
+    "prepack": "cp ../../README.md ./README.md",
+    "postpack": "rm ./README.md"
   },
   "react-native": "src/index.ts",
   "main": "lib/commonjs/index.js",
