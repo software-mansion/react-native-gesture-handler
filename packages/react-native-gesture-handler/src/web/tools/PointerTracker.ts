@@ -61,9 +61,7 @@ export default class PointerTracker {
   }
 
   public track(event: AdaptedEvent): void {
-    const element: TrackerElement = this.trackedPointers.get(
-      event.pointerId
-    ) as TrackerElement;
+    const element = this.trackedPointers.get(event.pointerId);
 
     if (!element) {
       return;
@@ -114,20 +112,24 @@ export default class PointerTracker {
   }
 
   public getVelocity(pointerId: number) {
-    return {
-      x: this.trackedPointers.get(pointerId)?.velocityX as number,
-      y: this.trackedPointers.get(pointerId)?.velocityY as number,
-    };
+    const element = this.trackedPointers.get(pointerId);
+
+    return element
+      ? {
+          x: element.velocityX,
+          y: element.velocityY,
+        }
+      : null;
   }
 
   public getLastAbsoluteCoords(pointerId?: number) {
     return this.trackedPointers.get(pointerId ?? this.lastMovedPointerId)
-      ?.abosoluteCoords as Point;
+      ?.abosoluteCoords;
   }
 
   public getLastRelativeCoords(pointerId?: number) {
     return this.trackedPointers.get(pointerId ?? this.lastMovedPointerId)
-      ?.relativeCoords as Point;
+      ?.relativeCoords;
   }
 
   // Some handlers use these methods to send average values in native event.
