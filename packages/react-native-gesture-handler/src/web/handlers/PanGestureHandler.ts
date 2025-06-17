@@ -325,8 +325,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastY = lastCoords.y;
 
     const velocity = this.tracker.getVelocity(event.pointerId);
-    this.velocityX = velocity.x;
-    this.velocityY = velocity.y;
+    this.velocityX = velocity?.x ?? 0;
+    this.velocityY = velocity?.y ?? 0;
 
     this.checkBegan();
 
@@ -346,8 +346,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastY = lastCoords.y;
 
     const velocity = this.tracker.getVelocity(event.pointerId);
-    this.velocityX = velocity.x;
-    this.velocityY = velocity.y;
+    this.velocityX = velocity?.x ?? 0;
+    this.velocityY = velocity?.y ?? 0;
 
     this.checkBegan();
 
@@ -408,8 +408,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.lastY = lastCoords.y;
 
     const velocity = this.tracker.getVelocity(event.pointerId);
-    this.velocityX = velocity.x;
-    this.velocityY = velocity.y;
+    this.velocityX = velocity?.x ?? 0;
+    this.velocityY = velocity?.y ?? 0;
 
     this.tryToSendMoveEvent(false, event);
     this.scheduleWheelEnd(event);
@@ -541,8 +541,8 @@ export default class PanGestureHandler extends GestureHandler {
       }
     } else {
       const velocity = this.tracker.getVelocity(event.pointerId);
-      this.velocityX = velocity.x;
-      this.velocityY = velocity.y;
+      this.velocityX = velocity?.x ?? 0;
+      this.velocityY = velocity?.y ?? 0;
     }
   }
 
