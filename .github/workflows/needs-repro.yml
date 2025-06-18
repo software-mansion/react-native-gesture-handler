@@ -3,8 +3,6 @@ name: Check for reproduction
 on:
   issues:
     types: [opened, edited]
-  issue_comment:
-    types: [created, edited, deleted]
 
 jobs:
   main:
