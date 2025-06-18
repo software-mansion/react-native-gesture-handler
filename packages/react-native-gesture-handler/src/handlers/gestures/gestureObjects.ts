@@ -73,7 +73,9 @@ export const GestureObjects = {
   },
 
   /**
-   * #### iOS only
+   * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
+   *
+   *  #### iOS only
    * A continuous gesture that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
    * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/force-touch-gesture
    */
