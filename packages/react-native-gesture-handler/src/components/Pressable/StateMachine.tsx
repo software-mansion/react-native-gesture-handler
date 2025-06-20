@@ -1,6 +1,6 @@
 interface StepDefinition {
   signal: string;
-  callbacks: (() => void)[];
+  callbacks?: (() => void)[];
 }
 
 interface FlowDefinition {
@@ -41,7 +41,7 @@ class Flow {
       return false;
     }
 
-    step.callbacks.forEach((cb) => cb());
+    step.callbacks?.forEach((cb) => cb());
     this.stepIndex++;
 
     return this.stepIndex === this.steps.length;
