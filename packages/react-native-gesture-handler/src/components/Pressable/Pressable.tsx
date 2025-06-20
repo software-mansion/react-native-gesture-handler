@@ -94,14 +94,18 @@ const PressableStateful = (props: PressableProps) => {
               },
               {
                 signal: Signal.NATIVE_START,
-                callbacks: [(event) => onPress?.(event)],
               },
               {
                 signal: Signal.NATIVE_END,
               },
               {
                 signal: Signal.LONG_PRESS_TOUCH_UP,
-                callbacks: [(event) => onPressOut?.(event)],
+                callbacks: [
+                  (event) => {
+                    onPress?.(event);
+                    onPressOut?.(event);
+                  },
+                ],
               },
             ],
           },
@@ -121,8 +125,46 @@ const PressableStateful = (props: PressableProps) => {
               {
                 signal: Signal.NATIVE_END,
                 callbacks: [
-                  (event) => onPress?.(event),
-                  (event) => onPressOut?.(event),
+                  (event) => {
+                    onPress?.(event);
+                    onPressOut?.(event);
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            isActive: Platform.OS === 'web',
+            steps: [
+              {
+                signal: Signal.NATIVE_BEGIN,
+              },
+              {
+                signal: Signal.NATIVE_START,
+              },
+              {
+                signal: Signal.NATIVE_TOUCH_DOWN,
+              },
+              {
+                signal: Signal.LONG_PRESS_BEGIN,
+                callbacks: [(event) => onPressIn?.(event)],
+              },
+              {
+                signal: Signal.LONG_PRESS_TOUCH_DOWN,
+              },
+              {
+                signal: Signal.NATIVE_TOUCH_UP,
+              },
+              {
+                signal: Signal.NATIVE_END,
+              },
+              {
+                signal: Signal.LONG_PRESS_TOUCH_UP,
+                callbacks: [
+                  (event) => {
+                    onPress?.(event);
+                    onPressOut?.(event);
+                  },
                 ],
               },
             ],
