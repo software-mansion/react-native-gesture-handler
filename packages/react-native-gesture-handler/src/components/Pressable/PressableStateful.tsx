@@ -157,9 +157,15 @@ const PressableStateful = (props: PressableProps) => {
         })
         .onTouchesUp(() => {
           stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_UP);
+
+          if (Platform.OS === 'android') {
+            // redundant, prevents potential soft-locks
+            stateMachine.reset();
+          }
         })
         .onTouchesCancelled(() => {
-          null; // stateMachine.reset()
+          /* dbg */ console.log('Long press touches cancel');
+          stateMachine.reset();
         })
         .onBegin(() => {
           stateMachine.sendSignal(Signal.LONG_PRESS_BEGIN);
@@ -184,7 +190,8 @@ const PressableStateful = (props: PressableProps) => {
           stateMachine.sendSignal(Signal.NATIVE_TOUCH_UP);
         })
         .onTouchesCancelled(() => {
-          null; // stateMachine.reset()
+          /* dbg */ console.log('Native touches cancel');
+          stateMachine.reset();
         })
         .onBegin(() => {
           stateMachine.sendSignal(Signal.NATIVE_BEGIN);

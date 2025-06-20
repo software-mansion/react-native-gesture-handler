@@ -8,6 +8,11 @@ interface FlowDefinition {
   steps: StepDefinition[];
 }
 
+const RNGH_ISSUE_URL =
+  'https://github.com/software-mansion/react-native-gesture-handler/issues/new?template=bug-report.yml';
+
+const OVERFLOW_ERROR_MESSAGE = `Pressable StateMachine: Index overflow error. Please this bug: ${RNGH_ISSUE_URL}`;
+
 class Flow {
   private steps: StepDefinition[];
   private stepIndex: number;
@@ -30,7 +35,8 @@ class Flow {
     }
 
     if (this.stepIndex >= this.steps.length) {
-      // this case should never occur
+      // this case should not be possible
+      console.error(OVERFLOW_ERROR_MESSAGE);
       return true;
     }
 
@@ -43,6 +49,10 @@ class Flow {
 
     step.callbacks?.forEach((cb) => cb());
     this.stepIndex++;
+
+    if (this.stepIndex === this.steps.length) {
+      /* dbg */ console.log('Pressable StateMachine: Success!');
+    }
 
     return this.stepIndex === this.steps.length;
   }
@@ -68,6 +78,8 @@ class StateMachine {
   }
 
   public sendSignal(signal: string) {
+    /* dbg */ console.log('Received:', signal);
+
     let isComplete = false;
 
     for (const flow of this.flows) {
