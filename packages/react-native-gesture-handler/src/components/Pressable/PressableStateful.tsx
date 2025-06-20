@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableProps } from './PressableProps';
@@ -6,7 +6,6 @@ import {
   Insets,
   Platform,
   StyleProp,
-  View,
   ViewStyle,
   processColor,
 } from 'react-native';
@@ -38,19 +37,16 @@ enum Signal {
   LONG_PRESS_TOUCH_UP = 'longPressTouchUp',
 }
 
-const PressableStateful = ({
-  ref: pressableRef,
-  props,
-}: {
-  ref: ForwardedRef<React.ComponentRef<typeof View>>;
-  props: PressableProps;
-}) => {
+const PressableStateful = (props: PressableProps) => {
+  // fixme: add ref prop, likely should be inherited from a higher order class
   const {
     testOnly_pressed,
     hitSlop,
     pressRetentionOffset,
     delayHoverIn,
     delayHoverOut,
+    // delayLongPress,
+    // unstable_pressDelay,
     onHoverIn,
     onHoverOut,
     onPress,
@@ -248,7 +244,6 @@ const PressableStateful = ({
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
-        ref={pressableRef}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
