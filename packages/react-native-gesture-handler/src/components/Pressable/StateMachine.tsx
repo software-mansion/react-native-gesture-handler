@@ -60,9 +60,11 @@ class Flow {
 
 class StateMachine {
   private flows: Flow[];
+  /* dbg, remove */ private label: string | undefined;
 
-  constructor(flowDefinitions: FlowDefinition[]) {
+  constructor(flowDefinitions: FlowDefinition[], label?: string) {
     this.flows = [];
+    this.label = label;
     for (const flow of flowDefinitions) {
       if (flow.isActive === false) {
         continue;
@@ -78,7 +80,7 @@ class StateMachine {
   }
 
   public sendSignal(signal: string) {
-    /* dbg */ console.log('Received:', signal);
+    /* dbg */ console.log(`${this.label ?? 'Received'}:`, signal);
 
     let isComplete = false;
 

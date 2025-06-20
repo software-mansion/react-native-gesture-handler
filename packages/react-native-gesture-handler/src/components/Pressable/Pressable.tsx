@@ -40,6 +40,7 @@ enum Signal {
 const PressableStateful = (props: PressableProps) => {
   // fixme: add ref prop, likely should be inherited from a higher order class
   const {
+    testID,
     testOnly_pressed,
     hitSlop,
     pressRetentionOffset,
@@ -73,38 +74,41 @@ const PressableStateful = (props: PressableProps) => {
 
   const stateMachine = useMemo(
     () =>
-      new StateMachine([
-        {
-          isActive: Platform.OS === 'android' && isFabric(),
-          steps: [
-            {
-              signal: Signal.NATIVE_BEGIN,
-            },
-            {
-              signal: Signal.NATIVE_TOUCH_DOWN,
-            },
-            {
-              signal: Signal.LONG_PRESS_BEGIN,
-            },
-            {
-              signal: Signal.LONG_PRESS_TOUCH_DOWN,
-            },
-            {
-              signal: Signal.NATIVE_TOUCH_UP,
-            },
-            {
-              signal: Signal.NATIVE_START,
-            },
-            {
-              signal: Signal.NATIVE_END,
-            },
-            {
-              signal: Signal.LONG_PRESS_TOUCH_UP,
-            },
-          ],
-        },
-      ]),
-    []
+      new StateMachine(
+        [
+          {
+            isActive: Platform.OS === 'android' && isFabric(),
+            steps: [
+              {
+                signal: Signal.NATIVE_BEGIN,
+              },
+              {
+                signal: Signal.NATIVE_TOUCH_DOWN,
+              },
+              {
+                signal: Signal.LONG_PRESS_BEGIN,
+              },
+              {
+                signal: Signal.LONG_PRESS_TOUCH_DOWN,
+              },
+              {
+                signal: Signal.NATIVE_TOUCH_UP,
+              },
+              {
+                signal: Signal.NATIVE_START,
+              },
+              {
+                signal: Signal.NATIVE_END,
+              },
+              {
+                signal: Signal.LONG_PRESS_TOUCH_UP,
+              },
+            ],
+          },
+        ],
+        /* dbg, remove */ testID
+      ),
+    [testID]
   );
 
   const [pressedState] = useState(testOnly_pressed ?? false);
