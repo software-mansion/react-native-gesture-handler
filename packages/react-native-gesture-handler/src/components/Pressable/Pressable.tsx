@@ -87,28 +87,28 @@ const PressableStateful = (props: PressableProps) => {
               },
               {
                 signal: Signal.LONG_PRESS_BEGIN,
+                callbacks: [(event) => onPressIn?.(event)],
               },
               {
                 signal: Signal.LONG_PRESS_TOUCH_DOWN,
               },
               {
-                signal: Signal.NATIVE_TOUCH_UP,
-              },
-              {
                 signal: Signal.NATIVE_START,
+                callbacks: [(event) => onPress?.(event)],
               },
               {
                 signal: Signal.NATIVE_END,
               },
               {
                 signal: Signal.LONG_PRESS_TOUCH_UP,
+                callbacks: [(event) => onPressOut?.(event)],
               },
             ],
           },
         ],
         /* dbg, remove */ testID
       ),
-    [testID]
+    [onPress, onPressIn, onPressOut, testID]
   );
 
   const [pressedState] = useState(testOnly_pressed ?? false);
@@ -171,13 +171,19 @@ const PressableStateful = (props: PressableProps) => {
           /* dbg */ console.log('Long press touches cancel');
           stateMachine.reset();
         })
-        .onBegin(() => {
+        .onBegin((event) => {
+          const gEvent = gestureToPressableEvent(event);
+          stateMachine.setEvent(gEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_BEGIN);
         })
-        .onStart(() => {
+        .onStart((event) => {
+          const gEvent = gestureToPressableEvent(event);
+          stateMachine.setEvent(gEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_START);
         })
-        .onEnd(() => {
+        .onEnd((event) => {
+          const gEvent = gestureToPressableEvent(event);
+          stateMachine.setEvent(gEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_END);
         }),
     [stateMachine]
@@ -187,11 +193,15 @@ const PressableStateful = (props: PressableProps) => {
   const buttonGesture = useMemo(
     () =>
       Gesture.Native()
+        // todo: onTouches* could provide useful event data, if we ever encounter an impossible order edge-case
         .onTouchesDown(() => {
           stateMachine.sendSignal(Signal.NATIVE_TOUCH_DOWN);
         })
         .onTouchesUp(() => {
-          stateMachine.sendSignal(Signal.NATIVE_TOUCH_UP);
+          if (Platform.OS !== 'android') {
+            // conflicts with Gesture.Native().onStart() on android
+            stateMachine.sendSignal(Signal.NATIVE_TOUCH_UP);
+          }
         })
         .onTouchesCancelled(() => {
           /* dbg */ console.log('Native touches cancel');

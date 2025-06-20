@@ -1,6 +1,8 @@
+import { PressableEvent } from './PressableProps';
+
 interface StepDefinition {
   signal: string;
-  callbacks?: (() => void)[];
+  callbacks?: ((event: PressableEvent) => void)[];
 }
 
 interface FlowDefinition {
@@ -11,7 +13,8 @@ interface FlowDefinition {
 const RNGH_ISSUE_URL =
   'https://github.com/software-mansion/react-native-gesture-handler/issues/new?template=bug-report.yml';
 
-const OVERFLOW_ERROR_MESSAGE = `Pressable StateMachine: Index overflow error. Please this bug: ${RNGH_ISSUE_URL}`;
+const OVERFLOW_ERROR_MESSAGE = `Pressable StateMachine: Index overflow error. Please report this bug: ${RNGH_ISSUE_URL}`;
+const UNDEFINED_EVENT_ERROR_MESSAGE = `Pressable StateMachine: Tried calling CB with undefined event argument!. Please report this bug: ${RNGH_ISSUE_URL}`;
 
 class Flow {
   private steps: StepDefinition[];
@@ -29,7 +32,7 @@ class Flow {
     this.enabled = true;
   }
 
-  public sendSignal(signal: string): boolean {
+  public sendSignal(signal: string, event?: PressableEvent): boolean {
     if (!this.enabled) {
       return false;
     }
@@ -47,7 +50,12 @@ class Flow {
       return false;
     }
 
-    step.callbacks?.forEach((cb) => cb());
+    if (step.callbacks && step.callbacks.length > 0 && !event) {
+      // if this case occurs, it's an unexpected edge-case that has to be patched
+      console.warn(UNDEFINED_EVENT_ERROR_MESSAGE);
+    }
+
+    step.callbacks?.forEach((cb) => event && cb(event));
     this.stepIndex++;
 
     if (this.stepIndex === this.steps.length) {
@@ -60,6 +68,7 @@ class Flow {
 
 class StateMachine {
   private flows: Flow[];
+  private latestEvent: PressableEvent | undefined;
   /* dbg, remove */ private label: string | undefined;
 
   constructor(flowDefinitions: FlowDefinition[], label?: string) {
@@ -77,6 +86,11 @@ class StateMachine {
     for (const flow of this.flows) {
       flow.reset();
     }
+    this.latestEvent = undefined;
+  }
+
+  public setEvent(event: PressableEvent) {
+    this.latestEvent = event;
   }
 
   public sendSignal(signal: string) {
@@ -85,7 +99,7 @@ class StateMachine {
     let isComplete = false;
 
     for (const flow of this.flows) {
-      isComplete ||= flow.sendSignal(signal);
+      isComplete ||= flow.sendSignal(signal, this.latestEvent);
     }
 
     if (isComplete) {
