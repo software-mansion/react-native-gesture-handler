@@ -19,10 +19,24 @@ import {
   RelationPropName,
   RelationPropType,
 } from '../utils';
+import { StateMachine } from './StateMachine';
 
 const IS_TEST_ENV = isTestEnv();
 
 let IS_FABRIC: null | boolean = null;
+
+enum Signal {
+  NATIVE_BEGIN = 'nativeBegin',
+  NATIVE_START = 'nativeStart',
+  NATIVE_END = 'nativeEnd',
+  NATIVE_TOUCH_DOWN = 'nativeTouchDown',
+  NATIVE_TOUCH_UP = 'nativeTouchUp',
+  LONG_PRESS_BEGIN = 'longPressBegin',
+  LONG_PRESS_START = 'longPressStart',
+  LONG_PRESS_END = 'longPressEnd',
+  LONG_PRESS_TOUCH_DOWN = 'longPressTouchDown',
+  LONG_PRESS_TOUCH_UP = 'longPressTouchUp',
+}
 
 const PressableStateful = ({
   ref: pressableRef,
@@ -60,6 +74,17 @@ const PressableStateful = ({
     requireExternalGestureToFail,
     blocksExternalGesture,
   };
+
+  const stateMachine = useMemo(
+    () =>
+      new StateMachine([
+        {
+          isActive: false,
+          steps: [],
+        },
+      ]),
+    []
+  );
 
   const [pressedState] = useState(testOnly_pressed ?? false);
 
@@ -100,8 +125,6 @@ const PressableStateful = ({
     [delayHoverIn, delayHoverOut, onHoverIn, onHoverOut]
   );
 
-  const innerPressableRef = useRef<React.ComponentRef<typeof View>>(null);
-
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
@@ -109,24 +132,24 @@ const PressableStateful = ({
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown(() => {
-          null;
+          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_DOWN);
         })
         .onTouchesUp(() => {
-          null;
+          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_UP);
         })
         .onTouchesCancelled(() => {
-          null;
+          null; // stateMachine.reset()
         })
         .onBegin(() => {
-          null;
+          stateMachine.sendSignal(Signal.LONG_PRESS_BEGIN);
         })
         .onStart(() => {
-          null;
+          stateMachine.sendSignal(Signal.LONG_PRESS_START);
         })
         .onEnd(() => {
-          null;
+          stateMachine.sendSignal(Signal.LONG_PRESS_END);
         }),
-    []
+    [stateMachine]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
@@ -134,24 +157,24 @@ const PressableStateful = ({
     () =>
       Gesture.Native()
         .onTouchesDown(() => {
-          null;
+          stateMachine.sendSignal(Signal.NATIVE_TOUCH_DOWN);
         })
         .onTouchesUp(() => {
-          null;
+          stateMachine.sendSignal(Signal.NATIVE_TOUCH_UP);
         })
         .onTouchesCancelled(() => {
-          null;
+          null; // stateMachine.reset()
         })
         .onBegin(() => {
-          null;
+          stateMachine.sendSignal(Signal.NATIVE_BEGIN);
         })
         .onStart(() => {
-          null;
+          stateMachine.sendSignal(Signal.NATIVE_START);
         })
         .onEnd(() => {
-          null;
+          stateMachine.sendSignal(Signal.NATIVE_END);
         }),
-    []
+    [stateMachine]
   );
 
   const normalizedHitSlop: Insets = useMemo(
@@ -225,7 +248,7 @@ const PressableStateful = ({
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
-        ref={pressableRef ?? innerPressableRef}
+        ref={pressableRef}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
