@@ -105,6 +105,28 @@ const PressableStateful = (props: PressableProps) => {
               },
             ],
           },
+          {
+            isActive: Platform.OS === 'ios' && isFabric(),
+            steps: [
+              {
+                signal: Signal.LONG_PRESS_TOUCH_DOWN,
+              },
+              {
+                signal: Signal.LONG_PRESS_BEGIN,
+                callbacks: [(event) => onPressIn?.(event)],
+              },
+              {
+                signal: Signal.NATIVE_START,
+              },
+              {
+                signal: Signal.NATIVE_END,
+                callbacks: [
+                  (event) => onPress?.(event),
+                  (event) => onPressOut?.(event),
+                ],
+              },
+            ],
+          },
         ],
         /* dbg, remove */ testID
       ),
@@ -160,10 +182,12 @@ const PressableStateful = (props: PressableProps) => {
           stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_DOWN);
         })
         .onTouchesUp(() => {
-          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_UP);
+          if (Platform.OS !== 'ios') {
+            stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_UP);
+          }
 
           if (Platform.OS === 'android') {
-            // redundant, prevents potential soft-locks
+            // prevents potential soft-locks
             stateMachine.reset();
           }
         })
@@ -215,6 +239,10 @@ const PressableStateful = (props: PressableProps) => {
         })
         .onEnd(() => {
           stateMachine.sendSignal(Signal.NATIVE_END);
+          if (Platform.OS === 'ios') {
+            // prevents potential soft-locks
+            stateMachine.reset();
+          }
         }),
     [stateMachine]
   );
