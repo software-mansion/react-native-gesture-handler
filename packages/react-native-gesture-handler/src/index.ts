@@ -149,7 +149,7 @@ export type {
   PressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';
-export { Pressable, PressableStateful } from './components/Pressable';
+export { Pressable } from './components/Pressable';
 
 export type {
   DrawerLayoutProps,
