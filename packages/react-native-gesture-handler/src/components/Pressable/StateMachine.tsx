@@ -24,28 +24,41 @@ class Flow {
     this.enabled = true;
   }
 
-  public sendSignal(signal: string) {
+  public sendSignal(signal: string): boolean {
     if (!this.enabled) {
-      return;
+      return false;
+    }
+
+    if (this.stepIndex >= this.steps.length) {
+      // this case should never occur
+      return true;
     }
 
     const step = this.steps[this.stepIndex];
 
     if (step.signal !== signal) {
       this.enabled = false;
-      return;
+      return false;
     }
 
     step.callbacks.forEach((cb) => cb());
     this.stepIndex++;
+
+    return this.stepIndex === this.steps.length;
   }
 }
 
 class StateMachine {
   private flows: Flow[];
 
-  constructor() {
+  constructor(flowDefinitions: FlowDefinition[]) {
     this.flows = [];
+    for (const flow of flowDefinitions) {
+      if (flow.isActive === false) {
+        continue;
+      }
+      this.flows.push(new Flow(flow));
+    }
   }
 
   public reset() {
@@ -55,17 +68,15 @@ class StateMachine {
   }
 
   public sendSignal(signal: string) {
-    this.flows.forEach((flow) => flow.sendSignal(signal));
-  }
+    let isComplete = false;
 
-  public loadFlowDefinitions(flowDefinitions: FlowDefinition[]) {
-    for (const flow of flowDefinitions) {
-      if (flow.isActive === false) {
-        continue;
-      }
-      this.flows.push(new Flow(flow));
+    for (const flow of this.flows) {
+      isComplete ||= flow.sendSignal(signal);
     }
-    return;
+
+    if (isComplete) {
+      this.reset();
+    }
   }
 }
 
