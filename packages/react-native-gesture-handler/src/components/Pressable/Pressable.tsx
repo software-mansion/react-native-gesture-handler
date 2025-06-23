@@ -73,6 +73,8 @@ const PressableStateful = (props: PressableProps) => {
     blocksExternalGesture,
   };
 
+  const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
+
   const longPressTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
 
@@ -98,7 +100,16 @@ const PressableStateful = (props: PressableProps) => {
     [onLongPress, cancelLongPress, delayLongPress]
   );
 
-  const onPressHandler = useCallback(
+  const handlePressIn = useCallback(
+    (event: PressableEvent) => {
+      onPressIn?.(event);
+      startLongPress(event);
+      setPressedState(true);
+    },
+    [onPressIn, startLongPress]
+  );
+
+  const handlePress = useCallback(
     (event: PressableEvent) => {
       if (isOnPressAllowed.current) {
         onPress?.(event);
@@ -107,6 +118,11 @@ const PressableStateful = (props: PressableProps) => {
     },
     [cancelLongPress, onPress]
   );
+
+  const handleFinalize = useCallback(() => {
+    cancelLongPress();
+    setPressedState(false);
+  }, [cancelLongPress]);
 
   const stateMachine = useMemo(
     () =>
@@ -123,12 +139,7 @@ const PressableStateful = (props: PressableProps) => {
               },
               {
                 signal: Signal.LONG_PRESS_BEGIN,
-                callbacks: [
-                  (event) => {
-                    onPressIn?.(event);
-                    startLongPress(event);
-                  },
-                ],
+                callbacks: [handlePressIn],
               },
               {
                 signal: Signal.LONG_PRESS_TOUCH_DOWN,
@@ -143,8 +154,9 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.LONG_PRESS_TOUCH_UP,
                 callbacks: [
                   (event) => {
-                    onPressHandler(event);
+                    handlePress(event);
                     onPressOut?.(event);
+                    handleFinalize();
                   },
                 ],
               },
@@ -158,11 +170,7 @@ const PressableStateful = (props: PressableProps) => {
               },
               {
                 signal: Signal.LONG_PRESS_BEGIN,
-                callbacks: [
-                  (event) => {
-                    onPressIn?.(event);
-                  },
-                ],
+                callbacks: [handlePressIn],
               },
               {
                 signal: Signal.NATIVE_START,
@@ -171,8 +179,9 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.NATIVE_END,
                 callbacks: [
                   (event) => {
-                    onPressHandler(event);
+                    handlePress(event);
                     onPressOut?.(event);
+                    handleFinalize();
                   },
                 ],
               },
@@ -192,11 +201,7 @@ const PressableStateful = (props: PressableProps) => {
               },
               {
                 signal: Signal.LONG_PRESS_BEGIN,
-                callbacks: [
-                  (event) => {
-                    onPressIn?.(event);
-                  },
-                ],
+                callbacks: [handlePressIn],
               },
               {
                 signal: Signal.LONG_PRESS_TOUCH_DOWN,
@@ -211,8 +216,9 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.LONG_PRESS_TOUCH_UP,
                 callbacks: [
                   (event) => {
-                    onPressHandler(event);
+                    handlePress(event);
                     onPressOut?.(event);
+                    handleFinalize();
                   },
                 ],
               },
@@ -221,10 +227,8 @@ const PressableStateful = (props: PressableProps) => {
         ],
         /* dbg, remove */ testID
       ),
-    [onPressHandler, onPressIn, onPressOut, startLongPress, testID]
+    [handleFinalize, handlePress, onPressOut, handlePressIn, testID]
   );
-
-  const [pressedState] = useState(testOnly_pressed ?? false);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -280,13 +284,13 @@ const PressableStateful = (props: PressableProps) => {
           if (Platform.OS === 'android') {
             // prevents potential soft-locks
             stateMachine.reset();
-            cancelLongPress();
+            handleFinalize();
           }
         })
         .onTouchesCancelled(() => {
           /* dbg */ console.log('Long press touches cancel');
           stateMachine.reset();
-          cancelLongPress();
+          handleFinalize();
         })
         .onBegin((event) => {
           const gEvent = gestureToPressableEvent(event);
@@ -303,7 +307,7 @@ const PressableStateful = (props: PressableProps) => {
           stateMachine.setEvent(gEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_END);
         }),
-    [stateMachine, cancelLongPress]
+    [stateMachine, handleFinalize]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
@@ -323,7 +327,7 @@ const PressableStateful = (props: PressableProps) => {
         .onTouchesCancelled(() => {
           /* dbg */ console.log('Native touches cancel');
           stateMachine.reset();
-          cancelLongPress();
+          handleFinalize();
         })
         .onBegin(() => {
           stateMachine.sendSignal(Signal.NATIVE_BEGIN);
@@ -336,10 +340,10 @@ const PressableStateful = (props: PressableProps) => {
           if (Platform.OS === 'ios') {
             // prevents potential soft-locks
             stateMachine.reset();
-            cancelLongPress();
+            handleFinalize();
           }
         }),
-    [stateMachine, cancelLongPress]
+    [stateMachine, handleFinalize]
   );
 
   const normalizedHitSlop: Insets = useMemo(
