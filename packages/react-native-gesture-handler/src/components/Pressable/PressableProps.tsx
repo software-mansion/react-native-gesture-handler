@@ -6,6 +6,7 @@ import {
   ViewStyle,
   PressableStateCallbackType as RNPressableStateCallbackType,
   PressableAndroidRippleConfig as RNPressableAndroidRippleConfig,
+  View,
 } from 'react-native';
 import { RelationPropType } from '../utils';
 
@@ -59,6 +60,11 @@ export interface PressableProps
    * Called when a long-tap gesture is detected.
    */
   onLongPress?: null | ((event: PressableEvent) => void);
+
+  /**
+   * A reference to the pressable element.
+   */
+  ref?: React.Ref<View>;
 
   /**
    * Either children or a render prop that receives a boolean reflecting whether
