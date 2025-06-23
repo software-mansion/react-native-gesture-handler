@@ -77,7 +77,7 @@ const PressableStateful = (props: PressableProps) => {
       new StateMachine(
         [
           {
-            isActive: Platform.OS === 'android' && isFabric(),
+            isActive: Platform.OS === 'android',
             steps: [
               {
                 signal: Signal.NATIVE_BEGIN,
