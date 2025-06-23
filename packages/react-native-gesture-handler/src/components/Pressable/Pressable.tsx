@@ -224,6 +224,31 @@ const PressableStateful = (props: PressableProps) => {
               },
             ],
           },
+          {
+            isActive: Platform.OS === 'macos',
+            steps: [
+              {
+                signal: Signal.LONG_PRESS_BEGIN,
+              },
+              {
+                signal: Signal.NATIVE_BEGIN,
+                callbacks: [handlePressIn],
+              },
+              {
+                signal: Signal.NATIVE_START,
+              },
+              {
+                signal: Signal.NATIVE_END,
+                callbacks: [
+                  (event) => {
+                    handlePress(event);
+                    onPressOut?.(event);
+                    handleFinalize();
+                  },
+                ],
+              },
+            ],
+          },
         ],
         /* dbg, remove */ testID
       ),
@@ -274,10 +299,12 @@ const PressableStateful = (props: PressableProps) => {
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown(() => {
-          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_DOWN);
+          if (Platform.OS !== 'macos') {
+            stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_DOWN);
+          }
         })
         .onTouchesUp(() => {
-          if (Platform.OS !== 'ios') {
+          if (Platform.OS !== 'ios' && Platform.OS !== 'macos') {
             stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_UP);
           }
 
@@ -288,7 +315,7 @@ const PressableStateful = (props: PressableProps) => {
           }
         })
         .onTouchesCancelled(() => {
-          /* dbg */ console.log('Long press touches cancel');
+          /* dbg */ console.log(testID, 'Long press touches cancel');
           stateMachine.reset();
           handleFinalize();
         })
@@ -307,7 +334,7 @@ const PressableStateful = (props: PressableProps) => {
           stateMachine.setEvent(gEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_END);
         }),
-    [stateMachine, handleFinalize]
+    [stateMachine, handleFinalize, testID]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
@@ -316,18 +343,23 @@ const PressableStateful = (props: PressableProps) => {
       Gesture.Native()
         // todo: onTouches* could provide useful event data, if we ever encounter an impossible order edge-case
         .onTouchesDown(() => {
-          stateMachine.sendSignal(Signal.NATIVE_TOUCH_DOWN);
+          if (Platform.OS !== 'macos') {
+            stateMachine.sendSignal(Signal.NATIVE_TOUCH_DOWN);
+          }
         })
         .onTouchesUp(() => {
-          if (Platform.OS !== 'android') {
+          if (Platform.OS !== 'android' && Platform.OS !== 'macos') {
             // conflicts with Gesture.Native().onStart() on android
             stateMachine.sendSignal(Signal.NATIVE_TOUCH_UP);
           }
         })
         .onTouchesCancelled(() => {
-          /* dbg */ console.log('Native touches cancel');
-          stateMachine.reset();
-          handleFinalize();
+          if (Platform.OS !== 'macos') {
+            // cancel occurs in middle of gesture on MacOS
+            /* dbg */ console.log(testID, 'Native touches cancel');
+            stateMachine.reset();
+            handleFinalize();
+          }
         })
         .onBegin(() => {
           stateMachine.sendSignal(Signal.NATIVE_BEGIN);
@@ -343,7 +375,7 @@ const PressableStateful = (props: PressableProps) => {
             handleFinalize();
           }
         }),
-    [stateMachine, handleFinalize]
+    [stateMachine, testID, handleFinalize]
   );
 
   const normalizedHitSlop: Insets = useMemo(
