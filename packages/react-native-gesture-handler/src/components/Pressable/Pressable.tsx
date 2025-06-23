@@ -29,13 +29,9 @@ enum Signal {
   NATIVE_BEGIN = 'nativeBegin',
   NATIVE_START = 'nativeStart',
   NATIVE_END = 'nativeEnd',
-  NATIVE_TOUCH_DOWN = 'nativeTouchDown',
-  NATIVE_TOUCH_UP = 'nativeTouchUp',
   LONG_PRESS_BEGIN = 'longPressBegin',
   LONG_PRESS_START = 'longPressStart',
   LONG_PRESS_END = 'longPressEnd',
-  LONG_PRESS_TOUCH_DOWN = 'longPressTouchDown',
-  LONG_PRESS_TOUCH_UP = 'longPressTouchUp',
 }
 
 const PressableStateful = (props: PressableProps) => {
@@ -72,6 +68,8 @@ const PressableStateful = (props: PressableProps) => {
     requireExternalGestureToFail,
     blocksExternalGesture,
   };
+
+  // note: onTouches* events could provide enough useful data to construct PressableEvent
 
   const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
@@ -135,23 +133,14 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.NATIVE_BEGIN,
               },
               {
-                signal: Signal.NATIVE_TOUCH_DOWN,
-              },
-              {
                 signal: Signal.LONG_PRESS_BEGIN,
                 callbacks: [handlePressIn],
-              },
-              {
-                signal: Signal.LONG_PRESS_TOUCH_DOWN,
               },
               {
                 signal: Signal.NATIVE_START,
               },
               {
                 signal: Signal.NATIVE_END,
-              },
-              {
-                signal: Signal.LONG_PRESS_TOUCH_UP,
                 callbacks: [
                   (event) => {
                     handlePress(event);
@@ -166,14 +155,11 @@ const PressableStateful = (props: PressableProps) => {
             isActive: Platform.OS === 'ios' && isFabric(),
             steps: [
               {
-                signal: Signal.LONG_PRESS_TOUCH_DOWN,
-              },
-              {
                 signal: Signal.LONG_PRESS_BEGIN,
-                callbacks: [handlePressIn],
               },
               {
                 signal: Signal.NATIVE_START,
+                callbacks: [handlePressIn],
               },
               {
                 signal: Signal.NATIVE_END,
@@ -197,23 +183,11 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.NATIVE_START,
               },
               {
-                signal: Signal.NATIVE_TOUCH_DOWN,
-              },
-              {
                 signal: Signal.LONG_PRESS_BEGIN,
                 callbacks: [handlePressIn],
               },
               {
-                signal: Signal.LONG_PRESS_TOUCH_DOWN,
-              },
-              {
-                signal: Signal.NATIVE_TOUCH_UP,
-              },
-              {
                 signal: Signal.NATIVE_END,
-              },
-              {
-                signal: Signal.LONG_PRESS_TOUCH_UP,
                 callbacks: [
                   (event) => {
                     handlePress(event);
@@ -298,16 +272,7 @@ const PressableStateful = (props: PressableProps) => {
         .minDuration(INT32_MAX) // Stops long press from blocking Gesture.Native()
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
-        .onTouchesDown(() => {
-          if (Platform.OS !== 'macos') {
-            stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_DOWN);
-          }
-        })
         .onTouchesUp(() => {
-          if (Platform.OS !== 'ios' && Platform.OS !== 'macos') {
-            stateMachine.sendSignal(Signal.LONG_PRESS_TOUCH_UP);
-          }
-
           if (Platform.OS === 'android') {
             // prevents potential soft-locks
             stateMachine.reset();
@@ -315,7 +280,6 @@ const PressableStateful = (props: PressableProps) => {
           }
         })
         .onTouchesCancelled(() => {
-          /* dbg */ console.log(testID, 'Long press touches cancel');
           stateMachine.reset();
           handleFinalize();
         })
@@ -334,28 +298,16 @@ const PressableStateful = (props: PressableProps) => {
           stateMachine.setEvent(gEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_END);
         }),
-    [stateMachine, handleFinalize, testID]
+    [stateMachine, handleFinalize]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
   const buttonGesture = useMemo(
     () =>
       Gesture.Native()
-        // todo: onTouches* could provide useful event data, if we ever encounter an impossible order edge-case
-        .onTouchesDown(() => {
-          if (Platform.OS !== 'macos') {
-            stateMachine.sendSignal(Signal.NATIVE_TOUCH_DOWN);
-          }
-        })
-        .onTouchesUp(() => {
-          if (Platform.OS !== 'android' && Platform.OS !== 'macos') {
-            // conflicts with Gesture.Native().onStart() on android
-            stateMachine.sendSignal(Signal.NATIVE_TOUCH_UP);
-          }
-        })
         .onTouchesCancelled(() => {
           if (Platform.OS !== 'macos') {
-            // cancel occurs in middle of gesture on MacOS
+            // on MacOS cancel occurs in middle of gesture
             /* dbg */ console.log(testID, 'Native touches cancel');
             stateMachine.reset();
             handleFinalize();

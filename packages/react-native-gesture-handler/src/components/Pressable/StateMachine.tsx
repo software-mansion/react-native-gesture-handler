@@ -60,10 +60,6 @@ class Flow {
     step.callbacks?.forEach((cb) => event && cb(event));
     this.stepIndex++;
 
-    if (this.stepIndex === this.steps.length) {
-      /* dbg */ console.log('Pressable StateMachine: Success!');
-    }
-
     return this.stepIndex === this.steps.length;
   }
 }
@@ -85,6 +81,7 @@ class StateMachine {
   }
 
   public reset() {
+    /* dbg */ console.log(this.label, 'StateMachine.reset()');
     for (const flow of this.flows) {
       flow.reset();
     }
