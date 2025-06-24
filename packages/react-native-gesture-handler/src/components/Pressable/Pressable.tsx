@@ -99,7 +99,6 @@ const Pressable = (props: PressableProps) => {
       if (onLongPress) {
         cancelLongPress();
         longPressTimeoutRef.current = setTimeout(() => {
-          // fixme: onLongPress can become stale during timeout - use up-to-date cb (ref should work)
           isOnPressAllowed.current = false;
           onLongPress(event);
         }, delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
