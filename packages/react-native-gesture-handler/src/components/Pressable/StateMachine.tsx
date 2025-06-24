@@ -13,10 +13,9 @@ interface FlowDefinition {
 const RNGH_ISSUE_URL =
   'https://github.com/software-mansion/react-native-gesture-handler/issues/new?template=bug-report.yml';
 
-const GH_TAG = '[GESTURE HANDLER]';
+const GH_TAG = '[GESTURE HANDLER] Pressable StateMachine:';
 
-const OVERFLOW_ERROR_MESSAGE = `${GH_TAG} Pressable StateMachine: Index overflow error. Please report this bug: ${RNGH_ISSUE_URL}`;
-const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Pressable StateMachine: Tried calling CB with undefined event argument!. Please report this bug: ${RNGH_ISSUE_URL}`;
+const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Tried calling CB with undefined event argument! Please report this bug: ${RNGH_ISSUE_URL}`;
 
 class Flow {
   private steps: StepDefinition[];
@@ -36,12 +35,6 @@ class Flow {
 
   public sendSignal(signal: string, event?: PressableEvent) {
     if (!this.enabled) {
-      return;
-    }
-
-    if (this.stepIndex >= this.steps.length) {
-      // This case should not be possible
-      console.error(OVERFLOW_ERROR_MESSAGE);
       return;
     }
 
