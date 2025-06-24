@@ -41,7 +41,6 @@ enum Signal {
 
 const Pressable = (props: PressableProps) => {
   const {
-    testID,
     testOnly_pressed,
     hitSlop,
     pressRetentionOffset,
@@ -119,11 +118,10 @@ const Pressable = (props: PressableProps) => {
   );
 
   const handleFinalize = useCallback(() => {
-    /* dbg */ console.log(testID, 'Finalizing');
     cancelLongPress();
     cancelDelayedPress();
     setPressedState(false);
-  }, [cancelDelayedPress, cancelLongPress, testID]);
+  }, [cancelDelayedPress, cancelLongPress]);
 
   const handlePressIn = useCallback(
     (event: PressableEvent) => {
@@ -155,98 +153,83 @@ const Pressable = (props: PressableProps) => {
     }
 
     if (Platform.OS === 'android') {
-      return new StateMachine(
-        [
-          {
-            signal: Signal.NATIVE_BEGIN,
-          },
-          {
-            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-            callback: handlePressIn,
-          },
-          {
-            signal: Signal.NATIVE_START,
-          },
-          {
-            signal: Signal.NATIVE_END,
-            callback: handlePressOut,
-          },
-        ],
-        /* dbg */ testID as string
-      );
+      return new StateMachine([
+        {
+          signal: Signal.NATIVE_BEGIN,
+        },
+        {
+          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          callback: handlePressIn,
+        },
+        {
+          signal: Signal.NATIVE_START,
+        },
+        {
+          signal: Signal.NATIVE_END,
+          callback: handlePressOut,
+        },
+      ]);
     } else if (Platform.OS === 'ios') {
-      return new StateMachine(
-        [
-          {
-            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-          },
-          {
-            signal: Signal.NATIVE_START,
-            callback: handlePressIn,
-          },
-          {
-            signal: Signal.NATIVE_END,
-            callback: handlePressOut,
-          },
-        ],
-        /* dbg */ testID as string
-      );
+      return new StateMachine([
+        {
+          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+        },
+        {
+          signal: Signal.NATIVE_START,
+          callback: handlePressIn,
+        },
+        {
+          signal: Signal.NATIVE_END,
+          callback: handlePressOut,
+        },
+      ]);
     } else if (Platform.OS === 'web') {
-      return new StateMachine(
-        [
-          {
-            signal: Signal.NATIVE_BEGIN,
-          },
-          {
-            signal: Signal.NATIVE_START,
-          },
-          {
-            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-            callback: handlePressIn,
-          },
-          {
-            signal: Signal.NATIVE_END,
-            callback: handlePressOut,
-          },
-        ],
-        /* dbg */ testID as string
-      );
+      return new StateMachine([
+        {
+          signal: Signal.NATIVE_BEGIN,
+        },
+        {
+          signal: Signal.NATIVE_START,
+        },
+        {
+          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          callback: handlePressIn,
+        },
+        {
+          signal: Signal.NATIVE_END,
+          callback: handlePressOut,
+        },
+      ]);
     } else if (Platform.OS === 'macos') {
-      return new StateMachine(
-        [
-          {
-            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-          },
-          {
-            signal: Signal.NATIVE_BEGIN,
-            callback: handlePressIn,
-          },
-          {
-            signal: Signal.NATIVE_START,
-          },
-          {
-            signal: Signal.NATIVE_END,
-            callback: handlePressOut,
-          },
-        ],
-        /* dbg */ testID as string
-      );
+      return new StateMachine([
+        {
+          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+        },
+        {
+          signal: Signal.NATIVE_BEGIN,
+          callback: handlePressIn,
+        },
+        {
+          signal: Signal.NATIVE_START,
+        },
+        {
+          signal: Signal.NATIVE_END,
+          callback: handlePressOut,
+        },
+      ]);
     } else {
       // Unknown platform - using minimal universal setup.
-      return new StateMachine(
-        [
-          {
-            signal: Signal.NATIVE_END,
-            callback: (event: PressableEvent) => {
-              handlePressIn(event);
-              handlePressOut(event);
-            },
+      return new StateMachine([
+        {
+          signal: Signal.NATIVE_END,
+          callback: (event: PressableEvent) => {
+            handlePressIn(event);
+            handlePressOut(event);
           },
-        ],
-        /* dbg */ testID as string
-      );
+        },
+      ]);
     }
-  }, [handlePressOut, handlePressIn, testID]);
+  }, [handlePressOut, handlePressIn]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -324,7 +307,6 @@ const Pressable = (props: PressableProps) => {
         .onTouchesCancelled(() => {
           if (Platform.OS !== 'macos') {
             // on MacOS cancel occurs in middle of gesture
-            /* dbg */ console.log(testID, 'Native touches cancel');
             stateMachine.reset();
             handleFinalize();
           }
@@ -339,7 +321,7 @@ const Pressable = (props: PressableProps) => {
           stateMachine.sendSignal(Signal.NATIVE_END);
           handleFinalize(); // common ending point for all platforms
         }),
-    [stateMachine, testID, handleFinalize]
+    [stateMachine, handleFinalize]
   );
 
   const normalizedHitSlop: Insets = useMemo(

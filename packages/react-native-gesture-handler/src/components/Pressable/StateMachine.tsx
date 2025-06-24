@@ -16,13 +16,11 @@ class StateMachine {
   private steps: StepDefinition[];
   private stepIndex: number;
   private latestEvent: PressableEvent | undefined;
-  /* dbg */ private label: string;
 
-  constructor(steps: StepDefinition[], label: string) {
+  constructor(steps: StepDefinition[]) {
     this.steps = steps;
     this.stepIndex = 0;
     this.latestEvent = undefined;
-    /* dbg */ this.label = label;
   }
 
   public reset() {
@@ -31,8 +29,6 @@ class StateMachine {
   }
 
   public sendSignal(signal: string, event?: PressableEvent) {
-    /* dbg */ console.log(`${this.label ?? 'Received'}:`, signal);
-
     const step = this.steps[this.stepIndex];
     this.latestEvent ||= event;
 
