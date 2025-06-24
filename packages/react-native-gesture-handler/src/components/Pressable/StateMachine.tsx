@@ -42,12 +42,12 @@ class StateMachine {
       return;
     }
 
-    if (step.callback && !event) {
+    if (step.callback && !this.latestEvent) {
       // This case indicates an unexpected edge-case that has to be patched
       console.warn(UNDEFINED_EVENT_ERROR_MESSAGE);
     }
 
-    event && step.callback?.(event);
+    this.latestEvent && step.callback?.(this.latestEvent);
     this.stepIndex++;
 
     if (this.stepIndex === this.steps.length) {
