@@ -48,7 +48,7 @@ const PressableStateful = (props: PressableProps) => {
     delayHoverIn,
     delayHoverOut,
     delayLongPress,
-    // unstable_pressDelay,
+    unstable_pressDelay,
     onHoverIn,
     onHoverOut,
     onPress,
@@ -128,17 +128,15 @@ const PressableStateful = (props: PressableProps) => {
 
   const handlePressIn = useCallback(
     (event: PressableEvent) => {
-      // if (unstable_pressDelay) {
-      //   pressDelayTimeoutRef.current = setTimeout(() => {
-      //     innerHandlePressIn(event);
-      //   }, unstable_pressDelay);
-      // } else {
-      //   innerHandlePressIn(event);
-      // }
-
-      innerHandlePressIn(event);
+      if (unstable_pressDelay) {
+        pressDelayTimeoutRef.current = setTimeout(() => {
+          innerHandlePressIn(event);
+        }, unstable_pressDelay);
+      } else {
+        innerHandlePressIn(event);
+      }
     },
-    [innerHandlePressIn]
+    [innerHandlePressIn, unstable_pressDelay]
   );
 
   const handlePressOut = useCallback(
