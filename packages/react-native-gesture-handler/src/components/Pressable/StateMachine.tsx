@@ -34,22 +34,22 @@ class Flow {
     this.enabled = true;
   }
 
-  public sendSignal(signal: string, event?: PressableEvent): boolean {
+  public sendSignal(signal: string, event?: PressableEvent) {
     if (!this.enabled) {
-      return false;
+      return;
     }
 
     if (this.stepIndex >= this.steps.length) {
       // This case should not be possible
       console.error(OVERFLOW_ERROR_MESSAGE);
-      return true;
+      return;
     }
 
     const step = this.steps[this.stepIndex];
 
     if (step.signal !== signal) {
-      this.enabled = false;
-      return false;
+      this.reset();
+      return;
     }
 
     if (step.callbacks && step.callbacks.length > 0 && !event) {
@@ -60,7 +60,9 @@ class Flow {
     step.callbacks?.forEach((cb) => event && cb(event));
     this.stepIndex++;
 
-    return this.stepIndex === this.steps.length;
+    if (this.stepIndex === this.steps.length) {
+      this.reset();
+    }
   }
 }
 
@@ -95,14 +97,8 @@ class StateMachine {
   public sendSignal(signal: string) {
     /* dbg */ console.log(`${this.label ?? 'Received'}:`, signal);
 
-    let isComplete = false;
-
     for (const flow of this.flows) {
-      isComplete ||= flow.sendSignal(signal, this.latestEvent);
-    }
-
-    if (isComplete) {
-      this.reset();
+      flow.sendSignal(signal, this.latestEvent);
     }
   }
 }
