@@ -35,7 +35,6 @@ enum Signal {
 }
 
 const PressableStateful = (props: PressableProps) => {
-  // fixme: add ref prop, likely should be inherited from a higher order class
   const {
     testID,
     testOnly_pressed,
@@ -321,11 +320,7 @@ const PressableStateful = (props: PressableProps) => {
         })
         .onEnd(() => {
           stateMachine.sendSignal(Signal.NATIVE_END);
-          if (Platform.OS === 'ios') {
-            // prevents potential soft-locks
-            stateMachine.reset();
-            handleFinalize();
-          }
+          handleFinalize(); // common ending point for all platforms
         }),
     [stateMachine, testID, handleFinalize]
   );
