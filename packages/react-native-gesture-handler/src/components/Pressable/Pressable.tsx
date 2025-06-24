@@ -34,10 +34,9 @@ enum Signal {
   NATIVE_BEGIN = 'nativeBegin',
   NATIVE_START = 'nativeStart',
   NATIVE_END = 'nativeEnd',
-  LONG_PRESS_BEGIN = 'longPressBegin',
+  LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
   LONG_PRESS_START = 'longPressStart',
   LONG_PRESS_END = 'longPressEnd',
-  LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
 }
 
 const PressableStateful = (props: PressableProps) => {
@@ -79,6 +78,7 @@ const PressableStateful = (props: PressableProps) => {
   const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
   const longPressTimeoutRef = useRef<number | null>(null);
+  const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
 
   const cancelLongPress = useCallback(() => {
@@ -89,12 +89,20 @@ const PressableStateful = (props: PressableProps) => {
     }
   }, []);
 
+  const cancelDelayedPress = useCallback(() => {
+    cancelLongPress();
+    if (pressDelayTimeoutRef.current) {
+      clearTimeout(pressDelayTimeoutRef.current);
+      pressDelayTimeoutRef.current = null;
+    }
+  }, [cancelLongPress]);
+
   const startLongPress = useCallback(
     (event: PressableEvent) => {
       if (onLongPress) {
         cancelLongPress();
         longPressTimeoutRef.current = setTimeout(() => {
-          // fixme: onLongPress can be stale - use up-to-date cb (ref should work)
+          // fixme: onLongPress can become stale during timeout - use up-to-date cb (ref should work)
           isOnPressAllowed.current = false;
           onLongPress(event);
         }, delayLongPress ?? DEFAULT_LONG_PRESS_DURATION);
@@ -103,7 +111,7 @@ const PressableStateful = (props: PressableProps) => {
     [onLongPress, cancelLongPress, delayLongPress]
   );
 
-  const handlePressIn = useCallback(
+  const innerHandlePressIn = useCallback(
     (event: PressableEvent) => {
       onPressIn?.(event);
       startLongPress(event);
@@ -112,20 +120,37 @@ const PressableStateful = (props: PressableProps) => {
     [onPressIn, startLongPress]
   );
 
-  const handlePress = useCallback(
+  const handleFinalize = useCallback(() => {
+    cancelLongPress();
+    cancelDelayedPress();
+    setPressedState(false);
+  }, [cancelDelayedPress, cancelLongPress]);
+
+  const handlePressIn = useCallback(
     (event: PressableEvent) => {
+      // if (unstable_pressDelay) {
+      //   pressDelayTimeoutRef.current = setTimeout(() => {
+      //     innerHandlePressIn(event);
+      //   }, unstable_pressDelay);
+      // } else {
+      //   innerHandlePressIn(event);
+      // }
+
+      innerHandlePressIn(event);
+    },
+    [innerHandlePressIn]
+  );
+
+  const handlePressOut = useCallback(
+    (event: PressableEvent) => {
+      onPressOut?.(event);
       if (isOnPressAllowed.current) {
         onPress?.(event);
       }
-      cancelLongPress();
+      handleFinalize();
     },
-    [cancelLongPress, onPress]
+    [handleFinalize, onPress, onPressOut]
   );
-
-  const handleFinalize = useCallback(() => {
-    cancelLongPress();
-    setPressedState(false);
-  }, [cancelLongPress]);
 
   const stateMachine = useMemo(() => {
     if (IS_FABRIC === null) {
@@ -141,7 +166,7 @@ const PressableStateful = (props: PressableProps) => {
               signal: Signal.NATIVE_BEGIN,
             },
             {
-              signal: Signal.LONG_PRESS_BEGIN,
+              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
               callbacks: [handlePressIn],
             },
             {
@@ -149,13 +174,7 @@ const PressableStateful = (props: PressableProps) => {
             },
             {
               signal: Signal.NATIVE_END,
-              callbacks: [
-                (event) => {
-                  onPressOut?.(event);
-                  handlePress(event);
-                  handleFinalize();
-                },
-              ],
+              callbacks: [handlePressOut],
             },
           ],
         },
@@ -163,7 +182,7 @@ const PressableStateful = (props: PressableProps) => {
           isActive: Platform.OS === 'ios' && IS_FABRIC,
           steps: [
             {
-              signal: Signal.LONG_PRESS_BEGIN,
+              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
             },
             {
               signal: Signal.NATIVE_START,
@@ -171,13 +190,7 @@ const PressableStateful = (props: PressableProps) => {
             },
             {
               signal: Signal.NATIVE_END,
-              callbacks: [
-                (event) => {
-                  onPressOut?.(event);
-                  handlePress(event);
-                  handleFinalize();
-                },
-              ],
+              callbacks: [handlePressOut],
             },
           ],
         },
@@ -191,18 +204,12 @@ const PressableStateful = (props: PressableProps) => {
               signal: Signal.NATIVE_START,
             },
             {
-              signal: Signal.LONG_PRESS_BEGIN,
+              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
               callbacks: [handlePressIn],
             },
             {
               signal: Signal.NATIVE_END,
-              callbacks: [
-                (event) => {
-                  onPressOut?.(event);
-                  handlePress(event);
-                  handleFinalize();
-                },
-              ],
+              callbacks: [handlePressOut],
             },
           ],
         },
@@ -221,20 +228,14 @@ const PressableStateful = (props: PressableProps) => {
             },
             {
               signal: Signal.NATIVE_END,
-              callbacks: [
-                (event) => {
-                  onPressOut?.(event);
-                  handlePress(event);
-                  handleFinalize();
-                },
-              ],
+              callbacks: [handlePressOut],
             },
           ],
         },
       ],
       /* dbg, remove */ testID
     );
-  }, [handleFinalize, handlePress, onPressOut, handlePressIn, testID]);
+  }, [handlePressOut, handlePressIn, testID]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -280,12 +281,9 @@ const PressableStateful = (props: PressableProps) => {
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
-          if (Platform.OS === 'macos') {
-            // MacOS uses onTouchesDown instead of onBegin
-            const pEvent = gestureTouchToPressableEvent(event);
-            stateMachine.setEvent(pEvent);
-            stateMachine.sendSignal(Signal.LONG_PRESS_TOUCHES_DOWN);
-          }
+          const pEvent = gestureTouchToPressableEvent(event);
+          stateMachine.setEvent(pEvent);
+          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCHES_DOWN);
         })
         .onTouchesUp(() => {
           if (Platform.OS === 'android') {
@@ -297,14 +295,6 @@ const PressableStateful = (props: PressableProps) => {
         .onTouchesCancelled(() => {
           stateMachine.reset();
           handleFinalize();
-        })
-        .onBegin((event) => {
-          if (Platform.OS !== 'macos') {
-            // MacOS uses onTouchesDown instead of onBegin
-            const pEvent = gestureToPressableEvent(event);
-            stateMachine.setEvent(pEvent);
-            stateMachine.sendSignal(Signal.LONG_PRESS_BEGIN);
-          }
         })
         .onStart((event) => {
           const pEvent = gestureToPressableEvent(event);
