@@ -22,7 +22,7 @@ class StateMachine {
     this.steps = steps;
     this.stepIndex = 0;
     this.latestEvent = undefined;
-    this.label = label;
+    /* dbg */ this.label = label;
   }
 
   public reset() {
@@ -37,8 +37,11 @@ class StateMachine {
     this.latestEvent ||= event;
 
     if (step.signal !== signal) {
-      // todo: allow for retry sendSignal after reset
-      this.reset();
+      if (this.stepIndex > 0) {
+        // retry with position at index 0
+        this.reset();
+        this.sendSignal(signal, event);
+      }
       return;
     }
 
