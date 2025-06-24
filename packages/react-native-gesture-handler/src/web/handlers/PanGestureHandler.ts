@@ -218,6 +218,20 @@ export default class PanGestureHandler extends GestureHandler {
     clearTimeout(this.activationTimeout);
   }
 
+  private updateLastCoords() {
+    const { x, y } = this.tracker.getAbsoluteCoordsAverage();
+
+    this.lastX = x;
+    this.lastY = y;
+  }
+
+  private updateVelocity(pointerId: number) {
+    const velocities = this.tracker.getVelocity(pointerId);
+
+    this.velocityX = velocities?.x ?? 0;
+    this.velocityY = velocities?.y ?? 0;
+  }
+
   // Events Handling
   protected onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
@@ -229,9 +243,7 @@ export default class PanGestureHandler extends GestureHandler {
 
     super.onPointerDown(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
+    this.updateLastCoords();
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -250,9 +262,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
+    this.updateLastCoords();
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -299,9 +309,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
+    this.updateLastCoords();
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -320,13 +328,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.tracker.track(event);
     this.stylusData = event.stylusData;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
-
-    const velocity = this.tracker.getVelocity(event.pointerId);
-    this.velocityX = velocity?.x ?? 0;
-    this.velocityY = velocity?.y ?? 0;
+    this.updateLastCoords();
+    this.updateVelocity(event.pointerId);
 
     this.checkBegan();
 
@@ -341,13 +344,8 @@ export default class PanGestureHandler extends GestureHandler {
     this.tracker.track(event);
     this.stylusData = event.stylusData;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
-
-    const velocity = this.tracker.getVelocity(event.pointerId);
-    this.velocityX = velocity?.x ?? 0;
-    this.velocityY = velocity?.y ?? 0;
+    this.updateLastCoords();
+    this.updateVelocity(event.pointerId);
 
     this.checkBegan();
 
@@ -391,9 +389,7 @@ export default class PanGestureHandler extends GestureHandler {
 
       this.tracker.addToTracker(event);
 
-      const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-      this.lastX = lastCoords.x;
-      this.lastY = lastCoords.y;
+      this.updateLastCoords();
 
       this.startX = this.lastX;
       this.startY = this.lastY;
@@ -403,13 +399,8 @@ export default class PanGestureHandler extends GestureHandler {
     }
     this.tracker.track(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
-
-    const velocity = this.tracker.getVelocity(event.pointerId);
-    this.velocityX = velocity?.x ?? 0;
-    this.velocityY = velocity?.y ?? 0;
+    this.updateLastCoords();
+    this.updateVelocity(event.pointerId);
 
     this.tryToSendMoveEvent(false, event);
     this.scheduleWheelEnd(event);
@@ -540,9 +531,7 @@ export default class PanGestureHandler extends GestureHandler {
         }, this.activateAfterLongPress);
       }
     } else {
-      const velocity = this.tracker.getVelocity(event.pointerId);
-      this.velocityX = velocity?.x ?? 0;
-      this.velocityY = velocity?.y ?? 0;
+      this.updateVelocity(event.pointerId);
     }
   }
 

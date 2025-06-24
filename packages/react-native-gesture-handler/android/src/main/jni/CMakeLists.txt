@@ -27,29 +27,10 @@ target_include_directories(
 
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
-if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
-  find_package(fbjni REQUIRED CONFIG)
-  target_link_libraries(
-    ${PACKAGE_NAME}
-    ReactAndroid::reactnative
-    ReactAndroid::jsi
-    fbjni::fbjni
-  )
-elseif (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
-  target_link_libraries(
-    ${PACKAGE_NAME}
-    ReactAndroid::reactnative
-    ReactAndroid::jsi
-  )
-elseif (ReactAndroid_VERSION_MINOR GREATER_EQUAL 75)
-  target_link_libraries(
-    ${PACKAGE_NAME}
-    ReactAndroid::react_render_core
-    ReactAndroid::react_render_uimanager
-    ReactAndroid::react_render_graphics
-    ReactAndroid::jsi
-    ReactAndroid::react_nativemodule_core
-  )
-else ()
-  message(FATAL_ERROR "react-native-gesture-handler on the New Architecture requires react-native 0.75 or newer.")
-endif ()
+
+target_link_libraries(
+  ${PACKAGE_NAME}
+  ReactAndroid::reactnative
+  ReactAndroid::jsi
+  fbjni::fbjni
+)
