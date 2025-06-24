@@ -99,6 +99,13 @@ export default class TapGestureHandler extends GestureHandler {
     }
   }
 
+  private updateLastCoords() {
+    const { x, y } = this.tracker.getAbsoluteCoordsAverage();
+
+    this.lastX = x;
+    this.lastY = y;
+  }
+
   // Handling Events
   protected onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
@@ -129,12 +136,10 @@ export default class TapGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY - this.startY;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
+    this.updateLastCoords();
 
-    this.startX = lastCoords.x;
-    this.startY = lastCoords.y;
+    this.startX = this.lastX;
+    this.startY = this.lastY;
 
     this.updateState(event);
   }
@@ -142,9 +147,7 @@ export default class TapGestureHandler extends GestureHandler {
   protected onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
+    this.updateLastCoords();
 
     this.tracker.removeFromTracker(event.pointerId);
 
@@ -158,9 +161,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.offsetX += this.lastX - this.startX;
     this.offsetY += this.lastY = this.startY;
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
+    this.updateLastCoords();
 
     this.startX = this.lastX;
     this.startY = this.lastY;
@@ -172,10 +173,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
-
+    this.updateLastCoords();
     this.updateState(event);
 
     super.onPointerMove(event);
@@ -185,10 +183,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
-    const lastCoords = this.tracker.getAbsoluteCoordsAverage();
-    this.lastX = lastCoords.x;
-    this.lastY = lastCoords.y;
-
+    this.updateLastCoords();
     this.updateState(event);
 
     super.onPointerOutOfBounds(event);
