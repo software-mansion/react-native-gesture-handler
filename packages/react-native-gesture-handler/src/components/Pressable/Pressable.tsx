@@ -127,112 +127,114 @@ const PressableStateful = (props: PressableProps) => {
     setPressedState(false);
   }, [cancelLongPress]);
 
-  const stateMachine = useMemo(
-    () =>
-      new StateMachine(
-        [
-          {
-            isActive: Platform.OS === 'android',
-            steps: [
-              {
-                signal: Signal.NATIVE_BEGIN,
-              },
-              {
-                signal: Signal.LONG_PRESS_BEGIN,
-                callbacks: [handlePressIn],
-              },
-              {
-                signal: Signal.NATIVE_START,
-              },
-              {
-                signal: Signal.NATIVE_END,
-                callbacks: [
-                  (event) => {
-                    onPressOut?.(event);
-                    handlePress(event);
-                    handleFinalize();
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            isActive: Platform.OS === 'ios' && isFabric(),
-            steps: [
-              {
-                signal: Signal.LONG_PRESS_BEGIN,
-              },
-              {
-                signal: Signal.NATIVE_START,
-                callbacks: [handlePressIn],
-              },
-              {
-                signal: Signal.NATIVE_END,
-                callbacks: [
-                  (event) => {
-                    onPressOut?.(event);
-                    handlePress(event);
-                    handleFinalize();
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            isActive: Platform.OS === 'web',
-            steps: [
-              {
-                signal: Signal.NATIVE_BEGIN,
-              },
-              {
-                signal: Signal.NATIVE_START,
-              },
-              {
-                signal: Signal.LONG_PRESS_BEGIN,
-                callbacks: [handlePressIn],
-              },
-              {
-                signal: Signal.NATIVE_END,
-                callbacks: [
-                  (event) => {
-                    onPressOut?.(event);
-                    handlePress(event);
-                    handleFinalize();
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            isActive: Platform.OS === 'macos',
-            steps: [
-              {
-                signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-              },
-              {
-                signal: Signal.NATIVE_BEGIN,
-                callbacks: [handlePressIn],
-              },
-              {
-                signal: Signal.NATIVE_START,
-              },
-              {
-                signal: Signal.NATIVE_END,
-                callbacks: [
-                  (event) => {
-                    onPressOut?.(event);
-                    handlePress(event);
-                    handleFinalize();
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        /* dbg, remove */ testID
-      ),
-    [handleFinalize, handlePress, onPressOut, handlePressIn, testID]
-  );
+  const stateMachine = useMemo(() => {
+    if (IS_FABRIC === null) {
+      IS_FABRIC = isFabric();
+    }
+
+    return new StateMachine(
+      [
+        {
+          isActive: Platform.OS === 'android',
+          steps: [
+            {
+              signal: Signal.NATIVE_BEGIN,
+            },
+            {
+              signal: Signal.LONG_PRESS_BEGIN,
+              callbacks: [handlePressIn],
+            },
+            {
+              signal: Signal.NATIVE_START,
+            },
+            {
+              signal: Signal.NATIVE_END,
+              callbacks: [
+                (event) => {
+                  onPressOut?.(event);
+                  handlePress(event);
+                  handleFinalize();
+                },
+              ],
+            },
+          ],
+        },
+        {
+          isActive: Platform.OS === 'ios' && IS_FABRIC,
+          steps: [
+            {
+              signal: Signal.LONG_PRESS_BEGIN,
+            },
+            {
+              signal: Signal.NATIVE_START,
+              callbacks: [handlePressIn],
+            },
+            {
+              signal: Signal.NATIVE_END,
+              callbacks: [
+                (event) => {
+                  onPressOut?.(event);
+                  handlePress(event);
+                  handleFinalize();
+                },
+              ],
+            },
+          ],
+        },
+        {
+          isActive: Platform.OS === 'web',
+          steps: [
+            {
+              signal: Signal.NATIVE_BEGIN,
+            },
+            {
+              signal: Signal.NATIVE_START,
+            },
+            {
+              signal: Signal.LONG_PRESS_BEGIN,
+              callbacks: [handlePressIn],
+            },
+            {
+              signal: Signal.NATIVE_END,
+              callbacks: [
+                (event) => {
+                  onPressOut?.(event);
+                  handlePress(event);
+                  handleFinalize();
+                },
+              ],
+            },
+          ],
+        },
+        {
+          isActive: Platform.OS === 'macos',
+          steps: [
+            {
+              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+            },
+            {
+              signal: Signal.NATIVE_BEGIN,
+              callbacks: [handlePressIn],
+            },
+            {
+              signal: Signal.NATIVE_START,
+            },
+            {
+              signal: Signal.NATIVE_END,
+              callbacks: [
+                (event) => {
+                  onPressOut?.(event);
+                  handlePress(event);
+                  handleFinalize();
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      /* dbg, remove */ testID
+    );
+  }, [handleFinalize, handlePress, onPressOut, handlePressIn, testID]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
