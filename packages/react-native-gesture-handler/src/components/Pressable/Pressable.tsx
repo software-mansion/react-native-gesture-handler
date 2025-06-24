@@ -73,8 +73,6 @@ const Pressable = (props: PressableProps) => {
     blocksExternalGesture,
   };
 
-  // note: onTouches* events could provide enough useful data to construct PressableEvent
-
   const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
   const longPressTimeoutRef = useRef<number | null>(null);
@@ -156,84 +154,98 @@ const Pressable = (props: PressableProps) => {
       IS_FABRIC = isFabric();
     }
 
-    return new StateMachine(
-      [
-        {
-          isActive: Platform.OS === 'android',
-          steps: [
-            {
-              signal: Signal.NATIVE_BEGIN,
+    if (Platform.OS === 'android') {
+      return new StateMachine(
+        [
+          {
+            signal: Signal.NATIVE_BEGIN,
+          },
+          {
+            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+            callback: handlePressIn,
+          },
+          {
+            signal: Signal.NATIVE_START,
+          },
+          {
+            signal: Signal.NATIVE_END,
+            callback: handlePressOut,
+          },
+        ],
+        /* dbg */ testID as string
+      );
+    } else if (Platform.OS === 'ios') {
+      return new StateMachine(
+        [
+          {
+            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          },
+          {
+            signal: Signal.NATIVE_START,
+            callback: handlePressIn,
+          },
+          {
+            signal: Signal.NATIVE_END,
+            callback: handlePressOut,
+          },
+        ],
+        /* dbg */ testID as string
+      );
+    } else if (Platform.OS === 'web') {
+      return new StateMachine(
+        [
+          {
+            signal: Signal.NATIVE_BEGIN,
+          },
+          {
+            signal: Signal.NATIVE_START,
+          },
+          {
+            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+            callback: handlePressIn,
+          },
+          {
+            signal: Signal.NATIVE_END,
+            callback: handlePressOut,
+          },
+        ],
+        /* dbg */ testID as string
+      );
+    } else if (Platform.OS === 'macos') {
+      return new StateMachine(
+        [
+          {
+            signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          },
+          {
+            signal: Signal.NATIVE_BEGIN,
+            callback: handlePressIn,
+          },
+          {
+            signal: Signal.NATIVE_START,
+          },
+          {
+            signal: Signal.NATIVE_END,
+            callback: handlePressOut,
+          },
+        ],
+        /* dbg */ testID as string
+      );
+    } else {
+      // Unknown platform - using minimal universal setup.
+      return new StateMachine(
+        [
+          {
+            signal: Signal.NATIVE_END,
+            callback: (event: PressableEvent) => {
+              handlePressIn(event);
+              handlePressOut(event);
             },
-            {
-              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-              callbacks: [handlePressIn],
-            },
-            {
-              signal: Signal.NATIVE_START,
-            },
-            {
-              signal: Signal.NATIVE_END,
-              callbacks: [handlePressOut],
-            },
-          ],
-        },
-        {
-          isActive: Platform.OS === 'ios' && IS_FABRIC,
-          steps: [
-            {
-              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-            },
-            {
-              signal: Signal.NATIVE_START,
-              callbacks: [handlePressIn],
-            },
-            {
-              signal: Signal.NATIVE_END,
-              callbacks: [handlePressOut],
-            },
-          ],
-        },
-        {
-          isActive: Platform.OS === 'web',
-          steps: [
-            {
-              signal: Signal.NATIVE_BEGIN,
-            },
-            {
-              signal: Signal.NATIVE_START,
-            },
-            {
-              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-              callbacks: [handlePressIn],
-            },
-            {
-              signal: Signal.NATIVE_END,
-              callbacks: [handlePressOut],
-            },
-          ],
-        },
-        {
-          isActive: Platform.OS === 'macos',
-          steps: [
-            {
-              signal: Signal.LONG_PRESS_TOUCHES_DOWN,
-            },
-            {
-              signal: Signal.NATIVE_BEGIN,
-              callbacks: [handlePressIn],
-            },
-            {
-              signal: Signal.NATIVE_START,
-            },
-            {
-              signal: Signal.NATIVE_END,
-              callbacks: [handlePressOut],
-            },
-          ],
-        },
-      ],
-      /* dbg, remove */ testID
-    );
+          },
+        ],
+        /* dbg */ testID as string
+      );
+    }
   }, [handlePressOut, handlePressIn, testID]);
 
   const hoverInTimeout = useRef<number | null>(null);
