@@ -142,8 +142,8 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.NATIVE_END,
                 callbacks: [
                   (event) => {
-                    handlePress(event);
                     onPressOut?.(event);
+                    handlePress(event);
                     handleFinalize();
                   },
                 ],
@@ -164,8 +164,8 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.NATIVE_END,
                 callbacks: [
                   (event) => {
-                    handlePress(event);
                     onPressOut?.(event);
+                    handlePress(event);
                     handleFinalize();
                   },
                 ],
@@ -189,8 +189,8 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.NATIVE_END,
                 callbacks: [
                   (event) => {
-                    handlePress(event);
                     onPressOut?.(event);
+                    handlePress(event);
                     handleFinalize();
                   },
                 ],
@@ -214,8 +214,8 @@ const PressableStateful = (props: PressableProps) => {
                 signal: Signal.NATIVE_END,
                 callbacks: [
                   (event) => {
-                    handlePress(event);
                     onPressOut?.(event);
+                    handlePress(event);
                     handleFinalize();
                   },
                 ],
