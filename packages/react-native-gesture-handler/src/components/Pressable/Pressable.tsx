@@ -293,8 +293,7 @@ const Pressable = (props: PressableProps) => {
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           const pEvent = gestureTouchToPressableEvent(event);
-          stateMachine.setEvent(pEvent);
-          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCHES_DOWN);
+          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCHES_DOWN, pEvent);
         })
         .onTouchesUp(() => {
           if (Platform.OS === 'android') {
@@ -309,13 +308,11 @@ const Pressable = (props: PressableProps) => {
         })
         .onStart((event) => {
           const pEvent = gestureToPressableEvent(event);
-          stateMachine.setEvent(pEvent);
-          stateMachine.sendSignal(Signal.LONG_PRESS_START);
+          stateMachine.sendSignal(Signal.LONG_PRESS_START, pEvent);
         })
         .onEnd((event) => {
           const pEvent = gestureToPressableEvent(event);
-          stateMachine.setEvent(pEvent);
-          stateMachine.sendSignal(Signal.LONG_PRESS_END);
+          stateMachine.sendSignal(Signal.LONG_PRESS_END, pEvent);
         }),
     [stateMachine, handleFinalize]
   );

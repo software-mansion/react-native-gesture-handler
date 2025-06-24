@@ -15,41 +15,39 @@ const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Tried calling CB with undefined
 class StateMachine {
   private steps: StepDefinition[];
   private stepIndex: number;
-  private latestEvent: PressableEvent | null;
+  private latestEvent: PressableEvent | undefined;
   /* dbg */ private label: string;
 
   constructor(steps: StepDefinition[], label: string) {
     this.steps = steps;
     this.stepIndex = 0;
-    this.latestEvent = null;
+    this.latestEvent = undefined;
     this.label = label;
   }
 
   public reset() {
     this.stepIndex = 0;
-    this.latestEvent = null;
+    this.latestEvent = undefined;
   }
 
-  public setEvent(event: PressableEvent) {
-    this.latestEvent = event;
-  }
-
-  public sendSignal(signal: string) {
+  public sendSignal(signal: string, event?: PressableEvent) {
     /* dbg */ console.log(`${this.label ?? 'Received'}:`, signal);
 
     const step = this.steps[this.stepIndex];
+    this.latestEvent ||= event;
 
     if (step.signal !== signal) {
+      // todo: allow for retry sendSignal after reset
       this.reset();
       return;
     }
 
-    if (step.callback && !this.latestEvent) {
+    if (step.callback && !event) {
       // This case indicates an unexpected edge-case that has to be patched
       console.warn(UNDEFINED_EVENT_ERROR_MESSAGE);
     }
 
-    this.latestEvent && step.callback?.(this.latestEvent);
+    event && step.callback?.(event);
     this.stepIndex++;
 
     if (this.stepIndex === this.steps.length) {
