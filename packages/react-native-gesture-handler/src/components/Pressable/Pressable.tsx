@@ -320,6 +320,10 @@ const Pressable = (props: PressableProps) => {
         .onEnd(() => {
           stateMachine.sendSignal(Signal.NATIVE_END);
           handleFinalize(); // common ending point for all platforms
+        })
+        .onFinalize(() => {
+          stateMachine.reset();
+          handleFinalize();
         }),
     [stateMachine, handleFinalize]
   );
