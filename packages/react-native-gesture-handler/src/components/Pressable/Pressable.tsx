@@ -39,7 +39,7 @@ enum Signal {
   LONG_PRESS_END = 'longPressEnd',
 }
 
-const PressableStateful = (props: PressableProps) => {
+const Pressable = (props: PressableProps) => {
   const {
     testID,
     testOnly_pressed,
@@ -121,10 +121,11 @@ const PressableStateful = (props: PressableProps) => {
   );
 
   const handleFinalize = useCallback(() => {
+    /* dbg */ console.log(testID, 'Finalizing');
     cancelLongPress();
     cancelDelayedPress();
     setPressedState(false);
-  }, [cancelDelayedPress, cancelLongPress]);
+  }, [cancelDelayedPress, cancelLongPress, testID]);
 
   const handlePressIn = useCallback(
     (event: PressableEvent) => {
@@ -423,4 +424,4 @@ const PressableStateful = (props: PressableProps) => {
   );
 };
 
-export default PressableStateful;
+export default Pressable;
