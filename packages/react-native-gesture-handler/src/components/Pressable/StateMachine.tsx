@@ -27,6 +27,7 @@ class StateMachine {
 
   public reset() {
     this.stepIndex = 0;
+    this.latestEvent = null;
   }
 
   public setEvent(event: PressableEvent) {
