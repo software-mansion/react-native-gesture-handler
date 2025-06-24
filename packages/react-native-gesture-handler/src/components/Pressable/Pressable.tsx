@@ -10,7 +10,12 @@ import {
   processColor,
 } from 'react-native';
 import NativeButton from '../GestureHandlerButton';
-import { gestureToPressableEvent, addInsets, numberAsInset } from './utils';
+import {
+  gestureToPressableEvent,
+  addInsets,
+  numberAsInset,
+  gestureTouchToPressableEvent,
+} from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
 import {
@@ -32,6 +37,7 @@ enum Signal {
   LONG_PRESS_BEGIN = 'longPressBegin',
   LONG_PRESS_START = 'longPressStart',
   LONG_PRESS_END = 'longPressEnd',
+  LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
 }
 
 const PressableStateful = (props: PressableProps) => {
@@ -201,7 +207,7 @@ const PressableStateful = (props: PressableProps) => {
             isActive: Platform.OS === 'macos',
             steps: [
               {
-                signal: Signal.LONG_PRESS_BEGIN,
+                signal: Signal.LONG_PRESS_TOUCHES_DOWN,
               },
               {
                 signal: Signal.NATIVE_BEGIN,
@@ -271,6 +277,14 @@ const PressableStateful = (props: PressableProps) => {
         .minDuration(INT32_MAX) // Stops long press from blocking Gesture.Native()
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
+        .onTouchesDown((event) => {
+          if (Platform.OS === 'macos') {
+            // MacOS uses onTouchesDown instead of onBegin
+            const pEvent = gestureTouchToPressableEvent(event);
+            stateMachine.setEvent(pEvent);
+            stateMachine.sendSignal(Signal.LONG_PRESS_TOUCHES_DOWN);
+          }
+        })
         .onTouchesUp(() => {
           if (Platform.OS === 'android') {
             // prevents potential soft-locks
@@ -283,18 +297,21 @@ const PressableStateful = (props: PressableProps) => {
           handleFinalize();
         })
         .onBegin((event) => {
-          const gEvent = gestureToPressableEvent(event);
-          stateMachine.setEvent(gEvent);
-          stateMachine.sendSignal(Signal.LONG_PRESS_BEGIN);
+          if (Platform.OS !== 'macos') {
+            // MacOS uses onTouchesDown instead of onBegin
+            const pEvent = gestureToPressableEvent(event);
+            stateMachine.setEvent(pEvent);
+            stateMachine.sendSignal(Signal.LONG_PRESS_BEGIN);
+          }
         })
         .onStart((event) => {
-          const gEvent = gestureToPressableEvent(event);
-          stateMachine.setEvent(gEvent);
+          const pEvent = gestureToPressableEvent(event);
+          stateMachine.setEvent(pEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_START);
         })
         .onEnd((event) => {
-          const gEvent = gestureToPressableEvent(event);
-          stateMachine.setEvent(gEvent);
+          const pEvent = gestureToPressableEvent(event);
+          stateMachine.setEvent(pEvent);
           stateMachine.sendSignal(Signal.LONG_PRESS_END);
         }),
     [stateMachine, handleFinalize]
