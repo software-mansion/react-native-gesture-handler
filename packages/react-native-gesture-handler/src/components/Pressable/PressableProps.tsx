@@ -64,7 +64,7 @@ export interface PressableProps
   /**
    * A reference to the pressable element.
    */
-  ref?: React.Ref<View>;
+  ref?: React.RefObject<View>;
 
   /**
    * Either children or a render prop that receives a boolean reflecting whether
