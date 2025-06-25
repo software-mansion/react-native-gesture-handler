@@ -1,3 +1,4 @@
+import { tagMessage } from '../../utils';
 import { PressableEvent } from './PressableProps';
 
 interface StepDefinition {
@@ -8,7 +9,7 @@ interface StepDefinition {
 const RNGH_ISSUE_URL =
   'https://github.com/software-mansion/react-native-gesture-handler/issues/new?template=bug-report.yml';
 
-const GH_TAG = '[GESTURE HANDLER] Pressable StateMachine:';
+const GH_TAG = tagMessage('Pressable StateMachine:');
 
 const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Tried calling CB with undefined event argument! Please report this bug: ${RNGH_ISSUE_URL}`;
 
