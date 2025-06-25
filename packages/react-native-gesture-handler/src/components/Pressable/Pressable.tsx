@@ -87,12 +87,11 @@ const Pressable = (props: PressableProps) => {
   }, []);
 
   const cancelDelayedPress = useCallback(() => {
-    cancelLongPress();
     if (pressDelayTimeoutRef.current) {
       clearTimeout(pressDelayTimeoutRef.current);
       pressDelayTimeoutRef.current = null;
     }
-  }, [cancelLongPress]);
+  }, []);
 
   const startLongPress = useCallback(
     (event: PressableEvent) => {
@@ -147,10 +146,6 @@ const Pressable = (props: PressableProps) => {
   );
 
   const stateMachine = useMemo(() => {
-    if (IS_FABRIC === null) {
-      IS_FABRIC = isFabric();
-    }
-
     if (Platform.OS === 'android') {
       return new StateMachine([
         {
