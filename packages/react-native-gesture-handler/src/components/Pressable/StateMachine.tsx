@@ -7,36 +7,36 @@ interface StepDefinition {
 
 class StateMachine {
   private steps: StepDefinition[];
-  private stepIndex: number;
-  private latestEvent?: PressableEvent;
+  private currentStepIndex: number;
+  private eventPayload?: PressableEvent;
 
   constructor(steps: StepDefinition[]) {
     this.steps = steps;
-    this.stepIndex = 0;
+    this.currentStepIndex = 0;
   }
 
   public reset() {
-    this.stepIndex = 0;
-    this.latestEvent = undefined;
+    this.currentStepIndex = 0;
+    this.eventPayload = undefined;
   }
 
-  public sendSignal(signal: string, event?: PressableEvent) {
-    const step = this.steps[this.stepIndex];
-    this.latestEvent = event || this.latestEvent;
+  public sendEvent(eventName: string, eventPayload?: PressableEvent) {
+    const step = this.steps[this.currentStepIndex];
+    this.eventPayload = eventPayload || this.eventPayload;
 
-    if (step.signal !== signal) {
-      if (this.stepIndex > 0) {
+    if (step.signal !== eventName) {
+      if (this.currentStepIndex > 0) {
         // retry with position at index 0
         this.reset();
-        this.sendSignal(signal, event);
+        this.sendEvent(eventName, eventPayload);
       }
       return;
     }
 
-    this.latestEvent && step.callback?.(this.latestEvent);
-    this.stepIndex++;
+    this.eventPayload && step.callback?.(this.eventPayload);
+    this.currentStepIndex++;
 
-    if (this.stepIndex === this.steps.length) {
+    if (this.currentStepIndex === this.steps.length) {
       this.reset();
     }
   }

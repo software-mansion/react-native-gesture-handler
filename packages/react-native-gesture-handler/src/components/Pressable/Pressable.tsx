@@ -30,7 +30,7 @@ const IS_TEST_ENV = isTestEnv();
 
 let IS_FABRIC: null | boolean = null;
 
-enum Signal {
+enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
   NATIVE_START = 'nativeStart',
   NATIVE_END = 'nativeEnd',
@@ -157,65 +157,65 @@ const Pressable = (props: PressableProps) => {
     if (Platform.OS === 'android') {
       return new StateMachine([
         {
-          signal: Signal.NATIVE_BEGIN,
+          signal: StateMachineEvent.NATIVE_BEGIN,
         },
         {
-          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
           callback: handlePressIn,
         },
         {
-          signal: Signal.NATIVE_START,
+          signal: StateMachineEvent.NATIVE_START,
         },
         {
-          signal: Signal.NATIVE_END,
+          signal: StateMachineEvent.NATIVE_END,
           callback: handlePressOut,
         },
       ]);
     } else if (Platform.OS === 'ios') {
       return new StateMachine([
         {
-          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         },
         {
-          signal: Signal.NATIVE_START,
+          signal: StateMachineEvent.NATIVE_START,
           callback: handlePressIn,
         },
         {
-          signal: Signal.NATIVE_END,
+          signal: StateMachineEvent.NATIVE_END,
           callback: handlePressOut,
         },
       ]);
     } else if (Platform.OS === 'web') {
       return new StateMachine([
         {
-          signal: Signal.NATIVE_BEGIN,
+          signal: StateMachineEvent.NATIVE_BEGIN,
         },
         {
-          signal: Signal.NATIVE_START,
+          signal: StateMachineEvent.NATIVE_START,
         },
         {
-          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
           callback: handlePressIn,
         },
         {
-          signal: Signal.NATIVE_END,
+          signal: StateMachineEvent.NATIVE_END,
           callback: handlePressOut,
         },
       ]);
     } else if (Platform.OS === 'macos') {
       return new StateMachine([
         {
-          signal: Signal.LONG_PRESS_TOUCHES_DOWN,
+          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         },
         {
-          signal: Signal.NATIVE_BEGIN,
+          signal: StateMachineEvent.NATIVE_BEGIN,
           callback: handlePressIn,
         },
         {
-          signal: Signal.NATIVE_START,
+          signal: StateMachineEvent.NATIVE_START,
         },
         {
-          signal: Signal.NATIVE_END,
+          signal: StateMachineEvent.NATIVE_END,
           callback: handlePressOut,
         },
       ]);
@@ -223,7 +223,7 @@ const Pressable = (props: PressableProps) => {
       // Unknown platform - using minimal universal setup.
       return new StateMachine([
         {
-          signal: Signal.NATIVE_END,
+          signal: StateMachineEvent.NATIVE_END,
           callback: (event: PressableEvent) => {
             handlePressIn(event);
             handlePressOut(event);
@@ -278,7 +278,10 @@ const Pressable = (props: PressableProps) => {
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           const pEvent = gestureTouchToPressableEvent(event);
-          stateMachine.sendSignal(Signal.LONG_PRESS_TOUCHES_DOWN, pEvent);
+          stateMachine.sendEvent(
+            StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+            pEvent
+          );
         })
         .onTouchesUp(() => {
           if (Platform.OS === 'android') {
@@ -306,13 +309,13 @@ const Pressable = (props: PressableProps) => {
           }
         })
         .onBegin(() => {
-          stateMachine.sendSignal(Signal.NATIVE_BEGIN);
+          stateMachine.sendEvent(StateMachineEvent.NATIVE_BEGIN);
         })
         .onStart(() => {
-          stateMachine.sendSignal(Signal.NATIVE_START);
+          stateMachine.sendEvent(StateMachineEvent.NATIVE_START);
         })
         .onEnd(() => {
-          stateMachine.sendSignal(Signal.NATIVE_END);
+          stateMachine.sendEvent(StateMachineEvent.NATIVE_END);
           handleFinalize(); // common ending point for all platforms
         })
         .onFinalize(() => {
