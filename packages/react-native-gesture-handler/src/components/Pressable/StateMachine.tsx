@@ -22,7 +22,7 @@ class StateMachine {
 
   public sendSignal(signal: string, event?: PressableEvent) {
     const step = this.steps[this.stepIndex];
-    this.latestEvent ||= event;
+    this.latestEvent = event || this.latestEvent;
 
     if (step.signal !== signal) {
       if (this.stepIndex > 0) {
