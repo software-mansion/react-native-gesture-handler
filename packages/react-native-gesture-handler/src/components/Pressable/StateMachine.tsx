@@ -11,7 +11,7 @@ const RNGH_ISSUE_URL =
 
 const GH_TAG = tagMessage('Pressable StateMachine:');
 
-const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Tried calling CB with undefined event argument! Please report this bug: ${RNGH_ISSUE_URL}`;
+const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Tried calling callback with an undefined event argument! Please report this bug: ${RNGH_ISSUE_URL}`;
 
 class StateMachine {
   private steps: StepDefinition[];
