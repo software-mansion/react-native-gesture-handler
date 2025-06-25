@@ -111,6 +111,10 @@ const Pressable = (props: PressableProps) => {
       onPressIn?.(event);
       startLongPress(event);
       setPressedState(true);
+      if (pressDelayTimeoutRef.current) {
+        clearTimeout(pressDelayTimeoutRef.current);
+        pressDelayTimeoutRef.current = null;
+      }
     },
     [onPressIn, startLongPress]
   );
@@ -136,13 +140,19 @@ const Pressable = (props: PressableProps) => {
 
   const handlePressOut = useCallback(
     (event: PressableEvent) => {
+      if (pressDelayTimeoutRef.current) {
+        innerHandlePressIn(event);
+      }
+
       onPressOut?.(event);
+
       if (isOnPressAllowed.current) {
         onPress?.(event);
       }
+
       handleFinalize();
     },
-    [handleFinalize, onPress, onPressOut]
+    [handleFinalize, innerHandlePressIn, onPress, onPressOut]
   );
 
   const stateMachine = useMemo(() => {
