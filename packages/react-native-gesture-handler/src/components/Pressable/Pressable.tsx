@@ -35,8 +35,6 @@ enum Signal {
   NATIVE_START = 'nativeStart',
   NATIVE_END = 'nativeEnd',
   LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
-  LONG_PRESS_START = 'longPressStart',
-  LONG_PRESS_END = 'longPressEnd',
 }
 
 const Pressable = (props: PressableProps) => {
@@ -292,14 +290,6 @@ const Pressable = (props: PressableProps) => {
         .onTouchesCancelled(() => {
           stateMachine.reset();
           handleFinalize();
-        })
-        .onStart((event) => {
-          const pEvent = gestureToPressableEvent(event);
-          stateMachine.sendSignal(Signal.LONG_PRESS_START, pEvent);
-        })
-        .onEnd((event) => {
-          const pEvent = gestureToPressableEvent(event);
-          stateMachine.sendSignal(Signal.LONG_PRESS_END, pEvent);
         }),
     [stateMachine, handleFinalize]
   );
@@ -369,9 +359,6 @@ const Pressable = (props: PressableProps) => {
       );
     });
   }
-
-  // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
-  buttonGesture.hitSlop(normalizedHitSlop);
 
   const gesture = Gesture.Simultaneous(...gestures);
 

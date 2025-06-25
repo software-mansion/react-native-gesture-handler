@@ -16,12 +16,11 @@ const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Tried calling callback with an 
 class StateMachine {
   private steps: StepDefinition[];
   private stepIndex: number;
-  private latestEvent: PressableEvent | undefined;
+  private latestEvent?: PressableEvent;
 
   constructor(steps: StepDefinition[]) {
     this.steps = steps;
     this.stepIndex = 0;
-    this.latestEvent = undefined;
   }
 
   public reset() {
