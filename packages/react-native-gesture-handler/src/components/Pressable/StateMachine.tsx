@@ -1,17 +1,9 @@
-import { tagMessage } from '../../utils';
 import { PressableEvent } from './PressableProps';
 
 interface StepDefinition {
   signal: string;
   callback?: (event: PressableEvent) => void;
 }
-
-const RNGH_ISSUE_URL =
-  'https://github.com/software-mansion/react-native-gesture-handler/issues/new?template=bug-report.yml';
-
-const GH_TAG = tagMessage('Pressable StateMachine:');
-
-const UNDEFINED_EVENT_ERROR_MESSAGE = `${GH_TAG} Tried calling callback with an undefined event argument! Please report this bug: ${RNGH_ISSUE_URL}`;
 
 class StateMachine {
   private steps: StepDefinition[];
@@ -39,11 +31,6 @@ class StateMachine {
         this.sendSignal(signal, event);
       }
       return;
-    }
-
-    if (step.callback && !this.latestEvent) {
-      // This case indicates an unexpected edge-case that has to be patched
-      console.warn(UNDEFINED_EVENT_ERROR_MESSAGE);
     }
 
     this.latestEvent && step.callback?.(this.latestEvent);
