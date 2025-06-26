@@ -8,7 +8,11 @@ import {
   GestureStateChangeEvent,
   GestureTouchEvent,
 } from '../../handlers/gestureHandlerCommon';
-import { InnerPressableEvent, PressableEvent } from './PressableProps';
+import {
+  PressableDimensions,
+  InnerPressableEvent,
+  PressableEvent,
+} from './PressableProps';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
@@ -58,10 +62,8 @@ const gestureToPressEvent = (
   changedTouches: [], // Always empty - legacy compatibility
 });
 
-type Dimensions = { width: number; height: number };
-
 const isTouchWithinInset = (
-  dimensions: Dimensions,
+  dimensions: PressableDimensions,
   inset: Insets,
   touch?: InnerPressableEvent
 ) =>
@@ -130,7 +132,6 @@ const gestureTouchToPressableEvent = (
 };
 
 export {
-  type Dimensions,
   numberAsInset,
   addInsets,
   isTouchWithinInset,

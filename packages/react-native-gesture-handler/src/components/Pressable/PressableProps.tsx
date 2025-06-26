@@ -9,7 +9,8 @@ import {
   View,
 } from 'react-native';
 import { RelationPropType } from '../utils';
-import { Dimensions } from './utils';
+
+export type PressableDimensions = { width: number; height: number };
 
 export type PressableStateCallbackType = RNPressableStateCallbackType;
 export type PressableAndroidRippleConfig = RNPressableAndroidRippleConfig;
@@ -171,5 +172,5 @@ export interface PressableProps
    * This property does not affect Pressable's physical appearance
    * Required when the Pressable is resized **and** uses pressRetentionOffset.
    */
-  dimensionsAfterResize?: Dimensions;
+  dimensionsAfterResize?: PressableDimensions;
 }

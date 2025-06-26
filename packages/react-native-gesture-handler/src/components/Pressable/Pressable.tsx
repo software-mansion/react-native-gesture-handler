@@ -7,7 +7,11 @@ import React, {
 } from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
-import { PressableEvent, PressableProps } from './PressableProps';
+import {
+  PressableEvent,
+  PressableProps,
+  PressableDimensions,
+} from './PressableProps';
 import {
   Insets,
   Platform,
@@ -22,7 +26,6 @@ import {
   addInsets,
   numberAsInset,
   gestureTouchToPressableEvent,
-  Dimensions,
   isTouchWithinInset,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
@@ -86,7 +89,7 @@ const Pressable = (props: PressableProps) => {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
   const isCurrentlyPressed = useRef<boolean>(false);
-  const dimensions = useRef<Dimensions>({ width: 0, height: 0 });
+  const dimensions = useRef<PressableDimensions>({ width: 0, height: 0 });
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
