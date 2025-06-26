@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { PressableEvent } from './PressableProps';
-import { StateMachine } from './StateMachine';
+import { PressableStateMachine } from './StateMachine';
 
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
@@ -14,75 +14,75 @@ export function getConfiguredStateMachine(
   handlePressOut: (event: PressableEvent) => void
 ) {
   if (Platform.OS === 'android') {
-    return new StateMachine([
+    return new PressableStateMachine([
       {
-        signal: StateMachineEvent.NATIVE_BEGIN,
+        eventName: StateMachineEvent.NATIVE_BEGIN,
       },
       {
-        signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         callback: handlePressIn,
       },
       {
-        signal: StateMachineEvent.NATIVE_START,
+        eventName: StateMachineEvent.NATIVE_START,
       },
       {
-        signal: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_END,
         callback: handlePressOut,
       },
     ]);
   } else if (Platform.OS === 'ios') {
-    return new StateMachine([
+    return new PressableStateMachine([
       {
-        signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
       },
       {
-        signal: StateMachineEvent.NATIVE_START,
+        eventName: StateMachineEvent.NATIVE_START,
         callback: handlePressIn,
       },
       {
-        signal: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_END,
         callback: handlePressOut,
       },
     ]);
   } else if (Platform.OS === 'web') {
-    return new StateMachine([
+    return new PressableStateMachine([
       {
-        signal: StateMachineEvent.NATIVE_BEGIN,
+        eventName: StateMachineEvent.NATIVE_BEGIN,
       },
       {
-        signal: StateMachineEvent.NATIVE_START,
+        eventName: StateMachineEvent.NATIVE_START,
       },
       {
-        signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         callback: handlePressIn,
       },
       {
-        signal: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_END,
         callback: handlePressOut,
       },
     ]);
   } else if (Platform.OS === 'macos') {
-    return new StateMachine([
+    return new PressableStateMachine([
       {
-        signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
       },
       {
-        signal: StateMachineEvent.NATIVE_BEGIN,
+        eventName: StateMachineEvent.NATIVE_BEGIN,
         callback: handlePressIn,
       },
       {
-        signal: StateMachineEvent.NATIVE_START,
+        eventName: StateMachineEvent.NATIVE_START,
       },
       {
-        signal: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_END,
         callback: handlePressOut,
       },
     ]);
   } else {
     // Unknown platform - using minimal universal setup.
-    return new StateMachine([
+    return new PressableStateMachine([
       {
-        signal: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_END,
         callback: (event: PressableEvent) => {
           handlePressIn(event);
           handlePressOut(event);

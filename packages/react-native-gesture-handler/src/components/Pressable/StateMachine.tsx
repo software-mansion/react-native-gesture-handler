@@ -1,17 +1,17 @@
 import { PressableEvent } from './PressableProps';
 
-interface StepDefinition {
-  signal: string;
+interface StateDefinition {
+  eventName: string;
   callback?: (event: PressableEvent) => void;
 }
 
-class StateMachine {
-  private steps: StepDefinition[];
+class PressableStateMachine {
+  private states: StateDefinition[];
   private currentStepIndex: number;
   private eventPayload: PressableEvent | null;
 
-  constructor(steps: StepDefinition[]) {
-    this.steps = steps;
+  constructor(steps: StateDefinition[]) {
+    this.states = steps;
     this.currentStepIndex = 0;
     this.eventPayload = null;
   }
@@ -22,10 +22,10 @@ class StateMachine {
   }
 
   public sendEvent(eventName: string, eventPayload?: PressableEvent) {
-    const step = this.steps[this.currentStepIndex];
+    const step = this.states[this.currentStepIndex];
     this.eventPayload = eventPayload || this.eventPayload;
 
-    if (step.signal !== eventName) {
+    if (step.eventName !== eventName) {
       if (this.currentStepIndex > 0) {
         // retry with position at index 0
         this.reset();
@@ -37,10 +37,10 @@ class StateMachine {
     this.eventPayload && step.callback?.(this.eventPayload);
     this.currentStepIndex++;
 
-    if (this.currentStepIndex === this.steps.length) {
+    if (this.currentStepIndex === this.states.length) {
       this.reset();
     }
   }
 }
 
-export { StateMachine };
+export { PressableStateMachine };
