@@ -5,7 +5,7 @@ import { PressableStateMachine } from './StateMachine';
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
   NATIVE_START = 'nativeStart',
-  NATIVE_END = 'nativeEnd',
+  NATIVE_FINALIZE = 'nativeFinalize',
   LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
 }
 
@@ -23,10 +23,7 @@ export function getConfiguredStateMachine(
         callback: handlePressIn,
       },
       {
-        eventName: StateMachineEvent.NATIVE_START,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_FINALIZE,
         callback: handlePressOut,
       },
     ]);
@@ -40,7 +37,7 @@ export function getConfiguredStateMachine(
         callback: handlePressIn,
       },
       {
-        eventName: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_FINALIZE,
         callback: handlePressOut,
       },
     ]);
@@ -57,7 +54,7 @@ export function getConfiguredStateMachine(
         callback: handlePressIn,
       },
       {
-        eventName: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_FINALIZE,
         callback: handlePressOut,
       },
     ]);
@@ -74,7 +71,7 @@ export function getConfiguredStateMachine(
         eventName: StateMachineEvent.NATIVE_START,
       },
       {
-        eventName: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_FINALIZE,
         callback: handlePressOut,
       },
     ]);
@@ -82,7 +79,7 @@ export function getConfiguredStateMachine(
     // Unknown platform - using minimal universal setup.
     return new PressableStateMachine([
       {
-        eventName: StateMachineEvent.NATIVE_END,
+        eventName: StateMachineEvent.NATIVE_FINALIZE,
         callback: (event: PressableEvent) => {
           handlePressIn(event);
           handlePressOut(event);

@@ -308,14 +308,13 @@ const Pressable = (props: PressableProps) => {
           stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
         })
         .onStart(() => {
-          stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
-        })
-        .onEnd(() => {
-          stateMachine.handleEvent(StateMachineEvent.NATIVE_END);
-          handleFinalize(); // common ending point for all platforms
+          if (Platform.OS !== 'android') {
+            // Gesture.Native().onStart() is broken with Android + hitSlop
+            stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
+          }
         })
         .onFinalize(() => {
-          stateMachine.reset();
+          stateMachine.handleEvent(StateMachineEvent.NATIVE_FINALIZE);
           handleFinalize();
         }),
     [stateMachine, handlePressOut, handleFinalize]
