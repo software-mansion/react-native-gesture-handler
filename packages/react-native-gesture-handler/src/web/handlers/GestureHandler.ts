@@ -701,9 +701,15 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     const rect = this.delegate.measureView();
-    const { x, y } = this.tracker.getLastAbsoluteCoords();
-    const offsetX: number = x - rect.pageX;
-    const offsetY: number = y - rect.pageY;
+
+    const lastCoords = this.tracker.getLastAbsoluteCoords();
+
+    if (!lastCoords) {
+      return false;
+    }
+
+    const offsetX: number = lastCoords.x - rect.pageX;
+    const offsetY: number = lastCoords.y - rect.pageY;
 
     return (
       offsetX >= left && offsetX <= right && offsetY >= top && offsetY <= bottom

@@ -337,6 +337,7 @@ export default class GestureHandlerOrchestrator {
       const point = handler.tracker.getLastAbsoluteCoords(pointer);
 
       return (
+        point &&
         handler.delegate.isPointerInBounds(point) &&
         otherHandler.delegate.isPointerInBounds(point)
       );
