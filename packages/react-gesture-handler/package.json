@@ -1,0 +1,93 @@
+{
+  "name": "react-gesture-handler",
+  "version": "2.26.0",
+  "description": "Declarative API exposing native platform touch and gesture system to React Native",
+  "scripts": {
+    "test": "jest",
+    "build": "yarn tsc -p tsconfig.build.json && bob build",
+    "ts-check": "yarn tsc --noEmit",
+    "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
+    "format:js": "yarn format-js",
+    "format:android": "node ../../scripts/format-android.js",
+    "format:apple": "node ../../scripts/format-apple.js",
+    "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
+    "lint:js": "yarn lint-js",
+    "lint:android": "./android/gradlew -p android spotlessCheck -q",
+    "circular-dependency-check": "yarn madge --extensions js,ts,tsx --circular src",
+    "architectures-consistency-check": "node ../../scripts/codegen-check-consistency.js",
+    "sync-architectures": "node ../../scripts/codegen-sync-archs.js",
+    "clean": "rm -rf node_modules android/build android/.cxx",
+    "prepack": "cp ../../README.md ./README.md",
+    "postpack": "rm ./README.md"
+  },
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "Swipeable/",
+    "ReanimatedSwipeable/",
+    "jest-utils/",
+    "DrawerLayout/",
+    "ReanimatedDrawerLayout/",
+    "README.md",
+    "jestSetup.js",
+    "RNGestureHandler.podspec"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/software-mansion/react-native-gesture-handler.git"
+  },
+  "author": {
+    "email": "krzys.magiera@gmail.com",
+    "name": "Krzysztof Magiera"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/software-mansion/react-native-gesture-handler/issues"
+  },
+  "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
+  "dependencies": {
+    "hoist-non-react-statics": "^3.3.0",
+    "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/preset-typescript": "^7.12.7",
+    "@testing-library/react-native": "^12.5.1",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/invariant": "^2.2.37",
+    "@types/jest": "^27.0.3",
+    "@types/react": "^19.1.0",
+    "@types/react-test-renderer": "^19.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "clang-format": "^1.8.0",
+    "eslint": "^8.57.0",
+    "eslint-config-satya164": "3.3.0",
+    "eslint-import-resolver-babel-module": "^5.2.0",
+    "eslint-plugin-jest": "27.4.3",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react": "^7.37.5",
+    "husky": "^8.0.1",
+    "jest": "^28.1.0",
+    "lint-staged": "^12.3.2",
+    "madge": "^6.1.0",
+    "prettier": "3.3.3",
+    "react": "19.1.0",
+    "react-test-renderer": "19.1.0",
+    "typescript": "~5.8.3"
+  },
+  "peerDependencies": {
+    "react": "*"
+  },
+
+  "packageManager": "yarn@4.7.0"
+}

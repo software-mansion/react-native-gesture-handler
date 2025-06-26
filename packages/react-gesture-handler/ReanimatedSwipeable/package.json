@@ -1,0 +1,6 @@
+{
+  "main": "../lib/commonjs/components/ReanimatedSwipeable",
+  "module": "../lib/module/components/ReanimatedSwipeable",
+  "react-native": "../src/components/ReanimatedSwipeable",
+  "types": "../lib/typescript/components/ReanimatedSwipeable.d.ts"
+}
