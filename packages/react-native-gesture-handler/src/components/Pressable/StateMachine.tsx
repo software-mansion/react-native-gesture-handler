@@ -8,16 +8,17 @@ interface StepDefinition {
 class StateMachine {
   private steps: StepDefinition[];
   private currentStepIndex: number;
-  private eventPayload?: PressableEvent;
+  private eventPayload: PressableEvent | null;
 
   constructor(steps: StepDefinition[]) {
     this.steps = steps;
     this.currentStepIndex = 0;
+    this.eventPayload = null;
   }
 
   public reset() {
     this.currentStepIndex = 0;
-    this.eventPayload = undefined;
+    this.eventPayload = null;
   }
 
   public sendEvent(eventName: string, eventPayload?: PressableEvent) {
