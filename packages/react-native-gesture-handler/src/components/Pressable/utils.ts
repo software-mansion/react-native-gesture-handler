@@ -58,15 +58,17 @@ const gestureToPressEvent = (
   changedTouches: [], // Always empty - legacy compatibility
 });
 
+type Dimensions = { width: number; height: number };
+
 const isTouchWithinInset = (
-  dimensions: { width: number; height: number },
+  dimensions: Dimensions,
   inset: Insets,
-  touch?: TouchData
+  touch?: InnerPressableEvent
 ) =>
-  (touch?.x ?? 0) < (inset.right ?? 0) + dimensions.width &&
-  (touch?.y ?? 0) < (inset.bottom ?? 0) + dimensions.height &&
-  (touch?.x ?? 0) > -(inset.left ?? 0) &&
-  (touch?.y ?? 0) > -(inset.top ?? 0);
+  (touch?.locationX ?? 0) < (inset.right ?? 0) + dimensions.width &&
+  (touch?.locationY ?? 0) < (inset.bottom ?? 0) + dimensions.height &&
+  (touch?.locationX ?? 0) > -(inset.left ?? 0) &&
+  (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
 const gestureToPressableEvent = (
   event: GestureStateChangeEvent<
@@ -128,6 +130,7 @@ const gestureTouchToPressableEvent = (
 };
 
 export {
+  type Dimensions,
   numberAsInset,
   addInsets,
   isTouchWithinInset,

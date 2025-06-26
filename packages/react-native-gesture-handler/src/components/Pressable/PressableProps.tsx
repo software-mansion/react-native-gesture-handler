@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { RelationPropType } from '../utils';
+import { Dimensions } from './utils';
 
 export type PressableStateCallbackType = RNPressableStateCallbackType;
 export type PressableAndroidRippleConfig = RNPressableAndroidRippleConfig;
@@ -164,4 +165,11 @@ export interface PressableProps
    * used with the Pressable's gesture handlers.
    */
   blocksExternalGesture?: RelationPropType;
+
+  /**
+   * Defines the dimensions of the Pressable.
+   * This prop does not change Pressable's physical appearance, and is used only in the internal logic for detecting hitbox bounds.
+   * Required when the Pressable is resized and uses pressRetentionOffset simultaneously, optional in all other cases.
+   */
+  dimensionDataOverride?: Dimensions;
 }

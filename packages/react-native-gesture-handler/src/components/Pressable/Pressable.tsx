@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import { PressableEvent, PressableProps } from './PressableProps';
@@ -6,6 +12,7 @@ import {
   Insets,
   Platform,
   StyleProp,
+  View,
   ViewStyle,
   processColor,
 } from 'react-native';
@@ -15,6 +22,8 @@ import {
   addInsets,
   numberAsInset,
   gestureTouchToPressableEvent,
+  Dimensions,
+  isTouchWithinInset,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
@@ -39,6 +48,7 @@ enum StateMachineEvent {
 
 const Pressable = (props: PressableProps) => {
   const {
+    ref,
     testOnly_pressed,
     hitSlop,
     pressRetentionOffset,
@@ -61,6 +71,7 @@ const Pressable = (props: PressableProps) => {
     simultaneousWithExternalGesture,
     requireExternalGestureToFail,
     blocksExternalGesture,
+    dimensionDataOverride,
     ...remainingProps
   } = props;
 
@@ -70,11 +81,50 @@ const Pressable = (props: PressableProps) => {
     blocksExternalGesture,
   };
 
+  // used only if `ref` is undefined
+  const fallbackRef = useRef<View>(null);
+
   const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
   const longPressTimeoutRef = useRef<number | null>(null);
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
+  const isCurrentlyPressed = useRef<boolean>(false);
+  const dimensions = useRef<Dimensions>({ width: 0, height: 0 });
+
+  const normalizedHitSlop: Insets = useMemo(
+    () =>
+      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : (hitSlop ?? {}),
+    [hitSlop]
+  );
+
+  const normalizedPressRetentionOffset: Insets = useMemo(
+    () =>
+      typeof pressRetentionOffset === 'number'
+        ? numberAsInset(pressRetentionOffset)
+        : (pressRetentionOffset ?? {}),
+    [pressRetentionOffset]
+  );
+
+  const appliedHitSlop = addInsets(
+    normalizedHitSlop,
+    normalizedPressRetentionOffset
+  );
+
+  useLayoutEffect(() => {
+    if (dimensionDataOverride) {
+      dimensions.current = dimensionDataOverride;
+    } else {
+      requestAnimationFrame(() => {
+        (ref ?? fallbackRef).current?.measure((_x, _y, width, height) => {
+          dimensions.current = {
+            width,
+            height,
+          };
+        });
+      });
+    }
+  }, [dimensionDataOverride, ref]);
 
   const cancelLongPress = useCallback(() => {
     if (longPressTimeoutRef.current) {
@@ -118,6 +168,7 @@ const Pressable = (props: PressableProps) => {
   );
 
   const handleFinalize = useCallback(() => {
+    isCurrentlyPressed.current = false;
     cancelLongPress();
     cancelDelayedPress();
     setPressedState(false);
@@ -125,6 +176,18 @@ const Pressable = (props: PressableProps) => {
 
   const handlePressIn = useCallback(
     (event: PressableEvent) => {
+      if (
+        !isTouchWithinInset(
+          dimensions.current,
+          normalizedHitSlop,
+          event.nativeEvent.changedTouches.at(-1)
+        )
+      ) {
+        // ignoring pressIn within pressRetentionOffset
+        return;
+      }
+
+      isCurrentlyPressed.current = true;
       if (unstable_pressDelay) {
         pressDelayTimeoutRef.current = setTimeout(() => {
           innerHandlePressIn(event);
@@ -133,18 +196,25 @@ const Pressable = (props: PressableProps) => {
         innerHandlePressIn(event);
       }
     },
-    [innerHandlePressIn, unstable_pressDelay]
+    [innerHandlePressIn, normalizedHitSlop, unstable_pressDelay]
   );
 
   const handlePressOut = useCallback(
-    (event: PressableEvent) => {
+    (event: PressableEvent, success: boolean = true) => {
+      if (!isCurrentlyPressed.current) {
+        // Some prop configurations may lead to handlePressOut being called mutliple times.
+        return;
+      }
+
+      isCurrentlyPressed.current = false;
+
       if (pressDelayTimeoutRef.current) {
         innerHandlePressIn(event);
       }
 
       onPressOut?.(event);
 
-      if (isOnPressAllowed.current) {
+      if (isOnPressAllowed.current && success) {
         onPress?.(event);
       }
 
@@ -290,22 +360,24 @@ const Pressable = (props: PressableProps) => {
             handleFinalize();
           }
         })
-        .onTouchesCancelled(() => {
+        .onTouchesCancelled((event) => {
+          const pEvent = gestureTouchToPressableEvent(event);
           stateMachine.reset();
-          handleFinalize();
+          handlePressOut(pEvent, false);
         }),
-    [stateMachine, handleFinalize]
+    [stateMachine, handleFinalize, handlePressOut]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
   const buttonGesture = useMemo(
     () =>
       Gesture.Native()
-        .onTouchesCancelled(() => {
+        .onTouchesCancelled((event) => {
           if (Platform.OS !== 'macos') {
             // on MacOS cancel occurs in middle of gesture
+            const pEvent = gestureTouchToPressableEvent(event);
             stateMachine.reset();
-            handleFinalize();
+            handlePressOut(pEvent, false);
           }
         })
         .onBegin(() => {
@@ -322,26 +394,7 @@ const Pressable = (props: PressableProps) => {
           stateMachine.reset();
           handleFinalize();
         }),
-    [stateMachine, handleFinalize]
-  );
-
-  const normalizedHitSlop: Insets = useMemo(
-    () =>
-      typeof hitSlop === 'number' ? numberAsInset(hitSlop) : (hitSlop ?? {}),
-    [hitSlop]
-  );
-
-  const normalizedPressRetentionOffset: Insets = useMemo(
-    () =>
-      typeof pressRetentionOffset === 'number'
-        ? numberAsInset(pressRetentionOffset)
-        : (pressRetentionOffset ?? {}),
-    [pressRetentionOffset]
-  );
-
-  const appliedHitSlop = addInsets(
-    normalizedHitSlop,
-    normalizedPressRetentionOffset
+    [stateMachine, handlePressOut, handleFinalize]
   );
 
   const isPressableEnabled = disabled !== true;
@@ -393,6 +446,7 @@ const Pressable = (props: PressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        ref={ref ?? fallbackRef}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
