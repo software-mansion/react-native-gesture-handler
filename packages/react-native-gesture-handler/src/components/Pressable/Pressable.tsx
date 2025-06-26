@@ -32,19 +32,15 @@ import {
   RelationPropName,
   RelationPropType,
 } from '../utils';
-import { StateMachine } from './StateMachine';
+import {
+  getConfiguredStateMachine,
+  StateMachineEvent,
+} from './stateDefinitions';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
 let IS_FABRIC: null | boolean = null;
-
-enum StateMachineEvent {
-  NATIVE_BEGIN = 'nativeBegin',
-  NATIVE_START = 'nativeStart',
-  NATIVE_END = 'nativeEnd',
-  LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
-}
 
 const Pressable = (props: PressableProps) => {
   const {
@@ -223,85 +219,10 @@ const Pressable = (props: PressableProps) => {
     [handleFinalize, innerHandlePressIn, onPress, onPressOut]
   );
 
-  const stateMachine = useMemo(() => {
-    if (Platform.OS === 'android') {
-      return new StateMachine([
-        {
-          signal: StateMachineEvent.NATIVE_BEGIN,
-        },
-        {
-          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-          callback: handlePressIn,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_START,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_END,
-          callback: handlePressOut,
-        },
-      ]);
-    } else if (Platform.OS === 'ios') {
-      return new StateMachine([
-        {
-          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_START,
-          callback: handlePressIn,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_END,
-          callback: handlePressOut,
-        },
-      ]);
-    } else if (Platform.OS === 'web') {
-      return new StateMachine([
-        {
-          signal: StateMachineEvent.NATIVE_BEGIN,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_START,
-        },
-        {
-          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-          callback: handlePressIn,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_END,
-          callback: handlePressOut,
-        },
-      ]);
-    } else if (Platform.OS === 'macos') {
-      return new StateMachine([
-        {
-          signal: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_BEGIN,
-          callback: handlePressIn,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_START,
-        },
-        {
-          signal: StateMachineEvent.NATIVE_END,
-          callback: handlePressOut,
-        },
-      ]);
-    } else {
-      // Unknown platform - using minimal universal setup.
-      return new StateMachine([
-        {
-          signal: StateMachineEvent.NATIVE_END,
-          callback: (event: PressableEvent) => {
-            handlePressIn(event);
-            handlePressOut(event);
-          },
-        },
-      ]);
-    }
-  }, [handlePressOut, handlePressIn]);
+  const stateMachine = useMemo(
+    () => getConfiguredStateMachine(handlePressOut, handlePressIn),
+    [handlePressOut, handlePressIn]
+  );
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
