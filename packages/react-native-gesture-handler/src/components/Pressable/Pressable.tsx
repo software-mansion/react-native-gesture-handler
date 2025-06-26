@@ -223,8 +223,8 @@ const Pressable = (props: PressableProps) => {
   );
 
   const stateMachine = useMemo(
-    () => getConfiguredStateMachine(handlePressOut, handlePressIn),
-    [handlePressOut, handlePressIn]
+    () => getConfiguredStateMachine(handlePressIn, handlePressOut),
+    [handlePressIn, handlePressOut]
   );
 
   const hoverInTimeout = useRef<number | null>(null);
