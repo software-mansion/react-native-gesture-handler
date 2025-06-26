@@ -34,7 +34,10 @@ class PressableStateMachine {
       return;
     }
 
-    this.eventPayload && step.callback?.(this.eventPayload);
+    if (this.eventPayload && step.callback) {
+      step.callback(this.eventPayload);
+    }
+
     this.currentStepIndex++;
 
     if (this.currentStepIndex === this.states.length) {
