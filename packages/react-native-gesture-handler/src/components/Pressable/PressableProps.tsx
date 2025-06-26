@@ -167,9 +167,9 @@ export interface PressableProps
   blocksExternalGesture?: RelationPropType;
 
   /**
-   * Defines the dimensions of the Pressable.
-   * This prop does not change Pressable's physical appearance, and is used only in the internal logic for detecting hitbox bounds.
-   * Required when the Pressable is resized and uses pressRetentionOffset simultaneously, optional in all other cases.
+   * Defines the dimensions of the Pressable after it's been resized.
+   * This property does not affect Pressable's physical appearance
+   * Required when the Pressable is resized **and** uses pressRetentionOffset.
    */
-  dimensionDataOverride?: Dimensions;
+  dimensionsAfterResize?: Dimensions;
 }

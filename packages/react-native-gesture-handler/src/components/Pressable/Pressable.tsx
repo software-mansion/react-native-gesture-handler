@@ -67,7 +67,7 @@ const Pressable = (props: PressableProps) => {
     simultaneousWithExternalGesture,
     requireExternalGestureToFail,
     blocksExternalGesture,
-    dimensionDataOverride,
+    dimensionsAfterResize,
     ...remainingProps
   } = props;
 
@@ -108,8 +108,8 @@ const Pressable = (props: PressableProps) => {
   );
 
   useLayoutEffect(() => {
-    if (dimensionDataOverride) {
-      dimensions.current = dimensionDataOverride;
+    if (dimensionsAfterResize) {
+      dimensions.current = dimensionsAfterResize;
     } else {
       requestAnimationFrame(() => {
         (ref ?? fallbackRef).current?.measure((_x, _y, width, height) => {
@@ -120,7 +120,7 @@ const Pressable = (props: PressableProps) => {
         });
       });
     }
-  }, [dimensionDataOverride, ref]);
+  }, [dimensionsAfterResize, ref]);
 
   const cancelLongPress = useCallback(() => {
     if (longPressTimeoutRef.current) {
