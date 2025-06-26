@@ -61,9 +61,9 @@ export default class PointerTracker {
   }
 
   public track(event: AdaptedEvent): void {
-    const element = this.trackedPointers.get(event.pointerId);
+    const pointerData = this.trackedPointers.get(event.pointerId);
 
-    if (!element) {
+    if (!pointerData) {
       return;
     }
 
@@ -72,13 +72,13 @@ export default class PointerTracker {
     this.velocityTracker.add(event);
     const [velocityX, velocityY] = this.velocityTracker.velocity;
 
-    element.velocityX = velocityX;
-    element.velocityY = velocityY;
+    pointerData.velocityX = velocityX;
+    pointerData.velocityY = velocityY;
 
-    element.abosoluteCoords = { x: event.x, y: event.y };
-    element.relativeCoords = { x: event.offsetX, y: event.offsetY };
+    pointerData.abosoluteCoords = { x: event.x, y: event.y };
+    pointerData.relativeCoords = { x: event.offsetX, y: event.offsetY };
 
-    this.trackedPointers.set(event.pointerId, element);
+    this.trackedPointers.set(event.pointerId, pointerData);
 
     this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
     this.cachedRelativeAverages = this.getRelativeCoordsAverage();
@@ -112,12 +112,12 @@ export default class PointerTracker {
   }
 
   public getVelocity(pointerId: number) {
-    const element = this.trackedPointers.get(pointerId);
+    const pointerData = this.trackedPointers.get(pointerId);
 
-    return element
+    return pointerData
       ? {
-          x: element.velocityX,
-          y: element.velocityY,
+          x: pointerData.velocityX,
+          y: pointerData.velocityY,
         }
       : null;
   }
