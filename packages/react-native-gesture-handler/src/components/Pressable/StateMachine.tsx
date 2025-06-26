@@ -21,7 +21,7 @@ class PressableStateMachine {
     this.eventPayload = null;
   }
 
-  public sendEvent(eventName: string, eventPayload?: PressableEvent) {
+  public handleEvent(eventName: string, eventPayload?: PressableEvent) {
     const step = this.states[this.currentStepIndex];
     this.eventPayload = eventPayload || this.eventPayload;
 
@@ -29,7 +29,7 @@ class PressableStateMachine {
       if (this.currentStepIndex > 0) {
         // retry with position at index 0
         this.reset();
-        this.sendEvent(eventName, eventPayload);
+        this.handleEvent(eventName, eventPayload);
       }
       return;
     }

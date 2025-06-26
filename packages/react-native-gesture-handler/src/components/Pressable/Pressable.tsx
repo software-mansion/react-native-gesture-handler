@@ -272,7 +272,7 @@ const Pressable = (props: PressableProps) => {
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           const pEvent = gestureTouchToPressableEvent(event);
-          stateMachine.sendEvent(
+          stateMachine.handleEvent(
             StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
             pEvent
           );
@@ -305,13 +305,13 @@ const Pressable = (props: PressableProps) => {
           }
         })
         .onBegin(() => {
-          stateMachine.sendEvent(StateMachineEvent.NATIVE_BEGIN);
+          stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
         })
         .onStart(() => {
-          stateMachine.sendEvent(StateMachineEvent.NATIVE_START);
+          stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
         })
         .onEnd(() => {
-          stateMachine.sendEvent(StateMachineEvent.NATIVE_END);
+          stateMachine.handleEvent(StateMachineEvent.NATIVE_END);
           handleFinalize(); // common ending point for all platforms
         })
         .onFinalize(() => {
