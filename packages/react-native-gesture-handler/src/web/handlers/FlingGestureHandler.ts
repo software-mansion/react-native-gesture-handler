@@ -49,6 +49,10 @@ export default class FlingGestureHandler extends GestureHandler {
   private tryEndFling(): boolean {
     const velocityVector = Vector.fromVelocity(this.tracker, this.keyPointer);
 
+    if (!velocityVector) {
+      return false;
+    }
+
     const getAlignment = (
       direction: Directions | DiagonalDirections,
       minimalAlignmentCosine: number

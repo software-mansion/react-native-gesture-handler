@@ -61,11 +61,9 @@ export default class PointerTracker {
   }
 
   public track(event: AdaptedEvent): void {
-    const element: TrackerElement = this.trackedPointers.get(
-      event.pointerId
-    ) as TrackerElement;
+    const pointerData = this.trackedPointers.get(event.pointerId);
 
-    if (!element) {
+    if (!pointerData) {
       return;
     }
 
@@ -74,13 +72,13 @@ export default class PointerTracker {
     this.velocityTracker.add(event);
     const [velocityX, velocityY] = this.velocityTracker.velocity;
 
-    element.velocityX = velocityX;
-    element.velocityY = velocityY;
+    pointerData.velocityX = velocityX;
+    pointerData.velocityY = velocityY;
 
-    element.abosoluteCoords = { x: event.x, y: event.y };
-    element.relativeCoords = { x: event.offsetX, y: event.offsetY };
+    pointerData.abosoluteCoords = { x: event.x, y: event.y };
+    pointerData.relativeCoords = { x: event.offsetX, y: event.offsetY };
 
-    this.trackedPointers.set(event.pointerId, element);
+    this.trackedPointers.set(event.pointerId, pointerData);
 
     this.cachedAbsoluteAverages = this.getAbsoluteCoordsAverage();
     this.cachedRelativeAverages = this.getRelativeCoordsAverage();
@@ -114,20 +112,24 @@ export default class PointerTracker {
   }
 
   public getVelocity(pointerId: number) {
-    return {
-      x: this.trackedPointers.get(pointerId)?.velocityX as number,
-      y: this.trackedPointers.get(pointerId)?.velocityY as number,
-    };
+    const pointerData = this.trackedPointers.get(pointerId);
+
+    return pointerData
+      ? {
+          x: pointerData.velocityX,
+          y: pointerData.velocityY,
+        }
+      : null;
   }
 
   public getLastAbsoluteCoords(pointerId?: number) {
     return this.trackedPointers.get(pointerId ?? this.lastMovedPointerId)
-      ?.abosoluteCoords as Point;
+      ?.abosoluteCoords;
   }
 
   public getLastRelativeCoords(pointerId?: number) {
     return this.trackedPointers.get(pointerId ?? this.lastMovedPointerId)
-      ?.relativeCoords as Point;
+      ?.relativeCoords;
   }
 
   // Some handlers use these methods to send average values in native event.

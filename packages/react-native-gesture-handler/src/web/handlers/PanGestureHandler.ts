@@ -226,10 +226,10 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   private updateVelocity(pointerId: number) {
-    const { x, y } = this.tracker.getVelocity(pointerId);
+    const velocities = this.tracker.getVelocity(pointerId);
 
-    this.velocityX = x;
-    this.velocityY = y;
+    this.velocityX = velocities?.x ?? 0;
+    this.velocityY = velocities?.y ?? 0;
   }
 
   // Events Handling
