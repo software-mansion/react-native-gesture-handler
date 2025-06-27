@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useReducer, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
@@ -10,8 +10,8 @@ type FlowChartProps = {
 };
 
 export default function FlowChart({ chartManager }: FlowChartProps) {
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
   const coordinates = useMemo<Map<number, Coordinate>>(() => new Map(), []);
-
   const rootRef = useRef<View>(null);
 
   const updateCoordinates = useCallback(
@@ -19,24 +19,19 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
       const htmlRootElement = rootRef.current as unknown as HTMLElement;
       const root = htmlRootElement.getBoundingClientRect();
 
+      if (!root) {
+        return;
+      }
+
       // Adjust to root relative positioning
       coordinates.set(id, {
         x: coordinate.x - root.left,
         y: coordinate.y - root.top,
       });
+      forceUpdate();
     },
     [coordinates]
   );
-
-  // Arrows are not shown on the first render on production builds.
-  // This `counter` forces a re-render after the component is mounted.
-  const [counter, setCounter] = useState(0);
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setCounter(counter + 1);
-    }, 0);
-    return () => clearTimeout(timeout);
-  }, [counter]);
 
   return (
     <View style={styles.container} ref={rootRef}>

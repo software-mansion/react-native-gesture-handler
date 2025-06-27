@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { StyleSheet, View, useWindowDimensions, Text } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -18,6 +18,7 @@ import FlowChart from './FlowChart';
 const MIN_DESKTOP_WIDTH = 1298;
 
 export default function App() {
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
   const chartManager = useMemo(() => new ChartManager(), []);
 
   const [panHandle, capturedPan, resetPan] = useMemo(
@@ -66,7 +67,8 @@ export default function App() {
     ];
 
     chartManager.layout = isDesktopMode ? desktopLayout : phoneLayout;
-  }, [chartManager, isDesktopMode, panHandle.idObject, pressHandle.idObject]);
+    forceUpdate();
+  }, [chartManager, isDesktopMode, panHandle, pressHandle]);
 
   const pressed = useSharedValue(false);
   const offset = useSharedValue(0);
