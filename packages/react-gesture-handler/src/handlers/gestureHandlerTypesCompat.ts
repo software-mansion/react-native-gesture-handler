@@ -1,9 +1,3 @@
-import type {
-  BaseButtonProps,
-  BorderlessButtonProps,
-  RawButtonProps,
-  RectButtonProps,
-} from '../components/GestureButtonsProps';
 import {
   GestureEvent,
   GestureEventPayload,
@@ -85,8 +79,3 @@ export type PinchGestureHandlerProperties = PinchGestureHandlerProps;
 export type RotationGestureHandlerProperties = RotationGestureHandlerProps;
 export type FlingGestureHandlerProperties = FlingGestureHandlerProps;
 export type ForceTouchGestureHandlerProperties = ForceTouchGestureHandlerProps;
-// Button props
-export type RawButtonProperties = RawButtonProps;
-export type BaseButtonProperties = BaseButtonProps;
-export type RectButtonProperties = RectButtonProps;
-export type BorderlessButtonProperties = BorderlessButtonProps;

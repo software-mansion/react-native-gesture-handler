@@ -1,4 +1,3 @@
-import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
 import {
@@ -12,10 +11,6 @@ import {
   GestureStateManager,
   GestureStateManagerType,
 } from './gestureStateManager';
-
-let gestureHandlerEventSubscription: EmitterSubscription | null = null;
-let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null =
-  null;
 
 const gestureStateManagers: Map<number, GestureStateManagerType> = new Map<
   number,
@@ -125,31 +120,5 @@ export function onGestureHandlerEvent(
       }
       return;
     }
-  }
-}
-
-export function startListening() {
-  stopListening();
-
-  gestureHandlerEventSubscription = DeviceEventEmitter.addListener(
-    'onGestureHandlerEvent',
-    onGestureHandlerEvent
-  );
-
-  gestureHandlerStateChangeEventSubscription = DeviceEventEmitter.addListener(
-    'onGestureHandlerStateChange',
-    onGestureHandlerEvent
-  );
-}
-
-export function stopListening() {
-  if (gestureHandlerEventSubscription) {
-    gestureHandlerEventSubscription.remove();
-    gestureHandlerEventSubscription = null;
-  }
-
-  if (gestureHandlerStateChangeEventSubscription) {
-    gestureHandlerStateChangeEventSubscription.remove();
-    gestureHandlerStateChangeEventSubscription = null;
   }
 }

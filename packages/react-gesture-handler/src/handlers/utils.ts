@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { Platform, findNodeHandle as findNodeHandleRN } from 'react-native';
-import { handlerIDToTag } from './handlersRegistry';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
@@ -40,27 +38,15 @@ export function filterConfig(
 export function transformIntoHandlerTags(handlerIDs: any) {
   handlerIDs = toArray(handlerIDs);
 
-  if (Platform.OS === 'web') {
-    return handlerIDs
-      .map(({ current }: { current: any }) => current)
-      .filter((handle: any) => handle);
-  }
-  // converts handler string IDs into their numeric tags
   return handlerIDs
-    .map(
-      (handlerID: any) =>
-        handlerIDToTag[handlerID] || handlerID.current?.handlerTag || -1
-    )
-    .filter((handlerTag: number) => handlerTag > 0);
+    .map(({ current }: { current: any }) => current)
+    .filter((handle: any) => handle);
 }
 
 export function findNodeHandle(
   node: null | number | React.Component<any, any> | React.ComponentClass<any>
 ): null | number | React.Component<any, any> | React.ComponentClass<any> {
-  if (Platform.OS === 'web') {
-    return node;
-  }
-  return findNodeHandleRN(node) ?? null;
+  return node;
 }
 let flushOperationsScheduled = false;
 

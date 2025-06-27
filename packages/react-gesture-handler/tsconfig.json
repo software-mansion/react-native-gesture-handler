@@ -3,8 +3,9 @@
   "compilerOptions": {
     "outDir": "lib/typescript",
     "paths": {
-      "react-native-gesture-handler": ["./src"]
-    }
+      "react-gesture-handler": ["./src"]
+    },
+    "module": "commonjs",
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
 }

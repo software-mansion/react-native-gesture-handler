@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 import { isTestEnv, tagMessage } from '../../../utils';
 import { GestureRef, BaseGesture, GestureType } from '../gesture';
 
@@ -17,8 +15,6 @@ import {
   HandlerStateChangeEvent,
   baseGestureHandlerWithDetectorProps,
 } from '../../gestureHandlerCommon';
-import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
-import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
 import { onGestureHandlerEvent } from '../eventReceiver';
@@ -69,9 +65,6 @@ export function extractGestureRelations(gesture: GestureType) {
 }
 
 export function checkGestureCallbacksForWorklets(gesture: GestureType) {
-  if (!__DEV__) {
-    return;
-  }
   // If a gesture is explicitly marked to run on the JS thread there is no need to check
   // if callbacks are worklets as the user is aware they will be ran on the JS thread
   if (gesture.config.runOnJS) {
@@ -109,7 +102,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function validateDetectorChildren(ref: any) {
+export function validateDetectorChildren(_ref: any) {
   // Finds the first native view under the Wrap component and traverses the fiber tree upwards
   // to check whether there is more than one native view as a pseudo-direct child of GestureDetector
   // i.e. this is not ok:
@@ -131,31 +124,6 @@ export function validateDetectorChildren(ref: any) {
   //          /     \
   //         /       \
   //   NativeView  NativeView
-  if (__DEV__ && Platform.OS !== 'web') {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const wrapType =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      ref._reactInternals.elementType;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    let instance =
-      RNRenderer.findHostInstance_DEPRECATED(
-        ref
-      )._internalFiberInstanceHandleDEV;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    while (instance && instance.elementType !== wrapType) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (instance.sibling) {
-        throw new Error(
-          'GestureDetector has more than one native view as its children. This can happen if you are using a custom component that renders multiple views, like React.Fragment. You should wrap content of GestureDetector with a <View> or <Animated.View>.'
-        );
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      instance = instance.return;
-    }
-  }
 }
 
 export function useForceRender() {
@@ -172,10 +140,8 @@ export function useWebEventHandlers() {
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },
-    onGestureHandlerStateChange: isNewWebImplementationEnabled()
-      ? (e: HandlerStateChangeEvent<unknown>) => {
-          onGestureHandlerEvent(e.nativeEvent);
-        }
-      : undefined,
+    onGestureHandlerStateChange: (e: HandlerStateChangeEvent<unknown>) => {
+      onGestureHandlerEvent(e.nativeEvent);
+    },
   });
 }

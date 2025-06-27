@@ -158,56 +158,6 @@ export const PanGestureHandler = createHandler<
   customNativeProps: panGestureHandlerCustomNativeProps,
 });
 
-function validatePanGestureHandlerProps(props: PanGestureHandlerProps) {
-  if (
-    Array.isArray(props.activeOffsetX) &&
-    (props.activeOffsetX[0] > 0 || props.activeOffsetX[1] < 0)
-  ) {
-    throw new Error(
-      `First element of activeOffsetX should be negative, a the second one should be positive`
-    );
-  }
-
-  if (
-    Array.isArray(props.activeOffsetY) &&
-    (props.activeOffsetY[0] > 0 || props.activeOffsetY[1] < 0)
-  ) {
-    throw new Error(
-      `First element of activeOffsetY should be negative, a the second one should be positive`
-    );
-  }
-
-  if (
-    Array.isArray(props.failOffsetX) &&
-    (props.failOffsetX[0] > 0 || props.failOffsetX[1] < 0)
-  ) {
-    throw new Error(
-      `First element of failOffsetX should be negative, a the second one should be positive`
-    );
-  }
-
-  if (
-    Array.isArray(props.failOffsetY) &&
-    (props.failOffsetY[0] > 0 || props.failOffsetY[1] < 0)
-  ) {
-    throw new Error(
-      `First element of failOffsetY should be negative, a the second one should be positive`
-    );
-  }
-
-  if (props.minDist && (props.failOffsetX || props.failOffsetY)) {
-    throw new Error(
-      `It is not supported to use minDist with failOffsetX or failOffsetY, use activeOffsetX and activeOffsetY instead`
-    );
-  }
-
-  if (props.minDist && (props.activeOffsetX || props.activeOffsetY)) {
-    throw new Error(
-      `It is not supported to use minDist with activeOffsetX or activeOffsetY`
-    );
-  }
-}
-
 function transformPanGestureHandlerProps(props: PanGestureHandlerProps) {
   type InternalPanGHKeys =
     | 'activeOffsetXStart'
@@ -275,8 +225,5 @@ function transformPanGestureHandlerProps(props: PanGestureHandlerProps) {
 }
 
 export function managePanProps(props: PanGestureHandlerProps) {
-  if (__DEV__) {
-    validatePanGestureHandlerProps(props);
-  }
   return transformPanGestureHandlerProps(props);
 }

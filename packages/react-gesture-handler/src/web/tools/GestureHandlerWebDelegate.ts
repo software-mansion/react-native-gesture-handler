@@ -41,6 +41,7 @@ export class GestureHandlerWebDelegate
     this.isInitialized = true;
 
     this.gestureHandler = handler;
+    // @ts-ignore works
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
     this.defaultViewStyles = {

@@ -1,11 +1,10 @@
 import React from 'react';
-import { GestureType, HandlerCallbacks } from '../gesture';
+import { GestureType } from '../gesture';
 import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
 import { ActionType } from '../../../ActionType';
-import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { AttachedGestureState, WebEventHandler } from './types';
@@ -45,6 +44,7 @@ export function attachHandlers({
   for (const handler of gesturesToAttach) {
     checkGestureCallbacksForWorklets(handler);
     RNGestureHandlerModule.createGestureHandler(
+      // @ts-ignore works
       handler.handlerName,
       handler.handlerTag,
       filterConfig(handler.config, ALLOWED_PROPS)
@@ -62,6 +62,7 @@ export function attachHandlers({
     for (const handler of gesturesToAttach) {
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
+        // @ts-ignore works
         filterConfig(
           handler.config,
           ALLOWED_PROPS,
@@ -74,39 +75,18 @@ export function attachHandlers({
   });
 
   for (const gesture of gesturesToAttach) {
-    const actionType = gesture.shouldUseReanimated
-      ? ActionType.REANIMATED_WORKLET
-      : ActionType.JS_FUNCTION_NEW_API;
-
-    if (Platform.OS === 'web') {
-      (
-        RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
-      )(
-        gesture.handlerTag,
-        viewTag,
-        ActionType.JS_FUNCTION_OLD_API, // Ignored on web
-        webEventHandlersRef
-      );
-    } else {
-      RNGestureHandlerModule.attachGestureHandler(
-        gesture.handlerTag,
-        viewTag,
-        actionType
-      );
-    }
+    console.log(viewTag);
+    (
+      RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
+    )(
+      gesture.handlerTag,
+      viewTag,
+      ActionType.JS_FUNCTION_OLD_API, // Ignored on web
+      webEventHandlersRef
+    );
 
     MountRegistry.gestureWillMount(gesture);
   }
 
   preparedGesture.attachedGestures = gesturesToAttach;
-
-  if (preparedGesture.animatedHandlers) {
-    const isAnimatedGesture = (g: GestureType) => g.shouldUseReanimated;
-
-    preparedGesture.animatedHandlers.value = gesturesToAttach
-      .filter(isAnimatedGesture)
-      .map((g) => g.handlers) as unknown as HandlerCallbacks<
-      Record<string, unknown>
-    >[];
-  }
 }

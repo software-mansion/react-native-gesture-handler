@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -rf node_modules"
   },
   "dependencies": {
     "next": "15.3.4",
@@ -22,5 +23,9 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "typescript": "^5"
+  },
+  "installConfig": {
+    "hoistingLimits": "dependencies",
+    "nodeLinker": "node-modules"
   }
 }

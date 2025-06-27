@@ -1,18 +1,8 @@
 import * as React from 'react';
-import {
-  Platform,
-  UIManager,
-  DeviceEventEmitter,
-  EmitterSubscription,
-} from 'react-native';
-import { customDirectEventTypes } from './customDirectEventTypes';
+
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { State } from '../State';
-import {
-  handlerIDToTag,
-  registerOldGestureHandler,
-  unregisterOldGestureHandler,
-} from './handlersRegistry';
+import { handlerIDToTag } from './handlersRegistry';
 import { getNextHandlerTag } from './getNextHandlerTag';
 
 import {
@@ -23,97 +13,12 @@ import {
 import { filterConfig, scheduleFlushOperations } from './utils';
 import findNodeHandle from '../findNodeHandle';
 import { ValueOf } from '../typeUtils';
-import {
-  deepEqual,
-  isFabric,
-  isReact19,
-  isTestEnv,
-  tagMessage,
-} from '../utils';
+import { deepEqual, isReact19, isTestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
-import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
 import { MountRegistry } from '../mountRegistry';
 import { ReactElement } from 'react';
-
-const UIManagerAny = UIManager as any;
-
-customDirectEventTypes.topGestureHandlerEvent = {
-  registrationName: 'onGestureHandlerEvent',
-};
-
-const customGHEventsConfigFabricAndroid = {
-  topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-  topOnGestureHandlerStateChange: {
-    registrationName: 'onGestureHandlerStateChange',
-  },
-};
-
-const customGHEventsConfig = {
-  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-  onGestureHandlerStateChange: {
-    registrationName: 'onGestureHandlerStateChange',
-  },
-
-  // When using React Native Gesture Handler for Animated.event with useNativeDriver: true
-  // on Android with Fabric enabled, the native part still sends the native events to JS
-  // but prefixed with "top". We cannot simply rename the events above so they are prefixed
-  // with "top" instead of "on" because in such case Animated.events would not be registered.
-  // That's why we need to register another pair of event names.
-  // The incoming events will be queued but never handled.
-  // Without this piece of code below, you'll get the following JS error:
-  // Unsupported top level event type "topOnGestureHandlerEvent" dispatched
-  ...(isFabric() &&
-    Platform.OS === 'android' &&
-    customGHEventsConfigFabricAndroid),
-};
-
-// Add gesture specific events to genericDirectEventTypes object exported from UIManager
-// native module.
-// Once new event types are registered with react it is possible to dispatch these
-// events to all kind of native views.
-UIManagerAny.genericDirectEventTypes = {
-  ...UIManagerAny.genericDirectEventTypes,
-  ...customGHEventsConfig,
-};
-
-const UIManagerConstants = UIManagerAny.getViewManagerConfig?.('getConstants');
-
-if (UIManagerConstants) {
-  UIManagerConstants.genericDirectEventTypes = {
-    ...UIManagerConstants.genericDirectEventTypes,
-    ...customGHEventsConfig,
-  };
-}
-
-// Wrap JS responder calls and notify gesture handler manager
-const {
-  setJSResponder: oldSetJSResponder = () => {
-    // no-op
-  },
-  clearJSResponder: oldClearJSResponder = () => {
-    // no-op
-  },
-} = UIManagerAny;
-UIManagerAny.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
-  RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
-  oldSetJSResponder(tag, blockNativeResponder);
-};
-UIManagerAny.clearJSResponder = () => {
-  RNGestureHandlerModule.handleClearJSResponder();
-  oldClearJSResponder();
-};
-
-let allowTouches = true;
-const DEV_ON_ANDROID = __DEV__ && Platform.OS === 'android';
-// Toggled inspector blocks touch events in order to allow inspecting on Android
-// This needs to be a global variable in order to set initial state for `allowTouches` property in Handler component
-if (DEV_ON_ANDROID) {
-  DeviceEventEmitter.addListener('toggleElementInspector', () => {
-    allowTouches = !allowTouches;
-  });
-}
 
 type HandlerProps<T extends Record<string, unknown>> = Readonly<
   React.PropsWithChildren<BaseGestureHandlerProps<T>>
@@ -192,14 +97,12 @@ export default function createHandler<
     private isMountedRef: React.MutableRefObject<boolean | null>;
     private viewNode: any;
     private viewTag?: number;
-    private inspectorToggleListener?: EmitterSubscription;
 
     constructor(props: T & InternalEventHandlers) {
       super(props);
       this.config = {};
       this.propsRef = React.createRef();
       this.isMountedRef = React.createRef();
-      this.state = { allowTouches };
       if (props.id) {
         if (handlerIDToTag[props.id] !== undefined) {
           throw new Error(`Handler with ID "${props.id}" already registered`);
@@ -212,15 +115,6 @@ export default function createHandler<
       const props: HandlerProps<U> = this.props;
       this.isMountedRef.current = true;
 
-      if (DEV_ON_ANDROID) {
-        this.inspectorToggleListener = DeviceEventEmitter.addListener(
-          'toggleElementInspector',
-          () => {
-            this.setState((_) => ({ allowTouches }));
-            this.update(UNRESOLVED_REFS_RETRY_LIMIT);
-          }
-        );
-      }
       if (hasUnresolvedRefs(props)) {
         // If there are unresolved refs (e.g. ".current" has not yet been set)
         // passed as `simultaneousHandlers` or `waitFor`, we enqueue a call to
@@ -259,11 +153,8 @@ export default function createHandler<
     }
 
     componentWillUnmount() {
-      this.inspectorToggleListener?.remove();
       this.isMountedRef.current = false;
-      if (Platform.OS !== 'web') {
-        unregisterOldGestureHandler(this.handlerTag);
-      }
+
       RNGestureHandlerModule.dropGestureHandler(this.handlerTag);
       scheduleFlushOperations();
       // We can't use this.props.id directly due to TS generic type narrowing bug, see https://github.com/microsoft/TypeScript/issues/13995 for more context
@@ -332,6 +223,7 @@ export default function createHandler<
       this.config = newConfig;
 
       RNGestureHandlerModule.createGestureHandler(
+        // @ts-ignore works
         name,
         this.handlerTag,
         newConfig
@@ -341,53 +233,13 @@ export default function createHandler<
     private attachGestureHandler = (newViewTag: number) => {
       this.viewTag = newViewTag;
 
-      if (Platform.OS === 'web') {
-        // Typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
-        (
-          RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb
-        )(
-          this.handlerTag,
-          newViewTag,
-          ActionType.JS_FUNCTION_OLD_API, // ignored on web
-          this.propsRef
-        );
-      } else {
-        registerOldGestureHandler(this.handlerTag, {
-          onGestureEvent: this.onGestureHandlerEvent,
-          onGestureStateChange: this.onGestureHandlerStateChange,
-        });
-
-        const actionType = (() => {
-          const onGestureEvent = this.props?.onGestureEvent;
-          const isGestureHandlerWorklet =
-            onGestureEvent &&
-            ('current' in onGestureEvent ||
-              'workletEventHandler' in onGestureEvent);
-          const onHandlerStateChange = this.props?.onHandlerStateChange;
-          const isStateChangeHandlerWorklet =
-            onHandlerStateChange &&
-            ('current' in onHandlerStateChange ||
-              'workletEventHandler' in onHandlerStateChange);
-          const isReanimatedHandler =
-            isGestureHandlerWorklet || isStateChangeHandlerWorklet;
-          if (isReanimatedHandler) {
-            // Reanimated worklet
-            return ActionType.REANIMATED_WORKLET;
-          } else if (onGestureEvent && '__isNative' in onGestureEvent) {
-            // Animated.event with useNativeDriver: true
-            return ActionType.NATIVE_ANIMATED_EVENT;
-          } else {
-            // JS callback or Animated.event with useNativeDriver: false
-            return ActionType.JS_FUNCTION_OLD_API;
-          }
-        })();
-
-        RNGestureHandlerModule.attachGestureHandler(
-          this.handlerTag,
-          newViewTag,
-          actionType
-        );
-      }
+      // Typecast due to dynamic resolution, attachGestureHandler should have web version signature in this branch
+      (RNGestureHandlerModule.attachGestureHandler as AttachGestureHandlerWeb)(
+        this.handlerTag,
+        newViewTag,
+        ActionType.JS_FUNCTION_OLD_API, // ignored on web
+        this.propsRef
+      );
 
       scheduleFlushOperations();
 
@@ -401,6 +253,7 @@ export default function createHandler<
     ) => {
       this.config = newConfig;
 
+      // @ts-ignore works
       RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
       scheduleFlushOperations();
     };
@@ -443,13 +296,6 @@ export default function createHandler<
     }
 
     render() {
-      if (__DEV__ && !this.context && !isTestEnv() && Platform.OS !== 'web') {
-        throw new Error(
-          name +
-            ' must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
-        );
-      }
-
       let gestureEventHandler = this.onGestureHandlerEvent;
       // Another instance of https://github.com/microsoft/TypeScript/issues/13995
       type OnGestureEventHandlers = {
@@ -531,41 +377,19 @@ export default function createHandler<
         );
       }
 
-      let grandChildren = child.props.children;
-      if (
-        __DEV__ &&
-        child.type &&
-        (child.type === 'RNGestureHandlerButton' ||
-          child.type.name === 'View' ||
-          child.type.displayName === 'View')
-      ) {
-        grandChildren = React.Children.toArray(grandChildren);
-        grandChildren.push(
-          <PressabilityDebugView
-            key="pressabilityDebugView"
-            color="mediumspringgreen"
-            hitSlop={child.props.hitSlop}
-          />
-        );
-      }
-
-      return React.cloneElement(
-        child,
-        {
-          ref: this.refHandler,
-          collapsable: false,
-          ...(isTestEnv()
-            ? {
-                handlerType: name,
-                handlerTag: this.handlerTag,
-                enabled: this.props.enabled,
-              }
-            : {}),
-          testID: this.props.testID ?? child.props.testID,
-          ...events,
-        },
-        grandChildren
-      );
+      return React.cloneElement(child, {
+        ref: this.refHandler,
+        collapsable: false,
+        ...(isTestEnv()
+          ? {
+              handlerType: name,
+              handlerTag: this.handlerTag,
+              enabled: this.props.enabled,
+            }
+          : {}),
+        testID: this.props.testID ?? child.props.testID,
+        ...events,
+      });
     }
   }
   return Handler;

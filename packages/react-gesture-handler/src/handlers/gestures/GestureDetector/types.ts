@@ -1,5 +1,4 @@
-import { GestureType, HandlerCallbacks } from '../gesture';
-import { SharedValue } from '../reanimatedWrapper';
+import { GestureType } from '../gesture';
 import { HandlerStateChangeEvent } from '../../gestureHandlerCommon';
 
 export interface AttachedGestureState {
@@ -8,9 +7,7 @@ export interface AttachedGestureState {
   // Event handler for the gesture, returned by `useEvent` from Reanimated
   animatedEventHandler: unknown;
   // Shared value that's responsible for transferring the callbacks to the UI thread handler
-  animatedHandlers: SharedValue<
-    HandlerCallbacks<Record<string, unknown>>[] | null
-  > | null;
+  animatedHandlers: null;
   // Whether `useAnimatedGesture` should be called inside detector
   shouldUseReanimated: boolean;
   // Whether the GestureDetector is mounted

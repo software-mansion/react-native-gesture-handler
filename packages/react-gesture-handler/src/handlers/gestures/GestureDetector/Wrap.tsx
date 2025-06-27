@@ -1,5 +1,4 @@
 import React from 'react';
-import { Reanimated } from '../reanimatedWrapper';
 import { tagMessage } from '../../../utils';
 
 export class Wrap extends React.Component<{
@@ -30,6 +29,3 @@ export class Wrap extends React.Component<{
     }
   }
 }
-
-export const AnimatedWrap =
-  Reanimated?.default?.createAnimatedComponent(Wrap) ?? Wrap;

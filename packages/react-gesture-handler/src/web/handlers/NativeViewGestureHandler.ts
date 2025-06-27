@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
@@ -20,10 +19,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     super.init(ref, propsRef);
 
     this.shouldCancelWhenOutside = true;
-
-    if (Platform.OS !== 'web') {
-      return;
-    }
 
     const view = this.delegate.view as HTMLElement;
 

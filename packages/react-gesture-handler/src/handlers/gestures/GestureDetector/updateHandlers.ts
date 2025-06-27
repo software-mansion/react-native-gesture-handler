@@ -1,4 +1,4 @@
-import { GestureType, HandlerCallbacks } from '../gesture';
+import { GestureType } from '../gesture';
 import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import { filterConfig, scheduleFlushOperations } from '../../utils';
@@ -46,27 +46,15 @@ export function updateHandlers(
       return;
     }
 
-    // If amount of gesture configs changes, we need to update the callbacks in shared value
-    let shouldUpdateSharedValueIfUsed =
-      attachedGestures.length !== newGestures.length;
-
     for (let i = 0; i < newGestures.length; i++) {
       const handler = attachedGestures[i];
-
-      // If the gestureId is different (gesture isn't wrapped with useMemo or its dependencies changed),
-      // we need to update the shared value, assuming the gesture runs on UI thread or the thread changed
-      if (
-        handler.handlers.gestureId !== newGestures[i].handlers.gestureId &&
-        (newGestures[i].shouldUseReanimated || handler.shouldUseReanimated)
-      ) {
-        shouldUpdateSharedValueIfUsed = true;
-      }
 
       handler.config = newGestures[i].config;
       handler.handlers = newGestures[i].handlers;
 
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
+        // @ts-ignore works
         filterConfig(
           handler.config,
           ALLOWED_PROPS,
@@ -75,16 +63,6 @@ export function updateHandlers(
       );
 
       registerHandler(handler.handlerTag, handler, handler.config.testId);
-    }
-
-    if (preparedGesture.animatedHandlers && shouldUpdateSharedValueIfUsed) {
-      const newHandlersValue = attachedGestures
-        .filter((g) => g.shouldUseReanimated) // Ignore gestures that shouldn't run on UI
-        .map((g) => g.handlers) as unknown as HandlerCallbacks<
-        Record<string, unknown>
-      >[];
-
-      preparedGesture.animatedHandlers.value = newHandlersValue;
     }
 
     scheduleFlushOperations();

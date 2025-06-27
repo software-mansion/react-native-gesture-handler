@@ -1,11 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { tagMessage } from '../utils';
-import PlatformConstants from '../PlatformConstants';
-import createHandler from './createHandler';
-import {
-  BaseGestureHandlerProps,
-  baseGestureHandlerProps,
-} from './gestureHandlerCommon';
+import { BaseGestureHandlerProps } from './gestureHandlerCommon';
 import type { ForceTouchGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 
 export const forceTouchGestureHandlerProps = [
@@ -70,19 +65,7 @@ export const forceTouchHandlerName = 'ForceTouchGestureHandler';
  * @deprecated ForceTouchGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.ForceTouch()` instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
-export const ForceTouchGestureHandler = PlatformConstants?.forceTouchAvailable
-  ? createHandler<
-      ForceTouchGestureHandlerProps,
-      ForceTouchGestureHandlerEventPayload
-    >({
-      name: forceTouchHandlerName,
-      allowedProps: [
-        ...baseGestureHandlerProps,
-        ...forceTouchGestureHandlerProps,
-      ] as const,
-      config: {},
-    })
-  : ForceTouchFallback;
+export const ForceTouchGestureHandler = ForceTouchFallback;
 
 (ForceTouchGestureHandler as ForceTouchGestureHandler).forceTouchAvailable =
-  PlatformConstants?.forceTouchAvailable || false;
+  false;

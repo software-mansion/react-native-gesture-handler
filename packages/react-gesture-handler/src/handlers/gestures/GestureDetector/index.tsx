@@ -1,26 +1,15 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from 'react';
-import { Platform } from 'react-native';
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
-import { isTestEnv } from '../../../utils';
 
-import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
 import { AttachedGestureState, GestureDetectorState } from './types';
-import { useAnimatedGesture } from './useAnimatedGesture';
 import { attachHandlers } from './attachHandlers';
-import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
 import { useWebEventHandlers } from './utils';
-import { Wrap, AnimatedWrap } from './Wrap';
+import { Wrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
 import { useMountReactions } from './useMountReactions';
@@ -93,13 +82,6 @@ interface GestureDetectorProps {
  * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/gesture-detector
  */
 export const GestureDetector = (props: GestureDetectorProps) => {
-  const rootViewContext = useContext(GestureHandlerRootViewContext);
-  if (__DEV__ && !rootViewContext && !isTestEnv() && Platform.OS !== 'web') {
-    throw new Error(
-      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
-    );
-  }
-
   // Gesture config should be wrapped with useMemo to prevent unnecessary re-renders
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
@@ -141,15 +123,11 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   // Reanimated event should be rebuilt only when gestures are reattached, otherwise
   // config update will be enough as all necessary items are stored in shared values anyway
-  const needsToRebuildReanimatedEvent =
-    state.firstRender ||
-    state.forceRebuildReanimatedEvent ||
-    needsToReattach(preparedGesture, gesturesToAttach);
+
   state.forceRebuildReanimatedEvent = false;
 
-  useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
-
   useLayoutEffect(() => {
+    // @ts-ignore works
     const viewTag = findNodeHandle(state.viewRef) as number;
     preparedGesture.isMounted = true;
 
@@ -177,15 +155,5 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useMountReactions(updateAttachedGestures, preparedGesture);
 
-  if (shouldUseReanimated) {
-    return (
-      <AnimatedWrap
-        ref={refHandler}
-        onGestureHandlerEvent={preparedGesture.animatedEventHandler}>
-        {props.children}
-      </AnimatedWrap>
-    );
-  } else {
-    return <Wrap ref={refHandler}>{props.children}</Wrap>;
-  }
+  return <Wrap ref={refHandler}>{props.children}</Wrap>;
 };
