@@ -21,6 +21,7 @@ export function useViewRefHandler(
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
       if (state.previousViewTag === -1) {
+        console.log('VIEWREF', state.viewRef);
         // @ts-ignore works
         state.previousViewTag = findNodeHandle(state.viewRef) as number;
       }

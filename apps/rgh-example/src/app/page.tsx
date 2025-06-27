@@ -4,7 +4,8 @@ import styles from './page.module.css';
 import { GestureDetector, Gesture } from 'react-gesture-handler';
 
 export default function Home() {
-  const g = Gesture.Tap().onEnd(console.log);
+  const g = Gesture.Pan().onUpdate(console.log);
+  console.log(g);
 
   return (
     <div className={styles.page}>

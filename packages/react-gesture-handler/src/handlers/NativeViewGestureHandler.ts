@@ -1,5 +1,4 @@
 import type { NativeViewGestureHandlerPayload } from './GestureHandlerEventPayload';
-import createHandler from './createHandler';
 import {
   BaseGestureHandlerProps,
   baseGestureHandlerProps,
@@ -39,21 +38,3 @@ export const nativeViewProps = [
 ] as const;
 
 export const nativeViewHandlerName = 'NativeViewGestureHandler';
-
-/**
- * @deprecated NativeViewGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Native()` instead.
- */
-export type NativeViewGestureHandler = typeof NativeViewGestureHandler;
-
-/**
- * @deprecated NativeViewGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Native()` instead.
- */
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
-export const NativeViewGestureHandler = createHandler<
-  NativeViewGestureHandlerProps,
-  NativeViewGestureHandlerPayload
->({
-  name: nativeViewHandlerName,
-  allowedProps: nativeViewProps,
-  config: {},
-});

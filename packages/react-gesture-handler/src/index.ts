@@ -37,14 +37,6 @@ export type { PinchGestureHandlerProps } from './handlers/PinchGestureHandler';
 export type { PinchGestureChangeEventPayload } from './handlers/gestures/pinchGesture';
 export type { RotationGestureHandlerProps } from './handlers/RotationGestureHandler';
 export type { FlingGestureHandlerProps } from './handlers/FlingGestureHandler';
-export { TapGestureHandler } from './handlers/TapGestureHandler';
-export { ForceTouchGestureHandler } from './handlers/ForceTouchGestureHandler';
-export { LongPressGestureHandler } from './handlers/LongPressGestureHandler';
-export { PanGestureHandler } from './handlers/PanGestureHandler';
-export { PinchGestureHandler } from './handlers/PinchGestureHandler';
-export { RotationGestureHandler } from './handlers/RotationGestureHandler';
-export { FlingGestureHandler } from './handlers/FlingGestureHandler';
-export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
@@ -65,7 +57,6 @@ export type {
   ExclusiveGestureType as ExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
-export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {

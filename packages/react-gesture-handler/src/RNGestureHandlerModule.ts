@@ -1,6 +1,5 @@
 import React from 'react';
 
-import type { ActionType } from './ActionType';
 import { Gestures } from './web/Gestures';
 import type { Config } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
@@ -48,7 +47,6 @@ export default {
     handlerTag: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newView: any,
-    _actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
     if (!(newView instanceof Element || newView instanceof React.Component)) {

@@ -1,10 +1,5 @@
 import { PointerType } from '../PointerType';
-import type {
-  GestureHandlerRef,
-  Point,
-  StylusData,
-  SVGRef,
-} from './interfaces';
+import type { Point, StylusData, SVGRef } from './interfaces';
 
 export function isPointerInBounds(view: HTMLElement, { x, y }: Point): boolean {
   const rect: DOMRect = view.getBoundingClientRect();
@@ -265,7 +260,7 @@ export const RNSVGElements = new Set([
 // corresponds to one of the possible SVG elements. Then we also check if `elementRef` field exists.
 // By doing both steps we decrease probability of detecting situations where, for example, user makes custom `Circle` and
 // we treat it as SVG.
-export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
+export function isRNSVGElement(viewRef: SVGRef) {
   const componentClassName = Object.getPrototypeOf(viewRef).constructor.name;
 
   return (

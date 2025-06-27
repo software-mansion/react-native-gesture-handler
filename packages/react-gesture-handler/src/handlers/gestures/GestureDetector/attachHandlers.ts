@@ -4,8 +4,6 @@ import { registerHandler } from '../../handlersRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
-import { ActionType } from '../../../ActionType';
-import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { AttachedGestureState, WebEventHandler } from './types';
 import {
@@ -14,6 +12,7 @@ import {
   ALLOWED_PROPS,
 } from './utils';
 import { MountRegistry } from '../../../mountRegistry';
+import { Gestures } from '../../../web/Gestures';
 
 interface AttachHandlersConfig {
   preparedGesture: AttachedGestureState;
@@ -44,8 +43,7 @@ export function attachHandlers({
   for (const handler of gesturesToAttach) {
     checkGestureCallbacksForWorklets(handler);
     RNGestureHandlerModule.createGestureHandler(
-      // @ts-ignore works
-      handler.handlerName,
+      handler.handlerName as keyof typeof Gestures,
       handler.handlerTag,
       filterConfig(handler.config, ALLOWED_PROPS)
     );
@@ -76,12 +74,9 @@ export function attachHandlers({
 
   for (const gesture of gesturesToAttach) {
     console.log(viewTag);
-    (
-      RNGestureHandlerModule.attachGestureHandler as typeof RNGestureHandlerModuleWeb.attachGestureHandler
-    )(
+    RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
       viewTag,
-      ActionType.JS_FUNCTION_OLD_API, // Ignored on web
       webEventHandlersRef
     );
 

@@ -1,9 +1,5 @@
 import { LongPressGestureHandlerEventPayload } from './GestureHandlerEventPayload';
-import createHandler from './createHandler';
-import {
-  BaseGestureHandlerProps,
-  baseGestureHandlerProps,
-} from './gestureHandlerCommon';
+import { BaseGestureHandlerProps } from './gestureHandlerCommon';
 
 export const longPressGestureHandlerProps = [
   'minDurationMs',
@@ -40,26 +36,3 @@ export interface LongPressGestureHandlerProps
     LongPressGestureConfig {}
 
 export const longPressHandlerName = 'LongPressGestureHandler';
-
-/**
- * @deprecated LongPressGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.LongPress()` instead.
- */
-export type LongPressGestureHandler = typeof LongPressGestureHandler;
-
-/**
- * @deprecated LongPressGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.LongPress()` instead.
- */
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
-export const LongPressGestureHandler = createHandler<
-  LongPressGestureHandlerProps,
-  LongPressGestureHandlerEventPayload
->({
-  name: longPressHandlerName,
-  allowedProps: [
-    ...baseGestureHandlerProps,
-    ...longPressGestureHandlerProps,
-  ] as const,
-  config: {
-    shouldCancelWhenOutside: true,
-  },
-});

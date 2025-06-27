@@ -1,9 +1,5 @@
 import type { FlingGestureHandlerEventPayload } from './GestureHandlerEventPayload';
-import createHandler from './createHandler';
-import {
-  BaseGestureHandlerProps,
-  baseGestureHandlerProps,
-} from './gestureHandlerCommon';
+import { BaseGestureHandlerProps } from './gestureHandlerCommon';
 
 export const flingGestureHandlerProps = [
   'numberOfPointers',
@@ -41,24 +37,3 @@ export interface FlingGestureHandlerProps
     FlingGestureConfig {}
 
 export const flingHandlerName = 'FlingGestureHandler';
-
-/**
- * @deprecated FlingGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Fling()` instead.
- */
-export type FlingGestureHandler = typeof FlingGestureHandler;
-
-/**
- * @deprecated FlingGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Fling()` instead.
- */
-// eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; see description on the top of gestureHandlerCommon.ts file
-export const FlingGestureHandler = createHandler<
-  FlingGestureHandlerProps,
-  FlingGestureHandlerEventPayload
->({
-  name: flingHandlerName,
-  allowedProps: [
-    ...baseGestureHandlerProps,
-    ...flingGestureHandlerProps,
-  ] as const,
-  config: {},
-});
