@@ -1,5 +1,4 @@
-import 'react-native-gesture-handler';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
@@ -16,25 +15,24 @@ type FlowChartProps = {
 };
 
 export default function FlowChart({ chartManager }: FlowChartProps) {
-  const itemsRef = useRef([]);
-  const itemsCoordsRef = useRef([]);
-  const rootRef = useRef(null);
+  const itemsRef = useRef<View[]>([]);
+  const itemsCoordsRef = useRef<Coordinate[]>([]);
+  const rootRef = useRef<View>(null);
 
-  // there's a bug where arrows are not shown on the first render on production build
-  // i hate this but it forces a re-render after the component is mounted
-  // a man's gotta do what a man's gotta do
+  // Arrows are not shown on the first render on production builds.
+  // This `counter` forces a re-render after the component is mounted.
   const [counter, setCounter] = useState(0);
   useEffect(() => {
     const timeout = setTimeout(() => {
       setCounter(counter + 1);
     }, 0);
     return () => clearTimeout(timeout);
-  }, []);
+  }, [counter]);
 
   const getCenter = (side: number, size: number) => side + size / 2;
 
-  itemsCoordsRef.current = itemsRef.current.map((element) => {
-    // during unloading or overresizing, item may reload itself, causing it to be undefined
+  itemsCoordsRef.current = itemsRef.current.map((element: View | undefined) => {
+    // During unloading or reresizing, element may reload itself, causing it to be undefined
     if (!element) {
       return {
         x: 0,
@@ -42,8 +40,12 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
       } as Coordinate;
     }
 
-    const box = element.getBoundingClientRect();
-    const root = rootRef.current.getBoundingClientRect();
+    const htmlElement = element as unknown as HTMLElement;
+    const htmlRootElement = rootRef.current as unknown as HTMLElement;
+
+    const box = htmlElement.getBoundingClientRect();
+    const root = htmlRootElement.getBoundingClientRect();
+
     return {
       x: getCenter(box.left, box.width) - root.left,
       y: getCenter(box.top, box.height) - root.top,
@@ -53,14 +55,16 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
-        {chartManager.layout.map((row, index) => (
-          <Grid container spacing={4} key={index}>
+        {chartManager.layout.map((row) => (
+          <Grid container spacing={4} key={row.toString()}>
             {row
               .map((itemId) => chartManager.items[itemId])
-              .map((item, index) => (
+              .map((item) => (
                 <ChartItem
-                  key={index}
-                  innerRef={(el) => (itemsRef.current[item.id] = el)}
+                  key={item.id}
+                  innerRef={(el) => {
+                    itemsRef.current[item.id] = el;
+                  }}
                   item={item}
                   chartManager={chartManager}
                 />

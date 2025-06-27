@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
-import React, { LegacyRef, useEffect } from 'react';
-import { StyleProp, StyleSheet, View, Text } from 'react-native';
+import { useEffect } from 'react';
+import { StyleProp, StyleSheet, View, Text, ViewStyle } from 'react-native';
 import ChartManager, { Item, WAVE_DELAY_MS } from './ChartManager';
 import Animated, {
   useAnimatedStyle,
@@ -11,8 +11,8 @@ import Animated, {
 interface ChartItemProps {
   item: Item;
   chartManager: ChartManager;
-  innerRef?: LegacyRef<View>;
-  style?: StyleProp<any>;
+  innerRef?: (element: View) => void;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function ChartItem({
@@ -24,7 +24,7 @@ export default function ChartItem({
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    if (item.id != ChartManager.EMPTY_SPACE_ID) {
+    if (item.id !== ChartManager.EMPTY_SPACE_ID) {
       const listenerId = chartManager.addListener(item.id, (isActive) => {
         progress.value = withSpring(isActive ? 1 : 0, {
           duration: 2 * WAVE_DELAY_MS,
@@ -35,7 +35,7 @@ export default function ChartItem({
         chartManager.removeListener(item.id, listenerId);
       };
     }
-  }, [chartManager]);
+  }, [chartManager, item.id, progress]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

@@ -1,5 +1,4 @@
-import 'react-native-gesture-handler';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, useWindowDimensions, Text } from 'react-native';
 import Animated, {
   useAnimatedStyle,
