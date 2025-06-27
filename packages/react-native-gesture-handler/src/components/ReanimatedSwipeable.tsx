@@ -272,11 +272,18 @@ const Swipeable = function Swipeable(props: SwipeableProps) {
     ...remainingProps
   } = props;
 
-  const relationProps = {
-    simultaneousWithExternalGesture,
-    requireExternalGestureToFail,
-    blocksExternalGesture,
-  };
+  const relationProps = useMemo(
+    () => ({
+      simultaneousWithExternalGesture,
+      requireExternalGestureToFail,
+      blocksExternalGesture,
+    }),
+    [
+      blocksExternalGesture,
+      requireExternalGestureToFail,
+      simultaneousWithExternalGesture,
+    ]
+  );
 
   const rowState = useSharedValue<number>(0);
 
@@ -369,7 +376,7 @@ const Swipeable = function Swipeable(props: SwipeableProps) {
         );
       }
     },
-    [onSwipeableWillClose, onSwipeableWillOpen, rowState]
+    [onSwipeableWillClose, onSwipeableWillOpen]
   );
 
   const dispatchEndEvents = useCallback(
@@ -683,7 +690,7 @@ const Swipeable = function Swipeable(props: SwipeableProps) {
     });
 
     return tap;
-  }, [close, rowState, simultaneousWithExternalGesture]);
+  }, [close, relationProps, rowState]);
 
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()
@@ -733,19 +740,19 @@ const Swipeable = function Swipeable(props: SwipeableProps) {
 
     return pan;
   }, [
-    dragOffsetFromLeftEdge,
-    dragOffsetFromRightEdge,
-    dragStarted,
-    enableTrackpadTwoFingerGesture,
     enabled,
-    handleRelease,
-    onSwipeableCloseStartDrag,
-    onSwipeableOpenStartDrag,
-    rowState,
-    updateAnimatedEvent,
+    enableTrackpadTwoFingerGesture,
+    dragOffsetFromRightEdge,
+    dragOffsetFromLeftEdge,
     updateElementWidths,
+    relationProps,
     userDrag,
-    simultaneousWithExternalGesture,
+    rowState.value,
+    dragStarted,
+    updateAnimatedEvent,
+    onSwipeableOpenStartDrag,
+    onSwipeableCloseStartDrag,
+    handleRelease,
   ]);
 
   useImperativeHandle(ref, () => swipeableMethods, [swipeableMethods]);
