@@ -81,8 +81,7 @@ export default function ChartItem({
   }, [item, updateCoordinates]);
 
   return (
-    // @ts-ignore This is legacy code, it works regardless of this error.
-    <Grid item style={styles.box} xs={3}>
+    <Grid style={styles.box} size={3}>
       <Animated.View
         style={[
           styles.item,
