@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
-import React, { LegacyRef, useEffect } from 'react';
-import { StyleProp, StyleSheet, View, Text } from 'react-native';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import ChartManager, { Item, WAVE_DELAY_MS } from './ChartManager';
 import Animated, {
   useAnimatedStyle,
@@ -8,23 +8,32 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+export type Coordinate = {
+  x: number;
+  y: number;
+};
+
 interface ChartItemProps {
   item: Item;
   chartManager: ChartManager;
-  innerRef?: LegacyRef<View>;
-  style?: StyleProp<any>;
+  updateCoordinates?: (id: number, coordinate: Coordinate) => void;
+  style?: StyleProp<ViewStyle>;
 }
+
+const getCenter = (side: number, size: number) => side + size / 2;
 
 export default function ChartItem({
   item,
   chartManager,
-  innerRef,
+  updateCoordinates,
   style,
 }: ChartItemProps) {
+  const ref = useRef<View>(null);
+
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    if (item.id != ChartManager.EMPTY_SPACE_ID) {
+    if (item.id !== ChartManager.EMPTY_SPACE_ID) {
       const listenerId = chartManager.addListener(item.id, (isActive) => {
         progress.value = withSpring(isActive ? 1 : 0, {
           duration: 2 * WAVE_DELAY_MS,
@@ -35,7 +44,7 @@ export default function ChartItem({
         chartManager.removeListener(item.id, listenerId);
       };
     }
-  }, [chartManager]);
+  }, [chartManager, item.id, progress]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -56,8 +65,23 @@ export default function ChartItem({
     };
   });
 
+  useLayoutEffect(() => {
+    const box = (
+      ref.current as unknown as HTMLElement
+    )?.getBoundingClientRect?.();
+
+    if (!box) {
+      return; // no-op on undefined view ref
+    }
+
+    updateCoordinates(item.id, {
+      x: getCenter(box.left, box.width),
+      y: getCenter(box.top, box.height),
+    });
+  }, [item, updateCoordinates]);
+
   return (
-    <Grid item style={styles.box} xs={3}>
+    <Grid style={styles.box} size={3}>
       <Animated.View
         style={[
           styles.item,
@@ -65,7 +89,7 @@ export default function ChartItem({
           animatedStyle,
           style,
         ]}
-        ref={innerRef}>
+        ref={ref}>
         <Animated.Text style={[animatedTextStyle, styles.label, style]}>
           {item.label}
         </Animated.Text>

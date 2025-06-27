@@ -1,66 +1,49 @@
-import 'react-native-gesture-handler';
-import React, { useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useReducer, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
-import ChartItem from './ChartItem';
+import ChartItem, { Coordinate } from './ChartItem';
 import Arrow from './Arrow';
-
-type Coordinate = {
-  x: number;
-  y: number;
-};
 
 type FlowChartProps = {
   chartManager: ChartManager;
 };
 
 export default function FlowChart({ chartManager }: FlowChartProps) {
-  const itemsRef = useRef([]);
-  const itemsCoordsRef = useRef([]);
-  const rootRef = useRef(null);
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
+  const coordinates = useMemo<Map<number, Coordinate>>(() => new Map(), []);
+  const rootRef = useRef<View>(null);
 
-  // there's a bug where arrows are not shown on the first render on production build
-  // i hate this but it forces a re-render after the component is mounted
-  // a man's gotta do what a man's gotta do
-  const [counter, setCounter] = useState(0);
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setCounter(counter + 1);
-    }, 0);
-    return () => clearTimeout(timeout);
-  }, []);
+  const updateCoordinates = useCallback(
+    (id: number, coordinate: Coordinate) => {
+      const htmlRootElement = rootRef.current as unknown as HTMLElement;
+      const root = htmlRootElement.getBoundingClientRect();
 
-  const getCenter = (side: number, size: number) => side + size / 2;
+      if (!root) {
+        return;
+      }
 
-  itemsCoordsRef.current = itemsRef.current.map((element) => {
-    // during unloading or overresizing, item may reload itself, causing it to be undefined
-    if (!element) {
-      return {
-        x: 0,
-        y: 0,
-      } as Coordinate;
-    }
-
-    const box = element.getBoundingClientRect();
-    const root = rootRef.current.getBoundingClientRect();
-    return {
-      x: getCenter(box.left, box.width) - root.left,
-      y: getCenter(box.top, box.height) - root.top,
-    } as Coordinate;
-  });
+      // Adjust to root relative positioning
+      coordinates.set(id, {
+        x: coordinate.x - root.left,
+        y: coordinate.y - root.top,
+      });
+      forceUpdate();
+    },
+    [coordinates]
+  );
 
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
-        {chartManager.layout.map((row, index) => (
-          <Grid container spacing={4} key={index}>
+        {chartManager.layout?.map((row) => (
+          <Grid container width={'100%'} spacing={4} key={row.toString()}>
             {row
               .map((itemId) => chartManager.items[itemId])
-              .map((item, index) => (
+              .map((item) => (
                 <ChartItem
-                  key={index}
-                  innerRef={(el) => (itemsRef.current[item.id] = el)}
+                  key={item.id}
+                  updateCoordinates={updateCoordinates}
                   item={item}
                   chartManager={chartManager}
                 />
@@ -72,21 +55,22 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
         // we have all the connections layed out,
         // but the user may choose not to use some of the available items,
         if (
-          !itemsCoordsRef.current[connection.from] ||
-          !itemsCoordsRef.current[connection.to]
+          !coordinates.get(connection.from) ||
+          !coordinates.get(connection.to)
         ) {
           return <View key={connection.id} />;
         }
+
         return (
           <Arrow
             key={connection.id}
             startPoint={{
-              x: itemsCoordsRef.current[connection.from].x,
-              y: itemsCoordsRef.current[connection.from].y,
+              x: coordinates.get(connection.from).x,
+              y: coordinates.get(connection.from).y,
             }}
             endPoint={{
-              x: itemsCoordsRef.current[connection.to].x,
-              y: itemsCoordsRef.current[connection.to].y,
+              x: coordinates.get(connection.to).x,
+              y: coordinates.get(connection.to).y,
             }}
           />
         );
