@@ -55,8 +55,8 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
-        {chartManager.layout.map((row) => (
-          <Grid container spacing={4} key={row.toString()}>
+        {chartManager.layout?.map((row) => (
+          <Grid container width={'100%'} spacing={4} key={row.toString()}>
             {row
               .map((itemId) => chartManager.items[itemId])
               .map((item) => (
