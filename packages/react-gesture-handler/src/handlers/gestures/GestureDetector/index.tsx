@@ -155,5 +155,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useMountReactions(updateAttachedGestures, preparedGesture);
 
+  // @ts-ignore works
   return <Wrap ref={refHandler}>{props.children}</Wrap>;
 };

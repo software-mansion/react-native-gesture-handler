@@ -15,6 +15,8 @@ export function useViewRefHandler(
         return;
       }
 
+      console.log('REF', ref);
+
       state.viewRef = ref;
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
