@@ -57,6 +57,7 @@ export default function ChartItem({
   });
 
   return (
+    // @ts-ignore This is legacy code, it works regardless of this error.
     <Grid item style={styles.box} xs={3}>
       <Animated.View
         style={[
