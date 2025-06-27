@@ -1,24 +1,32 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ChartManager from './ChartManager';
 import { Grid } from '@mui/material';
-import ChartItem from './ChartItem';
+import ChartItem, { Coordinate } from './ChartItem';
 import Arrow from './Arrow';
-
-type Coordinate = {
-  x: number;
-  y: number;
-};
 
 type FlowChartProps = {
   chartManager: ChartManager;
 };
 
-const getCenter = (side: number, size: number) => side + size / 2;
-
 export default function FlowChart({ chartManager }: FlowChartProps) {
-  const itemsRef = useRef<View[]>([]);
+  const coordinates = useMemo<Map<number, Coordinate>>(() => new Map(), []);
+
   const rootRef = useRef<View>(null);
+
+  const updateCoordinates = useCallback(
+    (id: number, coordinate: Coordinate) => {
+      const htmlRootElement = rootRef.current as unknown as HTMLElement;
+      const root = htmlRootElement.getBoundingClientRect();
+
+      // Adjust to root relative positioning
+      coordinates.set(id, {
+        x: coordinate.x - root.left,
+        y: coordinate.y - root.top,
+      });
+    },
+    [coordinates]
+  );
 
   // Arrows are not shown on the first render on production builds.
   // This `counter` forces a re-render after the component is mounted.
@@ -30,31 +38,6 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
     return () => clearTimeout(timeout);
   }, [counter]);
 
-  const itemsCoords = useMemo<Coordinate[]>(
-    () =>
-      itemsRef.current.map((element: View | undefined) => {
-        // During unloading or reresizing, element may reload itself, causing it to be undefined
-        if (!element) {
-          return {
-            x: 0,
-            y: 0,
-          } as Coordinate;
-        }
-
-        const htmlElement = element as unknown as HTMLElement;
-        const htmlRootElement = rootRef.current as unknown as HTMLElement;
-
-        const box = htmlElement.getBoundingClientRect();
-        const root = htmlRootElement.getBoundingClientRect();
-
-        return {
-          x: getCenter(box.left, box.width) - root.left,
-          y: getCenter(box.top, box.height) - root.top,
-        } as Coordinate;
-      }),
-    []
-  );
-
   return (
     <View style={styles.container} ref={rootRef}>
       <Grid container rowGap={4}>
@@ -65,9 +48,7 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
               .map((item) => (
                 <ChartItem
                   key={item.id}
-                  innerRef={(el) => {
-                    itemsRef.current[item.id] = el;
-                  }}
+                  updateCoordinates={updateCoordinates}
                   item={item}
                   chartManager={chartManager}
                 />
@@ -78,19 +59,23 @@ export default function FlowChart({ chartManager }: FlowChartProps) {
       {chartManager.connections.map((connection) => {
         // we have all the connections layed out,
         // but the user may choose not to use some of the available items,
-        if (!itemsCoords[connection.from] || !itemsCoords[connection.to]) {
+        if (
+          !coordinates.get(connection.from) ||
+          !coordinates.get(connection.to)
+        ) {
           return <View key={connection.id} />;
         }
+
         return (
           <Arrow
             key={connection.id}
             startPoint={{
-              x: itemsCoords[connection.from].x,
-              y: itemsCoords[connection.from].y,
+              x: coordinates.get(connection.from).x,
+              y: coordinates.get(connection.from).y,
             }}
             endPoint={{
-              x: itemsCoords[connection.to].x,
-              y: itemsCoords[connection.to].y,
+              x: coordinates.get(connection.to).x,
+              y: coordinates.get(connection.to).y,
             }}
           />
         );

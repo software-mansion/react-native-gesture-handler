@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
-import { useEffect } from 'react';
-import { StyleProp, StyleSheet, View, Text, ViewStyle } from 'react-native';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import ChartManager, { Item, WAVE_DELAY_MS } from './ChartManager';
 import Animated, {
   useAnimatedStyle,
@@ -8,19 +8,28 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
+export type Coordinate = {
+  x: number;
+  y: number;
+};
+
 interface ChartItemProps {
   item: Item;
   chartManager: ChartManager;
-  innerRef?: (element: View) => void;
+  updateCoordinates?: (id: number, coordinate: Coordinate) => void;
   style?: StyleProp<ViewStyle>;
 }
+
+const getCenter = (side: number, size: number) => side + size / 2;
 
 export default function ChartItem({
   item,
   chartManager,
-  innerRef,
+  updateCoordinates,
   style,
 }: ChartItemProps) {
+  const ref = useRef<View>(null);
+
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -56,6 +65,21 @@ export default function ChartItem({
     };
   });
 
+  useLayoutEffect(() => {
+    const box = (
+      ref.current as unknown as HTMLElement
+    )?.getBoundingClientRect?.();
+
+    if (!box) {
+      return; // no-op on undefined view ref
+    }
+
+    updateCoordinates(item.id, {
+      x: getCenter(box.left, box.width),
+      y: getCenter(box.top, box.height),
+    });
+  }, [item, updateCoordinates]);
+
   return (
     // @ts-ignore This is legacy code, it works regardless of this error.
     <Grid item style={styles.box} xs={3}>
@@ -66,7 +90,7 @@ export default function ChartItem({
           animatedStyle,
           style,
         ]}
-        ref={innerRef}>
+        ref={ref}>
         <Animated.Text style={[animatedTextStyle, styles.label, style]}>
           {item.label}
         </Animated.Text>
