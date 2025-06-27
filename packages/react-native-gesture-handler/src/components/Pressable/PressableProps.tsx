@@ -169,7 +169,7 @@ export interface PressableProps
 
   /**
    * Defines the dimensions of the Pressable after it's been resized.
-   * This property does not affect Pressable's physical appearance
+   * This property does not affect Pressable's physical appearance.
    * Required when the Pressable is resized **and** uses pressRetentionOffset.
    */
   dimensionsAfterResize?: PressableDimensions;
