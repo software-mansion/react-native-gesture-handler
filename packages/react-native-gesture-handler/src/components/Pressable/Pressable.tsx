@@ -182,7 +182,7 @@ const Pressable = (props: PressableProps) => {
           event.nativeEvent.changedTouches.at(-1)
         )
       ) {
-        // ignoring pressIn within pressRetentionOffset
+        // Ignoring pressIn within pressRetentionOffset
         return;
       }
 
@@ -279,7 +279,7 @@ const Pressable = (props: PressableProps) => {
         })
         .onTouchesUp(() => {
           if (Platform.OS === 'android') {
-            // prevents potential soft-locks
+            // Prevents potential soft-locks
             stateMachine.reset();
             handleFinalize();
           }
@@ -288,6 +288,12 @@ const Pressable = (props: PressableProps) => {
           const pressableEvent = gestureTouchToPressableEvent(event);
           stateMachine.reset();
           handlePressOut(pressableEvent, false);
+        })
+        .onFinalize(() => {
+          if (Platform.OS === 'web') {
+            stateMachine.handleEvent(StateMachineEvent.FINALIZE);
+            handleFinalize();
+          }
         }),
     [stateMachine, handleFinalize, handlePressOut]
   );
@@ -297,8 +303,9 @@ const Pressable = (props: PressableProps) => {
     () =>
       Gesture.Native()
         .onTouchesCancelled((event) => {
-          if (Platform.OS !== 'macos') {
-            // on MacOS cancel occurs in middle of gesture
+          if (Platform.OS !== 'macos' && Platform.OS !== 'web') {
+            // On MacOS cancel occurs in middle of gesture
+            // On Web cancel occurs on mouse move, which is unwanted
             const pressableEvent = gestureTouchToPressableEvent(event);
             stateMachine.reset();
             handlePressOut(pressableEvent, false);
@@ -314,8 +321,12 @@ const Pressable = (props: PressableProps) => {
           }
         })
         .onFinalize(() => {
-          stateMachine.handleEvent(StateMachineEvent.NATIVE_FINALIZE);
-          handleFinalize();
+          if (Platform.OS !== 'web') {
+            // On Web we use LongPress().onFinalize() instead of Native().onFinalize(),
+            // as Native cancels on mouse move, and LongPress does not.
+            stateMachine.handleEvent(StateMachineEvent.FINALIZE);
+            handleFinalize();
+          }
         }),
     [stateMachine, handlePressOut, handleFinalize]
   );

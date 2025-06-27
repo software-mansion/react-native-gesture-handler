@@ -5,7 +5,7 @@ import { PressableStateMachine } from './StateMachine';
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
   NATIVE_START = 'nativeStart',
-  NATIVE_FINALIZE = 'nativeFinalize',
+  FINALIZE = 'finalize',
   LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
 }
 
@@ -22,7 +22,7 @@ function getAndroidStateMachine(
       callback: handlePressIn,
     },
     {
-      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
   ]);
@@ -41,7 +41,7 @@ function getIosStateMachine(
       callback: handlePressIn,
     },
     {
-      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
   ]);
@@ -63,7 +63,7 @@ function getWebStateMachine(
       callback: handlePressIn,
     },
     {
-      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
   ]);
@@ -85,7 +85,7 @@ function getMacosStateMachine(
       eventName: StateMachineEvent.NATIVE_START,
     },
     {
-      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
   ]);
@@ -97,7 +97,7 @@ function getUniversalStateMachine(
 ) {
   return new PressableStateMachine([
     {
-      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      eventName: StateMachineEvent.FINALIZE,
       callback: (event: PressableEvent) => {
         handlePressIn(event);
         handlePressOut(event);
