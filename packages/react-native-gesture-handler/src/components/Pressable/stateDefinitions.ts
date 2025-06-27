@@ -9,82 +9,117 @@ export enum StateMachineEvent {
   LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
 }
 
+function getAndroidStateMachine(
+  handlePressIn: (event: PressableEvent) => void,
+  handlePressOut: (event: PressableEvent) => void
+) {
+  return new PressableStateMachine([
+    {
+      eventName: StateMachineEvent.NATIVE_BEGIN,
+    },
+    {
+      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+      callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      callback: handlePressOut,
+    },
+  ]);
+}
+
+function getIosStateMachine(
+  handlePressIn: (event: PressableEvent) => void,
+  handlePressOut: (event: PressableEvent) => void
+) {
+  return new PressableStateMachine([
+    {
+      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_START,
+      callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      callback: handlePressOut,
+    },
+  ]);
+}
+
+function getWebStateMachine(
+  handlePressIn: (event: PressableEvent) => void,
+  handlePressOut: (event: PressableEvent) => void
+) {
+  return new PressableStateMachine([
+    {
+      eventName: StateMachineEvent.NATIVE_BEGIN,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_START,
+    },
+    {
+      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+      callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      callback: handlePressOut,
+    },
+  ]);
+}
+
+function getMacosStateMachine(
+  handlePressIn: (event: PressableEvent) => void,
+  handlePressOut: (event: PressableEvent) => void
+) {
+  return new PressableStateMachine([
+    {
+      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_BEGIN,
+      callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_START,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      callback: handlePressOut,
+    },
+  ]);
+}
+
+function getUniversalStateMachine(
+  handlePressIn: (event: PressableEvent) => void,
+  handlePressOut: (event: PressableEvent) => void
+) {
+  return new PressableStateMachine([
+    {
+      eventName: StateMachineEvent.NATIVE_FINALIZE,
+      callback: (event: PressableEvent) => {
+        handlePressIn(event);
+        handlePressOut(event);
+      },
+    },
+  ]);
+}
+
 export function getConfiguredStateMachine(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
   if (Platform.OS === 'android') {
-    return new PressableStateMachine([
-      {
-        eventName: StateMachineEvent.NATIVE_BEGIN,
-      },
-      {
-        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-        callback: handlePressIn,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_FINALIZE,
-        callback: handlePressOut,
-      },
-    ]);
+    return getAndroidStateMachine(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'ios') {
-    return new PressableStateMachine([
-      {
-        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_START,
-        callback: handlePressIn,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_FINALIZE,
-        callback: handlePressOut,
-      },
-    ]);
+    return getIosStateMachine(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'web') {
-    return new PressableStateMachine([
-      {
-        eventName: StateMachineEvent.NATIVE_BEGIN,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_START,
-      },
-      {
-        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-        callback: handlePressIn,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_FINALIZE,
-        callback: handlePressOut,
-      },
-    ]);
+    return getWebStateMachine(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'macos') {
-    return new PressableStateMachine([
-      {
-        eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_BEGIN,
-        callback: handlePressIn,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_START,
-      },
-      {
-        eventName: StateMachineEvent.NATIVE_FINALIZE,
-        callback: handlePressOut,
-      },
-    ]);
+    return getMacosStateMachine(handlePressIn, handlePressOut);
   } else {
     // Unknown platform - using minimal universal setup.
-    return new PressableStateMachine([
-      {
-        eventName: StateMachineEvent.NATIVE_FINALIZE,
-        callback: (event: PressableEvent) => {
-          handlePressIn(event);
-          handlePressOut(event);
-        },
-      },
-    ]);
+    return getUniversalStateMachine(handlePressIn, handlePressOut);
   }
 }
