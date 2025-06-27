@@ -271,10 +271,10 @@ const Pressable = (props: PressableProps) => {
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
-          const pEvent = gestureTouchToPressableEvent(event);
+          const pressableEvent = gestureTouchToPressableEvent(event);
           stateMachine.handleEvent(
             StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
-            pEvent
+            pressableEvent
           );
         })
         .onTouchesUp(() => {
@@ -285,9 +285,9 @@ const Pressable = (props: PressableProps) => {
           }
         })
         .onTouchesCancelled((event) => {
-          const pEvent = gestureTouchToPressableEvent(event);
+          const pressableEvent = gestureTouchToPressableEvent(event);
           stateMachine.reset();
-          handlePressOut(pEvent, false);
+          handlePressOut(pressableEvent, false);
         }),
     [stateMachine, handleFinalize, handlePressOut]
   );
@@ -299,9 +299,9 @@ const Pressable = (props: PressableProps) => {
         .onTouchesCancelled((event) => {
           if (Platform.OS !== 'macos') {
             // on MacOS cancel occurs in middle of gesture
-            const pEvent = gestureTouchToPressableEvent(event);
+            const pressableEvent = gestureTouchToPressableEvent(event);
             stateMachine.reset();
-            handlePressOut(pEvent, false);
+            handlePressOut(pressableEvent, false);
           }
         })
         .onBegin(() => {
