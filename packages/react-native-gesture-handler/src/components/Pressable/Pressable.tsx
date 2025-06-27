@@ -328,7 +328,7 @@ const Pressable = (props: PressableProps) => {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(Platform.OS === 'web' ? false : true);
+    gesture.shouldCancelWhenOutside(Platform.OS !== 'web');
 
     Object.entries(relationProps).forEach(([relationName, relation]) => {
       applyRelationProp(
