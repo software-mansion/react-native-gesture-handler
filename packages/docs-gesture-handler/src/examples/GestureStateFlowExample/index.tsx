@@ -34,8 +34,15 @@ export default function App() {
   const isDesktopMode = dimensions.width > MIN_DESKTOP_WIDTH;
 
   useEffect(() => {
-    resetPan();
-    resetLongPress();
+    // Timing issue, neither useEffect, useLayoutEffect or requestAnimationFrame work
+    const timeout = setTimeout(() => {
+      resetPan();
+      resetLongPress();
+    }, 300);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [resetLongPress, resetPan]);
 
   useEffect(() => {
