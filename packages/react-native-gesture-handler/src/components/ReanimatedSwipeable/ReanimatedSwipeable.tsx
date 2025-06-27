@@ -1,238 +1,34 @@
 // Similarily to the DrawerLayout component this deserves to be put in a
 // separate repo. Although, keeping it here for the time being will allow us to
 // move faster and fix possible issues quicker
-
-import React, {
-  ForwardedRef,
-  useCallback,
-  useImperativeHandle,
-  useMemo,
-} from 'react';
-import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
-import { GestureDetector } from '../handlers/gestures/GestureDetector';
+import { useMemo, useCallback, useImperativeHandle, ForwardedRef } from 'react';
+import { LayoutChangeEvent, View, I18nManager, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  interpolate,
+  runOnJS,
+  ReduceMotion,
+  withSpring,
+  useAnimatedRef,
+  measure,
+  runOnUI,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+import { SwipeableProps, SwipeableMethods, SwipeDirection } from '.';
+import { Gesture } from '../..';
 import {
   GestureStateChangeEvent,
   GestureUpdateEvent,
-} from '../handlers/gestureHandlerCommon';
-import type { PanGestureHandlerProps } from '../handlers/PanGestureHandler';
-import type { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
-import Animated, {
-  ReduceMotion,
-  SharedValue,
-  interpolate,
-  measure,
-  runOnJS,
-  runOnUI,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+} from '../../handlers/gestureHandlerCommon';
+import { PanGestureHandlerEventPayload } from '../../handlers/GestureHandlerEventPayload';
+import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import {
-  I18nManager,
-  LayoutChangeEvent,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { applyRelationProp, RelationPropName, RelationPropType } from './utils';
+  applyRelationProp,
+  RelationPropName,
+  RelationPropType,
+} from '../utils';
 
 const DRAG_TOSS = 0.05;
-
-type SwipeableExcludes = Exclude<
-  keyof PanGestureHandlerProps,
-  'onGestureEvent' | 'onHandlerStateChange'
->;
-
-enum SwipeDirection {
-  LEFT = 'left',
-  RIGHT = 'right',
-}
-
-export interface SwipeableProps
-  extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
-  /**
-   *
-   */
-  ref?: React.RefObject<SwipeableMethods | null>;
-
-  /**
-   * Enables two-finger gestures on supported devices, for example iPads with
-   * trackpads. If not enabled the gesture will require click + drag, with
-   * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
-   * the gesture.
-   */
-  enableTrackpadTwoFingerGesture?: boolean;
-
-  /**
-   * Specifies how much the visual interaction will be delayed compared to the
-   * gesture distance. e.g. value of 1 will indicate that the swipeable panel
-   * should exactly follow the gesture, 2 means it is going to be two times
-   * "slower".
-   */
-  friction?: number;
-
-  /**
-   * Distance from the left edge at which released panel will animate to the
-   * open state (or the open panel will animate into the closed state). By
-   * default it's a half of the panel's width.
-   */
-  leftThreshold?: number;
-
-  /**
-   * Distance from the right edge at which released panel will animate to the
-   * open state (or the open panel will animate into the closed state). By
-   * default it's a half of the panel's width.
-   */
-  rightThreshold?: number;
-
-  /**
-   * Distance that the panel must be dragged from the left edge to be considered
-   * a swipe. The default value is 10.
-   */
-  dragOffsetFromLeftEdge?: number;
-
-  /**
-   * Distance that the panel must be dragged from the right edge to be considered
-   * a swipe. The default value is 10.
-   */
-  dragOffsetFromRightEdge?: number;
-
-  /**
-   * Value indicating if the swipeable panel can be pulled further than the left
-   * actions panel's width. It is set to true by default as long as the left
-   * panel render method is present.
-   */
-  overshootLeft?: boolean;
-
-  /**
-   * Value indicating if the swipeable panel can be pulled further than the
-   * right actions panel's width. It is set to true by default as long as the
-   * right panel render method is present.
-   */
-  overshootRight?: boolean;
-
-  /**
-   * Specifies how much the visual interaction will be delayed compared to the
-   * gesture distance at overshoot. Default value is 1, it mean no friction, for
-   * a native feel, try 8 or above.
-   */
-  overshootFriction?: number;
-
-  /**
-   * Called when action panel gets open (either right or left).
-   */
-  onSwipeableOpen?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
-
-  /**
-   * Called when action panel is closed.
-   */
-  onSwipeableClose?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
-
-  /**
-   * Called when action panel starts animating on open (either right or left).
-   */
-  onSwipeableWillOpen?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
-
-  /**
-   * Called when action panel starts animating on close.
-   */
-  onSwipeableWillClose?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
-
-  /**
-   * Called when action panel starts being shown on dragging to open.
-   */
-  onSwipeableOpenStartDrag?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
-
-  /**
-   * Called when action panel starts being shown on dragging to close.
-   */
-  onSwipeableCloseStartDrag?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
-
-  /**
-   * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
-   *  - When the element overshoots it's opened position the value tends towards `Infinity`.
-   *  - Goes back to `1` when `swipeable` is released.
-   *
-   * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
-   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
-   *
-   * To support `rtl` flexbox layouts use `flexDirection` styling.
-   * */
-  renderLeftActions?: (
-    progress: SharedValue<number>,
-    translation: SharedValue<number>,
-    swipeableMethods: SwipeableMethods
-  ) => React.ReactNode;
-
-  /**
-   * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
-   *  - When the element overshoots it's opened position the value tends towards `Infinity`.
-   *  - Goes back to `1` when `swipeable` is released.
-   *
-   * `translation`: a horizontal offset of the `swipeable` relative to its closed position.\
-   * `swipeableMethods`: provides an object exposing methods for controlling the `swipeable`.
-   *
-   * To support `rtl` flexbox layouts use `flexDirection` styling.
-   * */
-  renderRightActions?: (
-    progress: SharedValue<number>,
-    translation: SharedValue<number>,
-    swipeableMethods: SwipeableMethods
-  ) => React.ReactNode;
-
-  animationOptions?: Record<string, unknown>;
-
-  /**
-   * Style object for the container (`Animated.View`), for example to override
-   * `overflow: 'hidden'`.
-   */
-  containerStyle?: StyleProp<ViewStyle>;
-
-  /**
-   * Style object for the children container (`Animated.View`), for example to
-   * apply `flex: 1`
-   */
-  childrenContainerStyle?: StyleProp<ViewStyle>;
-
-  /**
-   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
-   * used with the swipeable's gesture handler.
-   */
-  simultaneousWithExternalGesture?: RelationPropType;
-
-  /**
-   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
-   * used with the swipeable's gesture handler.
-   */
-  requireExternalGestureToFail?: RelationPropType;
-
-  /**
-   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
-   * used with the swipeable's gesture handler.
-   */
-  blocksExternalGesture?: RelationPropType;
-}
-
-export interface SwipeableMethods {
-  close: () => void;
-  openLeft: () => void;
-  openRight: () => void;
-  reset: () => void;
-}
 
 const DEFAULT_FRICTION = 1;
 const DEFAULT_OVERSHOOT_FRICTION = 1;
