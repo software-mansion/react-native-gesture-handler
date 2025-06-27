@@ -10,6 +10,7 @@ import {
   checkGestureCallbacksForWorklets,
   ALLOWED_PROPS,
 } from './utils';
+import { Config } from 'packages/react-gesture-handler/src/web/interfaces';
 
 export function updateHandlers(
   preparedGesture: AttachedGestureState,
@@ -54,12 +55,11 @@ export function updateHandlers(
 
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
-        // @ts-ignore works
         filterConfig(
           handler.config,
           ALLOWED_PROPS,
           extractGestureRelations(handler)
-        )
+        ) as Config
       );
 
       registerHandler(handler.handlerTag, handler, handler.config.testId);

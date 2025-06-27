@@ -1,9 +1,9 @@
 import React from 'react';
-import type { PropsWithChildren, Ref } from 'react';
+import type { PropsWithChildren } from 'react';
 import { tagMessage } from '../../../utils';
 import { isRNSVGNode } from '../../../web/utils';
 
-type WrapProps = PropsWithChildren & { ref: Ref<HTMLDivElement> | null };
+type WrapProps = PropsWithChildren & { ref: (ref: Element) => void };
 
 export const Wrap = ({ children, ref }: WrapProps) => {
   try {
@@ -22,6 +22,7 @@ export const Wrap = ({ children, ref }: WrapProps) => {
     }
 
     return (
+      // @ts-ignore ref is handled correctly by the GestureDetector
       <div ref={ref} style={{ display: 'contents' }}>
         {child}
       </div>

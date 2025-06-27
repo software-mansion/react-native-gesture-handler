@@ -31,7 +31,7 @@ export class GestureHandlerWebDelegate
     touchAction: '',
   };
 
-  init(viewRef: number, handler: IGestureHandler): void {
+  init(viewRef: Element, handler: IGestureHandler): void {
     if (!viewRef) {
       throw new Error(
         `Cannot find HTML Element for handler ${handler.handlerTag}`
@@ -41,7 +41,7 @@ export class GestureHandlerWebDelegate
     this.isInitialized = true;
 
     this.gestureHandler = handler;
-    // @ts-ignore works
+
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
     this.defaultViewStyles = {

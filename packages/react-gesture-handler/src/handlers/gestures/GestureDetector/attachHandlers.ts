@@ -13,12 +13,13 @@ import {
 } from './utils';
 import { MountRegistry } from '../../../mountRegistry';
 import { Gestures } from '../../../web/Gestures';
+import { Config } from 'packages/react-gesture-handler/src/web/interfaces';
 
 interface AttachHandlersConfig {
   preparedGesture: AttachedGestureState;
   gestureConfig: ComposedGesture | GestureType;
   gesturesToAttach: GestureType[];
-  viewTag: number;
+  viewTag: Element;
   webEventHandlersRef: React.RefObject<WebEventHandler>;
 }
 
@@ -60,12 +61,11 @@ export function attachHandlers({
     for (const handler of gesturesToAttach) {
       RNGestureHandlerModule.updateGestureHandler(
         handler.handlerTag,
-        // @ts-ignore works
         filterConfig(
           handler.config,
           ALLOWED_PROPS,
           extractGestureRelations(handler)
-        )
+        ) as Config
       );
     }
 
@@ -73,7 +73,6 @@ export function attachHandlers({
   });
 
   for (const gesture of gesturesToAttach) {
-    console.log(viewTag);
     RNGestureHandlerModule.attachGestureHandler(
       gesture.handlerTag,
       viewTag,

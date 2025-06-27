@@ -55,7 +55,6 @@ export default {
       const handler = NodeManager.getHandler(handlerTag);
 
       const handlerName = handler.constructor.name;
-      console.log(newView);
 
       throw new Error(
         `${handlerName} with tag ${handlerTag} received child that is not valid HTML element.`

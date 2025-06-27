@@ -1,5 +1,5 @@
 import { GestureDetectorState } from './types';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import findNodeHandle from '../../../findNodeHandle';
 
 // Ref handler for the Wrap component attached under the GestureDetector.
@@ -10,20 +10,16 @@ export function useViewRefHandler(
   updateAttachedGestures: (skipConfigUpdate?: boolean) => void
 ) {
   const refHandler = useCallback(
-    (ref: React.Component | null) => {
+    (ref: Element) => {
       if (ref === null) {
         return;
       }
 
-      console.log('REF', ref);
-
       state.viewRef = ref;
 
       // if it's the first render, also set the previousViewTag to prevent reattaching gestures when not needed
-      if (state.previousViewTag === -1) {
-        console.log('VIEWREF', state.viewRef);
-        // @ts-ignore works
-        state.previousViewTag = findNodeHandle(state.viewRef) as number;
+      if (!state.previousViewTag) {
+        state.previousViewTag = findNodeHandle(state.viewRef);
       }
 
       // Pass true as `skipConfigUpdate`. Here we only want to trigger the eventual reattaching of handlers

@@ -15,7 +15,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
-  public init(ref: number, propsRef: React.RefObject<unknown>): void {
+  public init(ref: Element, propsRef: React.RefObject<unknown>): void {
     super.init(ref, propsRef);
 
     this.shouldCancelWhenOutside = true;

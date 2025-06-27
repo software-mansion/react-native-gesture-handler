@@ -48,7 +48,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleDetectorListener
   );
 
-  public init(ref: number, propsRef: React.RefObject<unknown>) {
+  public init(ref: Element, propsRef: React.RefObject<unknown>) {
     super.init(ref, propsRef);
 
     this.shouldCancelWhenOutside = false;

@@ -2,7 +2,7 @@ import type { SVGRef } from './web/interfaces';
 import { isRNSVGElement } from './web/utils';
 
 export default function findNodeHandle(
-  viewRef: SVGRef | HTMLElement
+  viewRef: SVGRef | Element
 ): HTMLElement | SVGElement {
   if (isRNSVGElement(viewRef as SVGRef)) {
     return (viewRef as SVGRef).elementRef.current;

@@ -28,7 +28,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected hasCustomActivationCriteria = false;
   private _enabled = false;
 
-  private viewRef!: number;
+  private viewRef!: Element;
   private propsRef!: React.RefObject<unknown>;
   private _handlerTag!: number;
   private _config: Config = { enabled: false };
@@ -56,7 +56,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Initializing handler
   //
 
-  protected init(viewRef: number, propsRef: React.RefObject<unknown>) {
+  protected init(viewRef: Element, propsRef: React.RefObject<unknown>) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
 

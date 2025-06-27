@@ -99,7 +99,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   const state = useRef<GestureDetectorState>({
     firstRender: true,
     viewRef: null,
-    previousViewTag: -1,
+    previousViewTag: null,
     forceRebuildReanimatedEvent: false,
   }).current;
 
@@ -127,8 +127,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   state.forceRebuildReanimatedEvent = false;
 
   useLayoutEffect(() => {
-    // @ts-ignore works
-    const viewTag = findNodeHandle(state.viewRef) as number;
+    const viewTag = findNodeHandle(state.viewRef!);
     preparedGesture.isMounted = true;
 
     attachHandlers({
@@ -155,6 +154,5 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useMountReactions(updateAttachedGestures, preparedGesture);
 
-  // @ts-ignore works
   return <Wrap ref={refHandler}>{props.children}</Wrap>;
 };

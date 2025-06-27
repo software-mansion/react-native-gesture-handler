@@ -29,8 +29,7 @@ export function useDetectorUpdater(
     // skipConfigUpdate is used to prevent unnecessary updates when only checking if the view has changed
     (skipConfigUpdate?: boolean) => {
       // If the underlying view has changed we need to reattach handlers to the new view
-      // @ts-ignore works
-      const viewTag = findNodeHandle(state.viewRef) as number;
+      const viewTag = findNodeHandle(state.viewRef!);
       const didUnderlyingViewChange = viewTag !== state.previousViewTag;
 
       if (

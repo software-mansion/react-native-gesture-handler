@@ -5,7 +5,6 @@ import { GestureDetector, Gesture } from 'react-gesture-handler';
 
 export default function Home() {
   const g = Gesture.Pan().onUpdate(console.log);
-  console.log(g);
 
   return (
     <div className={styles.page}>

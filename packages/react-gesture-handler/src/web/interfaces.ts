@@ -81,13 +81,13 @@ export interface Config extends Record<string, ConfigArgs> {
   enableTrackpadTwoFingerGesture?: boolean;
 }
 
-type NativeEventArgs = number | State | boolean | undefined;
+type NativeEventArgs = number | State | boolean | Element | undefined;
 interface NativeEvent extends Record<string, NativeEventArgs> {
   numberOfPointers: number;
   state: State;
   pointerInside: boolean | undefined;
   handlerTag: number;
-  target: number;
+  target: Element;
   oldState?: State;
   pointerType: PointerType;
 }
