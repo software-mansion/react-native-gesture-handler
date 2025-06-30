@@ -5,14 +5,14 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.BuildConfig
-import com.swmansion.gesturehandler.ReanimatedEventDispatcher
+import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.OnTouchEventListener
 import com.swmansion.gesturehandler.dispatchEvent
 
 class RNGestureHandlerEventDispatcher(private val reactApplicationContext: ReactApplicationContext) :
   OnTouchEventListener {
-  private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
+  private val reanimatedProxy = ReanimatedProxy()
 
   override fun <T : GestureHandler> onHandlerUpdate(handler: T, event: MotionEvent) {
     this.dispatchHandlerUpdateEvent(handler)
@@ -162,7 +162,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     // Delivers the event to Reanimated.
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Send event directly to Reanimated
-      reanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
+      reanimatedProxy.sendEvent(event, reactApplicationContext)
     } else {
       // In the old architecture, Reanimated subscribes for specific direct events.
       sendEventForDirectEvent(event)

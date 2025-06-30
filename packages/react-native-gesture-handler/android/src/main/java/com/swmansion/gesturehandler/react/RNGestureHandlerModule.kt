@@ -13,6 +13,7 @@ import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
 import com.facebook.soloader.SoLoader
 import com.swmansion.gesturehandler.NativeRNGestureHandlerModuleSpec
+import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
 
 // UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
@@ -58,8 +59,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   @ReactMethod
   override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
-    if (!uiRuntimeDecorated) {
+    if (ReanimatedProxy.REANIMATED_INSTALLED && !uiRuntimeDecorated) {
       uiRuntimeDecorated = decorateUIRuntime()
+      if (!uiRuntimeDecorated) {
+        throw Exception("Failed to decorate UI runtime")
+      }
     }
 
     val handlerTag = handlerTagDouble.toInt()
