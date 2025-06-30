@@ -19,14 +19,14 @@ class RNGestureHandlerModule : public jni::HybridClass<RNGestureHandlerModule> {
 
  private:
   friend HybridBase;
-  jsi::Runtime *rnRuntime = nullptr;
+  jsi::Runtime *rnRuntime_ = nullptr;
 
   jni::global_ref<RNGestureHandlerModule::javaobject> javaPart_;
   explicit RNGestureHandlerModule(
       jni::alias_ref<RNGestureHandlerModule::javaobject> jThis);
   jni::local_ref<BindingsInstallerHolder::javaobject> getBindingsInstallerCxx();
 
-  void setGestureState(int handlerTag, int state);
+  void setGestureState(const int handlerTag, const int state);
   void decorateRuntime(jsi::Runtime &runtime);
   bool decorateUIRuntime();
 };

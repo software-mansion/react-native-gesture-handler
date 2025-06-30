@@ -30,17 +30,19 @@ RNGestureHandlerModule::initHybrid(jni::alias_ref<jhybridobject> jThis) {
 
 jni::local_ref<BindingsInstallerHolder::javaobject>
 RNGestureHandlerModule::getBindingsInstallerCxx() {
-  return jni::make_local(
-      BindingsInstallerHolder::newObjectCxxArgs([&](jsi::Runtime &runtime) {
-        this->rnRuntime = &runtime;
+  return jni::make_local(BindingsInstallerHolder::newObjectCxxArgs(
+      [&, this](jsi::Runtime &runtime) {
+        this->rnRuntime_ = &runtime;
         RuntimeDecorator::installJSRuntimeBindings(
             runtime, [&](int handlerTag, int state) {
-              this->setGestureState(handlerTag, state);
+              setGestureState(handlerTag, state);
             });
       }));
 }
 
-void RNGestureHandlerModule::setGestureState(int handlerTag, int state) {
+void RNGestureHandlerModule::setGestureState(
+    const int handlerTag,
+    const int state) {
   static const auto method =
       javaClassLocal()->getMethod<void(jint, jint)>("setGestureHandlerState");
 
@@ -50,7 +52,7 @@ void RNGestureHandlerModule::setGestureState(int handlerTag, int state) {
 bool RNGestureHandlerModule::decorateUIRuntime() {
   // TODO: make sure we are on JS?
   return RuntimeDecorator::installUIRuntimeBindings(
-      *rnRuntime, [&](int handlerTag, int state) {
+      *rnRuntime_, [&](int handlerTag, int state) {
         this->setGestureState(handlerTag, state);
       });
 }
