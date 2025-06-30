@@ -20,7 +20,9 @@ void RNGestureHandlerModule::registerNatives() {
            "getBindingsInstallerCxx",
            RNGestureHandlerModule::getBindingsInstallerCxx),
        makeNativeMethod(
-           "decorateUIRuntime", RNGestureHandlerModule::decorateUIRuntime)});
+           "decorateUIRuntime", RNGestureHandlerModule::decorateUIRuntime),
+       makeNativeMethod(
+           "invalidateNative", RNGestureHandlerModule::invalidateNative)});
 }
 
 jni::local_ref<RNGestureHandlerModule::jhybriddata>
@@ -56,4 +58,11 @@ bool RNGestureHandlerModule::decorateUIRuntime() {
         this->setGestureState(handlerTag, state);
       });
 }
+
+void RNGestureHandlerModule::invalidateNative() {
+  // This is called when the module is being destroyed, so we need to clear
+  // the reference to the java part to avoid memory leaks.
+  javaPart_ = nullptr;
+}
+
 } // namespace gesturehandler

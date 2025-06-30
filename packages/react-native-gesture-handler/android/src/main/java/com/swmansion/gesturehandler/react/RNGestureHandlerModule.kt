@@ -149,6 +149,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private external fun initHybrid(): HybridData
   private external fun getBindingsInstallerCxx(): BindingsInstallerHolder
   private external fun decorateUIRuntime(): Boolean
+  private external fun invalidateNative(): Unit
 
   override fun getBindingsInstaller() = getBindingsInstallerCxx()
 
@@ -166,6 +167,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
     }
+    invalidateNative()
     super.invalidate()
   }
 
