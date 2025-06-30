@@ -57,10 +57,6 @@ public abstract class NativeRNGestureHandlerModuleSpec extends ReactContextBaseJ
   @DoNotStrip
   public abstract void dropGestureHandler(double handlerTag);
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  @DoNotStrip
-  public abstract boolean install();
-
   @ReactMethod
   @DoNotStrip
   public abstract void flushOperations();
