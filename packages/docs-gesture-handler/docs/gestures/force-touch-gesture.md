@@ -5,6 +5,10 @@ sidebar_label: Force touch gesture
 sidebar_position: 10
 ---
 
+:::warning
+ForceTouch gesture is depracted and will be removed in the future version of Gesture Handler.
+:::
+
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config.md';
