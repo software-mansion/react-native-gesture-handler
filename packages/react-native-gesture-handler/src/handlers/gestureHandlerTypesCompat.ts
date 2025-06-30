@@ -46,8 +46,14 @@ export type TapGestureHandlerGestureEvent =
 export type TapGestureHandlerStateChangeEvent =
   HandlerStateChangeEvent<TapGestureHandlerEventPayload>;
 
+/**
+ * @deprecated ForceTouchGestureHandlerś is deprecated and will be removed in the future.
+ */
 export type ForceTouchGestureHandlerGestureEvent =
   GestureEvent<ForceTouchGestureHandlerEventPayload>;
+/**
+ * @deprecated ForceTouchGestureHandlerś is deprecated and will be removed in the future.
+ */
 export type ForceTouchGestureHandlerStateChangeEvent =
   HandlerStateChangeEvent<ForceTouchGestureHandlerEventPayload>;
 
@@ -84,6 +90,9 @@ export type PanGestureHandlerProperties = PanGestureHandlerProps;
 export type PinchGestureHandlerProperties = PinchGestureHandlerProps;
 export type RotationGestureHandlerProperties = RotationGestureHandlerProps;
 export type FlingGestureHandlerProperties = FlingGestureHandlerProps;
+/**
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
+ */
 export type ForceTouchGestureHandlerProperties = ForceTouchGestureHandlerProps;
 // Button props
 export type RawButtonProperties = RawButtonProps;

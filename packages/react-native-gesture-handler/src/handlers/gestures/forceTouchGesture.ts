@@ -89,4 +89,7 @@ export class ForceTouchGesture extends ContinousBaseGesture<
   }
 }
 
+/**
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
+ */
 export type ForceTouchGestureType = InstanceType<typeof ForceTouchGesture>;

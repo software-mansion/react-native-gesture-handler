@@ -7,6 +7,9 @@ export type FlingGestureHandlerEventPayload = {
   absoluteY: number;
 };
 
+/**
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
+ */
 export type ForceTouchGestureHandlerEventPayload = {
   x: number;
   y: number;
