@@ -5959,7 +5959,7 @@ __metadata:
     react: "npm:19.1.0"
     react-native: "npm:0.80.0"
     react-native-gesture-handler: "workspace:*"
-    react-native-reanimated: "npm:4.0.0-beta.4"
+    react-native-reanimated: "npm:4.0.0-beta.5"
     react-native-worklets: "npm:^0.3.0"
     react-test-renderer: "npm:19.1.0"
     typescript: "npm:~5.8.3"
@@ -14121,9 +14121,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:4.0.0-beta.4":
-  version: 4.0.0-beta.4
-  resolution: "react-native-reanimated@npm:4.0.0-beta.4"
+"react-native-reanimated@npm:4.0.0-beta.5":
+  version: 4.0.0-beta.5
+  resolution: "react-native-reanimated@npm:4.0.0-beta.5"
   dependencies:
     react-native-is-edge-to-edge: "npm:1.1.7"
     semver: "npm:^7.7.1"
@@ -14132,7 +14132,7 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-worklets: ">=0.3.0"
-  checksum: 10c0/5a88b0ed7f54cde7cb42876f65f35905b13ce6a192060e4993f4fec11b6a844f06f2fc5cb6252c364fd2f0648b6e1925f8b7c1322b5dcc40b2baa4923b4a93cd
+  checksum: 10c0/446acddd80e7913fed951dd689a368b2052690f59b24d0aa6af2dd87cfa710e882d5ba2c6e241ba5f0f3978c1d25bbe94e14562ef5cf88ba442ea1b918547973
   languageName: node
   linkType: hard
 

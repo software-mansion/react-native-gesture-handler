@@ -54,7 +54,6 @@ export default function HomeScreen() {
             x: e.allTouches[0].absoluteX,
             y: e.allTouches[0].absoluteY,
           };
-          active.value = true;
         }
       }
     })
@@ -65,6 +64,7 @@ export default function HomeScreen() {
     })
     .onStart(() => {
       console.log('Gesture started');
+      active.value = true;
     })
     .onFinalize(() => {
       console.log('Gesture finalized');
