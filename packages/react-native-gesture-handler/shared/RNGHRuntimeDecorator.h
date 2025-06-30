@@ -6,11 +6,12 @@ using namespace facebook;
 
 class RNGHRuntimeDecorator {
  public:
-  static void installJSRuntimeBindings(
+  static void installRNRuntimeBindings(
       jsi::Runtime &rnRuntime,
       std::function<void(int, int)> &&setGestureState);
   static bool installUIRuntimeBindings(
       jsi::Runtime &rnRuntime,
       std::function<void(int, int)> &&setGestureState);
 };
+
 } // namespace gesturehandler

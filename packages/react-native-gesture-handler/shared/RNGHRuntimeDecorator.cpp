@@ -8,13 +8,14 @@
 #include "RNGHRuntimeDecorator.h"
 
 namespace gesturehandler {
+
 using namespace facebook;
 using namespace facebook::react;
 
-void RNGHRuntimeDecorator::installJSRuntimeBindings(
+void RNGHRuntimeDecorator::installRNRuntimeBindings(
     jsi::Runtime &rnRuntime,
     std::function<void(int, int)> &&setGestureState) {
-  auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
+  const auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
       rnRuntime,
       jsi::PropNameID::forAscii(rnRuntime, "_isViewFlatteningDisabled"),
       1,
@@ -38,16 +39,17 @@ void RNGHRuntimeDecorator::installJSRuntimeBindings(
         }
 #endif
 
-        const auto isViewFlatteningDisabled = shadowNode->getTraits().check(
+        const auto isFormsStackingContext = shadowNode->getTraits().check(
             ShadowNodeTraits::FormsStackingContext);
 
         // This is done using component names instead of type checking because
         // of duplicate symbols for RN types, which prevent RTTI from working.
-        const auto componentName = shadowNode->getComponentName();
-        const auto isTextComponent = strcmp(componentName, "Paragraph") == 0 ||
+        const auto &componentName = shadowNode->getComponentName();
+        const auto isTextOrParagraphComponent =
+            strcmp(componentName, "Paragraph") == 0 ||
             strcmp(componentName, "Text") == 0;
 
-        return jsi::Value(isViewFlatteningDisabled || isTextComponent);
+        return jsi::Value(isFormsStackingContext || isTextOrParagraphComponent);
       });
 
   rnRuntime.global().setProperty(
@@ -115,6 +117,8 @@ bool RNGHRuntimeDecorator::installUIRuntimeBindings(
 
   uiRuntime.global().setProperty(
       uiRuntime, "_setGestureStateSync", std::move(setGestureStateSync));
+
   return true;
 }
+
 } // namespace gesturehandler

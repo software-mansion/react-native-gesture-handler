@@ -99,7 +99,7 @@ RCT_EXPORT_MODULE()
   _rnRuntime = &rnRuntime;
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  RNGHRuntimeDecorator::installJSRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];

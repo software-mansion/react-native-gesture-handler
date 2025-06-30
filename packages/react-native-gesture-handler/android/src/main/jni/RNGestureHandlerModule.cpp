@@ -33,7 +33,7 @@ RNGestureHandlerModule::getBindingsInstallerCxx() {
   return jni::make_local(BindingsInstallerHolder::newObjectCxxArgs(
       [&, this](jsi::Runtime &runtime) {
         this->rnRuntime_ = &runtime;
-        RNGHRuntimeDecorator::installJSRuntimeBindings(
+        RNGHRuntimeDecorator::installRNRuntimeBindings(
             runtime, [&](int handlerTag, int state) {
               setGestureState(handlerTag, state);
             });
