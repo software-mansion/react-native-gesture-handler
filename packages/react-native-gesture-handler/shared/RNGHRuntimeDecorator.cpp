@@ -5,13 +5,13 @@
 
 #include <react/renderer/uimanager/primitives.h>
 
-#include "RuntimeDecorator.h"
+#include "RNGHRuntimeDecorator.h"
 
 namespace gesturehandler {
 using namespace facebook;
 using namespace facebook::react;
 
-void RuntimeDecorator::installJSRuntimeBindings(
+void RNGHRuntimeDecorator::installJSRuntimeBindings(
     jsi::Runtime &rnRuntime,
     std::function<void(int, int)> &&setGestureState) {
   auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
@@ -77,7 +77,7 @@ void RuntimeDecorator::installJSRuntimeBindings(
       rnRuntime, "_setGestureStateAsync", std::move(setGestureStateAsync));
 }
 
-bool RuntimeDecorator::installUIRuntimeBindings(
+bool RNGHRuntimeDecorator::installUIRuntimeBindings(
     jsi::Runtime &rnRuntime,
     std::function<void(int, int)> &&setGestureState) {
   const auto runtimeHolder =

@@ -4,7 +4,7 @@
 namespace gesturehandler {
 using namespace facebook;
 
-class RuntimeDecorator {
+class RNGHRuntimeDecorator {
  public:
   static void installJSRuntimeBindings(
       jsi::Runtime &rnRuntime,

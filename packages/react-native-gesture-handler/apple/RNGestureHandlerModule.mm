@@ -16,7 +16,7 @@
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #endif // RCT_NEW_ARCH_ENABLED
 
-#import "RuntimeDecorator.h"
+#import "RNGHRuntimeDecorator.h"
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
@@ -52,8 +52,8 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   // Oparations called after views have been updated.
   NSMutableArray<GestureHandlerOperation> *_operations;
 
-  facebook::jsi::Runtime *_rnRuntime;
-  bool _uiRuntimeDecorated;
+  jsi::Runtime *_rnRuntime;
+  bool _triedToDecorateUIRuntime;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -99,9 +99,9 @@ RCT_EXPORT_MODULE()
   _rnRuntime = &rnRuntime;
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  RuntimeDecorator::installJSRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installJSRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
-    if (strongSelf != nullptr) {
+    if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
     }
   });
@@ -114,7 +114,6 @@ RCT_EXPORT_MODULE()
   _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
                                                         viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
-  _rnRuntime = nullptr;
 }
 #else
 - (void)setBridge:(RCTBridge *)bridge
@@ -133,9 +132,9 @@ RCT_EXPORT_MODULE()
 {
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  return RuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, [weakSelf](int handlerTag, int state) {
+  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
-    if (strongSelf != nullptr) {
+    if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
     }
   });
@@ -146,8 +145,15 @@ RCT_EXPORT_METHOD(createGestureHandler
                   : (double)handlerTag config
                   : (NSDictionary *)config)
 {
-  if (!_uiRuntimeDecorated) {
-    _uiRuntimeDecorated = [self installUIRuntimeBindings];
+  if (!_triedToDecorateUIRuntime) {
+    _triedToDecorateUIRuntime = true;
+    bool reanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
+
+    if (reanimatedAvailable && ![self installUIRuntimeBindings]) {
+      @throw [[NSException alloc] initWithName:@"RNGHRuntimeDecorationException"
+                                        reason:@"Failed to decorate UI runtime"
+                                      userInfo:nil];
+    }
   }
 
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
@@ -218,7 +224,6 @@ RCT_EXPORT_METHOD(flushOperations)
     [self setGestureStateSynchronously:state forHandler:handlerTag];
   } else {
     RCTExecuteOnMainQueue(^{
-      RCTAssertMainQueue();
       [self setGestureStateSynchronously:state forHandler:handlerTag];
     });
   }
@@ -226,6 +231,7 @@ RCT_EXPORT_METHOD(flushOperations)
 
 - (void)setGestureStateSynchronously:(int)state forHandler:(int)handlerTag
 {
+  RCTAssertMainQueue();
   RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
 
   if (handler != nil) {
