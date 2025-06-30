@@ -1,4 +1,5 @@
 import { State } from '../../State';
+import { tagMessage } from '../../utils';
 
 export interface GestureStateManagerType {
   begin: () => void;
@@ -20,6 +21,8 @@ const wrappedSetGestureState = (handlerTag: number, state: State) => {
     globalThis._setGestureStateSync(handlerTag, state);
   } else if (globalThis._setGestureStateAsync) {
     globalThis._setGestureStateAsync(handlerTag, state);
+  } else {
+    throw new Error(tagMessage('Failed to set gesture state'));
   }
 };
 
