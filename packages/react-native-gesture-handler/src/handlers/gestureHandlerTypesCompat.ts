@@ -47,12 +47,12 @@ export type TapGestureHandlerStateChangeEvent =
   HandlerStateChangeEvent<TapGestureHandlerEventPayload>;
 
 /**
- * @deprecated ForceTouchGestureHandlerś is deprecated and will be removed in the future.
+ * @deprecated ForceTouchGestureHandler is deprecated and will be removed in the future.
  */
 export type ForceTouchGestureHandlerGestureEvent =
   GestureEvent<ForceTouchGestureHandlerEventPayload>;
 /**
- * @deprecated ForceTouchGestureHandlerś is deprecated and will be removed in the future.
+ * @deprecated ForceTouchGestureHandler is deprecated and will be removed in the future.
  */
 export type ForceTouchGestureHandlerStateChangeEvent =
   HandlerStateChangeEvent<ForceTouchGestureHandlerEventPayload>;
