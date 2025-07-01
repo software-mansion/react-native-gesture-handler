@@ -12,6 +12,7 @@ import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
+  private var moduleId: Int = -1
   private var rootViewEnabled = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
   override fun onAttachedToWindow() {
@@ -24,8 +25,12 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
       )
     }
     if (rootViewEnabled && rootHelper == null) {
-      rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this)
+      rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this, moduleId)
     }
+  }
+
+  fun setModuleId(id: Int) {
+    this.moduleId = id
   }
 
   fun tearDown() {

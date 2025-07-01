@@ -11,8 +11,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
   private var attachedHandlers = listOf<Int>()
+  private var moduleId: Int = -1;
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
 
     val KEEP = 0
@@ -31,11 +35,19 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     for (entry in changes) {
       if (entry.value == ATTACH) {
-        RNGestureHandlerModule.registry.attachHandlerToView(entry.value, this.id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
+        registry.attachHandlerToView(
+          entry.value,
+          this.id,
+          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+        )
       } else if (entry.value == DETACH) {
-        RNGestureHandlerModule.registry.detachHandler(entry.value)
+        registry.detachHandler(entry.value)
       }
     }
+  }
+
+  fun setModuleId(id: Int) {
+    this.moduleId = id
   }
 
   fun dispatchStateChangeEvent(event: RNGestureHandlerStateChangeEvent, newState: Int, oldState: Int) {

@@ -32,6 +32,10 @@ class RNGestureHandlerRootViewManager :
     view.tearDown()
   }
 
+  override fun setModuleId(view: RNGestureHandlerRootView, value: Int) {
+    view.setModuleId(value)
+  }
+
   /**
    * The following event configuration is necessary even if you are not using
    * GestureHandlerRootView component directly.

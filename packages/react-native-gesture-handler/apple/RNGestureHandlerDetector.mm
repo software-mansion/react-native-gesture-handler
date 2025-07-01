@@ -18,7 +18,9 @@ using namespace facebook::react;
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
 @end
 
-@implementation RNGestureHandlerDetector
+@implementation RNGestureHandlerDetector {
+  int _moduleId;
+}
 
 #if TARGET_OS_OSX
 + (BOOL)shouldBeRecycled
@@ -38,6 +40,7 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
     _props = defaultProps;
+    _moduleId = -1;
   }
 
   return self;
@@ -48,11 +51,13 @@ using namespace facebook::react;
 - (void)willMoveToWindow:(UIWindow *)newWindow
 {
   if (newWindow == nil) {
+    RNGestureHandlerManager* handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+    react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
     const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
 
     for (const auto handler : props.handlerTags) {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
-      [RNGestureHandlerModule.handlerManager.registry detachHandlerWithTag:handlerTag];
+      [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }
 }
@@ -78,6 +83,10 @@ using namespace facebook::react;
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(propsBase);
   const auto &oldProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(oldPropsBase);
 
+  _moduleId = newProps.moduleId;
+  RNGestureHandlerManager* handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+  
   const int KEEP = 0, DROP = 1, ATTACH = 2;
   std::unordered_map<int, int> changes;
 
@@ -97,11 +106,11 @@ using namespace facebook::react;
     // TODO: Do this better than exposing handlerManager as a static property
     if (handlerChange.second == ATTACH) {
       // TODO: Attach to the child when NativeGestureHandler, track children changes?
-      [RNGestureHandlerModule.handlerManager.registry attachHandlerWithTag:handlerTag
+      [handlerManager.registry attachHandlerWithTag:handlerTag
                                                                     toView:self
                                                             withActionType:RNGestureHandlerActionTypeNativeDetector];
     } else if (handlerChange.second == DROP) {
-      [RNGestureHandlerModule.handlerManager.registry detachHandlerWithTag:handlerTag];
+      [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }
 
