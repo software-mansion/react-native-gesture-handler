@@ -202,6 +202,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   companion object {
     const val NAME = "RNGestureHandlerModule"
+
     // TODO: this is likely to break compared to keeping it on module
     val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
 
