@@ -27,8 +27,8 @@ class RNGestureHandlerModule : public jni::HybridClass<RNGestureHandlerModule> {
   jni::local_ref<BindingsInstallerHolder::javaobject> getBindingsInstallerCxx();
 
   void setGestureState(const int handlerTag, const int state);
-  void decorateRuntime(jsi::Runtime &runtime);
   bool decorateUIRuntime();
   void invalidateNative();
+  int getModuleId();
 };
 } // namespace gesturehandler

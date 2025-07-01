@@ -50,6 +50,7 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   NSMutableArray<GestureHandlerOperation> *_operations;
 
   jsi::Runtime *_rnRuntime;
+  int _moduleId;
 
   bool _checkedIfReanimatedIsAvailable;
   bool _isReanimatedAvailable;
@@ -107,7 +108,7 @@ RCT_EXPORT_MODULE()
   _rnRuntime = &rnRuntime;
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
@@ -122,7 +123,9 @@ RCT_EXPORT_MODULE()
   _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
                                                         viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
-  _runtime = nullptr;
+  
+  static int nextModuleId = 0;
+  _moduleId = nextModuleId++;
 }
 #else
 - (void)setBridge:(RCTBridge *)bridge
@@ -141,7 +144,7 @@ RCT_EXPORT_MODULE()
 {
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, [weakSelf](int handlerTag, int state) {
+  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
