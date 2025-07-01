@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
 
-class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
+class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup, private val moduleId: Int) {
   private val orchestrator: GestureHandlerOrchestrator?
   private val jsGestureHandler: GestureHandler?
   val rootView: ViewGroup
@@ -22,6 +22,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var passingTouch = false
 
   init {
+    val registry = RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
     assert(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
@@ -33,18 +35,20 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     )
     orchestrator = GestureHandlerOrchestrator(
       wrappedView,
-      RNGestureHandlerModule.registry,
+      registry,
       RNViewConfigurationHelper(),
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
     jsGestureHandler = RootViewGestureHandler(handlerTag = -wrappedViewTag)
-    RNGestureHandlerModule.registry.registerHandler(jsGestureHandler)
-    RNGestureHandlerModule.registry.attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API)
+    registry.registerHandler(jsGestureHandler)
+    registry.attachHandlerToView(jsGestureHandler.tag, wrappedViewTag, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API)
     module.registerRootHelper(this)
   }
 
   fun tearDown() {
+    val registry = RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+
     Log.i(
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView",
@@ -53,7 +57,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       RNGestureHandlerModule::class.java,
     )!!
     with(module) {
-      RNGestureHandlerModule.registry.dropHandler(jsGestureHandler!!.tag)
+      registry.dropHandler(jsGestureHandler!!.tag)
       unregisterRootHelper(this@RNGestureHandlerRootHelper)
     }
   }

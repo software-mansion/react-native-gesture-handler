@@ -15,7 +15,7 @@
 #ifdef RCT_NEW_ARCH_ENABLED
                                     <NativeRNGestureHandlerModuleSpec, RCTJSDispatcherModule, RCTInitializing>
 
-@property (class, nonatomic, strong, nullable, readonly) RNGestureHandlerManager *handlerManager;
++ (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId;
 #else
                                     <RCTBridgeModule>
 #endif

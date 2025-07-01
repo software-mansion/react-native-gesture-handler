@@ -33,6 +33,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @Suppress("unused")
   private var mHybridData: HybridData = initHybrid()
   private var uiRuntimeDecorated = false
+  private val registry: RNGestureHandlerRegistry
+    get() = registries[moduleId]!!
+
+  init {
+    registries[moduleId] = RNGestureHandlerRegistry()
+  }
 
   override fun getName() = NAME
 
@@ -172,6 +178,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
     }
+    registries.remove(moduleId)
     invalidateNative()
     super.invalidate()
   }
@@ -206,7 +213,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
     private var nextModuleId = 0
     // TODO: this is likely to break compared to keeping it on module
-    val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
+    val registries: MutableMap<Int, RNGestureHandlerRegistry> = mutableMapOf()
 
     init {
       SoLoader.loadLibrary("gesturehandler")

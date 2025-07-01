@@ -60,11 +60,11 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 #ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
-static RNGestureHandlerManager *_manager;
+static std::unordered_map<int, RNGestureHandlerManager*> _managers;
 
-+ (RNGestureHandlerManager *)handlerManager
++ (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId
 {
-  return _manager;
+  return _managers[moduleId];
 }
 
 #endif // RCT_NEW_ARCH_ENABLED
@@ -78,12 +78,12 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  RNGestureHandlerManager *handlerManager = _manager;
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   dispatch_async(dispatch_get_main_queue(), ^{
     [handlerManager dropAllGestureHandlers];
   });
 
-  _manager = nil;
+  _managers[_moduleId] = nullptr;
 
 #ifndef RCT_NEW_ARCH_ENABLED
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
@@ -120,12 +120,11 @@ RCT_EXPORT_MODULE()
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)initialize
 {
-  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
-                                                        viewRegistry:_viewRegistry_DEPRECATED];
-  _operations = [NSMutableArray new];
-  
   static int nextModuleId = 0;
   _moduleId = nextModuleId++;
+  _managers[_moduleId] = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                        viewRegistry:_viewRegistry_DEPRECATED];
+  _operations = [NSMutableArray new];
 }
 #else
 - (void)setBridge:(RCTBridge *)bridge
@@ -224,12 +223,13 @@ RCT_EXPORT_MODULE()
     return;
   }
 
+  RNGestureHandlerManager* manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
     for (GestureHandlerOperation operation in operations) {
-      operation(_manager);
+      operation(manager);
     }
   }];
 #endif // RCT_NEW_ARCH_ENABLED
@@ -249,7 +249,8 @@ RCT_EXPORT_MODULE()
 - (void)setGestureStateSync:(int)state forHandler:(int)handlerTag
 {
   RCTAssertMainQueue();
-  RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
+  RNGestureHandlerManager* manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  RNGestureHandler *handler = [manager handlerWithTag:@(handlerTag)];
 
   if (handler != nil) {
     if (state == 1) { // FAILED

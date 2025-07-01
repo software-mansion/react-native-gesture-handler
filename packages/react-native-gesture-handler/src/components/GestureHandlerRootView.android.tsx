@@ -16,6 +16,7 @@ export default function GestureHandlerRootView({
       <GestureHandlerRootViewNativeComponent
         style={style ?? styles.container}
         {...rest}
+        moduleId={globalThis._RNGH_MODULE_ID} // Ensure moduleId is set
       />
     </GestureHandlerRootViewContext.Provider>
   );

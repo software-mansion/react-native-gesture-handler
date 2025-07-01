@@ -34,4 +34,8 @@ class RNGestureHandlerDetectorViewManager :
   override fun setHandlerTags(view: RNGestureHandlerDetectorView, value: ReadableArray?) {
     view.setHandlerTags(value)
   }
+
+  override fun setModuleId(view: RNGestureHandlerDetectorView, value: Int) {
+    view.setModuleId(value)
+  }
 }

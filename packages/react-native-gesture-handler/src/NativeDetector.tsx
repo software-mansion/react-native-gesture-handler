@@ -14,6 +14,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       onGestureHandlerStateChange={(event) => {
         console.log('onGestureHandlerStateChange', event.nativeEvent);
       }}
+      moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={[gesture.tag]}
       style={styles.detector}>
       {children}

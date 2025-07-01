@@ -52,6 +52,7 @@ export interface NativeProps extends ViewProps {
   onGestureHandlerTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
 
   handlerTags: Int32[];
+  moduleId: Int32;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector', {
