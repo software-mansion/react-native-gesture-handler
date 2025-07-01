@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from './handlers/getNextHandlerTag';
 import RNGestureHandlerModule from './RNGestureHandlerModule';
 
@@ -25,11 +25,12 @@ export function useGesture(
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
 
-  // TODO: useIsomorphicLayoutEffect?
-  useLayoutEffect(() => {
+  useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
     RNGestureHandlerModule.flushOperations();
+  }, [])
 
+  useEffect(() => {
     return () => {
       RNGestureHandlerModule.dropGestureHandler(tag);
       RNGestureHandlerModule.flushOperations();
