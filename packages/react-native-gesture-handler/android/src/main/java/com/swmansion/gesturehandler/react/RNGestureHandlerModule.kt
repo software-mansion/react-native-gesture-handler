@@ -24,6 +24,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext),
   TurboModuleWithJSIBindings {
 
+  private val moduleId = nextModuleId++
   private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
@@ -203,6 +204,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   companion object {
     const val NAME = "RNGestureHandlerModule"
 
+    private var nextModuleId = 0
     // TODO: this is likely to break compared to keeping it on module
     val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
 
