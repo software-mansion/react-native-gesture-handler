@@ -61,9 +61,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
     if (ReanimatedProxy.REANIMATED_INSTALLED && !uiRuntimeDecorated) {
       uiRuntimeDecorated = decorateUIRuntime()
-      if (!uiRuntimeDecorated) {
-        throw Exception("Failed to decorate UI runtime")
-      }
     }
 
     val handlerTag = handlerTagDouble.toInt()

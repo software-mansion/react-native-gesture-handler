@@ -53,7 +53,10 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   NSMutableArray<GestureHandlerOperation> *_operations;
 
   jsi::Runtime *_rnRuntime;
-  bool _triedToDecorateUIRuntime;
+
+  bool _checkedReanimated;
+  bool _reanimatedAvailable;
+  bool _uiRuntimeDecorated;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -145,15 +148,12 @@ RCT_EXPORT_METHOD(createGestureHandler
                   : (double)handlerTag config
                   : (NSDictionary *)config)
 {
-  if (!_triedToDecorateUIRuntime) {
-    _triedToDecorateUIRuntime = true;
-    bool reanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
+  if (!_checkedReanimated) {
+    _reanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
+  }
 
-    if (reanimatedAvailable && ![self installUIRuntimeBindings]) {
-      @throw [[NSException alloc] initWithName:@"RNGHRuntimeDecorationException"
-                                        reason:@"Failed to decorate UI runtime"
-                                      userInfo:nil];
-    }
+  if (_reanimatedAvailable && !_uiRuntimeDecorated) {
+    _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
 
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
