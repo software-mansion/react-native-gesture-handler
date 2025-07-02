@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
@@ -43,11 +42,6 @@ export function transformIntoHandlerTags(handlerIDs: any) {
     .filter((handle: any) => handle);
 }
 
-export function findNodeHandle(
-  node: null | number | React.Component<any, any> | React.ComponentClass<any>
-): null | number | React.Component<any, any> | React.ComponentClass<any> {
-  return node;
-}
 let flushOperationsScheduled = false;
 
 export function scheduleFlushOperations() {

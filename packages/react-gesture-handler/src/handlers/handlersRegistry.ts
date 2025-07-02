@@ -4,7 +4,6 @@ import { GestureEvent, HandlerStateChangeEvent } from './gestureHandlerCommon';
 
 export const handlerIDToTag: Record<string, number> = {};
 const gestures = new Map<number, GestureType>();
-const oldHandlers = new Map<number, GestureHandlerCallbacks>();
 const testIDs = new Map<string, number>();
 
 export function registerHandler(
@@ -18,17 +17,6 @@ export function registerHandler(
   }
 }
 
-export function registerOldGestureHandler(
-  handlerTag: number,
-  handler: GestureHandlerCallbacks
-) {
-  oldHandlers.set(handlerTag, handler);
-}
-
-export function unregisterOldGestureHandler(handlerTag: number) {
-  oldHandlers.delete(handlerTag);
-}
-
 export function unregisterHandler(handlerTag: number, testID?: string) {
   gestures.delete(handlerTag);
   if (isTestEnv() && testID) {
@@ -38,10 +26,6 @@ export function unregisterHandler(handlerTag: number, testID?: string) {
 
 export function findHandler(handlerTag: number) {
   return gestures.get(handlerTag);
-}
-
-export function findOldGestureHandler(handlerTag: number) {
-  return oldHandlers.get(handlerTag);
 }
 
 export function findHandlerByTestID(testID: string) {

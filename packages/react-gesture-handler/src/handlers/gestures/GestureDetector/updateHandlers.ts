@@ -5,11 +5,7 @@ import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { AttachedGestureState } from './types';
-import {
-  extractGestureRelations,
-  checkGestureCallbacksForWorklets,
-  ALLOWED_PROPS,
-} from './utils';
+import { extractGestureRelations, ALLOWED_PROPS } from './utils';
 import { Config } from 'packages/react-gesture-handler/src/web/interfaces';
 
 export function updateHandlers(
@@ -21,7 +17,6 @@ export function updateHandlers(
 
   for (let i = 0; i < newGestures.length; i++) {
     const handler = preparedGesture.attachedGestures[i];
-    checkGestureCallbacksForWorklets(handler);
 
     // Only update handlerTag when it's actually different, it may be the same
     // if gesture config object is wrapped with useMemo

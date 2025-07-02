@@ -48,7 +48,6 @@ export function useDetectorUpdater(
 
         if (didUnderlyingViewChange) {
           state.previousViewTag = viewTag;
-          state.forceRebuildReanimatedEvent = true;
           forceRender();
         }
       } else if (!skipConfigUpdate) {

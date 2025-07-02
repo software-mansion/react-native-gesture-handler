@@ -59,36 +59,3 @@ export type {
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 
 export { HoverEffect } from './handlers/gestures/hoverGesture';
-export type {
-  // Events
-  GestureHandlerGestureEvent,
-  GestureHandlerStateChangeEvent,
-  // Event payloads
-  GestureHandlerGestureEventNativeEvent,
-  GestureHandlerStateChangeNativeEvent,
-  NativeViewGestureHandlerGestureEvent,
-  NativeViewGestureHandlerStateChangeEvent,
-  TapGestureHandlerGestureEvent,
-  TapGestureHandlerStateChangeEvent,
-  ForceTouchGestureHandlerGestureEvent,
-  ForceTouchGestureHandlerStateChangeEvent,
-  LongPressGestureHandlerGestureEvent,
-  LongPressGestureHandlerStateChangeEvent,
-  PanGestureHandlerGestureEvent,
-  PanGestureHandlerStateChangeEvent,
-  PinchGestureHandlerGestureEvent,
-  PinchGestureHandlerStateChangeEvent,
-  RotationGestureHandlerGestureEvent,
-  RotationGestureHandlerStateChangeEvent,
-  FlingGestureHandlerGestureEvent,
-  FlingGestureHandlerStateChangeEvent,
-  // Handlers props
-  NativeViewGestureHandlerProperties,
-  TapGestureHandlerProperties,
-  LongPressGestureHandlerProperties,
-  PanGestureHandlerProperties,
-  PinchGestureHandlerProperties,
-  RotationGestureHandlerProperties,
-  FlingGestureHandlerProperties,
-  ForceTouchGestureHandlerProperties,
-} from './handlers/gestureHandlerTypesCompat';

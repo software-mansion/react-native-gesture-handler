@@ -1,4 +1,3 @@
-import { isTestEnv, tagMessage } from '../../../utils';
 import { GestureRef, BaseGesture, GestureType } from '../gesture';
 
 import { flingGestureHandlerProps } from '../../FlingGestureHandler';
@@ -16,7 +15,6 @@ import {
   baseGestureHandlerWithDetectorProps,
 } from '../../gestureHandlerCommon';
 import { useCallback, useRef, useState } from 'react';
-import { Reanimated } from '../reanimatedWrapper';
 import { onGestureHandlerEvent } from '../eventReceiver';
 import { WebEventHandler } from './types';
 
@@ -62,43 +60,6 @@ export function extractGestureRelations(gesture: GestureType) {
     simultaneousHandlers: simultaneousWith,
     blocksHandlers: blocksHandlers,
   };
-}
-
-export function checkGestureCallbacksForWorklets(gesture: GestureType) {
-  // If a gesture is explicitly marked to run on the JS thread there is no need to check
-  // if callbacks are worklets as the user is aware they will be ran on the JS thread
-  if (gesture.config.runOnJS) {
-    return;
-  }
-
-  const areSomeNotWorklets = gesture.handlers.isWorklet.includes(false);
-  const areSomeWorklets = gesture.handlers.isWorklet.includes(true);
-
-  // If some of the callbacks are worklets and some are not, and the gesture is not
-  // explicitly marked with `.runOnJS(true)` show an error
-  if (areSomeNotWorklets && areSomeWorklets) {
-    console.error(
-      tagMessage(
-        `Some of the callbacks in the gesture are worklets and some are not. Either make sure that all calbacks are marked as 'worklet' if you wish to run them on the UI thread or use '.runOnJS(true)' modifier on the gesture explicitly to run all callbacks on the JS thread.`
-      )
-    );
-  }
-
-  if (Reanimated === undefined) {
-    // If Reanimated is not available, we can't run worklets, so we shouldn't show the warning
-    return;
-  }
-
-  const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
-  // If none of the callbacks are worklets and the gesture is not explicitly marked with
-  // `.runOnJS(true)` show a warning
-  if (areAllNotWorklets && !isTestEnv()) {
-    console.warn(
-      tagMessage(
-        `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`
-      )
-    );
-  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

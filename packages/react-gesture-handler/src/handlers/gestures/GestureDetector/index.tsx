@@ -90,9 +90,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     () => gestureConfig.toGestureArray(),
     [gestureConfig]
   );
-  const shouldUseReanimated = gesturesToAttach.some(
-    (g) => g.shouldUseReanimated
-  );
 
   const webEventHandlersRef = useWebEventHandlers();
   // Store state in ref to prevent unnecessary renders
@@ -100,14 +97,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
     firstRender: true,
     viewRef: null,
     previousViewTag: null,
-    forceRebuildReanimatedEvent: false,
   }).current;
 
   const preparedGesture = React.useRef<AttachedGestureState>({
     attachedGestures: [],
-    animatedEventHandler: null,
-    animatedHandlers: null,
-    shouldUseReanimated: shouldUseReanimated,
     isMounted: false,
   }).current;
 
@@ -120,11 +113,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   );
 
   const refHandler = useViewRefHandler(state, updateAttachedGestures);
-
-  // Reanimated event should be rebuilt only when gestures are reattached, otherwise
-  // config update will be enough as all necessary items are stored in shared values anyway
-
-  state.forceRebuildReanimatedEvent = false;
 
   useLayoutEffect(() => {
     const viewTag = findNodeHandle(state.viewRef!);

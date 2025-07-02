@@ -6,11 +6,7 @@ import { filterConfig, scheduleFlushOperations } from '../../utils';
 import { ComposedGesture } from '../gestureComposition';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
 import { AttachedGestureState, WebEventHandler } from './types';
-import {
-  extractGestureRelations,
-  checkGestureCallbacksForWorklets,
-  ALLOWED_PROPS,
-} from './utils';
+import { extractGestureRelations, ALLOWED_PROPS } from './utils';
 import { MountRegistry } from '../../../mountRegistry';
 import { Gestures } from '../../../web/Gestures';
 import { Config } from 'packages/react-gesture-handler/src/web/interfaces';
@@ -42,7 +38,6 @@ export function attachHandlers({
   });
 
   for (const handler of gesturesToAttach) {
-    checkGestureCallbacksForWorklets(handler);
     RNGestureHandlerModule.createGestureHandler(
       handler.handlerName as keyof typeof Gestures,
       handler.handlerTag,

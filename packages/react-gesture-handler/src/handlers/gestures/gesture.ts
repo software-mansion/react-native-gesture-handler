@@ -20,7 +20,6 @@ import type {
   NativeViewGestureHandlerPayload,
   HoverGestureHandlerEventPayload,
 } from '../GestureHandlerEventPayload';
-import { isRemoteDebuggingEnabled } from '../../utils';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
@@ -49,7 +48,6 @@ export interface BaseGestureConfig
   blocksHandlers?: GestureRef[];
   needsPointerData?: boolean;
   manualActivation?: boolean;
-  runOnJS?: boolean;
   testId?: string;
   cancelsTouchesInView?: boolean;
 }
@@ -82,7 +80,6 @@ export type HandlerCallbacks<EventPayloadT extends Record<string, unknown>> = {
     current: GestureUpdateEvent<Record<string, unknown>>,
     previous?: GestureUpdateEvent<Record<string, unknown>>
   ) => GestureUpdateEvent<Record<string, unknown>>;
-  isWorklet: boolean[];
 };
 
 export const CALLBACK_TYPE = {
@@ -134,7 +131,6 @@ export abstract class BaseGesture<
   public handlers: HandlerCallbacks<EventPayloadT> = {
     gestureId: -1,
     handlerTag: -1,
-    isWorklet: [],
   };
 
   constructor() {
@@ -168,12 +164,6 @@ export abstract class BaseGesture<
     return this;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  protected isWorklet(callback: Function) {
-    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    return callback.__workletHash !== undefined;
-  }
-
   /**
    * Set the callback that is being called when given gesture handler starts receiving touches.
    * At the moment of this callback the handler is in `BEGAN` state and we don't know yet if it will recognize the gesture at all.
@@ -181,7 +171,6 @@ export abstract class BaseGesture<
    */
   onBegin(callback: (event: GestureStateChangeEvent<EventPayloadT>) => void) {
     this.handlers.onBegin = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.BEGAN] = this.isWorklet(callback);
     return this;
   }
 
@@ -191,7 +180,6 @@ export abstract class BaseGesture<
    */
   onStart(callback: (event: GestureStateChangeEvent<EventPayloadT>) => void) {
     this.handlers.onStart = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.START] = this.isWorklet(callback);
     return this;
   }
 
@@ -207,8 +195,6 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onEnd = callback;
-    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isWorklet[CALLBACK_TYPE.END] = this.isWorklet(callback);
     return this;
   }
 
@@ -223,8 +209,6 @@ export abstract class BaseGesture<
     ) => void
   ) {
     this.handlers.onFinalize = callback;
-    // @ts-ignore if callback is a worklet, the property will be available, if not then the check will return false
-    this.handlers.isWorklet[CALLBACK_TYPE.FINALIZE] = this.isWorklet(callback);
     return this;
   }
 
@@ -235,8 +219,6 @@ export abstract class BaseGesture<
   onTouchesDown(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesDown = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_DOWN] =
-      this.isWorklet(callback);
 
     return this;
   }
@@ -248,8 +230,6 @@ export abstract class BaseGesture<
   onTouchesMove(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesMove = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_MOVE] =
-      this.isWorklet(callback);
 
     return this;
   }
@@ -261,8 +241,6 @@ export abstract class BaseGesture<
   onTouchesUp(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesUp = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_UP] =
-      this.isWorklet(callback);
 
     return this;
   }
@@ -274,8 +252,6 @@ export abstract class BaseGesture<
   onTouchesCancelled(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesCancelled = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCELLED] =
-      this.isWorklet(callback);
 
     return this;
   }
@@ -336,17 +312,6 @@ export abstract class BaseGesture<
   }
 
   /**
-   * When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called.
-   * This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
-   * Defaults to `false`.
-   * @param runOnJS
-   */
-  runOnJS(runOnJS: boolean) {
-    this.config.runOnJS = runOnJS;
-    return this;
-  }
-
-  /**
    * Allows gestures across different components to be recognized simultaneously.
    * @param gestures
    * @see https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-composition/#simultaneouswithexternalgesture
@@ -391,17 +356,6 @@ export abstract class BaseGesture<
     return this;
   }
 
-  /**
-   * #### iOS only
-   * When `true`, the handler will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes `ACTIVE`.
-   * Default value is `true`.
-   * @param value
-   */
-  cancelsTouchesInView(value: boolean) {
-    this.config.cancelsTouchesInView = value;
-    return this;
-  }
-
   initialize() {
     this.handlerTag = getNextHandlerTag();
 
@@ -418,17 +372,6 @@ export abstract class BaseGesture<
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   prepare() {}
-
-  get shouldUseReanimated(): boolean {
-    // Use Reanimated when runOnJS isn't set explicitly,
-    // all defined callbacks are worklets
-    // and remote debugging is disabled
-    return (
-      this.config.runOnJS !== true &&
-      !this.handlers.isWorklet.includes(false) &&
-      !isRemoteDebuggingEnabled()
-    );
-  }
 }
 
 export abstract class ContinousBaseGesture<
@@ -441,7 +384,7 @@ export abstract class ContinousBaseGesture<
    */
   onUpdate(callback: (event: GestureUpdateEvent<EventPayloadT>) => void) {
     this.handlers.onUpdate = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.UPDATE] = this.isWorklet(callback);
+
     return this;
   }
 
@@ -456,7 +399,6 @@ export abstract class ContinousBaseGesture<
     ) => void
   ) {
     this.handlers.onChange = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.CHANGE] = this.isWorklet(callback);
     return this;
   }
 

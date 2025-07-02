@@ -853,23 +853,15 @@ function invokeNullableMethod(
     return;
   }
 
-  for (const [index, [key, value]] of argMapping.entries()) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  for (const [index, [key, _value]] of argMapping.entries()) {
     if (!(key in event.nativeEvent)) {
       continue;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const nativeValue = event.nativeEvent[key];
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (value?.setValue) {
-      // Reanimated API
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      value.setValue(nativeValue);
-    } else {
-      // RN Animated API
-      method.__nodeConfig.argMapping[index] = [key, nativeValue];
-    }
+    method.__nodeConfig.argMapping[index] = [key, nativeValue];
   }
 
   return;

@@ -15,9 +15,7 @@ export function needsToReattach(
   for (let i = 0; i < newGestures.length; i++) {
     if (
       newGestures[i].handlerName !==
-        preparedGesture.attachedGestures[i].handlerName ||
-      newGestures[i].shouldUseReanimated !==
-        preparedGesture.attachedGestures[i].shouldUseReanimated
+      preparedGesture.attachedGestures[i].handlerName
     ) {
       return true;
     }
