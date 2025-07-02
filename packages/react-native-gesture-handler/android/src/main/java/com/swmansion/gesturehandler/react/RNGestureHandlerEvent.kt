@@ -17,6 +17,7 @@ import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataB
 class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>() {
   private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var coalescingKey: Short = 0
+  private var actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
 
   // On the new architecture, native animated expects event names prefixed with `top` instead of `on`,
   // since we know when the native animated node is the target of the event we can use the different
@@ -27,11 +28,13 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   private fun <T : GestureHandler> init(
     handler: T,
+    actionType: Int,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     useNativeAnimatedName: Boolean,
   ) {
     val view = handler.view!!
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
+    this.actionType = actionType
     this.dataBuilder = dataBuilder
     this.useTopPrefixedName = useNativeAnimatedName
     coalescingKey = handler.eventCoalescingKey
@@ -62,14 +65,17 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
     fun <T : GestureHandler> obtain(
       handler: T,
+      actionType: Int,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
       useTopPrefixedName: Boolean = false,
     ): RNGestureHandlerEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
-      init(handler, dataBuilder, useTopPrefixedName)
+      init(handler, actionType, dataBuilder, useTopPrefixedName)
     }
 
     fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>): WritableMap = Arguments.createMap().apply {
       dataBuilder.buildEventData(this)
+      putInt("handlerTag", dataBuilder.handlerTag)
+      putInt("state", dataBuilder.state)
     }
   }
 }
