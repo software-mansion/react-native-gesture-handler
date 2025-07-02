@@ -540,7 +540,7 @@ const Swipeable = function Swipeable(props: SwipeableProps) {
     updateElementWidths,
     relationProps,
     userDrag,
-    rowState.value,
+    rowState,
     dragStarted,
     updateAnimatedEvent,
     onSwipeableOpenStartDrag,
