@@ -1,9 +1,7 @@
 #import "RNGestureHandler.h"
 #import "RNManualActivationRecognizer.h"
 
-#import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import "Handlers/RNNativeViewHandler.h"
-#import "RNGestureHandlerDetector.h"
 
 #if !TARGET_OS_OSX
 #import <UIKit/UIGestureRecognizerSubclass.h>
@@ -301,19 +299,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   _state = state;
 
-  if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
-    RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
-
-    facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange data = {
-        .state = static_cast<int>(_state),
-        .oldState = static_cast<int>(_lastState),
-    };
-
-    [detector dispatchStateChangeEvent:data];
-    _lastState = state;
-    return;
-  }
-
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
@@ -378,7 +363,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
-  [self.emitter sendEvent:event withActionType:self.actionType];
+  [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
@@ -394,7 +379,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                    extraData:extraData
                                                coalescingKey:[_tag intValue]];
 
-  [self.emitter sendEvent:event withActionType:self.actionType];
+  [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
 }
 
 - (RNGestureHandlerState)recognizerState

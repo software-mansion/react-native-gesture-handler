@@ -4,6 +4,7 @@
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerRegistry.h"
+#import "RNGestureHandlerDetector.h"
 
 @class RCTUIManager;
 @class RCTEventDispatcher;
