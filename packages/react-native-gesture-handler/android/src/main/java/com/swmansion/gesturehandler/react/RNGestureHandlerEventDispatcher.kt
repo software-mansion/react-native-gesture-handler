@@ -40,6 +40,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         // Reanimated worklet
         val event = RNGestureHandlerEvent.obtain(
           handler,
+          handler.actionType,
           handlerFactory.createEventBuilder(handler),
         )
         sendEventForReanimated(event)
@@ -48,6 +49,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         // Animated with useNativeDriver: true
         val event = RNGestureHandlerEvent.obtain(
           handler,
+          handler.actionType,
           handlerFactory.createEventBuilder(handler),
           true,
         )
@@ -63,6 +65,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         } else {
           val event = RNGestureHandlerEvent.obtain(
             handler,
+            handler.actionType,
             handlerFactory.createEventBuilder(handler),
           )
           sendEventForDirectEvent(event)
@@ -93,6 +96,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           handler,
           newState,
           oldState,
+          handler.actionType,
           handlerFactory.createEventBuilder(handler),
         )
         sendEventForReanimated(event)
@@ -112,6 +116,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
             handler,
             newState,
             oldState,
+            handler.actionType,
             handlerFactory.createEventBuilder(handler),
           )
           sendEventForDirectEvent(event)
@@ -135,6 +140,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
             handler,
             newState,
             oldState,
+            handler.actionType,
             handlerFactory.createEventBuilder(handler)
           )
           view.dispatchStateChangeEvent(event, newState, oldState)

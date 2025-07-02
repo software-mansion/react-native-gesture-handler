@@ -6,17 +6,10 @@ import com.swmansion.gesturehandler.core.RotationGestureHandler
 
 class RotationGestureHandlerEventDataBuilder(handler: RotationGestureHandler) :
   GestureHandlerEventDataBuilder<RotationGestureHandler>(handler) {
-  private val rotation: Double
-  private val anchorX: Float
-  private val anchorY: Float
-  private val velocity: Double
-
-  init {
-    rotation = handler.rotation
-    anchorX = handler.anchorX
-    anchorY = handler.anchorY
-    velocity = handler.velocity
-  }
+  private val rotation: Double = handler.rotation
+  private val anchorX: Float = handler.anchorX
+  private val anchorY: Float = handler.anchorY
+  private val velocity: Double = handler.velocity
 
   override fun buildEventData(eventData: WritableMap) {
     super.buildEventData(eventData)
