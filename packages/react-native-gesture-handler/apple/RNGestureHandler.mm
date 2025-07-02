@@ -216,10 +216,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return (UITouchType)_pointerType;
 }
 
+#if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(RNGHUIView *)view
 {
   return [view isKindOfClass:[RCTParagraphComponentView class]];
 }
+#endif
 
 - (void)bindToView:(RNGHUIView *)view
 {
@@ -228,10 +230,14 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #endif
   self.recognizer.delegate = self;
 
+#if RCT_NEW_ARCH_ENABLED
   // Starting from react-native 0.79 `RCTParagraphTextView` overrides `hitTest` method to return `nil`. This results in
   // native `UIGestureRecognizer` not responding to gestures. To fix this issue, we attach recognizer to its parent,
   // i.e. `RCTParagraphComponentView`.
   RNGHUIView *recognizerView = [self isViewParagraphComponent:view.superview] ? view.superview : view;
+#else
+  RNGHUIView *recognizerView = view;
+#endif
 
   [recognizerView addGestureRecognizer:self.recognizer];
   [self bindManualActivationToView:recognizerView];
@@ -266,7 +272,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
  */
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
+#if RCT_NEW_ARCH_ENABLED
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
+#else
+  return recognizer.view;
+#endif
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
