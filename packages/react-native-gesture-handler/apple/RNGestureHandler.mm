@@ -228,6 +228,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #endif
   self.recognizer.delegate = self;
 
+  // Starting from react-native 0.79 `RCTParagraphTextView` overrides `hitTest` method to return `nil`. This results in
+  // native `UIGestureRecognizer` not responding to gestures. To fix this issue, we attach recognizer to its parent,
+  // i.e. `RCTParagraphComponentView`.
   RNGHUIView *recognizerView = [self isViewParagraphComponent:view.superview] ? view.superview : view;
 
   [recognizerView addGestureRecognizer:self.recognizer];
@@ -257,6 +260,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #endif
 }
 
+/**
+ This method is used in `handleGesture` to choose appropriate view. `reactTag` in `RCTParagraphComponentView`
+ is `nil`, therefore we want to use `reactTag` from `RCTParagraphTextView`.
+ */
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
@@ -264,11 +271,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
+  RNGHUIView *view = [self chooseViewForInteraction:recognizer];
+
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-
-  RNGHUIView *view = [self chooseViewForInteraction:recognizer];
   if (view == nil) {
     return;
   }
