@@ -51,9 +51,9 @@ using namespace facebook::react;
 - (void)willMoveToWindow:(UIWindow *)newWindow
 {
   if (newWindow == nil) {
-    RNGestureHandlerManager* handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+    RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
     react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
-    const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
+        const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
 
     for (const auto handler : props.handlerTags) {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
@@ -71,8 +71,7 @@ using namespace facebook::react;
   }
 }
 
-- (void)dispatchGestureEvent:
-    (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureEvent)event
+- (void)dispatchGestureEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureEvent)event
 {
   if (_eventEmitter != nullptr) {
     std::dynamic_pointer_cast<const facebook::react::RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
@@ -93,10 +92,11 @@ using namespace facebook::react;
   const auto &oldProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(oldPropsBase);
 
   _moduleId = newProps.moduleId;
-  RNGestureHandlerManager* handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
-  
-  const int KEEP = 0, DROP = 1, ATTACH = 2;
+
+      const int KEEP = 0,
+                DROP = 1, ATTACH = 2;
   std::unordered_map<int, int> changes;
 
   if (oldPropsBase != nullptr) {
@@ -116,8 +116,8 @@ using namespace facebook::react;
     if (handlerChange.second == ATTACH) {
       // TODO: Attach to the child when NativeGestureHandler, track children changes?
       [handlerManager.registry attachHandlerWithTag:handlerTag
-                                                                    toView:self
-                                                            withActionType:RNGestureHandlerActionTypeNativeDetector];
+                                             toView:self
+                                     withActionType:RNGestureHandlerActionTypeNativeDetector];
     } else if (handlerChange.second == DROP) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }

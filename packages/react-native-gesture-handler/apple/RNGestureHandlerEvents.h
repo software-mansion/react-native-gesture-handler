@@ -9,7 +9,7 @@
 
 @interface RNGestureHandlerEventExtraData : NSObject
 
-@property (readonly) NSDictionary<NSString*, id> *data;
+@property (readonly) NSDictionary<NSString *, id> *data;
 
 - (instancetype)initWithData:(NSDictionary *)data;
 
@@ -57,9 +57,9 @@
 
 @interface RNGestureHandlerEvent : NSObject <RCTEvent>
 
-@property (nonatomic, strong, readonly) NSNumber* reactTag;
-@property (nonatomic, strong, readonly) NSNumber* handlerTag;
-@property (nonatomic, strong, readonly) RNGestureHandlerEventExtraData* extraData;
+@property (nonatomic, strong, readonly) NSNumber *reactTag;
+@property (nonatomic, strong, readonly) NSNumber *handlerTag;
+@property (nonatomic, strong, readonly) RNGestureHandlerEventExtraData *extraData;
 @property (nonatomic, readonly) RNGestureHandlerState state;
 
 - (instancetype)initWithReactTag:(NSNumber *)reactTag
@@ -72,9 +72,9 @@
 
 @interface RNGestureHandlerStateChange : NSObject <RCTEvent>
 
-@property (nonatomic, strong, readonly) NSNumber* reactTag;
-@property (nonatomic, strong, readonly) NSNumber* handlerTag;
-@property (nonatomic, strong, readonly) RNGestureHandlerEventExtraData* extraData;
+@property (nonatomic, strong, readonly) NSNumber *reactTag;
+@property (nonatomic, strong, readonly) NSNumber *handlerTag;
+@property (nonatomic, strong, readonly) RNGestureHandlerEventExtraData *extraData;
 @property (nonatomic, readonly) RNGestureHandlerState state;
 @property (nonatomic, readonly) RNGestureHandlerState previousState;
 

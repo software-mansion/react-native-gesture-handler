@@ -60,7 +60,7 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 #ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
-static std::unordered_map<int, RNGestureHandlerManager*> _managers;
+static std::unordered_map<int, RNGestureHandlerManager *> _managers;
 
 + (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId
 {
@@ -123,7 +123,7 @@ RCT_EXPORT_MODULE()
   static int nextModuleId = 0;
   _moduleId = nextModuleId++;
   _managers[_moduleId] = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
-                                                        viewRegistry:_viewRegistry_DEPRECATED];
+                                                                    viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
 }
 #else
@@ -151,9 +151,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (NSNumber *)createGestureHandler:(NSString *)handlerName
-                        handlerTag:(double)handlerTag
-                            config:(NSDictionary *)config
+- (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
   if (!_checkedIfReanimatedIsAvailable) {
     _isReanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
@@ -166,7 +164,7 @@ RCT_EXPORT_MODULE()
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
-  
+
   return @1;
 }
 
@@ -223,7 +221,7 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  RNGestureHandlerManager* manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
@@ -249,7 +247,7 @@ RCT_EXPORT_MODULE()
 - (void)setGestureStateSync:(int)state forHandler:(int)handlerTag
 {
   RCTAssertMainQueue();
-  RNGestureHandlerManager* manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   RNGestureHandler *handler = [manager handlerWithTag:@(handlerTag)];
 
   if (handler != nil) {
