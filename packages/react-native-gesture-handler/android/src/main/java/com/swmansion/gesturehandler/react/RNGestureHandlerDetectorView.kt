@@ -11,7 +11,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
   private var attachedHandlers = listOf<Int>()
-  private var moduleId: Int = -1;
+  private var moduleId: Int = -1
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val registry = RNGestureHandlerModule.registries[moduleId]
@@ -19,28 +19,28 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
 
-    val KEEP = 0
-    val ATTACH = 1
-    val DETACH = 2
+    val keep = 0
+    val attach = 1
+    val detach = 2
 
     val changes = mutableMapOf<Int, Int>()
 
     for (tag in attachedHandlers) {
-      changes[tag] = DETACH
+      changes[tag] = detach
     }
 
     for (tag in newHandlers) {
-      changes[tag] = if (changes.containsKey(tag)) KEEP else ATTACH
+      changes[tag] = if (changes.containsKey(tag)) keep else attach
     }
 
     for (entry in changes) {
-      if (entry.value == ATTACH) {
+      if (entry.value == attach) {
         registry.attachHandlerToView(
           entry.value,
           this.id,
-          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
         )
-      } else if (entry.value == DETACH) {
+      } else if (entry.value == detach) {
         registry.detachHandler(entry.value)
       }
     }
