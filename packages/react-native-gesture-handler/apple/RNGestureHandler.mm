@@ -286,7 +286,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (view == nil) {
+  if (view.reactTag == nil) {
     return;
   }
 
