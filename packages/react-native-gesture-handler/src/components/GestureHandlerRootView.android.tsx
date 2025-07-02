@@ -12,13 +12,14 @@ export default function GestureHandlerRootView({
   ...rest
 }: GestureHandlerRootViewProps) {
   return (
-    <GestureHandlerRootViewContext.Provider value>
+    <GestureHandlerRootViewContext value>
       <GestureHandlerRootViewNativeComponent
         style={style ?? styles.container}
         {...rest}
+        // @ts-expect-error _RNGH_MODULE_ID is injected via JSI
         moduleId={globalThis._RNGH_MODULE_ID} // Ensure moduleId is set
       />
-    </GestureHandlerRootViewContext.Provider>
+    </GestureHandlerRootViewContext>
   );
 }
 
