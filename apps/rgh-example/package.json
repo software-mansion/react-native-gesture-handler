@@ -25,7 +25,7 @@
     "typescript": "^5"
   },
   "installConfig": {
-    "hoistingLimits": "dependencies",
-    "nodeLinker": "node-modules"
+    "selfReferences": false,
+    "hoistingLimits": "dependencies"
   }
 }

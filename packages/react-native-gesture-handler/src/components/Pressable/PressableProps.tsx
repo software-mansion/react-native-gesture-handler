@@ -6,8 +6,11 @@ import {
   ViewStyle,
   PressableStateCallbackType as RNPressableStateCallbackType,
   PressableAndroidRippleConfig as RNPressableAndroidRippleConfig,
+  View,
 } from 'react-native';
 import { RelationPropType } from '../utils';
+
+export type PressableDimensions = { width: number; height: number };
 
 export type PressableStateCallbackType = RNPressableStateCallbackType;
 export type PressableAndroidRippleConfig = RNPressableAndroidRippleConfig;
@@ -59,6 +62,11 @@ export interface PressableProps
    * Called when a long-tap gesture is detected.
    */
   onLongPress?: null | ((event: PressableEvent) => void);
+
+  /**
+   * A reference to the pressable element.
+   */
+  ref?: React.RefObject<View>;
 
   /**
    * Either children or a render prop that receives a boolean reflecting whether
@@ -158,4 +166,11 @@ export interface PressableProps
    * used with the Pressable's gesture handlers.
    */
   blocksExternalGesture?: RelationPropType;
+
+  /**
+   * Defines the dimensions of the Pressable after it's been resized.
+   * This property does not affect Pressable's physical appearance.
+   * Required when the Pressable is resized **and** uses pressRetentionOffset.
+   */
+  dimensionsAfterResize?: PressableDimensions;
 }

@@ -79,9 +79,25 @@ function GesturizedBoxes() {
 
 function LegacyBoxes() {
   return (
-    <LegacyPressable style={outerStyle}>
-      <LegacyPressable style={middleStyle}>
-        <LegacyPressable style={innerStyle} />
+    <LegacyPressable
+      style={outerStyle}
+      onPressIn={() => console.log('[outer] onPressIn')}
+      onPressOut={() => console.log('[outer] onPressOut')}
+      onPress={() => console.log('[outer] onPress')}
+      onLongPress={() => console.log('[outer] onLongPress')}>
+      <LegacyPressable
+        style={middleStyle}
+        onPressIn={() => console.log('[middle] onPressIn')}
+        onPressOut={() => console.log('[middle] onPressOut')}
+        onPress={() => console.log('[middle] onPress')}
+        onLongPress={() => console.log('[middle] onLongPress')}>
+        <LegacyPressable
+          style={innerStyle}
+          onPressIn={() => console.log('[inner] onPressIn')}
+          onPressOut={() => console.log('[inner] onPressOut')}
+          onPress={() => console.log('[inner] onPress')}
+          onLongPress={() => console.log('[inner] onLongPress')}
+        />
       </LegacyPressable>
     </LegacyPressable>
   );

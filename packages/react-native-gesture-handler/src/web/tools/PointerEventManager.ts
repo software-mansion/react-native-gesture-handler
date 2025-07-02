@@ -98,7 +98,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     // pointer moves until it succeeds.
     // God, I do love web development.
     if (
-      !target.hasPointerCapture(event.pointerId) &&
+      !target?.hasPointerCapture(event.pointerId) &&
       !POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)
     ) {
       target.setPointerCapture(event.pointerId);
