@@ -3,8 +3,8 @@
 #import <React/RCTBridgeModule.h>
 
 #import "RNGestureHandler.h"
-#import "RNGestureHandlerRegistry.h"
 #import "RNGestureHandlerDetector.h"
+#import "RNGestureHandlerRegistry.h"
 
 @class RCTUIManager;
 @class RCTEventDispatcher;
