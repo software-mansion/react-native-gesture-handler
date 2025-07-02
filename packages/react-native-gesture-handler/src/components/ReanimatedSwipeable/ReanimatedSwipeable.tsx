@@ -1,6 +1,3 @@
-// Similarily to the DrawerLayout component this deserves to be put in a
-// separate repo. Although, keeping it here for the time being will allow us to
-// move faster and fix possible issues quicker
 import { useMemo, useCallback, useImperativeHandle, ForwardedRef } from 'react';
 import { LayoutChangeEvent, View, I18nManager, StyleSheet } from 'react-native';
 import Animated, {
