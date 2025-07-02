@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react
 
-import android.util.Log
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
@@ -16,12 +15,11 @@ class RNGestureHandlerDetectorViewManager :
   private val mDelegate: ViewManagerDelegate<RNGestureHandlerDetectorView>
 
   init {
-    mDelegate = RNGestureHandlerDetectorManagerDelegate<RNGestureHandlerDetectorView, RNGestureHandlerDetectorViewManager>(this)
+    mDelegate =
+      RNGestureHandlerDetectorManagerDelegate<RNGestureHandlerDetectorView, RNGestureHandlerDetectorViewManager>(this)
   }
 
-  override fun getDelegate(): ViewManagerDelegate<RNGestureHandlerDetectorView> {
-    return mDelegate
-  }
+  override fun getDelegate(): ViewManagerDelegate<RNGestureHandlerDetectorView> = mDelegate
 
   override fun getName() = REACT_CLASS
 

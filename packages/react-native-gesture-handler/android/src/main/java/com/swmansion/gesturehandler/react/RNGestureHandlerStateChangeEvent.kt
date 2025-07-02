@@ -50,11 +50,11 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   // TODO: coalescing
   override fun getCoalescingKey(): Short = 0
 
-  override fun getEventData(): WritableMap =
-    if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
-      createNativeEventData(dataBuilder!!, newState, oldState)
-    else
-      createEventData(dataBuilder!!, newState, oldState)
+  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+    createNativeEventData(dataBuilder!!, newState, oldState)
+  } else {
+    createEventData(dataBuilder!!, newState, oldState)
+  }
 
   companion object {
     const val EVENT_NAME = "onGestureHandlerStateChange"
@@ -84,14 +84,20 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
         putInt("oldState", oldState)
       }
 
-    fun createNativeEventData(dataBuilder: GestureHandlerEventDataBuilder<*>, newState: Int, oldState: Int): WritableMap =
-      Arguments.createMap().apply {
-        putMap("handlerData", Arguments.createMap().apply {
+    fun createNativeEventData(
+      dataBuilder: GestureHandlerEventDataBuilder<*>,
+      newState: Int,
+      oldState: Int,
+    ): WritableMap = Arguments.createMap().apply {
+      putMap(
+        "handlerData",
+        Arguments.createMap().apply {
           dataBuilder.buildEventData(this)
-        })
-        putInt("handlerTag", dataBuilder.handlerTag)
-        putInt("state", newState)
-        putInt("oldState", oldState)
-      }
+        },
+      )
+      putInt("handlerTag", dataBuilder.handlerTag)
+      putInt("state", newState)
+      putInt("oldState", oldState)
+    }
   }
 }

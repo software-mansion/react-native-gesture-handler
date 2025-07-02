@@ -141,7 +141,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
             newState,
             oldState,
             handler.actionType,
-            handlerFactory.createEventBuilder(handler)
+            handlerFactory.createEventBuilder(handler),
           )
           view.dispatchStateChangeEvent(event, newState, oldState)
         }

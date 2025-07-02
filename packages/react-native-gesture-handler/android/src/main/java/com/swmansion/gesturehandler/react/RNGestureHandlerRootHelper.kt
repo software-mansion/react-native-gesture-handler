@@ -22,7 +22,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var passingTouch = false
 
   init {
-    val registry = RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+    val registry =
+      RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
 
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
@@ -47,7 +48,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   fun tearDown() {
-    val registry = RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+    val registry =
+      RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
 
     Log.i(
       ReactConstants.TAG,
