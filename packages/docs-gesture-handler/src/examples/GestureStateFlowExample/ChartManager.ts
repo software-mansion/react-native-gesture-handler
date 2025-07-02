@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
   TapGesture,
   PanGesture,
@@ -92,7 +91,7 @@ export default class ChartManager {
   private _connections: ChartConnection[] = [];
   private _layout: number[][];
   private _listeners: Map<number, Map<number, (isActive: boolean) => void>> =
-    useMemo(() => new Map(), []);
+    new Map();
 
   public static EMPTY_SPACE_ID = 0;
 
@@ -120,7 +119,7 @@ export default class ChartManager {
     itemId: number,
     listener: (isActive: boolean) => void
   ): number {
-    const listenerId = this._listeners.get(itemId)?.size - 1 ?? 0;
+    const listenerId = this._listeners.get(itemId)?.size - 1;
 
     // another map is used inside of _listeners to seamlessly remove listening functions from _listeners
     if (this._listeners.has(itemId)) {
@@ -151,7 +150,7 @@ export default class ChartManager {
       label = stateToName.get(label);
     }
 
-    let highlightColor = labelColorMap.get(label) ?? Colors.YELLOW;
+    const highlightColor = labelColorMap.get(label) ?? Colors.YELLOW;
 
     const newItem = {
       id: newId,
@@ -205,12 +204,12 @@ export default class ChartManager {
 
     undeterminedCallback(true);
 
-    const resetAllStates = (event: GestureStateChangeEvent<any>) => {
+    const resetAllStates = (event: GestureStateChangeEvent<unknown>) => {
       undeterminedCallback(true);
-      if (event.state == State.FAILED) {
+      if (event.state === State.FAILED) {
         failedCallback(true);
       }
-      if (event.state == State.CANCELLED) {
+      if (event.state === State.CANCELLED) {
         cancelledCallback(true);
       }
       setTimeout(() => {
@@ -236,7 +235,7 @@ export default class ChartManager {
       .onEnd(() => {
         endCallback(true);
       })
-      .onFinalize((event: GestureStateChangeEvent<any>) => {
+      .onFinalize((event: GestureStateChangeEvent<unknown>) => {
         resetAllStates(event);
       });
 

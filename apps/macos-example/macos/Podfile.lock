@@ -1484,7 +1484,7 @@ PODS:
     - React-utils (= 0.78.3)
   - RNCAsyncStorage (2.1.2):
     - React-Core
-  - RNGestureHandler (2.26.0):
+  - RNGestureHandler (2.27.1):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1854,8 +1854,8 @@ SPEC CHECKSUMS:
   React-debug: 9ef45d64b88281e7e629158410ceb61b3bb51ea0
   React-defaultsnativemodule: 4e5646f85edca54998efb35efac242045d1123dc
   React-domnativemodule: aa0750129c97675305ad52da5e0525985a7bc1c9
-  React-Fabric: 20a409df4dc64d8139324f707837bfa72d5663ce
-  React-FabricComponents: a8ad8665dacbf82a4669f5a4e55531594c65601b
+  React-Fabric: e5670d9e6c90650fc3d8b86eedfb3a75b80152cb
+  React-FabricComponents: d1e9208aa6b2134bb1c18d8a42cf4c975ffc755d
   React-FabricImage: 309d4ebb53631461fc8108b7b3ce6dc84f135a20
   React-featureflags: 46790800dbdeb1305b3b12427b4d18413dadd13e
   React-featureflagsnativemodule: eb77d500c3770978e9c1c8e6f3f36a923ca7eecf
@@ -1901,7 +1901,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 3d30536e47f328f0a297d897cb789e46a092c2a6
   ReactCommon: 0f22e3dd34a8215b8482778898f6e1e95572c498
   RNCAsyncStorage: b9f5f78da5d16a853fe3dc22e8268d932fc45a83
-  RNGestureHandler: a86b34aa0bf84b4beb54206e7e1be4423ee28f04
+  RNGestureHandler: 231e0ff647e2f3b6a26b86f0fb1978b22cdbd1c6
   RNReanimated: 6ccc6e6826ada6643d2e6474d95f37a1fbf7771d
   RNSVG: 4c63b12b7b5761063bca4f20dd228f6a8370f614
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
@@ -1909,4 +1909,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: ba6f2105d3e43bf0ae77356a9afcc8b532e3c306
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
