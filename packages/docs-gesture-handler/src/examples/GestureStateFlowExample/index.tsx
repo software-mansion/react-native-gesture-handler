@@ -1,5 +1,4 @@
-import 'react-native-gesture-handler';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { StyleSheet, View, useWindowDimensions, Text } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -19,49 +18,59 @@ import FlowChart from './FlowChart';
 const MIN_DESKTOP_WIDTH = 1298;
 
 export default function App() {
-  const chartManager = useRef(new ChartManager());
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
+  const chartManager = useMemo(() => new ChartManager(), []);
 
   const [panHandle, capturedPan, resetPan] = useMemo(
-    () => chartManager.current.newGesture(Gesture.Pan()),
-    []
+    () => chartManager.newGesture(Gesture.Pan()),
+    [chartManager]
   );
 
   const [pressHandle, capturedPress, resetLongPress] = useMemo(
-    () => chartManager.current.newGesture(Gesture.LongPress()),
-    []
+    () => chartManager.newGesture(Gesture.LongPress()),
+    [chartManager]
   );
-
-  useEffect(() => {
-    resetPan();
-    resetLongPress();
-  }, []);
-
-  const panIds = panHandle.idObject;
-  const pressIds = pressHandle.idObject;
 
   const dimensions = useWindowDimensions();
   const isDesktopMode = dimensions.width > MIN_DESKTOP_WIDTH;
 
-  // prettier-ignore
-  const desktopLayout = [
-    [panIds.undetermined, ChartManager.EMPTY_SPACE_ID, pressIds.undetermined, ChartManager.EMPTY_SPACE_ID],
-    [panIds.began,        panIds.failed,               pressIds.began,        pressIds.failed],
-    [panIds.active,       panIds.cancelled,            pressIds.active,       pressIds.cancelled],
-    [panIds.end,          ChartManager.EMPTY_SPACE_ID, pressIds.end,          ChartManager.EMPTY_SPACE_ID],
-  ];
+  useEffect(() => {
+    // Timing issue, neither useEffect, useLayoutEffect or requestAnimationFrame work
+    const timeout = setTimeout(() => {
+      resetPan();
+      resetLongPress();
+    }, 300);
 
-  // prettier-ignore
-  const phoneLayout = [
-    [panIds.undetermined],
-    [panIds.began,        panIds.failed],
-    [panIds.active,       panIds.cancelled],
-    [panIds.end,          ChartManager.EMPTY_SPACE_ID],
-  ];
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [resetLongPress, resetPan]);
 
-  chartManager.current.layout = isDesktopMode ? desktopLayout : phoneLayout;
+  useEffect(() => {
+    const panIds = panHandle.idObject;
+    const pressIds = pressHandle.idObject;
+
+    // prettier-ignore
+    const desktopLayout = [
+      [panIds.undetermined, ChartManager.EMPTY_SPACE_ID, pressIds.undetermined, ChartManager.EMPTY_SPACE_ID],
+      [panIds.began,        panIds.failed,               pressIds.began,        pressIds.failed],
+      [panIds.active,       panIds.cancelled,            pressIds.active,       pressIds.cancelled],
+      [panIds.end,          ChartManager.EMPTY_SPACE_ID, pressIds.end,          ChartManager.EMPTY_SPACE_ID],
+    ];
+
+    // prettier-ignore
+    const phoneLayout = [
+      [panIds.undetermined],
+      [panIds.began,        panIds.failed],
+      [panIds.active,       panIds.cancelled],
+      [panIds.end,          ChartManager.EMPTY_SPACE_ID],
+    ];
+
+    chartManager.layout = isDesktopMode ? desktopLayout : phoneLayout;
+    forceUpdate();
+  }, [chartManager, isDesktopMode, panHandle, pressHandle]);
 
   const pressed = useSharedValue(false);
-
   const offset = useSharedValue(0);
   const scale = useSharedValue(1);
 
@@ -110,7 +119,7 @@ export default function App() {
             <Text style={styles.label}>Gesture.LongPress()</Text>
           )}
         </View>
-        <FlowChart chartManager={chartManager.current} />
+        <FlowChart chartManager={chartManager} />
       </View>
       <GestureHandlerRootView style={styles.container}>
         <View style={styles.container}>

@@ -3,6 +3,9 @@ import { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
 import type { ForceTouchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
+/**
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
+ */
 export type ForceTouchGestureChangeEventPayload = {
   forceChange: number;
 };
@@ -26,6 +29,9 @@ function changeEventCalculator(
   return { ...current, ...changePayload };
 }
 
+/**
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
+ */
 export class ForceTouchGesture extends ContinousBaseGesture<
   ForceTouchGestureHandlerEventPayload,
   ForceTouchGestureChangeEventPayload
@@ -83,4 +89,7 @@ export class ForceTouchGesture extends ContinousBaseGesture<
   }
 }
 
+/**
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
+ */
 export type ForceTouchGestureType = InstanceType<typeof ForceTouchGesture>;
