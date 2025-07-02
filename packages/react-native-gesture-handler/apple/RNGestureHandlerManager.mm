@@ -13,6 +13,7 @@
 #import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerState.h"
 #import "RNRootViewGestureRecognizer.h"
+#import "RNGestureHandlerNativeEventUtils.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTFabricModalHostViewController.h>
@@ -45,6 +46,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 @interface RNGestureHandlerManager () <RNGestureHandlerEventEmitter, RNRootViewGestureRecognizerDelegate>
 
 @end
+
 
 @implementation RNGestureHandlerManager {
   RNGestureHandlerRegistry *_registry;
@@ -356,9 +358,22 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 #pragma mark Events
 
-- (void)sendEvent:(RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType
+- (void)sendEvent:(RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType forRecognizer:(UIGestureRecognizer*)recognizer
 {
   switch (actionType) {
+    case RNGestureHandlerActionTypeNativeDetector: {
+      RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
+      if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
+        RNGestureHandlerEvent* gestureEvent = (RNGestureHandlerEvent*)event;
+        auto nativeEvent = [gestureEvent getNativeEvent];
+        [detector dispatchGestureEvent:nativeEvent];
+      } else {
+        auto nativeEvent = [event getNativeEvent];
+        [detector dispatchStateChangeEvent:nativeEvent];
+      }
+      break;
+    }
+      
     case RNGestureHandlerActionTypeReanimatedWorklet:
       [self sendEventForReanimated:event];
       break;

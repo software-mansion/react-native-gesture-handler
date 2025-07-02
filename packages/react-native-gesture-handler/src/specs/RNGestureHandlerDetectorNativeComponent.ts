@@ -9,18 +9,14 @@ import type { ViewProps } from 'react-native';
 
 type GestureHandlerEvent = Readonly<{
   handlerTag: Int32;
-  numberOfPointers: Int32;
   state: Int32;
-  pointerType: Int32;
   handlerData: UnsafeMixed;
 }>;
 
 type GestureHandlerStateChangeEvent = Readonly<{
   handlerTag: Int32;
-  numberOfPointers: Int32;
   state: Int32;
   oldState: Int32;
-  pointerType: Int32;
   handlerData: UnsafeMixed;
 }>;
 

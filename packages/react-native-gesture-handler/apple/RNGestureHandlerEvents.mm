@@ -164,11 +164,7 @@
 
 @end
 
-@implementation RNGestureHandlerEvent {
-  NSNumber *_handlerTag;
-  RNGestureHandlerState _state;
-  RNGestureHandlerEventExtraData *_extraData;
-}
+@implementation RNGestureHandlerEvent
 
 @synthesize viewTag = _viewTag;
 @synthesize coalescingKey = _coalescingKey;
@@ -222,12 +218,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-@implementation RNGestureHandlerStateChange {
-  NSNumber *_handlerTag;
-  RNGestureHandlerState _state;
-  RNGestureHandlerState _prevState;
-  RNGestureHandlerEventExtraData *_extraData;
-}
+@implementation RNGestureHandlerStateChange
 
 @synthesize viewTag = _viewTag;
 @synthesize coalescingKey = _coalescingKey;
@@ -243,7 +234,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     _viewTag = reactTag;
     _handlerTag = handlerTag;
     _state = state;
-    _prevState = prevState;
+    _previousState = prevState;
     _extraData = extraData;
     _coalescingKey = coalescingKey++;
   }
@@ -279,7 +270,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [body setObject:_viewTag forKey:@"target"];
   [body setObject:_handlerTag forKey:@"handlerTag"];
   [body setObject:@(_state) forKey:@"state"];
-  [body setObject:@(_prevState) forKey:@"oldState"];
+  [body setObject:@(_previousState) forKey:@"oldState"];
   return @[ self.viewTag, @"onGestureHandlerStateChange", body ];
 }
 
