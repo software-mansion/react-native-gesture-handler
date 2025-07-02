@@ -72,6 +72,8 @@
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
 
+- (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
+- (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
 - (void)bindToView:(nonnull RNGHUIView *)view;
 - (void)unbindFromView;
 - (void)resetConfig NS_REQUIRES_SUPER;

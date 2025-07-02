@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 #else
 #import <React/RCTScrollView.h>
@@ -215,15 +216,22 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return (UITouchType)_pointerType;
 }
 
+- (BOOL)isViewParagraphComponent:(RNGHUIView *)view
+{
+  return [view isKindOfClass:[RCTParagraphComponentView class]];
+}
+
 - (void)bindToView:(RNGHUIView *)view
 {
 #if !TARGET_OS_OSX
   view.userInteractionEnabled = YES;
 #endif
   self.recognizer.delegate = self;
-  [view addGestureRecognizer:self.recognizer];
 
-  [self bindManualActivationToView:view];
+  RNGHUIView *recognizerView = [self isViewParagraphComponent:view.superview] ? view.superview : view;
+
+  [recognizerView addGestureRecognizer:self.recognizer];
+  [self bindManualActivationToView:recognizerView];
 }
 
 - (void)unbindFromView
@@ -249,12 +257,19 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #endif
 }
 
+- (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
+{
+  return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
+}
+
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (recognizer.view.reactTag == nil) {
+
+  RNGHUIView *view = [self chooseViewForInteraction:recognizer];
+  if (view == nil) {
     return;
   }
 
@@ -266,7 +281,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   _state = state;
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
-  [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
+  RNGHUIView *view = [self chooseViewForInteraction:recognizer];
+
+  [self sendEventsInState:self.state forViewWithTag:view.reactTag withExtraData:eventData];
 }
 
 - (void)sendEventsInState:(RNGestureHandlerState)state
