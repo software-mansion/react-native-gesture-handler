@@ -225,9 +225,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)bindToView:(RNGHUIView *)view
 {
-#if !TARGET_OS_OSX
-  view.userInteractionEnabled = YES;
-#endif
   self.recognizer.delegate = self;
 
 #if RCT_NEW_ARCH_ENABLED
@@ -237,6 +234,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   RNGHUIView *recognizerView = [self isViewParagraphComponent:view.superview] ? view.superview : view;
 #else
   RNGHUIView *recognizerView = view;
+#endif
+
+#if !TARGET_OS_OSX
+  recognizerView.userInteractionEnabled = YES;
 #endif
 
   [recognizerView addGestureRecognizer:self.recognizer];
