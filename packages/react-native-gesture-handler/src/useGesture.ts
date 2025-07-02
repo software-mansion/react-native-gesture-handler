@@ -28,7 +28,7 @@ export function useGesture(
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
     RNGestureHandlerModule.flushOperations();
-  }, [])
+  }, [type, tag]);
 
   useEffect(() => {
     return () => {
