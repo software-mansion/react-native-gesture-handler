@@ -10,11 +10,14 @@ import com.swmansion.gesturehandler.core.GestureHandler
 class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerTouchEvent>() {
   private var extraData: WritableMap? = null
   private var coalescingKey: Short = 0
-  private fun <T : GestureHandler> init(handler: T) {
+  private var actionType = GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API
+
+  private fun <T : GestureHandler> init(handler: T, actionType: Int) {
     val view = handler.view!!
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
     extraData = createEventData(handler)
     coalescingKey = handler.eventCoalescingKey
+    this.actionType = actionType
   }
 
   override fun onDispose() {
@@ -22,7 +25,13 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = EVENT_NAME
+  override fun getEventName() = if (actionType ==
+    GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+  ) {
+    NATIVE_EVENT_NAME
+  } else {
+    EVENT_NAME
+  }
 
   override fun canCoalesce() = true
 
@@ -37,14 +46,15 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     const val EVENT_TOUCH_CANCELLED = 4
 
     const val EVENT_NAME = "onGestureHandlerEvent"
+    const val NATIVE_EVENT_NAME = "onGestureHandlerTouchEvent"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerTouchEvent>(
       TOUCH_EVENTS_POOL_SIZE,
     )
 
-    fun <T : GestureHandler> obtain(handler: T): RNGestureHandlerTouchEvent =
+    fun <T : GestureHandler> obtain(handler: T, actionType: Int): RNGestureHandlerTouchEvent =
       (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
-        init(handler)
+        init(handler, actionType)
       }
 
     fun <T : GestureHandler> createEventData(handler: T): WritableMap = Arguments.createMap().apply {
