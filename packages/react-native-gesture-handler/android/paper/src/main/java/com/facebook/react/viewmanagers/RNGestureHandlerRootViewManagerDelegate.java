@@ -21,6 +21,12 @@ public class RNGestureHandlerRootViewManagerDelegate<T extends View, U extends B
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
-    super.setProperty(view, propName, value);
+    switch (propName) {
+      case "moduleId":
+        mViewManager.setModuleId(view, value == null ? 0 : ((Double) value).intValue());
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
   }
 }

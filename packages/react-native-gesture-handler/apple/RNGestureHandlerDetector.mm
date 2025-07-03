@@ -71,11 +71,11 @@ using namespace facebook::react;
   }
 }
 
-- (void)dispatchGestureEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureEvent)event
+- (void)dispatchGestureEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event
 {
   if (_eventEmitter != nullptr) {
     std::dynamic_pointer_cast<const facebook::react::RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
-        ->onGestureEvent(event);
+        ->onGestureHandlerEvent(event);
   }
 }
 

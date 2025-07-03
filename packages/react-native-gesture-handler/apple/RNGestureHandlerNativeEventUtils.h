@@ -4,7 +4,7 @@
 
 @interface RNGestureHandlerEvent (NativeEvent)
 
-- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureEvent)getNativeEvent;
+- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)getNativeEvent;
 
 @end
 

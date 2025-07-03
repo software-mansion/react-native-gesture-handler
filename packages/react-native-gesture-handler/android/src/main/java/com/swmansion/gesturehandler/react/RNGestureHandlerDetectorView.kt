@@ -4,6 +4,7 @@ import android.content.Context
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
 
@@ -50,9 +51,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     this.moduleId = id
   }
 
-  fun dispatchStateChangeEvent(event: RNGestureHandlerStateChangeEvent, newState: Int, oldState: Int) {
+  fun dispatchEvent(event: Event<*>) {
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
-    // TODO: this event doesn't fit the structure of the codegened one
     eventDispatcher?.dispatchEvent(event)
   }
 }

@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dispatchStateChangeEvent:
     (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event;
 
-- (void)dispatchGestureEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureEvent)event;
+- (void)dispatchGestureEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event;
 
 @end
 
