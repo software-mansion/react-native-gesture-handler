@@ -32,7 +32,7 @@ const DEFAULT_OVERSHOOT_FRICTION = 1;
 const DEFAULT_DRAG_OFFSET = 10;
 const DEFAULT_ENABLE_TRACKING_TWO_FINGER_GESTURE = false;
 
-const Swipeable = function Swipeable(props: SwipeableProps) {
+const Swipeable = (props: SwipeableProps) => {
   const {
     ref,
     leftThreshold,
