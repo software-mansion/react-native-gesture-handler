@@ -179,13 +179,20 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     when (handler.actionType) {
       GestureHandler.ACTION_TYPE_REANIMATED_WORKLET -> {
         // Reanimated worklet
-        val event = RNGestureHandlerTouchEvent.obtain(handler)
+        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
         sendEventForReanimated(event)
       }
       GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
         // JS function, Animated.event with useNativeDriver: false with new API
         val data = RNGestureHandlerTouchEvent.createEventData(handler)
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
+      }
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
+        val view = handler.view
+        if (view is RNGestureHandlerDetectorView) {
+          val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
+          view.dispatchEvent(event)
+        }
       }
     }
   }
