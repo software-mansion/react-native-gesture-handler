@@ -14,6 +14,9 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       onGestureHandlerStateChange={(event) => {
         console.log('onGestureHandlerStateChange', event.nativeEvent);
       }}
+      onGestureHandlerEvent={(event) => {
+        console.log('onGestureHandlerEvent', event.nativeEvent);
+      }}
       // @ts-expect-error _RNGH_MODULE_ID is injected via JSI
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={[gesture.tag]}

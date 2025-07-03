@@ -77,6 +77,17 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
+        val view = handler.view
+        if (view is RNGestureHandlerDetectorView) {
+          val event = RNGestureHandlerEvent.obtain(
+            handler,
+            handler.actionType,
+            handlerFactory.createEventBuilder(handler),
+          )
+          view.dispatchEvent(event)
+        }
+      }
     }
   }
 
@@ -143,7 +154,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
             handler.actionType,
             handlerFactory.createEventBuilder(handler),
           )
-          view.dispatchStateChangeEvent(event, newState, oldState)
+          view.dispatchEvent(event)
         }
       }
     }

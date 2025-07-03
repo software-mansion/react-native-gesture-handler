@@ -50,11 +50,11 @@ static folly::dynamic rngh_dynamicFromId(id value)
 
 @implementation RNGestureHandlerEvent (NativeEvent)
 
-- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureEvent)getNativeEvent
+- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)getNativeEvent
 {
   folly::dynamic handlerData = rngh_dynamicFromId(self.extraData.data);
 
-  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureEvent nativeEvent = {
+  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent nativeEvent = {
       .handlerTag = [self.handlerTag intValue],
       .state = static_cast<int>(self.state),
       .handlerData = handlerData,

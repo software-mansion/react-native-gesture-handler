@@ -55,7 +55,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   override fun getCoalescingKey() = coalescingKey
 
-  override fun getEventData(): WritableMap = createEventData(dataBuilder!!)
+  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+    createNativeEventData(dataBuilder!!)
+  } else {
+    createEventData(dataBuilder!!)
+  }
 
   companion object {
     const val EVENT_NAME = "onGestureHandlerEvent"
@@ -77,5 +81,17 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
       putInt("handlerTag", dataBuilder.handlerTag)
       putInt("state", dataBuilder.state)
     }
+
+    fun createNativeEventData(dataBuilder: GestureHandlerEventDataBuilder<*>): WritableMap =
+      Arguments.createMap().apply {
+        putMap(
+          "handlerData",
+          Arguments.createMap().apply {
+            dataBuilder.buildEventData(this)
+          },
+        )
+        putInt("handlerTag", dataBuilder.handlerTag)
+        putInt("state", dataBuilder.state)
+      }
   }
 }
