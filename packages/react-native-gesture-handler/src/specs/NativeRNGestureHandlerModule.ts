@@ -10,7 +10,7 @@ export interface Spec extends TurboModule {
     // Record<> is not supported by codegen
     // eslint-disable-next-line @typescript-eslint/ban-types
     config: Object
-  ) => void;
+  ) => boolean;
   attachGestureHandler: (
     handlerTag: Double,
     newView: Double,

@@ -143,10 +143,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
-RCT_EXPORT_METHOD(createGestureHandler
-                  : (nonnull NSString *)handlerName handlerTag
-                  : (double)handlerTag config
-                  : (NSDictionary *)config)
+- (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
   if (!_checkedReanimated) {
     _reanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
@@ -159,9 +156,11 @@ RCT_EXPORT_METHOD(createGestureHandler
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
+
+  return @1;
 }
 
-RCT_EXPORT_METHOD(attachGestureHandler : (double)handlerTag newView : (double)viewTag actionType : (double)actionType)
+- (void)attachGestureHandler:(double)handlerTag newView:(double)viewTag actionType:(double)actionType
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager attachGestureHandler:[NSNumber numberWithDouble:handlerTag]
@@ -170,35 +169,35 @@ RCT_EXPORT_METHOD(attachGestureHandler : (double)handlerTag newView : (double)vi
   }];
 }
 
-RCT_EXPORT_METHOD(updateGestureHandler : (double)handlerTag newConfig : (NSDictionary *)config)
+- (void)updateGestureHandler:(double)handlerTag newConfig:(NSDictionary *)config
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager updateGestureHandler:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
 }
 
-RCT_EXPORT_METHOD(dropGestureHandler : (double)handlerTag)
+- (void)dropGestureHandler:(double)handlerTag
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager dropGestureHandler:[NSNumber numberWithDouble:handlerTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(handleSetJSResponder : (double)viewTag blockNativeResponder : (BOOL)blockNativeResponder)
+- (void)handleSetJSResponder:(double)viewTag blockNativeResponder:(BOOL)blockNativeResponder
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager handleSetJSResponder:[NSNumber numberWithDouble:viewTag] blockNativeResponder:blockNativeResponder];
   }];
 }
 
-RCT_EXPORT_METHOD(handleClearJSResponder)
+- (void)handleClearJSResponder
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager handleClearJSResponder];
   }];
 }
 
-RCT_EXPORT_METHOD(flushOperations)
+- (void)flushOperations
 {
   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
   // On the old arch we rely on `uiManagerWillPerformMounting`
