@@ -26,26 +26,6 @@ const wrappedSetGestureState = (handlerTag: number, state: State) => {
   }
 };
 
-// ui runtime global
-declare const global: {
-  _setGestureStateNew: (handlerTag: number, state: State) => void;
-};
-
-const wrappedSetGestureState = (handlerTag: number, state: State) => {
-  'worklet';
-
-  if (REANIMATED_AVAILABLE) {
-    // When Reanimated is available, setGestureState should be defined
-    if (global._setGestureStateNew) {
-      global._setGestureStateNew(handlerTag, state);
-    } else if (setGestureState) {
-      setGestureState(handlerTag, state);
-    }
-  } else {
-    console.warn(warningMessage);
-  }
-};
-
 function create(handlerTag: number): GestureStateManagerType {
   'worklet';
   return {
