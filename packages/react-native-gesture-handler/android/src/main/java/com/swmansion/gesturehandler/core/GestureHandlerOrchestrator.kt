@@ -255,6 +255,8 @@ class GestureHandlerOrchestrator(
   }
 
   private fun cancelAll() {
+    // We need `toList` as `awaitingHandlers` can be modified by `cancel`:
+    // `onHandlerStateChange` -> `tryActivate` -> `addAwaitingHandler`
     for (handler in awaitingHandlers.asReversed().toList()) {
       handler.cancel()
     }
