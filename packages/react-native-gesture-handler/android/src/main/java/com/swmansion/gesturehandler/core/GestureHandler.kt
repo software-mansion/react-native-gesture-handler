@@ -203,18 +203,24 @@ open class GestureHandler {
   }
 
   fun startTrackingPointer(pointerId: Int) {
-    if (trackedPointerIDs[pointerId] == -1) {
-      trackedPointerIDs[pointerId] = findNextLocalPointerId()
-      trackedPointersIDsCount++
+    if (isTrackingPointer(pointerId)) {
+      return
     }
+
+    trackedPointerIDs[pointerId] = findNextLocalPointerId()
+    trackedPointersIDsCount++
   }
 
   fun stopTrackingPointer(pointerId: Int) {
-    if (trackedPointerIDs[pointerId] != -1) {
-      trackedPointerIDs[pointerId] = -1
-      trackedPointersIDsCount--
+    if (!isTrackingPointer(pointerId)) {
+      return
     }
+
+    trackedPointerIDs[pointerId] = -1
+    trackedPointersIDsCount--
   }
+
+  fun isTrackingPointer(pointerId: Int) = trackedPointerIDs[pointerId] != -1
 
   private fun needAdapt(event: MotionEvent): Boolean {
     if (event.pointerCount != trackedPointersIDsCount) {
