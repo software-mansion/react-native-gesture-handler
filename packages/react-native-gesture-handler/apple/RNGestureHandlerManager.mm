@@ -400,6 +400,42 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   }
 }
 
+- (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler withPointerType:(NSInteger)pointerType
+{
+  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerTouchEvent nativeEvent = {
+      .handlerTag = [handler.tag intValue],
+      .state = static_cast<int>(handler.state),
+      .pointerType = static_cast<int>(pointerType),
+      .numberOfTouches = handler.pointerTracker.trackedPointersCount,
+      .eventType = static_cast<int>(handler.pointerTracker.eventType),
+      .changedTouches = {},
+      .allTouches = {},
+  };
+
+  for (NSDictionary<NSString *, NSNumber *> *touch in handler.pointerTracker.allPointersData) {
+    nativeEvent.allTouches.push_back({
+        .id = [[touch valueForKey:@"id"] intValue],
+        .x = [[touch valueForKey:@"x"] doubleValue],
+        .y = [[touch valueForKey:@"y"] doubleValue],
+        .absoluteX = [[touch valueForKey:@"absoluteX"] doubleValue],
+        .absoluteY = [[touch valueForKey:@"absoluteY"] doubleValue],
+    });
+  }
+
+  for (NSDictionary<NSString *, NSNumber *> *touch in handler.pointerTracker.changedPointersData) {
+    nativeEvent.changedTouches.push_back({
+        .id = [[touch valueForKey:@"id"] intValue],
+        .x = [[touch valueForKey:@"x"] doubleValue],
+        .y = [[touch valueForKey:@"y"] doubleValue],
+        .absoluteX = [[touch valueForKey:@"absoluteX"] doubleValue],
+        .absoluteY = [[touch valueForKey:@"absoluteY"] doubleValue],
+    });
+  }
+
+  RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)handler.recognizer.view;
+  [detector dispatchTouchEvent:nativeEvent];
+}
+
 - (void)sendEventForReanimated:(RNGestureHandlerStateChange *)event
 {
   // Delivers the event to Reanimated.

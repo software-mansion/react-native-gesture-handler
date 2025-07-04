@@ -79,6 +79,14 @@ using namespace facebook::react;
   }
 }
 
+- (void)dispatchTouchEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerTouchEvent)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const facebook::react::RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerTouchEvent(event);
+  }
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider

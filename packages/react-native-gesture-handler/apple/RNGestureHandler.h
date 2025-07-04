@@ -42,6 +42,8 @@
     withActionType:(RNGestureHandlerActionType)actionType
      forRecognizer:(UIGestureRecognizer *)recognizer;
 
+- (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler withPointerType:(NSInteger)pointerType;
+
 @end
 
 @protocol RNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
