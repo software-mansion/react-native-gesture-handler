@@ -67,13 +67,5 @@ function RadonBannerInner(): JSX.Element {
 }
 
 export default function RadonBanner() {
-  return (
-    <BrowserOnly fallback={<div />}>
-      {() => (
-        <>
-          <RadonBannerInner />
-        </>
-      )}
-    </BrowserOnly>
-  );
+  return <BrowserOnly>{() => <RadonBannerInner />}</BrowserOnly>;
 }
