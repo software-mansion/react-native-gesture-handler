@@ -54,8 +54,8 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
   jsi::Runtime *_rnRuntime;
 
-  bool _checkedReanimated;
-  bool _reanimatedAvailable;
+  bool _checkedIfReanimatedIsAvailable;
+  bool _isReanimatedAvailable;
   bool _uiRuntimeDecorated;
 }
 
@@ -145,11 +145,11 @@ RCT_EXPORT_MODULE()
 
 - (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
-  if (!_checkedReanimated) {
-    _reanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
+  if (!_checkedIfReanimatedIsAvailable) {
+    _isReanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
   }
 
-  if (_reanimatedAvailable && !_uiRuntimeDecorated) {
+  if (_isReanimatedAvailable && !_uiRuntimeDecorated) {
     _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
 
