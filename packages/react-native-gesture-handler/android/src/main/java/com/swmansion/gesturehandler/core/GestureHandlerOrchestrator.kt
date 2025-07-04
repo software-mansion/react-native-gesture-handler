@@ -249,6 +249,7 @@ class GestureHandlerOrchestrator(
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
     preparedHandlers.sortWith(handlersComparator)
+
     for (handler in preparedHandlers) {
       deliverEventToGestureHandler(handler, event)
     }
@@ -273,7 +274,8 @@ class GestureHandlerOrchestrator(
       handler.cancel()
       return
     }
-    if (!handler.wantEvents()) {
+
+    if (!handler.wantsEvent(sourceEvent)) {
       return
     }
 
