@@ -26,7 +26,8 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   }
 
   override fun getEventName() = if (actionType ==
-    GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+    GestureHandler.ACTION_TYPE_NATIVE_DETECTOR ||
+    actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
   ) {
     NATIVE_EVENT_NAME
   } else {

@@ -287,7 +287,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (recognizer.view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector) {
+  if (recognizer.view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
+      _actionType != RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
     return;
   }
 
@@ -300,9 +301,14 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _state = state;
 
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
-  RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
-  [self sendEventsInState:self.state forViewWithTag:view.reactTag withExtraData:eventData];
+  // TODO: do this only for native detector?
+  NSNumber *tag = recognizer.view.reactTag;
+  if (tag == nil) {
+    tag = @(recognizer.view.tag);
+  }
+
+  [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData];
 }
 
 - (void)sendEventsInState:(RNGestureHandlerState)state
@@ -356,6 +362,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          handlerTag:_tag
                                                               state:state
                                                           extraData:extraData
+                                                      forActionType:_actionType
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
@@ -380,6 +387,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                     handlerTag:_tag
                                                          state:state
                                                      extraData:extraData
+                                                 forActionType:_actionType
                                                  coalescingKey:[_tag intValue]];
 
     [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];

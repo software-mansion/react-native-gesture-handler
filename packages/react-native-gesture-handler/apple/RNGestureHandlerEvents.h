@@ -5,6 +5,7 @@
 #import "RNGHStylusData.h"
 #import "RNGHTouchEventType.h"
 #import "RNGHUIKit.h"
+#import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerState.h"
 
 @interface RNGestureHandlerEventExtraData : NSObject
@@ -66,6 +67,7 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
+                   forActionType:(NSInteger)actionType
                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 
 @end

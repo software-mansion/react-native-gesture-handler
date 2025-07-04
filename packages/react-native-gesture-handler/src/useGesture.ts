@@ -17,13 +17,23 @@ export interface NativeGesture {
   tag: number;
   name: GestureType;
   config: Record<string, unknown>;
+  animatedEvents: boolean;
 }
 
 export function useGesture(
   type: GestureType,
-  config: Record<string, unknown>
+  fullConfig: Record<string, unknown>
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
+
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onGestureHandlerStateChange,
+    onGestureHandlerEvent,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onGestureHandlerTouchEvent,
+    ...config
+  } = fullConfig;
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
@@ -43,5 +53,11 @@ export function useGesture(
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);
 
-  return { tag: tag, name: type, config };
+  return {
+    tag: tag,
+    name: type,
+    config: fullConfig,
+    animatedEvents:
+      !!onGestureHandlerEvent && '__isNative' in (onGestureHandlerEvent as any),
+  };
 }

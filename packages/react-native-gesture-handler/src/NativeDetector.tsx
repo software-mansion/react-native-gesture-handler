@@ -1,6 +1,6 @@
 import React from 'react';
 import RNGestureHandlerDetectorNativeComponent from './specs/RNGestureHandlerDetectorNativeComponent';
-import { StyleSheet } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 import { NativeGesture } from './useGesture';
 
 export interface NativeDetectorProps {
@@ -8,24 +8,27 @@ export interface NativeDetectorProps {
   gesture: NativeGesture;
 }
 
+const AnimatedDetector = Animated.createAnimatedComponent(
+  RNGestureHandlerDetectorNativeComponent
+);
+
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   return (
-    <RNGestureHandlerDetectorNativeComponent
-      onGestureHandlerStateChange={(event) => {
-        console.log('onGestureHandlerStateChange', event.nativeEvent);
-      }}
-      onGestureHandlerEvent={(event) => {
-        console.log('onGestureHandlerEvent', event.nativeEvent);
-      }}
-      onGestureHandlerTouchEvent={(event) => {
-        console.log('onGestureHandlerTouchEvent', event.nativeEvent);
-      }}
+    <AnimatedDetector
+      onGestureHandlerStateChange={
+        gesture.config.onGestureHandlerStateChange as any
+      }
+      onGestureHandlerEvent={gesture.config.onGestureHandlerEvent as any}
+      onGestureHandlerTouchEvent={
+        gesture.config.onGestureHandlerTouchEvent as any
+      }
+      animatedEvents={gesture.animatedEvents}
       // @ts-expect-error _RNGH_MODULE_ID is injected via JSI
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={[gesture.tag]}
       style={styles.detector}>
       {children}
-    </RNGestureHandlerDetectorNativeComponent>
+    </AnimatedDetector>
   );
 }
 

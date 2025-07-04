@@ -55,7 +55,9 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   override fun getCoalescingKey() = coalescingKey
 
-  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR ||
+    actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
+  ) {
     createNativeEventData(dataBuilder!!)
   } else {
     createEventData(dataBuilder!!)

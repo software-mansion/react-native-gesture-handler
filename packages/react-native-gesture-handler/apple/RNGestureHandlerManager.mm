@@ -362,12 +362,17 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
      forRecognizer:(UIGestureRecognizer *)recognizer
 {
   switch (actionType) {
-    case RNGestureHandlerActionTypeNativeDetector: {
+    case RNGestureHandlerActionTypeNativeDetector:
+    case RNGestureHandlerActionTypeNativeDetectorAnimatedEvent: {
       RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
-        auto nativeEvent = [gestureEvent getNativeEvent];
-        [detector dispatchGestureEvent:nativeEvent];
+        if (actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
+          [self sendEventForNativeAnimatedEvent:event];
+        } else {
+          RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+          auto nativeEvent = [gestureEvent getNativeEvent];
+          [detector dispatchGestureEvent:nativeEvent];
+        }
       } else {
         auto nativeEvent = [event getNativeEvent];
         [detector dispatchStateChangeEvent:nativeEvent];

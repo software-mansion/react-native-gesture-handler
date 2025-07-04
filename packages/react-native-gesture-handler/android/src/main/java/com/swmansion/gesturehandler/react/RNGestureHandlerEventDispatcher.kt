@@ -77,13 +77,14 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
         val view = handler.view
         if (view is RNGestureHandlerDetectorView) {
           val event = RNGestureHandlerEvent.obtain(
             handler,
             handler.actionType,
             handlerFactory.createEventBuilder(handler),
+            useTopPrefixedName = handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT,
           )
           view.dispatchEvent(event)
         }
@@ -144,7 +145,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
       }
 
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
         val view = handler.view
         if (view is RNGestureHandlerDetectorView) {
           val event = RNGestureHandlerStateChangeEvent.obtain(
@@ -187,7 +188,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         val data = RNGestureHandlerTouchEvent.createEventData(handler)
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
         val view = handler.view
         if (view is RNGestureHandlerDetectorView) {
           val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
