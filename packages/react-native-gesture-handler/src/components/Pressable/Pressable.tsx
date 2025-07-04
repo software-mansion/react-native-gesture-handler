@@ -36,7 +36,7 @@ import {
   RelationPropName,
   RelationPropType,
 } from '../utils';
-import { getConfiguredStates, StateMachineEvent } from './stateDefinitions';
+import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
 import { PressableStateMachine } from './StateMachine';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
@@ -224,7 +224,7 @@ const Pressable = (props: PressableProps) => {
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
 
   useEffect(() => {
-    const configuration = getConfiguredStates(handlePressIn, handlePressOut);
+    const configuration = getStatesConfig(handlePressIn, handlePressOut);
     stateMachine.setStates(configuration);
   }, [handlePressIn, handlePressOut, stateMachine]);
 
