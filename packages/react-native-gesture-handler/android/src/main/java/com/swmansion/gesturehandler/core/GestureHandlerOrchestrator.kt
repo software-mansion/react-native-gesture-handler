@@ -251,9 +251,7 @@ class GestureHandlerOrchestrator(
     preparedHandlers.sortWith(handlersComparator)
 
     for (handler in preparedHandlers) {
-      if (handler.shouldHandleTouchEvent(event)) {
-        deliverEventToGestureHandler(handler, event)
-      }
+      deliverEventToGestureHandler(handler, event)
     }
   }
 
@@ -276,7 +274,8 @@ class GestureHandlerOrchestrator(
       handler.cancel()
       return
     }
-    if (!handler.wantEvents()) {
+
+    if (!handler.wantsEvents(sourceEvent)) {
       return
     }
 

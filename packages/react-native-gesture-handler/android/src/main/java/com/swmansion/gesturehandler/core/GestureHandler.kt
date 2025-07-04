@@ -222,8 +222,6 @@ open class GestureHandler {
 
   private fun isTrackingPointer(pointerId: Int) = trackedPointerIDs[pointerId] != -1
 
-  fun shouldHandleTouchEvent(event: MotionEvent) = isTrackingPointer(event.getPointerId(event.actionIndex))
-
   private fun needAdapt(event: MotionEvent): Boolean {
     if (event.pointerCount != trackedPointersIDsCount) {
       return true
@@ -581,11 +579,12 @@ open class GestureHandler {
     onStateChange(newState, oldState)
   }
 
-  fun wantEvents(): Boolean = isEnabled &&
+  fun wantsEvents(event: MotionEvent): Boolean = isEnabled &&
     state != STATE_FAILED &&
     state != STATE_CANCELLED &&
     state != STATE_END &&
-    trackedPointersIDsCount > 0
+    trackedPointersIDsCount > 0 &&
+    isTrackingPointer(event.getPointerId(event.actionIndex))
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
     if (handler === this) {
