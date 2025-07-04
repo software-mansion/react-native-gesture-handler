@@ -8,7 +8,7 @@ export interface GestureStateManagerType {
   end: () => void;
 }
 
-// declare methods to keep the TS happy
+// Declare methods to keep the TS happy
 declare const globalThis: {
   _setGestureStateSync?: (handlerTag: number, state: State) => void;
   _setGestureStateAsync?: (handlerTag: number, state: State) => void;
