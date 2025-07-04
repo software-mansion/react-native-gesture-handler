@@ -4,6 +4,8 @@ import { Double } from 'react-native/Libraries/Types/CodegenTypes';
 export interface Spec extends TurboModule {
   handleSetJSResponder: (tag: Double, blockNativeResponder: boolean) => void;
   handleClearJSResponder: () => void;
+  // This method returns a boolean only to force the codegen to generate
+  // a synchronous method. The returned value doesn't have any meaning.
   createGestureHandler: (
     handlerName: string,
     handlerTag: Double,
