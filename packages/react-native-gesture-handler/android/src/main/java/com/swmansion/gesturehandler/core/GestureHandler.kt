@@ -583,7 +583,6 @@ open class GestureHandler {
     state != STATE_FAILED &&
     state != STATE_CANCELLED &&
     state != STATE_END &&
-    trackedPointersIDsCount > 0 &&
     isTrackingPointer(event.getPointerId(event.actionIndex))
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
