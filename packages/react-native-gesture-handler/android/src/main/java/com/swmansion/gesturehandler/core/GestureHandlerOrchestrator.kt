@@ -275,7 +275,7 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    if (!handler.wantsEvents(sourceEvent)) {
+    if (!handler.wantsEvent(sourceEvent)) {
       return
     }
 

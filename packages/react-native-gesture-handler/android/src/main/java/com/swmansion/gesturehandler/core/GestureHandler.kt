@@ -579,7 +579,7 @@ open class GestureHandler {
     onStateChange(newState, oldState)
   }
 
-  fun wantsEvents(event: MotionEvent): Boolean = isEnabled &&
+  fun wantsEvent(event: MotionEvent): Boolean = isEnabled &&
     state != STATE_FAILED &&
     state != STATE_CANCELLED &&
     state != STATE_END &&
