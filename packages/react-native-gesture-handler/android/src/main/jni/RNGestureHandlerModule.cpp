@@ -52,7 +52,6 @@ void RNGestureHandlerModule::setGestureState(
 }
 
 bool RNGestureHandlerModule::decorateUIRuntime() {
-  // TODO: make sure we are on JS?
   return RNGHRuntimeDecorator::installUIRuntimeBindings(
       *rnRuntime_, [&](int handlerTag, int state) {
         this->setGestureState(handlerTag, state);
