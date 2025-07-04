@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { PressableEvent } from './PressableProps';
-import { PressableStateMachine } from './StateMachine';
+import { StateDefinition } from './StateMachine';
 
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
@@ -13,7 +13,7 @@ function getAndroidStateMachine(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.NATIVE_BEGIN,
     },
@@ -25,14 +25,14 @@ function getAndroidStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
 function getIosStateMachine(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
     },
@@ -44,14 +44,14 @@ function getIosStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
 function getWebStateMachine(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.NATIVE_BEGIN,
     },
@@ -66,14 +66,14 @@ function getWebStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
 function getMacosStateMachine(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
     },
@@ -88,14 +88,14 @@ function getMacosStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
 function getUniversalStateMachine(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.FINALIZE,
       callback: (event: PressableEvent) => {
@@ -103,13 +103,13 @@ function getUniversalStateMachine(
         handlePressOut(event);
       },
     },
-  ]);
+  ];
 }
 
-export function getConfiguredStateMachine(
+export function getConfiguredStates(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
-) {
+): StateDefinition[] {
   if (Platform.OS === 'android') {
     return getAndroidStateMachine(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'ios') {
