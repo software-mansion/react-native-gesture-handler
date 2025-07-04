@@ -22,7 +22,7 @@ void RNGHRuntimeDecorator::installRNRuntimeBindings(
       [](jsi::Runtime &runtime,
          const jsi::Value &,
          const jsi::Value *args,
-         size_t count) -> jsi::Value {
+         size_t argumentCount) -> jsi::Value {
         if (!args[0].isObject()) {
           return jsi::Value::null();
         }
@@ -65,8 +65,8 @@ void RNGHRuntimeDecorator::installRNRuntimeBindings(
           jsi::Runtime &rt,
           const jsi::Value &,
           const jsi::Value *args,
-          size_t count) -> jsi::Value {
-        if (count == 2) {
+          size_t argumentCount) -> jsi::Value {
+        if (argumentCount == 2) {
           const auto handlerTag = static_cast<int>(args[0].asNumber());
           const auto state = static_cast<int>(args[1].asNumber());
 
@@ -105,8 +105,8 @@ bool RNGHRuntimeDecorator::installUIRuntimeBindings(
           jsi::Runtime &rt,
           const jsi::Value &,
           const jsi::Value *args,
-          size_t count) -> jsi::Value {
-        if (count == 2) {
+          size_t argumentCount) -> jsi::Value {
+        if (argumentCount == 2) {
           const auto handlerTag = static_cast<int>(args[0].asNumber());
           const auto state = static_cast<int>(args[1].asNumber());
 
