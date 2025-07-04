@@ -13,12 +13,36 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     get() = context as ThemedReactContext
   private var attachedHandlers = listOf<Int>()
   private var moduleId: Int = -1
+  private var animatedEvents: Boolean = false
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
+    val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
+    if (moduleId == -1) {
+      attachedHandlers = newHandlers
+      return
+    }
+
+    attachHandlers(newHandlers)
+  }
+
+  fun setModuleId(id: Int) {
+    if (this.moduleId == -1) {
+      this.moduleId = id
+      val handlersToAttach = this.attachedHandlers
+      this.attachedHandlers = emptyList()
+      this.attachHandlers(handlersToAttach)
+    } else {
+      throw Exception("Tried to change moduleId of a native detector")
+    }
+  }
+
+  fun setAnimatedEvents(animatedEvents: Boolean) {
+    this.animatedEvents = animatedEvents
+  }
+
+  private fun attachHandlers(newHandlers: List<Int>) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
-
-    val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
 
     val keep = 0
     val attach = 1
@@ -37,18 +61,18 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     for (entry in changes) {
       if (entry.value == attach) {
         registry.attachHandlerToView(
-          entry.value,
+          entry.key,
           this.id,
-          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
+          if (animatedEvents) {
+            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
+          } else {
+            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+          },
         )
       } else if (entry.value == detach) {
         registry.detachHandler(entry.value)
       }
     }
-  }
-
-  fun setModuleId(id: Int) {
-    this.moduleId = id
   }
 
   fun dispatchEvent(event: Event<*>) {

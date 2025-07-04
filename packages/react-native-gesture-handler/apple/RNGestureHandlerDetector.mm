@@ -94,6 +94,16 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<RNGestureHandlerDetectorComponentDescriptor>();
 }
 
+- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics
+{
+  auto newLayoutMetrics = layoutMetrics;
+  // Override to force hittesting to work outside bounds
+  newLayoutMetrics.overflowInset = {.left = 1, .right = 1, .top = 1, .bottom = 1};
+
+  [super updateLayoutMetrics:newLayoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+}
+
 - (void)updateProps:(const Props::Shared &)propsBase oldProps:(const Props::Shared &)oldPropsBase
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(propsBase);
@@ -120,18 +130,21 @@ using namespace facebook::react;
   for (const auto handlerChange : changes) {
     NSNumber *handlerTag = [NSNumber numberWithInt:handlerChange.first];
 
-    // TODO: Do this better than exposing handlerManager as a static property
     if (handlerChange.second == ATTACH) {
       // TODO: Attach to the child when NativeGestureHandler, track children changes?
-      [handlerManager.registry attachHandlerWithTag:handlerTag
-                                             toView:self
-                                     withActionType:RNGestureHandlerActionTypeNativeDetector];
+      [handlerManager.registry
+          attachHandlerWithTag:handlerTag
+                        toView:self
+                withActionType:newProps.animatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
+                                                       : RNGestureHandlerActionTypeNativeDetector];
     } else if (handlerChange.second == DROP) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }
 
   [super updateProps:propsBase oldProps:oldPropsBase];
+  // Override to force hittesting to work outside bounds
+  self.clipsToBounds = NO;
 }
 @end
 
