@@ -251,7 +251,7 @@ class GestureHandlerOrchestrator(
     preparedHandlers.sortWith(handlersComparator)
 
     for (handler in preparedHandlers) {
-      if (handler.isTrackingPointer(event.getPointerId(event.actionIndex))) {
+      if (handler.shouldHandleTouchEvent(event)) {
         deliverEventToGestureHandler(handler, event)
       }
     }
