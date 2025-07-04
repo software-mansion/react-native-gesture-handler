@@ -5,14 +5,14 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.BuildConfig
-import com.swmansion.gesturehandler.ReanimatedEventDispatcher
+import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.OnTouchEventListener
 import com.swmansion.gesturehandler.dispatchEvent
 
 class RNGestureHandlerEventDispatcher(private val reactApplicationContext: ReactApplicationContext) :
   OnTouchEventListener {
-  private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
+  private val reanimatedProxy = ReanimatedProxy()
 
   override fun <T : GestureHandler> onHandlerUpdate(handler: T, event: MotionEvent) {
     this.dispatchHandlerUpdateEvent(handler)
@@ -40,6 +40,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         // Reanimated worklet
         val event = RNGestureHandlerEvent.obtain(
           handler,
+          handler.actionType,
           handlerFactory.createEventBuilder(handler),
         )
         sendEventForReanimated(event)
@@ -48,6 +49,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         // Animated with useNativeDriver: true
         val event = RNGestureHandlerEvent.obtain(
           handler,
+          handler.actionType,
           handlerFactory.createEventBuilder(handler),
           true,
         )
@@ -63,6 +65,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         } else {
           val event = RNGestureHandlerEvent.obtain(
             handler,
+            handler.actionType,
             handlerFactory.createEventBuilder(handler),
           )
           sendEventForDirectEvent(event)
@@ -73,6 +76,18 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         val data =
           RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
+      }
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
+        val view = handler.view
+        if (view is RNGestureHandlerDetectorView) {
+          val event = RNGestureHandlerEvent.obtain(
+            handler,
+            handler.actionType,
+            handlerFactory.createEventBuilder(handler),
+            useTopPrefixedName = handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT,
+          )
+          view.dispatchEvent(event)
+        }
       }
     }
   }
@@ -93,10 +108,12 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           handler,
           newState,
           oldState,
+          handler.actionType,
           handlerFactory.createEventBuilder(handler),
         )
         sendEventForReanimated(event)
       }
+
       GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API -> {
         // JS function or Animated.event with useNativeDriver: false with old API
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
@@ -111,11 +128,13 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
             handler,
             newState,
             oldState,
+            handler.actionType,
             handlerFactory.createEventBuilder(handler),
           )
           sendEventForDirectEvent(event)
         }
       }
+
       GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
         // JS function or Animated.event with useNativeDriver: false with new API
         val data = RNGestureHandlerStateChangeEvent.createEventData(
@@ -124,6 +143,20 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           oldState,
         )
         sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
+      }
+
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
+        val view = handler.view
+        if (view is RNGestureHandlerDetectorView) {
+          val event = RNGestureHandlerStateChangeEvent.obtain(
+            handler,
+            newState,
+            oldState,
+            handler.actionType,
+            handlerFactory.createEventBuilder(handler),
+          )
+          view.dispatchEvent(event)
+        }
       }
     }
   }
@@ -147,13 +180,20 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     when (handler.actionType) {
       GestureHandler.ACTION_TYPE_REANIMATED_WORKLET -> {
         // Reanimated worklet
-        val event = RNGestureHandlerTouchEvent.obtain(handler)
+        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
         sendEventForReanimated(event)
       }
       GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
         // JS function, Animated.event with useNativeDriver: false with new API
         val data = RNGestureHandlerTouchEvent.createEventData(handler)
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
+      }
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
+        val view = handler.view
+        if (view is RNGestureHandlerDetectorView) {
+          val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
+          view.dispatchEvent(event)
+        }
       }
     }
   }
@@ -162,7 +202,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
     // Delivers the event to Reanimated.
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Send event directly to Reanimated
-      reanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
+      reanimatedProxy.sendEvent(event, reactApplicationContext)
     } else {
       // In the old architecture, Reanimated subscribes for specific direct events.
       sendEventForDirectEvent(event)

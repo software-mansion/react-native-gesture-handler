@@ -10,6 +10,7 @@
     "format:js": "yarn format-js",
     "format:android": "node ../../scripts/format-android.js",
     "format:apple": "node ../../scripts/format-apple.js",
+    "format:cpp": "node ../../scripts/format-cpp.js",
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:js": "yarn lint-js",
     "lint:android": "./android/gradlew -p android spotlessCheck -q",
@@ -46,6 +47,7 @@
     "android/svg",
     "android/nosvg",
     "apple/",
+    "shared/",
     "Swipeable/",
     "ReanimatedSwipeable/",
     "jest-utils/",
@@ -53,7 +55,8 @@
     "ReanimatedDrawerLayout/",
     "README.md",
     "jestSetup.js",
-    "RNGestureHandler.podspec"
+    "RNGestureHandler.podspec",
+    "react-native.config.js"
   ],
   "repository": {
     "type": "git",
@@ -133,7 +136,8 @@
     },
     "ios": {
       "componentProvider": {
-        "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView"
+        "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView",
+        "RNGestureHandlerDetector": "RNGestureHandlerDetector"
       }
     }
   },

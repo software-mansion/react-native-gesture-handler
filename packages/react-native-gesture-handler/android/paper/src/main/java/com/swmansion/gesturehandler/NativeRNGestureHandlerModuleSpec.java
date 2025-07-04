@@ -41,13 +41,17 @@ public abstract class NativeRNGestureHandlerModuleSpec extends ReactContextBaseJ
   @DoNotStrip
   public abstract void handleClearJSResponder();
 
-  @ReactMethod
+  @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract void createGestureHandler(String handlerName, double handlerTag, ReadableMap config);
+  public abstract boolean createGestureHandler(String handlerName, double handlerTag, ReadableMap config);
 
   @ReactMethod
   @DoNotStrip
   public abstract void attachGestureHandler(double handlerTag, double newView, double actionType);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void detachGestureHandler(double handlerTag);
 
   @ReactMethod
   @DoNotStrip
@@ -56,10 +60,6 @@ public abstract class NativeRNGestureHandlerModuleSpec extends ReactContextBaseJ
   @ReactMethod
   @DoNotStrip
   public abstract void dropGestureHandler(double handlerTag);
-
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  @DoNotStrip
-  public abstract boolean install();
 
   @ReactMethod
   @DoNotStrip

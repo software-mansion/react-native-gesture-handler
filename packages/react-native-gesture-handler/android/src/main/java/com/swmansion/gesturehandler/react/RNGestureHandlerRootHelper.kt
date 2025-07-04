@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
 
-class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup) {
+class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup, private val moduleId: Int) {
   private val orchestrator: GestureHandlerOrchestrator?
   private val jsGestureHandler: GestureHandler?
   val rootView: ViewGroup
@@ -22,11 +22,13 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   private var passingTouch = false
 
   init {
+    val registry =
+      RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+
     UiThreadUtil.assertOnUiThread()
     val wrappedViewTag = wrappedView.id
     assert(wrappedViewTag >= 1) { "Expect view tag to be set for $wrappedView" }
     val module = context.getNativeModule(RNGestureHandlerModule::class.java)!!
-    val registry = module.registry
     rootView = findRootViewTag(wrappedView)
     Log.i(
       ReactConstants.TAG,
@@ -46,6 +48,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   }
 
   fun tearDown() {
+    val registry =
+      RNGestureHandlerModule.registries[moduleId] ?: throw Exception("Tried to access a non-existent registry")
+
     Log.i(
       ReactConstants.TAG,
       "[GESTURE HANDLER] Tearing down gesture handler registered for root view $rootView",

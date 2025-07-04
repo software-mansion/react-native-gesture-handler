@@ -1,59 +1,131 @@
 import * as React from 'react';
-import { SafeAreaView, Platform } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import Navigator from './Navigator';
-
-import ComponentsScreen from './ComponentsScreen';
-import FinalScreen from './FinalScreen';
-import GestureCompositionScreen from './GestureCompositionScreen';
-import HomeScreen from './HomeScreen';
-import ViewFlatteningScreen from './ViewFlatteningScreen';
-
-const Stack = Navigator.create();
-
-Stack.setRoutes({
-  home: {
-    component: HomeScreen,
-    title: 'RNGH FabricExample',
-    rightButtonAction: () => {
-      Stack.navigateTo('gestureComposition');
-    },
-  },
-  gestureComposition: {
-    component: GestureCompositionScreen,
-    title: 'Gesture Composition',
-    rightButtonAction: () => {
-      Stack.navigateTo('components');
-    },
-  },
-  components: {
-    component: ComponentsScreen,
-    title: 'Components',
-    rightButtonAction: () => {
-      Stack.navigateTo('viewFlattening');
-    },
-  },
-  viewFlattening: {
-    component: ViewFlatteningScreen,
-    title: 'View Flattening',
-    rightButtonAction: () => {
-      Stack.navigateTo('final');
-    },
-  },
-  final: {
-    component: FinalScreen,
-    title: 'Final Screen',
-  },
-});
+import { Animated, Button, useAnimatedValue } from 'react-native';
+import {
+  GestureHandlerRootView,
+  NativeDetector,
+  useGesture,
+} from 'react-native-gesture-handler';
 
 export default function App() {
+  const [visible, setVisible] = React.useState(true);
+  const [animate, setAnimate] = React.useState(true);
+
+  const value = useAnimatedValue(0);
+  const event = Animated.event(
+    [{ nativeEvent: { handlerData: { translationX: value } } }],
+    {
+      useNativeDriver: true,
+    }
+  );
+
+  const tap = useGesture('PanGestureHandler', {
+    // numberOfTaps: 2,
+    // needsPointerData: true,
+    // onGestureHandlerStateChange: (event) => {
+    //   console.log('onHandlerStateChange', event.nativeEvent);
+    // },
+    onGestureHandlerEvent: animate
+      ? event
+      : (e: any) => console.log('onGestureHandlerEvent', e),
+    // onGestureHandlerTouchEvent: (event) => console.log('onGestureTouchEvent', event.nativeEvent),
+  });
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView
-        style={[{ flex: 1 }, Platform.OS === 'android' && { paddingTop: 50 }]}>
-        <Stack.Navigator initialRouteName="home" />
-      </SafeAreaView>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: 'white', paddingTop: 150 }}>
+      <Button
+        title="Toggle"
+        onPress={() => {
+          setVisible(!visible);
+        }}
+      />
+      <Button
+        title="Toggle animate"
+        onPress={() => {
+          setAnimate(!animate);
+        }}
+      />
+
+      {visible && (
+        <NativeDetector gesture={tap}>
+          <Animated.View
+            style={[
+              {
+                width: 150,
+                height: 150,
+                backgroundColor: 'blue',
+                opacity: 0.5,
+                borderWidth: 10,
+                borderColor: 'green',
+                marginTop: 20,
+                marginLeft: 40,
+              },
+              { transform: [{ translateX: value }] },
+            ]}
+          />
+        </NativeDetector>
+      )}
     </GestureHandlerRootView>
   );
 }
+
+// import * as React from 'react';
+// import { Button } from 'react-native';
+// import {
+//   GestureHandlerRootView,
+//   NativeDetector,
+//   useGesture,
+// } from 'react-native-gesture-handler';
+// import Animated, { useEvent } from 'react-native-reanimated';
+
+// export default function App() {
+//   const [visible, setVisible] = React.useState(true);
+
+// function handler(event) {
+//     'worklet';
+//     console.log('onGestureHandlerEvent', _WORKLET);
+//   }
+
+//   const event = useEvent(handler, ['onGestureHandlerEvent']);
+
+//   const tap = useGesture('PanGestureHandler', {
+//     numberOfTaps: 2,
+//     // needsPointerData: true,
+//     // onGestureHandlerStateChange: (event) => {
+//     //   console.log('onHandlerStateChange', event.nativeEvent);
+//     // },
+//     onGestureHandlerEvent: event,
+//     // onGestureHandlerTouchEvent: (event) => console.log('onGestureTouchEvent', event.nativeEvent),
+//   });
+
+//   return (
+//     <GestureHandlerRootView
+//       style={{ flex: 1, backgroundColor: 'white', paddingTop: 150 }}>
+//       <Button
+//         title="Toggle"
+//         onPress={() => {
+//           setVisible(!visible);
+//         }}
+//       />
+
+//       {visible && (
+//         <NativeDetector gesture={tap}>
+//           <Animated.View
+//             style={[
+//               {
+//                 width: 150,
+//                 height: 150,
+//                 backgroundColor: 'blue',
+//                 opacity: 0.5,
+//                 borderWidth: 10,
+//                 borderColor: 'green',
+//                 marginTop: 20,
+//                 marginLeft: 40,
+//               },
+//             ]}
+//           />
+//         </NativeDetector>
+//       )}
+//     </GestureHandlerRootView>
+//   );
+// }

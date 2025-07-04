@@ -41,6 +41,7 @@ export function isTestEnv(): boolean {
 }
 
 export function tagMessage(msg: string) {
+  'worklet';
   return `[react-native-gesture-handler] ${msg}`;
 }
 

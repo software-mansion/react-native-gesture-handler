@@ -6,17 +6,10 @@ import com.swmansion.gesturehandler.core.PinchGestureHandler
 
 class PinchGestureHandlerEventDataBuilder(handler: PinchGestureHandler) :
   GestureHandlerEventDataBuilder<PinchGestureHandler>(handler) {
-  private val scale: Double
-  private val focalX: Float
-  private val focalY: Float
-  private val velocity: Double
-
-  init {
-    scale = handler.scale
-    focalX = handler.focalPointX
-    focalY = handler.focalPointY
-    velocity = handler.velocity
-  }
+  private val scale: Double = handler.scale
+  private val focalX: Float = handler.focalPointX
+  private val focalY: Float = handler.focalPointY
+  private val velocity: Double = handler.velocity
 
   override fun buildEventData(eventData: WritableMap) {
     super.buildEventData(eventData)

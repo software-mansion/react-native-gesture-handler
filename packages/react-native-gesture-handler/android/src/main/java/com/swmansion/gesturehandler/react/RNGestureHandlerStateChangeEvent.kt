@@ -18,11 +18,13 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var newState: Int = GestureHandler.STATE_UNDETERMINED
   private var oldState: Int = GestureHandler.STATE_UNDETERMINED
+  private var actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
 
   private fun <T : GestureHandler> init(
     handler: T,
     newState: Int,
     oldState: Int,
+    actionType: Int,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
   ) {
     val view = handler.view!!
@@ -30,6 +32,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     this.dataBuilder = dataBuilder
     this.newState = newState
     this.oldState = oldState
+    this.actionType = actionType
   }
 
   override fun onDispose() {
@@ -47,7 +50,13 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   // TODO: coalescing
   override fun getCoalescingKey(): Short = 0
 
-  override fun getEventData(): WritableMap = createEventData(dataBuilder!!, newState, oldState)
+  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR ||
+    actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
+  ) {
+    createNativeEventData(dataBuilder!!, newState, oldState)
+  } else {
+    createEventData(dataBuilder!!, newState, oldState)
+  }
 
   companion object {
     const val EVENT_NAME = "onGestureHandlerStateChange"
@@ -60,19 +69,37 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
       handler: T,
       newState: Int,
       oldState: Int,
+      actionType: Int,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
     ): RNGestureHandlerStateChangeEvent = (
       EVENTS_POOL.acquire()
         ?: RNGestureHandlerStateChangeEvent()
       ).apply {
-      init(handler, newState, oldState, dataBuilder)
+      init(handler, newState, oldState, actionType, dataBuilder)
     }
 
     fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>, newState: Int, oldState: Int): WritableMap =
       Arguments.createMap().apply {
         dataBuilder.buildEventData(this)
+        putInt("handlerTag", dataBuilder.handlerTag)
         putInt("state", newState)
         putInt("oldState", oldState)
       }
+
+    fun createNativeEventData(
+      dataBuilder: GestureHandlerEventDataBuilder<*>,
+      newState: Int,
+      oldState: Int,
+    ): WritableMap = Arguments.createMap().apply {
+      putMap(
+        "handlerData",
+        Arguments.createMap().apply {
+          dataBuilder.buildEventData(this)
+        },
+      )
+      putInt("handlerTag", dataBuilder.handlerTag)
+      putInt("state", newState)
+      putInt("oldState", oldState)
+    }
   }
 }

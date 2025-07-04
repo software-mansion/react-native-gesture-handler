@@ -1,15 +1,19 @@
 package com.swmansion.gesturehandler.react
 
-import android.util.Log
+import com.facebook.jni.HybridData
+import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
 import com.facebook.soloader.SoLoader
-import com.swmansion.common.GestureHandlerStateManager
 import com.swmansion.gesturehandler.NativeRNGestureHandlerModuleSpec
+import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
 
 // UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
@@ -18,12 +22,23 @@ import com.swmansion.gesturehandler.core.GestureHandler
 @ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext),
-  GestureHandlerStateManager {
+  TurboModuleWithJSIBindings {
 
-  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
+  private val moduleId = nextModuleId++
   private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
+
+  @DoNotStrip
+  @Suppress("unused")
+  private var mHybridData: HybridData = initHybrid()
+  private var uiRuntimeDecorated = false
+  private val registry: RNGestureHandlerRegistry
+    get() = registries[moduleId]!!
+
+  init {
+    registries[moduleId] = RNGestureHandlerRegistry()
+  }
 
   override fun getName() = NAME
 
@@ -49,10 +64,16 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
+  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap): Boolean {
+    if (ReanimatedProxy.REANIMATED_INSTALLED && !uiRuntimeDecorated) {
+      uiRuntimeDecorated = decorateUIRuntime()
+    }
+
     val handlerTag = handlerTagDouble.toInt()
 
     createGestureHandlerHelper<GestureHandler>(handlerName, handlerTag, config)
+
+    return true
   }
 
   @ReactMethod
@@ -92,6 +113,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
+  override fun detachGestureHandler(handlerTagDouble: Double) {
+    val handlerTag = handlerTagDouble.toInt()
+    registry.detachHandler(handlerTag)
+  }
+
+  @ReactMethod
   override fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
     val viewTag = viewTagDouble.toInt()
     val rootView = findRootHelperForViewAncestor(viewTag)
@@ -104,7 +131,21 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun flushOperations() = Unit
 
-  override fun setGestureHandlerState(handlerTag: Int, newState: Int) {
+  @DoNotStrip
+  @Suppress("unused")
+  fun setGestureHandlerState(handlerTag: Int, newState: Int) {
+    if (UiThreadUtil.isOnUiThread()) {
+      setGestureStateSync(handlerTag, newState)
+    } else {
+      UiThreadUtil.runOnUiThread {
+        setGestureStateSync(handlerTag, newState)
+      }
+    }
+  }
+
+  private fun setGestureStateSync(handlerTag: Int, newState: Int) {
+    UiThreadUtil.assertOnUiThread()
+
     registry.getHandler(handlerTag)?.let { handler ->
       when (newState) {
         GestureHandler.STATE_ACTIVE -> handler.activate(force = true)
@@ -116,22 +157,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  override fun install(): Boolean {
-    reactApplicationContext.runOnJSQueueThread {
-      try {
-        SoLoader.loadLibrary("gesturehandler")
-        val jsContext = reactApplicationContext.javaScriptContextHolder!!
-        decorateRuntime(jsContext.get())
-      } catch (exception: Exception) {
-        Log.w("[RNGestureHandler]", "Could not install JSI bindings.")
-      }
-    }
+  private external fun initHybrid(): HybridData
+  private external fun getBindingsInstallerCxx(): BindingsInstallerHolder
+  private external fun decorateUIRuntime(): Boolean
+  private external fun invalidateNative(): Unit
 
-    return true
-  }
-
-  private external fun decorateRuntime(jsiPtr: Long)
+  override fun getBindingsInstaller() = getBindingsInstallerCxx()
 
   override fun invalidate() {
     registry.dropAllHandlers()
@@ -147,6 +178,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
     }
+    registries.remove(moduleId)
+    invalidateNative()
     super.invalidate()
   }
 
@@ -177,5 +210,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   companion object {
     const val NAME = "RNGestureHandlerModule"
+
+    private var nextModuleId = 0
+
+    // TODO: this is likely to break compared to keeping it on module
+    val registries: MutableMap<Int, RNGestureHandlerRegistry> = mutableMapOf()
+
+    init {
+      SoLoader.loadLibrary("gesturehandler")
+    }
   }
 }
