@@ -21,10 +21,13 @@ if (argc > 2) {
   const files = process.argv.slice(2).join(' ');
   runFormatter(files);
 } else {
-  const pattern = path.join(
-    __dirname,
-    '../packages/react-native-gesture-handler/{shared,android/src}/**/*.{h,cpp}'
-  );
+  const globPattern = process.env.FORMAT_GLOB_PATTERN
+  if (!globPattern) {
+    console.error('FORMAT_GLOB_PATTERN environment variable is not set.');
+    return exit(1);
+  }
+
+  const pattern = path.join(__dirname, globPattern);
 
   glob(pattern, (err, filesArray) => {
     if (err) {
@@ -32,6 +35,7 @@ if (argc > 2) {
       return exit(1);
     }
 
+    console.log(pattern, filesArray)
     const files = filesArray.join(' ');
     runFormatter(files);
   });
