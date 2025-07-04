@@ -368,18 +368,22 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
-  id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
-                                          withChangedPointers:_pointerTracker.changedPointersData
-                                              withAllPointers:_pointerTracker.allPointersData
-                                          withNumberOfTouches:_pointerTracker.trackedPointersCount
-                                              withPointerType:_pointerType];
-  id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
-                                                  handlerTag:_tag
-                                                       state:state
-                                                   extraData:extraData
-                                               coalescingKey:[_tag intValue]];
+  if (self.actionType == RNGestureHandlerActionTypeNativeDetector) {
+    [self.emitter sendNativeTouchEventForGestureHandler:self withPointerType:_pointerType];
+  } else {
+    id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
+                                            withChangedPointers:_pointerTracker.changedPointersData
+                                                withAllPointers:_pointerTracker.allPointersData
+                                            withNumberOfTouches:_pointerTracker.trackedPointersCount
+                                                withPointerType:_pointerType];
+    id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
+                                                    handlerTag:_tag
+                                                         state:state
+                                                     extraData:extraData
+                                                 coalescingKey:[_tag intValue]];
 
-  [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
+    [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
+  }
 }
 
 - (RNGestureHandlerState)recognizerState
