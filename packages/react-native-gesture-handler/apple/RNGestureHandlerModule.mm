@@ -220,15 +220,15 @@ RCT_EXPORT_MODULE()
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
   if (RCTIsMainQueue()) {
-    [self setGestureStateSynchronously:state forHandler:handlerTag];
+    [self setGestureStateSync:state forHandler:handlerTag];
   } else {
     RCTExecuteOnMainQueue(^{
-      [self setGestureStateSynchronously:state forHandler:handlerTag];
+      [self setGestureStateSync:state forHandler:handlerTag];
     });
   }
 }
 
-- (void)setGestureStateSynchronously:(int)state forHandler:(int)handlerTag
+- (void)setGestureStateSync:(int)state forHandler:(int)handlerTag
 {
   RCTAssertMainQueue();
   RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
