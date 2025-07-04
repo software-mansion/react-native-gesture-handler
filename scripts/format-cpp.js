@@ -35,7 +35,6 @@ if (argc > 2) {
       return exit(1);
     }
 
-    console.log(pattern, filesArray)
     const files = filesArray.join(' ');
     runFormatter(files);
   });
