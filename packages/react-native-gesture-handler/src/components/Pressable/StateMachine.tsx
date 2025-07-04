@@ -1,19 +1,23 @@
 import { PressableEvent } from './PressableProps';
 
-interface StateDefinition {
+export interface StateDefinition {
   eventName: string;
   callback?: (event: PressableEvent) => void;
 }
 
 class PressableStateMachine {
-  private states: StateDefinition[];
+  private states: StateDefinition[] | null;
   private currentStepIndex: number;
   private eventPayload: PressableEvent | null;
 
-  constructor(steps: StateDefinition[]) {
-    this.states = steps;
+  constructor() {
+    this.states = null;
     this.currentStepIndex = 0;
     this.eventPayload = null;
+  }
+
+  public setStates(states: StateDefinition[]) {
+    this.states = states;
   }
 
   public reset() {
@@ -22,6 +26,10 @@ class PressableStateMachine {
   }
 
   public handleEvent(eventName: string, eventPayload?: PressableEvent) {
+    if (!this.states) {
+      return;
+    }
+
     const step = this.states[this.currentStepIndex];
     this.eventPayload = eventPayload || this.eventPayload;
 

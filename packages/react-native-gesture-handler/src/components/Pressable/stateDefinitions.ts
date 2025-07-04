@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { PressableEvent } from './PressableProps';
-import { PressableStateMachine } from './StateMachine';
+import { StateDefinition } from './StateMachine';
 
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
@@ -9,11 +9,11 @@ export enum StateMachineEvent {
   LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
 }
 
-function getAndroidStateMachine(
+function getAndroidStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.NATIVE_BEGIN,
     },
@@ -25,14 +25,14 @@ function getAndroidStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
-function getIosStateMachine(
+function getIosStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
     },
@@ -44,14 +44,14 @@ function getIosStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
-function getWebStateMachine(
+function getWebStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.NATIVE_BEGIN,
     },
@@ -66,14 +66,14 @@ function getWebStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
-function getMacosStateMachine(
+function getMacosStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
     },
@@ -88,14 +88,14 @@ function getMacosStateMachine(
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
-  ]);
+  ];
 }
 
-function getUniversalStateMachine(
+function getUniversalStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
 ) {
-  return new PressableStateMachine([
+  return [
     {
       eventName: StateMachineEvent.FINALIZE,
       callback: (event: PressableEvent) => {
@@ -103,23 +103,23 @@ function getUniversalStateMachine(
         handlePressOut(event);
       },
     },
-  ]);
+  ];
 }
 
-export function getConfiguredStateMachine(
+export function getStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
-) {
+): StateDefinition[] {
   if (Platform.OS === 'android') {
-    return getAndroidStateMachine(handlePressIn, handlePressOut);
+    return getAndroidStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'ios') {
-    return getIosStateMachine(handlePressIn, handlePressOut);
+    return getIosStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'web') {
-    return getWebStateMachine(handlePressIn, handlePressOut);
+    return getWebStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'macos') {
-    return getMacosStateMachine(handlePressIn, handlePressOut);
+    return getMacosStatesConfig(handlePressIn, handlePressOut);
   } else {
     // Unknown platform - using minimal universal setup.
-    return getUniversalStateMachine(handlePressIn, handlePressOut);
+    return getUniversalStatesConfig(handlePressIn, handlePressOut);
   }
 }
