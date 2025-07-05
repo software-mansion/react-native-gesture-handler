@@ -158,8 +158,14 @@ android {
                     arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                             "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                             "-DANDROID_STL=c++_shared",
-                            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+                            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+                            // turn off build IDs for reproducibility
+                            "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--build-id=none"
                     abiFilters(*reactNativeArchitectures())
+                }
+                // per above
+                ndkBuild {
+                    arguments "APP_LDFLAGS+=-Wl,--build-id=none"
                 }
             }
         }
