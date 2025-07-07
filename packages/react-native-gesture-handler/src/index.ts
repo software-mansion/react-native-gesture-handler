@@ -1,3 +1,5 @@
+import './globals';
+
 import { initialize } from './init';
 
 export { Directions } from './Directions';

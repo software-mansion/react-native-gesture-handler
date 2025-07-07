@@ -26,7 +26,6 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         gesture.config.onGestureHandlerTouchEvent as any
       }
       animatedEvents={gesture.animatedEvents}
-      // @ts-expect-error _RNGH_MODULE_ID is injected via JSI
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={[gesture.tag]}
       style={styles.detector}>

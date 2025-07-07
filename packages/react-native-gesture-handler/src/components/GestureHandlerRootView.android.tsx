@@ -16,7 +16,6 @@ export default function GestureHandlerRootView({
       <GestureHandlerRootViewNativeComponent
         style={style ?? styles.container}
         {...rest}
-        // @ts-expect-error _RNGH_MODULE_ID is injected via JSI
         moduleId={globalThis._RNGH_MODULE_ID} // Ensure moduleId is set
       />
     </GestureHandlerRootViewContext>
