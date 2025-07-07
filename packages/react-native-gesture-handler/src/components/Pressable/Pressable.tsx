@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -35,10 +36,8 @@ import {
   RelationPropName,
   RelationPropType,
 } from '../utils';
-import {
-  getConfiguredStateMachine,
-  StateMachineEvent,
-} from './stateDefinitions';
+import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
+import { PressableStateMachine } from './StateMachine';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -222,10 +221,12 @@ const Pressable = (props: PressableProps) => {
     [handleFinalize, innerHandlePressIn, onPress, onPressOut]
   );
 
-  const stateMachine = useMemo(
-    () => getConfiguredStateMachine(handlePressIn, handlePressOut),
-    [handlePressIn, handlePressOut]
-  );
+  const stateMachine = useMemo(() => new PressableStateMachine(), []);
+
+  useEffect(() => {
+    const configuration = getStatesConfig(handlePressIn, handlePressOut);
+    stateMachine.setStates(configuration);
+  }, [handlePressIn, handlePressOut, stateMachine]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
