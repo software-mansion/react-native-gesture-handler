@@ -11,6 +11,7 @@ import com.swmansion.gesturehandler.core.GestureHandler
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
+  private var handlersToAttach: List<Int>? = null
   private var attachedHandlers = listOf<Int>()
   private var moduleId: Int = -1
   private var animatedEvents: Boolean = false
@@ -18,7 +19,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
     if (moduleId == -1) {
-      attachedHandlers = newHandlers
+      // It's possible that handlerTags will be set before module id. In that case, store
+      // the handler ids and attach them after setting module id.
+      handlersToAttach = newHandlers
       return
     }
 
@@ -28,9 +31,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   fun setModuleId(id: Int) {
     if (this.moduleId == -1) {
       this.moduleId = id
-      val handlersToAttach = this.attachedHandlers
-      this.attachedHandlers = emptyList()
-      this.attachHandlers(handlersToAttach)
+      this.attachHandlers(handlersToAttach ?: return)
+      handlersToAttach = null
     } else {
       throw Exception("Tried to change moduleId of a native detector")
     }
