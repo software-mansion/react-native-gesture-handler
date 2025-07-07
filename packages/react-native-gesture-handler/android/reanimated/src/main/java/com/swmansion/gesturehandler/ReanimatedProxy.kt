@@ -4,7 +4,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.reanimated.ReanimatedModule
 
-class ReanimatedEventDispatcher {
+class ReanimatedProxy {
   private var reanimatedModule: ReanimatedModule? = null
 
   fun <T : Event<T>> sendEvent(event: T, reactApplicationContext: ReactContext) {
@@ -13,5 +13,9 @@ class ReanimatedEventDispatcher {
     }
 
     reanimatedModule?.nodesManager?.onEventDispatch(event)
+  }
+
+  companion object {
+    const val REANIMATED_INSTALLED = true
   }
 }
