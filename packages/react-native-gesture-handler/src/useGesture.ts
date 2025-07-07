@@ -29,6 +29,8 @@ export function useGesture(
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onGestureHandlerStateChange,
+    onGestureHandlerAnimatedEvent,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onGestureHandlerEvent,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onGestureHandlerTouchEvent,
@@ -48,7 +50,8 @@ export function useGesture(
   }, [type, tag]);
 
   useEffect(() => {
-    // TODO: filter changes?
+    // TODO: filter changes - passing functions (and possibly other types)
+    // causes a native crash
     RNGestureHandlerModule.updateGestureHandler(tag, config);
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);
@@ -58,6 +61,7 @@ export function useGesture(
     name: type,
     config: fullConfig,
     animatedEvents:
-      !!onGestureHandlerEvent && '__isNative' in (onGestureHandlerEvent as any),
+      !!onGestureHandlerAnimatedEvent &&
+      '__isNative' in (onGestureHandlerAnimatedEvent as any),
   };
 }

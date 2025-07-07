@@ -193,6 +193,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSString *)eventName
 {
+  if (_actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
+    return @"onGestureHandlerAnimatedEvent";
+  }
+
   return @"onGestureHandlerEvent";
 }
 
@@ -219,7 +223,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     [body setObject:_handlerTag forKey:@"handlerTag"];
     [body setObject:@(_state) forKey:@"state"];
     [body setObject:_extraData.data forKey:@"handlerData"];
-    return @[ self.viewTag, @"onGestureHandlerEvent", body ];
+    return @[ self.viewTag, @"onGestureHandlerAnimatedEvent", body ];
   } else {
     NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:_extraData.data];
     [body setObject:_viewTag forKey:@"target"];

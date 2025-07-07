@@ -45,7 +45,9 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (useTopPrefixedName) {
+  override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT) {
+    NATIVE_DETECTOR_ANIMATED_EVENT_NAME
+  } else if (useTopPrefixedName) {
     NATIVE_ANIMATED_EVENT_NAME
   } else {
     EVENT_NAME
@@ -66,6 +68,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   companion object {
     const val EVENT_NAME = "onGestureHandlerEvent"
     const val NATIVE_ANIMATED_EVENT_NAME = "topGestureHandlerEvent"
+    const val NATIVE_DETECTOR_ANIMATED_EVENT_NAME = "topGestureHandlerAnimatedEvent"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerEvent>(TOUCH_EVENTS_POOL_SIZE)
 

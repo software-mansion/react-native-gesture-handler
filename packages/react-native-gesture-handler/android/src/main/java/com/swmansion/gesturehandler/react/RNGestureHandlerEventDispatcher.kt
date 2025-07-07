@@ -77,14 +77,33 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
         val view = handler.view
         if (view is RNGestureHandlerDetectorView) {
           val event = RNGestureHandlerEvent.obtain(
             handler,
             handler.actionType,
             handlerFactory.createEventBuilder(handler),
-            useTopPrefixedName = handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT,
+          )
+          view.dispatchEvent(event)
+        }
+      }
+      // In case of a native detector with animated event listener, dispatch the event twice:
+      // once for the animated event, second for any JS callbacks
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
+        val view = handler.view
+        if (view is RNGestureHandlerDetectorView) {
+          val animatedEvent = RNGestureHandlerEvent.obtain(
+            handler,
+            handler.actionType,
+            handlerFactory.createEventBuilder(handler),
+          )
+          view.dispatchEvent(animatedEvent)
+
+          val event = RNGestureHandlerEvent.obtain(
+            handler,
+            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
+            handlerFactory.createEventBuilder(handler),
           )
           view.dispatchEvent(event)
         }

@@ -19,6 +19,9 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         gesture.config.onGestureHandlerStateChange as any
       }
       onGestureHandlerEvent={gesture.config.onGestureHandlerEvent as any}
+      onGestureHandlerAnimatedEvent={
+        gesture.config.onGestureHandlerAnimatedEvent as any
+      }
       onGestureHandlerTouchEvent={
         gesture.config.onGestureHandlerTouchEvent as any
       }

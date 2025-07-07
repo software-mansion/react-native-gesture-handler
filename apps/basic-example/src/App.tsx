@@ -8,7 +8,6 @@ import {
 
 export default function App() {
   const [visible, setVisible] = React.useState(true);
-  const [animate, setAnimate] = React.useState(true);
 
   const value = useAnimatedValue(0);
   const event = Animated.event(
@@ -24,9 +23,9 @@ export default function App() {
     // onGestureHandlerStateChange: (event) => {
     //   console.log('onHandlerStateChange', event.nativeEvent);
     // },
-    onGestureHandlerEvent: animate
-      ? event
-      : (e: any) => console.log('onGestureHandlerEvent', e),
+    onGestureHandlerAnimatedEvent: event,
+    onGestureHandlerEvent: (e: any) =>
+      console.log('onGestureHandlerEvent', e.nativeEvent),
     // onGestureHandlerTouchEvent: (event) => console.log('onGestureTouchEvent', event.nativeEvent),
   });
 
@@ -37,12 +36,6 @@ export default function App() {
         title="Toggle"
         onPress={() => {
           setVisible(!visible);
-        }}
-      />
-      <Button
-        title="Toggle animate"
-        onPress={() => {
-          setAnimate(!animate);
         }}
       />
 
