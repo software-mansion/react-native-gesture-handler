@@ -29,9 +29,7 @@
 
 using namespace gesturehandler;
 using namespace facebook;
-#ifdef RCT_NEW_ARCH_ENABLED
 using namespace react;
-#endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @interface RNGestureHandlerModule () <RCTTurboModule, RCTTurboModuleWithJSIBindings>
