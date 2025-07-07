@@ -7,19 +7,11 @@ import com.swmansion.gesturehandler.core.StylusData
 
 class HoverGestureHandlerEventDataBuilder(handler: HoverGestureHandler) :
   GestureHandlerEventDataBuilder<HoverGestureHandler>(handler) {
-  private val x: Float
-  private val y: Float
-  private val absoluteX: Float
-  private val absoluteY: Float
-  private val stylusData: StylusData
-
-  init {
-    x = handler.lastRelativePositionX
-    y = handler.lastRelativePositionY
-    absoluteX = handler.lastPositionInWindowX
-    absoluteY = handler.lastPositionInWindowY
-    stylusData = handler.stylusData
-  }
+  private val x: Float = handler.lastRelativePositionX
+  private val y: Float = handler.lastRelativePositionY
+  private val absoluteX: Float = handler.lastPositionInWindowX
+  private val absoluteY: Float = handler.lastPositionInWindowY
+  private val stylusData: StylusData = handler.stylusData
 
   override fun buildEventData(eventData: WritableMap) {
     super.buildEventData(eventData)

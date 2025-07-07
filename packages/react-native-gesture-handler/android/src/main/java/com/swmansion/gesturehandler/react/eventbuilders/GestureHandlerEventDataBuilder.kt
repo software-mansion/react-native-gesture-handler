@@ -4,17 +4,10 @@ import com.facebook.react.bridge.WritableMap
 import com.swmansion.gesturehandler.core.GestureHandler
 
 abstract class GestureHandlerEventDataBuilder<T : GestureHandler>(handler: T) {
-  private val numberOfPointers: Int
-  private val handlerTag: Int
-  private val state: Int
-  private val pointerType: Int
-
-  init {
-    numberOfPointers = handler.numberOfPointers
-    handlerTag = handler.tag
-    state = handler.state
-    pointerType = handler.pointerType
-  }
+  private val handlerTag: Int = handler.tag
+  private val state: Int = handler.state
+  private val pointerType: Int = handler.pointerType
+  private val numberOfPointers: Int = handler.numberOfPointers
 
   open fun buildEventData(eventData: WritableMap) {
     eventData.putInt("numberOfPointers", numberOfPointers)

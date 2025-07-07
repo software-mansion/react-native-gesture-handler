@@ -7,27 +7,15 @@ import com.swmansion.gesturehandler.core.StylusData
 
 class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) :
   GestureHandlerEventDataBuilder<PanGestureHandler>(handler) {
-  private val x: Float
-  private val y: Float
-  private val absoluteX: Float
-  private val absoluteY: Float
-  private val translationX: Float
-  private val translationY: Float
-  private val velocityX: Float
-  private val velocityY: Float
-  private val stylusData: StylusData
-
-  init {
-    x = handler.lastRelativePositionX
-    y = handler.lastRelativePositionY
-    absoluteX = handler.lastPositionInWindowX
-    absoluteY = handler.lastPositionInWindowY
-    translationX = handler.translationX
-    translationY = handler.translationY
-    velocityX = handler.velocityX
-    velocityY = handler.velocityY
-    stylusData = handler.stylusData
-  }
+  private val x: Float = handler.lastRelativePositionX
+  private val y: Float = handler.lastRelativePositionY
+  private val absoluteX: Float = handler.lastPositionInWindowX
+  private val absoluteY: Float = handler.lastPositionInWindowY
+  private val translationX: Float = handler.translationX
+  private val translationY: Float = handler.translationY
+  private val velocityX: Float = handler.velocityX
+  private val velocityY: Float = handler.velocityY
+  private val stylusData: StylusData = handler.stylusData
 
   override fun buildEventData(eventData: WritableMap) {
     super.buildEventData(eventData)

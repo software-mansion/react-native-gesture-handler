@@ -6,19 +6,11 @@ import com.swmansion.gesturehandler.core.LongPressGestureHandler
 
 class LongPressGestureHandlerEventDataBuilder(handler: LongPressGestureHandler) :
   GestureHandlerEventDataBuilder<LongPressGestureHandler>(handler) {
-  private val x: Float
-  private val y: Float
-  private val absoluteX: Float
-  private val absoluteY: Float
-  private val duration: Int
-
-  init {
-    x = handler.lastRelativePositionX
-    y = handler.lastRelativePositionY
-    absoluteX = handler.lastPositionInWindowX
-    absoluteY = handler.lastPositionInWindowY
-    duration = handler.duration
-  }
+  private val x: Float = handler.lastRelativePositionX
+  private val y: Float = handler.lastRelativePositionY
+  private val absoluteX: Float = handler.lastPositionInWindowX
+  private val absoluteY: Float = handler.lastPositionInWindowY
+  private val duration: Int = handler.duration
 
   override fun buildEventData(eventData: WritableMap) {
     super.buildEventData(eventData)
