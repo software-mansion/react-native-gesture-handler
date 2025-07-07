@@ -9,7 +9,7 @@
         "../../packages/react-native-gesture-handler/src"
       ],
       "react-native-gesture-handler/ReanimatedSwipeable": [
-        "../../packages/react-native-gesture-handler/src/components/ReanimatedSwipeable.tsx"
+        "../../packages/react-native-gesture-handler/src/components/ReanimatedSwipeable/"
       ],
       "react-native-gesture-handler/ReanimatedDrawerLayout": [
         "../../packages/react-native-gesture-handler/src/components/ReanimatedDrawerLayout.tsx"
