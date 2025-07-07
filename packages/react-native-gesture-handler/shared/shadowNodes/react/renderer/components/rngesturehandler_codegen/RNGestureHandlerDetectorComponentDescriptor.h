@@ -23,10 +23,6 @@ class RNGestureHandlerDetectorComponentDescriptor final
   void adopt(ShadowNode &shadowNode) const override {
     react_native_assert(
         dynamic_cast<RNGestureHandlerDetectorShadowNode *>(&shadowNode));
-    auto detectorShadowNode =
-        dynamic_cast<RNGestureHandlerDetectorShadowNode *>(&shadowNode);
-
-    detectorShadowNode->setSize({.width = 300, .height = 300});
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }
