@@ -159,11 +159,11 @@ android {
                             "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                             "-DANDROID_STL=c++_shared",
                             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
-                            // turn off build IDs for reproducibility
+                            // Turn off build IDs for reproducibility (ensuring the same code will produce the same bundle when built)
+                            // See https://reproducible-builds.org/ for more information
                             "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--build-id=none"
                     abiFilters(*reactNativeArchitectures())
                 }
-                // per above
                 ndkBuild {
                     arguments "APP_LDFLAGS+=-Wl,--build-id=none"
                 }
