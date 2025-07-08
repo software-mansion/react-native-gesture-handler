@@ -113,12 +113,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun detachGestureHandler(handlerTagDouble: Double) {
-    val handlerTag = handlerTagDouble.toInt()
-    registry.detachHandler(handlerTag)
-  }
-
-  @ReactMethod
   override fun handleSetJSResponder(viewTagDouble: Double, blockNativeResponder: Boolean) {
     val viewTag = viewTagDouble.toInt()
     val rootView = findRootHelperForViewAncestor(viewTag)

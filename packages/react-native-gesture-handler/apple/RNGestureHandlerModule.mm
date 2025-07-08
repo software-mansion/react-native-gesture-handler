@@ -182,13 +182,6 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)detachGestureHandler:(double)handlerTag
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager detachGestureHandler:[NSNumber numberWithDouble:handlerTag]];
-  }];
-}
-
 - (void)dropGestureHandler:(double)handlerTag
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
