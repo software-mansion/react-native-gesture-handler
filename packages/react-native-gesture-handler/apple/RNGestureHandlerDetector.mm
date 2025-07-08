@@ -1,5 +1,3 @@
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #import "RNGestureHandlerDetector.h"
 #import "RNGestureHandlerDetectorComponentDescriptor.h"
 #import "RNGestureHandlerModule.h"
@@ -13,10 +11,14 @@
 
 #include <unordered_map>
 
-using namespace facebook::react;
-
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
 @end
+
+typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
+  RNGestureHandlerMutationAttach = 1,
+  RNGestureHandlerMutationDetach,
+  RNGestureHandlerMutationKeep,
+};
 
 @implementation RNGestureHandlerDetector {
   int _moduleId;
@@ -56,27 +58,25 @@ using namespace facebook::react;
   }
 }
 
-- (void)dispatchStateChangeEvent:
-    (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event
+- (void)dispatchStateChangeEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event
 {
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
         ->onGestureHandlerStateChange(event);
   }
 }
 
-- (void)dispatchGestureEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event
+- (void)dispatchGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event
 {
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
-        ->onGestureHandlerEvent(event);
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)->onGestureHandlerEvent(event);
   }
 }
 
-- (void)dispatchTouchEvent:(facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerTouchEvent)event
+- (void)dispatchTouchEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerTouchEvent)event
 {
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const facebook::react::RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
         ->onGestureHandlerTouchEvent(event);
   }
 }
@@ -88,8 +88,8 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<RNGestureHandlerDetectorComponentDescriptor>();
 }
 
-- (void)updateLayoutMetrics:(const facebook::react::LayoutMetrics &)layoutMetrics
-           oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics
+- (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
 {
   auto newLayoutMetrics = layoutMetrics;
   // Override to force hittesting to work outside bounds
@@ -107,31 +107,30 @@ using namespace facebook::react;
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
-      const int KEEP = 0,
-                DROP = 1, ATTACH = 2;
-  std::unordered_map<int, int> changes;
+      std::unordered_map<int, RNGestureHandlerMutation>
+          changes;
 
   if (oldPropsBase != nullptr) {
     for (const auto oldHandler : oldProps.handlerTags) {
-      changes[oldHandler] = DROP;
+      changes[oldHandler] = RNGestureHandlerMutationDetach;
     }
   }
 
   for (const auto newHandler : newProps.handlerTags) {
-    changes[newHandler] = changes.contains(newHandler) ? KEEP : ATTACH;
+    changes[newHandler] = changes.contains(newHandler) ? RNGestureHandlerMutationKeep : RNGestureHandlerMutationAttach;
   }
 
   for (const auto handlerChange : changes) {
     NSNumber *handlerTag = [NSNumber numberWithInt:handlerChange.first];
 
-    if (handlerChange.second == ATTACH) {
-      // TODO: Attach to the child when NativeGestureHandler, track children changes?
+    if (handlerChange.second == RNGestureHandlerMutationAttach) {
+      // TODO: Attach to the child when NativeGestureHandler remounts, track children changes?
       [handlerManager.registry
           attachHandlerWithTag:handlerTag
                         toView:self
                 withActionType:newProps.animatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
                                                        : RNGestureHandlerActionTypeNativeDetector];
-    } else if (handlerChange.second == DROP) {
+    } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }
@@ -146,5 +145,3 @@ Class<RCTComponentViewProtocol> RNGestureHandlerDetectorCls(void)
 {
   return RNGestureHandlerDetector.class;
 }
-
-#endif // RCT_NEW_ARCH_ENABLED

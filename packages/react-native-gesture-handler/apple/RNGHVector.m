@@ -8,7 +8,7 @@
 #import "RNGHVector.h"
 #import <Foundation/Foundation.h>
 
-@implementation Vector
+@implementation RNGHVector
 
 - (id)initWithX:(double)x withY:(double)y
 {
@@ -25,41 +25,41 @@
   return self;
 }
 
-+ (Vector *)fromDirection:(RNGestureHandlerDirection)direction
++ (RNGHVector *)fromDirection:(RNGestureHandlerDirection)direction
 {
   switch (direction) {
     case RNGestureHandlerDirectionRight:
-      return [[Vector alloc] initWithX:1 withY:0];
+      return [[RNGHVector alloc] initWithX:1 withY:0];
     case RNGestureHandlerDirectionLeft:
-      return [[Vector alloc] initWithX:-1 withY:0];
+      return [[RNGHVector alloc] initWithX:-1 withY:0];
     case RNGestureHandlerDirectionUp:
-      return [[Vector alloc] initWithX:0 withY:1];
+      return [[RNGHVector alloc] initWithX:0 withY:1];
     case RNGestureHandlerDirectionDown:
-      return [[Vector alloc] initWithX:0 withY:-1];
+      return [[RNGHVector alloc] initWithX:0 withY:-1];
     case RNGestureHandlerDirectionUpLeft:
-      return [[Vector alloc] initWithX:-1 withY:1];
+      return [[RNGHVector alloc] initWithX:-1 withY:1];
     case RNGestureHandlerDirectionUpRight:
-      return [[Vector alloc] initWithX:1 withY:1];
+      return [[RNGHVector alloc] initWithX:1 withY:1];
     case RNGestureHandlerDirectionDownLeft:
-      return [[Vector alloc] initWithX:-1 withY:-1];
+      return [[RNGHVector alloc] initWithX:-1 withY:-1];
     case RNGestureHandlerDirectionDownRight:
-      return [[Vector alloc] initWithX:1 withY:-1];
+      return [[RNGHVector alloc] initWithX:1 withY:-1];
     default:
-      return [[Vector alloc] initWithX:0 withY:0];
+      return [[RNGHVector alloc] initWithX:0 withY:0];
   }
 }
 
-+ (Vector *)fromVelocityX:(double)vx withVelocityY:(double)vy;
++ (RNGHVector *)fromVelocityX:(double)vx withVelocityY:(double)vy;
 {
-  return [[Vector alloc] initWithX:vx withY:vy];
+  return [[RNGHVector alloc] initWithX:vx withY:vy];
 }
 
-- (double)computeSimilarity:(Vector *)other
+- (double)computeSimilarity:(RNGHVector *)other
 {
   return self.unitX * other.unitX + self.unitY * other.unitY;
 }
 
-- (BOOL)isSimilar:(Vector *)other withThreshold:(double)threshold
+- (BOOL)isSimilar:(RNGHVector *)other withThreshold:(double)threshold
 {
   return [self computeSimilarity:other] > threshold;
 }

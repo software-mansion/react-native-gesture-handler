@@ -37,9 +37,13 @@ static folly::dynamic rngh_dynamicFromId(id value)
 {
   if ([value isKindOfClass:[NSNumber class]]) {
     return [(NSNumber *)value doubleValue];
-  } else if ([value isKindOfClass:[NSArray class]]) {
+  }
+
+  if ([value isKindOfClass:[NSArray class]]) {
     return rngh_dynamicFromArray((NSArray *)value);
-  } else if ([value isKindOfClass:[NSDictionary class]]) {
+  }
+
+  if ([value isKindOfClass:[NSDictionary class]]) {
     return rngh_dynamicFromDictionary((NSDictionary *)value);
   }
 

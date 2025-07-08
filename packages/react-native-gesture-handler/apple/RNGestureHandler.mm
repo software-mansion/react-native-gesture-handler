@@ -287,7 +287,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (recognizer.view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
+  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
       _actionType != RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
     return;
   }
@@ -302,9 +302,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
 
-  // TODO: do this only for native detector?
   NSNumber *tag = recognizer.view.reactTag;
-  if (tag == nil) {
+  if (tag == nil &&
+      (_actionType == RNGestureHandlerActionTypeNativeDetector ||
+       _actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent)) {
     tag = @(recognizer.view.tag);
   }
 

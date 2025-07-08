@@ -193,11 +193,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSString *)eventName
 {
-  if (_actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
-    return @"onGestureHandlerAnimatedEvent";
-  }
-
-  return @"onGestureHandlerEvent";
+  return _actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent ? @"onGestureHandlerAnimatedEvent"
+                                                                              : @"onGestureHandlerEvent";
 }
 
 - (BOOL)canCoalesce
