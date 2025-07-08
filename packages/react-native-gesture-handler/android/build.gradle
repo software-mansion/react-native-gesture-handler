@@ -160,7 +160,8 @@ android {
                             "-DANDROID_STL=c++_shared",
                             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
                             // Turn off build IDs for reproducibility (ensuring the same code will produce the same bundle when built)
-                            // See https://reproducible-builds.org/ for more information
+                            // See https://gitlab.com/IzzyOnDroid/repo/-/wikis/Reproducible-Builds/RB-Hints-for-Developers#no-funny-build-time-generated-ids
+                            // for more information
                             "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--build-id=none"
                     abiFilters(*reactNativeArchitectures())
                 }
