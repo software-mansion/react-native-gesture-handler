@@ -212,8 +212,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     const val NAME = "RNGestureHandlerModule"
 
     private var nextModuleId = 0
-
-    // TODO: this is likely to break compared to keeping it on module
     val registries: MutableMap<Int, RNGestureHandlerRegistry> = mutableMapOf()
 
     init {

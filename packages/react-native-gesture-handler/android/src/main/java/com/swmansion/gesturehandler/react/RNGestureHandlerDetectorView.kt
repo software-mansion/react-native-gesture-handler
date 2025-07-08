@@ -29,13 +29,11 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   fun setModuleId(id: Int) {
-    if (this.moduleId == -1) {
-      this.moduleId = id
-      this.attachHandlers(handlersToAttach ?: return)
-      handlersToAttach = null
-    } else {
-      throw Exception("Tried to change moduleId of a native detector")
-    }
+    assert(this.moduleId == -1) { "Tried to change moduleId of a native detector" }
+
+    this.moduleId = id
+    this.attachHandlers(handlersToAttach ?: return)
+    handlersToAttach = null
   }
 
   fun setAnimatedEvents(animatedEvents: Boolean) {
@@ -46,22 +44,18 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
-    val keep = 0
-    val attach = 1
-    val detach = 2
-
-    val changes = mutableMapOf<Int, Int>()
+    val changes = mutableMapOf<Int, GestureHandlerMutation>()
 
     for (tag in attachedHandlers) {
-      changes[tag] = detach
+      changes[tag] = GestureHandlerMutation.Detach
     }
 
     for (tag in newHandlers) {
-      changes[tag] = if (changes.containsKey(tag)) keep else attach
+      changes[tag] = if (changes.containsKey(tag)) GestureHandlerMutation.Keep else GestureHandlerMutation.Attach
     }
 
     for (entry in changes) {
-      if (entry.value == attach) {
+      if (entry.value == GestureHandlerMutation.Attach) {
         registry.attachHandlerToView(
           entry.key,
           this.id,
@@ -71,8 +65,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
             GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
           },
         )
-      } else if (entry.value == detach) {
-        registry.detachHandler(entry.value)
+      } else if (entry.value == GestureHandlerMutation.Detach) {
+        registry.detachHandler(entry.key)
       }
     }
   }
@@ -80,5 +74,13 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   fun dispatchEvent(event: Event<*>) {
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
     eventDispatcher?.dispatchEvent(event)
+  }
+
+  companion object {
+    private enum class GestureHandlerMutation {
+      Attach,
+      Detach,
+      Keep,
+    }
   }
 }
