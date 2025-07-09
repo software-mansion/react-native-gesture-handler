@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -69,7 +68,6 @@ const Pressable = (props: PressableProps) => {
     simultaneousWithExternalGesture,
     requireExternalGestureToFail,
     blocksExternalGesture,
-    dimensionsAfterResize,
     ...remainingProps
   } = props;
 
@@ -108,21 +106,6 @@ const Pressable = (props: PressableProps) => {
     normalizedHitSlop,
     normalizedPressRetentionOffset
   );
-
-  useLayoutEffect(() => {
-    if (dimensionsAfterResize) {
-      dimensions.current = dimensionsAfterResize;
-    } else {
-      requestAnimationFrame(() => {
-        (ref ?? fallbackRef).current?.measure((_x, _y, width, height) => {
-          dimensions.current = {
-            width,
-            height,
-          };
-        });
-      });
-    }
-  }, [dimensionsAfterResize, ref]);
 
   const cancelLongPress = useCallback(() => {
     if (longPressTimeoutRef.current) {
@@ -377,10 +360,14 @@ const Pressable = (props: PressableProps) => {
       : processColor(unprocessedRippleColor);
   }, [android_ripple]);
 
+  console.log('render');
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
+        // @ts-ignore Prop `onLayout` always works. Todo: Define it's availability on NativeButton
+        onLayout={(e) => (dimensions.current = e.nativeEvent.layout)}
         ref={ref ?? fallbackRef}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
