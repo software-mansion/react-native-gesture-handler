@@ -16,7 +16,6 @@ import {
   Insets,
   Platform,
   StyleProp,
-  View,
   ViewStyle,
   processColor,
 } from 'react-native';
@@ -45,7 +44,6 @@ let IS_FABRIC: null | boolean = null;
 
 const Pressable = (props: PressableProps) => {
   const {
-    ref,
     testOnly_pressed,
     hitSlop,
     pressRetentionOffset,
@@ -76,9 +74,6 @@ const Pressable = (props: PressableProps) => {
     requireExternalGestureToFail,
     blocksExternalGesture,
   };
-
-  // used only if `ref` is undefined
-  const fallbackRef = useRef<View>(null);
 
   const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
@@ -365,7 +360,6 @@ const Pressable = (props: PressableProps) => {
       <NativeButton
         {...remainingProps}
         onLayout={(e) => (dimensions.current = e.nativeEvent.layout)}
-        ref={ref ?? fallbackRef}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
