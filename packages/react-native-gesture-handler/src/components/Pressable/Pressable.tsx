@@ -360,8 +360,6 @@ const Pressable = (props: PressableProps) => {
       : processColor(unprocessedRippleColor);
   }, [android_ripple]);
 
-  console.log('render');
-
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
