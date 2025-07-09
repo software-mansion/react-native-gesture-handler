@@ -364,7 +364,6 @@ const Pressable = (props: PressableProps) => {
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
-        // @ts-ignore Prop `onLayout` always works. Todo: Define it's availability on NativeButton
         onLayout={(e) => (dimensions.current = e.nativeEvent.layout)}
         ref={ref ?? fallbackRef}
         accessible={accessible !== false}
