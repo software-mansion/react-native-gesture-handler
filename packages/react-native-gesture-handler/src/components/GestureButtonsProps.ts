@@ -58,9 +58,7 @@ export interface RawButtonProps
   style?: StyleProp<ViewStyle>;
 
   /**
-   * Invoked on mount and layout changes with
-   *
-   * {nativeEvent: { layout: {x, y, width, height}}}.
+   * Invoked on mount and layout changes.
    */
   onLayout?: (event: LayoutChangeEvent) => void;
 
