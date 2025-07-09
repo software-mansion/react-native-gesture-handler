@@ -62,7 +62,7 @@ export interface RawButtonProps
    *
    * {nativeEvent: { layout: {x, y, width, height}}}.
    */
-  onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
+  onLayout?: (event: LayoutChangeEvent) => void;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
