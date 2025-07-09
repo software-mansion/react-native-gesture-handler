@@ -14,6 +14,7 @@ import {
 } from './PressableProps';
 import {
   Insets,
+  LayoutChangeEvent,
   Platform,
   StyleProp,
   ViewStyle,
@@ -355,11 +356,15 @@ const Pressable = (props: PressableProps) => {
       : processColor(unprocessedRippleColor);
   }, [android_ripple]);
 
+  const setDimensions = useCallback((event: LayoutChangeEvent) => {
+    dimensions.current = event.nativeEvent.layout;
+  }, []);
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
-        onLayout={(e) => (dimensions.current = e.nativeEvent.layout)}
+        onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
