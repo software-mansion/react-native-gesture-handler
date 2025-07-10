@@ -1,12 +1,12 @@
-import React, { Component, ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import {
   Animated,
   Dimensions,
-  LayoutChangeEvent,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
   SafeAreaView,
+  LayoutChangeEvent,
 } from 'react-native';
 import {
   PanGestureHandler,
@@ -46,132 +46,48 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
+type PipLayoutProps = {
   player: ReactNode;
 };
-type State = {
-  isDraggingEnabled: boolean;
-  isFullDetails: boolean;
-  playerSize: {
-    width: number;
-    height: number;
+
+export const PipLayout = (props: PipLayoutProps) => {
+  const [isDraggingEnabled, setIsDraggingEnabled] = useState(true);
+  const [isFullDetails, setIsFullDetails] = useState(true);
+  const [playerSize, setPlayerSize] = useState({
+    height: 0,
+    width: 0,
+  });
+
+  const touchOnPlayerX = new Animated.Value(0);
+  const touchOnPlayerY = new Animated.Value(0);
+
+  const onPlayerVerticalDrag = Animated.event(
+    [
+      {
+        nativeEvent: { translationY: touchOnPlayerY },
+      },
+    ],
+    {
+      useNativeDriver: true,
+    }
+  );
+
+  const onPlayerSwipeAway = Animated.event(
+    [
+      {
+        nativeEvent: { translationX: touchOnPlayerX },
+      },
+    ],
+    {
+      useNativeDriver: true,
+    }
+  );
+
+  const showFullDetails = () => {
+    setShowFullDetails(true);
   };
-};
 
-export default class PipLayout extends Component<Props, State> {
-  touchOnPlayerX = new Animated.Value(0);
-  touchOnPlayerY = new Animated.Value(0);
-
-  onPlayerVerticalDrag = Animated.event(
-    [
-      {
-        nativeEvent: { translationY: this.touchOnPlayerY },
-      },
-    ],
-    {
-      useNativeDriver: true,
-    }
-  );
-
-  onPlayerSwipeAway = Animated.event(
-    [
-      {
-        nativeEvent: { translationX: this.touchOnPlayerX },
-      },
-    ],
-    {
-      useNativeDriver: true,
-    }
-  );
-
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      isDraggingEnabled: true,
-      isFullDetails: true,
-      playerSize: {
-        height: 0,
-        width: 0,
-      },
-    };
-
-    this.onPlayerVerticalDragStateChange =
-      this.onPlayerVerticalDragStateChange.bind(this);
-    this.onPlayerSwipeAwayStateChange =
-      this.onPlayerSwipeAwayStateChange.bind(this);
-    this.setShowFullDetails = this.setShowFullDetails.bind(this);
-    this.showFullDetails = this.showFullDetails.bind(this);
-    this.showPictureInPicture = this.showPictureInPicture.bind(this);
-    this.onPlayerLayout = this.onPlayerLayout.bind(this);
-  }
-
-  showFullDetails() {
-    this.setShowFullDetails(true);
-  }
-
-  showPictureInPicture() {
-    this.setShowFullDetails(false);
-  }
-
-  render() {
-    const { player } = this.props;
-    const { isFullDetails, isDraggingEnabled } = this.state;
-
-    const containerPointerEvents = isFullDetails ? 'auto' : 'box-none';
-
-    return (
-      <View style={styles.container} pointerEvents={containerPointerEvents}>
-        <AnimatedSafeAreView
-          style={this.topSafeAreaStyle}
-          pointerEvents={containerPointerEvents}
-        />
-        <Animated.View
-          style={styles.movingContent}
-          pointerEvents={containerPointerEvents}>
-          <PanGestureHandler
-            onGestureEvent={this.onPlayerVerticalDrag}
-            onHandlerStateChange={(event) =>
-              this.onPlayerVerticalDragStateChange(event)
-            }
-            enabled={this.state.isDraggingEnabled}
-            activeOffsetY={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
-            <Animated.View
-              style={this.playerSwipeAwayStyle}
-              pointerEvents={containerPointerEvents}>
-              <PanGestureHandler
-                onGestureEvent={this.onPlayerSwipeAway}
-                onHandlerStateChange={(event) =>
-                  this.onPlayerSwipeAwayStateChange(event)
-                }
-                enabled={!isFullDetails && isDraggingEnabled}
-                activeOffsetX={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
-                <Animated.View
-                  style={this.playerAnimatedStyle}
-                  pointerEvents={containerPointerEvents}
-                  onLayout={(event) => this.onPlayerLayout(event)}>
-                  <TouchableWithoutFeedback
-                    onPress={() => this.showFullDetails()}
-                    disabled={isFullDetails || !isDraggingEnabled}>
-                    <View pointerEvents={isFullDetails ? 'auto' : 'box-only'}>
-                      {player}
-                    </View>
-                  </TouchableWithoutFeedback>
-                </Animated.View>
-              </PanGestureHandler>
-            </Animated.View>
-          </PanGestureHandler>
-          <Animated.View
-            style={[styles.bodyContainer, this.bodyAnimatedStyle]}
-            pointerEvents={isFullDetails ? 'auto' : 'none'}
-          />
-        </Animated.View>
-      </View>
-    );
-  }
-
-  get pictureInPicturePlayerSize() {
-    const { playerSize } = this.state;
+  const pictureInPicturePlayerSize = () => {
     const { height } = Dimensions.get('window');
     const minPlayerHeight =
       height * PICTURE_IN_PICTURE_PLAYER_HEIGHT_PERCENTAGE;
@@ -183,44 +99,41 @@ export default class PipLayout extends Component<Props, State> {
       height: minPlayerHeight,
       width: minPlayerHeight * aspectRatio,
     };
-  }
+  };
 
-  get playerMaximumTopOffset() {
+  const playerMaximumTopOffset = () => {
     const { height } = Dimensions.get('window');
     const bottomPlayerPadding = PICTURE_IN_PICTURE_PLAYER_PADDING + 100;
 
-    return (
-      height - this.pictureInPicturePlayerSize.height - bottomPlayerPadding
-    );
-  }
+    return height - pictureInPicturePlayerSize().height - bottomPlayerPadding;
+  };
 
-  get playerMaximumLeftOffset() {
+  const playerMaximumLeftOffset = () => {
     const { width } = Dimensions.get('window');
     return (
       width -
-      this.pictureInPicturePlayerSize.width -
+      pictureInPicturePlayerSize().width -
       PICTURE_IN_PICTURE_PLAYER_PADDING
     );
-  }
+  };
 
-  get playerPictureInPictureScale() {
+  const playerPictureInPictureScale = () => {
     const { width } = Dimensions.get('window');
-    return this.pictureInPicturePlayerSize.width / width;
-  }
+    return pictureInPicturePlayerSize().width / width;
+  };
 
-  get playerDragYPosition() {
-    const { isFullDetails } = this.state;
+  const playerDragYPosition = () => {
     return Animated.add(
-      this.touchOnPlayerY,
-      new Animated.Value(isFullDetails ? 0 : this.playerMaximumTopOffset)
+      touchOnPlayerY,
+      new Animated.Value(isFullDetails ? 0 : playerMaximumTopOffset())
     );
-  }
+  };
 
-  get playerSwipeAwayStyle() {
-    const smallPlayerWidth = this.pictureInPicturePlayerSize.width;
+  const playerSwipeAwayStyle = () => {
+    const smallPlayerWidth = pictureInPicturePlayerSize().width;
 
     return {
-      opacity: this.touchOnPlayerX.interpolate({
+      opacity: touchOnPlayerX.interpolate({
         extrapolate: 'clamp',
         inputRange: [
           -smallPlayerWidth * SWIPE_AWAY_OPACITY_DROP_OFF_MULTIPLIER,
@@ -231,193 +144,233 @@ export default class PipLayout extends Component<Props, State> {
       }),
       transform: [
         {
-          translateX: this.touchOnPlayerX.interpolate({
+          translateX: touchOnPlayerX.interpolate({
             inputRange: [-smallPlayerWidth, 0, smallPlayerWidth],
             outputRange: [
-              -(smallPlayerWidth * this.playerPictureInPictureScale),
+              -(smallPlayerWidth * playerPictureInPictureScale()),
               0,
-              smallPlayerWidth * this.playerPictureInPictureScale,
+              smallPlayerWidth * playerPictureInPictureScale(),
             ],
           }),
         },
       ],
     };
-  }
+  };
 
-  get playerPositionOffsetBecauseOfScale() {
-    const { playerSize } = this.state;
+  const playerPositionOffsetBecauseOfScale = () => {
     return {
       x:
-        (playerSize.width * this.playerPictureInPictureScale -
-          playerSize.width) /
+        (playerSize.width * playerPictureInPictureScale() - playerSize.width) /
         2,
       y:
-        (playerSize.height * this.playerPictureInPictureScale -
+        (playerSize.height * playerPictureInPictureScale() -
           playerSize.height) /
         2,
     };
-  }
+  };
 
-  get playerAnimatedStyle() {
+  const playerAnimatedStyle = () => {
     return {
       transform: [
         {
-          translateX: this.playerDragYPosition.interpolate({
+          translateX: playerDragYPosition().interpolate({
             extrapolate: 'clamp',
-            inputRange: [0, this.playerMaximumTopOffset],
+            inputRange: [0, playerMaximumTopOffset()],
             outputRange: [
               0,
-              this.playerMaximumLeftOffset +
-                this.playerPositionOffsetBecauseOfScale.x,
+              playerMaximumLeftOffset() +
+                playerPositionOffsetBecauseOfScale().x,
             ],
           }),
         },
         {
-          translateY: this.playerDragYPosition.interpolate({
+          translateY: playerDragYPosition().interpolate({
             extrapolate: 'clamp',
-            inputRange: [0, this.playerMaximumTopOffset],
+            inputRange: [0, playerMaximumTopOffset()],
             outputRange: [
               0,
-              this.playerMaximumTopOffset +
-                this.playerPositionOffsetBecauseOfScale.y,
+              playerMaximumTopOffset() + playerPositionOffsetBecauseOfScale().y,
             ],
           }),
         },
         {
-          scale: this.playerDragYPosition.interpolate({
+          scale: playerDragYPosition().interpolate({
             extrapolate: 'clamp',
-            inputRange: [0, this.playerMaximumTopOffset],
-            outputRange: [1, this.playerPictureInPictureScale],
+            inputRange: [0, playerMaximumTopOffset()],
+            outputRange: [1, playerPictureInPictureScale()],
           }),
         },
       ],
     };
-  }
+  };
 
-  get bodyAnimatedStyle() {
-    const { playerSize } = this.state;
+  const bodyAnimatedStyle = () => {
     const playerSizeDifferenceAfterScale =
-      playerSize.height - this.pictureInPicturePlayerSize.height;
+      playerSize.height - pictureInPicturePlayerSize().height;
 
     return {
-      opacity: this.playerDragYPosition.interpolate({
+      opacity: playerDragYPosition().interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, this.playerMaximumTopOffset],
+        inputRange: [0, playerMaximumTopOffset()],
         outputRange: [VISIBLE, INVISIBLE],
       }),
       transform: [
         {
-          translateY: this.playerDragYPosition.interpolate({
+          translateY: playerDragYPosition().interpolate({
             extrapolate: 'clamp',
-            inputRange: [0, this.playerMaximumTopOffset],
+            inputRange: [0, playerMaximumTopOffset()],
             outputRange: [
               0,
-              this.playerMaximumTopOffset - playerSizeDifferenceAfterScale,
+              playerMaximumTopOffset() - playerSizeDifferenceAfterScale,
             ],
           }),
         },
         {
-          translateX: this.playerDragYPosition.interpolate({
+          translateX: playerDragYPosition().interpolate({
             extrapolate: 'clamp',
-            inputRange: [0, this.playerMaximumTopOffset],
-            outputRange: [0, this.playerMaximumLeftOffset],
+            inputRange: [0, playerMaximumTopOffset()],
+            outputRange: [0, playerMaximumLeftOffset()],
           }),
         },
       ],
     };
-  }
+  };
 
-  get topSafeAreaStyle() {
+  const topSafeAreaStyle = () => {
     return [
       styles.topSafeArea,
       {
-        opacity: this.playerDragYPosition.interpolate({
+        opacity: playerDragYPosition().interpolate({
           extrapolate: 'clamp',
           inputRange: [
             0,
-            this.playerMaximumTopOffset * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE,
+            playerMaximumTopOffset() * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE,
           ],
           outputRange: [VISIBLE, INVISIBLE],
         }),
       },
     ];
-  }
+  };
 
-  onPlayerVerticalDragStateChange({
+  const onPlayerVerticalDragStateChange = ({
     nativeEvent,
-  }: PanGestureHandlerGestureEvent) {
-    const { isFullDetails } = this.state;
-
+  }: PanGestureHandlerGestureEvent) => {
     if (nativeEvent.state === PanState.END) {
       const transitionThreshold =
-        this.playerMaximumTopOffset *
+        playerMaximumTopOffset() *
         PICTURE_IN_PICTURE_TRANSITION_THRESHOLD_PERCENTAGE;
       const activateFullDetails =
         (isFullDetails && nativeEvent.translationY < transitionThreshold) ||
         (!isFullDetails &&
           Math.abs(nativeEvent.translationY) > transitionThreshold);
-      this.setShowFullDetails(activateFullDetails);
+      setShowFullDetails(activateFullDetails);
     }
-  }
+  };
 
-  onPlayerSwipeAwayStateChange({ nativeEvent }: PanGestureHandlerGestureEvent) {
+  const onPlayerSwipeAwayStateChange = ({
+    nativeEvent,
+  }: PanGestureHandlerGestureEvent) => {
     if (nativeEvent.state === PanState.END) {
-      this.setState({ isDraggingEnabled: false }, () => {
-        const { width } = Dimensions.get('window');
-        const swipeAwayDistance =
-          this.pictureInPicturePlayerSize.width *
-          SWIPE_AWAY_THRESHOLD_PERCENTAGE;
-        const isSwipeAwaySuccesful =
-          Math.abs(nativeEvent.translationX) > swipeAwayDistance;
-        if (isSwipeAwaySuccesful) {
-          Animated.timing(this.touchOnPlayerX, {
-            duration: ANIMATION_LENGTH,
-            toValue:
-              (nativeEvent.translationX > 0 ? 1 : -1) *
-              width *
-              SWIPE_AWAY_SPEED_MULTIPLIER,
-            useNativeDriver: true,
-          }).start();
-        } else {
-          Animated.timing(this.touchOnPlayerX, {
-            duration: ANIMATION_LENGTH,
-            toValue: 0,
-            useNativeDriver: true,
-          }).start(() => {
-            this.setState({ isDraggingEnabled: true });
-          });
-        }
-      });
-    }
-  }
-
-  setShowFullDetails(activateFullDetails: boolean) {
-    this.setState({ isDraggingEnabled: false }, () => {
-      // eslint-disable-next-line @eslint-react/no-access-state-in-setstate
-      const isFullDetailsYOffset = this.state.isFullDetails
-        ? 0
-        : this.playerMaximumTopOffset;
-      Animated.timing(this.touchOnPlayerY, {
-        duration: ANIMATION_LENGTH,
-        toValue:
-          (activateFullDetails ? 0 : this.playerMaximumTopOffset) -
-          isFullDetailsYOffset,
-        useNativeDriver: true,
-      }).start(() => {
-        this.setState({
-          isDraggingEnabled: true,
-          isFullDetails: activateFullDetails,
+      setIsDraggingEnabled(false);
+      const { width } = Dimensions.get('window');
+      const swipeAwayDistance =
+        pictureInPicturePlayerSize().width * SWIPE_AWAY_THRESHOLD_PERCENTAGE;
+      const isSwipeAwaySuccesful =
+        Math.abs(nativeEvent.translationX) > swipeAwayDistance;
+      if (isSwipeAwaySuccesful) {
+        Animated.timing(touchOnPlayerX, {
+          duration: ANIMATION_LENGTH,
+          toValue:
+            (nativeEvent.translationX > 0 ? 1 : -1) *
+            width *
+            SWIPE_AWAY_SPEED_MULTIPLIER,
+          useNativeDriver: true,
+        }).start();
+      } else {
+        Animated.timing(touchOnPlayerX, {
+          duration: ANIMATION_LENGTH,
+          toValue: 0,
+          useNativeDriver: true,
+        }).start(() => {
+          setIsDraggingEnabled(true);
         });
-      });
-    });
-  }
+      }
+    }
+  };
 
-  onPlayerLayout({ nativeEvent: { layout } }: LayoutChangeEvent) {
-    this.setState({
-      playerSize: {
-        height: layout.height,
-        width: layout.width,
-      },
+  const setShowFullDetails = (activateFullDetails: boolean) => {
+    setIsDraggingEnabled(false);
+
+    const isFullDetailsYOffset = isFullDetails ? 0 : playerMaximumTopOffset();
+    Animated.timing(touchOnPlayerY, {
+      duration: ANIMATION_LENGTH,
+      toValue:
+        (activateFullDetails ? 0 : playerMaximumTopOffset()) -
+        isFullDetailsYOffset,
+      useNativeDriver: true,
+    }).start(() => {
+      setIsDraggingEnabled(true);
+      setIsFullDetails(activateFullDetails);
     });
-  }
-}
+  };
+
+  const onPlayerLayout = ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
+    setPlayerSize({
+      height: layout.height,
+      width: layout.width,
+    });
+  };
+
+  const { player } = props;
+
+  const containerPointerEvents = isFullDetails ? 'auto' : 'box-none';
+
+  return (
+    <View style={styles.container} pointerEvents={containerPointerEvents}>
+      <AnimatedSafeAreView
+        style={topSafeAreaStyle()}
+        pointerEvents={containerPointerEvents}
+      />
+      <Animated.View
+        style={styles.movingContent}
+        pointerEvents={containerPointerEvents}>
+        <PanGestureHandler
+          onGestureEvent={onPlayerVerticalDrag}
+          onHandlerStateChange={(event) =>
+            onPlayerVerticalDragStateChange(event)
+          }
+          enabled={isDraggingEnabled}
+          activeOffsetY={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
+          <Animated.View
+            style={playerSwipeAwayStyle()}
+            pointerEvents={containerPointerEvents}>
+            <PanGestureHandler
+              onGestureEvent={onPlayerSwipeAway}
+              onHandlerStateChange={(event) =>
+                onPlayerSwipeAwayStateChange(event)
+              }
+              enabled={!isFullDetails && isDraggingEnabled}
+              activeOffsetX={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
+              <Animated.View
+                style={playerAnimatedStyle()}
+                pointerEvents={containerPointerEvents}
+                onLayout={(event) => onPlayerLayout(event)}>
+                <TouchableWithoutFeedback
+                  onPress={() => showFullDetails()}
+                  disabled={isFullDetails || !isDraggingEnabled}>
+                  <View pointerEvents={isFullDetails ? 'auto' : 'box-only'}>
+                    {player}
+                  </View>
+                </TouchableWithoutFeedback>
+              </Animated.View>
+            </PanGestureHandler>
+          </Animated.View>
+        </PanGestureHandler>
+        <Animated.View
+          style={[styles.bodyContainer, bodyAnimatedStyle()]}
+          pointerEvents={isFullDetails ? 'auto' : 'none'}
+        />
+      </Animated.View>
+    </View>
+  );
+};

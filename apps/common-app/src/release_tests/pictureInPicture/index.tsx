@@ -12,7 +12,7 @@ import {
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import PipLayout from './pipLayout';
+import { PipLayout } from './pipLayout';
 
 const App = () => {
   const fakeData = Array(50)
