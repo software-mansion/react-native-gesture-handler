@@ -35,6 +35,7 @@ import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHR
 import TwoFingerPan from './src/release_tests/twoFingerPan';
 import SvgCompatibility from './src/release_tests/svg';
 import NestedText from './src/release_tests/nestedText';
+import PictureInPicture from './src/release_tests/pictureInPicture';
 
 import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
@@ -182,6 +183,10 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Nested buttons (sound & ripple)',
         component: NestedButtons,
         unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
+      },
+      {
+        name: 'Picture in picture',
+        component: PictureInPicture,
       },
       {
         name: 'Svg integration with Gesture Handler',
