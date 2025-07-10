@@ -1,17 +1,16 @@
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   Animated,
   Dimensions,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
   SafeAreaView,
   LayoutChangeEvent,
 } from 'react-native';
 import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State as PanState,
+  Gesture,
+  GestureDetector,
+  Pressable,
 } from 'react-native-gesture-handler';
 
 const AnimatedSafeAreView = Animated.createAnimatedComponent(SafeAreaView);
@@ -61,27 +60,17 @@ export const PipLayout = (props: PipLayoutProps) => {
   const touchOnPlayerX = new Animated.Value(0);
   const touchOnPlayerY = new Animated.Value(0);
 
-  const onPlayerVerticalDrag = Animated.event(
-    [
-      {
-        nativeEvent: { translationY: touchOnPlayerY },
-      },
-    ],
+  const onPlayerVerticalDrag = Animated.event([
     {
-      useNativeDriver: true,
-    }
-  );
+      translationY: touchOnPlayerY,
+    },
+  ]);
 
-  const onPlayerSwipeAway = Animated.event(
-    [
-      {
-        nativeEvent: { translationX: touchOnPlayerX },
-      },
-    ],
+  const onPlayerSwipeAway = Animated.event([
     {
-      useNativeDriver: true,
-    }
-  );
+      translationX: touchOnPlayerX,
+    },
+  ]);
 
   const showFullDetails = () => {
     setShowFullDetails(true);
@@ -252,52 +241,6 @@ export const PipLayout = (props: PipLayoutProps) => {
     ];
   };
 
-  const onPlayerVerticalDragStateChange = ({
-    nativeEvent,
-  }: PanGestureHandlerGestureEvent) => {
-    if (nativeEvent.state === PanState.END) {
-      const transitionThreshold =
-        playerMaximumTopOffset() *
-        PICTURE_IN_PICTURE_TRANSITION_THRESHOLD_PERCENTAGE;
-      const activateFullDetails =
-        (isFullDetails && nativeEvent.translationY < transitionThreshold) ||
-        (!isFullDetails &&
-          Math.abs(nativeEvent.translationY) > transitionThreshold);
-      setShowFullDetails(activateFullDetails);
-    }
-  };
-
-  const onPlayerSwipeAwayStateChange = ({
-    nativeEvent,
-  }: PanGestureHandlerGestureEvent) => {
-    if (nativeEvent.state === PanState.END) {
-      setIsDraggingEnabled(false);
-      const { width } = Dimensions.get('window');
-      const swipeAwayDistance =
-        pictureInPicturePlayerSize().width * SWIPE_AWAY_THRESHOLD_PERCENTAGE;
-      const isSwipeAwaySuccesful =
-        Math.abs(nativeEvent.translationX) > swipeAwayDistance;
-      if (isSwipeAwaySuccesful) {
-        Animated.timing(touchOnPlayerX, {
-          duration: ANIMATION_LENGTH,
-          toValue:
-            (nativeEvent.translationX > 0 ? 1 : -1) *
-            width *
-            SWIPE_AWAY_SPEED_MULTIPLIER,
-          useNativeDriver: true,
-        }).start();
-      } else {
-        Animated.timing(touchOnPlayerX, {
-          duration: ANIMATION_LENGTH,
-          toValue: 0,
-          useNativeDriver: true,
-        }).start(() => {
-          setIsDraggingEnabled(true);
-        });
-      }
-    }
-  };
-
   const setShowFullDetails = (activateFullDetails: boolean) => {
     setIsDraggingEnabled(false);
 
@@ -325,6 +268,56 @@ export const PipLayout = (props: PipLayoutProps) => {
 
   const containerPointerEvents = isFullDetails ? 'auto' : 'box-none';
 
+  const verticalDragGesture = Gesture.Pan()
+    .runOnJS(true)
+    .enabled(isDraggingEnabled)
+    .activeOffsetY([-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD])
+    .onUpdate((event) => {
+      onPlayerVerticalDrag(event);
+    })
+    .onEnd((event) => {
+      const transitionThreshold =
+        playerMaximumTopOffset() *
+        PICTURE_IN_PICTURE_TRANSITION_THRESHOLD_PERCENTAGE;
+      const activateFullDetails =
+        (isFullDetails && event.translationY < transitionThreshold) ||
+        (!isFullDetails && Math.abs(event.translationY) > transitionThreshold);
+      setShowFullDetails(activateFullDetails);
+    });
+
+  const swipeAwayGesture = Gesture.Pan()
+    .enabled(!isFullDetails && isDraggingEnabled)
+    .activeOffsetX([-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD])
+    .onUpdate((event) => {
+      onPlayerSwipeAway(event);
+    })
+    .onEnd((event) => {
+      setIsDraggingEnabled(false);
+      const { width } = Dimensions.get('window');
+      const swipeAwayDistance =
+        pictureInPicturePlayerSize().width * SWIPE_AWAY_THRESHOLD_PERCENTAGE;
+      const isSwipeAwaySuccesful =
+        Math.abs(event.translationX) > swipeAwayDistance;
+      if (isSwipeAwaySuccesful) {
+        Animated.timing(touchOnPlayerX, {
+          duration: ANIMATION_LENGTH,
+          toValue:
+            (event.translationX > 0 ? 1 : -1) *
+            width *
+            SWIPE_AWAY_SPEED_MULTIPLIER,
+          useNativeDriver: true,
+        }).start();
+      } else {
+        Animated.timing(touchOnPlayerX, {
+          duration: ANIMATION_LENGTH,
+          toValue: 0,
+          useNativeDriver: true,
+        }).start(() => {
+          setIsDraggingEnabled(true);
+        });
+      }
+    });
+
   return (
     <View style={styles.container} pointerEvents={containerPointerEvents}>
       <AnimatedSafeAreView
@@ -334,38 +327,26 @@ export const PipLayout = (props: PipLayoutProps) => {
       <Animated.View
         style={styles.movingContent}
         pointerEvents={containerPointerEvents}>
-        <PanGestureHandler
-          onGestureEvent={onPlayerVerticalDrag}
-          onHandlerStateChange={(event) =>
-            onPlayerVerticalDragStateChange(event)
-          }
-          enabled={isDraggingEnabled}
-          activeOffsetY={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
+        <GestureDetector gesture={verticalDragGesture}>
           <Animated.View
             style={playerSwipeAwayStyle()}
             pointerEvents={containerPointerEvents}>
-            <PanGestureHandler
-              onGestureEvent={onPlayerSwipeAway}
-              onHandlerStateChange={(event) =>
-                onPlayerSwipeAwayStateChange(event)
-              }
-              enabled={!isFullDetails && isDraggingEnabled}
-              activeOffsetX={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
+            <GestureDetector gesture={swipeAwayGesture}>
               <Animated.View
                 style={playerAnimatedStyle()}
                 pointerEvents={containerPointerEvents}
                 onLayout={(event) => onPlayerLayout(event)}>
-                <TouchableWithoutFeedback
+                <Pressable
                   onPress={() => showFullDetails()}
                   disabled={isFullDetails || !isDraggingEnabled}>
                   <View pointerEvents={isFullDetails ? 'auto' : 'box-only'}>
                     {player}
                   </View>
-                </TouchableWithoutFeedback>
+                </Pressable>
               </Animated.View>
-            </PanGestureHandler>
+            </GestureDetector>
           </Animated.View>
-        </PanGestureHandler>
+        </GestureDetector>
         <Animated.View
           style={[styles.bodyContainer, bodyAnimatedStyle()]}
           pointerEvents={isFullDetails ? 'auto' : 'none'}
