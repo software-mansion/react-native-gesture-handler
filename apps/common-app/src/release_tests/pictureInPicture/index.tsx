@@ -5,12 +5,14 @@ import {
   View,
   Text,
   StatusBar,
-  FlatList,
-  TouchableOpacity,
   Alert,
 } from 'react-native';
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  Pressable,
+  FlatList,
+} from 'react-native-gesture-handler';
 
 import { PipLayout } from './pipLayout';
 
@@ -29,18 +31,18 @@ const App = () => {
 
   const renderItem = ({ item }: { item: number }) => {
     return (
-      <TouchableOpacity onPress={() => onItemPress(item)}>
+      <Pressable onPress={() => onItemPress(item)}>
         <Text style={styles.row}>{`Item #${item}`}</Text>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
   const renderPlayButton = () => {
     return (
       <View style={styles.player}>
-        <TouchableOpacity onPress={onPlayPress}>
+        <Pressable onPress={onPlayPress}>
           <View style={styles.playButton} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   };
