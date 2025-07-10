@@ -1,17 +1,25 @@
-import { ReactNode, useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import {
-  Animated,
   Dimensions,
   StyleSheet,
   View,
-  SafeAreaView,
   LayoutChangeEvent,
+  SafeAreaView,
 } from 'react-native';
 import {
   Gesture,
   GestureDetector,
   Pressable,
 } from 'react-native-gesture-handler';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const AnimatedSafeAreView = Animated.createAnimatedComponent(SafeAreaView);
 
@@ -57,27 +65,13 @@ export const PipLayout = (props: PipLayoutProps) => {
     width: 0,
   });
 
-  const touchOnPlayerX = new Animated.Value(0);
-  const touchOnPlayerY = new Animated.Value(0);
+  const touchOnPlayerX = useSharedValue(0);
+  const touchOnPlayerY = useSharedValue(0);
 
-  const onPlayerVerticalDrag = Animated.event([
-    {
-      translationY: touchOnPlayerY,
-    },
-  ]);
-
-  const onPlayerSwipeAway = Animated.event([
-    {
-      translationX: touchOnPlayerX,
-    },
-  ]);
-
-  const showFullDetails = () => {
-    setShowFullDetails(true);
-  };
+  const { width, height } = Dimensions.get('window');
 
   const pictureInPicturePlayerSize = () => {
-    const { height } = Dimensions.get('window');
+    'worklet';
     const minPlayerHeight =
       height * PICTURE_IN_PICTURE_PLAYER_HEIGHT_PERCENTAGE;
     // Initially there is no player height. That is why we have a fallback
@@ -91,14 +85,14 @@ export const PipLayout = (props: PipLayoutProps) => {
   };
 
   const playerMaximumTopOffset = () => {
-    const { height } = Dimensions.get('window');
+    'worklet';
     const bottomPlayerPadding = PICTURE_IN_PICTURE_PLAYER_PADDING + 100;
 
     return height - pictureInPicturePlayerSize().height - bottomPlayerPadding;
   };
 
   const playerMaximumLeftOffset = () => {
-    const { width } = Dimensions.get('window');
+    'worklet';
     return (
       width -
       pictureInPicturePlayerSize().width -
@@ -107,46 +101,46 @@ export const PipLayout = (props: PipLayoutProps) => {
   };
 
   const playerPictureInPictureScale = () => {
-    const { width } = Dimensions.get('window');
+    'worklet';
     return pictureInPicturePlayerSize().width / width;
   };
 
-  const playerDragYPosition = () => {
-    return Animated.add(
-      touchOnPlayerY,
-      new Animated.Value(isFullDetails ? 0 : playerMaximumTopOffset())
-    );
-  };
+  const playerDragYPosition = useDerivedValue(
+    () => touchOnPlayerY.value + (isFullDetails ? 0 : playerMaximumTopOffset())
+  );
 
-  const playerSwipeAwayStyle = () => {
+  const playerSwipeAwayStyle = useAnimatedStyle(() => {
     const smallPlayerWidth = pictureInPicturePlayerSize().width;
 
     return {
-      opacity: touchOnPlayerX.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [
+      opacity: interpolate(
+        touchOnPlayerX.value,
+        [
           -smallPlayerWidth * SWIPE_AWAY_OPACITY_DROP_OFF_MULTIPLIER,
           0,
           smallPlayerWidth * SWIPE_AWAY_OPACITY_DROP_OFF_MULTIPLIER,
         ],
-        outputRange: [INVISIBLE, VISIBLE, INVISIBLE],
-      }),
+        [INVISIBLE, VISIBLE, INVISIBLE],
+        Extrapolation.CLAMP
+      ),
       transform: [
         {
-          translateX: touchOnPlayerX.interpolate({
-            inputRange: [-smallPlayerWidth, 0, smallPlayerWidth],
-            outputRange: [
+          translateX: interpolate(
+            touchOnPlayerX.value,
+            [-smallPlayerWidth, 0, smallPlayerWidth],
+            [
               -(smallPlayerWidth * playerPictureInPictureScale()),
               0,
               smallPlayerWidth * playerPictureInPictureScale(),
-            ],
-          }),
+            ]
+          ),
         },
       ],
     };
-  };
+  });
 
   const playerPositionOffsetBecauseOfScale = () => {
+    'worklet';
     return {
       x:
         (playerSize.width * playerPictureInPictureScale() - playerSize.width) /
@@ -158,107 +152,107 @@ export const PipLayout = (props: PipLayoutProps) => {
     };
   };
 
-  const playerAnimatedStyle = () => {
+  const playerAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
         {
-          translateX: playerDragYPosition().interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, playerMaximumTopOffset()],
-            outputRange: [
+          translateX: interpolate(
+            playerDragYPosition.value,
+            [0, playerMaximumTopOffset()],
+            [
               0,
               playerMaximumLeftOffset() +
                 playerPositionOffsetBecauseOfScale().x,
             ],
-          }),
+            Extrapolation.CLAMP
+          ),
         },
         {
-          translateY: playerDragYPosition().interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, playerMaximumTopOffset()],
-            outputRange: [
+          translateY: interpolate(
+            playerDragYPosition.value,
+            [0, playerMaximumTopOffset()],
+            [
               0,
               playerMaximumTopOffset() + playerPositionOffsetBecauseOfScale().y,
             ],
-          }),
+            Extrapolation.CLAMP
+          ),
         },
         {
-          scale: playerDragYPosition().interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, playerMaximumTopOffset()],
-            outputRange: [1, playerPictureInPictureScale()],
-          }),
+          scale: interpolate(
+            playerDragYPosition.value,
+            [0, playerMaximumTopOffset()],
+            [1, playerPictureInPictureScale()],
+            Extrapolation.CLAMP
+          ),
         },
       ],
     };
-  };
+  });
 
-  const bodyAnimatedStyle = () => {
+  const bodyAnimatedStyle = useAnimatedStyle(() => {
     const playerSizeDifferenceAfterScale =
       playerSize.height - pictureInPicturePlayerSize().height;
 
     return {
-      opacity: playerDragYPosition().interpolate({
-        extrapolate: 'clamp',
-        inputRange: [0, playerMaximumTopOffset()],
-        outputRange: [VISIBLE, INVISIBLE],
-      }),
+      opacity: interpolate(
+        playerDragYPosition.value,
+        [0, playerMaximumTopOffset()],
+        [VISIBLE, INVISIBLE],
+        Extrapolation.CLAMP
+      ),
       transform: [
         {
-          translateY: playerDragYPosition().interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, playerMaximumTopOffset()],
-            outputRange: [
-              0,
-              playerMaximumTopOffset() - playerSizeDifferenceAfterScale,
-            ],
-          }),
+          translateY: interpolate(
+            playerDragYPosition.value,
+            [0, playerMaximumTopOffset()],
+            [0, playerMaximumTopOffset() - playerSizeDifferenceAfterScale],
+            Extrapolation.CLAMP
+          ),
         },
         {
-          translateX: playerDragYPosition().interpolate({
-            extrapolate: 'clamp',
-            inputRange: [0, playerMaximumTopOffset()],
-            outputRange: [0, playerMaximumLeftOffset()],
-          }),
+          translateX: interpolate(
+            playerDragYPosition.value,
+            [0, playerMaximumTopOffset()],
+            [0, playerMaximumLeftOffset()],
+            Extrapolation.CLAMP
+          ),
         },
       ],
     };
-  };
+  });
 
-  const topSafeAreaStyle = () => {
-    return [
-      styles.topSafeArea,
-      {
-        opacity: playerDragYPosition().interpolate({
-          extrapolate: 'clamp',
-          inputRange: [
-            0,
-            playerMaximumTopOffset() * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE,
-          ],
-          outputRange: [VISIBLE, INVISIBLE],
-        }),
-      },
-    ];
-  };
+  const topSafeAreaStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(
+        playerDragYPosition.value,
+        [0, playerMaximumTopOffset() * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE],
+        [0, playerMaximumTopOffset() * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE],
+        Extrapolation.CLAMP
+      ),
+    };
+  });
 
   const setShowFullDetails = (activateFullDetails: boolean) => {
-    setIsDraggingEnabled(false);
+    'worklet';
+    runOnJS(setIsDraggingEnabled)(false);
 
     const isFullDetailsYOffset = isFullDetails ? 0 : playerMaximumTopOffset();
-    Animated.timing(touchOnPlayerY, {
-      duration: ANIMATION_LENGTH,
-      toValue:
-        (activateFullDetails ? 0 : playerMaximumTopOffset()) -
+    touchOnPlayerY.value = withTiming(
+      (activateFullDetails ? 0 : playerMaximumTopOffset()) -
         isFullDetailsYOffset,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsDraggingEnabled(true);
-      setIsFullDetails(activateFullDetails);
-    });
+      { duration: ANIMATION_LENGTH },
+      () => {
+        'worklet';
+        runOnJS(setIsDraggingEnabled)(true);
+        runOnJS(setIsFullDetails)(activateFullDetails);
+      }
+    );
   };
 
   const onPlayerLayout = ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
-    setPlayerSize({
+    'worklet';
+    runOnJS(setPlayerSize)({
       height: layout.height,
       width: layout.width,
     });
@@ -273,7 +267,7 @@ export const PipLayout = (props: PipLayoutProps) => {
     .enabled(isDraggingEnabled)
     .activeOffsetY([-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD])
     .onUpdate((event) => {
-      onPlayerVerticalDrag(event);
+      touchOnPlayerY.value = event.translationY;
     })
     .onEnd((event) => {
       const transitionThreshold =
@@ -289,39 +283,38 @@ export const PipLayout = (props: PipLayoutProps) => {
     .enabled(!isFullDetails && isDraggingEnabled)
     .activeOffsetX([-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD])
     .onUpdate((event) => {
-      onPlayerSwipeAway(event);
+      touchOnPlayerX.value = event.translationX;
     })
     .onEnd((event) => {
-      setIsDraggingEnabled(false);
-      const { width } = Dimensions.get('window');
+      runOnJS(setIsDraggingEnabled)(false);
+
       const swipeAwayDistance =
         pictureInPicturePlayerSize().width * SWIPE_AWAY_THRESHOLD_PERCENTAGE;
       const isSwipeAwaySuccesful =
         Math.abs(event.translationX) > swipeAwayDistance;
       if (isSwipeAwaySuccesful) {
-        Animated.timing(touchOnPlayerX, {
-          duration: ANIMATION_LENGTH,
-          toValue:
-            (event.translationX > 0 ? 1 : -1) *
+        touchOnPlayerX.value = withTiming(
+          (event.translationX > 0 ? 1 : -1) *
             width *
             SWIPE_AWAY_SPEED_MULTIPLIER,
-          useNativeDriver: true,
-        }).start();
+          { duration: ANIMATION_LENGTH }
+        );
       } else {
-        Animated.timing(touchOnPlayerX, {
-          duration: ANIMATION_LENGTH,
-          toValue: 0,
-          useNativeDriver: true,
-        }).start(() => {
-          setIsDraggingEnabled(true);
-        });
+        touchOnPlayerX.value = withTiming(
+          0,
+          { duration: ANIMATION_LENGTH },
+          () => {
+            'worklet';
+            runOnJS(setIsDraggingEnabled)(true);
+          }
+        );
       }
     });
 
   return (
     <View style={styles.container} pointerEvents={containerPointerEvents}>
       <AnimatedSafeAreView
-        style={topSafeAreaStyle()}
+        style={[styles.topSafeArea, topSafeAreaStyle]}
         pointerEvents={containerPointerEvents}
       />
       <Animated.View
@@ -329,15 +322,15 @@ export const PipLayout = (props: PipLayoutProps) => {
         pointerEvents={containerPointerEvents}>
         <GestureDetector gesture={verticalDragGesture}>
           <Animated.View
-            style={playerSwipeAwayStyle()}
+            style={playerSwipeAwayStyle}
             pointerEvents={containerPointerEvents}>
             <GestureDetector gesture={swipeAwayGesture}>
               <Animated.View
-                style={playerAnimatedStyle()}
+                style={playerAnimatedStyle}
                 pointerEvents={containerPointerEvents}
                 onLayout={(event) => onPlayerLayout(event)}>
                 <Pressable
-                  onPress={() => showFullDetails()}
+                  onPress={() => setShowFullDetails(true)}
                   disabled={isFullDetails || !isDraggingEnabled}>
                   <View pointerEvents={isFullDetails ? 'auto' : 'box-only'}>
                     {player}
@@ -348,7 +341,7 @@ export const PipLayout = (props: PipLayoutProps) => {
           </Animated.View>
         </GestureDetector>
         <Animated.View
-          style={[styles.bodyContainer, bodyAnimatedStyle()]}
+          style={[styles.bodyContainer, bodyAnimatedStyle]}
           pointerEvents={isFullDetails ? 'auto' : 'none'}
         />
       </Animated.View>
