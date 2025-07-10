@@ -72,6 +72,13 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   if (!__DEV__) {
     return;
   }
+
+  // Wokrlets do not work on web and in test environments, so we don't need to check
+  // if the callbacks are worklets.
+  if (Platform.OS === 'web' || isTestEnv()) {
+    return;
+  }
+
   // If a gesture is explicitly marked to run on the JS thread there is no need to check
   // if callbacks are worklets as the user is aware they will be ran on the JS thread
   if (gesture.config.runOnJS) {
