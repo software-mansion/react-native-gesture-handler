@@ -168,11 +168,7 @@ export interface PressableProps
   blocksExternalGesture?: RelationPropType;
 
   /**
-   * Defines the dimensions of the Pressable after it's been resized.
-   * This property does not affect Pressable's physical appearance.
-   * Required when the Pressable is resized **and** uses pressRetentionOffset.
-   *
-   * @deprecated This property is no longer used. It can be safely removed.
+   * @deprecated This property is no longer used, and will be removed in the future. It can be safely removed.
    */
   dimensionsAfterResize?: PressableDimensions;
 }
