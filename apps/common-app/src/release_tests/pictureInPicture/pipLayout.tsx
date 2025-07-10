@@ -131,7 +131,9 @@ export default class PipLayout extends Component<Props, State> {
           pointerEvents={containerPointerEvents}>
           <PanGestureHandler
             onGestureEvent={this.onPlayerVerticalDrag}
-            onHandlerStateChange={this.onPlayerVerticalDragStateChange}
+            onHandlerStateChange={(event) =>
+              this.onPlayerVerticalDragStateChange(event)
+            }
             enabled={this.state.isDraggingEnabled}
             activeOffsetY={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
             <Animated.View
@@ -139,15 +141,17 @@ export default class PipLayout extends Component<Props, State> {
               pointerEvents={containerPointerEvents}>
               <PanGestureHandler
                 onGestureEvent={this.onPlayerSwipeAway}
-                onHandlerStateChange={this.onPlayerSwipeAwayStateChange}
+                onHandlerStateChange={(event) =>
+                  this.onPlayerSwipeAwayStateChange(event)
+                }
                 enabled={!isFullDetails && isDraggingEnabled}
                 activeOffsetX={[-PAN_RESPOND_THRESHOLD, PAN_RESPOND_THRESHOLD]}>
                 <Animated.View
                   style={this.playerAnimatedStyle}
                   pointerEvents={containerPointerEvents}
-                  onLayout={this.onPlayerLayout}>
+                  onLayout={(event) => this.onPlayerLayout(event)}>
                   <TouchableWithoutFeedback
-                    onPress={this.showFullDetails}
+                    onPress={() => this.showFullDetails()}
                     disabled={isFullDetails || !isDraggingEnabled}>
                     <View pointerEvents={isFullDetails ? 'auto' : 'box-only'}>
                       {player}
@@ -389,8 +393,8 @@ export default class PipLayout extends Component<Props, State> {
 
   setShowFullDetails(activateFullDetails: boolean) {
     this.setState({ isDraggingEnabled: false }, () => {
-      const { isFullDetails } = this.state;
-      const isFullDetailsYOffset = isFullDetails
+      // eslint-disable-next-line @eslint-react/no-access-state-in-setstate
+      const isFullDetailsYOffset = this.state.isFullDetails
         ? 0
         : this.playerMaximumTopOffset;
       Animated.timing(this.touchOnPlayerY, {
