@@ -17,9 +17,9 @@ import PipLayout from './pipLayout';
 const App = () => {
   const fakeData = Array(50)
     .fill(0)
-    .map((value, index) => value + index);
+    .map((value: number, index) => value + index);
 
-  const onItemPress = (item) => {
+  const onItemPress = (item: number) => {
     Alert.alert('Item pressed', `Item #${item}`);
   };
 
@@ -27,7 +27,7 @@ const App = () => {
     Alert.alert('Play press');
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: { item: number }) => {
     return (
       <TouchableOpacity onPress={() => onItemPress(item)}>
         <Text style={styles.row}>{`Item #${item}`}</Text>
