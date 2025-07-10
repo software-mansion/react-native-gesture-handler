@@ -48,31 +48,10 @@ class RNGestureHandlerDetectorShadowNode final
     initialize();
   }
 
-  void initialize() {
-    // Disable forcing view flattening
-    ShadowNode::traits_.unset(ShadowNodeTraits::ForceFlattenView);
-  }
+  void layout(LayoutContext layoutContext) override;
 
-  void layout(LayoutContext layoutContext) override {
-    YogaLayoutableShadowNode::layout(layoutContext);
-    // TODO: consider allowing more than one child and doing bounding box
-    react_native_assert(getChildren().size() == 1);
-
-    auto child = std::static_pointer_cast<const YogaLayoutableShadowNode>(
-        getChildren()[0]);
-    auto mutableChild =
-        std::const_pointer_cast<YogaLayoutableShadowNode>(child);
-
-    // TODO: figure out the correct way to setup metrics between detector and
-    // the child
-    auto metrics = child->getLayoutMetrics();
-    metrics.frame = child->getLayoutMetrics().frame;
-    setLayoutMetrics(metrics);
-
-    auto childmetrics = child->getLayoutMetrics();
-    childmetrics.frame.origin = Point{};
-    mutableChild->setLayoutMetrics(childmetrics);
-  }
+ private:
+  void initialize();
 };
 
 } // namespace facebook::react
