@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -15,9 +14,9 @@ import {
 } from './PressableProps';
 import {
   Insets,
+  LayoutChangeEvent,
   Platform,
   StyleProp,
-  View,
   ViewStyle,
   processColor,
 } from 'react-native';
@@ -46,7 +45,6 @@ let IS_FABRIC: null | boolean = null;
 
 const Pressable = (props: PressableProps) => {
   const {
-    ref,
     testOnly_pressed,
     hitSlop,
     pressRetentionOffset,
@@ -60,6 +58,7 @@ const Pressable = (props: PressableProps) => {
     onPressIn,
     onPressOut,
     onLongPress,
+    onLayout,
     style,
     children,
     android_disableSound,
@@ -69,7 +68,6 @@ const Pressable = (props: PressableProps) => {
     simultaneousWithExternalGesture,
     requireExternalGestureToFail,
     blocksExternalGesture,
-    dimensionsAfterResize,
     ...remainingProps
   } = props;
 
@@ -78,9 +76,6 @@ const Pressable = (props: PressableProps) => {
     requireExternalGestureToFail,
     blocksExternalGesture,
   };
-
-  // used only if `ref` is undefined
-  const fallbackRef = useRef<View>(null);
 
   const [pressedState, setPressedState] = useState(testOnly_pressed ?? false);
 
@@ -108,21 +103,6 @@ const Pressable = (props: PressableProps) => {
     normalizedHitSlop,
     normalizedPressRetentionOffset
   );
-
-  useLayoutEffect(() => {
-    if (dimensionsAfterResize) {
-      dimensions.current = dimensionsAfterResize;
-    } else {
-      requestAnimationFrame(() => {
-        (ref ?? fallbackRef).current?.measure((_x, _y, width, height) => {
-          dimensions.current = {
-            width,
-            height,
-          };
-        });
-      });
-    }
-  }, [dimensionsAfterResize, ref]);
 
   const cancelLongPress = useCallback(() => {
     if (longPressTimeoutRef.current) {
@@ -377,11 +357,19 @@ const Pressable = (props: PressableProps) => {
       : processColor(unprocessedRippleColor);
   }, [android_ripple]);
 
+  const setDimensions = useCallback(
+    (event: LayoutChangeEvent) => {
+      onLayout?.(event);
+      dimensions.current = event.nativeEvent.layout;
+    },
+    [onLayout]
+  );
+
   return (
     <GestureDetector gesture={gesture}>
       <NativeButton
         {...remainingProps}
-        ref={ref ?? fallbackRef}
+        onLayout={setDimensions}
         accessible={accessible !== false}
         hitSlop={appliedHitSlop}
         enabled={isPressableEnabled}
