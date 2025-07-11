@@ -168,7 +168,7 @@ export interface PressableProps
   blocksExternalGesture?: RelationPropType;
 
   /**
-   * @deprecated This property is no longer used, and will be removed in the future. It can be safely removed.
+   * @deprecated This property is no longer used, and will be removed in the future.
    */
   dimensionsAfterResize?: PressableDimensions;
 }
