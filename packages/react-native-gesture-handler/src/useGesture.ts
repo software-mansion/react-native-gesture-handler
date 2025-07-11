@@ -17,7 +17,7 @@ export interface NativeGesture {
   tag: number;
   name: GestureType;
   config: Record<string, unknown>;
-  animatedEvents: boolean;
+  dispatchAnimatedEvents: boolean;
 }
 
 export function useGesture(
@@ -60,7 +60,7 @@ export function useGesture(
     tag: tag,
     name: type,
     config: fullConfig,
-    animatedEvents:
+    dispatchAnimatedEvents:
       !!onGestureHandlerAnimatedEvent &&
       '__isNative' in (onGestureHandlerAnimatedEvent as any),
   };

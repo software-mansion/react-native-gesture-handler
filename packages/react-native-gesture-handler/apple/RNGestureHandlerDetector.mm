@@ -128,8 +128,8 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
       [handlerManager.registry
           attachHandlerWithTag:handlerTag
                         toView:self
-                withActionType:newProps.animatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
-                                                       : RNGestureHandlerActionTypeNativeDetector];
+                withActionType:newProps.dispatchAnimatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
+                                                               : RNGestureHandlerActionTypeNativeDetector];
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
