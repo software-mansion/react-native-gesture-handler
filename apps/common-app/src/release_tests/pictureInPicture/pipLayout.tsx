@@ -70,7 +70,7 @@ export const PipLayout = (props: PipLayoutProps) => {
 
   const { width, height } = useMemo(() => Dimensions.get('window'), []);
 
-  const pictureInPicturePlayerSize = () => {
+  const pictureInPicturePlayerSize = useMemo(() => {
     'worklet';
     const minPlayerHeight =
       height * PICTURE_IN_PICTURE_PLAYER_HEIGHT_PERCENTAGE;
@@ -82,35 +82,35 @@ export const PipLayout = (props: PipLayoutProps) => {
       height: minPlayerHeight,
       width: minPlayerHeight * aspectRatio,
     };
-  };
+  }, [height, playerSize]);
 
-  const playerMaximumTopOffset = () => {
+  const playerMaximumTopOffset = useMemo(() => {
     'worklet';
     const bottomPlayerPadding = PICTURE_IN_PICTURE_PLAYER_PADDING + 100;
 
-    return height - pictureInPicturePlayerSize().height - bottomPlayerPadding;
-  };
+    return height - pictureInPicturePlayerSize.height - bottomPlayerPadding;
+  }, [height, pictureInPicturePlayerSize]);
 
-  const playerMaximumLeftOffset = () => {
+  const playerMaximumLeftOffset = useMemo(() => {
     'worklet';
     return (
       width -
-      pictureInPicturePlayerSize().width -
+      pictureInPicturePlayerSize.width -
       PICTURE_IN_PICTURE_PLAYER_PADDING
     );
-  };
+  }, [pictureInPicturePlayerSize, width]);
 
-  const playerPictureInPictureScale = () => {
+  const playerPictureInPictureScale = useMemo(() => {
     'worklet';
-    return pictureInPicturePlayerSize().width / width;
-  };
+    return pictureInPicturePlayerSize.width / width;
+  }, [pictureInPicturePlayerSize, width]);
 
   const playerDragYPosition = useDerivedValue(
-    () => touchOnPlayerY.value + (isFullDetails ? 0 : playerMaximumTopOffset())
+    () => touchOnPlayerY.value + (isFullDetails ? 0 : playerMaximumTopOffset)
   );
 
   const playerSwipeAwayStyle = useAnimatedStyle(() => {
-    const smallPlayerWidth = pictureInPicturePlayerSize().width;
+    const smallPlayerWidth = pictureInPicturePlayerSize.width;
 
     return {
       opacity: interpolate(
@@ -129,9 +129,9 @@ export const PipLayout = (props: PipLayoutProps) => {
             touchOnPlayerX.value,
             [-smallPlayerWidth, 0, smallPlayerWidth],
             [
-              -(smallPlayerWidth * playerPictureInPictureScale()),
+              -(smallPlayerWidth * playerPictureInPictureScale),
               0,
-              smallPlayerWidth * playerPictureInPictureScale(),
+              smallPlayerWidth * playerPictureInPictureScale,
             ]
           ),
         },
@@ -139,18 +139,16 @@ export const PipLayout = (props: PipLayoutProps) => {
     };
   });
 
-  const playerPositionOffsetBecauseOfScale = () => {
+  const playerPositionOffsetBecauseOfScale = useMemo(() => {
     'worklet';
     return {
       x:
-        (playerSize.width * playerPictureInPictureScale() - playerSize.width) /
-        2,
+        (playerSize.width * playerPictureInPictureScale - playerSize.width) / 2,
       y:
-        (playerSize.height * playerPictureInPictureScale() -
-          playerSize.height) /
+        (playerSize.height * playerPictureInPictureScale - playerSize.height) /
         2,
     };
-  };
+  }, [playerPictureInPictureScale, playerSize.height, playerSize.width]);
 
   const playerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -158,31 +156,24 @@ export const PipLayout = (props: PipLayoutProps) => {
         {
           translateX: interpolate(
             playerDragYPosition.value,
-            [0, playerMaximumTopOffset()],
-            [
-              0,
-              playerMaximumLeftOffset() +
-                playerPositionOffsetBecauseOfScale().x,
-            ],
+            [0, playerMaximumTopOffset],
+            [0, playerMaximumLeftOffset + playerPositionOffsetBecauseOfScale.x],
             Extrapolation.CLAMP
           ),
         },
         {
           translateY: interpolate(
             playerDragYPosition.value,
-            [0, playerMaximumTopOffset()],
-            [
-              0,
-              playerMaximumTopOffset() + playerPositionOffsetBecauseOfScale().y,
-            ],
+            [0, playerMaximumTopOffset],
+            [0, playerMaximumTopOffset + playerPositionOffsetBecauseOfScale.y],
             Extrapolation.CLAMP
           ),
         },
         {
           scale: interpolate(
             playerDragYPosition.value,
-            [0, playerMaximumTopOffset()],
-            [1, playerPictureInPictureScale()],
+            [0, playerMaximumTopOffset],
+            [1, playerPictureInPictureScale],
             Extrapolation.CLAMP
           ),
         },
@@ -192,12 +183,12 @@ export const PipLayout = (props: PipLayoutProps) => {
 
   const bodyAnimatedStyle = useAnimatedStyle(() => {
     const playerSizeDifferenceAfterScale =
-      playerSize.height - pictureInPicturePlayerSize().height;
+      playerSize.height - pictureInPicturePlayerSize.height;
 
     return {
       opacity: interpolate(
         playerDragYPosition.value,
-        [0, playerMaximumTopOffset()],
+        [0, playerMaximumTopOffset],
         [VISIBLE, INVISIBLE],
         Extrapolation.CLAMP
       ),
@@ -205,16 +196,16 @@ export const PipLayout = (props: PipLayoutProps) => {
         {
           translateY: interpolate(
             playerDragYPosition.value,
-            [0, playerMaximumTopOffset()],
-            [0, playerMaximumTopOffset() - playerSizeDifferenceAfterScale],
+            [0, playerMaximumTopOffset],
+            [0, playerMaximumTopOffset - playerSizeDifferenceAfterScale],
             Extrapolation.CLAMP
           ),
         },
         {
           translateX: interpolate(
             playerDragYPosition.value,
-            [0, playerMaximumTopOffset()],
-            [0, playerMaximumLeftOffset()],
+            [0, playerMaximumTopOffset],
+            [0, playerMaximumLeftOffset],
             Extrapolation.CLAMP
           ),
         },
@@ -226,8 +217,8 @@ export const PipLayout = (props: PipLayoutProps) => {
     return {
       opacity: interpolate(
         playerDragYPosition.value,
-        [0, playerMaximumTopOffset() * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE],
-        [0, playerMaximumTopOffset() * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE],
+        [0, playerMaximumTopOffset * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE],
+        [0, playerMaximumTopOffset * SAFE_AREA_OPACITY_DROP_OFF_PERCENTAGE],
         Extrapolation.CLAMP
       ),
     };
@@ -237,10 +228,9 @@ export const PipLayout = (props: PipLayoutProps) => {
     'worklet';
     runOnJS(setIsDraggingEnabled)(false);
 
-    const isFullDetailsYOffset = isFullDetails ? 0 : playerMaximumTopOffset();
+    const isFullDetailsYOffset = isFullDetails ? 0 : playerMaximumTopOffset;
     touchOnPlayerY.value = withTiming(
-      (activateFullDetails ? 0 : playerMaximumTopOffset()) -
-        isFullDetailsYOffset,
+      (activateFullDetails ? 0 : playerMaximumTopOffset) - isFullDetailsYOffset,
       { duration: ANIMATION_LENGTH },
       () => {
         'worklet';
@@ -271,7 +261,7 @@ export const PipLayout = (props: PipLayoutProps) => {
     })
     .onEnd((event) => {
       const transitionThreshold =
-        playerMaximumTopOffset() *
+        playerMaximumTopOffset *
         PICTURE_IN_PICTURE_TRANSITION_THRESHOLD_PERCENTAGE;
       const activateFullDetails =
         (isFullDetails && event.translationY < transitionThreshold) ||
@@ -289,7 +279,7 @@ export const PipLayout = (props: PipLayoutProps) => {
       runOnJS(setIsDraggingEnabled)(false);
 
       const swipeAwayDistance =
-        pictureInPicturePlayerSize().width * SWIPE_AWAY_THRESHOLD_PERCENTAGE;
+        pictureInPicturePlayerSize.width * SWIPE_AWAY_THRESHOLD_PERCENTAGE;
       const isSwipeAwaySuccesful =
         Math.abs(event.translationX) > swipeAwayDistance;
       if (isSwipeAwaySuccesful) {
