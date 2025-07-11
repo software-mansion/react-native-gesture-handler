@@ -17,7 +17,7 @@ export default function App() {
     }
   );
 
-  const tap = useGesture('PanGestureHandler', {
+  const gesture = useGesture('PanGestureHandler', {
     onGestureHandlerAnimatedEvent: event,
     onGestureHandlerEvent: (e: any) =>
       console.log('onGestureHandlerEvent', e.nativeEvent),
@@ -34,7 +34,7 @@ export default function App() {
       />
 
       {visible && (
-        <NativeDetector gesture={tap}>
+        <NativeDetector gesture={gesture}>
           <Animated.View
             style={[
               {
