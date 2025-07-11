@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   AccessibilityProps,
   ColorValue,
+  LayoutChangeEvent,
   StyleProp,
   ViewStyle,
 } from 'react-native';
@@ -55,6 +56,11 @@ export interface RawButtonProps
    * Style object, use it to set additional styles.
    */
   style?: StyleProp<ViewStyle>;
+
+  /**
+   * Invoked on mount and layout changes.
+   */
+  onLayout?: (event: LayoutChangeEvent) => void;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
