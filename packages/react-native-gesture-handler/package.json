@@ -55,7 +55,8 @@
     "ReanimatedDrawerLayout/",
     "README.md",
     "jestSetup.js",
-    "RNGestureHandler.podspec"
+    "RNGestureHandler.podspec",
+    "react-native.config.js"
   ],
   "repository": {
     "type": "git",
@@ -135,7 +136,8 @@
     },
     "ios": {
       "componentProvider": {
-        "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView"
+        "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView",
+        "RNGestureHandlerDetector": "RNGestureHandlerDetector"
       }
     }
   },

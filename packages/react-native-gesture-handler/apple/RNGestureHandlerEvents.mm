@@ -165,9 +165,7 @@
 @end
 
 @implementation RNGestureHandlerEvent {
-  NSNumber *_handlerTag;
-  RNGestureHandlerState _state;
-  RNGestureHandlerEventExtraData *_extraData;
+  NSInteger _actionType;
 }
 
 @synthesize viewTag = _viewTag;
@@ -177,6 +175,7 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
+                   forActionType:(NSInteger)actionType
                    coalescingKey:(uint16_t)coalescingKey
 {
   if ((self = [super init])) {
@@ -185,6 +184,7 @@
     _state = state;
     _extraData = extraData;
     _coalescingKey = coalescingKey;
+    _actionType = actionType;
   }
   return self;
 }
@@ -193,7 +193,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSString *)eventName
 {
-  return @"onGestureHandlerEvent";
+  return _actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent ? @"onGestureHandlerAnimatedEvent"
+                                                                              : @"onGestureHandlerEvent";
 }
 
 - (BOOL)canCoalesce
@@ -213,21 +214,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSArray *)arguments
 {
-  NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:_extraData.data];
-  [body setObject:_viewTag forKey:@"target"];
-  [body setObject:_handlerTag forKey:@"handlerTag"];
-  [body setObject:@(_state) forKey:@"state"];
-  return @[ self.viewTag, @"onGestureHandlerEvent", body ];
+  if (_actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
+    NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
+    [body setObject:_viewTag forKey:@"target"];
+    [body setObject:_handlerTag forKey:@"handlerTag"];
+    [body setObject:@(_state) forKey:@"state"];
+    [body setObject:_extraData.data forKey:@"handlerData"];
+    return @[ self.viewTag, @"onGestureHandlerAnimatedEvent", body ];
+  } else {
+    NSMutableDictionary *body = [NSMutableDictionary dictionaryWithDictionary:_extraData.data];
+    [body setObject:_viewTag forKey:@"target"];
+    [body setObject:_handlerTag forKey:@"handlerTag"];
+    [body setObject:@(_state) forKey:@"state"];
+    return @[ self.viewTag, @"onGestureHandlerEvent", body ];
+  }
 }
 
 @end
 
-@implementation RNGestureHandlerStateChange {
-  NSNumber *_handlerTag;
-  RNGestureHandlerState _state;
-  RNGestureHandlerState _prevState;
-  RNGestureHandlerEventExtraData *_extraData;
-}
+@implementation RNGestureHandlerStateChange
 
 @synthesize viewTag = _viewTag;
 @synthesize coalescingKey = _coalescingKey;
@@ -243,7 +248,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     _viewTag = reactTag;
     _handlerTag = handlerTag;
     _state = state;
-    _prevState = prevState;
+    _previousState = prevState;
     _extraData = extraData;
     _coalescingKey = coalescingKey++;
   }
@@ -279,7 +284,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [body setObject:_viewTag forKey:@"target"];
   [body setObject:_handlerTag forKey:@"handlerTag"];
   [body setObject:@(_state) forKey:@"state"];
-  [body setObject:@(_prevState) forKey:@"oldState"];
+  [body setObject:@(_previousState) forKey:@"oldState"];
   return @[ self.viewTag, @"onGestureHandlerStateChange", body ];
 }
 

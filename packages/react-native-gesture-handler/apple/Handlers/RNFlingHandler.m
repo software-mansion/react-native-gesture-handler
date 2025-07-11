@@ -169,7 +169,8 @@
 
   double timeDelta = currentTime - startTime;
 
-  Vector *velocityVector = [Vector fromVelocityX:(distance.x / timeDelta) withVelocityY:(distance.y / timeDelta)];
+  RNGHVector *velocityVector = [RNGHVector fromVelocityX:(distance.x / timeDelta)
+                                           withVelocityY:(distance.y / timeDelta)];
 
   [self tryActivate:velocityVector];
 }
@@ -184,7 +185,7 @@
       self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
 }
 
-- (void)tryActivate:(Vector *)velocityVector
+- (void)tryActivate:(RNGHVector *)velocityVector
 {
   bool isAligned = NO;
 
@@ -217,9 +218,9 @@
 
 - (BOOL)getAlignment:(RNGestureHandlerDirection)direction
     withMinimalAlignmentCosine:(double)minimalAlignmentCosine
-            withVelocityVector:(Vector *)velocityVector
+            withVelocityVector:(RNGHVector *)velocityVector
 {
-  Vector *directionVector = [Vector fromDirection:direction];
+  RNGHVector *directionVector = [RNGHVector fromDirection:direction];
   return ((self.direction & direction) == direction) &&
       [velocityVector isSimilar:directionVector withThreshold:minimalAlignmentCosine];
 }

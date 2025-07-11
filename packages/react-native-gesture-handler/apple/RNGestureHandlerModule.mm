@@ -20,7 +20,6 @@
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
-#import "RNGestureHandlerManager.h"
 #import "RNGestureHandlerState.h"
 
 #import "RNGestureHandlerButton.h"
@@ -30,9 +29,7 @@
 
 using namespace gesturehandler;
 using namespace facebook;
-#ifdef RCT_NEW_ARCH_ENABLED
 using namespace react;
-#endif // RCT_NEW_ARCH_ENABLED
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @interface RNGestureHandlerModule () <RCTTurboModule, RCTTurboModuleWithJSIBindings>
@@ -47,12 +44,11 @@ using namespace react;
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 @implementation RNGestureHandlerModule {
-  RNGestureHandlerManager *_manager;
-
   // Oparations called after views have been updated.
   NSMutableArray<GestureHandlerOperation> *_operations;
 
   jsi::Runtime *_rnRuntime;
+  int _moduleId;
 
   bool _checkedIfReanimatedIsAvailable;
   bool _isReanimatedAvailable;
@@ -61,6 +57,14 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 #ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+
+static std::unordered_map<int, RNGestureHandlerManager *> _managers;
+
++ (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId
+{
+  return _managers[moduleId];
+}
+
 #endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_MODULE()
@@ -72,12 +76,12 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  RNGestureHandlerManager *handlerManager = _manager;
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   dispatch_async(dispatch_get_main_queue(), ^{
     [handlerManager dropAllGestureHandlers];
   });
 
-  _manager = nil;
+  _managers[_moduleId] = nullptr;
 
 #ifndef RCT_NEW_ARCH_ENABLED
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
@@ -102,7 +106,7 @@ RCT_EXPORT_MODULE()
   _rnRuntime = &rnRuntime;
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, [weakSelf](int handlerTag, int state) {
+  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
@@ -114,8 +118,10 @@ RCT_EXPORT_MODULE()
 #ifdef RCT_NEW_ARCH_ENABLED
 - (void)initialize
 {
-  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
-                                                        viewRegistry:_viewRegistry_DEPRECATED];
+  static int nextModuleId = 0;
+  _moduleId = nextModuleId++;
+  _managers[_moduleId] = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                                    viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
 }
 #else
@@ -135,7 +141,7 @@ RCT_EXPORT_MODULE()
 {
   __weak RNGestureHandlerModule *weakSelf = self;
 
-  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, [weakSelf](int handlerTag, int state) {
+  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
     RNGestureHandlerModule *strongSelf = weakSelf;
     if (strongSelf != nil) {
       [strongSelf setGestureState:state forHandler:handlerTag];
@@ -206,12 +212,13 @@ RCT_EXPORT_MODULE()
     return;
   }
 
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
     for (GestureHandlerOperation operation in operations) {
-      operation(self->_manager);
+      operation(manager);
     }
   }];
 #endif // RCT_NEW_ARCH_ENABLED
@@ -231,7 +238,8 @@ RCT_EXPORT_MODULE()
 - (void)setGestureStateSync:(int)state forHandler:(int)handlerTag
 {
   RCTAssertMainQueue();
-  RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  RNGestureHandler *handler = [manager handlerWithTag:@(handlerTag)];
 
   if (handler != nil) {
     if (state == 1) { // FAILED

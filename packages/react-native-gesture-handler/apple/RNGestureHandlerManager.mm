@@ -11,7 +11,7 @@
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerActionType.h"
-#import "RNGestureHandlerRegistry.h"
+#import "RNGestureHandlerNativeEventUtils.h"
 #import "RNGestureHandlerState.h"
 #import "RNRootViewGestureRecognizer.h"
 
@@ -63,6 +63,11 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
+- (RNGestureHandlerRegistry *)registry
+{
+  return _registry;
+}
+
 - (instancetype)initWithModuleRegistry:(RCTModuleRegistry *)moduleRegistry viewRegistry:(RCTViewRegistry *)viewRegistry
 {
   if ((self = [super init])) {
@@ -347,9 +352,29 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 #pragma mark Events
 
-- (void)sendEvent:(RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType
+- (void)sendEvent:(RNGestureHandlerStateChange *)event
+    withActionType:(RNGestureHandlerActionType)actionType
+     forRecognizer:(UIGestureRecognizer *)recognizer
 {
   switch (actionType) {
+    case RNGestureHandlerActionTypeNativeDetector:
+    case RNGestureHandlerActionTypeNativeDetectorAnimatedEvent: {
+      RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
+      if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
+        if (actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
+          [self sendEventForNativeAnimatedEvent:event];
+        }
+
+        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+        auto nativeEvent = [gestureEvent getNativeEvent];
+        [detector dispatchGestureEvent:nativeEvent];
+      } else {
+        auto nativeEvent = [event getNativeEvent];
+        [detector dispatchStateChangeEvent:nativeEvent];
+      }
+      break;
+    }
+
     case RNGestureHandlerActionTypeReanimatedWorklet:
       [self sendEventForReanimated:event];
       break;
@@ -373,6 +398,42 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
       [self sendEventForJSFunctionNewAPI:event];
       break;
   }
+}
+
+- (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler withPointerType:(NSInteger)pointerType
+{
+  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerTouchEvent nativeEvent = {
+      .handlerTag = [handler.tag intValue],
+      .state = static_cast<int>(handler.state),
+      .pointerType = static_cast<int>(pointerType),
+      .numberOfTouches = handler.pointerTracker.trackedPointersCount,
+      .eventType = static_cast<int>(handler.pointerTracker.eventType),
+      .changedTouches = {},
+      .allTouches = {},
+  };
+
+  for (NSDictionary<NSString *, NSNumber *> *touch in handler.pointerTracker.allPointersData) {
+    nativeEvent.allTouches.push_back({
+        .id = [[touch valueForKey:@"id"] intValue],
+        .x = [[touch valueForKey:@"x"] doubleValue],
+        .y = [[touch valueForKey:@"y"] doubleValue],
+        .absoluteX = [[touch valueForKey:@"absoluteX"] doubleValue],
+        .absoluteY = [[touch valueForKey:@"absoluteY"] doubleValue],
+    });
+  }
+
+  for (NSDictionary<NSString *, NSNumber *> *touch in handler.pointerTracker.changedPointersData) {
+    nativeEvent.changedTouches.push_back({
+        .id = [[touch valueForKey:@"id"] intValue],
+        .x = [[touch valueForKey:@"x"] doubleValue],
+        .y = [[touch valueForKey:@"y"] doubleValue],
+        .absoluteX = [[touch valueForKey:@"absoluteX"] doubleValue],
+        .absoluteY = [[touch valueForKey:@"absoluteY"] doubleValue],
+    });
+  }
+
+  RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)handler.recognizer.view;
+  [detector dispatchTouchEvent:nativeEvent];
 }
 
 - (void)sendEventForReanimated:(RNGestureHandlerStateChange *)event

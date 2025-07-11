@@ -13,5 +13,5 @@ import android.view.View;
 import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
 public interface RNGestureHandlerRootViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
-  // No props
+  void setModuleId(T view, int value);
 }

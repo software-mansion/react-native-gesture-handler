@@ -24,7 +24,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext),
   TurboModuleWithJSIBindings {
 
-  val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
+  private val moduleId = nextModuleId++
   private val eventDispatcher = RNGestureHandlerEventDispatcher(reactApplicationContext)
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
@@ -33,6 +33,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @Suppress("unused")
   private var mHybridData: HybridData = initHybrid()
   private var uiRuntimeDecorated = false
+  private val registry: RNGestureHandlerRegistry
+    get() = registries[moduleId]!!
+
+  init {
+    registries[moduleId] = RNGestureHandlerRegistry()
+  }
 
   override fun getName() = NAME
 
@@ -166,6 +172,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
     }
+    registries.remove(moduleId)
     invalidateNative()
     super.invalidate()
   }
@@ -197,6 +204,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   companion object {
     const val NAME = "RNGestureHandlerModule"
+
+    private var nextModuleId = 0
+    val registries: MutableMap<Int, RNGestureHandlerRegistry> = mutableMapOf()
 
     init {
       SoLoader.loadLibrary("gesturehandler")

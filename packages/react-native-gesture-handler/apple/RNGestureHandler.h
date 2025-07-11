@@ -38,7 +38,11 @@
 
 @protocol RNGestureHandlerEventEmitter
 
-- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType;
+- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event
+    withActionType:(RNGestureHandlerActionType)actionType
+     forRecognizer:(UIGestureRecognizer *)recognizer;
+
+- (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler withPointerType:(NSInteger)pointerType;
 
 @end
 

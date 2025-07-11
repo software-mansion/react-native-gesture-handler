@@ -1,3 +1,5 @@
+import './globals';
+
 import { initialize } from './init';
 
 export { Directions } from './Directions';
@@ -59,7 +61,6 @@ export type { LongPressGestureType as LongPressGesture } from './handlers/gestur
 export type { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGesture';
 export type { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
 export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
-export type { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
 export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
 export type { HoverGestureType as HoverGesture } from './handlers/gestures/hoverGesture';
 export type {
@@ -160,5 +161,10 @@ export type {
   DrawerKeyboardDismissMode,
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
+
+export type { NativeDetectorProps } from './NativeDetector';
+export { NativeDetector } from './NativeDetector';
+
+export * from './useGesture';
 
 initialize();

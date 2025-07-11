@@ -287,7 +287,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (view.reactTag == nil) {
+  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
+      _actionType != RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
     return;
   }
 
@@ -298,10 +299,17 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state
 {
   _state = state;
-  RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
-  RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
-  [self sendEventsInState:self.state forViewWithTag:view.reactTag withExtraData:eventData];
+  RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+
+  NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
+  if (tag == nil &&
+      (_actionType == RNGestureHandlerActionTypeNativeDetector ||
+       _actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent)) {
+    tag = @(recognizer.view.tag);
+  }
+
+  [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData];
 }
 
 - (void)sendEventsInState:(RNGestureHandlerState)state
@@ -355,6 +363,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          handlerTag:_tag
                                                               state:state
                                                           extraData:extraData
+                                                      forActionType:_actionType
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
@@ -362,23 +371,28 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
-  [self.emitter sendEvent:event withActionType:self.actionType];
+  [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
-  id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
-                                          withChangedPointers:_pointerTracker.changedPointersData
-                                              withAllPointers:_pointerTracker.allPointersData
-                                          withNumberOfTouches:_pointerTracker.trackedPointersCount
-                                              withPointerType:_pointerType];
-  id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
-                                                  handlerTag:_tag
-                                                       state:state
-                                                   extraData:extraData
-                                               coalescingKey:[_tag intValue]];
+  if (self.actionType == RNGestureHandlerActionTypeNativeDetector) {
+    [self.emitter sendNativeTouchEventForGestureHandler:self withPointerType:_pointerType];
+  } else {
+    id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
+                                            withChangedPointers:_pointerTracker.changedPointersData
+                                                withAllPointers:_pointerTracker.allPointersData
+                                            withNumberOfTouches:_pointerTracker.trackedPointersCount
+                                                withPointerType:_pointerType];
+    id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
+                                                    handlerTag:_tag
+                                                         state:state
+                                                     extraData:extraData
+                                                 forActionType:_actionType
+                                                 coalescingKey:[_tag intValue]];
 
-  [self.emitter sendEvent:event withActionType:self.actionType];
+    [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
+  }
 }
 
 - (RNGestureHandlerState)recognizerState

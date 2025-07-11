@@ -43,6 +43,12 @@
   [handler bindToView:view];
 }
 
+- (void)detachHandlerWithTag:(NSNumber *)handlerTag
+{
+  RNGestureHandler *handler = _handlers[handlerTag];
+  [handler unbindFromView];
+}
+
 - (void)dropHandlerWithTag:(NSNumber *)handlerTag
 {
   RNGestureHandler *handler = _handlers[handlerTag];

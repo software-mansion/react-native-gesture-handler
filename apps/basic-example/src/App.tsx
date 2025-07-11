@@ -4,55 +4,47 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Navigator from './Navigator';
 
-import ComponentsScreen from './ComponentsScreen';
-import FinalScreen from './FinalScreen';
-import GestureCompositionScreen from './GestureCompositionScreen';
-import HomeScreen from './HomeScreen';
-import ViewFlatteningScreen from './ViewFlatteningScreen';
+import NativeDetector from './NativeDetector';
+import RuntimeDecoration from './RuntimeDecoration';
+
+const EXAMPLES = [
+  {
+    name: 'Runtime Decoration',
+    component: RuntimeDecoration,
+  },
+  {
+    name: 'Native Detector',
+    component: NativeDetector,
+  },
+];
 
 const Stack = Navigator.create();
-
-Stack.setRoutes({
-  home: {
-    component: HomeScreen,
-    title: 'RNGH FabricExample',
-    rightButtonAction: () => {
-      Stack.navigateTo('gestureComposition');
-    },
-  },
-  gestureComposition: {
-    component: GestureCompositionScreen,
-    title: 'Gesture Composition',
-    rightButtonAction: () => {
-      Stack.navigateTo('components');
-    },
-  },
-  components: {
-    component: ComponentsScreen,
-    title: 'Components',
-    rightButtonAction: () => {
-      Stack.navigateTo('viewFlattening');
-    },
-  },
-  viewFlattening: {
-    component: ViewFlatteningScreen,
-    title: 'View Flattening',
-    rightButtonAction: () => {
-      Stack.navigateTo('final');
-    },
-  },
-  final: {
-    component: FinalScreen,
-    title: 'Final Screen',
-  },
-});
+Stack.setRoutes(
+  Object.fromEntries(
+    EXAMPLES.map((example, index) => [
+      example.name.toLowerCase().replace(/\s+/g, ''),
+      {
+        component: example.component,
+        title: example.name,
+        rightButtonAction:
+          index === EXAMPLES.length - 1
+            ? undefined
+            : () => {
+                Stack.navigateTo(
+                  EXAMPLES[index + 1].name.toLowerCase().replace(/\s+/g, '')
+                );
+              },
+      },
+    ])
+  )
+);
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView
         style={[{ flex: 1 }, Platform.OS === 'android' && { paddingTop: 50 }]}>
-        <Stack.Navigator initialRouteName="home" />
+        <Stack.Navigator />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
