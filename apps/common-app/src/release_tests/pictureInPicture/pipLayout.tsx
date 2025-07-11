@@ -250,8 +250,6 @@ export const PipLayout = (props: PipLayoutProps) => {
 
   const { player } = props;
 
-  const containerPointerEvents = isFullDetails ? 'auto' : 'box-none';
-
   const verticalDragGesture = Gesture.Pan()
     .runOnJS(true)
     .enabled(isDraggingEnabled)
@@ -302,38 +300,25 @@ export const PipLayout = (props: PipLayoutProps) => {
     });
 
   return (
-    <View style={styles.container} pointerEvents={containerPointerEvents}>
-      <AnimatedSafeAreView
-        style={[styles.topSafeArea, topSafeAreaStyle]}
-        pointerEvents={containerPointerEvents}
-      />
-      <Animated.View
-        style={styles.movingContent}
-        pointerEvents={containerPointerEvents}>
+    <View style={styles.container}>
+      <AnimatedSafeAreView style={[styles.topSafeArea, topSafeAreaStyle]} />
+      <Animated.View style={styles.movingContent}>
         <GestureDetector gesture={verticalDragGesture}>
-          <Animated.View
-            style={playerSwipeAwayStyle}
-            pointerEvents={containerPointerEvents}>
+          <Animated.View style={playerSwipeAwayStyle}>
             <GestureDetector gesture={swipeAwayGesture}>
               <Animated.View
                 style={playerAnimatedStyle}
-                pointerEvents={containerPointerEvents}
                 onLayout={(event) => onPlayerLayout(event)}>
                 <Pressable
                   onPress={() => setShowFullDetails(true)}
                   disabled={isFullDetails || !isDraggingEnabled}>
-                  <View pointerEvents={isFullDetails ? 'auto' : 'box-only'}>
-                    {player}
-                  </View>
+                  <View>{player}</View>
                 </Pressable>
               </Animated.View>
             </GestureDetector>
           </Animated.View>
         </GestureDetector>
-        <Animated.View
-          style={[styles.bodyContainer, bodyAnimatedStyle]}
-          pointerEvents={isFullDetails ? 'auto' : 'none'}
-        />
+        <Animated.View style={[styles.bodyContainer, bodyAnimatedStyle]} />
       </Animated.View>
     </View>
   );
