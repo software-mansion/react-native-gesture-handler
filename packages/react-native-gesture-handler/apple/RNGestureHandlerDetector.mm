@@ -124,7 +124,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     NSNumber *handlerTag = [NSNumber numberWithInt:handlerChange.first];
 
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
-      // TODO: Attach to the child when NativeGestureHandler remounts, track children changes?
+      // TODO: Attach to the child when attached gesture is a NativeGestureHandler, track children changes then
       [handlerManager.registry
           attachHandlerWithTag:handlerTag
                         toView:self

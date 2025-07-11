@@ -56,6 +56,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     for (entry in changes) {
       if (entry.value == GestureHandlerMutation.Attach) {
+        // TODO: Attach to the child when attached gesture is a NativeGestureHandler, track children changes then
         registry.attachHandlerToView(
           entry.key,
           this.id,
