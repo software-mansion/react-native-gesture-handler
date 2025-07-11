@@ -49,7 +49,7 @@ export interface NativeProps extends ViewProps {
   onGestureHandlerTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
 
   handlerTags: Int32[];
-  dispatchAnimatedEvents: boolean;
+  dispatchesAnimatedEvents: boolean;
   moduleId: Int32;
 }
 

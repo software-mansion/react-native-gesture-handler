@@ -14,7 +14,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var handlersToAttach: List<Int>? = null
   private var attachedHandlers = listOf<Int>()
   private var moduleId: Int = -1
-  private var dispatchAnimatedEvents: Boolean = false
+  private var dispatchesAnimatedEvents: Boolean = false
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
@@ -36,8 +36,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     handlersToAttach = null
   }
 
-  fun setDispatchAnimatedEvents(dispatchAnimatedEvents: Boolean) {
-    this.dispatchAnimatedEvents = dispatchAnimatedEvents
+  fun setDispatchesAnimatedEvents(dispatchesAnimatedEvents: Boolean) {
+    this.dispatchesAnimatedEvents = dispatchesAnimatedEvents
   }
 
   private fun attachHandlers(newHandlers: List<Int>) {
@@ -59,7 +59,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         registry.attachHandlerToView(
           entry.key,
           this.id,
-          if (dispatchAnimatedEvents) {
+          if (dispatchesAnimatedEvents) {
             GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
           } else {
             GestureHandler.ACTION_TYPE_NATIVE_DETECTOR

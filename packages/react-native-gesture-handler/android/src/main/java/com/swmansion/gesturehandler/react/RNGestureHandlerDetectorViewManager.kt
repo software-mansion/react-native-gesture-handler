@@ -37,7 +37,7 @@ class RNGestureHandlerDetectorViewManager :
     view.setModuleId(value)
   }
 
-  override fun setDispatchAnimatedEvents(view: RNGestureHandlerDetectorView, value: Boolean) {
-    view.setDispatchAnimatedEvents(value)
+  override fun setDispatchesAnimatedEvents(view: RNGestureHandlerDetectorView, value: Boolean) {
+    view.setDispatchesAnimatedEvents(value)
   }
 }
