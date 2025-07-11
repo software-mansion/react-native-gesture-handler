@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -68,7 +68,7 @@ export const PipLayout = (props: PipLayoutProps) => {
   const touchOnPlayerX = useSharedValue(0);
   const touchOnPlayerY = useSharedValue(0);
 
-  const { width, height } = Dimensions.get('window');
+  const { width, height } = useMemo(() => Dimensions.get('window'), []);
 
   const pictureInPicturePlayerSize = () => {
     'worklet';
