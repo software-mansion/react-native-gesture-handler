@@ -101,7 +101,7 @@ void decorateRuntime(jsi::Runtime &runtime)
         if (!arguments[0].isObject()) {
           return jsi::Value::null();
         }
-        auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+        auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(runtime, arguments[0]);
 
         if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
           return jsi::Value(true);

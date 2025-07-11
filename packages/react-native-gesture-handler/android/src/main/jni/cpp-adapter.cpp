@@ -19,7 +19,9 @@ void decorateRuntime(jsi::Runtime &runtime) {
                     return jsi::Value::null();
                 }
 
-                auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+                auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                        runtime, arguments[0]);
+
                 bool isViewFlatteningDisabled = shadowNode->getTraits().check(
                         ShadowNodeTraits::FormsStackingContext);
 
