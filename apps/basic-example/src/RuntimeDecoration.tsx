@@ -1,20 +1,27 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { useState } from 'react';
 
-export default function HomeScreen() {
+export function RuntimeChecker({
+  runGestureOnJS,
+}: {
+  runGestureOnJS: boolean;
+}) {
   const pressed = useSharedValue(false);
   const active = useSharedValue(false);
   const posX = useSharedValue(0);
   const posY = useSharedValue(0);
 
   const start = useSharedValue({ x: 0, y: 0 });
+  const [isUIRuntime, setIsUIRuntime] = useState<boolean | null>(null);
 
   const style = useAnimatedStyle(() => {
     return {
@@ -28,6 +35,7 @@ export default function HomeScreen() {
   });
 
   const gesture = Gesture.Manual()
+    .runOnJS(runGestureOnJS)
     .onTouchesDown((e) => {
       if (!pressed.value) {
         pressed.value = true;
@@ -36,7 +44,7 @@ export default function HomeScreen() {
           y: e.allTouches[0].absoluteY,
         };
       }
-      console.log(_WORKLET);
+      runOnJS(setIsUIRuntime)(_WORKLET ?? false);
     })
     .onTouchesMove((e, state) => {
       const dist = Math.sqrt(
@@ -63,17 +71,20 @@ export default function HomeScreen() {
       }
     })
     .onStart(() => {
-      console.log('Gesture started');
       active.value = true;
     })
     .onFinalize(() => {
-      console.log('Gesture finalized');
       pressed.value = false;
       active.value = false;
     });
 
   return (
     <View style={styles.container}>
+      <Text>
+        {isUIRuntime === null
+          ? 'Start the gesture to check the runtime'
+          : `Running on the ${isUIRuntime ? 'UI' : 'JS'} runtime`}
+      </Text>
       <GestureDetector gesture={gesture}>
         <Animated.View
           style={[styles.box, style, { backgroundColor: COLORS.KINDA_BLUE }]}
@@ -83,14 +94,30 @@ export default function HomeScreen() {
   );
 }
 
+export default function RuntimeDecorationExample() {
+  return (
+    <View style={styles.container}>
+      <RuntimeChecker runGestureOnJS={false} />
+      <View style={styles.separator} />
+      <RuntimeChecker runGestureOnJS={true} />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   box: {
     width: 50,
     height: 50,
+  },
+  separator: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'black',
   },
 });
