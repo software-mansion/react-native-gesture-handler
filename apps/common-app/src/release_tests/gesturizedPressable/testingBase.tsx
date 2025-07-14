@@ -16,17 +16,17 @@ const TestingBase = (props: GHPressableProps & RNPressableProps) => (
   <>
     <GesturizedPressable {...props}>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Gesturized pressable!</Text>
+        <Text style={styles.text}>New GH pressable</Text>
       </View>
     </GesturizedPressable>
     <OldPressable {...props}>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Old pressable!</Text>
+        <Text style={styles.text}>Old GH pressable</Text>
       </View>
     </OldPressable>
     <Pressable {...props}>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Legacy pressable!</Text>
+        <Text style={styles.text}>RN pressable</Text>
       </View>
     </Pressable>
   </>
