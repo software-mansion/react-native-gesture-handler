@@ -7,6 +7,7 @@ import {
   PressableProps as RNPressableProps,
 } from 'react-native';
 import {
+  OldPressable,
   Pressable as GesturizedPressable,
   PressableProps as GHPressableProps,
 } from 'react-native-gesture-handler';
@@ -18,6 +19,11 @@ const TestingBase = (props: GHPressableProps & RNPressableProps) => (
         <Text style={styles.text}>Gesturized pressable!</Text>
       </View>
     </GesturizedPressable>
+    <OldPressable {...props}>
+      <View style={styles.textWrapper}>
+        <Text style={styles.text}>Old pressable!</Text>
+      </View>
+    </OldPressable>
     <Pressable {...props}>
       <View style={styles.textWrapper}>
         <Text style={styles.text}>Legacy pressable!</Text>
