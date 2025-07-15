@@ -11,8 +11,8 @@ import {
   DrawerLayoutAndroid,
   View,
 } from 'react-native';
-import { State } from './State';
-import { Directions } from './Directions';
+import { State } from '../State';
+import { Directions } from '../Directions';
 
 const NOOP = () => {
   // Do nothing
@@ -38,7 +38,6 @@ export const RawButton = ({ enabled, ...rest }: any) => (
 );
 export const BaseButton = RawButton;
 export const RectButton = RawButton;
-export const Pressable = RawButton;
 export const BorderlessButton = TouchableNativeFeedback;
 
 export default {
@@ -58,10 +57,6 @@ export default {
   PinchGestureHandler,
   RotationGestureHandler,
   FlingGestureHandler,
-  RawButton,
-  BaseButton,
-  RectButton,
-  BorderlessButton,
   PanGestureHandler,
   attachGestureHandler,
   createGestureHandler,
