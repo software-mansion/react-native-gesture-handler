@@ -58,24 +58,28 @@ export interface RawButtonProps
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onPress?: Function | null;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onPressIn?: Function | null;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onPressOut?: Function | null;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onLongPress?: Function | null;
