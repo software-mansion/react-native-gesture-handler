@@ -1,3 +1,1 @@
-import { Pressable as RnPressable } from 'react-native';
-const Pressable = RnPressable;
-export default Pressable;
+export { Pressable as default } from 'react-native';

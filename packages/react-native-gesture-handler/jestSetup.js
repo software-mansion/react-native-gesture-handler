@@ -24,4 +24,3 @@ jest.mock('./lib/module/components/Pressable', () =>
   require('./lib/module/mocks/Pressable')
 );
 
-
