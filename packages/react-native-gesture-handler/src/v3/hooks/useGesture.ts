@@ -66,8 +66,10 @@ export function useGesture(
   useEffect(() => {
     // TODO: filter changes - passing functions (and possibly other types)
     // causes a native crash
+    const animatedEvent = config.onGestureHandlerAnimatedEvent;
     config.onGestureHandlerAnimatedEvent = null;
     RNGestureHandlerModule.updateGestureHandler(tag, config);
+    config.onGestureHandlerAnimatedEvent = animatedEvent;
 
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);
