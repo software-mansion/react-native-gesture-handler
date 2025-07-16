@@ -1,26 +1,32 @@
 import React from 'react';
-import RNGestureHandlerDetectorNativeComponent from '../../specs/RNGestureHandlerDetectorNativeComponent';
+import { NativeGesture } from './hooks/useGesture';
+import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
+
 import { Animated, StyleSheet } from 'react-native';
-import { NativeGesture } from '../hooks/useGesture';
+import RNGestureHandlerDetectorNativeComponent from '../specs/RNGestureHandlerDetectorNativeComponent';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
   gesture: NativeGesture;
 }
 
-const AnimatedDetector = Animated.createAnimatedComponent(
+const AnimatedNativeDetector = Animated.createAnimatedComponent(
   RNGestureHandlerDetectorNativeComponent
 );
 
-export function AnimatedNativeDetector({
-  gesture,
-  children,
-}: NativeDetectorProps) {
-  console.log('Hello from AnimatedNativeDetector');
-  console.log(gesture.gestureEvents.onGestureHandlerStateChange);
+const ReanimatedNativeDetector = Reanimated?.default.createAnimatedComponent(
+  RNGestureHandlerDetectorNativeComponent
+);
+
+export function NativeDetector({ gesture, children }: NativeDetectorProps) {
+  const NativeDetectorComponent = gesture.dispatchesAnimatedEvents
+    ? AnimatedNativeDetector
+    : Reanimated !== undefined && gesture.shouldUseReanimated
+      ? ReanimatedNativeDetector!
+      : RNGestureHandlerDetectorNativeComponent;
 
   return (
-    <AnimatedDetector
+    <NativeDetectorComponent
       onGestureHandlerStateChange={
         gesture.gestureEvents.onGestureHandlerStateChange
       }
@@ -36,7 +42,7 @@ export function AnimatedNativeDetector({
       handlerTags={[gesture.tag]}
       style={styles.detector}>
       {children}
-    </AnimatedDetector>
+    </NativeDetectorComponent>
   );
 }
 
