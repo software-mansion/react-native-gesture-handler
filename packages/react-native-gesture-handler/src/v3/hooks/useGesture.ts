@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
-import { getNextHandlerTag } from './handlers/getNextHandlerTag';
-import RNGestureHandlerModule from './RNGestureHandlerModule';
+import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
+import RNGestureHandlerModule from '../../RNGestureHandlerModule';
+import { useGestureEvent } from './useGestureEvent';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -13,29 +14,42 @@ type GestureType =
   | 'ManualGestureHandler'
   | 'NativeViewGestureHandler';
 
+type GestureEvents = {
+  onGestureHandlerStateChange: (event: any) => void;
+  onGestureHandlerEvent: (event: any) => void;
+  onGestureHandlerTouchEvent: (event: any) => void;
+  onGestureHandlerAnimatedEvent: (event: any) => void;
+};
+
 export interface NativeGesture {
   tag: number;
   name: GestureType;
   config: Record<string, unknown>;
+  gestureEvents: GestureEvents;
+  shouldUseReanimated: boolean;
   dispatchesAnimatedEvents: boolean;
+}
+
+function hasWorklets(config: Record<string, unknown>) {
+  return Object.values(config).some(
+    (prop) => typeof prop === 'function' && prop.__workletHash !== undefined
+  );
 }
 
 export function useGesture(
   type: GestureType,
-  fullConfig: Record<string, unknown>
+  config: Record<string, unknown>
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
 
+  const shouldUseReanimated = hasWorklets(config);
+
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onGestureHandlerStateChange,
-    onGestureHandlerAnimatedEvent,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onGestureHandlerEvent,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent,
-    ...config
-  } = fullConfig;
+  } = useGestureEvent(config, shouldUseReanimated);
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
@@ -52,16 +66,25 @@ export function useGesture(
   useEffect(() => {
     // TODO: filter changes - passing functions (and possibly other types)
     // causes a native crash
+    config.onGestureHandlerAnimatedEvent = null;
     RNGestureHandlerModule.updateGestureHandler(tag, config);
+
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);
 
   return {
     tag: tag,
     name: type,
-    config: fullConfig,
+    config,
+    gestureEvents: {
+      onGestureHandlerStateChange,
+      onGestureHandlerEvent,
+      onGestureHandlerTouchEvent,
+      onGestureHandlerAnimatedEvent,
+    },
+    shouldUseReanimated,
     dispatchesAnimatedEvents:
       !!onGestureHandlerAnimatedEvent &&
-      '__isNative' in (onGestureHandlerAnimatedEvent as any),
+      '__isNative' in onGestureHandlerAnimatedEvent,
   };
 }

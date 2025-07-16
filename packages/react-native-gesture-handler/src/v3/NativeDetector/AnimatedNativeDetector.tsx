@@ -1,7 +1,7 @@
 import React from 'react';
-import RNGestureHandlerDetectorNativeComponent from './specs/RNGestureHandlerDetectorNativeComponent';
+import RNGestureHandlerDetectorNativeComponent from '../../specs/RNGestureHandlerDetectorNativeComponent';
 import { Animated, StyleSheet } from 'react-native';
-import { NativeGesture } from './useGesture';
+import { NativeGesture } from '../hooks/useGesture';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
@@ -12,18 +12,24 @@ const AnimatedDetector = Animated.createAnimatedComponent(
   RNGestureHandlerDetectorNativeComponent
 );
 
-export function NativeDetector({ gesture, children }: NativeDetectorProps) {
+export function AnimatedNativeDetector({
+  gesture,
+  children,
+}: NativeDetectorProps) {
+  console.log('Hello from AnimatedNativeDetector');
+  console.log(gesture.gestureEvents.onGestureHandlerStateChange);
+
   return (
     <AnimatedDetector
       onGestureHandlerStateChange={
-        gesture.config.onGestureHandlerStateChange as any
+        gesture.gestureEvents.onGestureHandlerStateChange
       }
-      onGestureHandlerEvent={gesture.config.onGestureHandlerEvent as any}
+      onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
       onGestureHandlerAnimatedEvent={
-        gesture.config.onGestureHandlerAnimatedEvent as any
+        gesture.gestureEvents.onGestureHandlerAnimatedEvent
       }
       onGestureHandlerTouchEvent={
-        gesture.config.onGestureHandlerTouchEvent as any
+        gesture.gestureEvents.onGestureHandlerStateChange
       }
       dispatchesAnimatedEvents={gesture.dispatchesAnimatedEvents}
       moduleId={globalThis._RNGH_MODULE_ID}
