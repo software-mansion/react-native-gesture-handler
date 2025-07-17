@@ -3,7 +3,7 @@ import {
   HandlerCallbacks,
 } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
-import { GestureHandlerEvent } from '../interfaces';
+import { EventWithNativeEvent, GestureHandlerEvent } from '../interfaces';
 
 export function getHandler(
   type: CALLBACK_TYPE,
@@ -62,4 +62,16 @@ export function runWorklet(
 
   // @ts-ignore It works, duh -_-
   handler?.(event, ...args);
+}
+
+export function compareTags(handlerTag: number, event: GestureHandlerEvent) {
+  'worklet';
+
+  if ('nativeEvent' in event) {
+    return (
+      (event as EventWithNativeEvent<any>).nativeEvent.handlerTag === handlerTag
+    );
+  }
+
+  return event.handlerTag === handlerTag;
 }

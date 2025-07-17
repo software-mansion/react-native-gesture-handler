@@ -24,6 +24,7 @@ let Reanimated:
       ) => unknown;
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
+      isSharedValue: (value: unknown) => value is SharedValue<unknown>;
     }
   | undefined;
 

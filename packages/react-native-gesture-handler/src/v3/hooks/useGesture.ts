@@ -59,7 +59,7 @@ export function useGesture(
     onGestureHandlerEvent,
     onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent,
-  } = useGestureEvent(config, shouldUseReanimated);
+  } = useGestureEvent(tag, config, shouldUseReanimated);
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});

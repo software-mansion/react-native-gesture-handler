@@ -1,16 +1,21 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { runWorklet } from '../utils';
+import { compareTags, runWorklet } from '../utils';
 import { State } from '../../../State';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { EventWithNativeEvent, StateChangeEvent } from '../../interfaces';
 import { GestureStateChangeEvent } from '../../../handlers/gestureHandlerCommon';
 
 export function useGestureStateChangeEvent(
+  handlerTag: number,
   config: any,
   shouldUseReanimated: boolean
 ) {
   const onGestureHandlerStateChange = (event: StateChangeEvent) => {
     'worklet';
+
+    if (!compareTags(handlerTag, event)) {
+      return;
+    }
 
     let oldState: State | undefined;
     let state: State | undefined;

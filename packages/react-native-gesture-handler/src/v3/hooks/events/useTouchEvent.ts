@@ -1,12 +1,24 @@
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import { runWorklet, touchEventTypeToCallbackType } from '../utils';
+import {
+  compareTags,
+  runWorklet,
+  touchEventTypeToCallbackType,
+} from '../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { TouchEventType } from '../../../TouchEventType';
 import { EventWithNativeEvent, TouchEvent } from '../../interfaces';
 
-export function useTouchEvent(config: any, shouldUseReanimated: boolean) {
+export function useTouchEvent(
+  handlerTag: number,
+  config: any,
+  shouldUseReanimated: boolean
+) {
   const onGestureHandlerTouchEvent = (event: TouchEvent) => {
     'worklet';
+
+    if (!compareTags(handlerTag, event)) {
+      return;
+    }
 
     if (
       // @ts-ignore That's the point, we want to check if nativeEvent exists or not
