@@ -36,6 +36,15 @@ function hasWorklets(config: Record<string, unknown>) {
   );
 }
 
+function shouldHandleTouchEvents(config: Record<string, unknown>) {
+  return (
+    !!config.onTouchesDown ||
+    !!config.onTouchesMove ||
+    !!config.onTouchesUp ||
+    !!config.onTouchesCancelled
+  );
+}
+
 export function useGesture(
   type: GestureType,
   config: Record<string, unknown>
@@ -43,6 +52,7 @@ export function useGesture(
   const tag = useMemo(() => getNextHandlerTag(), []);
 
   const shouldUseReanimated = hasWorklets(config);
+  config.needsPointerData = shouldHandleTouchEvents(config);
 
   const {
     onGestureHandlerStateChange,
