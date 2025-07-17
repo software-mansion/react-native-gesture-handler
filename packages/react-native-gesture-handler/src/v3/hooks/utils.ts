@@ -1,13 +1,9 @@
 import {
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-  GestureUpdateEvent,
-} from '../../handlers/gestureHandlerCommon';
-import {
   CALLBACK_TYPE,
   HandlerCallbacks,
 } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
+import { GestureHandlerEvent } from '../interfaces';
 
 export function getHandler(
   type: CALLBACK_TYPE,
@@ -58,34 +54,12 @@ export function touchEventTypeToCallbackType(
 export function runWorklet(
   type: CALLBACK_TYPE,
   config: HandlerCallbacks<Record<string, unknown>>,
-  event: GestureStateChangeEvent | GestureUpdateEvent | GestureTouchEvent,
+  event: GestureHandlerEvent,
   ...args: unknown[]
 ) {
   'worklet';
   const handler = getHandler(type, config);
+
+  // @ts-ignore It works, duh -_-
   handler?.(event, ...args);
-}
-
-export function isStateChangeEvent(
-  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-): event is GestureStateChangeEvent {
-  'worklet';
-
-  if (event.nativeEvent) {
-    if (!event.nativeEvent.oldState) {
-      return false;
-    }
-
-    return event.nativeEvent.oldState !== event.nativeEvent.state;
-  }
-
-  // @ts-ignore Yes, the oldState prop is missing on GestureTouchEvent, that's the point
-  return event.oldState != null;
-}
-
-export function isTouchEvent(
-  event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-): event is GestureTouchEvent {
-  'worklet';
-  return event.eventType != null;
 }

@@ -1,16 +1,6 @@
-import {
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-  GestureUpdateEvent,
-} from '../../handlers/gestureHandlerCommon';
-import { TouchEventType } from '../../TouchEventType';
-import {
-  isTouchEvent,
-  runWorklet,
-  touchEventTypeToCallbackType,
-} from './utils';
 import { useGestureStateChangeEvent } from './events/useGestureStateChangeEvent';
 import { useGestureHandlerEvent } from './events/useGestureHandlerEvent';
+import { useTouchEvent } from './events/useTouchEvent';
 
 export function useGestureEvent(config: any, shouldUseReanimated: boolean) {
   const onGestureHandlerStateChange = useGestureStateChangeEvent(
@@ -22,19 +12,7 @@ export function useGestureEvent(config: any, shouldUseReanimated: boolean) {
     shouldUseReanimated
   );
 
-  const onGestureHandlerTouchEvent = (
-    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-  ) => {
-    'worklet';
-
-    if (!isTouchEvent(event)) {
-      return;
-    }
-
-    if (event.eventType !== TouchEventType.UNDETERMINED) {
-      runWorklet(touchEventTypeToCallbackType(event.eventType), config, event);
-    }
-  };
+  const onGestureHandlerTouchEvent = useTouchEvent(config, shouldUseReanimated);
 
   const onGestureHandlerAnimatedEvent = config.onGestureHandlerAnimatedEvent;
 

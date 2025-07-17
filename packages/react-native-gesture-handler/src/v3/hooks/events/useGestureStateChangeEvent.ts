@@ -1,27 +1,29 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import {
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-  GestureUpdateEvent,
-} from '../../../handlers/gestureHandlerCommon';
-import { isStateChangeEvent, runWorklet } from '../utils';
+import { runWorklet } from '../utils';
 import { State } from '../../../State';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { EventWithNativeEvent, StateChangeEvent } from '../../interfaces';
+import { GestureStateChangeEvent } from '../../../handlers/gestureHandlerCommon';
 
 export function useGestureStateChangeEvent(
   config: any,
   shouldUseReanimated: boolean
 ) {
-  const onGestureHandlerStateChange = (
-    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-  ) => {
+  const onGestureHandlerStateChange = (event: StateChangeEvent) => {
     'worklet';
-    if (!isStateChangeEvent(event)) {
-      return;
-    }
 
-    const oldState = event.nativeEvent?.oldState ?? event.oldState;
-    const state = event.nativeEvent?.state ?? event.state;
+    let oldState: State | undefined;
+    let state: State | undefined;
+
+    if (event.nativeEvent) {
+      oldState = (event as EventWithNativeEvent<GestureStateChangeEvent>)
+        .nativeEvent.oldState;
+      state = (event as EventWithNativeEvent<GestureStateChangeEvent>)
+        .nativeEvent.state;
+    } else {
+      oldState = (event as GestureStateChangeEvent).oldState;
+      state = (event as GestureStateChangeEvent).state;
+    }
 
     if (oldState === State.UNDETERMINED && state === State.BEGAN) {
       runWorklet(CALLBACK_TYPE.BEGAN, config, event);

@@ -1,23 +1,14 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import {
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-  GestureUpdateEvent,
-} from '../../../handlers/gestureHandlerCommon';
-import { isStateChangeEvent, isTouchEvent, runWorklet } from '../utils';
+import { runWorklet } from '../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { UpdateEvent } from '../../interfaces';
 
 export function useGestureHandlerEvent(
   config: any,
   shouldUseReanimated: boolean
 ) {
-  const onGestureHandlerEvent = (
-    event: GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
-  ) => {
+  const onGestureHandlerEvent = (event: UpdateEvent) => {
     'worklet';
-    if (isStateChangeEvent(event) || isTouchEvent(event)) {
-      return;
-    }
 
     runWorklet(CALLBACK_TYPE.UPDATE, config, event);
 

@@ -1,8 +1,4 @@
 import { ComponentClass } from 'react';
-import {
-  GestureUpdateEvent,
-  GestureStateChangeEvent,
-} from '../gestureHandlerCommon';
 import { tagMessage } from '../../utils';
 
 export interface SharedValue<T> {
@@ -18,8 +14,11 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
-      useEvent: (
-        callback: (event: GestureUpdateEvent | GestureStateChangeEvent) => void,
+      useHandler: (handlers: Record<string, unknown>) => {
+        doDependenciesDiffer: boolean;
+      };
+      useEvent: <T>(
+        callback: (event: T) => void,
         events: string[],
         rebuild: boolean
       ) => unknown;
