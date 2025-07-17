@@ -3,14 +3,10 @@ import { compareTags, runWorklet } from '../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { UpdateEvent } from '../../interfaces';
 
-export function useGestureHandlerEvent(
-  handlerTag: number,
-  config: any,
-  shouldUseReanimated: boolean
-) {
-  const lastUpdateEvents = shouldUseReanimated
-    ? Reanimated!.useSharedValue<(UpdateEvent | undefined)[]>([])
-    : ([] as UpdateEvent[]);
+function useReanimatedEvent(handlerTag: number, config: any) {
+  const lastUpdateEvents = Reanimated!.useSharedValue<
+    (UpdateEvent | undefined)[]
+  >([]);
 
   const onGestureHandlerEvent = (event: UpdateEvent) => {
     'worklet';
@@ -22,38 +18,66 @@ export function useGestureHandlerEvent(
     runWorklet(CALLBACK_TYPE.UPDATE, config, event);
 
     if (config.onChange && config.changeEventCalculator) {
-      const lastUpdateEvent = Reanimated?.isSharedValue(lastUpdateEvents)
-        ? lastUpdateEvents.value[handlerTag]
-        : lastUpdateEvents[handlerTag];
-
       runWorklet(
         CALLBACK_TYPE.CHANGE,
         config,
-        config.changeEventCalculator?.(event, lastUpdateEvent)
+        config.changeEventCalculator?.(
+          event,
+          lastUpdateEvents.value[handlerTag]
+        )
       );
 
-      if (Reanimated?.isSharedValue(lastUpdateEvents)) {
-        lastUpdateEvents.value[handlerTag] = event;
-      } else {
-        lastUpdateEvents[handlerTag] = event;
-      }
+      lastUpdateEvents.value[handlerTag] = event;
     }
   };
 
-  if (shouldUseReanimated) {
-    const handlers = {
-      onChange: config.onChange,
-      onUpdate: config.onUpdate,
-    };
+  const handlers = {
+    onChange: config.onChange,
+    onUpdate: config.onUpdate,
+  };
 
-    const { doDependenciesDiffer } = Reanimated!.useHandler(handlers);
+  const { doDependenciesDiffer } = Reanimated!.useHandler(handlers);
 
-    return Reanimated!.useEvent(
-      onGestureHandlerEvent,
-      ['onGestureHandlerEvent'],
-      doDependenciesDiffer
-    );
-  }
+  return Reanimated!.useEvent(
+    onGestureHandlerEvent,
+    ['onGestureHandlerEvent'],
+    doDependenciesDiffer
+  );
+}
+
+function gestureHandlerEvent(handlerTag: number, config: any) {
+  const lastUpdateEvents: UpdateEvent[] = [];
+
+  const onGestureHandlerEvent = (event: UpdateEvent) => {
+    'worklet';
+
+    if (!compareTags(handlerTag, event)) {
+      return;
+    }
+
+    runWorklet(CALLBACK_TYPE.UPDATE, config, event);
+
+    if (config.onChange && config.changeEventCalculator) {
+      runWorklet(
+        CALLBACK_TYPE.CHANGE,
+        config,
+        config.changeEventCalculator?.(event, lastUpdateEvents[handlerTag])
+      );
+
+      lastUpdateEvents[handlerTag] = event;
+    }
+  };
 
   return onGestureHandlerEvent;
+}
+
+export function useGestureHandlerEvent(
+  handlerTag: number,
+  config: any,
+  shouldUseReanimated: boolean
+) {
+  return shouldUseReanimated
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useReanimatedEvent(handlerTag, config)
+    : gestureHandlerEvent(handlerTag, config);
 }
