@@ -1,5 +1,6 @@
-import { ComponentClass } from 'react';
+import { ComponentClass, Context } from 'react';
 import { tagMessage } from '../../utils';
+import { GestureHandlerEvent } from '../../v3/interfaces';
 
 export interface SharedValue<T> {
   value: T;
@@ -21,7 +22,7 @@ let Reanimated:
         callback: (event: T) => void,
         events: string[],
         rebuild: boolean
-      ) => unknown;
+      ) => (event: GestureHandlerEvent, context?: Context<unknown>) => void;
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
       isSharedValue: (value: unknown) => value is SharedValue<unknown>;

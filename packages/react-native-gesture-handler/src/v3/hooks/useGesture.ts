@@ -32,6 +32,7 @@ export interface NativeGesture {
 
 function hasWorklets(config: Record<string, unknown>) {
   return Object.values(config).some(
+    // @ts-ignore `__workletHash` comes from Reanimated and it does exist (on JS thread) if function is worklet.
     (prop) => typeof prop === 'function' && prop.__workletHash !== undefined
   );
 }
