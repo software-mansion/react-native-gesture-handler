@@ -382,6 +382,13 @@ export default class GestureHandlerOrchestrator {
     });
   }
 
+  // Manually deleting gesture handler from the array, called in NodeManager whenever component has been dropped
+  public deleteGesture(handlerTag: number): void {
+    this.gestureHandlers = this.gestureHandlers.filter((item) => {
+      return item.handlerTag !== handlerTag;
+    });
+  }
+
   public static get instance(): GestureHandlerOrchestrator {
     if (!GestureHandlerOrchestrator._instance) {
       GestureHandlerOrchestrator._instance = new GestureHandlerOrchestrator();
