@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureEvent } from './useGestureEvent';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -52,7 +53,7 @@ export function useGesture(
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
 
-  const shouldUseReanimated = hasWorklets(config);
+  const shouldUseReanimated = Reanimated !== undefined && hasWorklets(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
 
   const {
