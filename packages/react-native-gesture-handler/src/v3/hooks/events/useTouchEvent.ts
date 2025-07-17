@@ -35,8 +35,10 @@ export function useTouchEvent(config: any, shouldUseReanimated: boolean) {
 
   if (shouldUseReanimated) {
     const handlers = {
-      onChange: config.onChange,
-      onUpdate: config.onUpdate,
+      onTouchesDown: config.onTouchesDown,
+      onTouchesMove: config.onTouchesMove,
+      onTouchesUp: config.onTouchesUp,
+      onTouchesCancelled: config.onTouchesCancelled,
     };
 
     const { doDependenciesDiffer } = Reanimated!.useHandler(handlers);
