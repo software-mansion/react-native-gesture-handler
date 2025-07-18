@@ -4,6 +4,7 @@ import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 
 import { Animated, StyleSheet } from 'react-native';
 import RNGestureHandlerDetectorNativeComponent from '../specs/RNGestureHandlerDetectorNativeComponent';
+import { tagMessage } from '../utils';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
@@ -24,6 +25,10 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
     : gesture.shouldUseReanimated
       ? ReanimatedNativeDetector!
       : RNGestureHandlerDetectorNativeComponent;
+
+  if (!NativeDetectorComponent) {
+    throw new Error(tagMessage('Failed to create NativeDetector component.'));
+  }
 
   return (
     <NativeDetectorComponent
