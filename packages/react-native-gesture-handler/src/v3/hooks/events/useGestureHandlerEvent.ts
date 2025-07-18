@@ -5,6 +5,7 @@ import {
   ReanimatedContext,
 } from '../../../handlers/gestures/reanimatedWrapper';
 import { UpdateEvent } from '../../types';
+import { tagMessage } from '../../../utils';
 
 export function useGestureHandlerEvent(
   handlerTag: number,
@@ -13,7 +14,7 @@ export function useGestureHandlerEvent(
 ) {
   const onGestureHandlerEvent = (
     event: UpdateEvent,
-    context: ReanimatedContext
+    context: ReanimatedContext | undefined
   ) => {
     'worklet';
 
@@ -22,6 +23,12 @@ export function useGestureHandlerEvent(
     }
 
     runWorkletCallback(CALLBACK_TYPE.UPDATE, config, event);
+
+    // This should never happen, but since we don't want to call hooks conditionally, we have to mark
+    // context as possibly undefined to make TypeScript happy.
+    if (!context) {
+      throw new Error(tagMessage('Event handler context is not defined'));
+    }
 
     if (config.onChange && config.changeEventCalculator) {
       runWorkletCallback(
@@ -34,27 +41,26 @@ export function useGestureHandlerEvent(
     }
   };
 
-  if (shouldUseReanimated) {
-    const handlers = {
-      onChange: config.onChange,
-      onUpdate: config.onUpdate,
-    };
+  const handlers = {
+    onChange: config.onChange,
+    onUpdate: config.onUpdate,
+  };
 
-    const { doDependenciesDiffer, context } = Reanimated!.useHandler(handlers);
+  const jsContext: ReanimatedContext = {
+    lastUpdateEvent: undefined,
+  };
 
-    return Reanimated!.useEvent(
-      (event: UpdateEvent) => {
-        'worklet';
-        onGestureHandlerEvent(event, context);
-      },
-      ['onGestureHandlerEvent'],
-      doDependenciesDiffer
-    );
-  } else {
-    const context: ReanimatedContext = {
-      lastUpdateEvent: undefined,
-    };
+  const reanimatedHandler = Reanimated?.useHandler(handlers);
+  const reanimatedEvent = Reanimated?.useEvent(
+    (event: UpdateEvent) => {
+      'worklet';
+      onGestureHandlerEvent(event, reanimatedHandler?.context);
+    },
+    ['onGestureHandlerEvent'],
+    !!reanimatedHandler?.doDependenciesDiffer
+  );
 
-    return (event: UpdateEvent) => onGestureHandlerEvent(event, context);
-  }
+  return shouldUseReanimated
+    ? reanimatedEvent
+    : (event: UpdateEvent) => onGestureHandlerEvent(event, jsContext);
 }

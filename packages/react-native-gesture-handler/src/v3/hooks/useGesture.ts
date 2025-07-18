@@ -3,6 +3,7 @@ import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureEvent } from './useGestureEvent';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../utils';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -63,6 +64,16 @@ export function useGesture(
     onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent,
   } = useGestureEvent(tag, config, shouldUseReanimated);
+
+  // This should never happen, but since we don't want to call hooks conditionally,
+  // we have to mark these as possibly undefined to make TypeScript happy.
+  if (
+    !onGestureHandlerStateChange ||
+    !onGestureHandlerEvent ||
+    !onGestureHandlerTouchEvent
+  ) {
+    throw new Error(tagMessage('Failed to create event handlers.'));
+  }
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});

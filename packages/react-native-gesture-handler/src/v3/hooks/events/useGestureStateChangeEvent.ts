@@ -54,22 +54,19 @@ export function useGestureStateChangeEvent(
     }
   };
 
-  if (shouldUseReanimated) {
-    const handlers = {
-      onBegin: config.onBegin,
-      onStart: config.onStart,
-      onEnd: config.onEnd,
-      onFinalize: config.onFinalize,
-    };
+  const handlers = {
+    onBegin: config.onBegin,
+    onStart: config.onStart,
+    onEnd: config.onEnd,
+    onFinalize: config.onFinalize,
+  };
 
-    const { doDependenciesDiffer } = Reanimated!.useHandler(handlers);
+  const reanimatedHandler = Reanimated?.useHandler(handlers);
+  const reanimatedEvent = Reanimated?.useEvent(
+    onGestureHandlerStateChange,
+    ['onGestureHandlerStateChange'],
+    !!reanimatedHandler?.doDependenciesDiffer
+  );
 
-    return Reanimated!.useEvent(
-      onGestureHandlerStateChange,
-      ['onGestureHandlerStateChange'],
-      doDependenciesDiffer
-    );
-  }
-
-  return onGestureHandlerStateChange;
+  return shouldUseReanimated ? reanimatedEvent : onGestureHandlerStateChange;
 }

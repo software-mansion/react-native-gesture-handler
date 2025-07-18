@@ -46,22 +46,20 @@ export function useTouchEvent(
     }
   };
 
-  if (shouldUseReanimated) {
-    const handlers = {
-      onTouchesDown: config.onTouchesDown,
-      onTouchesMove: config.onTouchesMove,
-      onTouchesUp: config.onTouchesUp,
-      onTouchesCancelled: config.onTouchesCancelled,
-    };
+  const handlers = {
+    onTouchesDown: config.onTouchesDown,
+    onTouchesMove: config.onTouchesMove,
+    onTouchesUp: config.onTouchesUp,
+    onTouchesCancelled: config.onTouchesCancelled,
+  };
 
-    const { doDependenciesDiffer } = Reanimated!.useHandler(handlers);
+  const reanimatedHandler = Reanimated?.useHandler(handlers);
 
-    return Reanimated!.useEvent(
-      onGestureHandlerTouchEvent,
-      ['onGestureHandlerTouchEvent'],
-      doDependenciesDiffer
-    );
-  }
+  const reanimatedEvent = Reanimated?.useEvent(
+    onGestureHandlerTouchEvent,
+    ['onGestureHandlerTouchEvent'],
+    !!reanimatedHandler?.doDependenciesDiffer
+  );
 
-  return onGestureHandlerTouchEvent;
+  return shouldUseReanimated ? reanimatedEvent : onGestureHandlerTouchEvent;
 }
