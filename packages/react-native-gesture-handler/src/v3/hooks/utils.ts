@@ -1,9 +1,15 @@
+import { NativeSyntheticEvent } from 'react-native';
 import {
   CALLBACK_TYPE,
   HandlerCallbacks,
 } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
-import { EventWithNativeEvent, GestureHandlerEvent } from '../interfaces';
+import { GestureHandlerEvent } from '../types';
+import {
+  GestureStateChangeEvent,
+  GestureTouchEvent,
+  GestureUpdateEvent,
+} from '../../handlers/gestureHandlerCommon';
 
 export function getHandler(
   type: CALLBACK_TYPE,
@@ -51,7 +57,7 @@ export function touchEventTypeToCallbackType(
   return CALLBACK_TYPE.UNDEFINED;
 }
 
-export function runWorklet(
+export function runWorkletCallback(
   type: CALLBACK_TYPE,
   config: HandlerCallbacks<Record<string, unknown>>,
   event: GestureHandlerEvent,
@@ -64,14 +70,24 @@ export function runWorklet(
   handler?.(event, ...args);
 }
 
+function isNativeEvent(
+  event:
+    | GestureHandlerEvent
+    | NativeSyntheticEvent<
+        GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+      >
+): event is NativeSyntheticEvent<
+  GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+> {
+  'worklet';
+
+  return 'nativeEvent' in event;
+}
+
 export function compareTags(handlerTag: number, event: GestureHandlerEvent) {
   'worklet';
 
-  if ('nativeEvent' in event) {
-    return (
-      (event as EventWithNativeEvent<any>).nativeEvent.handlerTag === handlerTag
-    );
-  }
-
-  return event.handlerTag === handlerTag;
+  return isNativeEvent(event)
+    ? event.nativeEvent.handlerTag === handlerTag
+    : event.handlerTag === handlerTag;
 }

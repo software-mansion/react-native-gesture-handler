@@ -1,9 +1,10 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { compareTags, runWorklet } from '../utils';
+import { compareTags, runWorkletCallback } from '../utils';
 import { State } from '../../../State';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { EventWithNativeEvent, StateChangeEvent } from '../../interfaces';
+import { StateChangeEvent } from '../../types';
 import { GestureStateChangeEvent } from '../../../handlers/gestureHandlerCommon';
+import { NativeSyntheticEvent } from 'react-native';
 
 export function useGestureStateChangeEvent(
   handlerTag: number,
@@ -21,9 +22,9 @@ export function useGestureStateChangeEvent(
     let state: State | undefined;
 
     if (event.nativeEvent) {
-      oldState = (event as EventWithNativeEvent<GestureStateChangeEvent>)
+      oldState = (event as NativeSyntheticEvent<GestureStateChangeEvent>)
         .nativeEvent.oldState;
-      state = (event as EventWithNativeEvent<GestureStateChangeEvent>)
+      state = (event as NativeSyntheticEvent<GestureStateChangeEvent>)
         .nativeEvent.state;
     } else {
       oldState = (event as GestureStateChangeEvent).oldState;
@@ -31,25 +32,25 @@ export function useGestureStateChangeEvent(
     }
 
     if (oldState === State.UNDETERMINED && state === State.BEGAN) {
-      runWorklet(CALLBACK_TYPE.BEGAN, config, event);
+      runWorkletCallback(CALLBACK_TYPE.BEGAN, config, event);
     } else if (
       (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
       state === State.ACTIVE
     ) {
-      runWorklet(CALLBACK_TYPE.START, config, event);
+      runWorkletCallback(CALLBACK_TYPE.START, config, event);
     } else if (oldState !== state && state === State.END) {
       if (oldState === State.ACTIVE) {
-        runWorklet(CALLBACK_TYPE.END, config, event, true);
+        runWorkletCallback(CALLBACK_TYPE.END, config, event, true);
       }
-      runWorklet(CALLBACK_TYPE.FINALIZE, config, event, true);
+      runWorkletCallback(CALLBACK_TYPE.FINALIZE, config, event, true);
     } else if (
       (state === State.FAILED || state === State.CANCELLED) &&
       state !== oldState
     ) {
       if (oldState === State.ACTIVE) {
-        runWorklet(CALLBACK_TYPE.END, config, event, false);
+        runWorkletCallback(CALLBACK_TYPE.END, config, event, false);
       }
-      runWorklet(CALLBACK_TYPE.FINALIZE, config, event, false);
+      runWorkletCallback(CALLBACK_TYPE.FINALIZE, config, event, false);
     }
   };
 

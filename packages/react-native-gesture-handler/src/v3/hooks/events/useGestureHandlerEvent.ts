@@ -1,83 +1,60 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { compareTags, runWorklet } from '../utils';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { UpdateEvent } from '../../interfaces';
-
-function useReanimatedEvent(handlerTag: number, config: any) {
-  const lastUpdateEvents = Reanimated!.useSharedValue<
-    (UpdateEvent | undefined)[]
-  >([]);
-
-  const onGestureHandlerEvent = (event: UpdateEvent) => {
-    'worklet';
-
-    if (!compareTags(handlerTag, event)) {
-      return;
-    }
-
-    runWorklet(CALLBACK_TYPE.UPDATE, config, event);
-
-    if (config.onChange && config.changeEventCalculator) {
-      runWorklet(
-        CALLBACK_TYPE.CHANGE,
-        config,
-        config.changeEventCalculator?.(
-          event,
-          lastUpdateEvents.value[handlerTag]
-        )
-      );
-
-      lastUpdateEvents.value[handlerTag] = event;
-    }
-  };
-
-  const handlers = {
-    onChange: config.onChange,
-    onUpdate: config.onUpdate,
-  };
-
-  const { doDependenciesDiffer } = Reanimated!.useHandler(handlers);
-
-  return Reanimated!.useEvent(
-    onGestureHandlerEvent,
-    ['onGestureHandlerEvent'],
-    doDependenciesDiffer
-  );
-}
-
-function gestureHandlerEvent(handlerTag: number, config: any) {
-  const lastUpdateEvents: UpdateEvent[] = [];
-
-  const onGestureHandlerEvent = (event: UpdateEvent) => {
-    'worklet';
-
-    if (!compareTags(handlerTag, event)) {
-      return;
-    }
-
-    runWorklet(CALLBACK_TYPE.UPDATE, config, event);
-
-    if (config.onChange && config.changeEventCalculator) {
-      runWorklet(
-        CALLBACK_TYPE.CHANGE,
-        config,
-        config.changeEventCalculator?.(event, lastUpdateEvents[handlerTag])
-      );
-
-      lastUpdateEvents[handlerTag] = event;
-    }
-  };
-
-  return onGestureHandlerEvent;
-}
+import { compareTags, runWorkletCallback } from '../utils';
+import {
+  Reanimated,
+  ReanimatedContext,
+} from '../../../handlers/gestures/reanimatedWrapper';
+import { UpdateEvent } from '../../types';
 
 export function useGestureHandlerEvent(
   handlerTag: number,
   config: any,
   shouldUseReanimated: boolean
 ) {
-  return shouldUseReanimated
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useReanimatedEvent(handlerTag, config)
-    : gestureHandlerEvent(handlerTag, config);
+  const onGestureHandlerEvent = (
+    event: UpdateEvent,
+    context: ReanimatedContext
+  ) => {
+    'worklet';
+
+    if (!compareTags(handlerTag, event)) {
+      return;
+    }
+
+    runWorkletCallback(CALLBACK_TYPE.UPDATE, config, event);
+
+    if (config.onChange && config.changeEventCalculator) {
+      runWorkletCallback(
+        CALLBACK_TYPE.CHANGE,
+        config,
+        config.changeEventCalculator?.(event, context.lastUpdateEvent)
+      );
+
+      context.lastUpdateEvent = event;
+    }
+  };
+
+  if (shouldUseReanimated) {
+    const handlers = {
+      onChange: config.onChange,
+      onUpdate: config.onUpdate,
+    };
+
+    const { doDependenciesDiffer, context } = Reanimated!.useHandler(handlers);
+
+    return Reanimated!.useEvent(
+      (event: UpdateEvent) => {
+        'worklet';
+        onGestureHandlerEvent(event, context);
+      },
+      ['onGestureHandlerEvent'],
+      doDependenciesDiffer
+    );
+  } else {
+    const context: ReanimatedContext = {
+      lastUpdateEvent: undefined,
+    };
+
+    return (event: UpdateEvent) => onGestureHandlerEvent(event, context);
+  }
 }

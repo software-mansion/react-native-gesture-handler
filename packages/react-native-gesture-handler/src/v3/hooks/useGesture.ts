@@ -31,7 +31,7 @@ export interface NativeGesture {
   dispatchesAnimatedEvents: boolean;
 }
 
-function hasWorklets(config: Record<string, unknown>) {
+function hasWorkletEventHandlers(config: Record<string, unknown>) {
   return Object.values(config).some(
     // @ts-ignore `__workletHash` comes from Reanimated and it does exist (on JS thread) if function is worklet.
     (prop) => typeof prop === 'function' && prop.__workletHash !== undefined
@@ -53,7 +53,8 @@ export function useGesture(
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
 
-  const shouldUseReanimated = Reanimated !== undefined && hasWorklets(config);
+  const shouldUseReanimated =
+    Reanimated !== undefined && hasWorkletEventHandlers(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
 
   const {

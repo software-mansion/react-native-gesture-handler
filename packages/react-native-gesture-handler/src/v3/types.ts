@@ -1,3 +1,4 @@
+import { NativeSyntheticEvent } from 'react-native';
 import {
   GestureStateChangeEvent,
   GestureTouchEvent,
@@ -8,16 +9,12 @@ export type GestureHandlerEvent = UpdateEvent | StateChangeEvent | TouchEvent;
 
 export type UpdateEvent =
   | GestureUpdateEvent
-  | EventWithNativeEvent<GestureUpdateEvent>;
+  | NativeSyntheticEvent<GestureUpdateEvent>;
 
 export type StateChangeEvent =
   | GestureStateChangeEvent
-  | EventWithNativeEvent<GestureStateChangeEvent>;
+  | NativeSyntheticEvent<GestureStateChangeEvent>;
 
 export type TouchEvent =
   | GestureTouchEvent
-  | EventWithNativeEvent<GestureTouchEvent>;
-
-export type EventWithNativeEvent<T> = {
-  nativeEvent: T;
-};
+  | NativeSyntheticEvent<GestureTouchEvent>;

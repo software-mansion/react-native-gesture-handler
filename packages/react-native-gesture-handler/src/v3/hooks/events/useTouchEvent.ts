@@ -1,12 +1,13 @@
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import {
   compareTags,
-  runWorklet,
+  runWorkletCallback,
   touchEventTypeToCallbackType,
 } from '../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { TouchEventType } from '../../../TouchEventType';
-import { EventWithNativeEvent, TouchEvent } from '../../interfaces';
+import { TouchEvent } from '../../types';
+import { NativeSyntheticEvent } from 'react-native';
 
 export function useTouchEvent(
   handlerTag: number,
@@ -23,12 +24,12 @@ export function useTouchEvent(
     if (
       // @ts-ignore That's the point, we want to check if nativeEvent exists or not
       event.nativeEvent &&
-      (event as EventWithNativeEvent<GestureTouchEvent>).nativeEvent
+      (event as NativeSyntheticEvent<GestureTouchEvent>).nativeEvent
         .eventType !== TouchEventType.UNDETERMINED
     ) {
-      runWorklet(
+      runWorkletCallback(
         touchEventTypeToCallbackType(
-          (event as EventWithNativeEvent<GestureTouchEvent>).nativeEvent
+          (event as NativeSyntheticEvent<GestureTouchEvent>).nativeEvent
             .eventType
         ),
         config,
@@ -37,7 +38,7 @@ export function useTouchEvent(
     } else if (
       (event as GestureTouchEvent).eventType !== TouchEventType.UNDETERMINED
     ) {
-      runWorklet(
+      runWorkletCallback(
         touchEventTypeToCallbackType((event as GestureTouchEvent).eventType),
         config,
         event

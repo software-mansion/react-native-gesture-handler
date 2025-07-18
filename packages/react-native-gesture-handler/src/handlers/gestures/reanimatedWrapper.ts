@@ -1,10 +1,14 @@
-import { ComponentClass, Context } from 'react';
+import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
-import { GestureHandlerEvent } from '../../v3/interfaces';
+import { UpdateEvent } from '../../v3/types';
 
 export interface SharedValue<T> {
   value: T;
 }
+
+export type ReanimatedContext = {
+  lastUpdateEvent: UpdateEvent | undefined;
+};
 
 let Reanimated:
   | {
@@ -17,12 +21,13 @@ let Reanimated:
       };
       useHandler: (handlers: Record<string, unknown>) => {
         doDependenciesDiffer: boolean;
+        context: ReanimatedContext;
       };
       useEvent: <T>(
         callback: (event: T) => void,
         events: string[],
         rebuild: boolean
-      ) => (event: GestureHandlerEvent, context?: Context<unknown>) => void;
+      ) => (event: unknown) => void;
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
       isSharedValue: (value: unknown) => value is SharedValue<unknown>;
