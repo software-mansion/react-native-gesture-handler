@@ -4,7 +4,7 @@ import {
   Reanimated,
   ReanimatedContext,
 } from '../../../handlers/gestures/reanimatedWrapper';
-import { UpdateEvent } from '../../types';
+import { CallbackHandlers, UpdateEvent } from '../../types';
 import { tagMessage } from '../../../utils';
 
 export function useGestureHandlerEvent(
@@ -12,6 +12,11 @@ export function useGestureHandlerEvent(
   config: any,
   shouldUseReanimated: boolean
 ) {
+  const handlers: CallbackHandlers = {
+    onChange: config.onChange,
+    onUpdate: config.onUpdate,
+  };
+
   const onGestureHandlerEvent = (
     event: UpdateEvent,
     context: ReanimatedContext | undefined
@@ -22,7 +27,7 @@ export function useGestureHandlerEvent(
       return;
     }
 
-    runWorkletCallback(CALLBACK_TYPE.UPDATE, config, event);
+    runWorkletCallback(CALLBACK_TYPE.UPDATE, handlers, event);
 
     // This should never happen, but since we don't want to call hooks conditionally, we have to mark
     // context as possibly undefined to make TypeScript happy.
@@ -33,17 +38,13 @@ export function useGestureHandlerEvent(
     if (config.onChange && config.changeEventCalculator) {
       runWorkletCallback(
         CALLBACK_TYPE.CHANGE,
-        config,
-        config.changeEventCalculator?.(event, context.lastUpdateEvent)
+        handlers,
+        // @ts-ignore This type comes from old API and should be fixed in the future
+        handlers.changeEventCalculator?.(event, context.lastUpdateEvent)
       );
 
       context.lastUpdateEvent = event;
     }
-  };
-
-  const handlers = {
-    onChange: config.onChange,
-    onUpdate: config.onUpdate,
   };
 
   const jsContext: ReanimatedContext = {

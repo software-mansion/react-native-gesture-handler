@@ -1,20 +1,14 @@
 import { NativeSyntheticEvent } from 'react-native';
-import {
-  CALLBACK_TYPE,
-  HandlerCallbacks,
-} from '../../handlers/gestures/gesture';
+import { CALLBACK_TYPE } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
-import { GestureHandlerEvent } from '../types';
+import { CallbackHandlers, GestureHandlerEvent } from '../types';
 import {
   GestureStateChangeEvent,
   GestureTouchEvent,
   GestureUpdateEvent,
 } from '../../handlers/gestureHandlerCommon';
 
-export function getHandler(
-  type: CALLBACK_TYPE,
-  config: HandlerCallbacks<Record<string, unknown>>
-) {
+export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
   'worklet';
   switch (type) {
     case CALLBACK_TYPE.BEGAN:
@@ -59,7 +53,7 @@ export function touchEventTypeToCallbackType(
 
 export function runWorkletCallback(
   type: CALLBACK_TYPE,
-  config: HandlerCallbacks<Record<string, unknown>>,
+  config: CallbackHandlers,
   event: GestureHandlerEvent,
   ...args: unknown[]
 ) {

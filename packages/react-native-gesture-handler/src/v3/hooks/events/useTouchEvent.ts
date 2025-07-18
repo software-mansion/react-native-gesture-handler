@@ -6,7 +6,7 @@ import {
 } from '../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { TouchEventType } from '../../../TouchEventType';
-import { TouchEvent } from '../../types';
+import { CallbackHandlers, TouchEvent } from '../../types';
 import { NativeSyntheticEvent } from 'react-native';
 
 export function useTouchEvent(
@@ -14,6 +14,13 @@ export function useTouchEvent(
   config: any,
   shouldUseReanimated: boolean
 ) {
+  const handlers: CallbackHandlers = {
+    onTouchesDown: config.onTouchesDown,
+    onTouchesMove: config.onTouchesMove,
+    onTouchesUp: config.onTouchesUp,
+    onTouchesCancelled: config.onTouchesCancelled,
+  };
+
   const onGestureHandlerTouchEvent = (event: TouchEvent) => {
     'worklet';
 
@@ -32,7 +39,7 @@ export function useTouchEvent(
           (event as NativeSyntheticEvent<GestureTouchEvent>).nativeEvent
             .eventType
         ),
-        config,
+        handlers,
         event
       );
     } else if (
@@ -40,17 +47,10 @@ export function useTouchEvent(
     ) {
       runWorkletCallback(
         touchEventTypeToCallbackType((event as GestureTouchEvent).eventType),
-        config,
+        handlers,
         event
       );
     }
-  };
-
-  const handlers = {
-    onTouchesDown: config.onTouchesDown,
-    onTouchesMove: config.onTouchesMove,
-    onTouchesUp: config.onTouchesUp,
-    onTouchesCancelled: config.onTouchesCancelled,
   };
 
   const reanimatedHandler = Reanimated?.useHandler(handlers);
