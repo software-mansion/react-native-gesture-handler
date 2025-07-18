@@ -24,7 +24,8 @@ export function useGestureEvent(
     shouldUseReanimated
   );
 
-  const onGestureHandlerAnimatedEvent = config.onGestureHandlerAnimatedEvent;
+  const onGestureHandlerAnimatedEvent =
+    config.onGestureHandlerAnimatedEvent as (...args: any[]) => void;
 
   return {
     onGestureHandlerStateChange,

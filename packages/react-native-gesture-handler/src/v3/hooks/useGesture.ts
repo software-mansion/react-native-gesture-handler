@@ -110,7 +110,7 @@ export function useGesture(
     },
     shouldUseReanimated,
     dispatchesAnimatedEvents:
-      !!onGestureHandlerAnimatedEvent &&
+      onGestureHandlerAnimatedEvent &&
       '__isNative' in onGestureHandlerAnimatedEvent,
   };
 }
