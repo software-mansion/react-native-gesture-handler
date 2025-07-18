@@ -45,6 +45,16 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
+  // Called in handler's onDestroy
+  public removeHandlerFromOrchestratorByTag(handlerTag: number): void {
+    const handler = this.gestureHandlers.find(
+      (item) => item.handlerTag === handlerTag
+    );
+    if (handler !== undefined) {
+      this.removeHandlerFromOrchestrator(handler);
+    }
+  }
+
   private cleanupFinishedHandlers(): void {
     const handlersToRemove = new Set<IGestureHandler>();
 
@@ -379,13 +389,6 @@ export default class GestureHandlerOrchestrator {
         // There may be possibility to use that fact to make handler respond properly to first mouse click
         handler.tracker.resetTracker();
       }
-    });
-  }
-
-  // Manually deleting gesture handler from the array, called in NodeManager whenever component has been dropped
-  public deleteGesture(handlerTag: number): void {
-    this.gestureHandlers = this.gestureHandlers.filter((item) => {
-      return item.handlerTag !== handlerTag;
     });
   }
 
