@@ -727,6 +727,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected resetConfig(): void {}
 
   public onDestroy(): void {
+    GestureHandlerOrchestrator.instance.deleteGesture(this.handlerTag);
     this.delegate.destroy(this.config);
   }
 
