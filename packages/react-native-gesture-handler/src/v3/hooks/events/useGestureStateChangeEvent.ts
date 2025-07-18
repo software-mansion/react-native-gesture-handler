@@ -18,9 +18,9 @@ export function useGestureStateChangeEvent(
     onFinalize: config.onFinalize,
   };
 
-  const onGestureHandlerStateChange = (event: StateChangeEvent) => {
-    'worklet';
-
+  const onGestureHandlerStateChange = (
+    event: StateChangeEvent<Record<string, unknown>>
+  ) => {
     if (!compareTags(handlerTag, event)) {
       return;
     }

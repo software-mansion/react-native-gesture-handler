@@ -7,7 +7,7 @@ export interface SharedValue<T> {
 }
 
 export type ReanimatedContext = {
-  lastUpdateEvent: UpdateEvent | undefined;
+  lastUpdateEvent: UpdateEvent<Record<string, unknown>> | undefined;
 };
 
 let Reanimated:

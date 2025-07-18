@@ -6,15 +6,26 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
 
-export type GestureHandlerEvent = UpdateEvent | StateChangeEvent | TouchEvent;
+type GestureUpdateEventWithData<T> = GestureUpdateEvent & {
+  handlerData: T;
+};
 
-export type UpdateEvent =
-  | GestureUpdateEvent
-  | NativeSyntheticEvent<GestureUpdateEvent>;
+type GestureStateChangeEventWithData<T> = GestureStateChangeEvent & {
+  handlerData: T;
+};
 
-export type StateChangeEvent =
-  | GestureStateChangeEvent
-  | NativeSyntheticEvent<GestureStateChangeEvent>;
+export type GestureHandlerEvent<T> =
+  | UpdateEvent<T>
+  | StateChangeEvent<T>
+  | TouchEvent;
+
+export type UpdateEvent<T> =
+  | GestureUpdateEventWithData<T>
+  | NativeSyntheticEvent<GestureUpdateEventWithData<T>>;
+
+export type StateChangeEvent<T> =
+  | GestureStateChangeEventWithData<T>
+  | NativeSyntheticEvent<GestureStateChangeEventWithData<T>>;
 
 export type TouchEvent =
   | GestureTouchEvent

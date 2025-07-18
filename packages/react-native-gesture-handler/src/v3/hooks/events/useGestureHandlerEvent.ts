@@ -18,7 +18,7 @@ export function useGestureHandlerEvent(
   };
 
   const onGestureHandlerEvent = (
-    event: UpdateEvent,
+    event: UpdateEvent<Record<string, unknown>>,
     context: ReanimatedContext | undefined
   ) => {
     'worklet';
@@ -53,7 +53,7 @@ export function useGestureHandlerEvent(
 
   const reanimatedHandler = Reanimated?.useHandler(handlers);
   const reanimatedEvent = Reanimated?.useEvent(
-    (event: UpdateEvent) => {
+    (event: UpdateEvent<Record<string, unknown>>) => {
       'worklet';
       onGestureHandlerEvent(event, reanimatedHandler?.context);
     },
@@ -63,5 +63,6 @@ export function useGestureHandlerEvent(
 
   return shouldUseReanimated
     ? reanimatedEvent
-    : (event: UpdateEvent) => onGestureHandlerEvent(event, jsContext);
+    : (event: UpdateEvent<Record<string, unknown>>) =>
+        onGestureHandlerEvent(event, jsContext);
 }

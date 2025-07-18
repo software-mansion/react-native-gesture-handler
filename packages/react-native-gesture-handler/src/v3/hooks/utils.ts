@@ -54,7 +54,7 @@ export function touchEventTypeToCallbackType(
 export function runWorkletCallback(
   type: CALLBACK_TYPE,
   config: CallbackHandlers,
-  event: GestureHandlerEvent,
+  event: GestureHandlerEvent<Record<string, unknown>>,
   ...args: unknown[]
 ) {
   'worklet';
@@ -66,7 +66,7 @@ export function runWorkletCallback(
 
 function isNativeEvent(
   event:
-    | GestureHandlerEvent
+    | GestureHandlerEvent<Record<string, unknown>>
     | NativeSyntheticEvent<
         GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
       >
@@ -78,7 +78,10 @@ function isNativeEvent(
   return 'nativeEvent' in event;
 }
 
-export function compareTags(handlerTag: number, event: GestureHandlerEvent) {
+export function compareTags(
+  handlerTag: number,
+  event: GestureHandlerEvent<Record<string, unknown>>
+) {
   'worklet';
 
   return isNativeEvent(event)
