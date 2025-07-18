@@ -45,16 +45,6 @@ export default class GestureHandlerOrchestrator {
     }
   }
 
-  // Called in handler's onDestroy
-  public removeHandlerFromOrchestratorByTag(handlerTag: number): void {
-    const handler = this.gestureHandlers.find(
-      (item) => item.handlerTag === handlerTag
-    );
-    if (handler !== undefined) {
-      this.removeHandlerFromOrchestrator(handler);
-    }
-  }
-
   private cleanupFinishedHandlers(): void {
     const handlersToRemove = new Set<IGestureHandler>();
 

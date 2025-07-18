@@ -1,6 +1,7 @@
 import { ValueOf } from '../../typeUtils';
 import { Gestures } from '../Gestures';
 import type IGestureHandler from '../handlers/IGestureHandler';
+
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default abstract class NodeManager {
   private static gestures: Record<
@@ -34,7 +35,9 @@ export default abstract class NodeManager {
     if (!(handlerTag in this.gestures)) {
       return;
     }
+
     this.gestures[handlerTag].onDestroy();
+
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.gestures[handlerTag];
   }
