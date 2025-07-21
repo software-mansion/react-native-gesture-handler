@@ -67,7 +67,9 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   public registerListeners(): void {
     this.view.addEventListener('keydown', this.keyDownCallback);
     this.view.addEventListener('keyup', this.keyUpCallback);
+
     KeyboardEventManager.instances.add(this);
+
     if (!KeyboardEventManager.registeredStaticListeners) {
       KeyboardEventManager.registeredStaticListeners = true;
       document.addEventListener(
@@ -80,7 +82,9 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   public unregisterListeners(): void {
     this.view.removeEventListener('keydown', this.keyDownCallback);
     this.view.removeEventListener('keyup', this.keyUpCallback);
+
     KeyboardEventManager.instances.delete(this);
+
     if (KeyboardEventManager.instances.size === 0) {
       document.removeEventListener(
         'keyup',
