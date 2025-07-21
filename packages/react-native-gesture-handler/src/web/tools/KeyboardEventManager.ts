@@ -6,6 +6,7 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private activationKeys = ['Enter', ' '];
   private cancelationKeys = ['Tab'];
   private isPressed = false;
+
   private static registeredStaticListeners = false;
   private static instances: Set<KeyboardEventManager> = new Set();
 
@@ -63,8 +64,8 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     this.view.addEventListener('keydown', this.keyDownCallback);
     if (!KeyboardEventManager.registeredStaticListeners) {
       document.addEventListener('keyup', KeyboardEventManager.keyUpCallback);
+      KeyboardEventManager.registeredStaticListeners = true;
     }
-
     KeyboardEventManager.instances.add(this);
   }
 
