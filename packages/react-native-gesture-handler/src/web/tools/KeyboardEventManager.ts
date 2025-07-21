@@ -62,16 +62,20 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
   public registerListeners(): void {
     this.view.addEventListener('keydown', this.keyDownCallback);
-    if (!KeyboardEventManager.registeredStaticListeners) {
-      document.addEventListener('keyup', KeyboardEventManager.keyUpCallback);
-      KeyboardEventManager.registeredStaticListeners = true;
-    }
     KeyboardEventManager.instances.add(this);
+    if (!KeyboardEventManager.registeredStaticListeners) {
+      KeyboardEventManager.registeredStaticListeners = true;
+      document.addEventListener('keyup', KeyboardEventManager.keyUpCallback);
+    }
   }
 
   public unregisterListeners(): void {
     this.view.removeEventListener('keydown', this.keyDownCallback);
     KeyboardEventManager.instances.delete(this);
+    if (KeyboardEventManager.instances.size === 0) {
+      document.removeEventListener('keyup', KeyboardEventManager.keyUpCallback);
+      KeyboardEventManager.registeredStaticListeners = false;
+    }
   }
 
   protected mapEvent(
