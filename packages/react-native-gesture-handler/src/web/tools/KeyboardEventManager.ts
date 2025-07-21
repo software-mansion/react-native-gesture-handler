@@ -6,14 +6,18 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private activationKeys = ['Enter', ' '];
   private cancelationKeys = ['Tab'];
   private isPressed = false;
-
   private static registeredStaticListeners = false;
   private static instances: Set<KeyboardEventManager> = new Set();
 
-  private static keyUpCallback = (event: KeyboardEvent): void => {
+  private static keyUpStaticCallback = (event: KeyboardEvent): void => {
     this.instances.forEach((item) => {
       item.keyUp(event);
     });
+  };
+
+  private keyUpCallback = (event: KeyboardEvent): void => {
+    event.stopPropagation();
+    this.keyUp(event);
   };
 
   private keyDownCallback = (event: KeyboardEvent): void => {
@@ -62,18 +66,26 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
   public registerListeners(): void {
     this.view.addEventListener('keydown', this.keyDownCallback);
+    this.view.addEventListener('keyup', this.keyUpCallback);
     KeyboardEventManager.instances.add(this);
     if (!KeyboardEventManager.registeredStaticListeners) {
       KeyboardEventManager.registeredStaticListeners = true;
-      document.addEventListener('keyup', KeyboardEventManager.keyUpCallback);
+      document.addEventListener(
+        'keyup',
+        KeyboardEventManager.keyUpStaticCallback
+      );
     }
   }
 
   public unregisterListeners(): void {
     this.view.removeEventListener('keydown', this.keyDownCallback);
+    this.view.removeEventListener('keyup', this.keyUpCallback);
     KeyboardEventManager.instances.delete(this);
     if (KeyboardEventManager.instances.size === 0) {
-      document.removeEventListener('keyup', KeyboardEventManager.keyUpCallback);
+      document.removeEventListener(
+        'keyup',
+        KeyboardEventManager.keyUpStaticCallback
+      );
       KeyboardEventManager.registeredStaticListeners = false;
     }
   }
