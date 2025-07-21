@@ -6,6 +6,14 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private activationKeys = ['Enter', ' '];
   private cancelationKeys = ['Tab'];
   private isPressed = false;
+  private static registeredStaticListeners = false;
+  private static instances: Set<KeyboardEventManager> = new Set();
+
+  private static keyUpCallback = (event: KeyboardEvent): void => {
+    this.instances.forEach((item) => {
+      item.keyUp(event);
+    });
+  };
 
   private keyDownCallback = (event: KeyboardEvent): void => {
     if (this.cancelationKeys.indexOf(event.key) !== -1 && this.isPressed) {
@@ -20,7 +28,7 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     this.dispatchEvent(event, EventTypes.DOWN);
   };
 
-  private keyUpCallback = (event: KeyboardEvent): void => {
+  private keyUp = (event: KeyboardEvent): void => {
     if (this.activationKeys.indexOf(event.key) === -1 || !this.isPressed) {
       return;
     }
@@ -53,12 +61,16 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
   public registerListeners(): void {
     this.view.addEventListener('keydown', this.keyDownCallback);
-    this.view.addEventListener('keyup', this.keyUpCallback);
+    if (!KeyboardEventManager.registeredStaticListeners) {
+      document.addEventListener('keyup', KeyboardEventManager.keyUpCallback);
+    }
+
+    KeyboardEventManager.instances.add(this);
   }
 
   public unregisterListeners(): void {
     this.view.removeEventListener('keydown', this.keyDownCallback);
-    this.view.removeEventListener('keyup', this.keyUpCallback);
+    KeyboardEventManager.instances.delete(this);
   }
 
   protected mapEvent(
