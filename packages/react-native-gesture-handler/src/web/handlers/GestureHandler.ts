@@ -570,6 +570,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (this.enabled !== enabled) {
       this.delegate.onEnabledChange(enabled);
     }
+
     this.enabled = enabled;
 
     if (this.config.shouldCancelWhenOutside !== undefined) {
