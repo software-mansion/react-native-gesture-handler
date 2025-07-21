@@ -8,15 +8,22 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private isPressed = false;
   private static registeredStaticListeners = false;
   private static instances: Set<KeyboardEventManager> = new Set();
+  private static lastKeyUpTimeStamp: number;
 
   private static keyUpStaticCallback = (event: KeyboardEvent): void => {
+    if (event.key !== 'Enter' || this.lastKeyUpTimeStamp === event.timeStamp) {
+      return;
+    }
+
+    this.lastKeyUpTimeStamp = event.timeStamp;
+
     this.instances.forEach((item) => {
       item.keyUp(event);
     });
   };
 
   private keyUpCallback = (event: KeyboardEvent): void => {
-    event.stopPropagation();
+    KeyboardEventManager.lastKeyUpTimeStamp = event.timeStamp;
     this.keyUp(event);
   };
 
