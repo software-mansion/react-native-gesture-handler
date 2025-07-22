@@ -8,26 +8,21 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private isPressed = false;
   private static registeredStaticListeners = false;
   private static instances: Set<KeyboardEventManager> = new Set();
-  private static lastKeyUpTimeStamp: number;
 
   private static keyUpStaticCallback = (event: KeyboardEvent): void => {
-    if (
-      this.activationKeys.indexOf(event.key) === -1 ||
-      event.timeStamp !== this.lastKeyUpTimeStamp
-    ) {
+    /*
+     We need a global listener, as in some cases, keyUp event gets stop-propagated.
+     Then, if we used only component-level listeners the gesture would never end,
+     causing other gestues to fail.
+     */
+
+    if (this.activationKeys.indexOf(event.key) === -1) {
       return;
     }
-
-    this.lastKeyUpTimeStamp = event.timeStamp;
 
     this.instances.forEach((item) => {
       item.onKeyUp(event);
     });
-  };
-
-  private keyUpCallback = (event: KeyboardEvent): void => {
-    KeyboardEventManager.lastKeyUpTimeStamp = event.timeStamp;
-    this.onKeyUp(event);
   };
 
   private keyDownCallback = (event: KeyboardEvent): void => {
@@ -82,7 +77,6 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
   public registerListeners(): void {
     this.view.addEventListener('keydown', this.keyDownCallback);
-    this.view.addEventListener('keyup', this.keyUpCallback);
 
     KeyboardEventManager.instances.add(this);
 
@@ -97,7 +91,6 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
   public unregisterListeners(): void {
     this.view.removeEventListener('keydown', this.keyDownCallback);
-    this.view.removeEventListener('keyup', this.keyUpCallback);
 
     KeyboardEventManager.instances.delete(this);
 
