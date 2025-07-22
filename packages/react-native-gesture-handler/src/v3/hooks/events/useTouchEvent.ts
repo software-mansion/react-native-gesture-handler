@@ -52,8 +52,13 @@ export function useTouchEvent(
     }
   };
 
-  const reanimatedHandler = Reanimated?.useHandler(handlers);
+  if (config.disableReanimated) {
+    return onGestureHandlerTouchEvent;
+  }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const reanimatedHandler = Reanimated?.useHandler(handlers);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedEvent = Reanimated?.useEvent(
     onGestureHandlerTouchEvent,
     ['onGestureHandlerTouchEvent'],

@@ -53,6 +53,15 @@ export function useGesture(
   config: Record<string, unknown>
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
+  const disableReanimated = useMemo(() => config.disableReanimated, []);
+
+  if (config.disableReanimated !== disableReanimated) {
+    throw new Error(
+      tagMessage(
+        'The "disableReanimated" property must not be changed after the handler is created.'
+      )
+    );
+  }
 
   const shouldUseReanimated =
     Reanimated !== undefined && hasWorkletEventHandlers(config);

@@ -49,7 +49,14 @@ export function useGestureHandlerEvent(
     lastUpdateEvent: undefined,
   };
 
+  if (config.disableReanimated) {
+    return (event: UpdateEvent<Record<string, unknown>>) =>
+      onGestureHandlerEvent(event, jsContext);
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedHandler = Reanimated?.useHandler(handlers);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedEvent = Reanimated?.useEvent(
     (event: UpdateEvent<Record<string, unknown>>) => {
       'worklet';
