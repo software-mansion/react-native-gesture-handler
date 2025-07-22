@@ -18,13 +18,13 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     this.lastKeyUpTimeStamp = event.timeStamp;
 
     this.instances.forEach((item) => {
-      item.keyUp(event);
+      item.onKeyUp(event);
     });
   };
 
   private keyUpCallback = (event: KeyboardEvent): void => {
     KeyboardEventManager.lastKeyUpTimeStamp = event.timeStamp;
-    this.keyUp(event);
+    this.onKeyUp(event);
   };
 
   private keyDownCallback = (event: KeyboardEvent): void => {
@@ -40,7 +40,7 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     this.dispatchEvent(event, EventTypes.DOWN);
   };
 
-  private keyUp = (event: KeyboardEvent): void => {
+  private onKeyUp = (event: KeyboardEvent): void => {
     if (this.activationKeys.indexOf(event.key) === -1 || !this.isPressed) {
       return;
     }
