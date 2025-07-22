@@ -1,5 +1,5 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { compareTags, runWorkletCallback } from '../utils';
+import { isEventForHandlerWithTag, runWorkletCallback } from '../utils';
 import {
   Reanimated,
   ReanimatedContext,
@@ -23,7 +23,7 @@ export function useGestureHandlerEvent(
   ) => {
     'worklet';
 
-    if (!compareTags(handlerTag, event)) {
+    if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
     }
 

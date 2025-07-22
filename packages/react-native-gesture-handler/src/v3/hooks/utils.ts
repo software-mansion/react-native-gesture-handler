@@ -79,7 +79,7 @@ function isNativeEvent(
   return 'nativeEvent' in event;
 }
 
-export function compareTags(
+export function isEventForHandlerWithTag(
   handlerTag: number,
   event: GestureHandlerEvent<Record<string, unknown>>
 ) {

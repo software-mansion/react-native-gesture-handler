@@ -1,5 +1,5 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { compareTags, runWorkletCallback } from '../utils';
+import { isEventForHandlerWithTag, runWorkletCallback } from '../utils';
 import { State } from '../../../State';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
@@ -23,7 +23,7 @@ export function useGestureStateChangeEvent(
   ) => {
     'worklet';
 
-    if (!compareTags(handlerTag, event)) {
+    if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
     }
 

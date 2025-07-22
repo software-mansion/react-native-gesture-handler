@@ -1,6 +1,6 @@
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import {
-  compareTags,
+  isEventForHandlerWithTag,
   runWorkletCallback,
   touchEventTypeToCallbackType,
 } from '../utils';
@@ -24,7 +24,7 @@ export function useTouchEvent(
   const onGestureHandlerTouchEvent = (event: TouchEvent) => {
     'worklet';
 
-    if (!compareTags(handlerTag, event)) {
+    if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
     }
 
