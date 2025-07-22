@@ -60,7 +60,8 @@ export function runWorkletCallback(
   'worklet';
   const handler = getHandler(type, config);
 
-  // @ts-ignore It works, duh -_-
+  // TODO: add proper types (likely boolean)
+  // @ts-ignore It works, duh
   handler?.(event, ...args);
 }
 
