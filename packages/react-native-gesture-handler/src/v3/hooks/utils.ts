@@ -65,7 +65,7 @@ export function runWorkletCallback(
   handler?.(event, ...args);
 }
 
-function isNativeEvent(
+export function isNativeEvent(
   event:
     | GestureHandlerEvent<Record<string, unknown>>
     | NativeSyntheticEvent<

@@ -1,6 +1,7 @@
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import {
   isEventForHandlerWithTag,
+  isNativeEvent,
   runWorkletCallback,
   touchEventTypeToCallbackType,
 } from '../utils';
@@ -29,10 +30,8 @@ export function useTouchEvent(
     }
 
     if (
-      // @ts-ignore That's the point, we want to check if nativeEvent exists or not
-      event.nativeEvent &&
-      (event as NativeSyntheticEvent<GestureTouchEvent>).nativeEvent
-        .eventType !== TouchEventType.UNDETERMINED
+      isNativeEvent(event) &&
+      event.nativeEvent.eventType !== TouchEventType.UNDETERMINED
     ) {
       runWorkletCallback(
         touchEventTypeToCallbackType(

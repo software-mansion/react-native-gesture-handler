@@ -1,10 +1,12 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { isEventForHandlerWithTag, runWorkletCallback } from '../utils';
+import {
+  isEventForHandlerWithTag,
+  isNativeEvent,
+  runWorkletCallback,
+} from '../utils';
 import { State } from '../../../State';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
-import { GestureStateChangeEvent } from '../../../handlers/gestureHandlerCommon';
-import { NativeSyntheticEvent } from 'react-native';
 
 export function useGestureStateChangeEvent(
   handlerTag: number,
@@ -30,14 +32,12 @@ export function useGestureStateChangeEvent(
     let oldState: State | undefined;
     let state: State | undefined;
 
-    if (event.nativeEvent) {
-      oldState = (event as NativeSyntheticEvent<GestureStateChangeEvent>)
-        .nativeEvent.oldState;
-      state = (event as NativeSyntheticEvent<GestureStateChangeEvent>)
-        .nativeEvent.state;
+    if (isNativeEvent(event)) {
+      oldState = event.nativeEvent.oldState;
+      state = event.nativeEvent.state;
     } else {
-      oldState = (event as GestureStateChangeEvent).oldState;
-      state = (event as GestureStateChangeEvent).state;
+      oldState = event.oldState;
+      state = event.state;
     }
 
     if (oldState === State.UNDETERMINED && state === State.BEGAN) {
