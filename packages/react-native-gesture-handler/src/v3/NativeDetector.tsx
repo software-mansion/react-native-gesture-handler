@@ -23,11 +23,16 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   const NativeDetectorComponent = gesture.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : gesture.shouldUseReanimated
-      ? ReanimatedNativeDetector!
+      ? ReanimatedNativeDetector
       : RNGestureHandlerDetectorNativeComponent;
 
+  // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
-    throw new Error(tagMessage('Failed to create NativeDetector component.'));
+    throw new Error(
+      tagMessage(
+        'Gesture expects to run on the UI thread, but failed to create the Reanimated NativeDetector.'
+      )
+    );
   }
 
   return (
