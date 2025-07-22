@@ -37,7 +37,7 @@ export function useGestureHandlerEvent(
       CALLBACK_TYPE.UPDATE,
       handlers,
       config.changeEventCalculator
-        ? config.changeEventCalculator?.(event, context.lastUpdateEvent)
+        ? config.changeEventCalculator(event, context.lastUpdateEvent)
         : event
     );
 
