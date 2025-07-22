@@ -27,24 +27,22 @@ export function useGestureHandlerEvent(
       return;
     }
 
-    runWorkletCallback(CALLBACK_TYPE.UPDATE, handlers, event);
-
     // This should never happen, but since we don't want to call hooks conditionally, we have to mark
     // context as possibly undefined to make TypeScript happy.
     if (!context) {
       throw new Error(tagMessage('Event handler context is not defined'));
     }
 
-    if (config.onChange && config.changeEventCalculator) {
-      runWorkletCallback(
-        CALLBACK_TYPE.CHANGE,
-        handlers,
-        // @ts-ignore This type comes from old API and should be fixed in the future
-        handlers.changeEventCalculator?.(event, context.lastUpdateEvent)
-      );
+    runWorkletCallback(
+      CALLBACK_TYPE.UPDATE,
+      handlers,
+      config.changeEventCalculator
+        ? config.changeEventCalculator?.(event, context.lastUpdateEvent)
+        : event
+    );
 
-      context.lastUpdateEvent = event;
-    }
+    // TODO: Investigate why this is always undefined
+    context.lastUpdateEvent = event;
   };
 
   const jsContext: ReanimatedContext = {

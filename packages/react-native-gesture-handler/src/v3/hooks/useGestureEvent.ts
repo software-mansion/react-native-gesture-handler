@@ -25,6 +25,7 @@ export function useGestureEvent(
   );
 
   // TODO: Assign `onGestureHandlerAnimatedEvent` automatically when user passes `onUpdate` callback as Animated.Event
+  // Also throw error when someone uses `change*` properties with Animated Event in `onUpdate`
   const onGestureHandlerAnimatedEvent =
     config.onGestureHandlerAnimatedEvent as (...args: any[]) => void;
 
