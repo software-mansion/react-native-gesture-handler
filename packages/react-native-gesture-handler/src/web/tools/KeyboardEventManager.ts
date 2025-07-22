@@ -10,11 +10,9 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private static instances: Set<KeyboardEventManager> = new Set();
 
   private static keyUpStaticCallback = (event: KeyboardEvent): void => {
-    /*
-     We need a global listener, as in some cases, keyUp event gets stop-propagated.
-     Then, if we used only component-level listeners the gesture would never end,
-     causing other gestues to fail.
-     */
+    // We need a global listener, as in some cases, keyUp event gets stop-propagated.
+    // Then, if we used only component-level listeners the gesture would never end,
+    // causing other gestues to fail.
 
     if (this.activationKeys.indexOf(event.key) === -1) {
       return;
