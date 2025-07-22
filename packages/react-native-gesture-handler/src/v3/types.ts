@@ -1,16 +1,16 @@
 import { NativeSyntheticEvent } from 'react-native';
 import {
-  GestureStateChangeEvent,
+  GestureEventPayload,
   GestureTouchEvent,
-  GestureUpdateEvent,
+  HandlerStateChangeEventPayload,
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
 
-type GestureUpdateEventWithData<T> = GestureUpdateEvent & {
+type GestureUpdateEventWithData<T> = GestureEventPayload & {
   handlerData: T;
 };
 
-type GestureStateChangeEventWithData<T> = GestureStateChangeEvent & {
+type GestureStateChangeEventWithData<T> = HandlerStateChangeEventPayload & {
   handlerData: T;
 };
 

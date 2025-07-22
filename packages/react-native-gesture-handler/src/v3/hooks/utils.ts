@@ -3,9 +3,9 @@ import { CALLBACK_TYPE } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
 import { CallbackHandlers, GestureHandlerEvent } from '../types';
 import {
-  GestureStateChangeEvent,
+  GestureEventPayload,
   GestureTouchEvent,
-  GestureUpdateEvent,
+  HandlerStateChangeEventPayload,
 } from '../../handlers/gestureHandlerCommon';
 
 export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
@@ -69,10 +69,10 @@ export function isNativeEvent(
   event:
     | GestureHandlerEvent<Record<string, unknown>>
     | NativeSyntheticEvent<
-        GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+        GestureEventPayload | HandlerStateChangeEventPayload | GestureTouchEvent
       >
 ): event is NativeSyntheticEvent<
-  GestureUpdateEvent | GestureStateChangeEvent | GestureTouchEvent
+  GestureEventPayload | HandlerStateChangeEventPayload | GestureTouchEvent
 > {
   'worklet';
 
