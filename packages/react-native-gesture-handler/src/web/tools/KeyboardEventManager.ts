@@ -3,15 +3,18 @@ import EventManager from './EventManager';
 import { PointerType } from '../../PointerType';
 
 export default class KeyboardEventManager extends EventManager<HTMLElement> {
-  private activationKeys = ['Enter', ' '];
-  private cancelationKeys = ['Tab'];
+  private static activationKeys = ['Enter', ' '];
+  private static cancelationKeys = ['Tab'];
   private isPressed = false;
   private static registeredStaticListeners = false;
   private static instances: Set<KeyboardEventManager> = new Set();
   private static lastKeyUpTimeStamp: number;
 
   private static keyUpStaticCallback = (event: KeyboardEvent): void => {
-    if (event.key !== 'Enter' || this.lastKeyUpTimeStamp === event.timeStamp) {
+    if (
+      this.activationKeys.indexOf(event.key) === -1 ||
+      event.timeStamp !== this.lastKeyUpTimeStamp
+    ) {
       return;
     }
 
@@ -28,12 +31,15 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   };
 
   private keyDownCallback = (event: KeyboardEvent): void => {
-    if (this.cancelationKeys.indexOf(event.key) !== -1 && this.isPressed) {
+    if (
+      KeyboardEventManager.cancelationKeys.indexOf(event.key) !== -1 &&
+      this.isPressed
+    ) {
       this.dispatchEvent(event, EventTypes.CANCEL);
       return;
     }
 
-    if (this.activationKeys.indexOf(event.key) === -1) {
+    if (KeyboardEventManager.activationKeys.indexOf(event.key) === -1) {
       return;
     }
 
@@ -41,7 +47,10 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
   };
 
   private onKeyUp = (event: KeyboardEvent): void => {
-    if (this.activationKeys.indexOf(event.key) === -1 || !this.isPressed) {
+    if (
+      KeyboardEventManager.activationKeys.indexOf(event.key) === -1 ||
+      !this.isPressed
+    ) {
       return;
     }
 
