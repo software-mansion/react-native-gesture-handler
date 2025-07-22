@@ -21,6 +21,8 @@ export function useGestureStateChangeEvent(
   const onGestureHandlerStateChange = (
     event: StateChangeEvent<Record<string, unknown>>
   ) => {
+    'worklet';
+
     if (!compareTags(handlerTag, event)) {
       return;
     }
