@@ -32,9 +32,14 @@ export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
 
+// TODO: Replace with v3 specific types
 export type CallbackHandlers = Omit<
   HandlerCallbacks<Record<string, unknown>>,
-  'gestureId' | 'handlerTag' | 'isWorklet'
+  | 'gestureId'
+  | 'handlerTag'
+  | 'isWorklet'
+  | 'changeEventCalculator'
+  | 'onChange'
 >;
 
 // This is almost how Animated.event is typed in React Native. We add _argMapping in order to:

@@ -17,7 +17,6 @@ export function useGestureHandlerEvent(
   shouldUseReanimated: boolean
 ) {
   const handlers: CallbackHandlers = {
-    onChange: config.onChange,
     onUpdate: config.onUpdate,
   };
 
