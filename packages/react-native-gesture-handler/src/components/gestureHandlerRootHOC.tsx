@@ -5,7 +5,7 @@ import GestureHandlerRootView from './GestureHandlerRootView';
 
 /**
  * @deprecated `gestureHandlerRootHOC` is deprecated and will be removed in the future version of Gesture Handler.
- * Use `GestureHandlerRootView` instead.
+ * Use `GestureHandlerRootView` directly instead.
  */
 export default function gestureHandlerRootHOC<P extends object>(
   Component: React.ComponentType<P>,
