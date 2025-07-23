@@ -34,5 +34,9 @@ export type TouchEvent =
 
 export type CallbackHandlers = Omit<
   HandlerCallbacks<Record<string, unknown>>,
-  'gestureId' | 'handlerTag' | 'isWorklet'
+  | 'gestureId'
+  | 'handlerTag'
+  | 'isWorklet'
+  | 'changeEventCalculator'
+  | 'onChange'
 >;

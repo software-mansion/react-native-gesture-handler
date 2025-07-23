@@ -18,8 +18,6 @@ export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
       return config.onStart;
     case CALLBACK_TYPE.UPDATE:
       return config.onUpdate;
-    case CALLBACK_TYPE.CHANGE:
-      return config.onChange;
     case CALLBACK_TYPE.END:
       return config.onEnd;
     case CALLBACK_TYPE.FINALIZE:
