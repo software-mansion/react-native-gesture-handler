@@ -101,7 +101,11 @@ export function isAnimatedEvent(
 export function checkMappingForChangeProperties(
   obj: NativeSyntheticEvent<GestureUpdateEventWithData<object>>
 ) {
-  const payload = obj.nativeEvent.handlerData;
+  const payload = obj?.nativeEvent?.handlerData;
+
+  if (!payload) {
+    return;
+  }
 
   for (const key in payload) {
     if (key.startsWith('change')) {
