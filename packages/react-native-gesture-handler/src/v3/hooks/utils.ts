@@ -101,13 +101,7 @@ export function checkMappingForChangeProperties(obj: Animated.Mapping) {
     return;
   }
 
-  const payload = obj.nativeEvent.handlerData;
-
-  if (!payload) {
-    return;
-  }
-
-  for (const key in payload) {
+  for (const key in obj.nativeEvent.handlerData) {
     if (key.startsWith('change')) {
       throw new Error(
         tagMessage(`${key} is not available when using Animated.Event.`)
