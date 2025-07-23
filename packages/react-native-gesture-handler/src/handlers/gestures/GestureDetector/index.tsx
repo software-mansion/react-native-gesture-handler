@@ -96,7 +96,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   const rootViewContext = useContext(GestureHandlerRootViewContext);
   if (__DEV__ && !rootViewContext && !isTestEnv() && Platform.OS !== 'web') {
     throw new Error(
-      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/installation for more details.'
+      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation for more details.'
     );
   }
 

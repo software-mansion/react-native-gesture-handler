@@ -66,7 +66,7 @@ export interface PressableProps
   /**
    * A reference to the pressable element.
    */
-  ref?: React.RefObject<View>;
+  ref?: React.Ref<View>;
 
   /**
    * Either children or a render prop that receives a boolean reflecting whether
@@ -168,9 +168,7 @@ export interface PressableProps
   blocksExternalGesture?: RelationPropType;
 
   /**
-   * Defines the dimensions of the Pressable after it's been resized.
-   * This property does not affect Pressable's physical appearance.
-   * Required when the Pressable is resized **and** uses pressRetentionOffset.
+   * @deprecated This property is no longer used, and will be removed in the future.
    */
   dimensionsAfterResize?: PressableDimensions;
 }

@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   AccessibilityProps,
   ColorValue,
+  LayoutChangeEvent,
   StyleProp,
   ViewStyle,
 } from 'react-native';
@@ -57,25 +58,34 @@ export interface RawButtonProps
   style?: StyleProp<ViewStyle>;
 
   /**
+   * Invoked on mount and layout changes.
+   */
+  onLayout?: (event: LayoutChangeEvent) => void;
+
+  /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onPress?: Function | null;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onPressIn?: Function | null;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onPressOut?: Function | null;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
+   * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onLongPress?: Function | null;
