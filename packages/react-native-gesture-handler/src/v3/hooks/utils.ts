@@ -99,16 +99,11 @@ export function isAnimatedEvent(
 }
 
 export function checkMappingForChangeProperties(obj: Animated.Mapping) {
-  if (!('nativeEvent' in obj)) {
-    return;
-  }
-  const nativeEvent = obj.nativeEvent;
-
-  if (!('handlerData' in nativeEvent)) {
+  if (!('nativeEvent' in obj) || !('handlerData' in obj.nativeEvent)) {
     return;
   }
 
-  const payload = nativeEvent.handlerData;
+  const payload = obj.nativeEvent.handlerData;
 
   if (!payload) {
     return;
