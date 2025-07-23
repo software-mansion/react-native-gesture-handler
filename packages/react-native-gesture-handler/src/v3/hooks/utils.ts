@@ -1,4 +1,4 @@
-import { NativeSyntheticEvent } from 'react-native';
+import { Animated, NativeSyntheticEvent } from 'react-native';
 import { CALLBACK_TYPE } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
 import {
@@ -98,10 +98,17 @@ export function isAnimatedEvent(
   return '_argMapping' in callback;
 }
 
-export function checkMappingForChangeProperties(
-  obj: NativeSyntheticEvent<GestureUpdateEventWithData<object>>
-) {
-  const payload = obj?.nativeEvent?.handlerData;
+export function checkMappingForChangeProperties(obj: Animated.Mapping) {
+  if (!('nativeEvent' in obj)) {
+    return;
+  }
+  const nativeEvent = obj.nativeEvent;
+
+  if (!('handlerData' in nativeEvent)) {
+    return;
+  }
+
+  const payload = nativeEvent.handlerData;
 
   if (!payload) {
     return;
