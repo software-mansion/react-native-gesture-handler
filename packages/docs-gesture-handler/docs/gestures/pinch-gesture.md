@@ -93,6 +93,10 @@ const styles = StyleSheet.create({
 });
 ```
 
+## Remarks
+
+- When implementing pinch based on `focal` point, make sure to use it after gesture has activated, i.e. in `onStart`, `onUpdate` or `onChange` callbacks. Using it in `onBegan` may lead to unexpected behavior.
+
 ## Config
 
 <BaseEventConfig />

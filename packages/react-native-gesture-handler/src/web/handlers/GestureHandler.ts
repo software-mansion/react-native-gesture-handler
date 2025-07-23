@@ -566,9 +566,12 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public updateGestureConfig({ enabled = true, ...props }: Config): void {
     this._config = { enabled: enabled, ...props };
-    this.enabled = enabled;
 
-    this.delegate.onEnabledChange(enabled);
+    if (this.enabled !== enabled) {
+      this.delegate.onEnabledChange(enabled);
+    }
+
+    this.enabled = enabled;
 
     if (this.config.shouldCancelWhenOutside !== undefined) {
       this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
@@ -727,6 +730,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected resetConfig(): void {}
 
   public onDestroy(): void {
+    GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
     this.delegate.destroy(this.config);
   }
 
