@@ -1,12 +1,13 @@
 import { NativeSyntheticEvent } from 'react-native';
 import { CALLBACK_TYPE } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
-import { CallbackHandlers, GestureHandlerEvent } from '../types';
 import {
-  GestureEventPayload,
-  GestureTouchEvent,
-  HandlerStateChangeEventPayload,
-} from '../../handlers/gestureHandlerCommon';
+  CallbackHandlers,
+  GestureHandlerEvent,
+  GestureStateChangeEventWithData,
+  GestureUpdateEventWithData,
+} from '../types';
+import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 
 export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
   'worklet';
@@ -66,14 +67,11 @@ export function runWorkletCallback(
 }
 
 export function isNativeEvent(
-  event:
-    | GestureHandlerEvent<Record<string, unknown>>
-    | NativeSyntheticEvent<
-        GestureEventPayload | HandlerStateChangeEventPayload | GestureTouchEvent
-      >
-): event is NativeSyntheticEvent<
-  GestureEventPayload | HandlerStateChangeEventPayload | GestureTouchEvent
-> {
+  event: GestureHandlerEvent<unknown>
+): event is
+  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureTouchEvent> {
   'worklet';
 
   return 'nativeEvent' in event;

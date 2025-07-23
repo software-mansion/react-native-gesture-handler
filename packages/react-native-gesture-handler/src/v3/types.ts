@@ -6,13 +6,14 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
 
-type GestureUpdateEventWithData<T> = GestureEventPayload & {
+export type GestureUpdateEventWithData<T> = GestureEventPayload & {
   handlerData: T;
 };
 
-type GestureStateChangeEventWithData<T> = HandlerStateChangeEventPayload & {
-  handlerData: T;
-};
+export type GestureStateChangeEventWithData<T> =
+  HandlerStateChangeEventPayload & {
+    handlerData: T;
+  };
 
 export type GestureHandlerEvent<T> =
   | UpdateEvent<T>
