@@ -26,9 +26,6 @@ export function useGestureEvent(
     shouldUseReanimated
   );
 
-  // TODO: Assign `onGestureHandlerAnimatedEvent` automatically when user passes `onUpdate` callback as Animated.Event
-  // Also throw error when someone uses `change*` properties with Animated Event in `onUpdate`
-
   let onGestureHandlerAnimatedEvent: AnimatedEvent | undefined;
 
   if (isAnimatedEvent(config.onUpdate)) {
