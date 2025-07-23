@@ -3,25 +3,47 @@ import EventManager from './EventManager';
 import { PointerType } from '../../PointerType';
 
 export default class KeyboardEventManager extends EventManager<HTMLElement> {
-  private activationKeys = ['Enter', ' '];
-  private cancelationKeys = ['Tab'];
+  private static activationKeys = ['Enter', ' '];
+  private static cancelationKeys = ['Tab'];
   private isPressed = false;
+  private static registeredStaticListeners = false;
+  private static instances: Set<KeyboardEventManager> = new Set();
+
+  private static keyUpStaticCallback = (event: KeyboardEvent): void => {
+    // We need a global listener, as in some cases, keyUp event gets stop-propagated.
+    // Then, if we used only component-level listeners the gesture would never end,
+    // causing other gestues to fail.
+
+    if (this.activationKeys.indexOf(event.key) === -1) {
+      return;
+    }
+
+    this.instances.forEach((item) => {
+      item.onKeyUp(event);
+    });
+  };
 
   private keyDownCallback = (event: KeyboardEvent): void => {
-    if (this.cancelationKeys.indexOf(event.key) !== -1 && this.isPressed) {
+    if (
+      KeyboardEventManager.cancelationKeys.indexOf(event.key) !== -1 &&
+      this.isPressed
+    ) {
       this.dispatchEvent(event, EventTypes.CANCEL);
       return;
     }
 
-    if (this.activationKeys.indexOf(event.key) === -1) {
+    if (KeyboardEventManager.activationKeys.indexOf(event.key) === -1) {
       return;
     }
 
     this.dispatchEvent(event, EventTypes.DOWN);
   };
 
-  private keyUpCallback = (event: KeyboardEvent): void => {
-    if (this.activationKeys.indexOf(event.key) === -1 || !this.isPressed) {
+  private onKeyUp = (event: KeyboardEvent): void => {
+    if (
+      KeyboardEventManager.activationKeys.indexOf(event.key) === -1 ||
+      !this.isPressed
+    ) {
       return;
     }
 
@@ -53,12 +75,32 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
 
   public registerListeners(): void {
     this.view.addEventListener('keydown', this.keyDownCallback);
-    this.view.addEventListener('keyup', this.keyUpCallback);
+
+    KeyboardEventManager.instances.add(this);
+
+    if (!KeyboardEventManager.registeredStaticListeners) {
+      KeyboardEventManager.registeredStaticListeners = true;
+      document.addEventListener(
+        'keyup',
+        KeyboardEventManager.keyUpStaticCallback,
+        { capture: true }
+      );
+    }
   }
 
   public unregisterListeners(): void {
     this.view.removeEventListener('keydown', this.keyDownCallback);
-    this.view.removeEventListener('keyup', this.keyUpCallback);
+
+    KeyboardEventManager.instances.delete(this);
+
+    if (KeyboardEventManager.instances.size === 0) {
+      document.removeEventListener(
+        'keyup',
+        KeyboardEventManager.keyUpStaticCallback,
+        { capture: true }
+      );
+      KeyboardEventManager.registeredStaticListeners = false;
+    }
   }
 
   protected mapEvent(
