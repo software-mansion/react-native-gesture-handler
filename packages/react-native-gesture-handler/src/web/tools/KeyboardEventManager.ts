@@ -82,7 +82,8 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
       KeyboardEventManager.registeredStaticListeners = true;
       document.addEventListener(
         'keyup',
-        KeyboardEventManager.keyUpStaticCallback
+        KeyboardEventManager.keyUpStaticCallback,
+        { capture: true }
       );
     }
   }
@@ -95,7 +96,8 @@ export default class KeyboardEventManager extends EventManager<HTMLElement> {
     if (KeyboardEventManager.instances.size === 0) {
       document.removeEventListener(
         'keyup',
-        KeyboardEventManager.keyUpStaticCallback
+        KeyboardEventManager.keyUpStaticCallback,
+        { capture: true }
       );
       KeyboardEventManager.registeredStaticListeners = false;
     }
