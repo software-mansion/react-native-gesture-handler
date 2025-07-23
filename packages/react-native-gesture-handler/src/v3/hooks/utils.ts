@@ -117,7 +117,7 @@ export function checkMappingForChangeProperties(obj: Animated.Mapping) {
   for (const key in payload) {
     if (key.startsWith('change')) {
       throw new Error(
-        tagMessage(`change properties are not supported in Animated.Event.`)
+        tagMessage(`${key} is not available when using Animated.Event.`)
       );
     }
   }
