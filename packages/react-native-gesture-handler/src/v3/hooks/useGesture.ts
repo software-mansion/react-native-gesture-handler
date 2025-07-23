@@ -19,7 +19,7 @@ type GestureType =
 
 type GestureEvents = {
   onGestureHandlerStateChange: (event: any) => void;
-  onGestureHandlerEvent: (event: any) => void;
+  onGestureHandlerEvent: undefined | ((event: any) => void);
   onGestureHandlerTouchEvent: (event: any) => void;
   onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
@@ -78,7 +78,8 @@ export function useGesture(
   // we have to mark these as possibly undefined to make TypeScript happy.
   if (
     !onGestureHandlerStateChange ||
-    !onGestureHandlerEvent ||
+    // If onUpdate is an AnimatedEvent, `onGestureHandlerEvent` will be undefined and vice versa.
+    (!onGestureHandlerEvent && !onGestureHandlerAnimatedEvent) ||
     !onGestureHandlerTouchEvent
   ) {
     throw new Error(tagMessage('Failed to create event handlers.'));

@@ -55,8 +55,7 @@ export function useGestureHandlerEvent(
 
   if (config.disableReanimated) {
     return isAnimatedEvent(config.onUpdate)
-      ? // eslint-disable-next-line @typescript-eslint/no-empty-function
-        () => {}
+      ? undefined
       : (event: UpdateEvent<Record<string, unknown>>) =>
           onGestureHandlerEvent(event, jsContext);
   }
@@ -74,8 +73,7 @@ export function useGestureHandlerEvent(
   );
 
   return isAnimatedEvent(config.onUpdate)
-    ? // eslint-disable-next-line @typescript-eslint/no-empty-function
-      () => {}
+    ? undefined
     : shouldUseReanimated
       ? reanimatedEvent
       : (event: UpdateEvent<Record<string, unknown>>) =>
