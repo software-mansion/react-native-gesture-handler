@@ -32,6 +32,7 @@ export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
 
+// TODO: Replace with v3 specific types
 export type CallbackHandlers = Omit<
   HandlerCallbacks<Record<string, unknown>>,
   | 'gestureId'
