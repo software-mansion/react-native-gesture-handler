@@ -1,5 +1,9 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { isEventForHandlerWithTag, runWorkletCallback } from '../utils';
+import {
+  isAnimatedEvent,
+  isEventForHandlerWithTag,
+  runWorkletCallback,
+} from '../utils';
 import {
   Reanimated,
   ReanimatedContext,
@@ -50,8 +54,11 @@ export function useGestureHandlerEvent(
   };
 
   if (config.disableReanimated) {
-    return (event: UpdateEvent<Record<string, unknown>>) =>
-      onGestureHandlerEvent(event, jsContext);
+    return isAnimatedEvent(config.onUpdate)
+      ? // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {}
+      : (event: UpdateEvent<Record<string, unknown>>) =>
+          onGestureHandlerEvent(event, jsContext);
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -66,8 +73,11 @@ export function useGestureHandlerEvent(
     !!reanimatedHandler?.doDependenciesDiffer
   );
 
-  return shouldUseReanimated
-    ? reanimatedEvent
-    : (event: UpdateEvent<Record<string, unknown>>) =>
-        onGestureHandlerEvent(event, jsContext);
+  return isAnimatedEvent(config.onUpdate)
+    ? // eslint-disable-next-line @typescript-eslint/no-empty-function
+      () => {}
+    : shouldUseReanimated
+      ? reanimatedEvent
+      : (event: UpdateEvent<Record<string, unknown>>) =>
+          onGestureHandlerEvent(event, jsContext);
 }

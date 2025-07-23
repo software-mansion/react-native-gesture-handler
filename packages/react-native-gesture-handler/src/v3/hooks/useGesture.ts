@@ -4,6 +4,7 @@ import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureEvent } from './useGestureEvent';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
+import { AnimatedEvent } from '../types';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -20,7 +21,7 @@ type GestureEvents = {
   onGestureHandlerStateChange: (event: any) => void;
   onGestureHandlerEvent: (event: any) => void;
   onGestureHandlerTouchEvent: (event: any) => void;
-  onGestureHandlerAnimatedEvent: (event: any) => void;
+  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
 
 export interface NativeGesture {
@@ -98,10 +99,10 @@ export function useGesture(
   useEffect(() => {
     // TODO: filter changes - passing functions (and possibly other types)
     // causes a native crash
-    const animatedEvent = config.onGestureHandlerAnimatedEvent;
-    config.onGestureHandlerAnimatedEvent = null;
+    const animatedEvent = config.onUpdate;
+    config.onUpdate = null;
     RNGestureHandlerModule.updateGestureHandler(tag, config);
-    config.onGestureHandlerAnimatedEvent = animatedEvent;
+    config.onUpdate = animatedEvent;
 
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);
@@ -118,7 +119,7 @@ export function useGesture(
     },
     shouldUseReanimated,
     dispatchesAnimatedEvents:
-      onGestureHandlerAnimatedEvent &&
+      !!onGestureHandlerAnimatedEvent &&
       '__isNative' in onGestureHandlerAnimatedEvent,
   };
 }
