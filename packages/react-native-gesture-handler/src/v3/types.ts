@@ -41,3 +41,10 @@ export type CallbackHandlers = Omit<
   | 'changeEventCalculator'
   | 'onChange'
 >;
+
+// This is almost how Animated.event is typed in React Native. We add _argMapping in order to:
+// 1. Distinguish it from a regular function,
+// 2. Have access to the _argMapping property to check for usage of `change*` callbacks.
+export type AnimatedEvent = ((...args: any[]) => void) & {
+  _argMapping?: unknown;
+};

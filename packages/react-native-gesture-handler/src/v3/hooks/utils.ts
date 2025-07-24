@@ -1,13 +1,15 @@
-import { NativeSyntheticEvent } from 'react-native';
+import { Animated, NativeSyntheticEvent } from 'react-native';
 import { CALLBACK_TYPE } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
 import {
+  AnimatedEvent,
   CallbackHandlers,
   GestureHandlerEvent,
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
+import { tagMessage } from '../../utils';
 
 export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
   'worklet';
@@ -84,4 +86,26 @@ export function isEventForHandlerWithTag(
   return isNativeEvent(event)
     ? event.nativeEvent.handlerTag === handlerTag
     : event.handlerTag === handlerTag;
+}
+
+export function isAnimatedEvent(
+  callback: ((event: any) => void) | AnimatedEvent
+): callback is AnimatedEvent {
+  'worklet';
+
+  return '_argMapping' in callback;
+}
+
+export function checkMappingForChangeProperties(obj: Animated.Mapping) {
+  if (!('nativeEvent' in obj) || !('handlerData' in obj.nativeEvent)) {
+    return;
+  }
+
+  for (const key in obj.nativeEvent.handlerData) {
+    if (key.startsWith('change')) {
+      throw new Error(
+        tagMessage(`${key} is not available when using Animated.Event.`)
+      );
+    }
+  }
 }
