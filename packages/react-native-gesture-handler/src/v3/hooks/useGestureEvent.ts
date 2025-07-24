@@ -33,6 +33,7 @@ export function useGestureEvent(
       checkMappingForChangeProperties(mapping);
     }
 
+    // TODO: Remove cast when config is properly typed.
     onGestureHandlerAnimatedEvent = config.onUpdate as AnimatedEvent;
   }
 
