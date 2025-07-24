@@ -49,9 +49,11 @@ class RNGestureHandlerButtonWrapperShadowNode final
   }
 
   void layout(LayoutContext layoutContext) override;
+  void appendChild(const ShadowNode::Shared &child) override;
 
  private:
   void initialize();
+  void prepareChildren();
 };
 
 } // namespace facebook::react
