@@ -32,11 +32,15 @@ Some libraries (for example React Navigation) already use `GestureHandlerRootVie
 
 ## Update your JS code
 
-Instead of using `RNGestureHandlerEnabledRootView` wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHOC`, for example:
+Instead of using `RNGestureHandlerEnabledRootView` wrap your entry point with `<GestureHandlerRootView>`, for example:
 
 ```jsx
 export default function App() {
-  return <GestureHandlerRootView style={{ flex: 1 }}>{/* content */}</GestureHandlerRootView>;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* content */}
+    </GestureHandlerRootView>
+  );
 }
 ```
 
