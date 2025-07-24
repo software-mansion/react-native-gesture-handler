@@ -2552,7 +2552,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: ba145f1c381299018032c57386bc01cf7da36a79
   ReactCodegen: 17e20a7ea755a372d5f8584da8198813d5e84358
   ReactCommon: 61f2cc9427acc386355f0a1008ceacf35ab3eb21
-  RNGestureHandler: 0fbc8afacdf8e7fcd4dc5cc1773bfb9cb4f710e8
+  RNGestureHandler: eeb519bb8f93a48e91d3b8848446ba123203b530
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 670c6752f06f48ee4e172a75988a963ea53ea2a5
 

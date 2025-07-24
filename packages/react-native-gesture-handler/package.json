@@ -46,6 +46,7 @@
     "android/svg",
     "android/nosvg",
     "apple/",
+    "scripts/",
     "Swipeable/",
     "ReanimatedSwipeable/",
     "jest-utils/",

@@ -1,5 +1,5 @@
 require "json"
-require_relative '../../scripts/gesture_handler_utils'
+require_relative './scripts/gesture_handler_utils'
 
 is_gh_example_app = ENV["GH_EXAMPLE_APP_NAME"] != nil
 
