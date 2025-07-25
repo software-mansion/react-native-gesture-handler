@@ -17,17 +17,34 @@ export interface GestureHandlerDetectorProps extends ViewProps {
   dispatchesAnimatedEvents: boolean;
   moduleId: number;
 }
+
 const GestureHandlerDetector = (props: GestureHandlerDetectorProps) => {
-  const { handlerTags } = props;
+  const {
+    onGestureHandlerEvent,
+    onGestureHandlerAnimatedEvent,
+    onGestureHandlerStateChange,
+    onGestureHandlerTouchEvent,
+    handlerTags,
+    dispatchesAnimatedEvents,
+    moduleId,
+  } = props;
 
   const viewRef = useRef(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
 
   useEffect(() => {
-    updateProps();
-  }, [props]);
+    attachHandlers();
+  }, [
+    onGestureHandlerEvent,
+    onGestureHandlerAnimatedEvent,
+    onGestureHandlerStateChange,
+    onGestureHandlerTouchEvent,
+    handlerTags,
+    dispatchesAnimatedEvents,
+    moduleId,
+  ]);
 
-  const updateProps = (): void => {
+  const attachHandlers = (): void => {
     handlerTags.forEach((tag) => {
       RNGestureHandlerModuleWeb.attachGestureHandler(
         tag,
@@ -39,4 +56,5 @@ const GestureHandlerDetector = (props: GestureHandlerDetectorProps) => {
   };
   return <View ref={viewRef}>{props.children}</View>;
 };
+
 export default GestureHandlerDetector;
