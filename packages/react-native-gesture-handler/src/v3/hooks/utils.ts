@@ -89,11 +89,11 @@ export function isEventForHandlerWithTag(
 }
 
 export function isAnimatedEvent(
-  callback: ((event: any) => void) | AnimatedEvent
+  callback: ((event: any) => void) | AnimatedEvent | undefined
 ): callback is AnimatedEvent {
   'worklet';
 
-  return '_argMapping' in callback;
+  return !!callback && '_argMapping' in callback;
 }
 
 export function checkMappingForChangeProperties(obj: Animated.Mapping) {
