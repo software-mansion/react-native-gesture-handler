@@ -50,7 +50,6 @@ def resolveReactNativeDirectory() {
 }
 
 apply plugin: 'com.facebook.react'
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -194,9 +193,6 @@ android {
             } else {
                 srcDirs += 'nosvg/src/main/java'
             }
-
-            // TODO: flatteb fabric/src/main/java src dir into core
-            srcDirs += 'fabric/src/main/java'
         }
     }
 
