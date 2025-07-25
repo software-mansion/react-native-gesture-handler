@@ -1,17 +1,20 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
+import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
   private var handlersToAttach: List<Int>? = null
+  private var nativeHandlersToAttach = ArrayList<Int>()
   private var attachedHandlers = listOf<Int>()
   private var moduleId: Int = -1
   private var dispatchesAnimatedEvents: Boolean = false
@@ -40,6 +43,19 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     this.dispatchesAnimatedEvents = dispatchesAnimatedEvents
   }
 
+  // We override this `addView` because it is called inside `addView(child: View?, index: Int)`
+  override fun addView(child: View?, index: Int, params: LayoutParams?) {
+    super.addView(child, index, params)
+
+    if (child == null) {
+      throw Exception(
+        "[react-native-gesture-handler] Cannot attach gesture handler. GestureDetector got null as child.",
+      )
+    }
+
+    attachNativeGestureHandlers(child.id)
+  }
+
   private fun attachHandlers(newHandlers: List<Int>) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
@@ -57,19 +73,42 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     for (entry in changes) {
       if (entry.value == GestureHandlerMutation.Attach) {
         // TODO: Attach to the child when attached gesture is a NativeGestureHandler, track children changes then
-        registry.attachHandlerToView(
-          entry.key,
-          this.id,
-          if (dispatchesAnimatedEvents) {
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
-          } else {
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
-          },
-        )
+        if (registry.getHandler(entry.key) is NativeViewGestureHandler) {
+          nativeHandlersToAttach.add(entry.key)
+        } else {
+          registry.attachHandlerToView(
+            entry.key,
+            this.id,
+            if (dispatchesAnimatedEvents) {
+              GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
+            } else {
+              GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+            },
+          )
+        }
       } else if (entry.value == GestureHandlerMutation.Detach) {
         registry.detachHandler(entry.key)
       }
     }
+  }
+
+  private fun attachNativeGestureHandlers(childId: Int) {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    for (tag in nativeHandlersToAttach) {
+      registry.attachHandlerToView(
+        tag,
+        childId,
+        if (dispatchesAnimatedEvents) {
+          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
+        } else {
+          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+        },
+      )
+    }
+
+    nativeHandlersToAttach.clear()
   }
 
   fun dispatchEvent(event: Event<*>) {
