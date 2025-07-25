@@ -216,7 +216,6 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 dependencies {
     implementation 'com.facebook.react:react-native:+' // from node_modules
 
-
     if (shouldUseCommonInterfaceFromReanimated()) {
         // Include Reanimated as dependency to load the common interface
         implementation(rootProject.subprojects.find { it.name == 'react-native-reanimated' }) {
