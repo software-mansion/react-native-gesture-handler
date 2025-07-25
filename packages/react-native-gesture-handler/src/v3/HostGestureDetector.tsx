@@ -1,0 +1,3 @@
+import RNGestureHandlerDetectorNativeComponent from '../specs/RNGestureHandlerDetectorNativeComponent';
+const HostGestureDetector = RNGestureHandlerDetectorNativeComponent;
+export default HostGestureDetector;
