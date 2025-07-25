@@ -57,19 +57,10 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       }
       GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API -> {
         // JS function, Animated.event with useNativeDriver: false using old API
-        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-          val data = RNGestureHandlerEvent.createEventData(
-            handlerFactory.createEventBuilder(handler),
-          )
-          sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
-        } else {
-          val event = RNGestureHandlerEvent.obtain(
-            handler,
-            handler.actionType,
-            handlerFactory.createEventBuilder(handler),
-          )
-          sendEventForDirectEvent(event)
-        }
+        val data = RNGestureHandlerEvent.createEventData(
+          handlerFactory.createEventBuilder(handler),
+        )
+        sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
         // JS function, Animated.event with useNativeDriver: false using new API
@@ -135,23 +126,12 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
 
       GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT, GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API -> {
         // JS function or Animated.event with useNativeDriver: false with old API
-        if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-          val data = RNGestureHandlerStateChangeEvent.createEventData(
-            handlerFactory.createEventBuilder(handler),
-            newState,
-            oldState,
-          )
-          sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
-        } else {
-          val event = RNGestureHandlerStateChangeEvent.obtain(
-            handler,
-            newState,
-            oldState,
-            handler.actionType,
-            handlerFactory.createEventBuilder(handler),
-          )
-          sendEventForDirectEvent(event)
-        }
+        val data = RNGestureHandlerStateChangeEvent.createEventData(
+          handlerFactory.createEventBuilder(handler),
+          newState,
+          oldState,
+        )
+        sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
       }
 
       GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API -> {
@@ -219,13 +199,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
 
   private fun <T : Event<T>> sendEventForReanimated(event: T) {
     // Delivers the event to Reanimated.
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      // Send event directly to Reanimated
-      reanimatedProxy.sendEvent(event, reactApplicationContext)
-    } else {
-      // In the old architecture, Reanimated subscribes for specific direct events.
-      sendEventForDirectEvent(event)
-    }
+    reanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
   }
 
   private fun sendEventForNativeAnimatedEvent(event: RNGestureHandlerEvent) {

@@ -137,10 +137,6 @@ android {
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 24)
         targetSdkVersion safeExtGet('targetSdkVersion', 33)
-
-        // TODO: Determine if IS_NEW_ARCHITECTURE_ENABLED has to be set
-        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true"
-
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
         var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
