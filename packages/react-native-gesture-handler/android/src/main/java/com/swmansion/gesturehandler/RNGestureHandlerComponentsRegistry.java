@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.react;
+package com.swmansion.gesturehandler;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
