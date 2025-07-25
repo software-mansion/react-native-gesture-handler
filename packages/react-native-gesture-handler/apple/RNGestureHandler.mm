@@ -10,12 +10,8 @@
 
 #import <React/UIView+React.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
-#else
-#import <React/RCTScrollView.h>
-#endif
 
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
@@ -216,25 +212,19 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return (UITouchType)_pointerType;
 }
 
-#if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(RNGHUIView *)view
 {
   return [view isKindOfClass:[RCTParagraphComponentView class]];
 }
-#endif
 
 - (void)bindToView:(RNGHUIView *)view
 {
   self.recognizer.delegate = self;
 
-#if RCT_NEW_ARCH_ENABLED
-  // Starting from react-native 0.79 `RCTParagraphTextView` overrides `hitTest` method to return `nil`. This results in
-  // native `UIGestureRecognizer` not responding to gestures. To fix this issue, we attach recognizer to its parent,
-  // i.e. `RCTParagraphComponentView`.
+  // Starting from react-native 0.79 `RCTParagraphTextView` overrides `hitTest` method to return `nil`.
+  // This results in native `UIGestureRecognizer` not responding to gestures.
+  // To fix this issue, we attach recognizer to its parent, i.e. `RCTParagraphComponentView`.
   RNGHUIView *recognizerView = [self isViewParagraphComponent:view.superview] ? view.superview : view;
-#else
-  RNGHUIView *recognizerView = view;
-#endif
 
 #if !TARGET_OS_OSX
   recognizerView.userInteractionEnabled = YES;
@@ -273,11 +263,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
  */
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
-#if RCT_NEW_ARCH_ENABLED
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
-#else
-  return recognizer.view;
-#endif
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
@@ -595,20 +581,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIScrollView *)retrieveScrollView:(RNGHUIView *)view
 {
-#ifdef RCT_NEW_ARCH_ENABLED
   if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
     RNGHUIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     return scrollView;
   }
-#else
-  if ([view isKindOfClass:[RCTScrollView class]]) {
-    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
-    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
-    // subview
-    RNGHUIScrollView *scrollView = [view.subviews objectAtIndex:0];
-    return scrollView;
-  }
-#endif
 
   return nil;
 }
