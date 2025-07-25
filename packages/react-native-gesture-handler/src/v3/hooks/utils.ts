@@ -89,7 +89,7 @@ export function isEventForHandlerWithTag(
 }
 
 export function isAnimatedEvent(
-  callback: ((event: any) => void) | AnimatedEvent
+  callback: ((event: any) => void) | AnimatedEvent | undefined
 ): callback is AnimatedEvent {
   'worklet';
 
