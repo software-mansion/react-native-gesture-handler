@@ -3,7 +3,7 @@ import { NativeGesture } from './hooks/useGesture';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 
 import { Animated, StyleSheet } from 'react-native';
-import GestureHandlerDetector from '../web/detectors/GestureHandlerDetector';
+import GestureHandlerDetector from '../web/GestureHandlerDetector';
 import { tagMessage } from '../utils';
 
 // TODO: move it to a different file
