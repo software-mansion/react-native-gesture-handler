@@ -1,5 +1,3 @@
-const shouldEnablePaper = process.env.PAPER_ENABLED === '1';
-
 export default {
   expo: {
     name: 'ExpoExample',
@@ -8,7 +6,7 @@ export default {
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
-    newArchEnabled: !shouldEnablePaper,
+    newArchEnabled: 1,
     splash: {
       image: './assets/splash.png',
       resizeMode: 'cover',

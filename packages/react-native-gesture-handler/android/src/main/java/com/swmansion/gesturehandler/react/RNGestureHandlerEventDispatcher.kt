@@ -154,6 +154,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
   }
 
   private fun <T : Event<T>> sendEventForDirectEvent(event: T) {
+    // TODO: Remove root usage of this method.
     // Delivers the event to JS as a direct event. This method is called only on Paper.
     reactApplicationContext.dispatchEvent(event)
   }
