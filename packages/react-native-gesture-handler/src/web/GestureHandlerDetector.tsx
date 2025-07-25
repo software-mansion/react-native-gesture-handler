@@ -3,10 +3,10 @@ import {
   GestureHandlerStateChangeEvent,
   GestureHandlerTouchEvent,
   GestureHandlerEvent,
-} from '../interfaces';
+} from './interfaces';
 import { View, ViewProps } from 'react-native';
-import RNGestureHandlerModuleWeb from '../../RNGestureHandlerModule.web';
-import { ActionType } from '../../ActionType';
+import RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
+import { ActionType } from '../ActionType';
 export interface GestureHandlerDetectorProps extends ViewProps {
   onGestureHandlerEvent?: (e: GestureHandlerEvent) => void;
   onGestureHandlerAnimatedEvent?: (e: GestureHandlerEvent) => void;
