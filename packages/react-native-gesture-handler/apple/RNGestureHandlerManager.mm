@@ -15,14 +15,10 @@
 #import "RNGestureHandlerState.h"
 #import "RNRootViewGestureRecognizer.h"
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTFabricModalHostViewController.h>
 #import <React/RCTSurfaceTouchHandler.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTViewComponentView.h>
-#else
-#import <React/RCTTouchHandler.h>
-#endif // RCT_NEW_ARCH_ENABLED
 
 #import "Handlers/RNFlingHandler.h"
 #import "Handlers/RNForceTouchHandler.h"
@@ -52,17 +48,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
   NSMutableDictionary<NSNumber *, NSNumber *> *_attachRetryCounter;
   NSMutableSet *_droppedHandlers;
-#ifdef RCT_NEW_ARCH_ENABLED
   RCTModuleRegistry *_moduleRegistry;
   RCTViewRegistry *_viewRegistry;
-#else
-  RCTUIManager *_uiManager;
-#endif // RCT_NEW_ARCH_ENABLED
   id<RCTEventDispatcherProtocol> _eventDispatcher;
   id _reanimatedModule;
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (instancetype)initWithModuleRegistry:(RCTModuleRegistry *)moduleRegistry viewRegistry:(RCTViewRegistry *)viewRegistry
 {
   if ((self = [super init])) {
@@ -73,18 +64,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   }
   return self;
 }
-#else
-- (instancetype)initWithUIManager:(RCTUIManager *)uiManager
-                  eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
-{
-  if ((self = [super init])) {
-    _uiManager = uiManager;
-    _eventDispatcher = eventDispatcher;
-    [self initCommonProps];
-  }
-  return self;
-}
-#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)initCommonProps
 {
@@ -139,13 +118,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                toViewWithTag:(nonnull NSNumber *)viewTag
               withActionType:(RNGestureHandlerActionType)actionType
 {
-#ifdef RCT_NEW_ARCH_ENABLED
   RNGHUIView *view = [_viewRegistry viewForReactTag:viewTag];
-#else
-  RNGHUIView *view = [_uiManager viewForReactTag:viewTag];
-#endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RCT_NEW_ARCH_ENABLED
   if (view == nil || view.superview == nil) {
     // There are a few reasons we could end up here:
     // - the native view corresponding to the viewtag hasn't yet been created
@@ -192,7 +166,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
   view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be
                            // returned as event.target
-#endif // RCT_NEW_ARCH_ENABLED
 
   [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
 
@@ -240,7 +213,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView
 {
-#ifdef RCT_NEW_ARCH_ENABLED
   RNGHUIView *touchHandlerView = childView;
 
 #if !TARGET_OS_OSX
@@ -256,31 +228,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     touchHandlerView = touchHandlerView.superview;
   }
 #endif // !TARGET_OS_OSX
-
-#else
-  RNGHUIView *touchHandlerView = nil;
-
-#if !TARGET_OS_OSX
-  if ([[childView reactViewController] isKindOfClass:[RCTModalHostViewController class]]) {
-    touchHandlerView = [childView reactViewController].view.subviews[0];
-  } else {
-    UIView *parent = childView;
-    while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) {
-      parent = parent.superview;
-    }
-
-    touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
-  }
-#else
-  NSView *parent = childView;
-  while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) {
-    parent = parent.superview;
-  }
-
-  touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
-#endif // !TARGET_OS_OSX
-
-#endif // RCT_NEW_ARCH_ENABLED
 
   if (touchHandlerView == nil) {
     return;
@@ -332,11 +279,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
   // this way we can extract the touch handler on both architectures relatively easily
   for (UIGestureRecognizer *recognizer in [viewWithTouchHandler gestureRecognizers]) {
-#ifdef RCT_NEW_ARCH_ENABLED
     if ([recognizer isKindOfClass:[RCTSurfaceTouchHandler class]]) {
-#else
-    if ([recognizer isKindOfClass:[RCTTouchHandler class]]) {
-#endif // RCT_NEW_ARCH_ENABLED
       touchHandler = recognizer;
       break;
     }
@@ -378,18 +321,11 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 - (void)sendEventForReanimated:(RNGestureHandlerStateChange *)event
 {
   // Delivers the event to Reanimated.
-#ifdef RCT_NEW_ARCH_ENABLED
-  // Send event directly to Reanimated
   if (_reanimatedModule == nil) {
     _reanimatedModule = [_moduleRegistry moduleForName:"ReanimatedModule"];
   }
 
   [_reanimatedModule eventDispatcherWillDispatchEvent:event];
-#else
-  // In the old architecture, Reanimated overwrites RCTEventDispatcher
-  // with REAEventDispatcher and intercepts all direct events.
-  [self sendEventForDirectEvent:event];
-#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (void)sendEventForNativeAnimatedEvent:(RNGestureHandlerStateChange *)event
@@ -404,11 +340,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 - (void)sendEventForJSFunctionOldAPI:(RNGestureHandlerStateChange *)event
 {
   // Delivers the event to JS (old RNGH API).
-#ifdef RCT_NEW_ARCH_ENABLED
   [self sendEventForDeviceEvent:event];
-#else
-  [self sendEventForDirectEvent:event];
-#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (void)sendEventForJSFunctionNewAPI:(RNGestureHandlerStateChange *)event

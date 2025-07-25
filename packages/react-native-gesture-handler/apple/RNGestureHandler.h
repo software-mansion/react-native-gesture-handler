@@ -72,9 +72,7 @@
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
 
-#if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
-#endif
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
 - (void)bindToView:(nonnull RNGHUIView *)view;
 - (void)unbindFromView;
