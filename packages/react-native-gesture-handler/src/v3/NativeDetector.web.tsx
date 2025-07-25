@@ -6,6 +6,7 @@ import { Animated, StyleSheet } from 'react-native';
 import GestureHandlerDetector from '../web/detectors/GestureHandlerDetector';
 import { tagMessage } from '../utils';
 
+// TODO: move it to a different file
 export interface NativeDetectorProps {
   children?: React.ReactNode;
   gesture: NativeGesture;
@@ -16,7 +17,7 @@ const AnimatedNativeDetector = Animated.createAnimatedComponent(
 );
 
 const ReanimatedNativeDetector = Reanimated?.default.createAnimatedComponent(
-  // TODO: fix typing, using any isn't the best practice
+  // TODO: fix typing
   GestureHandlerDetector as any
 );
 

@@ -49,7 +49,7 @@ const GestureHandlerDetector = (props: GestureHandlerDetectorProps) => {
       RNGestureHandlerModuleWeb.attachGestureHandler(
         tag,
         viewRef.current,
-        ActionType.NATIVE_ANIMATED_EVENT,
+        ActionType.NATIVE_ANIMATED_EVENT, // TODO: find proper ActionType
         propsRef
       );
     });
