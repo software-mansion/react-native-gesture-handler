@@ -4,10 +4,10 @@ import {
   GestureHandlerTouchEvent,
   GestureHandlerEvent,
 } from './interfaces';
-import { View, ViewProps } from 'react-native';
+import { View } from 'react-native';
 import RNGestureHandlerModuleWeb from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
-export interface GestureHandlerDetectorProps extends ViewProps {
+export interface GestureHandlerDetectorProps {
   onGestureHandlerEvent?: (e: GestureHandlerEvent) => void;
   onGestureHandlerAnimatedEvent?: (e: GestureHandlerEvent) => void;
   onGestureHandlerStateChange?: (e: GestureHandlerStateChangeEvent) => void;
@@ -16,6 +16,7 @@ export interface GestureHandlerDetectorProps extends ViewProps {
   handlerTags: number[];
   dispatchesAnimatedEvents: boolean;
   moduleId: number;
+  children?: React.ReactNode;
 }
 
 const GestureHandlerDetector = (props: GestureHandlerDetectorProps) => {
@@ -27,6 +28,7 @@ const GestureHandlerDetector = (props: GestureHandlerDetectorProps) => {
     handlerTags,
     dispatchesAnimatedEvents,
     moduleId,
+    children,
   } = props;
 
   const viewRef = useRef(null);
@@ -54,7 +56,7 @@ const GestureHandlerDetector = (props: GestureHandlerDetectorProps) => {
       );
     });
   };
-  return <View ref={viewRef}>{props.children}</View>;
+  return <View ref={viewRef}>{children}</View>;
 };
 
 export default GestureHandlerDetector;
