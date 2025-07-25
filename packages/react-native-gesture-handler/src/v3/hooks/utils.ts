@@ -93,7 +93,7 @@ export function isAnimatedEvent(
 ): callback is AnimatedEvent {
   'worklet';
 
-  return '_argMapping' in callback;
+  return !!callback && '_argMapping' in callback;
 }
 
 export function checkMappingForChangeProperties(obj: Animated.Mapping) {
