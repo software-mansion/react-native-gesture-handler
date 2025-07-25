@@ -16,14 +16,6 @@ buildscript {
     }
 }
 
-def isNewArchitectureEnabled() {
-    // To opt-in for the New Architecture, you can either:
-    // - Set `newArchEnabled` to true inside the `gradle.properties` file
-    // - Invoke gradle with `-newArchEnabled=true`
-    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
-    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
-}
-
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -57,9 +49,7 @@ def resolveReactNativeDirectory() {
     )
 }
 
-if (isNewArchitectureEnabled()) {
-    apply plugin: 'com.facebook.react'
-}
+apply plugin: 'com.facebook.react'
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -147,27 +137,28 @@ android {
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 24)
         targetSdkVersion safeExtGet('targetSdkVersion', 33)
-        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+
+        // TODO: Determine if IS_NEW_ARCHITECTURE_ENABLED has to be set
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true"
+
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
-        if (isNewArchitectureEnabled()) {
-            var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
-            externalNativeBuild {
-                cmake {
-                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
-                    arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
-                            "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
-                            "-DANDROID_STL=c++_shared",
-                            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
-                            // Turn off build IDs for reproducibility (ensuring the same code will produce the same bundle when built)
-                            // See https://gitlab.com/IzzyOnDroid/repo/-/wikis/Reproducible-Builds/RB-Hints-for-Developers#no-funny-build-time-generated-ids
-                            // for more information
-                            "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--build-id=none"
-                    abiFilters(*reactNativeArchitectures())
-                }
-                ndkBuild {
-                    arguments "APP_LDFLAGS+=-Wl,--build-id=none"
-                }
+        var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
+        externalNativeBuild {
+            cmake {
+                cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
+                arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                        "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+                        // Turn off build IDs for reproducibility (ensuring the same code will produce the same bundle when built)
+                        // See https://gitlab.com/IzzyOnDroid/repo/-/wikis/Reproducible-Builds/RB-Hints-for-Developers#no-funny-build-time-generated-ids
+                        // for more information
+                        "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--build-id=none"
+                abiFilters(*reactNativeArchitectures())
+            }
+            ndkBuild {
+                arguments "APP_LDFLAGS+=-Wl,--build-id=none"
             }
         }
     }
@@ -177,11 +168,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    if (isNewArchitectureEnabled()) {
-        externalNativeBuild {
-            cmake {
-                path "src/main/jni/CMakeLists.txt"
-            }
+    externalNativeBuild {
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
         }
     }
 
@@ -210,13 +199,8 @@ android {
                 srcDirs += 'nosvg/src/main/java'
             }
 
-            if (isNewArchitectureEnabled()) {
-                srcDirs += 'fabric/src/main/java'
-            } else {
-                // 'paper/src/main/java' includes files from codegen so the library can compile with
-                // codegen turned off
-                srcDirs += 'paper/src/main/java'
-            }
+            // TODO: flatteb fabric/src/main/java src dir into core
+            srcDirs += 'fabric/src/main/java'
         }
     }
 
