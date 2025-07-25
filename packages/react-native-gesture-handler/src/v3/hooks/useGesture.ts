@@ -4,6 +4,7 @@ import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureEvent } from './useGestureEvent';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
+import { AnimatedEvent } from '../types';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -18,9 +19,9 @@ type GestureType =
 
 type GestureEvents = {
   onGestureHandlerStateChange: (event: any) => void;
-  onGestureHandlerEvent: (event: any) => void;
+  onGestureHandlerEvent: undefined | ((event: any) => void);
   onGestureHandlerTouchEvent: (event: any) => void;
-  onGestureHandlerAnimatedEvent: (event: any) => void;
+  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
 
 export interface NativeGesture {
@@ -77,7 +78,8 @@ export function useGesture(
   // we have to mark these as possibly undefined to make TypeScript happy.
   if (
     !onGestureHandlerStateChange ||
-    !onGestureHandlerEvent ||
+    // If onUpdate is an AnimatedEvent, `onGestureHandlerEvent` will be undefined and vice versa.
+    (!onGestureHandlerEvent && !onGestureHandlerAnimatedEvent) ||
     !onGestureHandlerTouchEvent
   ) {
     throw new Error(tagMessage('Failed to create event handlers.'));
@@ -98,10 +100,10 @@ export function useGesture(
   useEffect(() => {
     // TODO: filter changes - passing functions (and possibly other types)
     // causes a native crash
-    const animatedEvent = config.onGestureHandlerAnimatedEvent;
-    config.onGestureHandlerAnimatedEvent = null;
+    const animatedEvent = config.onUpdate;
+    config.onUpdate = null;
     RNGestureHandlerModule.updateGestureHandler(tag, config);
-    config.onGestureHandlerAnimatedEvent = animatedEvent;
+    config.onUpdate = animatedEvent;
 
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);
@@ -118,7 +120,7 @@ export function useGesture(
     },
     shouldUseReanimated,
     dispatchesAnimatedEvents:
-      onGestureHandlerAnimatedEvent &&
+      !!onGestureHandlerAnimatedEvent &&
       '__isNative' in onGestureHandlerAnimatedEvent,
   };
 }
