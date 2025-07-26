@@ -32,11 +32,17 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.tearDown()
   }
 
-  override fun dispatchTouchEvent(ev: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(ev)) {
-    true
-  } else {
-    super.dispatchTouchEvent(ev)
-  }
+  override fun dispatchTouchEvent(ev: MotionEvent) =
+    try {
+      if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(ev)) {
+        true
+      } else {
+        super.dispatchTouchEvent(ev)
+      }
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+      false
+    }
 
   override fun dispatchGenericMotionEvent(event: MotionEvent) =
     if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
