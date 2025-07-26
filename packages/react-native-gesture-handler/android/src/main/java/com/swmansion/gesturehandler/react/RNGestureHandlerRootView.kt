@@ -39,7 +39,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
       } else {
         super.dispatchTouchEvent(ev)
       }
-    } catch (IllegalArgumentException e) {
+    } catch (e: IllegalArgumentException) {
       e.printStackTrace();
       false
     }
