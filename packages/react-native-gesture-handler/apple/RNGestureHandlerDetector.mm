@@ -44,7 +44,11 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
 // TODO: I'm not sure whether this is the correct place for cleanup
 // Possibly allowing recycling and doing this in prepareForRecycle would be better
+#if TARGET_OS_OSX
+- (void)willMoveToWindow:(NSWindow *)newWindow
+#else
 - (void)willMoveToWindow:(UIWindow *)newWindow
+#endif
 {
   if (newWindow == nil) {
     RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
