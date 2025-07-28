@@ -13,8 +13,8 @@
 #endif
 
 #import <React/RCTConvert.h>
-#import <React/RCTScrollViewComponentView.h>
 #import <React/UIView+React.h>
+#import <React/RCTScrollViewComponentView.h>
 
 #pragma mark RNDummyGestureRecognizer
 
