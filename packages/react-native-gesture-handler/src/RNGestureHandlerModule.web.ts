@@ -84,7 +84,6 @@ export default {
     if (shouldPreventDrop) {
       return;
     }
-    console.log();
     NodeManager.dropGestureHandler(handlerTag);
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
