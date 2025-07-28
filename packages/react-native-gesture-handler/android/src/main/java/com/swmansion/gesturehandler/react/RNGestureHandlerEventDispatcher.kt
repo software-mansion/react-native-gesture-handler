@@ -199,7 +199,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
 
   private fun <T : Event<T>> sendEventForReanimated(event: T) {
     // Delivers the event to Reanimated.
-    reanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
+    reanimatedProxy.sendEvent(event, reactApplicationContext)
   }
 
   private fun sendEventForNativeAnimatedEvent(event: RNGestureHandlerEvent) {
