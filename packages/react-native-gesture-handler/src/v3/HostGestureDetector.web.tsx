@@ -17,8 +17,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const oldHandlerTags = useRef<Set<number>>(new Set<number>());
 
   const attachHandlers = (): void => {
-    const curHandlerTags = new Set(handlerTags);
-    const newHandlerTags: Set<number> = curHandlerTags.difference(
+    const currentHandlerTags = new Set(handlerTags);
+    const newHandlerTags: Set<number> = currentHandlerTags.difference(
       oldHandlerTags.current
     );
     newHandlerTags.forEach((tag) => {
@@ -29,6 +29,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         propsRef
       );
     });
+    oldHandlerTags.current = currentHandlerTags;
   };
 
   const detachHandlers = (): void => {
