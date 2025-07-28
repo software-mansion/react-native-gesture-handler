@@ -188,26 +188,3 @@ export type GestureHandlerRef = {
 export type SVGRef = {
   elementRef: { current: SVGElement };
 };
-
-export type GestureHandlerEvent = {
-  handlerTag: number;
-  state: number;
-  handlerData: unknown;
-};
-
-export type GestureHandlerStateChangeEvent = {
-  handlerTag: number;
-  state: number;
-  oldState: number;
-  handlerData: unknown;
-};
-
-export type GestureHandlerTouchEvent = {
-  handlerTag: number;
-  numberOfTouches: number;
-  state: number;
-  eventType: number;
-  allTouches: PointerData[];
-  changedTouches: PointerData;
-  pointerType: number;
-};
