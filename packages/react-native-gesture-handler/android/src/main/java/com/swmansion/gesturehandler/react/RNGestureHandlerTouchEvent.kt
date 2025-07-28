@@ -6,6 +6,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 
 class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerTouchEvent>() {
   private var extraData: WritableMap? = null
@@ -14,7 +15,15 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
 
   private fun <T : GestureHandler> init(handler: T, actionType: Int) {
     val view = handler.view!!
-    super.init(UIManagerHelper.getSurfaceId(view), view.id)
+
+    if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
+      super.init(
+        UIManagerHelper.getSurfaceId(view.parent as RNGestureHandlerDetectorView),
+        (view.parent as RNGestureHandlerDetectorView).id,
+      )
+    } else {
+      super.init(UIManagerHelper.getSurfaceId(view), view.id)
+    }
     extraData = createEventData(handler)
     coalescingKey = handler.eventCoalescingKey
     this.actionType = actionType

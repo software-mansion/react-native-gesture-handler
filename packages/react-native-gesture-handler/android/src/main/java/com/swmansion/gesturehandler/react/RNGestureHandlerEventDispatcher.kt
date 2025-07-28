@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.core.OnTouchEventListener
 import com.swmansion.gesturehandler.dispatchEvent
 
@@ -78,34 +79,43 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val view = handler.view
+        val view = handler.view ?: return
+
+        val event = RNGestureHandlerEvent.obtain(
+          handler,
+          handler.actionType,
+          handlerFactory.createEventBuilder(handler),
+        )
+
         if (view is RNGestureHandlerDetectorView) {
-          val event = RNGestureHandlerEvent.obtain(
-            handler,
-            handler.actionType,
-            handlerFactory.createEventBuilder(handler),
-          )
           view.dispatchEvent(event)
+        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
+          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
         }
       }
       // In case of a native detector with animated event listener, dispatch the event twice:
       // once for the animated event, second for any JS callbacks
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
-        val view = handler.view
-        if (view is RNGestureHandlerDetectorView) {
-          val animatedEvent = RNGestureHandlerEvent.obtain(
-            handler,
-            handler.actionType,
-            handlerFactory.createEventBuilder(handler),
-          )
-          view.dispatchEvent(animatedEvent)
+        val view = handler.view ?: return
 
-          val event = RNGestureHandlerEvent.obtain(
-            handler,
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
-            handlerFactory.createEventBuilder(handler),
-          )
+        val animatedEvent = RNGestureHandlerEvent.obtain(
+          handler,
+          handler.actionType,
+          handlerFactory.createEventBuilder(handler),
+        )
+
+        val event = RNGestureHandlerEvent.obtain(
+          handler,
+          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
+          handlerFactory.createEventBuilder(handler),
+        )
+
+        if (view is RNGestureHandlerDetectorView) {
+          view.dispatchEvent(animatedEvent)
           view.dispatchEvent(event)
+        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
+          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(animatedEvent)
+          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
         }
       }
     }
@@ -165,16 +175,20 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       }
 
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
-        val view = handler.view
+        val view = handler.view ?: return
+
+        val event = RNGestureHandlerStateChangeEvent.obtain(
+          handler,
+          newState,
+          oldState,
+          handler.actionType,
+          handlerFactory.createEventBuilder(handler),
+        )
+
         if (view is RNGestureHandlerDetectorView) {
-          val event = RNGestureHandlerStateChangeEvent.obtain(
-            handler,
-            newState,
-            oldState,
-            handler.actionType,
-            handlerFactory.createEventBuilder(handler),
-          )
           view.dispatchEvent(event)
+        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
+          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
         }
       }
     }
@@ -208,10 +222,14 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
-        val view = handler.view
+        val view = handler.view ?: return
+
+        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
+
         if (view is RNGestureHandlerDetectorView) {
-          val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
           view.dispatchEvent(event)
+        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
+          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
         }
       }
     }

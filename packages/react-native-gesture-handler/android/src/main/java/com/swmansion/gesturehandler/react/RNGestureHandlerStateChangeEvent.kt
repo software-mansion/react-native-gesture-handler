@@ -12,6 +12,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 
 class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHandlerStateChangeEvent>() {
@@ -28,7 +29,15 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     dataBuilder: GestureHandlerEventDataBuilder<T>,
   ) {
     val view = handler.view!!
-    super.init(UIManagerHelper.getSurfaceId(view), view.id)
+
+    if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
+      super.init(
+        UIManagerHelper.getSurfaceId(view.parent as RNGestureHandlerDetectorView),
+        (view.parent as RNGestureHandlerDetectorView).id,
+      )
+    } else {
+      super.init(UIManagerHelper.getSurfaceId(view), view.id)
+    }
     this.dataBuilder = dataBuilder
     this.newState = newState
     this.oldState = oldState
