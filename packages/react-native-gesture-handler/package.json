@@ -37,7 +37,6 @@
     "android/common/src/main/java/",
     "android/reanimated/src/main/java/",
     "android/noreanimated/src/main/java/",
-    "android/packageDeprecated/",
     "android/svg",
     "android/nosvg",
     "apple/",
