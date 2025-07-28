@@ -33,6 +33,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
 
   const viewRef = useRef(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
+  const oldHandlerTags = useRef<Set<number>>(new Set<number>());
 
   useEffect(() => {
     attachHandlers();
@@ -47,7 +48,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   ]);
 
   const attachHandlers = (): void => {
-    handlerTags.forEach((tag) => {
+    const curHandlerTags = new Set(handlerTags);
+    const newHandlerTags: Set<number> = curHandlerTags.difference(
+      oldHandlerTags.current
+    );
+    newHandlerTags.forEach((tag) => {
       RNGestureHandlerModuleWeb.attachGestureHandler(
         tag,
         viewRef.current,
