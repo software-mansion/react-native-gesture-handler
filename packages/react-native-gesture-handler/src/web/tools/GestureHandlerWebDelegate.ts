@@ -63,6 +63,10 @@ export class GestureHandlerWebDelegate
     );
   }
 
+  detachHtml(): void {
+    this.view = null as unknown as HTMLElement;
+  }
+
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
     return isPointerInBounds(this.view, { x, y });
   }

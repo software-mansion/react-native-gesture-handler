@@ -11,6 +11,7 @@ export interface GestureHandlerDelegate<TComponent, THandler> {
   view: TComponent;
 
   init(viewRef: number, handler: THandler): void;
+  detachHtml(): void;
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean;
   measureView(): MeasureResult;
   reset(): void;

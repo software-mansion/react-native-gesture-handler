@@ -65,6 +65,10 @@ export default {
     // @ts-ignore Types should be HTMLElement or React.Component
     NodeManager.getHandler(handlerTag).init(newView, propsRef);
   },
+  detachGestureHandler(handlerTag: number) {
+    shouldPreventDrop = false;
+    NodeManager.getHandler(handlerTag).detachHtml();
+  },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
@@ -80,7 +84,7 @@ export default {
     if (shouldPreventDrop) {
       return;
     }
-
+    console.log();
     NodeManager.dropGestureHandler(handlerTag);
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function

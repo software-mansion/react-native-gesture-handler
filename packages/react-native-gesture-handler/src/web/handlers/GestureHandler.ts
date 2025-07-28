@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { createRef } from 'react';
 import { State } from '../../State';
 import {
   Config,
@@ -63,6 +64,13 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.state = State.UNDETERMINED;
 
     this.delegate.init(viewRef, this);
+  }
+
+  public detachHtml() {
+    this.propsRef = createRef();
+    this.viewRef = 0;
+    this.state = State.UNDETERMINED;
+    this.delegate.detachHtml();
   }
 
   public attachEventManager(manager: EventManager<unknown>): void {
