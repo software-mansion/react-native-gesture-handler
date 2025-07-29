@@ -49,7 +49,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     if (child == null) {
       throw Exception(
-        "[react-native-gesture-handler] Cannot attach gesture handler. GestureDetector got null as child.",
+        "[react-native-gesture-handler] Cannot attach gesture handler. NativeGestureDetector got null as child.",
       )
     }
 

@@ -98,6 +98,7 @@
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
+- (nonnull RNGHUIView *)findViewForEvents;
 - (BOOL)hasNativeDetectorActionType;
 
 #if !TARGET_OS_OSX

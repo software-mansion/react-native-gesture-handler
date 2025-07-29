@@ -374,11 +374,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIView *)findViewForEvents
 {
-  if ([self isKindOfClass:[RNNativeViewGestureHandler class]] && [self hasNativeDetectorActionType]) {
-    return self.recognizer.view.superview;
-  }
-
-  return self.recognizer.view;
+  return [self isKindOfClass:[RNNativeViewGestureHandler class]] && [self hasNativeDetectorActionType]
+      ? self.recognizer.view.superview
+      : self.recognizer.view;
 }
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
