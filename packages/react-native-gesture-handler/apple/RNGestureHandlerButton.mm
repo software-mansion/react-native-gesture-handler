@@ -150,11 +150,9 @@ static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
 
   return str;
 }
-#endif
 
-// TODO: Combine all "if TARGET_OS_OSX" macros in this file
+#else
 
-#if TARGET_OS_OSX
 - (void)mountChildComponentView:(RNGHUIView *)childComponentView index:(NSInteger)index
 {
   if (childComponentView.superview != nil) {
@@ -207,6 +205,7 @@ static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
     self.hidden = layoutMetrics.displayType == facebook::react::DisplayType::None;
   }
 }
+
 #endif
 
 @end
