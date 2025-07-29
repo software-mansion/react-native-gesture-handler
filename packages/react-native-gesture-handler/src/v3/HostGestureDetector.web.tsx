@@ -7,15 +7,10 @@ export interface GestureHandlerDetectorProps {
   dispatchesAnimatedEvents: boolean;
   moduleId: number;
   children?: React.ReactNode;
-  actionType?: ActionType;
 }
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
-  const {
-    handlerTags,
-    children,
-    actionType = ActionType.NATIVE_DETECTOR,
-  } = props;
+  const { handlerTags, dispatchesAnimatedEvents, children } = props;
 
   const viewRef = useRef(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
@@ -30,7 +25,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       RNGestureHandlerModule.attachGestureHandler(
         tag,
         viewRef.current,
-        actionType,
+        dispatchesAnimatedEvents
+          ? ActionType.NATIVE_DETECTOR_ANIMATED_EVENT
+          : ActionType.NATIVE_DETECTOR,
         propsRef
       );
     });
