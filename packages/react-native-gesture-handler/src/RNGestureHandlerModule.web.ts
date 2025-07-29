@@ -47,7 +47,7 @@ export default {
     handlerTag: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newView: any,
-    _actionType: ActionType,
+    actionType: ActionType,
     propsRef: React.RefObject<unknown>
   ) {
     if (!(newView instanceof Element || newView instanceof React.Component)) {
@@ -63,7 +63,7 @@ export default {
     }
 
     // @ts-ignore Types should be HTMLElement or React.Component
-    NodeManager.getHandler(handlerTag).init(newView, propsRef);
+    NodeManager.getHandler(handlerTag).init(newView, propsRef, actionType);
   },
   detachGestureHandler(handlerTag: number) {
     shouldPreventDrop = false;

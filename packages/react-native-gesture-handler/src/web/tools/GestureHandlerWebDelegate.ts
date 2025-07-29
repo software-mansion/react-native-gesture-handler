@@ -65,6 +65,12 @@ export class GestureHandlerWebDelegate
 
   detachHtml(): void {
     this.view = null as unknown as HTMLElement;
+    this.defaultViewStyles = {
+      userSelect: '',
+      touchAction: '',
+    };
+
+    this.eventManagers = [];
   }
 
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {

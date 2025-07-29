@@ -4,6 +4,7 @@ import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
+import { ActionType } from '../../ActionType';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
@@ -16,8 +17,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
-  public init(ref: number, propsRef: React.RefObject<unknown>): void {
-    super.init(ref, propsRef);
+  public init(
+    ref: number,
+    propsRef: React.RefObject<unknown>,
+    actionType: ActionType
+  ): void {
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = true;
 

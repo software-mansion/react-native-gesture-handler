@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { createRef } from 'react';
 import { State } from '../../State';
 import {
   Config,
@@ -19,6 +18,7 @@ import IGestureHandler from './IGestureHandler';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import { ActionType } from '../../ActionType';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -29,8 +29,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected hasCustomActivationCriteria = false;
   private _enabled = false;
 
-  private viewRef!: number;
-  private propsRef!: React.RefObject<unknown>;
+  private viewRef: number | null = null;
+  private propsRef: React.RefObject<unknown> | null = null;
+  private actionType: ActionType | null = null;
   private _handlerTag!: number;
   private _config: Config = { enabled: false };
 
@@ -57,19 +58,25 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Initializing handler
   //
 
-  protected init(viewRef: number, propsRef: React.RefObject<unknown>) {
+  protected init(
+    viewRef: number,
+    propsRef: React.RefObject<unknown>,
+    actionType: ActionType
+  ) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
-
+    this.actionType = actionType;
     this.state = State.UNDETERMINED;
 
     this.delegate.init(viewRef, this);
   }
 
   public detachHtml() {
-    this.propsRef = createRef();
-    this.viewRef = 0;
+    this.propsRef = null;
+    this.viewRef = null;
+    this.actionType = null;
     this.state = State.UNDETERMINED;
+
     this.delegate.detachHtml();
   }
 
@@ -344,18 +351,18 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public sendTouchEvent(event: AdaptedEvent): void {
-    if (!this.enabled) {
+    if (!this.enabled || !this.propsRef) {
       return;
     }
 
-    const { onGestureHandlerEvent }: PropsRef = this.propsRef
+    const { onGestureHandlerTouchEvent }: PropsRef = this.propsRef
       .current as PropsRef;
 
     const touchEvent: ResultTouchEvent | undefined =
       this.transformTouchEvent(event);
 
     if (touchEvent) {
-      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+      invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
     }
   }
 
@@ -364,9 +371,14 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
-    const { onGestureHandlerEvent, onGestureHandlerStateChange }: PropsRef =
-      this.propsRef.current as PropsRef;
-
+    if (!this.propsRef) {
+      return;
+    }
+    const {
+      onGestureHandlerEvent,
+      onGestureHandlerStateChange,
+      onGestureHandlerAnimatedEvent,
+    }: PropsRef = this.propsRef.current as PropsRef;
     const resultEvent: ResultEvent = this.transformEventData(
       newState,
       oldState
@@ -383,7 +395,14 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
     if (this.state === State.ACTIVE) {
       resultEvent.nativeEvent.oldState = undefined;
-      invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+      if (
+        this.actionType === ActionType.NATIVE_DETECTOR ||
+        this.actionType === ActionType.NATIVE_DETECTOR_ANIMATED_EVENT
+      ) {
+        invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+      }
     }
   };
 
@@ -397,7 +416,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         ),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
-        target: this.viewRef,
+        target: this.viewRef!,
         oldState: newState !== oldState ? oldState : undefined,
         pointerType: this.pointerType,
       },
@@ -512,7 +531,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     const trackerData = this.tracker.trackedPointers;
 
-    if (trackerData.size === 0) {
+    if (trackerData.size === 0 || !this.propsRef) {
       return;
     }
 

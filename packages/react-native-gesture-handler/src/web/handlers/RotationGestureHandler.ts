@@ -5,6 +5,7 @@ import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
   RotationGestureListener,
 } from '../detectors/RotationGestureDetector';
+import { ActionType } from '../../ActionType';
 
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
@@ -44,8 +45,12 @@ export default class RotationGestureHandler extends GestureHandler {
   private rotationGestureDetector: RotationGestureDetector =
     new RotationGestureDetector(this.rotationGestureListener);
 
-  public init(ref: number, propsRef: React.RefObject<unknown>): void {
-    super.init(ref, propsRef);
+  public init(
+    ref: number,
+    propsRef: React.RefObject<unknown>,
+    actionType: ActionType
+  ): void {
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = false;
   }

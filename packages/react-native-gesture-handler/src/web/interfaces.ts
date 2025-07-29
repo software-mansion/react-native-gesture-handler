@@ -130,7 +130,9 @@ export interface ResultTouchEvent
 
 export interface PropsRef {
   onGestureHandlerEvent: () => void;
+  onGestureHandlerAnimatedEvent: () => void;
   onGestureHandlerStateChange: () => void;
+  onGestureHandlerTouchEvent: () => void;
 }
 
 export interface StylusData {
