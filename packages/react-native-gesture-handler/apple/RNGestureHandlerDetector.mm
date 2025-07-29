@@ -127,20 +127,11 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
       const auto handler = [[handlerManager registry] handlerWithTag:handlerTag];
 
-      if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
-        [handlerManager.registry attachHandlerWithTag:handlerTag
-                                               toView:self.subviews[0]
-                                       withActionType:newProps.dispatchesAnimatedEvents
-                                           ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
-                                           : RNGestureHandlerActionTypeNativeDetector];
-      } else {
-        [handlerManager.registry attachHandlerWithTag:handlerTag
-                                               toView:self
-                                       withActionType:newProps.dispatchesAnimatedEvents
-                                           ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
-                                           : RNGestureHandlerActionTypeNativeDetector];
-      }
-
+      [handlerManager.registry
+          attachHandlerWithTag:handlerTag
+                        toView:[handler isKindOfClass:[RNNativeViewGestureHandler class]] ? self.subviews[0] : self
+                withActionType:newProps.dispatchesAnimatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
+                                                                 : RNGestureHandlerActionTypeNativeDetector];
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
