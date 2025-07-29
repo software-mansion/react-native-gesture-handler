@@ -40,7 +40,7 @@
 
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
-     forRecognizer:(UIGestureRecognizer *)recognizer;
+           forView:(RNGHUIView *)detectorView;
 
 - (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler withPointerType:(NSInteger)pointerType;
 

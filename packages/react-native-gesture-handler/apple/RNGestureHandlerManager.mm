@@ -354,12 +354,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
-     forRecognizer:(UIGestureRecognizer *)recognizer
+           forView:(RNGHUIView *)detectorView // I'd love to make it RNGestureHandlerDetector, however it results in
+                                              // compilation errors because of importing C++
 {
   switch (actionType) {
     case RNGestureHandlerActionTypeNativeDetector:
     case RNGestureHandlerActionTypeNativeDetectorAnimatedEvent: {
-      RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
         if (actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
           [self sendEventForNativeAnimatedEvent:event];
@@ -367,10 +367,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
         RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getNativeEvent];
-        [detector dispatchGestureEvent:nativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
       } else {
         auto nativeEvent = [event getNativeEvent];
-        [detector dispatchStateChangeEvent:nativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchStateChangeEvent:nativeEvent];
       }
       break;
     }

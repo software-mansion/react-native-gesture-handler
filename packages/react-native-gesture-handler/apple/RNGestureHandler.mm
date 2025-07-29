@@ -369,9 +369,23 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
+- (RNGHUIView *)findViewForEvents
+{
+  if (self.actionType != RNGestureHandlerActionTypeNativeDetector &&
+      self.actionType != RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
+    return self.recognizer.view;
+  }
+
+  if ([self isKindOfClass:[RNNativeViewGestureHandler class]]) {
+    return self.recognizer.view.superview;
+  }
+
+  return self.recognizer.view;
+}
+
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
-  [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
+  [self.emitter sendEvent:event withActionType:self.actionType forView:[self findViewForEvents]];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
@@ -391,7 +405,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                  forActionType:_actionType
                                                  coalescingKey:[_tag intValue]];
 
-    [self.emitter sendEvent:event withActionType:self.actionType forRecognizer:self.recognizer];
+    [self.emitter sendEvent:event withActionType:self.actionType forView:[self findViewForEvents]];
   }
 }
 

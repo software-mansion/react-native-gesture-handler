@@ -1,4 +1,5 @@
 #import "RNGestureHandlerDetector.h"
+#import "Handlers/RNNativeViewHandler.h"
 #import "RNGestureHandlerDetectorComponentDescriptor.h"
 #import "RNGestureHandlerModule.h"
 
@@ -124,12 +125,22 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     NSNumber *handlerTag = [NSNumber numberWithInt:handlerChange.first];
 
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
-      // TODO: Attach to the child when attached gesture is a NativeGestureHandler, track children changes then
-      [handlerManager.registry
-          attachHandlerWithTag:handlerTag
-                        toView:self
-                withActionType:newProps.dispatchesAnimatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
-                                                                 : RNGestureHandlerActionTypeNativeDetector];
+      const auto handler = [[handlerManager registry] handlerWithTag:handlerTag];
+
+      if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
+        [handlerManager.registry attachHandlerWithTag:handlerTag
+                                               toView:self.subviews[0]
+                                       withActionType:newProps.dispatchesAnimatedEvents
+                                           ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
+                                           : RNGestureHandlerActionTypeNativeDetector];
+      } else {
+        [handlerManager.registry attachHandlerWithTag:handlerTag
+                                               toView:self
+                                       withActionType:newProps.dispatchesAnimatedEvents
+                                           ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
+                                           : RNGestureHandlerActionTypeNativeDetector];
+      }
+
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
