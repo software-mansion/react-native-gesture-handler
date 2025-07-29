@@ -432,7 +432,11 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     });
   }
 
-  RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)handler.recognizer.view;
+  RNGestureHandlerDetector *detector =
+      [handler isKindOfClass:[RNNativeViewGestureHandler class]] && [handler hasNativeDetectorActionType]
+      ? (RNGestureHandlerDetector *)handler.recognizer.view.superview
+      : (RNGestureHandlerDetector *)handler.recognizer.view;
+
   [detector dispatchTouchEvent:nativeEvent];
 }
 

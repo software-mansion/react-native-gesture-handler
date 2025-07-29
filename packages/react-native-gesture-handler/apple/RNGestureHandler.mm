@@ -216,6 +216,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return (UITouchType)_pointerType;
 }
 
+- (BOOL)hasNativeDetectorActionType
+{
+  return self.actionType == RNGestureHandlerActionTypeNativeDetector ||
+      self.actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent;
+}
+
 #if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(RNGHUIView *)view
 {
@@ -371,12 +377,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIView *)findViewForEvents
 {
-  if (self.actionType != RNGestureHandlerActionTypeNativeDetector &&
-      self.actionType != RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
-    return self.recognizer.view;
-  }
-
-  if ([self isKindOfClass:[RNNativeViewGestureHandler class]]) {
+  if ([self isKindOfClass:[RNNativeViewGestureHandler class]] && [self hasNativeDetectorActionType]) {
     return self.recognizer.view.superview;
   }
 
@@ -390,7 +391,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
-  if (self.actionType == RNGestureHandlerActionTypeNativeDetector) {
+  if ([self hasNativeDetectorActionType]) {
     [self.emitter sendNativeTouchEventForGestureHandler:self withPointerType:_pointerType];
   } else {
     id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
@@ -405,7 +406,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                  forActionType:_actionType
                                                  coalescingKey:[_tag intValue]];
 
-    [self.emitter sendEvent:event withActionType:self.actionType forView:[self findViewForEvents]];
+    [self.emitter sendEvent:event withActionType:self.actionType forView:self.recognizer.view];
   }
 }
 
