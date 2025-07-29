@@ -35,7 +35,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   ) {
     val view = handler.view!!
 
-    if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
+    if (handler is NativeViewGestureHandler && handler.hasNativeDetectorActionType()) {
       super.init(
         UIManagerHelper.getSurfaceId(view.parent as RNGestureHandlerDetectorView),
         (view.parent as RNGestureHandlerDetectorView).id,

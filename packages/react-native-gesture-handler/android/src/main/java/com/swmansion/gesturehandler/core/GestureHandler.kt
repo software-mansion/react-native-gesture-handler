@@ -124,6 +124,9 @@ open class GestureHandler {
     return false
   }
 
+  fun hasNativeDetectorActionType() =
+    actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
+
   fun setHitSlop(leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float, width: Float, height: Float) {
     if (hitSlop == null) {
       hitSlop = FloatArray(6)

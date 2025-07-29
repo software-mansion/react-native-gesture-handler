@@ -79,7 +79,11 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val view = handler.view ?: return
+        val view = if (handler is NativeViewGestureHandler) handler.view?.parent else handler.view
+
+        assert(view is RNGestureHandlerDetectorView) {
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView."
+        }
 
         val event = RNGestureHandlerEvent.obtain(
           handler,
@@ -87,16 +91,16 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           handlerFactory.createEventBuilder(handler),
         )
 
-        if (view is RNGestureHandlerDetectorView) {
-          view.dispatchEvent(event)
-        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
-          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
-        }
+        (view as RNGestureHandlerDetectorView).dispatchEvent(event)
       }
       // In case of a native detector with animated event listener, dispatch the event twice:
       // once for the animated event, second for any JS callbacks
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
-        val view = handler.view ?: return
+        val view = if (handler is NativeViewGestureHandler) handler.view?.parent else handler.view
+
+        assert(view is RNGestureHandlerDetectorView) {
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView."
+        }
 
         val animatedEvent = RNGestureHandlerEvent.obtain(
           handler,
@@ -110,13 +114,8 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           handlerFactory.createEventBuilder(handler),
         )
 
-        if (view is RNGestureHandlerDetectorView) {
-          view.dispatchEvent(animatedEvent)
-          view.dispatchEvent(event)
-        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
-          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(animatedEvent)
-          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
-        }
+        (view as RNGestureHandlerDetectorView).dispatchEvent(animatedEvent)
+        (view).dispatchEvent(event)
       }
     }
   }
@@ -175,7 +174,11 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       }
 
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
-        val view = handler.view ?: return
+        val view = if (handler is NativeViewGestureHandler) handler.view?.parent else handler.view
+
+        assert(view is RNGestureHandlerDetectorView) {
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView."
+        }
 
         val event = RNGestureHandlerStateChangeEvent.obtain(
           handler,
@@ -185,11 +188,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           handlerFactory.createEventBuilder(handler),
         )
 
-        if (view is RNGestureHandlerDetectorView) {
-          view.dispatchEvent(event)
-        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
-          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
-        }
+        (view as RNGestureHandlerDetectorView).dispatchEvent(event)
       }
     }
   }
@@ -222,15 +221,15 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT -> {
-        val view = handler.view ?: return
+        val view = if (handler is NativeViewGestureHandler) handler.view?.parent else handler.view
+
+        assert(view is RNGestureHandlerDetectorView) {
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView."
+        }
 
         val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
 
-        if (view is RNGestureHandlerDetectorView) {
-          view.dispatchEvent(event)
-        } else if (handler is NativeViewGestureHandler && view.parent is RNGestureHandlerDetectorView) {
-          (view.parent as RNGestureHandlerDetectorView).dispatchEvent(event)
-        }
+        (view as RNGestureHandlerDetectorView).dispatchEvent(event)
       }
     }
   }
