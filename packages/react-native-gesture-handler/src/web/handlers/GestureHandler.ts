@@ -407,6 +407,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   };
 
   private transformEventData(newState: State, oldState: State): ResultEvent {
+    if (!this.viewRef) {
+      throw new Error('Cannot handle event when target is null');
+    }
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.trackedPointersCount,
@@ -416,7 +419,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         ),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
-        target: this.viewRef!,
+        target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
         pointerType: this.pointerType,
       },

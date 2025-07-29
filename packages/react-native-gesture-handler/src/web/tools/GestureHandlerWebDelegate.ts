@@ -70,6 +70,9 @@ export class GestureHandlerWebDelegate
       touchAction: '',
     };
 
+    this.eventManagers.forEach((manager) => {
+      manager.unregisterListeners();
+    });
     this.eventManagers = [];
   }
 
