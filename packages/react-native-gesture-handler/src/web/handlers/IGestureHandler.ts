@@ -35,7 +35,7 @@ export default interface IGestureHandler {
   cancel: () => void;
 
   reset: () => void;
-  detachHtml: () => void;
+  detach: () => void;
 
   shouldWaitForHandlerFailure: (handler: IGestureHandler) => boolean;
   shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;

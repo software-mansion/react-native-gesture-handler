@@ -71,13 +71,13 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.delegate.init(viewRef, this);
   }
 
-  public detachHtml() {
+  public detach() {
     this.propsRef = null;
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
 
-    this.delegate.detachHtml();
+    this.delegate.detach();
   }
 
   public attachEventManager(manager: EventManager<unknown>): void {
@@ -396,7 +396,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (this.state === State.ACTIVE) {
       resultEvent.nativeEvent.oldState = undefined;
       if (
-        this.actionType === ActionType.NATIVE_DETECTOR ||
+        this.actionType === ActionType.NATIVE_ANIMATED_EVENT ||
         this.actionType === ActionType.NATIVE_DETECTOR_ANIMATED_EVENT
       ) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
@@ -524,6 +524,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   private cancelTouches(): void {
+    if (!this.propsRef) {
+      return;
+    }
     const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
@@ -531,7 +534,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     const trackerData = this.tracker.trackedPointers;
 
-    if (trackerData.size === 0 || !this.propsRef) {
+    if (trackerData.size === 0) {
       return;
     }
 

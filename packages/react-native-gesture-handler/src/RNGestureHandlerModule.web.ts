@@ -67,7 +67,7 @@ export default {
   },
   detachGestureHandler(handlerTag: number) {
     shouldPreventDrop = false;
-    NodeManager.getHandler(handlerTag).detachHtml();
+    NodeManager.getHandler(handlerTag).detach();
   },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
@@ -84,6 +84,7 @@ export default {
     if (shouldPreventDrop) {
       return;
     }
+
     NodeManager.dropGestureHandler(handlerTag);
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function

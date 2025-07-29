@@ -63,7 +63,7 @@ export class GestureHandlerWebDelegate
     );
   }
 
-  detachHtml(): void {
+  detach(): void {
     this.view = null as unknown as HTMLElement;
     this.defaultViewStyles = {
       userSelect: '',
