@@ -19,7 +19,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
 
   const viewRef = useRef(null);
   const propsRef = useRef<PropsRef>(props);
-  const oldHandlerTags = useRef<Set<number>>(new Set<number>());
 
   const detachHandlers = useCallback(() => {
     handlerTags.forEach((tag) => {
@@ -28,11 +27,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [handlerTags]);
 
   const attachHandlers = useCallback(() => {
-    const currentHandlerTags = new Set(handlerTags);
-    const newHandlerTags = currentHandlerTags.difference(
-      oldHandlerTags.current
-    );
-    newHandlerTags.forEach((tag) => {
+    // TODO: add memoisation
+
+    handlerTags.forEach((tag) => {
       RNGestureHandlerModule.attachGestureHandler(
         tag,
         viewRef.current,
@@ -42,7 +39,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         propsRef
       );
     });
-    oldHandlerTags.current = currentHandlerTags;
   }, [handlerTags, dispatchesAnimatedEvents]);
 
   useEffect(() => {
