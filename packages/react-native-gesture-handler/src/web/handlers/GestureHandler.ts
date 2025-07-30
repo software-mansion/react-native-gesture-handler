@@ -356,14 +356,21 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    const { onGestureHandlerTouchEvent }: PropsRef = this.propsRef
-      .current as PropsRef;
+    const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef = this
+      .propsRef.current as PropsRef;
 
     const touchEvent: ResultTouchEvent | undefined =
       this.transformTouchEvent(event);
 
     if (touchEvent) {
-      invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
+      if (
+        this.actionType === ActionType.NATIVE_DETECTOR ||
+        this.actionType === ActionType.NATIVE_DETECTOR_ANIMATED_EVENT
+      ) {
+        invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+      }
     }
   }
 

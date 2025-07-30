@@ -85,6 +85,7 @@ export default {
   },
   dropGestureHandler(handlerTag: number) {
     if (shouldPreventDrop) {
+      shouldPreventDrop = false;
       return;
     }
 
