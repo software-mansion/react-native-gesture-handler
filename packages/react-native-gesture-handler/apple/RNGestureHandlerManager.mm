@@ -354,8 +354,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
-           forView:(RNGHUIView *)detectorView // I'd love to make it RNGestureHandlerDetector, however it results in
-                                              // compilation errors because of importing C++
+           forView:(RNGHUIView *)detectorView // Typing as RNGestureHandlerDetector is preferable
+                                              // but results in a compilation error.
 {
   switch (actionType) {
     case RNGestureHandlerActionTypeNativeDetector:
