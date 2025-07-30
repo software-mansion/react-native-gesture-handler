@@ -365,7 +365,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          handlerTag:_tag
                                                               state:state
                                                           extraData:extraData
-                                                      forActionType:_actionType
                                                         forAnimated:_dispatchesAnimatedEvents
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
@@ -394,7 +393,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                     handlerTag:_tag
                                                          state:state
                                                      extraData:extraData
-                                                 forActionType:_actionType
                                                    forAnimated:_dispatchesAnimatedEvents
                                                  coalescingKey:[_tag intValue]];
 

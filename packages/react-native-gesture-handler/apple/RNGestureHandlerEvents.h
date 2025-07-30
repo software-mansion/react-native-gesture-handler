@@ -68,7 +68,6 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
-                   forActionType:(NSInteger)actionType
                      forAnimated:(BOOL)forAnimated
                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 

@@ -164,9 +164,7 @@
 
 @end
 
-@implementation RNGestureHandlerEvent {
-  NSInteger _actionType;
-}
+@implementation RNGestureHandlerEvent
 
 @synthesize viewTag = _viewTag;
 @synthesize coalescingKey = _coalescingKey;
@@ -175,7 +173,6 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
-                   forActionType:(NSInteger)actionType
                      forAnimated:(BOOL)forAnimated
                    coalescingKey:(uint16_t)coalescingKey
 {
@@ -185,7 +182,6 @@
     _state = state;
     _extraData = extraData;
     _coalescingKey = coalescingKey;
-    _actionType = actionType;
     _forAnimated = forAnimated;
   }
   return self;
