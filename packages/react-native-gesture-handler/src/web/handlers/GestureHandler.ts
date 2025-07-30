@@ -416,7 +416,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformEventData(newState: State, oldState: State): ResultEvent {
     if (!this.viewRef) {
-      throw tagMessage('Cannot handle event when target is null');
+      throw new Error(tagMessage('Cannot handle event when target is null'));
     }
     return {
       nativeEvent: {
