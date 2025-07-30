@@ -176,7 +176,7 @@
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
                    forActionType:(NSInteger)actionType
-               withAnimatedEvent:(BOOL)useAnimatedEvents
+                     forAnimated:(BOOL)forAnimated
                    coalescingKey:(uint16_t)coalescingKey
 {
   if ((self = [super init])) {
@@ -186,7 +186,7 @@
     _extraData = extraData;
     _coalescingKey = coalescingKey;
     _actionType = actionType;
-    _useAnimatedEvents = useAnimatedEvents;
+    _forAnimated = forAnimated;
   }
   return self;
 }
@@ -195,7 +195,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSString *)eventName
 {
-  return _useAnimatedEvents ? @"onGestureHandlerAnimatedEvent" : @"onGestureHandlerEvent";
+  return _forAnimated ? @"onGestureHandlerAnimatedEvent" : @"onGestureHandlerEvent";
 }
 
 - (BOOL)canCoalesce
@@ -215,7 +215,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSArray *)arguments
 {
-  if (_useAnimatedEvents) {
+  if (_forAnimated) {
     NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];

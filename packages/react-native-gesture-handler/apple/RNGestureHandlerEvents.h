@@ -62,14 +62,14 @@
 @property (nonatomic, strong, readonly) NSNumber *handlerTag;
 @property (nonatomic, strong, readonly) RNGestureHandlerEventExtraData *extraData;
 @property (nonatomic, readonly) RNGestureHandlerState state;
-@property (nonatomic, readonly) BOOL useAnimatedEvents;
+@property (nonatomic, readonly) BOOL forAnimated;
 
 - (instancetype)initWithReactTag:(NSNumber *)reactTag
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
                    forActionType:(NSInteger)actionType
-               withAnimatedEvent:(BOOL)useAnimatedEvent
+                     forAnimated:(BOOL)forAnimated
                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 
 @end

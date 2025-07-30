@@ -366,7 +366,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                               state:state
                                                           extraData:extraData
                                                       forActionType:_actionType
-                                                  withAnimatedEvent:_dispatchesAnimatedEvents
+                                                        forAnimated:_dispatchesAnimatedEvents
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
@@ -376,7 +376,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   [self.emitter sendEvent:event
            withActionType:self.actionType
-        withAnimatedEvent:_dispatchesAnimatedEvents
+              forAnimated:_dispatchesAnimatedEvents
             forRecognizer:self.recognizer];
 }
 
@@ -395,12 +395,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          state:state
                                                      extraData:extraData
                                                  forActionType:_actionType
-                                             withAnimatedEvent:_dispatchesAnimatedEvents
+                                                   forAnimated:_dispatchesAnimatedEvents
                                                  coalescingKey:[_tag intValue]];
 
     [self.emitter sendEvent:event
              withActionType:self.actionType
-          withAnimatedEvent:_dispatchesAnimatedEvents
+                forAnimated:_dispatchesAnimatedEvents
               forRecognizer:self.recognizer];
   }
 }
