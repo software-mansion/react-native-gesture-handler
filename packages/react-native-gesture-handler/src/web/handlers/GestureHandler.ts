@@ -19,6 +19,7 @@ import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
+import { tagMessage } from '../../utils';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -408,7 +409,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformEventData(newState: State, oldState: State): ResultEvent {
     if (!this.viewRef) {
-      throw new Error('Cannot handle event when target is null');
+      throw tagMessage('Cannot handle event when target is null');
     }
     return {
       nativeEvent: {
