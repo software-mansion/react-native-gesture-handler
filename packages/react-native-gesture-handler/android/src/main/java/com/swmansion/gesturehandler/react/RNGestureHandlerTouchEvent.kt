@@ -17,10 +17,8 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     val view = handler.view!!
 
     if (handler is NativeViewGestureHandler && handler.isSendingEventsToNativeDetector()) {
-      super.init(
-        UIManagerHelper.getSurfaceId(view.parent as RNGestureHandlerDetectorView),
-        (view.parent as RNGestureHandlerDetectorView).id,
-      )
+      val detector = view.parent as RNGestureHandlerDetectorView
+      super.init(UIManagerHelper.getSurfaceId(detector), (detector).id)
     } else {
       super.init(UIManagerHelper.getSurfaceId(view), view.id)
     }
