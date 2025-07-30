@@ -352,10 +352,14 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public sendTouchEvent(event: AdaptedEvent): void {
-    if (!this.enabled || !this.propsRef) {
+    if (!this.enabled) {
       return;
     }
-
+    if (!this.propsRef) {
+      throw new Error(
+        tagMessage('Cannot handle event when component props are null')
+      );
+    }
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
       this.propsRef.current;
 
@@ -380,7 +384,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public sendEvent = (newState: State, oldState: State): void => {
     if (!this.propsRef) {
-      return;
+      throw new Error(
+        tagMessage('Cannot handle event when component props are null')
+      );
     }
     const {
       onGestureHandlerEvent,
@@ -536,7 +542,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private cancelTouches(): void {
     if (!this.propsRef) {
-      return;
+      throw new Error(
+        tagMessage('Cannot handle event when component props are null')
+      );
     }
     const rect = this.delegate.measureView();
 
