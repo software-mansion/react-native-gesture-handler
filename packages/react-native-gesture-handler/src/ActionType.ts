@@ -7,5 +7,19 @@ export const ActionType = {
   NATIVE_DETECTOR_ANIMATED_EVENT: 6,
 } as const;
 
+export function isNativeDetectorActionType(type: ActionType | null): boolean {
+  return (
+    type === ActionType.NATIVE_ANIMATED_EVENT ||
+    type === ActionType.NATIVE_DETECTOR_ANIMATED_EVENT
+  );
+}
+
+export function isAnimatedActionType(type: ActionType | null): boolean {
+  return (
+    type === ActionType.NATIVE_DETECTOR ||
+    type === ActionType.NATIVE_DETECTOR_ANIMATED_EVENT
+  );
+}
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; it can be used as a type and as a value
 export type ActionType = (typeof ActionType)[keyof typeof ActionType];

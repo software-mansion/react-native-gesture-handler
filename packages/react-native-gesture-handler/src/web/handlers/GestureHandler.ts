@@ -18,7 +18,11 @@ import IGestureHandler from './IGestureHandler';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType } from '../../ActionType';
+import {
+  ActionType,
+  isAnimatedActionType,
+  isNativeDetectorActionType,
+} from '../../ActionType';
 import { tagMessage } from '../../utils';
 
 export default abstract class GestureHandler implements IGestureHandler {
@@ -369,8 +373,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (touchEvent) {
       if (
         onGestureHandlerTouchEvent &&
-        (this.actionType === ActionType.NATIVE_DETECTOR ||
-          this.actionType === ActionType.NATIVE_DETECTOR_ANIMATED_EVENT)
+        isNativeDetectorActionType(this.actionType)
       ) {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
       }
@@ -411,8 +414,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       resultEvent.nativeEvent.oldState = undefined;
       if (
         onGestureHandlerAnimatedEvent &&
-        (this.actionType === ActionType.NATIVE_ANIMATED_EVENT ||
-          this.actionType === ActionType.NATIVE_DETECTOR_ANIMATED_EVENT)
+        isAnimatedActionType(this.actionType)
       ) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
