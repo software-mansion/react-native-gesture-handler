@@ -33,14 +33,13 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     useNativeAnimatedName: Boolean,
   ) {
-    val view = handler.view!!
-
-    if (handler is NativeViewGestureHandler && handler.isSendingEventsToNativeDetector()) {
-      val detector = view.parent as RNGestureHandlerDetectorView
-      super.init(UIManagerHelper.getSurfaceId(detector), detector.id)
+    val view = if (handler is NativeViewGestureHandler && handler.isSendingEventsToNativeDetector()) {
+      handler.view!!.parent as RNGestureHandlerDetectorView
     } else {
-      super.init(UIManagerHelper.getSurfaceId(view), view.id)
+      handler.view!!
     }
+
+    super.init(UIManagerHelper.getSurfaceId(view), view.id)
 
     this.actionType = actionType
     this.dataBuilder = dataBuilder

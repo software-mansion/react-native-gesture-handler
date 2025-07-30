@@ -14,14 +14,14 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   private var actionType = GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API
 
   private fun <T : GestureHandler> init(handler: T, actionType: Int) {
-    val view = handler.view!!
-
-    if (handler is NativeViewGestureHandler && handler.isSendingEventsToNativeDetector()) {
-      val detector = view.parent as RNGestureHandlerDetectorView
-      super.init(UIManagerHelper.getSurfaceId(detector), (detector).id)
+    val view = if (handler is NativeViewGestureHandler && handler.isSendingEventsToNativeDetector()) {
+      handler.view!!.parent as RNGestureHandlerDetectorView
     } else {
-      super.init(UIManagerHelper.getSurfaceId(view), view.id)
+      handler.view!!
     }
+
+    super.init(UIManagerHelper.getSurfaceId(view), view.id)
+
     extraData = createEventData(handler)
     coalescingKey = handler.eventCoalescingKey
     this.actionType = actionType
