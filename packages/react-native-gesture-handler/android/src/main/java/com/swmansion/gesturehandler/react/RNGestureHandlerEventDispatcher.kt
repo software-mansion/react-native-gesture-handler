@@ -82,7 +82,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         val view = if (handler is NativeViewGestureHandler) handler.view?.parent else handler.view
 
         assert(view is RNGestureHandlerDetectorView) {
-          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView."
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event."
         }
 
         val event = RNGestureHandlerEvent.obtain(
