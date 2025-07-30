@@ -18,6 +18,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
+import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
@@ -29,6 +30,19 @@ open class GestureHandler {
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
   var view: View? = null
+    private set
+  var viewForEvents: RNGestureHandlerDetectorView? = null
+    get() {
+      val detector = if (this is NativeViewGestureHandler) this.view?.parent else view
+
+      if (detector !is RNGestureHandlerDetectorView) {
+        throw Error(
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event.",
+        )
+      }
+
+      return detector
+    }
     private set
   var state = STATE_UNDETERMINED
     private set
