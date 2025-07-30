@@ -62,6 +62,7 @@ open class GestureHandler {
     private set
   private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
   var needsPointerData = false
+  var dispatchesAnimatedEvents = false
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -859,6 +860,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
         handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
       }
+      if (config.hasKey(KEY_DISPATCHES_ANIMATED_EVENTS)) {
+        handler.dispatchesAnimatedEvents = config.getBoolean(KEY_DISPATCHES_ANIMATED_EVENTS)
+      }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.manualActivation = config.getBoolean(KEY_MANUAL_ACTIVATION)
       }
@@ -873,6 +877,7 @@ open class GestureHandler {
       private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
       private const val KEY_ENABLED = "enabled"
       private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
+      private const val KEY_DISPATCHES_ANIMATED_EVENTS = "dispatchesAnimatedEvents"
       private const val KEY_MANUAL_ACTIVATION = "manualActivation"
       private const val KEY_MOUSE_BUTTON = "mouseButton"
       private const val KEY_HIT_SLOP = "hitSlop"
@@ -968,7 +973,6 @@ open class GestureHandler {
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     const val ACTION_TYPE_NATIVE_DETECTOR = 5
-    const val ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT = 6
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
