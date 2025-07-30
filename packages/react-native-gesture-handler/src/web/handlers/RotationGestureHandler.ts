@@ -1,5 +1,5 @@
 import { State } from '../../State';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import RotationGestureDetector, {
@@ -47,7 +47,7 @@ export default class RotationGestureHandler extends GestureHandler {
 
   public init(
     ref: number,
-    propsRef: React.RefObject<unknown>,
+    propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ): void {
     super.init(ref, propsRef, actionType);

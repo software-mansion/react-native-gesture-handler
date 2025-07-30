@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
@@ -51,7 +51,7 @@ export default class PinchGestureHandler extends GestureHandler {
 
   public init(
     ref: number,
-    propsRef: React.RefObject<unknown>,
+    propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ) {
     super.init(ref, propsRef, actionType);

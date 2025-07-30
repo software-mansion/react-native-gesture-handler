@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { ActionType } from './ActionType';
 import { Gestures } from './web/Gestures';
-import type { Config } from './web/interfaces';
+import type { Config, PropsRef } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
 import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
@@ -48,7 +48,7 @@ export default {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newView: any,
     actionType: ActionType,
-    propsRef: React.RefObject<unknown>
+    propsRef: React.RefObject<PropsRef>
   ) {
     if (!(newView instanceof Element || newView instanceof React.Component)) {
       shouldPreventDrop = true;

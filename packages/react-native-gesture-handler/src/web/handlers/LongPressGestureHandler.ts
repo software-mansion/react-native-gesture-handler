@@ -1,6 +1,6 @@
 import { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent, Config, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 
@@ -24,7 +24,7 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   public init(
     ref: number,
-    propsRef: React.RefObject<unknown>,
+    propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ) {
     if (this.config.enableContextMenu === undefined) {

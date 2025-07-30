@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent, Config, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import { ActionType } from '../../ActionType';
@@ -19,7 +19,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public init(
     ref: number,
-    propsRef: React.RefObject<unknown>,
+    propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ): void {
     super.init(ref, propsRef, actionType);
