@@ -125,11 +125,9 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
       // TODO: Attach to the child when attached gesture is a NativeGestureHandler, track children changes then
-      [handlerManager.registry
-          attachHandlerWithTag:handlerTag
-                        toView:self
-                withActionType:newProps.dispatchesAnimatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
-                                                                 : RNGestureHandlerActionTypeNativeDetector];
+      [handlerManager.registry attachHandlerWithTag:handlerTag
+                                             toView:self
+                                     withActionType:RNGestureHandlerActionTypeNativeDetector];
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
