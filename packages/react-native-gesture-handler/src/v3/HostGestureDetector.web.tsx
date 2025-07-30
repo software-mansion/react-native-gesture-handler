@@ -15,7 +15,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const viewRef = useRef(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
   const oldHandlerTags = useRef<Set<number>>(new Set<number>());
-  const oldDispatchesAnimatedEvents = useRef<boolean>(null);
 
   const detachHandlers = useCallback(() => {
     handlerTags.forEach((tag) => {
@@ -24,11 +23,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [handlerTags]);
 
   const attachHandlers = useCallback(() => {
-    if (oldDispatchesAnimatedEvents.current !== dispatchesAnimatedEvents) {
-      // We reattach handlers, if the action type changes
-      oldHandlerTags.current = new Set<number>();
-      detachHandlers();
-    }
     const currentHandlerTags = new Set(handlerTags);
     const newHandlerTags = currentHandlerTags.difference(
       oldHandlerTags.current
@@ -44,7 +38,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       );
     });
     oldHandlerTags.current = currentHandlerTags;
-  }, [handlerTags, dispatchesAnimatedEvents, detachHandlers]);
+  }, [handlerTags, dispatchesAnimatedEvents]);
 
   useEffect(() => {
     attachHandlers();
