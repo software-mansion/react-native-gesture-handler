@@ -3,15 +3,11 @@ import { View } from 'react-native';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
-export interface GestureHandlerDetectorProps {
+export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   dispatchesAnimatedEvents: boolean;
   moduleId: number;
   children?: React.ReactNode;
-  onGestureHandlerEvent: () => void;
-  onGestureHandlerAnimatedEvent?: () => void;
-  onGestureHandlerStateChange: () => void;
-  onGestureHandlerTouchEvent?: () => void;
 }
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
