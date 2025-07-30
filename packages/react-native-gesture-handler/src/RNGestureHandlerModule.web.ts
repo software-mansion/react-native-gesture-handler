@@ -66,7 +66,10 @@ export default {
     NodeManager.getHandler(handlerTag).init(newView, propsRef, actionType);
   },
   detachGestureHandler(handlerTag: number) {
-    shouldPreventDrop = false;
+    if (shouldPreventDrop) {
+      return;
+    }
+
     NodeManager.getHandler(handlerTag).detach();
   },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
