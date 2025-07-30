@@ -376,8 +376,9 @@ export default abstract class GestureHandler implements IGestureHandler {
         isNativeDetectorActionType(this.actionType)
       ) {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, touchEvent);
       }
-      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
     }
   }
 
