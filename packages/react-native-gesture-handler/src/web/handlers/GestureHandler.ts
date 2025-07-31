@@ -81,6 +81,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
+    this.fail();
 
     this.delegate.detach();
   }
