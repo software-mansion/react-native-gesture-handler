@@ -60,11 +60,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         registry.attachHandlerToView(
           entry.key,
           this.id,
-          if (dispatchesAnimatedEvents) {
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
-          } else {
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
-          },
+          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
         )
       } else if (entry.value == GestureHandlerMutation.Detach) {
         registry.detachHandler(entry.key)
