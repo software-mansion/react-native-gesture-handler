@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
     _props = defaultProps;
     _moduleId = -1;
+    _nativeHandlersToAttach = [NSMutableSet set];
+    _attachedHandlers = [NSMutableSet set];
   }
 
   return self;
@@ -80,6 +82,20 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
         ->onGestureHandlerTouchEvent(event);
   }
+}
+
+- (void)addSubview:(UIView *)view
+{
+  [super addSubview:view];
+
+  [self maybeAttachNativeGestureHandlers];
+}
+
+- (void)willRemoveSubview:(UIView *)subview
+{
+  [self detachNativeGestureHandlers];
+
+  [super willRemoveSubview:subview];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -127,20 +143,63 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
       const auto handler = [[handlerManager registry] handlerWithTag:handlerTag];
 
-      [handlerManager.registry
-          attachHandlerWithTag:handlerTag
-                        toView:[handler isKindOfClass:[RNNativeViewGestureHandler class]] ? self.subviews[0] : self
-                withActionType:newProps.dispatchesAnimatedEvents ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
-                                                                 : RNGestureHandlerActionTypeNativeDetector];
+      if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
+        [_nativeHandlersToAttach addObject:handlerTag];
+      } else {
+        [handlerManager.registry attachHandlerWithTag:handlerTag
+                                               toView:self
+                                       withActionType:newProps.dispatchesAnimatedEvents
+                                           ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
+                                           : RNGestureHandlerActionTypeNativeDetector];
+
+        [_attachedHandlers addObject:handlerTag];
+      }
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
+      [_attachedHandlers removeObject:handlerTag];
     }
+
+    [self maybeAttachNativeGestureHandlers];
   }
 
   [super updateProps:propsBase oldProps:oldPropsBase];
   // Override to force hittesting to work outside bounds
   self.clipsToBounds = NO;
 }
+
+- (void)maybeAttachNativeGestureHandlers
+{
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  for (NSNumber *handlerTag in _nativeHandlersToAttach) {
+    if ([_attachedHandlers containsObject:handlerTag]) {
+      continue;
+    }
+
+    [handlerManager.registry attachHandlerWithTag:handlerTag
+                                           toView:self.subviews[0]
+                                   withActionType:RNGestureHandlerActionTypeNativeDetector];
+
+    [_attachedHandlers addObject:handlerTag];
+  }
+
+  [_nativeHandlersToAttach removeAllObjects];
+}
+
+- (void)detachNativeGestureHandlers
+{
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  for (NSNumber *handlerTag in _attachedHandlers) {
+    const auto handler = [[handlerManager registry] handlerWithTag:handlerTag];
+
+    if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
+      [[handlerManager registry] detachHandlerWithTag:handlerTag];
+      [_attachedHandlers removeObject:handlerTag];
+    }
+  }
+}
+
 @end
 
 Class<RCTComponentViewProtocol> RNGestureHandlerDetectorCls(void)
