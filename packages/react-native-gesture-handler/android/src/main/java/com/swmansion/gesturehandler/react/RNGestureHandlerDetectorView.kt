@@ -95,7 +95,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
           registry.attachHandlerToView(
             tag,
             this.id,
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
           )
 
           attachedHandlers.add(tag)
@@ -126,11 +126,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       registry.attachHandlerToView(
         tag,
         childId,
-        if (dispatchesAnimatedEvents) {
-          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
-        } else {
-          GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
-        },
+        GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
       )
 
       attachedHandlers.add(tag)

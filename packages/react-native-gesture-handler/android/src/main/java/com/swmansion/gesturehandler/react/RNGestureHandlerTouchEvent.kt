@@ -14,7 +14,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   private var actionType = GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API
 
   private fun <T : GestureHandler> init(handler: T, actionType: Int) {
-    val view = if (handler is NativeViewGestureHandler && handler.isSendingEventsToNativeDetector()) {
+    val view = if (handler is NativeViewGestureHandler && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
       handler.view!!.parent as RNGestureHandlerDetectorView
     } else {
       handler.view!!
