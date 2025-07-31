@@ -146,6 +146,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _needsPointerData = [RCTConvert BOOL:prop];
   }
 
+  prop = config[@"dispatchesAnimatedEvents"];
+  if (prop != nil) {
+    _dispatchesAnimatedEvents = [RCTConvert BOOL:prop];
+  }
+
   prop = config[@"manualActivation"];
   if (prop != nil) {
     self.manualActivation = [RCTConvert BOOL:prop];
@@ -293,7 +298,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (view.reactTag == nil && ![self hasNativeDetectorActionType]) {
+  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector) {
     return;
   }
 
@@ -308,7 +313,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
 
   NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
-  if (tag == nil && [self hasNativeDetectorActionType]) {
+  if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
     tag = @(recognizer.view.tag);
   }
 
@@ -366,7 +371,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          handlerTag:_tag
                                                               state:state
                                                           extraData:extraData
-                                                      forActionType:_actionType
+                                                        forAnimated:_dispatchesAnimatedEvents
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
@@ -381,7 +386,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
-  [self.emitter sendEvent:event withActionType:self.actionType forView:[self findViewForEvents]];
+  [self.emitter sendEvent:event
+           withActionType:self.actionType
+              forAnimated:_dispatchesAnimatedEvents
+            forRecognizer:self.recognizer];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
@@ -398,10 +406,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                     handlerTag:_tag
                                                          state:state
                                                      extraData:extraData
-                                                 forActionType:_actionType
+                                                   forAnimated:_dispatchesAnimatedEvents
                                                  coalescingKey:[_tag intValue]];
 
-    [self.emitter sendEvent:event withActionType:self.actionType forView:self.recognizer.view];
+    [self.emitter sendEvent:event
+             withActionType:self.actionType
+                forAnimated:_dispatchesAnimatedEvents
+              forRecognizer:self.recognizer];
   }
 }
 

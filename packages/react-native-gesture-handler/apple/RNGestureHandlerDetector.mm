@@ -153,9 +153,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
       } else {
         [handlerManager.registry attachHandlerWithTag:handlerTag
                                                toView:self
-                                       withActionType:newProps.dispatchesAnimatedEvents
-                                           ? RNGestureHandlerActionTypeNativeDetectorAnimatedEvent
-                                           : RNGestureHandlerActionTypeNativeDetector];
+                                       withActionType:RNGestureHandlerActionTypeNativeDetector];
 
         [_attachedHandlers addObject:handlerTag];
       }
