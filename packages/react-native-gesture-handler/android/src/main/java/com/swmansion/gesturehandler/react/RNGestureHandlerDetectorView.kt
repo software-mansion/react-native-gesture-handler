@@ -43,6 +43,13 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     this.dispatchesAnimatedEvents = dispatchesAnimatedEvents
   }
 
+  fun shouldAttachGestureToSubview(tag: Int): Boolean {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    return registry.getHandler(tag) is NativeViewGestureHandler
+  }
+
   // We override this `addView` because it is called inside `addView(child: View?, index: Int)`
   override fun addView(child: View?, index: Int, params: LayoutParams?) {
     super.addView(child, index, params)
@@ -82,7 +89,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       if (entry.value == GestureHandlerMutation.Attach) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
         // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
-        if (registry.getHandler(tag) is NativeViewGestureHandler) {
+        if (shouldAttachGestureToSubview(tag)) {
           nativeHandlersToAttach.add(tag)
         } else {
           registry.attachHandlerToView(
@@ -141,7 +148,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in attachedHandlers) {
-      if (registry.getHandler(tag) is NativeViewGestureHandler) {
+      if (shouldAttachGestureToSubview(tag)) {
         registry.detachHandler(tag)
         attachedHandlers.remove(tag)
       }

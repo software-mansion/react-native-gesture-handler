@@ -84,6 +84,13 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   }
 }
 
+- (BOOL)shouldAttachGestureToSubview:(NSNumber *)handlerTag
+{
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  return [[[handlerManager registry] handlerWithTag:handlerTag] isKindOfClass:[RNNativeViewGestureHandler class]];
+}
+
 - (void)addSubview:(UIView *)view
 {
   [super addSubview:view];
@@ -141,9 +148,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     NSNumber *handlerTag = [NSNumber numberWithInt:handlerChange.first];
 
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
-      const auto handler = [[handlerManager registry] handlerWithTag:handlerTag];
-
-      if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
+      if ([self shouldAttachGestureToSubview:handlerTag]) {
         [_nativeHandlersToAttach addObject:handlerTag];
       } else {
         [handlerManager.registry attachHandlerWithTag:handlerTag
@@ -191,9 +196,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   for (NSNumber *handlerTag in _attachedHandlers) {
-    const auto handler = [[handlerManager registry] handlerWithTag:handlerTag];
-
-    if ([handler isKindOfClass:[RNNativeViewGestureHandler class]]) {
+    if ([self shouldAttachGestureToSubview:handlerTag]) {
       [[handlerManager registry] detachHandlerWithTag:handlerTag];
       [_attachedHandlers removeObject:handlerTag];
     }
