@@ -355,11 +355,11 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
        forAnimated:(BOOL)forAnimated
-     forRecognizer:(UIGestureRecognizer *)recognizer
+           forView:(RNGHUIView *)detectorView // Typing as RNGestureHandlerDetector is preferable
+                                              // but results in a compilation error.
 {
   switch (actionType) {
     case RNGestureHandlerActionTypeNativeDetector: {
-      RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
         if (forAnimated) {
           [self sendEventForNativeAnimatedEvent:event];
