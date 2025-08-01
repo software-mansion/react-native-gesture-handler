@@ -5,8 +5,8 @@ import {
   TouchAction,
 } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
-import { State } from '../State';
 import { PointerType } from '../PointerType';
+import { GestureHandlerEvent } from '../v3/types';
 
 export interface HitSlop {
   left?: number;
@@ -81,17 +81,6 @@ export interface Config extends Record<string, ConfigArgs> {
   enableTrackpadTwoFingerGesture?: boolean;
 }
 
-type NativeEventArgs = number | State | boolean | undefined;
-interface NativeEvent extends Record<string, NativeEventArgs> {
-  numberOfPointers: number;
-  state: State;
-  pointerInside: boolean | undefined;
-  handlerTag: number;
-  target: number;
-  oldState?: State;
-  pointerType: PointerType;
-}
-
 export interface Point {
   x: number;
   y: number;
@@ -105,26 +94,9 @@ export interface PointerData {
   absoluteY: number;
 }
 
-type TouchNativeArgs = number | State | TouchEventType | PointerData[];
-
-interface NativeTouchEvent extends Record<string, TouchNativeArgs> {
-  handlerTag: number;
-  state: State;
-  eventType: TouchEventType;
-  changedTouches: PointerData[];
-  allTouches: PointerData[];
-  numberOfTouches: number;
-  pointerType: PointerType;
-}
-
-export interface ResultEvent extends Record<string, NativeEvent | number> {
-  nativeEvent: NativeEvent;
-  timeStamp: number;
-}
-
-export interface ResultTouchEvent
-  extends Record<string, NativeTouchEvent | number> {
-  nativeEvent: NativeTouchEvent;
+export interface ResultEvent
+  extends Record<string, GestureHandlerEvent<unknown> | number> {
+  nativeEvent: GestureHandlerEvent<unknown>;
   timeStamp: number;
 }
 
