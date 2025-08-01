@@ -29,10 +29,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       RNGestureHandlerModule.attachGestureHandler(
         tag,
         viewRef.current,
+        ActionType.NATIVE_DETECTOR,
+        propsRef,
         dispatchesAnimatedEvents
-          ? ActionType.NATIVE_DETECTOR_ANIMATED_EVENT
-          : ActionType.NATIVE_DETECTOR,
-        propsRef
       );
     });
   }, [handlerTags, dispatchesAnimatedEvents]);

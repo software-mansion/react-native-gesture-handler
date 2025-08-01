@@ -18,11 +18,7 @@ import IGestureHandler from './IGestureHandler';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import {
-  ActionType,
-  isAnimatedActionType,
-  isNativeDetectorActionType,
-} from '../../ActionType';
+import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
 
 export default abstract class GestureHandler implements IGestureHandler {
@@ -37,6 +33,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
+  private forAnimated: boolean | null = null;
   private _handlerTag!: number;
   private _config: Config = { enabled: false };
 
@@ -50,7 +47,6 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private _shouldResetProgress = false;
   private _pointerType: PointerType = PointerType.MOUSE;
-
   private _delegate: GestureHandlerDelegate<unknown, IGestureHandler>;
 
   public constructor(
@@ -66,12 +62,14 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected init(
     viewRef: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    forAnimated: boolean
   ) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
+    this.forAnimated = forAnimated;
 
     this.delegate.init(viewRef, this);
   }
@@ -86,6 +84,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
+    this.forAnimated = null;
 
     this.delegate.detach();
   }
@@ -374,7 +373,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (touchEvent) {
       if (
         onGestureHandlerTouchEvent &&
-        isNativeDetectorActionType(this.actionType)
+        this.actionType === ActionType.NATIVE_DETECTOR
       ) {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
       } else {
@@ -412,7 +411,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       resultEvent.nativeEvent.oldState = undefined;
       if (
         onGestureHandlerAnimatedEvent &&
-        isAnimatedActionType(this.actionType)
+        (this.actionType === ActionType.NATIVE_ANIMATED_EVENT ||
+          this.forAnimated)
       ) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
