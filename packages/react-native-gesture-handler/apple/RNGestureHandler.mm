@@ -307,6 +307,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
 
   NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
+
   if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
     tag = @(recognizer.view.tag);
   }
@@ -375,7 +376,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   return
       [self isKindOfClass:[RNNativeViewGestureHandler class]] && _actionType == RNGestureHandlerActionTypeNativeDetector
-
       ? self.recognizer.view.superview
       : self.recognizer.view;
 }
