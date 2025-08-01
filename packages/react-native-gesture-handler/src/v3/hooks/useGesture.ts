@@ -30,7 +30,6 @@ export interface NativeGesture {
   config: Record<string, unknown>;
   gestureEvents: GestureEvents;
   shouldUseReanimated: boolean;
-  dispatchesAnimatedEvents: boolean;
 }
 
 function hasWorkletEventHandlers(config: Record<string, unknown>) {
@@ -65,7 +64,6 @@ export function useGesture(
 
   const shouldUseReanimated =
     Reanimated !== undefined && hasWorkletEventHandlers(config);
-  config.needsPointerData = shouldHandleTouchEvents(config);
 
   const {
     onGestureHandlerStateChange,
@@ -84,6 +82,11 @@ export function useGesture(
   ) {
     throw new Error(tagMessage('Failed to create event handlers.'));
   }
+
+  config.needsPointerData = shouldHandleTouchEvents(config);
+  config.dispatchesAnimatedEvents =
+    !!onGestureHandlerAnimatedEvent &&
+    '__isNative' in onGestureHandlerAnimatedEvent;
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
@@ -119,8 +122,5 @@ export function useGesture(
       onGestureHandlerAnimatedEvent,
     },
     shouldUseReanimated,
-    dispatchesAnimatedEvents:
-      !!onGestureHandlerAnimatedEvent &&
-      '__isNative' in onGestureHandlerAnimatedEvent,
   };
 }
