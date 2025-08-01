@@ -12,7 +12,6 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.core.GestureHandler
-import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 
 class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>() {
@@ -34,8 +33,8 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     useNativeAnimatedName: Boolean,
   ) {
-    val view = if (handler is NativeViewGestureHandler && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-      handler.view!!.parent as RNGestureHandlerDetectorView
+    val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+      handler.viewForEvents!!
     } else {
       handler.view!!
     }

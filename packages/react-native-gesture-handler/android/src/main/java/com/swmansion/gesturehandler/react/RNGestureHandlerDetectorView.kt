@@ -43,7 +43,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     this.dispatchesAnimatedEvents = dispatchesAnimatedEvents
   }
 
-  fun shouldAttachGestureToSubview(tag: Int): Boolean {
+  private fun shouldAttachGestureToSubview(tag: Int): Boolean {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
@@ -92,11 +92,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         if (shouldAttachGestureToSubview(tag)) {
           nativeHandlersToAttach.add(tag)
         } else {
-          registry.attachHandlerToView(
-            tag,
-            this.id,
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
-          )
+          registry.attachHandlerToView(tag, this.id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
 
           attachedHandlers.add(tag)
         }
@@ -123,11 +119,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         continue
       }
 
-      registry.attachHandlerToView(
-        tag,
-        childId,
-        GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
-      )
+      registry.attachHandlerToView(tag, childId, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
 
       attachedHandlers.add(tag)
     }

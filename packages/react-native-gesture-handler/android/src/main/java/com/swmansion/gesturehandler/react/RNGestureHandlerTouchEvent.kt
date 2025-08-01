@@ -6,7 +6,6 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.core.GestureHandler
-import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 
 class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerTouchEvent>() {
   private var extraData: WritableMap? = null
@@ -14,8 +13,8 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   private var actionType = GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API
 
   private fun <T : GestureHandler> init(handler: T, actionType: Int) {
-    val view = if (handler is NativeViewGestureHandler && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-      handler.view!!.parent as RNGestureHandlerDetectorView
+    val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+      handler.viewForEvents!!
     } else {
       handler.view!!
     }
