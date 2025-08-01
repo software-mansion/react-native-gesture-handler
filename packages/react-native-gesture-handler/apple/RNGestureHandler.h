@@ -40,6 +40,7 @@
 
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
+       forAnimated:(BOOL)forAnimated
      forRecognizer:(UIGestureRecognizer *)recognizer;
 
 - (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler withPointerType:(NSInteger)pointerType;
@@ -75,6 +76,7 @@
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
+@property (nonatomic) BOOL dispatchesAnimatedEvents;
 
 #if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
