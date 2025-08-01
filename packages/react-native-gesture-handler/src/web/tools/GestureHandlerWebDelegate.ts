@@ -12,6 +12,7 @@ import { Config } from '../interfaces';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
 import WheelEventManager from './WheelEventManager';
+import { tagMessage } from '../../utils';
 
 interface DefaultViewStyles {
   userSelect: string;
@@ -22,7 +23,7 @@ export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
   private isInitialized = false;
-  private _view!: HTMLElement;
+  private _view: HTMLElement | null = null;
 
   private gestureHandler!: IGestureHandler;
   private eventManagers: EventManager<unknown>[] = [];
@@ -64,7 +65,7 @@ export class GestureHandlerWebDelegate
   }
 
   detach(): void {
-    this.view = null as unknown as HTMLElement;
+    this._view = null;
     this.defaultViewStyles = {
       userSelect: '',
       touchAction: '',
@@ -232,6 +233,10 @@ export class GestureHandlerWebDelegate
   }
 
   public get view() {
+    if (!this._view) {
+      throw new Error(tagMessage('component`s view is null'));
+    }
+
     return this._view;
   }
   public set view(value: HTMLElement) {

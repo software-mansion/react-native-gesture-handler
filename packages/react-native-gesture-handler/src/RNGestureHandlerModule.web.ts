@@ -67,6 +67,7 @@ export default {
   },
   detachGestureHandler(handlerTag: number) {
     if (shouldPreventDrop) {
+      shouldPreventDrop = false;
       return;
     }
 

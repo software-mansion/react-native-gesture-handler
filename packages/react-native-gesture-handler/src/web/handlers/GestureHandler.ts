@@ -360,13 +360,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (!this.enabled) {
       return;
     }
-    if (!this.propsRef) {
-      throw new Error(
-        tagMessage('Cannot handle event when component props are null')
-      );
-    }
+    this.ensurePropsRef();
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
-      this.propsRef.current;
+      this.propsRef!.current;
 
     const touchEvent: ResultTouchEvent | undefined =
       this.transformTouchEvent(event);
@@ -388,16 +384,12 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
-    if (!this.propsRef) {
-      throw new Error(
-        tagMessage('Cannot handle event when component props are null')
-      );
-    }
+    this.ensurePropsRef();
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
-    }: PropsRef = this.propsRef.current;
+    }: PropsRef = this.propsRef!.current;
     const resultEvent: ResultEvent = this.transformEventData(
       newState,
       oldState
@@ -545,11 +537,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   private cancelTouches(): void {
-    if (!this.propsRef) {
-      throw new Error(
-        tagMessage('Cannot handle event when component props are null')
-      );
-    }
+    this.ensurePropsRef();
     const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
@@ -594,9 +582,17 @@ export default abstract class GestureHandler implements IGestureHandler {
       timeStamp: Date.now(),
     };
 
-    const { onGestureHandlerEvent }: PropsRef = this.propsRef.current;
+    const { onGestureHandlerEvent }: PropsRef = this.propsRef!.current;
 
     invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
+  }
+
+  protected ensurePropsRef(): void {
+    if (!this.propsRef) {
+      throw new Error(
+        tagMessage('Cannot handle event when component props are null')
+      );
+    }
   }
 
   protected transformNativeEvent(): Record<string, unknown> {
