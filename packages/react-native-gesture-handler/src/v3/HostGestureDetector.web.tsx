@@ -44,7 +44,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     };
   }, [attachHandlers, detachHandlers]);
 
-  return <View ref={viewRef}>{children}</View>;
+  return (
+    <View style={{ display: 'contents' }} ref={viewRef}>
+      {children}
+    </View>
+  );
 };
 
 export default HostGestureDetector;
