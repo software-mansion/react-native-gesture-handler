@@ -16,7 +16,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var nativeHandlersToAttach: MutableSet<Int> = mutableSetOf()
   private var attachedHandlers: MutableSet<Int> = mutableSetOf()
   private var moduleId: Int = -1
-  private var dispatchesAnimatedEvents: Boolean = false
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
@@ -36,10 +35,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     this.moduleId = id
     this.attachHandlers(handlersToAttach ?: return)
     handlersToAttach = null
-  }
-
-  fun setDispatchesAnimatedEvents(dispatchesAnimatedEvents: Boolean) {
-    this.dispatchesAnimatedEvents = dispatchesAnimatedEvents
   }
 
   private fun shouldAttachGestureToChildView(tag: Int): Boolean {
