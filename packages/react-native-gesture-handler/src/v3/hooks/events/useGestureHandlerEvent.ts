@@ -11,11 +11,7 @@ import {
 import { CallbackHandlers, UpdateEvent } from '../../types';
 import { tagMessage } from '../../../utils';
 
-export function useGestureHandlerEvent(
-  handlerTag: number,
-  config: any,
-  shouldUseReanimated: boolean
-) {
+export function useGestureHandlerEvent(handlerTag: number, config: any) {
   const handlers: CallbackHandlers = {
     onUpdate: config.onUpdate,
   };
@@ -73,7 +69,7 @@ export function useGestureHandlerEvent(
 
   return isAnimatedEvent(config.onUpdate)
     ? undefined
-    : shouldUseReanimated
+    : config.shouldUseReanimated
       ? reanimatedEvent
       : (event: UpdateEvent<Record<string, unknown>>) =>
           onGestureHandlerEvent(event, jsContext);
