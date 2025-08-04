@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
+
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   dispatchesAnimatedEvents: boolean;
@@ -15,33 +16,47 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
 
   const viewRef = useRef(null);
   const propsRef = useRef<PropsRef>(props);
+  const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const detachHandlers = useCallback(() => {
-    handlerTags.forEach((tag) => {
+  const detachHandlers = useCallback((oldHandlerTags: Set<number>) => {
+    oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
     });
-  }, [handlerTags]);
+  }, []);
 
-  const attachHandlers = useCallback(() => {
-    // TODO: add memoisation
-
-    handlerTags.forEach((tag) => {
-      RNGestureHandlerModule.attachGestureHandler(
-        tag,
-        viewRef.current,
-        ActionType.NATIVE_DETECTOR,
-        propsRef,
-        dispatchesAnimatedEvents
+  const attachHandlers = useCallback(
+    (currentHandlerTags: Set<number>) => {
+      const oldHandlerTags =
+        attachedHandlerTags.current.difference(currentHandlerTags);
+      const newHandlerTags = currentHandlerTags.difference(
+        attachedHandlerTags.current
       );
-    });
-  }, [handlerTags, dispatchesAnimatedEvents]);
+
+      detachHandlers(oldHandlerTags);
+
+      newHandlerTags.forEach((tag) => {
+        RNGestureHandlerModule.attachGestureHandler(
+          tag,
+          viewRef.current,
+          ActionType.NATIVE_DETECTOR,
+          propsRef,
+          dispatchesAnimatedEvents
+        );
+      });
+      attachedHandlerTags.current = currentHandlerTags;
+    },
+    [dispatchesAnimatedEvents]
+  );
 
   useEffect(() => {
-    attachHandlers();
+    attachHandlers(new Set(handlerTags));
+  }, [attachHandlers]);
+
+  useEffect(() => {
     return () => {
-      detachHandlers();
+      detachHandlers(attachedHandlerTags.current);
     };
-  }, [attachHandlers, detachHandlers]);
+  }, []);
 
   return (
     <View style={{ display: 'contents' }} ref={viewRef}>
