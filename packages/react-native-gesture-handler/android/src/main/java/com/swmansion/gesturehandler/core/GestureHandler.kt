@@ -33,6 +33,10 @@ open class GestureHandler {
     private set
   var viewForEvents: RNGestureHandlerDetectorView? = null
     get() {
+      assert(actionType == ACTION_TYPE_NATIVE_DETECTOR) {
+        "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
+      }
+
       val detector = if (this is NativeViewGestureHandler) this.view?.parent else view
 
       if (detector !is RNGestureHandlerDetectorView) {
@@ -43,7 +47,6 @@ open class GestureHandler {
 
       return detector
     }
-    private set
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
