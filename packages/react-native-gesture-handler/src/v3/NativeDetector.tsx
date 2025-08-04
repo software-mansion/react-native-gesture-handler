@@ -48,9 +48,6 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       onGestureHandlerTouchEvent={
         gesture.gestureEvents.onGestureHandlerTouchEvent
       }
-      dispatchesAnimatedEvents={
-        gesture.config.dispatchesAnimatedEvents as boolean
-      }
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={[gesture.tag]}
       style={styles.detector}>
