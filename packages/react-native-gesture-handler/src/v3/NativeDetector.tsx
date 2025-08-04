@@ -22,7 +22,8 @@ const ReanimatedNativeDetector = Reanimated?.default.createAnimatedComponent(
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : (gesture.config.shouldUseReanimated as boolean)
+    : // TODO: Remove this cast when we properly type config
+      (gesture.config.shouldUseReanimated as boolean)
       ? ReanimatedNativeDetector
       : RNGestureHandlerDetectorNativeComponent;
 
