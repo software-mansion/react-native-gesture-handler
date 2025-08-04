@@ -3,6 +3,7 @@ import {
   ActiveCursor,
   MouseButton,
   TouchAction,
+  StylusData,
 } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { PointerType } from '../PointerType';
@@ -105,14 +106,6 @@ export interface PropsRef {
   onGestureHandlerAnimatedEvent?: (e: any) => void;
   onGestureHandlerStateChange: (e: any) => void;
   onGestureHandlerTouchEvent?: (e: any) => void;
-}
-
-export interface StylusData {
-  tiltX: number;
-  tiltY: number;
-  azimuthAngle: number;
-  altitudeAngle: number;
-  pressure: number;
 }
 
 export interface AdaptedEvent {
