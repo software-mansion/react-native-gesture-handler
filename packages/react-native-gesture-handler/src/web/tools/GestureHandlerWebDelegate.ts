@@ -234,7 +234,7 @@ export class GestureHandlerWebDelegate
 
   public get view() {
     if (!this._view) {
-      throw new Error(tagMessage('component`s view is null'));
+      throw new Error(tagMessage("component's view is null"));
     }
 
     return this._view;
