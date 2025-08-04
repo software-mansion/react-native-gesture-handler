@@ -95,7 +95,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       }
     }
 
-    // This covers the case where `NativeViewGestureHandlers` are attached after children views were created.
+    // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
     val child = getChildAt(0)
 
     if (child != null) {
