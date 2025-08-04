@@ -277,6 +277,10 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
+  public shouldAttachGestureToChildView(): boolean {
+    return false;
+  }
+
   //
   // Event actions
   //

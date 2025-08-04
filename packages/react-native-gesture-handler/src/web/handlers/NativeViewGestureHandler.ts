@@ -171,6 +171,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     return !this.disallowInterruption;
   }
 
+  public shouldAttachGestureToChildView(): boolean {
+    return true;
+  }
+
   public disallowsInterruption(): boolean {
     return this.disallowInterruption;
   }
