@@ -1,5 +1,4 @@
 #import "RNGestureHandlerDetector.h"
-#import "Handlers/RNNativeViewHandler.h"
 #import "RNGestureHandlerDetectorComponentDescriptor.h"
 #import "RNGestureHandlerModule.h"
 
@@ -92,7 +91,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
-  return [[[handlerManager registry] handlerWithTag:handlerTag] isKindOfClass:[RNNativeViewGestureHandler class]];
+  return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
 }
 
 - (void)addSubview:(UIView *)view

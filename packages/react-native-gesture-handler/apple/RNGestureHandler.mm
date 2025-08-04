@@ -688,4 +688,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return YES;
 }
 
+- (BOOL)wantsToAttachDirectlyToView
+{
+  return NO;
+}
+
 @end
