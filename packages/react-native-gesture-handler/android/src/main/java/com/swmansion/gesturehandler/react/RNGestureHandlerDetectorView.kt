@@ -51,14 +51,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   // We override this `addView` because it is called inside `addView(child: View?, index: Int)`
-  override fun addView(child: View?, index: Int, params: LayoutParams?) {
+  override fun addView(child: View, index: Int, params: LayoutParams?) {
     super.addView(child, index, params)
-
-    if (child == null) {
-      throw Exception(
-        "[react-native-gesture-handler] Cannot attach gesture handler. NativeGestureDetector got null as child.",
-      )
-    }
 
     maybeAttachNativeGestureHandlers(child.id)
   }
