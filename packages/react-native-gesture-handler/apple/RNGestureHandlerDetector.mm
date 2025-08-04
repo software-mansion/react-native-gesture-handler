@@ -98,7 +98,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 {
   [super addSubview:view];
 
-  [self maybeAttachNativeGestureHandlers];
+  [self tryAttachHandlerToChildView];
 }
 
 - (void)willRemoveSubview:(UIView *)subview
@@ -165,7 +165,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
       [_attachedHandlers removeObject:handlerTag];
     }
 
-    [self maybeAttachNativeGestureHandlers];
+    [self tryAttachHandlerToChildView];
   }
 
   [super updateProps:propsBase oldProps:oldPropsBase];
@@ -173,7 +173,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   self.clipsToBounds = NO;
 }
 
-- (void)maybeAttachNativeGestureHandlers
+- (void)tryAttachHandlerToChildView
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
