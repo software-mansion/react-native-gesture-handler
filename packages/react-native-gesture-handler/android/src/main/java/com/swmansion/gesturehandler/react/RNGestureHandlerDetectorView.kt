@@ -14,7 +14,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var handlersToAttach: List<Int>? = null
   private var attachedHandlers = listOf<Int>()
   private var moduleId: Int = -1
-  private var dispatchesAnimatedEvents: Boolean = false
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
@@ -34,10 +33,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     this.moduleId = id
     this.attachHandlers(handlersToAttach ?: return)
     handlersToAttach = null
-  }
-
-  fun setDispatchesAnimatedEvents(dispatchesAnimatedEvents: Boolean) {
-    this.dispatchesAnimatedEvents = dispatchesAnimatedEvents
   }
 
   private fun attachHandlers(newHandlers: List<Int>) {
