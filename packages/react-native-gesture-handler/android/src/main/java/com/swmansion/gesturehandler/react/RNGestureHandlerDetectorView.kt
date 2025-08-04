@@ -8,7 +8,6 @@ import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
-import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
@@ -47,7 +46,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
-    return registry.getHandler(tag) is NativeViewGestureHandler
+    return registry.getHandler(tag)?.wantsToAttachDirectlyToView() ?: false
   }
 
   // We override this `addView` because it is called inside `addView(child: View?, index: Int)`

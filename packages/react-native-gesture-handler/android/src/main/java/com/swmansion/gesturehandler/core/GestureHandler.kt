@@ -840,6 +840,8 @@ open class GestureHandler {
     }
   }
 
+  open fun wantsToAttachDirectlyToView() = false
+
   override fun toString(): String {
     val viewString = if (view == null) null else view!!.javaClass.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
