@@ -13,6 +13,10 @@
 #include <unordered_map>
 
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
+
+@property (nonatomic, nonnull) NSMutableSet *nativeHandlersToAttach;
+@property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
+
 @end
 
 typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {

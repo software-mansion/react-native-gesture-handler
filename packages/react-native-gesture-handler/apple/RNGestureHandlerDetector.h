@@ -14,9 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RNGestureHandlerDetector : RCTViewComponentView
 
-@property (nonatomic, nonnull) NSMutableSet *nativeHandlersToAttach;
-@property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
-
 - (void)dispatchStateChangeEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event;
 
 - (void)dispatchGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event;
