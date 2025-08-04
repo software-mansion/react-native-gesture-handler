@@ -74,6 +74,7 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
+    this.removeContextMenuListeners(this.gestureHandler.config);
     this.eventManagers = [];
   }
 
