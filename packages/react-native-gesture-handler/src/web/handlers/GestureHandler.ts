@@ -587,12 +587,15 @@ export default abstract class GestureHandler implements IGestureHandler {
     invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
   }
 
-  protected ensurePropsRef(): void {
+  protected ensurePropsRef(): this is this & {
+    propsRef: React.RefObject<PropsRef>;
+  } {
     if (!this.propsRef) {
       throw new Error(
         tagMessage('Cannot handle event when component props are null')
       );
     }
+    return true;
   }
 
   protected transformNativeEvent(): Record<string, unknown> {
