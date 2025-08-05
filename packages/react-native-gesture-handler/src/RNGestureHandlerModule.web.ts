@@ -41,7 +41,7 @@ export default {
       NodeManager.getHandler(handlerTag),
       config as unknown as Config
     );
-    this.updateGestureHandler(handlerTag, config as unknown as Config);
+    this.setGestureHandlerConfig(handlerTag, config as unknown as Config);
   },
   attachGestureHandler(
     handlerTag: number,
@@ -65,13 +65,16 @@ export default {
     // @ts-ignore Types should be HTMLElement or React.Component
     NodeManager.getHandler(handlerTag).init(newView, propsRef);
   },
-  updateGestureHandler(handlerTag: number, newConfig: Config) {
+  setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
 
     InteractionManager.instance.configureInteractions(
       NodeManager.getHandler(handlerTag),
       newConfig
     );
+  },
+  updateGestureHandlerConfig(_handlerTag: number, _newConfig: Config) {
+    // TODO: To be implemented
   },
   getGestureHandlerNode(handlerTag: number) {
     return NodeManager.getHandler(handlerTag);

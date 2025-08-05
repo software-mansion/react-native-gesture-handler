@@ -109,14 +109,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
+  override fun setGestureHandlerConfig(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
     updateGestureHandlerHelper<GestureHandler>(handlerTag, config, false)
   }
 
   @ReactMethod
-  override fun updateConfig(handlerTagDouble: Double, config: ReadableMap) {
+  override fun updateGestureHandlerConfig(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
     updateGestureHandlerHelper<GestureHandler>(handlerTag, config, true)

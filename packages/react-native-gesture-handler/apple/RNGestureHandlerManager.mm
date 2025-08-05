@@ -133,7 +133,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   }
 
   RNGestureHandler *gestureHandler = [[nodeClass alloc] initWithTag:handlerTag];
-  [gestureHandler configure:config];
+  [gestureHandler setConfig:config];
   [_registry registerGestureHandler:gestureHandler];
 
   __weak id<RNGestureHandlerEventEmitter> emitter = self;
@@ -205,13 +205,13 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
-- (void)updateGestureHandler:(NSNumber *)handlerTag config:(NSDictionary *)config
+- (void)setGestureHandlerConfig:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
   RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
-  [handler configure:config];
+  [handler setConfig:config];
 }
 
-- (void)updateConfig:(NSNumber *)handlerTag config:(NSDictionary *)config
+- (void)updateGestureHandlerConfig:(NSNumber *)handlerTag config:(NSDictionary *)config
 {
   RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
   [handler updateConfig:config];

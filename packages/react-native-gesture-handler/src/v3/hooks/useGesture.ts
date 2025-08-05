@@ -57,7 +57,7 @@ const sharedValues = new Map<
 let nextSharedValueID = 0;
 
 // This is used to obtain HostFunction that can be executed on the UI thread
-const { updateConfig } = RNGestureHandlerModule;
+const { updateGestureHandlerConfig } = RNGestureHandlerModule;
 
 function maybeExtractSharedValues(config: any, tag: number) {
   if (Reanimated === undefined) {
@@ -74,7 +74,7 @@ function maybeExtractSharedValues(config: any, tag: number) {
     sharedValue.addListener(id, (value) => {
       'worklet';
 
-      updateConfig(tag, { [configKey]: value });
+      updateGestureHandlerConfig(tag, { [configKey]: value });
     });
   };
 
@@ -176,7 +176,7 @@ export function useGesture(
     // causes a native crash
     const animatedEvent = config.onUpdate;
     config.onUpdate = null;
-    RNGestureHandlerModule.updateGestureHandler(tag, config);
+    RNGestureHandlerModule.setGestureHandlerConfig(tag, config);
     config.onUpdate = animatedEvent;
 
     RNGestureHandlerModule.flushOperations();

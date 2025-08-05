@@ -60,7 +60,7 @@ export function attachHandlers({
       return;
     }
     for (const handler of gesturesToAttach) {
-      RNGestureHandlerModule.updateGestureHandler(
+      RNGestureHandlerModule.setGestureHandlerConfig(
         handler.handlerTag,
         filterConfig(
           handler.config,

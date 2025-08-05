@@ -175,17 +175,17 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)updateGestureHandler:(double)handlerTag newConfig:(NSDictionary *)config
+- (void)setGestureHandlerConfig:(double)handlerTag newConfig:(NSDictionary *)config
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager updateGestureHandler:[NSNumber numberWithDouble:handlerTag] config:config];
+    [manager setGestureHandlerConfig:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
 }
 
-- (void)updateConfig:(double)handlerTag newConfig:(NSDictionary *)config
+- (void)updateGestureHandlerConfig:(double)handlerTag newConfig:(NSDictionary *)config
 {
   RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  [manager updateConfig:[NSNumber numberWithDouble:handlerTag] config:config];
+  [manager updateGestureHandlerConfig:[NSNumber numberWithDouble:handlerTag] config:config];
 }
 
 - (void)dropGestureHandler:(double)handlerTag

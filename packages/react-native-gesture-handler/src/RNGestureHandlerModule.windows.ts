@@ -47,7 +47,10 @@ export default {
   ) {
     // NO-OP
   },
-  updateGestureHandler(_handlerTag: number, _newConfig: Config) {
+  setGestureHandlerConfig(_handlerTag: number, _newConfig: Config) {
+    // NO-OP
+  },
+  updateGestureHandlerConfig(_handlerTag: number, _newConfig: Config) {
     // NO-OP
   },
   getGestureHandlerNode(_handlerTag: number) {

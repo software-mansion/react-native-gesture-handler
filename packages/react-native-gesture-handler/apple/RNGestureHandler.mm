@@ -117,7 +117,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #endif
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)setConfig:(NSDictionary *)config
 {
   [self resetConfig];
   [self updateConfig:config];
