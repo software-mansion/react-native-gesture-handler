@@ -182,6 +182,12 @@ RCT_EXPORT_MODULE()
   }];
 }
 
+- (void)updateConfig:(double)handlerTag newConfig:(NSDictionary *)config
+{
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [manager updateConfig:[NSNumber numberWithDouble:handlerTag] config:config];
+}
+
 - (void)dropGestureHandler:(double)handlerTag
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {

@@ -211,6 +211,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [handler configure:config];
 }
 
+- (void)updateConfig:(NSNumber *)handlerTag config:(NSDictionary *)config
+{
+  RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
+  [handler updateConfig:config];
+}
+
 - (void)dropGestureHandler:(NSNumber *)handlerTag
 {
   [_registry dropHandlerWithTag:handlerTag];
