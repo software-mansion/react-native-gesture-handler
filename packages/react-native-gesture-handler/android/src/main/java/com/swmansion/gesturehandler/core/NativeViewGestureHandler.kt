@@ -173,8 +173,8 @@ class NativeViewGestureHandler : GestureHandler() {
 
     override fun create(context: Context?): NativeViewGestureHandler = NativeViewGestureHandler()
 
-    override fun setConfig(handler: NativeViewGestureHandler, config: ReadableMap) {
-      super.setConfig(handler, config)
+    override fun updateConfig(handler: NativeViewGestureHandler, config: ReadableMap) {
+      super.updateConfig(handler, config)
       if (config.hasKey(KEY_SHOULD_ACTIVATE_ON_START)) {
         handler.shouldActivateOnStart = config.getBoolean(KEY_SHOULD_ACTIVATE_ON_START)
       }

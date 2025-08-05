@@ -90,9 +90,19 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  private fun <T : GestureHandler> updateGestureHandlerHelper(handlerTag: Int, config: ReadableMap) {
+  private fun <T : GestureHandler> updateGestureHandlerHelper(
+    handlerTag: Int,
+    config: ReadableMap,
+    onlyUpdate: Boolean,
+  ) {
     val handler = registry.getHandler(handlerTag) ?: return
     val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler<GestureHandler>(handler) ?: return
+
+    if (onlyUpdate) {
+      factory.updateConfig(handler, config)
+      return
+    }
+
     interactionManager.dropRelationsForHandlerWithTag(handlerTag)
     interactionManager.configureInteractions(handler, config)
     factory.setConfig(handler, config)
@@ -102,7 +112,14 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   override fun updateGestureHandler(handlerTagDouble: Double, config: ReadableMap) {
     val handlerTag = handlerTagDouble.toInt()
 
-    updateGestureHandlerHelper<GestureHandler>(handlerTag, config)
+    updateGestureHandlerHelper<GestureHandler>(handlerTag, config, false)
+  }
+
+  @ReactMethod
+  override fun updateConfig(handlerTagDouble: Double, config: ReadableMap) {
+    val handlerTag = handlerTagDouble.toInt()
+
+    updateGestureHandlerHelper<GestureHandler>(handlerTag, config, true)
   }
 
   @ReactMethod
