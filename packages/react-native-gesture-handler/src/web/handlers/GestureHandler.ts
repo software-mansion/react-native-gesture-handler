@@ -31,7 +31,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _enabled = false;
 
   private viewRef: number | null = null;
-  private propsRef: React.RefObject<PropsRef> | null = null;
+  protected propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
   private forAnimated: boolean | null = null;
   private _handlerTag!: number;
@@ -62,14 +62,12 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected init(
     viewRef: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    forAnimated: boolean
+    actionType: ActionType
   ) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
-    this.forAnimated = forAnimated;
 
     this.delegate.init(viewRef, this);
   }
@@ -365,7 +363,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
     this.ensurePropsRef();
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
-      this.propsRef!.current;
+      this.propsRef.current;
 
     const touchEvent: ResultEvent | undefined = this.transformTouchEvent(event);
 
@@ -391,7 +389,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
-    }: PropsRef = this.propsRef!.current;
+    }: PropsRef = this.propsRef.current;
     const resultEvent: ResultEvent = this.transformEventData(
       newState,
       oldState
@@ -407,11 +405,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
     if (this.state === State.ACTIVE) {
-      if (
-        onGestureHandlerAnimatedEvent &&
-        (this.actionType === ActionType.NATIVE_ANIMATED_EVENT ||
-          this.forAnimated)
-      ) {
+      resultEvent.nativeEvent.oldState = undefined;
+      if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
@@ -584,12 +579,14 @@ export default abstract class GestureHandler implements IGestureHandler {
       timeStamp: Date.now(),
     };
 
-    const { onGestureHandlerEvent }: PropsRef = this.propsRef!.current;
+    const { onGestureHandlerEvent }: PropsRef = this.propsRef.current;
 
     invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
   }
 
-  protected ensurePropsRef(): void {
+  protected ensurePropsRef(): asserts this is this & {
+    propsRef: React.RefObject<PropsRef>;
+  } {
     if (!this.propsRef) {
       throw new Error(
         tagMessage('Cannot handle event when component props are null')
@@ -614,8 +611,16 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Handling config
   //
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    this._config = { enabled: enabled, ...props };
+  public updateGestureConfig({
+    enabled = true,
+    dispatchesAnimatedEvents = false,
+    ...props
+  }: Config): void {
+    this._config = {
+      enabled: enabled,
+      dispatchesAnimatedEvents: dispatchesAnimatedEvents,
+      ...props,
+    };
 
     if (this.enabled !== enabled) {
       this.delegate.onEnabledChange(enabled);
@@ -627,6 +632,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
     }
 
+    this.forAnimated = dispatchesAnimatedEvents;
     this.validateHitSlops();
 
     if (this.enabled) {

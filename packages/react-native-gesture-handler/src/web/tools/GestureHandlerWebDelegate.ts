@@ -22,7 +22,7 @@ interface DefaultViewStyles {
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
-  private isInitialized = false;
+  public isInitialized = false;
   private _view: HTMLElement | null = null;
 
   private gestureHandler!: IGestureHandler;
@@ -74,6 +74,7 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
+    this.removeContextMenuListeners(this.gestureHandler.config);
     this.eventManagers = [];
   }
 
@@ -234,7 +235,7 @@ export class GestureHandlerWebDelegate
 
   public get view() {
     if (!this._view) {
-      throw new Error(tagMessage('component`s view is null'));
+      throw new Error(tagMessage("component's view is null"));
     }
 
     return this._view;

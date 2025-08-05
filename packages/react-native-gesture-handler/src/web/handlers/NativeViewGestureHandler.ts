@@ -20,10 +20,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    forAnimated: boolean
+    actionType: ActionType
   ): void {
-    super.init(ref, propsRef, actionType, forAnimated);
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = true;
 
@@ -46,9 +45,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (this.config.disallowInterruption !== undefined) {
       this.disallowInterruption = this.config.disallowInterruption;
     }
-
-    const view = this.delegate.view as HTMLElement;
-    this.restoreViewStyles(view);
+    if (this.delegate.isInitialized) {
+      // this function is called on handler creation, which happens before initializing delegate
+      const view = this.delegate.view as HTMLElement;
+      this.restoreViewStyles(view);
+    }
   }
 
   private restoreViewStyles(view: HTMLElement) {

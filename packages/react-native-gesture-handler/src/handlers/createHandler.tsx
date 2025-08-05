@@ -160,8 +160,7 @@ type AttachGestureHandlerWeb = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   newView: any,
   _actionType: ActionType,
-  propsRef: React.RefObject<unknown>,
-  forAnimated: boolean
+  propsRef: React.RefObject<unknown>
 ) => void;
 
 const UNRESOLVED_REFS_RETRY_LIMIT = 1;
@@ -350,8 +349,7 @@ export default function createHandler<
           this.handlerTag,
           newViewTag,
           ActionType.JS_FUNCTION_OLD_API, // ignored on web
-          this.propsRef,
-          false
+          this.propsRef
         );
       } else {
         registerOldGestureHandler(this.handlerTag, {

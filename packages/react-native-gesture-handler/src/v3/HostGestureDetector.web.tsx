@@ -3,45 +3,55 @@ import { View } from 'react-native';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
+
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
-  dispatchesAnimatedEvents: boolean;
   moduleId: number;
   children?: React.ReactNode;
 }
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
-  const { handlerTags, dispatchesAnimatedEvents, children } = props;
+  const { handlerTags, children } = props;
 
   const viewRef = useRef(null);
   const propsRef = useRef<PropsRef>(props);
+  const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const detachHandlers = useCallback(() => {
-    handlerTags.forEach((tag) => {
+  const detachHandlers = useCallback((oldHandlerTags: Set<number>) => {
+    oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
     });
-  }, [handlerTags]);
+  }, []);
 
-  const attachHandlers = useCallback(() => {
-    // TODO: add memoisation
+  const attachHandlers = useCallback((currentHandlerTags: Set<number>) => {
+    const oldHandlerTags =
+      attachedHandlerTags.current.difference(currentHandlerTags);
+    const newHandlerTags = currentHandlerTags.difference(
+      attachedHandlerTags.current
+    );
 
-    handlerTags.forEach((tag) => {
+    detachHandlers(oldHandlerTags);
+
+    newHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.attachGestureHandler(
         tag,
         viewRef.current,
         ActionType.NATIVE_DETECTOR,
-        propsRef,
-        dispatchesAnimatedEvents
+        propsRef
       );
     });
-  }, [handlerTags, dispatchesAnimatedEvents]);
+    attachedHandlerTags.current = currentHandlerTags;
+  }, []);
 
   useEffect(() => {
-    attachHandlers();
+    attachHandlers(new Set(handlerTags));
+  }, [handlerTags]);
+
+  useEffect(() => {
     return () => {
-      detachHandlers();
+      detachHandlers(attachedHandlerTags.current);
     };
-  }, [attachHandlers, detachHandlers]);
+  }, []);
 
   return (
     <View style={{ display: 'contents' }} ref={viewRef}>

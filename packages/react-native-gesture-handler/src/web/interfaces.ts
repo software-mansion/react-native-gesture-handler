@@ -49,6 +49,7 @@ export interface Config extends Record<string, ConfigArgs> {
   enableContextMenu?: boolean;
   touchAction?: TouchAction;
   manualActivation?: boolean;
+  dispatchesAnimatedEvents?: false;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;

@@ -78,26 +78,23 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val view = handler.view
-
-        if (view is RNGestureHandlerDetectorView) {
-          if (handler.dispatchesAnimatedEvents) {
-            val animatedEvent = RNGestureHandlerEvent.obtain(
-              handler,
-              handler.actionType,
-              handlerFactory.createEventBuilder(handler),
-              true,
-            )
-            view.dispatchEvent(animatedEvent)
-          }
-
-          val event = RNGestureHandlerEvent.obtain(
+        if (handler.dispatchesAnimatedEvents) {
+          val animatedEvent = RNGestureHandlerEvent.obtain(
             handler,
             handler.actionType,
             handlerFactory.createEventBuilder(handler),
+            true,
           )
-          view.dispatchEvent(event)
+          handler.viewForEvents!!.dispatchEvent(animatedEvent)
         }
+
+        val event = RNGestureHandlerEvent.obtain(
+          handler,
+          handler.actionType,
+          handlerFactory.createEventBuilder(handler),
+        )
+
+        handler.viewForEvents!!.dispatchEvent(event)
       }
     }
   }
@@ -156,17 +153,15 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       }
 
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val view = handler.view
-        if (view is RNGestureHandlerDetectorView) {
-          val event = RNGestureHandlerStateChangeEvent.obtain(
-            handler,
-            newState,
-            oldState,
-            handler.actionType,
-            handlerFactory.createEventBuilder(handler),
-          )
-          view.dispatchEvent(event)
-        }
+        val event = RNGestureHandlerStateChangeEvent.obtain(
+          handler,
+          newState,
+          oldState,
+          handler.actionType,
+          handlerFactory.createEventBuilder(handler),
+        )
+
+        handler.viewForEvents!!.dispatchEvent(event)
       }
     }
   }
@@ -199,11 +194,9 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val view = handler.view
-        if (view is RNGestureHandlerDetectorView) {
-          val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
-          view.dispatchEvent(event)
-        }
+        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
+
+        handler.viewForEvents!!.dispatchEvent(event)
       }
     }
   }
