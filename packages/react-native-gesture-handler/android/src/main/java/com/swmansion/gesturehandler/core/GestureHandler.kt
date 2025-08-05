@@ -18,6 +18,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
+import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
@@ -30,6 +31,22 @@ open class GestureHandler {
   var tag = 0
   var view: View? = null
     private set
+  val viewForEvents: RNGestureHandlerDetectorView
+    get() {
+      assert(actionType == ACTION_TYPE_NATIVE_DETECTOR) {
+        "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
+      }
+
+      val detector = if (this is NativeViewGestureHandler) this.view?.parent else view
+
+      if (detector !is RNGestureHandlerDetectorView) {
+        throw Error(
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event.",
+        )
+      }
+
+      return detector
+    }
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -822,6 +839,8 @@ open class GestureHandler {
       else -> POINTER_TYPE_OTHER
     }
   }
+
+  open fun wantsToAttachDirectlyToView() = false
 
   override fun toString(): String {
     val viewString = if (view == null) null else view!!.javaClass.simpleName
