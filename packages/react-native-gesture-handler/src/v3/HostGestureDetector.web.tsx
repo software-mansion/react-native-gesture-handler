@@ -1,9 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { View } from 'react-native';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
-import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -14,8 +12,7 @@ export interface GestureHandlerDetectorProps extends PropsRef {
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
-  const viewRef = useRef(null);
-  const childRef = useRef(null);
+  const viewRef = useRef<HTMLDivElement>(null);
   const propsRef = useRef<PropsRef>(props);
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
@@ -49,7 +46,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     newHandlerTags.forEach((tag) => {
       const shouldAttachToChild = shouldAttachGestureToChildView(tag);
       const attachTarget = shouldAttachToChild
-        ? childRef.current
+        ? viewRef.current!.firstChild
         : viewRef.current;
 
       if (shouldAttachToChild) {
@@ -81,9 +78,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, []);
 
   return (
-    <View style={{ display: 'contents' }} ref={viewRef}>
-      <Wrap ref={childRef}>{children}</Wrap>
-    </View>
+    <div style={{ display: 'contents' }} ref={viewRef}>
+      {children}
+    </div>
   );
 };
 
