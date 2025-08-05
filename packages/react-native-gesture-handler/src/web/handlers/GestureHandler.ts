@@ -31,7 +31,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _enabled = false;
 
   private viewRef: number | null = null;
-  private propsRef: React.RefObject<PropsRef> | null = null;
+  protected propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
   private forAnimated: boolean | null = null;
   private _handlerTag!: number;
@@ -365,7 +365,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
     this.ensurePropsRef();
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
-      this.propsRef!.current;
+      this.propsRef.current;
 
     const touchEvent: ResultTouchEvent | undefined =
       this.transformTouchEvent(event);
@@ -392,7 +392,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
-    }: PropsRef = this.propsRef!.current;
+    }: PropsRef = this.propsRef.current;
     const resultEvent: ResultEvent = this.transformEventData(
       newState,
       oldState
@@ -582,12 +582,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       timeStamp: Date.now(),
     };
 
-    const { onGestureHandlerEvent }: PropsRef = this.propsRef!.current;
+    const { onGestureHandlerEvent }: PropsRef = this.propsRef.current;
 
     invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
   }
 
-  protected ensurePropsRef(): this is this & {
+  protected ensurePropsRef(): asserts this is this & {
     propsRef: React.RefObject<PropsRef>;
   } {
     if (!this.propsRef) {
@@ -595,7 +595,6 @@ export default abstract class GestureHandler implements IGestureHandler {
         tagMessage('Cannot handle event when component props are null')
       );
     }
-    return true;
   }
 
   protected transformNativeEvent(): Record<string, unknown> {
