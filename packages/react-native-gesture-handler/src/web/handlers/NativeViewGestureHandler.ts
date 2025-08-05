@@ -20,10 +20,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    forAnimated: boolean
+    actionType: ActionType
   ): void {
-    super.init(ref, propsRef, actionType, forAnimated);
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = true;
 

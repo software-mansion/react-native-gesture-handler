@@ -62,14 +62,12 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected init(
     viewRef: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    forAnimated: boolean
+    actionType: ActionType
   ) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
-    this.forAnimated = forAnimated;
 
     this.delegate.init(viewRef, this);
   }
