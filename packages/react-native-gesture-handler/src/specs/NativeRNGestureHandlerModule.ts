@@ -20,6 +20,8 @@ export interface Spec extends TurboModule {
   ) => void;
   // eslint-disable-next-line @typescript-eslint/ban-types
   updateGestureHandler: (handlerTag: Double, newConfig: Object) => void;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  updateConfig: (handlerTag: Double, newConfig: Object) => void;
   dropGestureHandler: (handlerTag: Double) => void;
   flushOperations: () => void;
 }
