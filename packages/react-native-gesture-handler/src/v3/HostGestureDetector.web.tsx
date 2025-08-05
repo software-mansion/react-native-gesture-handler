@@ -6,13 +6,12 @@ import { PropsRef } from '../web/interfaces';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
-  dispatchesAnimatedEvents: boolean;
   moduleId: number;
   children?: React.ReactNode;
 }
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
-  const { handlerTags, dispatchesAnimatedEvents, children } = props;
+  const { handlerTags, children } = props;
 
   const viewRef = useRef(null);
   const propsRef = useRef<PropsRef>(props);
@@ -24,29 +23,25 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
   }, []);
 
-  const attachHandlers = useCallback(
-    (currentHandlerTags: Set<number>) => {
-      const oldHandlerTags =
-        attachedHandlerTags.current.difference(currentHandlerTags);
-      const newHandlerTags = currentHandlerTags.difference(
-        attachedHandlerTags.current
+  const attachHandlers = useCallback((currentHandlerTags: Set<number>) => {
+    const oldHandlerTags =
+      attachedHandlerTags.current.difference(currentHandlerTags);
+    const newHandlerTags = currentHandlerTags.difference(
+      attachedHandlerTags.current
+    );
+
+    detachHandlers(oldHandlerTags);
+
+    newHandlerTags.forEach((tag) => {
+      RNGestureHandlerModule.attachGestureHandler(
+        tag,
+        viewRef.current,
+        ActionType.NATIVE_DETECTOR,
+        propsRef
       );
-
-      detachHandlers(oldHandlerTags);
-
-      newHandlerTags.forEach((tag) => {
-        RNGestureHandlerModule.attachGestureHandler(
-          tag,
-          viewRef.current,
-          ActionType.NATIVE_DETECTOR,
-          propsRef,
-          dispatchesAnimatedEvents
-        );
-      });
-      attachedHandlerTags.current = currentHandlerTags;
-    },
-    [dispatchesAnimatedEvents]
-  );
+    });
+    attachedHandlerTags.current = currentHandlerTags;
+  }, []);
 
   useEffect(() => {
     attachHandlers(new Set(handlerTags));

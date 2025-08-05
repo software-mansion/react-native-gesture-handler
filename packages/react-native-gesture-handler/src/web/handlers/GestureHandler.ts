@@ -615,8 +615,16 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Handling config
   //
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    this._config = { enabled: enabled, ...props };
+  public updateGestureConfig({
+    enabled = true,
+    dispatchesAnimatedEvents = false,
+    ...props
+  }: Config): void {
+    this._config = {
+      enabled: enabled,
+      dispatchesAnimatedEvents: dispatchesAnimatedEvents,
+      ...props,
+    };
 
     if (this.enabled !== enabled) {
       this.delegate.onEnabledChange(enabled);
@@ -628,6 +636,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
     }
 
+    this.forAnimated = dispatchesAnimatedEvents;
     this.validateHitSlops();
 
     if (this.enabled) {
