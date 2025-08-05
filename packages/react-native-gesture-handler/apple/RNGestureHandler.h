@@ -41,9 +41,10 @@
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
        forAnimated:(BOOL)forAnimated
-     forRecognizer:(UIGestureRecognizer *)recognizer;
+           forView:(nonnull RNGHUIView *)detectorView;
 
-- (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler withPointerType:(NSInteger)pointerType;
+- (void)sendNativeTouchEventForGestureHandler:(nonnull RNGestureHandler *)handler
+                              withPointerType:(NSInteger)pointerType;
 
 @end
 
@@ -100,6 +101,8 @@
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
+- (nonnull RNGHUIView *)findViewForEvents;
+- (BOOL)wantsToAttachDirectlyToView;
 
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
