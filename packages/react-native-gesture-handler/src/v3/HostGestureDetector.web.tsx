@@ -50,7 +50,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
 
   useEffect(() => {
     attachHandlers(new Set(handlerTags));
-  }, [attachHandlers]);
+  }, [handlerTags]);
 
   useEffect(() => {
     return () => {
