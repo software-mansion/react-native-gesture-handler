@@ -4,27 +4,14 @@ import { useTouchEvent } from './events/useTouchEvent';
 import { AnimatedEvent } from '../types';
 import { checkMappingForChangeProperties, isAnimatedEvent } from './utils';
 
-export function useGestureEvent(
-  handlerTag: number,
-  config: any,
-  shouldUseReanimated: boolean
-) {
+export function useGestureEvent(handlerTag: number, config: any) {
   const onGestureHandlerStateChange = useGestureStateChangeEvent(
     handlerTag,
-    config,
-    shouldUseReanimated
+    config
   );
-  const onGestureHandlerEvent = useGestureHandlerEvent(
-    handlerTag,
-    config,
-    shouldUseReanimated
-  );
+  const onGestureHandlerEvent = useGestureHandlerEvent(handlerTag, config);
 
-  const onGestureHandlerTouchEvent = useTouchEvent(
-    handlerTag,
-    config,
-    shouldUseReanimated
-  );
+  const onGestureHandlerTouchEvent = useTouchEvent(handlerTag, config);
 
   let onGestureHandlerAnimatedEvent: AnimatedEvent | undefined;
 

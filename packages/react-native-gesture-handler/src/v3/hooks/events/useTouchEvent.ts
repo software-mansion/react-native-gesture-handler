@@ -10,11 +10,7 @@ import { TouchEventType } from '../../../TouchEventType';
 import { CallbackHandlers, TouchEvent } from '../../types';
 import { NativeSyntheticEvent } from 'react-native';
 
-export function useTouchEvent(
-  handlerTag: number,
-  config: any,
-  shouldUseReanimated: boolean
-) {
+export function useTouchEvent(handlerTag: number, config: any) {
   const handlers: CallbackHandlers = {
     onTouchesDown: config.onTouchesDown,
     onTouchesMove: config.onTouchesMove,
@@ -65,5 +61,7 @@ export function useTouchEvent(
     !!reanimatedHandler?.doDependenciesDiffer
   );
 
-  return shouldUseReanimated ? reanimatedEvent : onGestureHandlerTouchEvent;
+  return config.shouldUseReanimated
+    ? reanimatedEvent
+    : onGestureHandlerTouchEvent;
 }
