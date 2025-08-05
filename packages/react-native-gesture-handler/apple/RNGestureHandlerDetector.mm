@@ -178,10 +178,6 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   for (NSNumber *handlerTag in _nativeHandlersToAttach) {
-    if ([_attachedHandlers containsObject:handlerTag]) {
-      continue;
-    }
-
     [handlerManager.registry attachHandlerWithTag:handlerTag
                                            toView:self.subviews[0]
                                    withActionType:RNGestureHandlerActionTypeNativeDetector];

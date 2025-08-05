@@ -103,10 +103,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in nativeHandlersToAttach) {
-      if (tag in attachedHandlers) {
-        continue
-      }
-
       registry.attachHandlerToView(tag, childId, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
 
       attachedHandlers.add(tag)
