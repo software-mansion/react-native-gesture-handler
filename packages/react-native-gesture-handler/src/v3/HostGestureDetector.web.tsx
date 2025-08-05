@@ -7,13 +7,12 @@ import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
-  dispatchesAnimatedEvents: boolean;
   moduleId: number;
   children?: React.ReactNode;
 }
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
-  const { handlerTags, dispatchesAnimatedEvents, children } = props;
+  const { handlerTags, children } = props;
 
   const viewRef = useRef(null);
   const childRef = useRef(null);
@@ -35,36 +34,32 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
   }, []);
 
-  const attachHandlers = useCallback(
-    (currentHandlerTags: Set<number>) => {
-      const oldHandlerTags =
-        attachedHandlerTags.current.difference(currentHandlerTags);
-      const newHandlerTags = currentHandlerTags.difference(
-        attachedHandlerTags.current
+  const attachHandlers = useCallback((currentHandlerTags: Set<number>) => {
+    const oldHandlerTags =
+      attachedHandlerTags.current.difference(currentHandlerTags);
+    const newHandlerTags = currentHandlerTags.difference(
+      attachedHandlerTags.current
+    );
+
+    detachHandlers(oldHandlerTags);
+
+    newHandlerTags.forEach((tag) => {
+      const attachTarget = shouldAttachGestureToChildView(tag)
+        ? childRef.current
+        : viewRef.current;
+      RNGestureHandlerModule.attachGestureHandler(
+        tag,
+        attachTarget,
+        ActionType.NATIVE_DETECTOR,
+        propsRef
       );
-
-      detachHandlers(oldHandlerTags);
-
-      newHandlerTags.forEach((tag) => {
-        const attachTarget = shouldAttachGestureToChildView(tag)
-          ? childRef.current
-          : viewRef.current;
-        RNGestureHandlerModule.attachGestureHandler(
-          tag,
-          attachTarget,
-          ActionType.NATIVE_DETECTOR,
-          propsRef,
-          dispatchesAnimatedEvents
-        );
-      });
-      attachedHandlerTags.current = currentHandlerTags;
-    },
-    [dispatchesAnimatedEvents]
-  );
+    });
+    attachedHandlerTags.current = currentHandlerTags;
+  }, []);
 
   useEffect(() => {
     attachHandlers(new Set(handlerTags));
-  }, [attachHandlers]);
+  }, [handlerTags]);
 
   useEffect(() => {
     return () => {

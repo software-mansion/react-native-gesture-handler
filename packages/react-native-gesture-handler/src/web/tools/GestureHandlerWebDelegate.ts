@@ -21,7 +21,7 @@ interface DefaultViewStyles {
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
-  private isInitialized = false;
+  public isInitialized = false;
   private _view: HTMLElement | null = null;
 
   private gestureHandler!: IGestureHandler;

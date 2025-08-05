@@ -86,8 +86,7 @@ export function attachHandlers({
         gesture.handlerTag,
         viewTag,
         ActionType.JS_FUNCTION_OLD_API, // Ignored on web
-        webEventHandlersRef,
-        false
+        webEventHandlersRef
       );
     } else {
       RNGestureHandlerModule.attachGestureHandler(

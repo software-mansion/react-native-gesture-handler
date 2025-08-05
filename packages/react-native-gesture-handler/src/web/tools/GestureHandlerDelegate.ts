@@ -8,6 +8,7 @@ export interface MeasureResult {
 }
 
 export interface GestureHandlerDelegate<TComponent, THandler> {
+  isInitialized: boolean;
   view: TComponent;
 
   init(viewRef: number, handler: THandler): void;
