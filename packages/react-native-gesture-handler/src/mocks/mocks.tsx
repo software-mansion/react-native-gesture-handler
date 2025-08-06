@@ -22,6 +22,7 @@ const attachGestureHandler = NOOP;
 const createGestureHandler = NOOP;
 const dropGestureHandler = NOOP;
 const setGestureHandlerConfig = NOOP;
+const updateGestureHandlerConfig = NOOP;
 const flushOperations = NOOP;
 const install = NOOP;
 const NativeViewGestureHandler = View;
@@ -62,6 +63,7 @@ export default {
   createGestureHandler,
   dropGestureHandler,
   setGestureHandlerConfig,
+  updateGestureHandlerConfig,
   flushOperations,
   install,
   // Probably can be removed
