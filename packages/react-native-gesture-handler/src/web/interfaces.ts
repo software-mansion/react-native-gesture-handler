@@ -102,11 +102,12 @@ export interface ResultEvent
   timeStamp: number;
 }
 
+// We need to leave any for v2 compatibility
 export interface PropsRef {
   onGestureHandlerEvent: (e: any) => void;
-  onGestureHandlerAnimatedEvent?: (e: any) => void;
+  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
   onGestureHandlerStateChange: (e: any) => void;
-  onGestureHandlerTouchEvent?: (e: any) => void;
+  onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {
