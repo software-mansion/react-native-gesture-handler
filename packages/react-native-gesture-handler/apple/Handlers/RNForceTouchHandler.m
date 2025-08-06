@@ -153,9 +153,9 @@ static const BOOL defaultFeedbackOnActivation = NO;
   recognizer.minForce = defaultMinForce;
 }
 
-- (void)setConfig:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super setConfig:config];
+  [super updateConfig:config];
   RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
 
   APPLY_FLOAT_PROP(maxForce);
