@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
@@ -17,13 +17,13 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const propsRef = useRef<PropsRef>(props);
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const detachHandlers = useCallback((oldHandlerTags: Set<number>) => {
+  const detachHandlers = (oldHandlerTags: Set<number>) => {
     oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
     });
-  }, []);
+  };
 
-  const attachHandlers = useCallback((currentHandlerTags: Set<number>) => {
+  const attachHandlers = (currentHandlerTags: Set<number>) => {
     const oldHandlerTags =
       attachedHandlerTags.current.difference(currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(
@@ -41,7 +41,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       );
     });
     attachedHandlerTags.current = currentHandlerTags;
-  }, []);
+  };
 
   useEffect(() => {
     attachHandlers(new Set(handlerTags));

@@ -22,7 +22,7 @@ interface DefaultViewStyles {
 export class GestureHandlerWebDelegate
   implements GestureHandlerDelegate<HTMLElement, IGestureHandler>
 {
-  public isInitialized = false;
+  private isInitialized = false;
   private _view: HTMLElement | null = null;
 
   private gestureHandler!: IGestureHandler;
@@ -240,7 +240,12 @@ export class GestureHandlerWebDelegate
 
     return this._view;
   }
+
   public set view(value: HTMLElement) {
     this._view = value;
+  }
+
+  get initialized(): boolean {
+    return this.isInitialized;
   }
 }
