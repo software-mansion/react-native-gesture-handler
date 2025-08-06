@@ -25,14 +25,13 @@ export default class LongPressGestureHandler extends GestureHandler {
   public init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    forAnimated: boolean
+    actionType: ActionType
   ) {
     if (this.config.enableContextMenu === undefined) {
       this.config.enableContextMenu = false;
     }
 
-    super.init(ref, propsRef, actionType, forAnimated);
+    super.init(ref, propsRef, actionType);
   }
 
   protected transformNativeEvent() {

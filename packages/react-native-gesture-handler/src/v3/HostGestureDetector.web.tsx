@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
@@ -23,15 +23,15 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     ).shouldAttachGestureToChildView();
   };
 
-  const detachHandlers = useCallback((oldHandlerTags: Set<number>) => {
+  const detachHandlers = (oldHandlerTags: Set<number>) => {
     oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
       attachedNativeHandlerTags.current.delete(tag);
       attachedHandlerTags.current.delete(tag);
     });
-  }, []);
+  };
 
-  const attachHandlers = useCallback((currentHandlerTags: Set<number>) => {
+  const attachHandlers = (currentHandlerTags: Set<number>) => {
     const oldHandlerTags =
       attachedHandlerTags.current.difference(currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(
@@ -58,7 +58,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       );
     });
     attachedHandlerTags.current = currentHandlerTags;
-  }, []);
+  };
 
   useEffect(() => {
     detachHandlers(attachedNativeHandlerTags.current);
