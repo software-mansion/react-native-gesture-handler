@@ -101,7 +101,12 @@ void decorateRuntime(jsi::Runtime &runtime)
         if (!arguments[0].isObject()) {
           return jsi::Value::null();
         }
+
+#if REACT_NATIVE_MINOR_VERSION >= 81
+        auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(runtime, arguments[0]);
+#else
         auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+#endif
 
         if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
           return jsi::Value(true);
