@@ -71,7 +71,7 @@ export default {
       return;
     }
 
-    NodeManager.getHandler(handlerTag).detach();
+    NodeManager.detachGestureHandler(handlerTag);
   },
   updateGestureHandler(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
