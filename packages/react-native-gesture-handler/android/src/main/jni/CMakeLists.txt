@@ -12,6 +12,7 @@ set(PACKAGE_NAME "gesturehandler")
 set(REACT_ANDROID_DIR "${REACT_NATIVE_DIR}/ReactAndroid")
 
 include(${REACT_ANDROID_DIR}/cmake-utils/folly-flags.cmake)
+add_link_options(-Wl,--build-id=none)
 add_compile_options(${folly_FLAGS})
 
 add_library(${PACKAGE_NAME}
