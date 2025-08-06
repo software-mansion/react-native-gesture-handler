@@ -54,7 +54,7 @@ const sharedValues = new Map<
   { id: number; sharedValue: SharedValue }
 >();
 
-let nextSharedValueID = 0;
+let nextSharedValueListenerID = 0;
 
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig } = RNGestureHandlerModule;
@@ -84,7 +84,7 @@ function maybeExtractSharedValues(config: any, tag: number) {
     }
 
     sharedValues.set(key, {
-      id: nextSharedValueID,
+      id: nextSharedValueListenerID,
       sharedValue: maybeSharedValue,
     });
 
@@ -92,11 +92,11 @@ function maybeExtractSharedValues(config: any, tag: number) {
 
     Reanimated.runOnUI(attachListener)(
       maybeSharedValue,
-      nextSharedValueID,
+      nextSharedValueListenerID,
       key
     );
 
-    nextSharedValueID++;
+    nextSharedValueListenerID++;
   }
 }
 
