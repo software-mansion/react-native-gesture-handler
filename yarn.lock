@@ -3395,9 +3395,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-macos/virtualized-lists@npm:0.78.5":
-  version: 0.78.5
-  resolution: "@react-native-macos/virtualized-lists@npm:0.78.5"
+"@react-native-macos/virtualized-lists@npm:0.78.4":
+  version: 0.78.4
+  resolution: "@react-native-macos/virtualized-lists@npm:0.78.4"
   dependencies:
     invariant: "npm:^2.2.4"
     nullthrows: "npm:^1.1.1"
@@ -3408,7 +3408,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10c0/2d29126318e161508de0ac974c4b192b5f2b152ab89d0aebb1fbeb0ee520835856bac081426c2b2106aef4e80535011e4b5e64f72c8f9376d06c57b77c3c56d3
+  checksum: 10c0/f68a4830738006b4e94a6a9a44fd8337a0af8a5d3443642bb15d99d958f2f5d3d4d8662d6316375bffdb7c7a98f1136cd897cb1103692721173a9b00e361d240
   languageName: node
   linkType: hard
 
@@ -11828,7 +11828,7 @@ __metadata:
     react: "npm:19.0.0"
     react-native: "npm:0.78.0"
     react-native-gesture-handler: "workspace:*"
-    react-native-macos: "npm:^0.78.0-0"
+    react-native-macos: "npm:0.78.4"
     react-native-reanimated: "npm:^3.18.0"
     react-native-safe-area-context: "npm:5.4.0"
     react-native-svg: "npm:15.11.2"
@@ -14472,12 +14472,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-macos@npm:^0.78.0-0":
-  version: 0.78.5
-  resolution: "react-native-macos@npm:0.78.5"
+"react-native-macos@npm:0.78.4":
+  version: 0.78.4
+  resolution: "react-native-macos@npm:0.78.4"
   dependencies:
     "@jest/create-cache-key-function": "npm:^29.6.3"
-    "@react-native-macos/virtualized-lists": "npm:0.78.5"
+    "@react-native-macos/virtualized-lists": "npm:0.78.4"
     "@react-native/assets-registry": "npm:0.78.2"
     "@react-native/codegen": "npm:0.78.2"
     "@react-native/community-cli-plugin": "npm:0.78.2"
@@ -14521,7 +14521,7 @@ __metadata:
       optional: true
   bin:
     react-native: cli.js
-  checksum: 10c0/9559b79faaa72f4a0a8e94c5c7b3f50f34b9c91973ad111c103e03f284f9920c2c596ee5e45f6103bc933490f42f9c2905f8d4267f334533a6f0be834951b13d
+  checksum: 10c0/f8ba97a963ddf6f20da09a6e8838f1682743e1005ab03c2b4a3818f2ee1ef9a9c796483b41281e034e8445fcf7af6c2aa7ef18fad5368b1c54d2981c16878e94
   languageName: node
   linkType: hard
 
