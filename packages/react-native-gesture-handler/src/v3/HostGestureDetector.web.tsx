@@ -17,14 +17,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const shouldAttachGestureToChildView = useCallback(
-    (handlerTag: number): boolean => {
-      return RNGestureHandlerModule.getGestureHandlerNode(
-        handlerTag
-      ).shouldAttachGestureToChildView();
-    },
-    []
-  );
+  const shouldAttachGestureToChildView = (handlerTag: number): boolean => {
+    return RNGestureHandlerModule.getGestureHandlerNode(
+      handlerTag
+    ).shouldAttachGestureToChildView();
+  };
 
   const detachHandlers = useCallback((oldHandlerTags: Set<number>) => {
     oldHandlerTags.forEach((tag) => {
