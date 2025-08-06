@@ -72,8 +72,6 @@ function maybeExtractSharedValues(config: any, tag: number) {
     'worklet';
 
     sharedValue.addListener(id, (value) => {
-      'worklet';
-
       updateGestureHandlerConfig(tag, { [configKey]: value });
     });
   };
