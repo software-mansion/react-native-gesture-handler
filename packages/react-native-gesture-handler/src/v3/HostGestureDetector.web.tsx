@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
+import { View } from 'react-native';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -12,15 +13,20 @@ export interface GestureHandlerDetectorProps extends PropsRef {
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
-  const viewRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<View>(null);
   const propsRef = useRef<PropsRef>(props);
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const shouldAttachGestureToChildView = (handlerTag: number): boolean => {
-    return RNGestureHandlerModule.getGestureHandlerNode(
-      handlerTag
-    ).shouldAttachGestureToChildView();
+  const shouldAttachGestureToChildView = (
+    handlerTag: number,
+    view: unknown
+  ): view is HTMLDivElement => {
+    return (
+      RNGestureHandlerModule.getGestureHandlerNode(
+        handlerTag
+      ).shouldAttachGestureToChildView() && view instanceof HTMLDivElement
+    );
   };
 
   const detachHandlers = (oldHandlerTags: Set<number>) => {
@@ -41,21 +47,22 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     detachHandlers(oldHandlerTags);
 
     newHandlerTags.forEach((tag) => {
-      const shouldAttachToChild = shouldAttachGestureToChildView(tag);
-      const attachTarget = shouldAttachToChild
-        ? viewRef.current!.firstChild
-        : viewRef.current;
-
-      if (shouldAttachToChild) {
+      if (shouldAttachGestureToChildView(tag, viewRef.current)) {
+        RNGestureHandlerModule.attachGestureHandler(
+          tag,
+          viewRef.current.firstChild,
+          ActionType.NATIVE_DETECTOR,
+          propsRef
+        );
         attachedNativeHandlerTags.current.add(tag);
+      } else {
+        RNGestureHandlerModule.attachGestureHandler(
+          tag,
+          viewRef.current,
+          ActionType.NATIVE_DETECTOR,
+          propsRef
+        );
       }
-
-      RNGestureHandlerModule.attachGestureHandler(
-        tag,
-        attachTarget,
-        ActionType.NATIVE_DETECTOR,
-        propsRef
-      );
     });
     attachedHandlerTags.current = currentHandlerTags;
   };
@@ -75,9 +82,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, []);
 
   return (
-    <div style={{ display: 'contents' }} ref={viewRef}>
+    <View style={{ display: 'contents' }} ref={viewRef}>
       {children}
-    </div>
+    </View>
   );
 };
 
