@@ -128,18 +128,26 @@ export class GestureHandlerWebDelegate
   }
 
   private addContextMenuListeners(config: Config): void {
+    if (!this.view) {
+      return;
+    }
+
     if (this.shouldDisableContextMenu(config)) {
-      this.view!.addEventListener('contextmenu', this.disableContextMenu);
+      this.view.addEventListener('contextmenu', this.disableContextMenu);
     } else if (config.enableContextMenu) {
-      this.view!.addEventListener('contextmenu', this.enableContextMenu);
+      this.view.addEventListener('contextmenu', this.enableContextMenu);
     }
   }
 
   private removeContextMenuListeners(config: Config): void {
+    if (!this.view) {
+      return;
+    }
+
     if (this.shouldDisableContextMenu(config)) {
-      this.view!.removeEventListener('contextmenu', this.disableContextMenu);
+      this.view.removeEventListener('contextmenu', this.disableContextMenu);
     } else if (config.enableContextMenu) {
-      this.view!.removeEventListener('contextmenu', this.enableContextMenu);
+      this.view.removeEventListener('contextmenu', this.enableContextMenu);
     }
   }
 
@@ -154,11 +162,15 @@ export class GestureHandlerWebDelegate
   private setUserSelect(isHandlerEnabled: boolean) {
     const { userSelect } = this.gestureHandler.config;
 
-    this.view!.style['userSelect'] = isHandlerEnabled
+    if (!this.view) {
+      return;
+    }
+
+    this.view.style['userSelect'] = isHandlerEnabled
       ? (userSelect ?? 'none')
       : this.defaultViewStyles.userSelect;
 
-    this.view!.style['webkitUserSelect'] = isHandlerEnabled
+    this.view.style['webkitUserSelect'] = isHandlerEnabled
       ? (userSelect ?? 'none')
       : this.defaultViewStyles.userSelect;
   }
@@ -166,12 +178,16 @@ export class GestureHandlerWebDelegate
   private setTouchAction(isHandlerEnabled: boolean) {
     const { touchAction } = this.gestureHandler.config;
 
-    this.view!.style['touchAction'] = isHandlerEnabled
+    if (!this.view) {
+      return;
+    }
+
+    this.view.style['touchAction'] = isHandlerEnabled
       ? (touchAction ?? 'none')
       : this.defaultViewStyles.touchAction;
 
     // @ts-ignore This one disables default events on Safari
-    this.view!.style['WebkitTouchCallout'] = isHandlerEnabled
+    this.view.style['WebkitTouchCallout'] = isHandlerEnabled
       ? (touchAction ?? 'none')
       : this.defaultViewStyles.touchAction;
   }
