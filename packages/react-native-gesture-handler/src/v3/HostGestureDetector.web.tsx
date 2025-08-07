@@ -13,7 +13,7 @@ export interface GestureHandlerDetectorProps extends PropsRef {
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
-  const viewRef = useRef<Node>(null);
+  const viewRef = useRef<Element>(null);
   const propsRef = useRef<PropsRef>(props);
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
