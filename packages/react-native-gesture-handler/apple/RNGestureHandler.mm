@@ -312,6 +312,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
 
   NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
+
   if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
     tag = @(recognizer.view.tag);
   }
@@ -376,17 +377,25 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
+- (RNGHUIView *)findViewForEvents
+{
+  return
+      [self isKindOfClass:[RNNativeViewGestureHandler class]] && _actionType == RNGestureHandlerActionTypeNativeDetector
+      ? self.recognizer.view.superview
+      : self.recognizer.view;
+}
+
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
   [self.emitter sendEvent:event
            withActionType:self.actionType
               forAnimated:_dispatchesAnimatedEvents
-            forRecognizer:self.recognizer];
+                  forView:[self findViewForEvents]];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
-  if (self.actionType == RNGestureHandlerActionTypeNativeDetector) {
+  if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
     [self.emitter sendNativeTouchEventForGestureHandler:self withPointerType:_pointerType];
   } else {
     id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
@@ -404,7 +413,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     [self.emitter sendEvent:event
              withActionType:self.actionType
                 forAnimated:_dispatchesAnimatedEvents
-              forRecognizer:self.recognizer];
+                    forView:self.recognizer.view];
   }
 }
 
@@ -682,6 +691,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return CGRectContainsPoint(hitFrame, location);
   }
   return YES;
+}
+
+- (BOOL)wantsToAttachDirectlyToView
+{
+  return NO;
 }
 
 @end

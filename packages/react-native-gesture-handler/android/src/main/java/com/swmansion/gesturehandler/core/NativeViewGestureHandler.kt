@@ -167,6 +167,8 @@ class NativeViewGestureHandler : GestureHandler() {
     this.hook = defaultHook
   }
 
+  override fun wantsToAttachDirectlyToView() = true
+
   class Factory : GestureHandler.Factory<NativeViewGestureHandler>() {
     override val type = NativeViewGestureHandler::class.java
     override val name = "NativeViewGestureHandler"
