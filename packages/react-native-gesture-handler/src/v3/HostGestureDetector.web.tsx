@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { Ref, useEffect, useRef } from 'react';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
@@ -13,19 +13,16 @@ export interface GestureHandlerDetectorProps extends PropsRef {
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
-  const viewRef = useRef<View>(null);
+  const viewRef = useRef<Node>(null);
   const propsRef = useRef<PropsRef>(props);
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const shouldAttachGestureToChildView = (
-    handlerTag: number,
-    view: unknown
-  ): view is HTMLDivElement => {
+  const shouldAttachGestureToChildView = (handlerTag: number): boolean => {
     return (
       RNGestureHandlerModule.getGestureHandlerNode(
         handlerTag
-      ).shouldAttachGestureToChildView() && view instanceof HTMLDivElement
+      ).shouldAttachGestureToChildView() && !!viewRef.current?.firstChild
     );
   };
 
@@ -47,10 +44,10 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     detachHandlers(oldHandlerTags);
 
     newHandlerTags.forEach((tag) => {
-      if (shouldAttachGestureToChildView(tag, viewRef.current)) {
+      if (shouldAttachGestureToChildView(tag)) {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
-          viewRef.current.firstChild,
+          viewRef.current!.firstChild,
           ActionType.NATIVE_DETECTOR,
           propsRef
         );
@@ -82,7 +79,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, []);
 
   return (
-    <View style={{ display: 'contents' }} ref={viewRef}>
+    <View style={{ display: 'contents' }} ref={viewRef as Ref<View>}>
       {children}
     </View>
   );
