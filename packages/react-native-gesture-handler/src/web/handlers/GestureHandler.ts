@@ -585,7 +585,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
   }
 
-  protected ensurePropsRef(): void {
+  private ensurePropsRef(): void {
     if (!this.propsRef) {
       throw new Error(
         tagMessage('Cannot handle event when component props are null')
@@ -616,8 +616,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     ...props
   }: Config): void {
     this._config = {
-      enabled: enabled,
-      dispatchesAnimatedEvents: dispatchesAnimatedEvents,
+      enabled,
+      dispatchesAnimatedEvents,
       ...props,
     };
 
