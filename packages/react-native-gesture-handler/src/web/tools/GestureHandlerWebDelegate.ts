@@ -65,7 +65,6 @@ export class GestureHandlerWebDelegate
   }
 
   detach(): void {
-    this._view = null;
     this.defaultViewStyles = {
       userSelect: '',
       touchAction: '',
@@ -75,6 +74,7 @@ export class GestureHandlerWebDelegate
       manager.unregisterListeners();
     });
     this.removeContextMenuListeners(this.gestureHandler.config);
+    this._view = null;
     this.eventManagers = [];
   }
 
