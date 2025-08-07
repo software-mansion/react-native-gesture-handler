@@ -7,6 +7,7 @@ export interface GestureStateManagerType {
   activate: () => void;
   fail: () => void;
   end: () => void;
+  handlerTag: number;
 }
 
 const warningMessage = tagMessage(
@@ -21,6 +22,7 @@ const setGestureState = Reanimated?.setGestureState;
 function create(handlerTag: number): GestureStateManagerType {
   'worklet';
   return {
+    handlerTag,
     begin: () => {
       'worklet';
       if (REANIMATED_AVAILABLE) {
