@@ -1,5 +1,5 @@
 import React from 'react';
-import { NativeGesture } from './hooks/useGesture';
+import { NativeGesture } from './types';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 
 import { Animated, StyleSheet } from 'react-native';
@@ -49,7 +49,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         gesture.gestureEvents.onGestureHandlerTouchEvent
       }
       moduleId={globalThis._RNGH_MODULE_ID}
-      handlerTags={[gesture.tag]}
+      handlerTags={gesture.tag}
       style={styles.detector}>
       {children}
     </NativeDetectorComponent>

@@ -48,3 +48,28 @@ export type CallbackHandlers = Omit<
 export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping?: unknown;
 };
+
+export type GestureType =
+  | 'TapGestureHandler'
+  | 'LongPressGestureHandler'
+  | 'PanGestureHandler'
+  | 'PinchGestureHandler'
+  | 'RotationGestureHandler'
+  | 'FlingGestureHandler'
+  | 'ForceTouchGestureHandler'
+  | 'ManualGestureHandler'
+  | 'NativeViewGestureHandler';
+
+export type GestureEvents = {
+  onGestureHandlerStateChange: (event: any) => void;
+  onGestureHandlerEvent: undefined | ((event: any) => void);
+  onGestureHandlerTouchEvent: (event: any) => void;
+  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
+};
+
+export interface NativeGesture {
+  tag: number[];
+  name: GestureType;
+  config: Record<string, unknown>;
+  gestureEvents: GestureEvents;
+}
