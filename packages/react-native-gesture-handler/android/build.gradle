@@ -146,7 +146,6 @@ android {
         targetSdkVersion safeExtGet('targetSdkVersion', 33)
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
-        var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
         externalNativeBuild {
             cmake {
                 cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
