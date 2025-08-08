@@ -1,6 +1,7 @@
 package com.swmansion.gesturehandler.react
 
 import android.content.Context
+import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -12,9 +13,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
   private var handlersToAttach: List<Int>? = null
-  private var attachedHandlers = listOf<Int>()
+  private var nativeHandlersToAttach: MutableSet<Int> = mutableSetOf()
+  private var attachedHandlers: MutableSet<Int> = mutableSetOf()
   private var moduleId: Int = -1
-  private var dispatchesAnimatedEvents: Boolean = false
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
@@ -36,8 +37,24 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     handlersToAttach = null
   }
 
-  fun setDispatchesAnimatedEvents(dispatchesAnimatedEvents: Boolean) {
-    this.dispatchesAnimatedEvents = dispatchesAnimatedEvents
+  private fun shouldAttachGestureToChildView(tag: Int): Boolean {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    return registry.getHandler(tag)?.wantsToAttachDirectlyToView() ?: false
+  }
+
+  // We override this `addView` because it is called inside `addView(child: View?, index: Int)`
+  override fun addView(child: View, index: Int, params: LayoutParams?) {
+    super.addView(child, index, params)
+
+    tryAttachHandlerToChildView(child.id)
+  }
+
+  override fun removeViewAt(index: Int) {
+    detachNativeGestureHandlers()
+
+    super.removeViewAt(index)
   }
 
   private fun attachHandlers(newHandlers: List<Int>) {
@@ -55,19 +72,53 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
 
     for (entry in changes) {
+      val tag = entry.key
+
       if (entry.value == GestureHandlerMutation.Attach) {
-        // TODO: Attach to the child when attached gesture is a NativeGestureHandler, track children changes then
-        registry.attachHandlerToView(
-          entry.key,
-          this.id,
-          if (dispatchesAnimatedEvents) {
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
-          } else {
-            GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
-          },
-        )
+        // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
+        // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
+        if (shouldAttachGestureToChildView(tag)) {
+          nativeHandlersToAttach.add(tag)
+        } else {
+          registry.attachHandlerToView(tag, this.id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
+
+          attachedHandlers.add(tag)
+        }
       } else if (entry.value == GestureHandlerMutation.Detach) {
-        registry.detachHandler(entry.key)
+        registry.detachHandler(tag)
+        attachedHandlers.remove(tag)
+      }
+    }
+
+    // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
+    val child = getChildAt(0)
+
+    if (child != null) {
+      tryAttachHandlerToChildView(child.id)
+    }
+  }
+
+  private fun tryAttachHandlerToChildView(childId: Int) {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    for (tag in nativeHandlersToAttach) {
+      registry.attachHandlerToView(tag, childId, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
+
+      attachedHandlers.add(tag)
+    }
+
+    nativeHandlersToAttach.clear()
+  }
+
+  private fun detachNativeGestureHandlers() {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    for (tag in attachedHandlers) {
+      if (shouldAttachGestureToChildView(tag)) {
+        registry.detachHandler(tag)
+        attachedHandlers.remove(tag)
       }
     }
   }

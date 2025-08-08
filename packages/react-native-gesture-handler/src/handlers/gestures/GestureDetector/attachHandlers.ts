@@ -8,20 +8,21 @@ import { ActionType } from '../../../ActionType';
 import { Platform } from 'react-native';
 import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
 import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
-import { AttachedGestureState, WebEventHandler } from './types';
+import { AttachedGestureState } from './types';
 import {
   extractGestureRelations,
   checkGestureCallbacksForWorklets,
   ALLOWED_PROPS,
 } from './utils';
 import { MountRegistry } from '../../../mountRegistry';
+import { PropsRef } from '../../../web/interfaces';
 
 interface AttachHandlersConfig {
   preparedGesture: AttachedGestureState;
   gestureConfig: ComposedGesture | GestureType;
   gesturesToAttach: GestureType[];
   viewTag: number;
-  webEventHandlersRef: React.RefObject<WebEventHandler>;
+  webEventHandlersRef: React.RefObject<PropsRef>;
 }
 
 export function attachHandlers({

@@ -3,7 +3,7 @@ import { NativeGesture } from './hooks/useGesture';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 
 import { Animated, StyleSheet } from 'react-native';
-import RNGestureHandlerDetectorNativeComponent from '../specs/RNGestureHandlerDetectorNativeComponent';
+import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
 
 export interface NativeDetectorProps {
@@ -11,20 +11,19 @@ export interface NativeDetectorProps {
   gesture: NativeGesture;
 }
 
-const AnimatedNativeDetector = Animated.createAnimatedComponent(
-  RNGestureHandlerDetectorNativeComponent
-);
+const AnimatedNativeDetector =
+  Animated.createAnimatedComponent(HostGestureDetector);
 
-const ReanimatedNativeDetector = Reanimated?.default.createAnimatedComponent(
-  RNGestureHandlerDetectorNativeComponent
-);
+const ReanimatedNativeDetector =
+  Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
-  const NativeDetectorComponent = gesture.dispatchesAnimatedEvents
+  const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : gesture.shouldUseReanimated
+    : // TODO: Remove this cast when we properly type config
+      (gesture.config.shouldUseReanimated as boolean)
       ? ReanimatedNativeDetector
-      : RNGestureHandlerDetectorNativeComponent;
+      : HostGestureDetector;
 
   // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
@@ -47,7 +46,6 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       onGestureHandlerTouchEvent={
         gesture.gestureEvents.onGestureHandlerTouchEvent
       }
-      dispatchesAnimatedEvents={gesture.dispatchesAnimatedEvents}
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={[gesture.tag]}
       style={styles.detector}>

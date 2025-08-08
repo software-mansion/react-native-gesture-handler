@@ -224,6 +224,11 @@
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
 }
 
+- (BOOL)wantsToAttachDirectlyToView
+{
+  return YES;
+}
+
 #else
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer

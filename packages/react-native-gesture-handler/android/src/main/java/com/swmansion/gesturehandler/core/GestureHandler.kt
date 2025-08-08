@@ -18,6 +18,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
+import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
@@ -30,6 +31,22 @@ open class GestureHandler {
   var tag = 0
   var view: View? = null
     private set
+  val viewForEvents: RNGestureHandlerDetectorView
+    get() {
+      assert(actionType == ACTION_TYPE_NATIVE_DETECTOR) {
+        "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
+      }
+
+      val detector = if (this is NativeViewGestureHandler) this.view?.parent else view
+
+      if (detector !is RNGestureHandlerDetectorView) {
+        throw Error(
+          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event.",
+        )
+      }
+
+      return detector
+    }
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -62,6 +79,7 @@ open class GestureHandler {
     private set
   private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
   var needsPointerData = false
+  var dispatchesAnimatedEvents = false
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -822,6 +840,8 @@ open class GestureHandler {
     }
   }
 
+  open fun wantsToAttachDirectlyToView() = false
+
   override fun toString(): String {
     val viewString = if (view == null) null else view!!.javaClass.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
@@ -859,6 +879,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
         handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
       }
+      if (config.hasKey(KEY_DISPATCHES_ANIMATED_EVENTS)) {
+        handler.dispatchesAnimatedEvents = config.getBoolean(KEY_DISPATCHES_ANIMATED_EVENTS)
+      }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.manualActivation = config.getBoolean(KEY_MANUAL_ACTIVATION)
       }
@@ -873,6 +896,7 @@ open class GestureHandler {
       private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
       private const val KEY_ENABLED = "enabled"
       private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
+      private const val KEY_DISPATCHES_ANIMATED_EVENTS = "dispatchesAnimatedEvents"
       private const val KEY_MANUAL_ACTIVATION = "manualActivation"
       private const val KEY_MOUSE_BUTTON = "mouseButton"
       private const val KEY_HIT_SLOP = "hitSlop"
@@ -968,7 +992,6 @@ open class GestureHandler {
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     const val ACTION_TYPE_NATIVE_DETECTOR = 5
-    const val ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT = 6
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2

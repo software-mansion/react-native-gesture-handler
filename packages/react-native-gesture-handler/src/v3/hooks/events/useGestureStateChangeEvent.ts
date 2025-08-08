@@ -8,11 +8,7 @@ import { State } from '../../../State';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
 
-export function useGestureStateChangeEvent(
-  handlerTag: number,
-  config: any,
-  shouldUseReanimated: boolean
-) {
+export function useGestureStateChangeEvent(handlerTag: number, config: any) {
   const handlers: CallbackHandlers = {
     onBegin: config.onBegin,
     onStart: config.onStart,
@@ -76,5 +72,7 @@ export function useGestureStateChangeEvent(
     !!reanimatedHandler?.doDependenciesDiffer
   );
 
-  return shouldUseReanimated ? reanimatedEvent : onGestureHandlerStateChange;
+  return config.shouldUseReanimated
+    ? reanimatedEvent
+    : onGestureHandlerStateChange;
 }
