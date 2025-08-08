@@ -405,6 +405,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
     if (this.state === State.ACTIVE) {
+      (resultEvent.nativeEvent as { oldState?: any }).oldState = undefined;
       if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
@@ -421,7 +422,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         nativeEvent: {
           state: newState,
           handlerTag: this.handlerTag,
-          oldState: oldState,
+          oldState: newState !== oldState ? oldState : undefined,
           handlerData: {
             pointerType: this.pointerType,
             numberOfPointers: this.tracker.trackedPointersCount,
