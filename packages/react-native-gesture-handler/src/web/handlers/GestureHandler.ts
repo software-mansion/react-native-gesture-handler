@@ -405,7 +405,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
     if (this.state === State.ACTIVE) {
-      (resultEvent.nativeEvent as { oldState?: any }).oldState = undefined;
+      if ('oldState' in resultEvent.nativeEvent) {
+        (resultEvent.nativeEvent as { oldState?: any }).oldState = undefined;
+      }
       if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
@@ -435,23 +437,22 @@ export default abstract class GestureHandler implements IGestureHandler {
         } as StateChangeEvent<unknown> | UpdateEvent<unknown>,
         timeStamp: Date.now(),
       };
-    } else {
-      return {
-        nativeEvent: {
-          numberOfPointers: this.tracker.trackedPointersCount,
-          state: newState,
-          pointerInside: this.delegate.isPointerInBounds(
-            this.tracker.getAbsoluteCoordsAverage()
-          ),
-          ...this.transformNativeEvent(),
-          handlerTag: this.handlerTag,
-          target: this.viewRef,
-          oldState: newState !== oldState ? oldState : undefined,
-          pointerType: this.pointerType,
-        },
-        timeStamp: Date.now(),
-      };
     }
+    return {
+      nativeEvent: {
+        numberOfPointers: this.tracker.trackedPointersCount,
+        state: newState,
+        pointerInside: this.delegate.isPointerInBounds(
+          this.tracker.getAbsoluteCoordsAverage()
+        ),
+        ...this.transformNativeEvent(),
+        handlerTag: this.handlerTag,
+        target: this.viewRef,
+        oldState: newState !== oldState ? oldState : undefined,
+        pointerType: this.pointerType,
+      },
+      timeStamp: Date.now(),
+    };
   }
 
   private transformTouchEvent(event: AdaptedEvent): ResultEvent | undefined {
