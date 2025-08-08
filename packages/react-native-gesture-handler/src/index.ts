@@ -166,5 +166,8 @@ export type { NativeDetectorProps } from './v3/NativeDetector';
 export { NativeDetector } from './v3/NativeDetector';
 
 export * from './v3/hooks/useGesture';
+export * from './v3/hooks/relations/useSimultaneous';
+export * from './v3/hooks/relations/useExclusive';
+export * from './v3/hooks/relations/useRace';
 
 initialize();
