@@ -416,23 +416,41 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (!this.viewRef) {
       throw new Error(tagMessage('Cannot handle event when target is null'));
     }
-    return {
-      nativeEvent: {
-        state: newState,
-        handlerTag: this.handlerTag,
-        oldState: oldState,
-        handlerData: {
-          pointerType: this.pointerType,
+    if (this.actionType === ActionType.NATIVE_DETECTOR) {
+      return {
+        nativeEvent: {
+          state: newState,
+          handlerTag: this.handlerTag,
+          oldState: oldState,
+          handlerData: {
+            pointerType: this.pointerType,
+            numberOfPointers: this.tracker.trackedPointersCount,
+            pointerInside: this.delegate.isPointerInBounds(
+              this.tracker.getAbsoluteCoordsAverage()
+            ),
+            ...this.transformNativeEvent(),
+            target: this.viewRef,
+          },
+        } as StateChangeEvent<unknown> | UpdateEvent<unknown>,
+        timeStamp: Date.now(),
+      };
+    } else {
+      return {
+        nativeEvent: {
           numberOfPointers: this.tracker.trackedPointersCount,
+          state: newState,
           pointerInside: this.delegate.isPointerInBounds(
             this.tracker.getAbsoluteCoordsAverage()
           ),
           ...this.transformNativeEvent(),
+          handlerTag: this.handlerTag,
           target: this.viewRef,
+          oldState: newState !== oldState ? oldState : undefined,
+          pointerType: this.pointerType,
         },
-      } as StateChangeEvent<unknown> | UpdateEvent<unknown>,
-      timeStamp: Date.now(),
-    };
+        timeStamp: Date.now(),
+      };
+    }
   }
 
   private transformTouchEvent(event: AdaptedEvent): ResultEvent | undefined {

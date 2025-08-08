@@ -8,6 +8,7 @@ import {
 import { Directions } from '../Directions';
 import { PointerType } from '../PointerType';
 import { GestureHandlerEvent } from '../v3/types';
+import { State } from '../State';
 
 export interface HitSlop {
   left?: number;
@@ -83,6 +84,17 @@ export interface Config extends Record<string, ConfigArgs> {
   enableTrackpadTwoFingerGesture?: boolean;
 }
 
+type NativeEventArgs = number | State | boolean | undefined;
+interface NativeEvent extends Record<string, NativeEventArgs> {
+  numberOfPointers: number;
+  state: State;
+  pointerInside: boolean | undefined;
+  handlerTag: number;
+  target: number;
+  oldState?: State;
+  pointerType: PointerType;
+}
+
 export interface Point {
   x: number;
   y: number;
@@ -96,9 +108,10 @@ export interface PointerData {
   absoluteY: number;
 }
 
-export interface ResultEvent
-  extends Record<string, GestureHandlerEvent<unknown> | number> {
-  nativeEvent: GestureHandlerEvent<unknown>;
+// Native event has to stay for v2 compatibility
+type ResultEventType = GestureHandlerEvent<unknown> | NativeEvent;
+export interface ResultEvent extends Record<string, ResultEventType | number> {
+  nativeEvent: ResultEventType;
   timeStamp: number;
 }
 
