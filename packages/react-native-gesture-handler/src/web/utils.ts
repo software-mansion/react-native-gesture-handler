@@ -1,4 +1,5 @@
 import { PointerType } from '../PointerType';
+import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import type {
   GestureHandlerRef,
   Point,
@@ -290,4 +291,10 @@ export function isRNSVGNode(node: any) {
     Object.getPrototypeOf(node?.type)?.name === 'WebShape' ||
     RNSVGElements.has(node?.type?.displayName)
   );
+}
+
+export function shouldAttachGestureToChildView(handlerTag: number): boolean {
+  return RNGestureHandlerModule.getGestureHandlerNode(
+    handlerTag
+  ).shouldAttachGestureToChildView();
 }
