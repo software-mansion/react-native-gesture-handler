@@ -42,6 +42,14 @@ export default abstract class NodeManager {
     delete this.gestures[handlerTag];
   }
 
+  public static detachGestureHandler(handlerTag: number): void {
+    if (!(handlerTag in this.gestures)) {
+      return;
+    }
+
+    this.gestures[handlerTag].detach();
+  }
+
   public static get nodes() {
     return { ...this.gestures };
   }

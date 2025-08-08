@@ -1,11 +1,12 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
   ScaleGestureListener,
 } from '../detectors/ScaleGestureDetector';
+import { ActionType } from '../../ActionType';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;
@@ -48,8 +49,12 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleDetectorListener
   );
 
-  public init(ref: number, propsRef: React.RefObject<unknown>) {
-    super.init(ref, propsRef);
+  public init(
+    ref: number,
+    propsRef: React.RefObject<PropsRef>,
+    actionType: ActionType
+  ) {
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = false;
   }
