@@ -2,7 +2,7 @@ import { NativeGesture } from '../../types';
 import { useComposedGesture } from './useComposedGesture';
 
 export function useSimultaneous(...gestures: NativeGesture[]) {
-  const g = useComposedGesture(...gestures);
+  const composedGesture = useComposedGesture(...gestures);
 
   const tags = gestures.flatMap((gesture) => gesture.tag);
 
@@ -14,5 +14,7 @@ export function useSimultaneous(...gestures: NativeGesture[]) {
     gesture.config.simultaneousHandlers = simultaneousHandlersTags;
   }
 
-  return g;
+  composedGesture.name = 'SimultaneousGesture';
+
+  return composedGesture;
 }

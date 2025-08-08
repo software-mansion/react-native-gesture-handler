@@ -2,7 +2,7 @@ import { NativeGesture } from '../../types';
 import { useComposedGesture } from './useComposedGesture';
 
 export function useExclusive(...gestures: NativeGesture[]) {
-  const g = useComposedGesture(...gestures);
+  const composedGesture = useComposedGesture(...gestures);
 
   const tags = gestures.flatMap((gesture) => gesture.tag);
 
@@ -10,5 +10,7 @@ export function useExclusive(...gestures: NativeGesture[]) {
     gestures[i].config.waitFor = tags.slice(0, i);
   }
 
-  return g;
+  composedGesture.name = 'ExclusiveGesture';
+
+  return composedGesture;
 }

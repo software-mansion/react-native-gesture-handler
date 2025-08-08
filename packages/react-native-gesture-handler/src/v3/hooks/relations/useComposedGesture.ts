@@ -1,23 +1,25 @@
-import { NativeGesture } from '../../types';
+import {
+  NativeGesture,
+  StateChangeEvent,
+  UpdateEvent,
+  TouchEvent,
+} from '../../types';
 
 export function useComposedGesture(...gestures: NativeGesture[]) {
   const tags = gestures.flatMap((gesture) => gesture.tag);
+
   const config = {
     shouldUseReanimated: gestures.some(
       (gesture) => gesture.config.shouldUseReanimated
     ),
-    needsPointerData: gestures.some(
-      (gesture) => gesture.config.needsPointerData
-    ),
     dispatchesAnimatedEvents: gestures.some(
       (gesture) => gesture.config.dispatchesAnimatedEvents
     ),
-    disableReanimated: gestures.some(
-      (gesture) => gesture.config.disableReanimated
-    ),
   };
 
-  const onGestureHandlerStateChange = (event: any) => {
+  const onGestureHandlerStateChange = (
+    event: StateChangeEvent<Record<string, unknown>>
+  ) => {
     for (const gesture of gestures) {
       if (gesture.gestureEvents.onGestureHandlerStateChange) {
         gesture.gestureEvents.onGestureHandlerStateChange(event);
@@ -25,7 +27,9 @@ export function useComposedGesture(...gestures: NativeGesture[]) {
     }
   };
 
-  const onGestureHandlerEvent = (event: any) => {
+  const onGestureHandlerEvent = (
+    event: UpdateEvent<Record<string, unknown>>
+  ) => {
     for (const gesture of gestures) {
       if (gesture.gestureEvents.onGestureHandlerEvent) {
         gesture.gestureEvents.onGestureHandlerEvent(event);
@@ -33,7 +37,7 @@ export function useComposedGesture(...gestures: NativeGesture[]) {
     }
   };
 
-  const onGestureHandlerTouchEvent = (event: any) => {
+  const onGestureHandlerTouchEvent = (event: TouchEvent) => {
     for (const gesture of gestures) {
       if (gesture.gestureEvents.onGestureHandlerTouchEvent) {
         gesture.gestureEvents.onGestureHandlerTouchEvent(event);
