@@ -33,7 +33,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
-  private forAnimated: boolean | null = null;
+  private forAnimated: boolean = false;
   private _handlerTag!: number;
   private _config: Config = { enabled: false };
 
@@ -82,7 +82,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
-    this.forAnimated = null;
+    this.forAnimated = false;
 
     this.delegate.detach();
   }
@@ -589,7 +589,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
   }
 
-  protected ensurePropsRef(): void {
+  private ensurePropsRef(): void {
     if (!this.propsRef) {
       throw new Error(
         tagMessage('Cannot handle event when component props are null')
@@ -620,8 +620,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     ...props
   }: Config): void {
     this._config = {
-      enabled: enabled,
-      dispatchesAnimatedEvents: dispatchesAnimatedEvents,
+      enabled,
+      dispatchesAnimatedEvents,
       ...props,
     };
 

@@ -8,8 +8,7 @@ export interface MeasureResult {
 }
 
 export interface GestureHandlerDelegate<TComponent, THandler> {
-  readonly initialized: boolean;
-  view: TComponent;
+  view: TComponent | null;
 
   init(viewRef: number, handler: THandler): void;
   detach(): void;
