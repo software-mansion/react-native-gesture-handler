@@ -85,7 +85,8 @@ export interface Config extends Record<string, ConfigArgs> {
 }
 
 type NativeEventArgs = number | State | boolean | undefined;
-interface NativeEvent extends Record<string, NativeEventArgs> {
+export interface GestureHandlerNativeEvent
+  extends Record<string, NativeEventArgs> {
   numberOfPointers: number;
   state: State;
   pointerInside: boolean | undefined;
@@ -109,7 +110,7 @@ export interface PointerData {
 }
 
 // Native event has to stay for v2 compatibility
-type ResultEventType = GestureHandlerEvent<unknown> | NativeEvent;
+type ResultEventType = GestureHandlerEvent<unknown> | GestureHandlerNativeEvent;
 export interface ResultEvent extends Record<string, ResultEventType | number> {
   nativeEvent: ResultEventType;
   timeStamp: number;
