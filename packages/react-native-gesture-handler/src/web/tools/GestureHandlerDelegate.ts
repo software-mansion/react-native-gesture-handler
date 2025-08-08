@@ -8,9 +8,10 @@ export interface MeasureResult {
 }
 
 export interface GestureHandlerDelegate<TComponent, THandler> {
-  view: TComponent;
+  view: TComponent | null;
 
   init(viewRef: number, handler: THandler): void;
+  detach(): void;
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean;
   measureView(): MeasureResult;
   reset(): void;

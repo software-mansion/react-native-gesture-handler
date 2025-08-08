@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { ActionType } from './ActionType';
 import { Gestures } from './web/Gestures';
-import type { Config } from './web/interfaces';
+import type { Config, PropsRef } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
 import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
@@ -47,8 +47,8 @@ export default {
     handlerTag: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newView: any,
-    _actionType: ActionType,
-    propsRef: React.RefObject<unknown>
+    actionType: ActionType,
+    propsRef: React.RefObject<PropsRef>
   ) {
     if (!(newView instanceof Element || newView instanceof React.Component)) {
       shouldPreventDrop = true;
@@ -63,7 +63,15 @@ export default {
     }
 
     // @ts-ignore Types should be HTMLElement or React.Component
-    NodeManager.getHandler(handlerTag).init(newView, propsRef);
+    NodeManager.getHandler(handlerTag).init(newView, propsRef, actionType);
+  },
+  detachGestureHandler(handlerTag: number) {
+    if (shouldPreventDrop) {
+      shouldPreventDrop = false;
+      return;
+    }
+
+    NodeManager.detachGestureHandler(handlerTag);
   },
   setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
@@ -81,6 +89,7 @@ export default {
   },
   dropGestureHandler(handlerTag: number) {
     if (shouldPreventDrop) {
+      shouldPreventDrop = false;
       return;
     }
 
