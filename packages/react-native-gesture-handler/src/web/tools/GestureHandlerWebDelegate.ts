@@ -251,7 +251,7 @@ export class GestureHandlerWebDelegate
 
   private ensureView(view: any): asserts view is HTMLElement {
     if (!view) {
-      throw new Error(tagMessage('View is null, gesture is not attached'));
+      throw new Error(tagMessage('Expected delegate view to be HTMLElement'));
     }
   }
 
