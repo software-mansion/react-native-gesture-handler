@@ -1,6 +1,7 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config, StylusData, WheelDevice } from '../interfaces';
+import { AdaptedEvent, Config, WheelDevice } from '../interfaces';
+import { StylusData } from '../../handlers/gestureHandlerCommon';
 
 import GestureHandler from './GestureHandler';
 

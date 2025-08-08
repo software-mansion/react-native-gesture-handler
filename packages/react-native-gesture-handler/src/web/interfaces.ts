@@ -3,10 +3,12 @@ import {
   ActiveCursor,
   MouseButton,
   TouchAction,
+  StylusData,
 } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
-import { State } from '../State';
 import { PointerType } from '../PointerType';
+import { GestureHandlerEvent } from '../v3/types';
+import { State } from '../State';
 
 export interface HitSlop {
   left?: number;
@@ -106,42 +108,19 @@ export interface PointerData {
   absoluteY: number;
 }
 
-type TouchNativeArgs = number | State | TouchEventType | PointerData[];
-
-interface NativeTouchEvent extends Record<string, TouchNativeArgs> {
-  handlerTag: number;
-  state: State;
-  eventType: TouchEventType;
-  changedTouches: PointerData[];
-  allTouches: PointerData[];
-  numberOfTouches: number;
-  pointerType: PointerType;
-}
-
-export interface ResultEvent extends Record<string, NativeEvent | number> {
-  nativeEvent: NativeEvent;
+// Native event has to stay for v2 compatibility
+type ResultEventType = GestureHandlerEvent<unknown> | NativeEvent;
+export interface ResultEvent extends Record<string, ResultEventType | number> {
+  nativeEvent: ResultEventType;
   timeStamp: number;
 }
 
-export interface ResultTouchEvent
-  extends Record<string, NativeTouchEvent | number> {
-  nativeEvent: NativeTouchEvent;
-  timeStamp: number;
-}
-
+// We need to leave any for v2 compatibility
 export interface PropsRef {
   onGestureHandlerEvent: (e: any) => void;
-  onGestureHandlerAnimatedEvent?: (e: any) => void;
+  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
   onGestureHandlerStateChange: (e: any) => void;
-  onGestureHandlerTouchEvent?: (e: any) => void;
-}
-
-export interface StylusData {
-  tiltX: number;
-  tiltY: number;
-  azimuthAngle: number;
-  altitudeAngle: number;
-  pressure: number;
+  onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {

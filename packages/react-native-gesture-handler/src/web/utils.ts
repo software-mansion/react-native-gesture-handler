@@ -1,10 +1,6 @@
 import { PointerType } from '../PointerType';
-import type {
-  GestureHandlerRef,
-  Point,
-  StylusData,
-  SVGRef,
-} from './interfaces';
+import type { GestureHandlerRef, Point, SVGRef } from './interfaces';
+import { StylusData } from '../handlers/gestureHandlerCommon';
 
 export function isPointerInBounds(view: HTMLElement, { x, y }: Point): boolean {
   const rect: DOMRect = view.getBoundingClientRect();

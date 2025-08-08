@@ -165,6 +165,14 @@ export type GestureTouchEvent = {
   pointerType: PointerType;
 };
 
+export interface StylusData {
+  tiltX: number;
+  tiltY: number;
+  azimuthAngle: number;
+  altitudeAngle: number;
+  pressure: number;
+}
+
 export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
   GestureEventPayload & GestureEventPayloadT;
 

@@ -1,7 +1,8 @@
 import { State } from '../../State';
-import { AdaptedEvent, StylusData } from '../interfaces';
+import { AdaptedEvent } from '../interfaces';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import GestureHandler from './GestureHandler';
+import { StylusData } from '../../handlers/gestureHandlerCommon';
 
 export default class HoverGestureHandler extends GestureHandler {
   private stylusData: StylusData | undefined;

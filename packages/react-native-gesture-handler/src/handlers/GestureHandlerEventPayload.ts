@@ -1,4 +1,4 @@
-import { StylusData } from '../web/interfaces';
+import { StylusData } from './gestureHandlerCommon';
 
 export type FlingGestureHandlerEventPayload = {
   x: number;

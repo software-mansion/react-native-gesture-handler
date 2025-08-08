@@ -6,7 +6,6 @@ import {
   PropsRef,
   ResultEvent,
   PointerData,
-  ResultTouchEvent,
   TouchEventType,
   EventTypes,
 } from '../interfaces';
@@ -20,6 +19,7 @@ import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
+import { StateChangeEvent, UpdateEvent } from '../../v3/types';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -365,8 +365,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
       this.propsRef!.current;
 
-    const touchEvent: ResultTouchEvent | undefined =
-      this.transformTouchEvent(event);
+    const touchEvent: ResultEvent | undefined = this.transformTouchEvent(event);
 
     if (touchEvent) {
       if (
@@ -406,7 +405,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
     if (this.state === State.ACTIVE) {
-      resultEvent.nativeEvent.oldState = undefined;
+      if ('oldState' in resultEvent.nativeEvent) {
+        (resultEvent.nativeEvent as { oldState?: any }).oldState = undefined;
+      }
       if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
@@ -417,6 +418,25 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformEventData(newState: State, oldState: State): ResultEvent {
     if (!this.viewRef) {
       throw new Error(tagMessage('Cannot handle event when target is null'));
+    }
+    if (this.actionType === ActionType.NATIVE_DETECTOR) {
+      return {
+        nativeEvent: {
+          state: newState,
+          handlerTag: this.handlerTag,
+          oldState: newState !== oldState ? oldState : undefined,
+          handlerData: {
+            pointerType: this.pointerType,
+            numberOfPointers: this.tracker.trackedPointersCount,
+            pointerInside: this.delegate.isPointerInBounds(
+              this.tracker.getAbsoluteCoordsAverage()
+            ),
+            ...this.transformNativeEvent(),
+            target: this.viewRef,
+          },
+        } as StateChangeEvent<unknown> | UpdateEvent<unknown>,
+        timeStamp: Date.now(),
+      };
     }
     return {
       nativeEvent: {
@@ -435,9 +455,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
-  private transformTouchEvent(
-    event: AdaptedEvent
-  ): ResultTouchEvent | undefined {
+  private transformTouchEvent(event: AdaptedEvent): ResultEvent | undefined {
     const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
@@ -567,7 +585,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       });
     });
 
-    const cancelEvent: ResultTouchEvent = {
+    const cancelEvent: ResultEvent = {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.state,
@@ -883,10 +901,10 @@ export default abstract class GestureHandler implements IGestureHandler {
 
 function invokeNullableMethod(
   method:
-    | ((event: ResultEvent | ResultTouchEvent) => void)
-    | { __getHandler: () => (event: ResultEvent | ResultTouchEvent) => void }
+    | ((event: ResultEvent) => void)
+    | { __getHandler: () => (event: ResultEvent) => void }
     | { __nodeConfig: { argMapping: unknown[] } },
-  event: ResultEvent | ResultTouchEvent
+  event: ResultEvent
 ): void {
   if (!method) {
     return;
@@ -918,7 +936,7 @@ function invokeNullableMethod(
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const nativeValue = event.nativeEvent[key];
+    const nativeValue = (event.nativeEvent as any)[key];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (value?.setValue) {
