@@ -98,14 +98,22 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
 }
 
+#if TARGET_OS_OSX
+- (void)addSubview:(NSView *)view
+#else
 - (void)addSubview:(UIView *)view
+#endif
 {
   [super addSubview:view];
 
   [self tryAttachHandlerToChildView];
 }
 
+#if TARGET_OS_OSX
+- (void)willRemoveSubview:(NSView *)subview
+#else
 - (void)willRemoveSubview:(UIView *)subview
+#endif
 {
   [self detachNativeGestureHandlers];
 
