@@ -4,7 +4,6 @@ import android.view.MotionEvent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
-import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.OnTouchEventListener
