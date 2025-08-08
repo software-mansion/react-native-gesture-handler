@@ -237,12 +237,15 @@
 
 - (void)sendEvent
 {
+  if (!_gestureHandler.needsPointerData) {
+    return;
+  }
+
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (!_gestureHandler.needsPointerData ||
-      (_gestureHandler.recognizer.view.reactTag == nil &&
-       ![_gestureHandler.recognizer.view isKindOfClass:[RNGestureHandlerDetector class]])) {
+  if (_gestureHandler.recognizer.view.reactTag == nil &&
+      _gestureHandler.actionType != RNGestureHandlerActionTypeNativeDetector) {
     return;
   }
 

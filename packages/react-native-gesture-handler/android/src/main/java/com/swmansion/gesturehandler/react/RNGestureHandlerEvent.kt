@@ -18,6 +18,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var coalescingKey: Short = 0
   private var actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
+  private var useAnimatedEvent = false
 
   // On the new architecture, native animated expects event names prefixed with `top` instead of `on`,
   // since we know when the native animated node is the target of the event we can use the different
@@ -32,11 +33,18 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     useNativeAnimatedName: Boolean,
   ) {
-    val view = handler.view!!
+    val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+      handler.viewForEvents!!
+    } else {
+      handler.view!!
+    }
+
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
+
     this.actionType = actionType
     this.dataBuilder = dataBuilder
     this.useTopPrefixedName = useNativeAnimatedName
+    this.useAnimatedEvent = useAnimatedEvent
     coalescingKey = handler.eventCoalescingKey
   }
 
@@ -45,7 +53,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT) {
+  override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR && useTopPrefixedName) {
     NATIVE_DETECTOR_ANIMATED_EVENT_NAME
   } else if (useTopPrefixedName) {
     NATIVE_ANIMATED_EVENT_NAME
@@ -57,9 +65,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   override fun getCoalescingKey() = coalescingKey
 
-  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR ||
-    actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR_ANIMATED_EVENT
-  ) {
+  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
     createNativeEventData(dataBuilder!!)
   } else {
     createEventData(dataBuilder!!)

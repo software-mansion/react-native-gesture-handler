@@ -48,6 +48,7 @@ export interface Config extends Record<string, ConfigArgs> {
   enableContextMenu?: boolean;
   touchAction?: TouchAction;
   manualActivation?: boolean;
+  dispatchesAnimatedEvents?: false;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
@@ -129,8 +130,10 @@ export interface ResultTouchEvent
 }
 
 export interface PropsRef {
-  onGestureHandlerEvent: () => void;
-  onGestureHandlerStateChange: () => void;
+  onGestureHandlerEvent: (e: any) => void;
+  onGestureHandlerAnimatedEvent?: (e: any) => void;
+  onGestureHandlerStateChange: (e: any) => void;
+  onGestureHandlerTouchEvent?: (e: any) => void;
 }
 
 export interface StylusData {

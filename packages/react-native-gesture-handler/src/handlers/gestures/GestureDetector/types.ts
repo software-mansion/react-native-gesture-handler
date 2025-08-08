@@ -1,6 +1,5 @@
 import { GestureType, HandlerCallbacks } from '../gesture';
 import { SharedValue } from '../reanimatedWrapper';
-import { HandlerStateChangeEvent } from '../../gestureHandlerCommon';
 
 export interface AttachedGestureState {
   // Array of gestures that should be attached to the view under that gesture detector
@@ -22,11 +21,4 @@ export interface GestureDetectorState {
   viewRef: React.Component | null;
   previousViewTag: number;
   forceRebuildReanimatedEvent: boolean;
-}
-
-export interface WebEventHandler {
-  onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
-  onGestureHandlerStateChange?: (
-    event: HandlerStateChangeEvent<unknown>
-  ) => void;
 }

@@ -29,8 +29,6 @@ export interface NativeGesture {
   name: GestureType;
   config: Record<string, unknown>;
   gestureEvents: GestureEvents;
-  shouldUseReanimated: boolean;
-  dispatchesAnimatedEvents: boolean;
 }
 
 function hasWorkletEventHandlers(config: Record<string, unknown>) {
@@ -63,7 +61,8 @@ export function useGesture(
     );
   }
 
-  const shouldUseReanimated =
+  // This has to be done ASAP as other hooks depend `shouldUseReanimated`.
+  config.shouldUseReanimated =
     Reanimated !== undefined && hasWorkletEventHandlers(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
 
@@ -72,7 +71,7 @@ export function useGesture(
     onGestureHandlerEvent,
     onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent,
-  } = useGestureEvent(tag, config, shouldUseReanimated);
+  } = useGestureEvent(tag, config);
 
   // This should never happen, but since we don't want to call hooks conditionally,
   // we have to mark these as possibly undefined to make TypeScript happy.
@@ -84,6 +83,10 @@ export function useGesture(
   ) {
     throw new Error(tagMessage('Failed to create event handlers.'));
   }
+
+  config.dispatchesAnimatedEvents =
+    !!onGestureHandlerAnimatedEvent &&
+    '__isNative' in onGestureHandlerAnimatedEvent;
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
@@ -118,9 +121,5 @@ export function useGesture(
       onGestureHandlerTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
-    shouldUseReanimated,
-    dispatchesAnimatedEvents:
-      !!onGestureHandlerAnimatedEvent &&
-      '__isNative' in onGestureHandlerAnimatedEvent,
   };
 }

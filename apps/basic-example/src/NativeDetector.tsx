@@ -18,9 +18,7 @@ export default function App() {
   );
 
   const gesture = useGesture('PanGestureHandler', {
-    onGestureHandlerAnimatedEvent: event,
-    onGestureHandlerEvent: (e: any) =>
-      console.log('onGestureHandlerEvent', e.nativeEvent),
+    onUpdate: event,
   });
 
   return (

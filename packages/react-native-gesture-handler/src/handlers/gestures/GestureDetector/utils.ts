@@ -21,7 +21,7 @@ import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
 import { onGestureHandlerEvent } from '../eventReceiver';
-import { WebEventHandler } from './types';
+import { PropsRef } from '../../../web/interfaces';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -167,7 +167,7 @@ export function useForceRender() {
 }
 
 export function useWebEventHandlers() {
-  return useRef<WebEventHandler>({
+  return useRef<PropsRef>({
     onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
       onGestureHandlerEvent(e.nativeEvent);
     },

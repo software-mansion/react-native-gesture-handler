@@ -297,23 +297,23 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
-     forRecognizer:(UIGestureRecognizer *)recognizer
+       forAnimated:(BOOL)forAnimated
+           forView:(RNGHUIView *)detectorView // Typing as RNGestureHandlerDetector is preferable
+                                              // but results in a compilation error.
 {
   switch (actionType) {
-    case RNGestureHandlerActionTypeNativeDetector:
-    case RNGestureHandlerActionTypeNativeDetectorAnimatedEvent: {
-      RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)recognizer.view;
+    case RNGestureHandlerActionTypeNativeDetector: {
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
-        if (actionType == RNGestureHandlerActionTypeNativeDetectorAnimatedEvent) {
+        if (forAnimated) {
           [self sendEventForNativeAnimatedEvent:event];
         }
 
         RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getNativeEvent];
-        [detector dispatchGestureEvent:nativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
       } else {
         auto nativeEvent = [event getNativeEvent];
-        [detector dispatchStateChangeEvent:nativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchStateChangeEvent:nativeEvent];
       }
       break;
     }
@@ -375,7 +375,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     });
   }
 
-  RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)handler.recognizer.view;
+  RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)[handler findViewForEvents];
+
   [detector dispatchTouchEvent:nativeEvent];
 }
 
