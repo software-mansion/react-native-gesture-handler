@@ -49,7 +49,15 @@ def resolveReactNativeDirectory() {
     )
 }
 
-apply plugin: 'com.facebook.react'
+def isNewArchitectureEnabled() {
+    // This is a workaround for linter crashing when applying the `com.facebook.react` plugin.
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+if (isNewArchitectureEnabled()) {
+    apply plugin: 'com.facebook.react'
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
