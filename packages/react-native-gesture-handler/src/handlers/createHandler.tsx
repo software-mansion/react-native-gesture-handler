@@ -396,12 +396,15 @@ export default function createHandler<
       });
     };
 
-    private updateGestureHandler = (
+    private setGestureHandlerConfig = (
       newConfig: Readonly<Record<string, unknown>>
     ) => {
       this.config = newConfig;
 
-      RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
+      RNGestureHandlerModule.setGestureHandlerConfig(
+        this.handlerTag,
+        newConfig
+      );
       scheduleFlushOperations();
     };
 
@@ -426,7 +429,7 @@ export default function createHandler<
           config
         );
         if (!deepEqual(this.config, newConfig)) {
-          this.updateGestureHandler(newConfig);
+          this.setGestureHandlerConfig(newConfig);
         }
       }
     }
@@ -439,7 +442,7 @@ export default function createHandler<
         [...allowedProps, ...customNativeProps],
         config
       );
-      this.updateGestureHandler(newConfig);
+      this.setGestureHandlerConfig(newConfig);
     }
 
     render() {

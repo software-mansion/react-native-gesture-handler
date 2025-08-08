@@ -2,8 +2,16 @@ import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
 import { UpdateEvent } from '../../v3/types';
 
-export interface SharedValue<T> {
-  value: T;
+export interface SharedValue<Value = unknown> {
+  value: Value;
+  get(): Value;
+  set(value: Value | ((value: Value) => Value)): void;
+  addListener: (listenerID: number, listener: (value: Value) => void) => void;
+  removeListener: (listenerID: number) => void;
+  modify: (
+    modifier?: <T extends Value>(value: T) => T,
+    forceUpdate?: boolean
+  ) => void;
 }
 
 export type ReanimatedContext = {
@@ -31,6 +39,9 @@ let Reanimated:
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
       isSharedValue: (value: unknown) => value is SharedValue<unknown>;
+      runOnUI<A extends any[], R>(
+        fn: (...args: A) => R
+      ): (...args: Parameters<typeof fn>) => void;
     }
   | undefined;
 

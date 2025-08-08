@@ -128,9 +128,9 @@
   return self;
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
 }

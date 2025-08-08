@@ -2,7 +2,10 @@ import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureEvent } from './useGestureEvent';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import {
+  Reanimated,
+  SharedValue,
+} from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
 import { AnimatedEvent } from '../types';
 
@@ -44,6 +47,69 @@ function shouldHandleTouchEvents(config: Record<string, unknown>) {
     !!config.onTouchesUp ||
     !!config.onTouchesCancelled
   );
+}
+
+const sharedValues = new Map<
+  string,
+  { id: number; sharedValue: SharedValue }
+>();
+
+let nextSharedValueListenerID = 0;
+
+// This is used to obtain HostFunction that can be executed on the UI thread
+const { updateGestureHandlerConfig } = RNGestureHandlerModule;
+
+function maybeExtractSharedValues(config: any, tag: number) {
+  if (Reanimated === undefined) {
+    return;
+  }
+
+  const attachListener = (
+    sharedValue: SharedValue,
+    id: number,
+    configKey: string
+  ) => {
+    'worklet';
+
+    sharedValue.addListener(id, (value) => {
+      updateGestureHandlerConfig(tag, { [configKey]: value });
+    });
+  };
+
+  for (const [key, maybeSharedValue] of Object.entries(config)) {
+    if (!Reanimated.isSharedValue(maybeSharedValue)) {
+      continue;
+    }
+
+    sharedValues.set(key, {
+      id: nextSharedValueListenerID,
+      sharedValue: maybeSharedValue,
+    });
+
+    config[key] = maybeSharedValue.value;
+
+    Reanimated.runOnUI(attachListener)(
+      maybeSharedValue,
+      nextSharedValueListenerID,
+      key
+    );
+
+    nextSharedValueListenerID++;
+  }
+}
+
+function maybeDetachSharedValues() {
+  if (Reanimated === undefined) {
+    return;
+  }
+
+  for (const [key, { id, sharedValue }] of sharedValues.entries()) {
+    Reanimated.runOnUI(() => {
+      sharedValue.removeListener(id);
+    })();
+
+    sharedValues.delete(key);
+  }
 }
 
 export function useGesture(
@@ -94,18 +160,21 @@ export function useGesture(
   }, [type, tag]);
 
   useEffect(() => {
+    maybeExtractSharedValues(config, tag);
+
     return () => {
+      maybeDetachSharedValues();
       RNGestureHandlerModule.dropGestureHandler(tag);
       RNGestureHandlerModule.flushOperations();
     };
-  }, [type, tag]);
+  }, [type, tag, config]);
 
   useEffect(() => {
     // TODO: filter changes - passing functions (and possibly other types)
     // causes a native crash
     const animatedEvent = config.onUpdate;
     config.onUpdate = null;
-    RNGestureHandlerModule.updateGestureHandler(tag, config);
+    RNGestureHandlerModule.setGestureHandlerConfig(tag, config);
     config.onUpdate = animatedEvent;
 
     RNGestureHandlerModule.flushOperations();
