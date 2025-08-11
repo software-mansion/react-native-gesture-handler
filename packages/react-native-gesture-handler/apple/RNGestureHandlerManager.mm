@@ -270,15 +270,9 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   // particular if we have one PanHandler and ScrollView that can work simultaniously then when
   // the Pan handler activates it would still tigger cancel events.
   // Once the upstream fix lands the line below along with this comment can be removed
-#if TARGET_OS_OSX
-  if ([gestureRecognizer.view isKindOfClass:[NSScrollView class]]) {
+  if ([gestureRecognizer.view isKindOfClass:[RNGHScrollView class]]) {
     return;
   }
-#else
-  if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) {
-    return;
-  }
-#endif
 
   UIGestureRecognizer *touchHandler = nil;
 
