@@ -111,17 +111,18 @@ export interface PointerData {
 
 // Native event has to stay for v2 compatibility
 type ResultEventType = GestureHandlerEvent<unknown> | GestureHandlerNativeEvent;
-export interface ResultEvent extends Record<string, ResultEventType | number> {
-  nativeEvent: ResultEventType;
+export interface ResultEvent<T extends ResultEventType = ResultEventType>
+  extends Record<string, T | number> {
+  nativeEvent: T;
   timeStamp: number;
 }
 
 // We need to leave any for v2 compatibility
 export interface PropsRef {
   onGestureHandlerEvent: (e: any) => void;
-  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
+  onGestureHandlerAnimatedEvent?: (e: any) => void;
   onGestureHandlerStateChange: (e: any) => void;
-  onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
+  onGestureHandlerTouchEvent?: (e: any) => void;
 }
 
 export interface AdaptedEvent {

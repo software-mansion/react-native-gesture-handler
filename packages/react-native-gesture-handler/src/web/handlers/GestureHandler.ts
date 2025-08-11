@@ -20,7 +20,7 @@ import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
-import { StateChangeEvent, UpdateEvent } from '../../v3/types';
+import { StateChangeEvent, TouchEvent, UpdateEvent } from '../../v3/types';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -366,7 +366,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
       this.propsRef!.current;
 
-    const touchEvent: ResultEvent | undefined = this.transformTouchEvent(event);
+    const touchEvent: ResultEvent<TouchEvent> | undefined =
+      this.transformTouchEvent(event);
 
     if (touchEvent) {
       if (
@@ -391,10 +392,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
     }: PropsRef = this.propsRef!.current;
-    const resultEvent: ResultEvent = this.transformEventData(
-      newState,
-      oldState
-    );
+    const resultEvent: ResultEvent =
+      this.actionType !== ActionType.NATIVE_DETECTOR
+        ? this.transformEventData(newState, oldState)
+        : this.lastSentState !== newState
+          ? this.transformStateChangeEvent(newState, oldState)
+          : this.transformUpdateEvent(newState);
 
     // In the v2 API oldState field has to be undefined, unless we send event state changed
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
@@ -417,29 +420,11 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
   };
 
-  private transformEventData(newState: State, oldState: State): ResultEvent {
-    if (!this.viewRef) {
-      throw new Error(tagMessage('Cannot handle event when target is null'));
-    }
-    if (this.actionType === ActionType.NATIVE_DETECTOR) {
-      return {
-        nativeEvent: {
-          state: newState,
-          handlerTag: this.handlerTag,
-          oldState: newState !== oldState ? oldState : undefined,
-          handlerData: {
-            pointerType: this.pointerType,
-            numberOfPointers: this.tracker.trackedPointersCount,
-            pointerInside: this.delegate.isPointerInBounds(
-              this.tracker.getAbsoluteCoordsAverage()
-            ),
-            ...this.transformNativeEvent(),
-            target: this.viewRef,
-          },
-        } as StateChangeEvent<unknown> | UpdateEvent<unknown>,
-        timeStamp: Date.now(),
-      };
-    }
+  private transformEventData(
+    newState: State,
+    oldState: State
+  ): ResultEvent<GestureHandlerNativeEvent> {
+    this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.trackedPointersCount,
@@ -457,7 +442,55 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
-  private transformTouchEvent(event: AdaptedEvent): ResultEvent | undefined {
+  private transformStateChangeEvent(
+    newState: State,
+    oldState: State
+  ): ResultEvent<StateChangeEvent<unknown>> {
+    this.ensureViewRef(this.viewRef);
+    return {
+      nativeEvent: {
+        state: newState,
+        handlerTag: this.handlerTag,
+        pointerType: this.pointerType,
+        oldState: oldState,
+        numberOfPointers: this.tracker.trackedPointersCount,
+        handlerData: {
+          pointerInside: this.delegate.isPointerInBounds(
+            this.tracker.getAbsoluteCoordsAverage()
+          ),
+          ...this.transformNativeEvent(),
+          target: this.viewRef,
+        },
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
+  private transformUpdateEvent(
+    newState: State
+  ): ResultEvent<UpdateEvent<unknown>> {
+    this.ensureViewRef(this.viewRef);
+    return {
+      nativeEvent: {
+        state: newState,
+        handlerTag: this.handlerTag,
+        pointerType: this.pointerType,
+        numberOfPointers: this.tracker.trackedPointersCount,
+        handlerData: {
+          pointerInside: this.delegate.isPointerInBounds(
+            this.tracker.getAbsoluteCoordsAverage()
+          ),
+          ...this.transformNativeEvent(),
+          target: this.viewRef,
+        },
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
+  private transformTouchEvent(
+    event: AdaptedEvent
+  ): ResultEvent<TouchEvent> | undefined {
     const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
@@ -587,7 +620,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       });
     });
 
-    const cancelEvent: ResultEvent = {
+    const cancelEvent: ResultEvent<TouchEvent> = {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.state,
@@ -610,6 +643,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       throw new Error(
         tagMessage('Cannot handle event when component props are null')
       );
+    }
+  }
+
+  private ensureViewRef(viewRef: any): asserts viewRef is number {
+    if (!viewRef) {
+      throw new Error(tagMessage('Cannot handle event when target is null'));
     }
   }
 
