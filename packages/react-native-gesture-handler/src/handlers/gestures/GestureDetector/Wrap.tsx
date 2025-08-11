@@ -7,7 +7,7 @@ export class Wrap extends React.Component<{
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?: React.ReactNode;
 }> {
-  render() {
+  override render() {
     try {
       // I don't think that fighting with types over such a simple function is worth it
       // The only thing it does is add 'collapsable: false' to the child component

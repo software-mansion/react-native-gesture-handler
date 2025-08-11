@@ -122,7 +122,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
     ); // TODO: maybe it is not correct
   };
 
-  render() {
+  override render() {
     const { rippleColor: unprocessedRippleColor, style, ...rest } = this.props;
 
     if (IS_FABRIC === null) {
@@ -190,7 +190,7 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
     this.props.onActiveStateChange?.(active);
   };
 
-  render() {
+  override render() {
     const { children, style, ...rest } = this.props;
 
     const resolvedStyle = StyleSheet.flatten(style) ?? {};
@@ -247,7 +247,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
     this.props.onActiveStateChange?.(active);
   };
 
-  render() {
+  override render() {
     const { children, style, innerRef, ...rest } = this.props;
 
     return (

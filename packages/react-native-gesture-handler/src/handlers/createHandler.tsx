@@ -184,7 +184,7 @@ export default function createHandler<
     HandlerState
   > {
     static displayName = name;
-    static contextType = GestureHandlerRootViewContext;
+    static override contextType = GestureHandlerRootViewContext;
 
     private handlerTag = -1;
     private config: Record<string, unknown>;
@@ -208,7 +208,7 @@ export default function createHandler<
       }
     }
 
-    componentDidMount() {
+    override componentDidMount() {
       const props: HandlerProps<U> = this.props;
       this.isMountedRef.current = true;
 
@@ -250,7 +250,7 @@ export default function createHandler<
       this.attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
     }
 
-    componentDidUpdate() {
+    override componentDidUpdate() {
       const viewTag = findNodeHandle(this.viewNode);
       if (this.viewTag !== viewTag) {
         this.attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
@@ -258,7 +258,7 @@ export default function createHandler<
       this.update(UNRESOLVED_REFS_RETRY_LIMIT);
     }
 
-    componentWillUnmount() {
+    override componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       this.isMountedRef.current = false;
       if (Platform.OS !== 'web') {
@@ -445,7 +445,7 @@ export default function createHandler<
       this.setGestureHandlerConfig(newConfig);
     }
 
-    render() {
+    override render() {
       if (__DEV__ && !this.context && !isTestEnv() && Platform.OS !== 'web') {
         throw new Error(
           name +

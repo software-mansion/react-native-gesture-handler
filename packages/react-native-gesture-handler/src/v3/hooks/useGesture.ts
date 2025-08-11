@@ -24,29 +24,21 @@ function shouldHandleTouchEvents(config: Record<string, unknown>) {
   );
 }
 
-const sharedValues = new Map<
-  string,
-  { id: number; sharedValue: SharedValue }
->();
-
-let nextSharedValueListenerID = 0;
+const SHARED_VALUE_OFFSET = 1.618;
 
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig } = RNGestureHandlerModule;
 
-function maybeExtractSharedValues(config: any, tag: number) {
+function bindSharedValues(config: any, tag: number) {
   if (Reanimated === undefined) {
     return;
   }
 
-  const attachListener = (
-    sharedValue: SharedValue,
-    id: number,
-    configKey: string
-  ) => {
-    'worklet';
+  const listenerId = tag + SHARED_VALUE_OFFSET;
 
-    sharedValue.addListener(id, (value) => {
+  const attachListener = (sharedValue: SharedValue, configKey: string) => {
+    'worklet';
+    sharedValue.addListener(listenerId, (value) => {
       updateGestureHandlerConfig(tag, { [configKey]: value });
     });
   };
@@ -56,34 +48,27 @@ function maybeExtractSharedValues(config: any, tag: number) {
       continue;
     }
 
-    sharedValues.set(key, {
-      id: nextSharedValueListenerID,
-      sharedValue: maybeSharedValue,
-    });
-
     config[key] = maybeSharedValue.value;
 
-    Reanimated.runOnUI(attachListener)(
-      maybeSharedValue,
-      nextSharedValueListenerID,
-      key
-    );
-
-    nextSharedValueListenerID++;
+    Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
   }
 }
 
-function maybeDetachSharedValues() {
+function unbindSharedValues(config: any, tag: number) {
   if (Reanimated === undefined) {
     return;
   }
 
-  for (const [key, { id, sharedValue }] of sharedValues.entries()) {
-    Reanimated.runOnUI(() => {
-      sharedValue.removeListener(id);
-    })();
+  const listenerId = tag + SHARED_VALUE_OFFSET;
 
-    sharedValues.delete(key);
+  for (const maybeSharedValue of Object.values(config)) {
+    if (!Reanimated.isSharedValue(maybeSharedValue)) {
+      continue;
+    }
+
+    Reanimated.runOnUI(() => {
+      maybeSharedValue.removeListener(listenerId);
+    })();
   }
 }
 
@@ -135,14 +120,19 @@ export function useGesture(
   }, [type, tag]);
 
   useEffect(() => {
-    maybeExtractSharedValues(config, tag);
-
     return () => {
-      maybeDetachSharedValues();
       RNGestureHandlerModule.dropGestureHandler(tag);
       RNGestureHandlerModule.flushOperations();
     };
-  }, [type, tag, config]);
+  }, [type, tag]);
+
+  useEffect(() => {
+    bindSharedValues(config, tag);
+
+    return () => {
+      unbindSharedValues(config, tag);
+    };
+  }, [tag, config]);
 
   useEffect(() => {
     // TODO: filter changes - passing functions (and possibly other types)
