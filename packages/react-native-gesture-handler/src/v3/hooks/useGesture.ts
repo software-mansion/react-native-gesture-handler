@@ -160,14 +160,19 @@ export function useGesture(
   }, [type, tag]);
 
   useEffect(() => {
+    return () => {
+      RNGestureHandlerModule.dropGestureHandler(tag);
+      RNGestureHandlerModule.flushOperations();
+    };
+  }, [type, tag]);
+
+  useEffect(() => {
     maybeExtractSharedValues(config, tag);
 
     return () => {
       maybeDetachSharedValues();
-      RNGestureHandlerModule.dropGestureHandler(tag);
-      RNGestureHandlerModule.flushOperations();
     };
-  }, [type, tag, config]);
+  }, [tag, config]);
 
   useEffect(() => {
     // TODO: filter changes - passing functions (and possibly other types)
