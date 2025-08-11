@@ -55,7 +55,7 @@ let sharedValues: SharedValue[] = [];
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig } = RNGestureHandlerModule;
 
-function maybeExtractSharedValues(config: any, tag: number) {
+function bindSharedValues(config: any, tag: number) {
   if (Reanimated === undefined) {
     return;
   }
@@ -82,7 +82,7 @@ function maybeExtractSharedValues(config: any, tag: number) {
   }
 }
 
-function maybeDetachSharedValues(tag: number) {
+function unbindSharedValues(tag: number) {
   if (Reanimated === undefined) {
     return;
   }
@@ -154,10 +154,10 @@ export function useGesture(
   }, [type, tag]);
 
   useEffect(() => {
-    maybeExtractSharedValues(config, tag);
+    bindSharedValues(config, tag);
 
     return () => {
-      maybeDetachSharedValues(tag);
+      unbindSharedValues(tag);
     };
   }, [tag, config]);
 
