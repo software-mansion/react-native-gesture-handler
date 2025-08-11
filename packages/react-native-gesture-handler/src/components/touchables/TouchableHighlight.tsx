@@ -103,7 +103,7 @@ export default class TouchableHighlight extends Component<
     }
   };
 
-  render() {
+  override render() {
     const { style = {}, ...rest } = this.props;
     const { extraUnderlayStyle } = this.state;
     return (

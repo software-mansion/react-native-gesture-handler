@@ -257,7 +257,7 @@ export default class Swipeable extends Component<
     );
   }
 
-  shouldComponentUpdate(props: SwipeableProps, state: SwipeableState) {
+  override shouldComponentUpdate(props: SwipeableProps, state: SwipeableState) {
     if (
       this.props.friction !== props.friction ||
       this.props.overshootLeft !== props.overshootLeft ||
@@ -504,7 +504,7 @@ export default class Swipeable extends Component<
     this.setState({ rowState: 0 });
   };
 
-  render() {
+  override render() {
     const { rowState } = this.state;
     const {
       children,
