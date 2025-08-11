@@ -4,7 +4,6 @@ import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../utils';
-import { shouldAttachGestureToChildView } from '../web/utils';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -38,7 +37,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     detachHandlers(oldHandlerTags);
 
     newHandlerTags.forEach((tag) => {
-      if (shouldAttachGestureToChildView(tag)) {
+      if (
+        RNGestureHandlerModule.getGestureHandlerNode(
+          tag
+        ).shouldAttachGestureToChildView()
+      ) {
         if (!viewRef.current?.firstChild) {
           throw new Error(
             tagMessage('Detector expected to have a child element')
