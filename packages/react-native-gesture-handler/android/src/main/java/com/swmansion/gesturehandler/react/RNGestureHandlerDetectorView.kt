@@ -70,7 +70,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     for (tag in newHandlers) {
       changes[tag] = if (changes.containsKey(tag)) GestureHandlerMutation.Keep else GestureHandlerMutation.Attach
     }
-
     for (entry in changes) {
       val tag = entry.key
 
@@ -126,6 +125,15 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   fun dispatchEvent(event: Event<*>) {
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
     eventDispatcher?.dispatchEvent(event)
+  }
+
+  fun onViewDrop() {
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+    for (tag in attachedHandlers) {
+      registry.detachHandler(tag)
+      attachedHandlers.remove(tag)
+    }
   }
 
   companion object {
