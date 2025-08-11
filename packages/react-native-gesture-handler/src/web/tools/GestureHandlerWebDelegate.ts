@@ -262,8 +262,4 @@ export class GestureHandlerWebDelegate
   public set view(value: HTMLElement) {
     this._view = value;
   }
-
-  get initialized(): boolean {
-    return this.isInitialized;
-  }
 }
