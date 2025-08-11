@@ -49,12 +49,8 @@ function shouldHandleTouchEvents(config: Record<string, unknown>) {
   );
 }
 
-const sharedValues = new Map<
-  string,
-  { id: number; sharedValue: SharedValue }
->();
-
-let nextSharedValueListenerID = 0;
+const SHARED_VALUE_OFFSET = 1.618;
+let sharedValues: SharedValue[] = [];
 
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig } = RNGestureHandlerModule;
@@ -64,14 +60,11 @@ function maybeExtractSharedValues(config: any, tag: number) {
     return;
   }
 
-  const attachListener = (
-    sharedValue: SharedValue,
-    id: number,
-    configKey: string
-  ) => {
-    'worklet';
+  const listenerId = tag + SHARED_VALUE_OFFSET;
 
-    sharedValue.addListener(id, (value) => {
+  const attachListener = (sharedValue: SharedValue, configKey: string) => {
+    'worklet';
+    sharedValue.addListener(listenerId, (value) => {
       updateGestureHandlerConfig(tag, { [configKey]: value });
     });
   };
@@ -81,35 +74,29 @@ function maybeExtractSharedValues(config: any, tag: number) {
       continue;
     }
 
-    sharedValues.set(key, {
-      id: nextSharedValueListenerID,
-      sharedValue: maybeSharedValue,
-    });
+    sharedValues.push(maybeSharedValue);
 
     config[key] = maybeSharedValue.value;
 
-    Reanimated.runOnUI(attachListener)(
-      maybeSharedValue,
-      nextSharedValueListenerID,
-      key
-    );
-
-    nextSharedValueListenerID++;
+    Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
   }
 }
 
-function maybeDetachSharedValues() {
+function maybeDetachSharedValues(tag: number) {
   if (Reanimated === undefined) {
     return;
   }
 
-  for (const [key, { id, sharedValue }] of sharedValues.entries()) {
-    Reanimated.runOnUI(() => {
-      sharedValue.removeListener(id);
-    })();
+  const listenerId = tag + SHARED_VALUE_OFFSET;
 
-    sharedValues.delete(key);
-  }
+  sharedValues.forEach((sharedValue) => {
+    // @ts-ignore Reanimated won't be undefined because we check it above
+    Reanimated.runOnUI(() => {
+      sharedValue.removeListener(listenerId);
+    })();
+  });
+
+  sharedValues = [];
 }
 
 export function useGesture(
@@ -170,7 +157,7 @@ export function useGesture(
     maybeExtractSharedValues(config, tag);
 
     return () => {
-      maybeDetachSharedValues();
+      maybeDetachSharedValues(tag);
     };
   }, [tag, config]);
 
