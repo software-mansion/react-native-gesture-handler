@@ -6,14 +6,14 @@ import GestureHandler from './GestureHandler';
 export default class HoverGestureHandler extends GestureHandler {
   private stylusData: StylusData | undefined;
 
-  protected transformNativeEvent(): Record<string, unknown> {
+  protected override transformNativeEvent(): Record<string, unknown> {
     return {
       ...super.transformNativeEvent(),
       stylusData: this.stylusData,
     };
   }
 
-  protected onPointerMoveOver(event: AdaptedEvent): void {
+  protected override onPointerMoveOver(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
 
     this.tracker.addToTracker(event);
@@ -26,7 +26,7 @@ export default class HoverGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMoveOut(event: AdaptedEvent): void {
+  protected override onPointerMoveOut(event: AdaptedEvent): void {
     this.tracker.removeFromTracker(event.pointerId);
     this.stylusData = event.stylusData;
 
@@ -35,14 +35,14 @@ export default class HoverGestureHandler extends GestureHandler {
     this.end();
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
     this.stylusData = event.stylusData;
 
     super.onPointerMove(event);
   }
 
-  protected onPointerCancel(event: AdaptedEvent): void {
+  protected override onPointerCancel(event: AdaptedEvent): void {
     super.onPointerCancel(event);
     this.reset();
   }

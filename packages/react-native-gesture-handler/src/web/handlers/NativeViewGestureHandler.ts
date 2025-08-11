@@ -17,7 +17,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
-  public init(
+  public override init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
@@ -36,7 +36,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.buttonRole = view.getAttribute('role') === 'button';
   }
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
+  public override updateGestureConfig({
+    enabled = true,
+    ...props
+  }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     if (this.config.shouldActivateOnStart !== undefined) {
@@ -60,7 +63,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     view.style['WebkitTouchCallout'] = 'auto';
   }
 
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.newPointerAction();
@@ -68,7 +71,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.tryToSendTouchEvent(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
     this.newPointerAction();
@@ -93,7 +96,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
@@ -110,18 +113,18 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerLeave(): void {
+  protected override onPointerLeave(): void {
     if (this.state === State.BEGAN || this.state === State.ACTIVE) {
       this.cancel();
     }
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.onUp(event);
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.onUp(event);
   }
@@ -138,7 +141,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+  public override shouldRecognizeSimultaneously(
+    handler: GestureHandler
+  ): boolean {
     if (super.shouldRecognizeSimultaneously(handler)) {
       return true;
     }
@@ -166,7 +171,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     );
   }
 
-  public shouldBeCancelledByOther(_handler: GestureHandler): boolean {
+  public override shouldBeCancelledByOther(_handler: GestureHandler): boolean {
     return !this.disallowInterruption;
   }
 
