@@ -62,7 +62,10 @@ export default class PanGestureHandler extends GestureHandler {
   private endWheelTimeout = 0;
   private wheelDevice = WheelDevice.UNDETERMINED;
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
+  public override updateGestureConfig({
+    enabled = true,
+    ...props
+  }: Config): void {
     this.resetConfig();
 
     super.updateGestureConfig({ enabled: enabled, ...props });
@@ -169,7 +172,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected resetConfig(): void {
+  protected override resetConfig(): void {
     super.resetConfig();
 
     this.activeOffsetXStart = -Number.MAX_SAFE_INTEGER;
@@ -194,7 +197,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.activateAfterLongPress = 0;
   }
 
-  protected transformNativeEvent() {
+  protected override transformNativeEvent() {
     const translationX: number = this.getTranslationX();
     const translationY: number = this.getTranslationY();
 
@@ -234,7 +237,7 @@ export default class PanGestureHandler extends GestureHandler {
   }
 
   // Events Handling
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
       return;
     }
@@ -255,7 +258,7 @@ export default class PanGestureHandler extends GestureHandler {
     this.tryToSendTouchEvent(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
     this.tryBegin(event);
@@ -279,7 +282,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     this.stylusData = event.stylusData;
 
     super.onPointerUp(event);
@@ -303,7 +306,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
 
@@ -325,7 +328,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
     this.stylusData = event.stylusData;
 
@@ -337,7 +340,7 @@ export default class PanGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected override onPointerOutOfBounds(event: AdaptedEvent): void {
     if (this.shouldCancelWhenOutside) {
       return;
     }
@@ -369,7 +372,7 @@ export default class PanGestureHandler extends GestureHandler {
     }, 30);
   }
 
-  protected onWheel(event: AdaptedEvent): void {
+  protected override onWheel(event: AdaptedEvent): void {
     if (
       this.wheelDevice === WheelDevice.MOUSE ||
       !this.enableTrackpadTwoFingerGesture
@@ -546,7 +549,7 @@ export default class PanGestureHandler extends GestureHandler {
     }
   }
 
-  public activate(force = false): void {
+  public override activate(force = false): void {
     if (this.state !== State.ACTIVE) {
       this.resetProgress();
     }
@@ -554,15 +557,15 @@ export default class PanGestureHandler extends GestureHandler {
     super.activate(force);
   }
 
-  protected onCancel(): void {
+  protected override onCancel(): void {
     this.clearActivationTimeout();
   }
 
-  protected onReset(): void {
+  protected override onReset(): void {
     this.clearActivationTimeout();
   }
 
-  protected resetProgress(): void {
+  protected override resetProgress(): void {
     if (this.state === State.ACTIVE) {
       return;
     }

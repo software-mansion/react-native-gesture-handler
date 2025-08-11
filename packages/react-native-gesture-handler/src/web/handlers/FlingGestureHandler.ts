@@ -26,7 +26,10 @@ export default class FlingGestureHandler extends GestureHandler {
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
+  public override updateGestureConfig({
+    enabled = true,
+    ...props
+  }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     if (this.config.direction) {
@@ -104,7 +107,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
       return;
     }
@@ -118,7 +121,7 @@ export default class FlingGestureHandler extends GestureHandler {
     this.tryToSendTouchEvent(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
     this.newPointerAction();
@@ -153,24 +156,24 @@ export default class FlingGestureHandler extends GestureHandler {
     this.tryEndFling();
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     this.pointerMoveAction(event);
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected override onPointerOutOfBounds(event: AdaptedEvent): void {
     this.pointerMoveAction(event);
     super.onPointerOutOfBounds(event);
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.onUp(event);
 
     this.keyPointer = NaN;
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.onUp(event);
   }
@@ -183,12 +186,12 @@ export default class FlingGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
   }
 
-  public activate(force?: boolean): void {
+  public override activate(force?: boolean): void {
     super.activate(force);
     this.end();
   }
 
-  protected resetConfig(): void {
+  protected override resetConfig(): void {
     super.resetConfig();
     this.numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
     this.direction = DEFAULT_DIRECTION;

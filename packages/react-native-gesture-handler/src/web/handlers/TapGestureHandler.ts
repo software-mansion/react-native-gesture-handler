@@ -31,7 +31,10 @@ export default class TapGestureHandler extends GestureHandler {
 
   private tapsSoFar = 0;
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
+  public override updateGestureConfig({
+    enabled = true,
+    ...props
+  }: Config): void {
     super.updateGestureConfig({ enabled: enabled, ...props });
 
     if (this.config.numberOfTaps !== undefined) {
@@ -63,7 +66,7 @@ export default class TapGestureHandler extends GestureHandler {
     }
   }
 
-  protected resetConfig(): void {
+  protected override resetConfig(): void {
     super.resetConfig();
 
     this.maxDeltaX = Number.MIN_SAFE_INTEGER;
@@ -107,7 +110,7 @@ export default class TapGestureHandler extends GestureHandler {
   }
 
   // Handling Events
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
       return;
     }
@@ -128,7 +131,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.tryToSendTouchEvent(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     super.onPointerAdd(event);
     this.tracker.addToTracker(event);
     this.trySettingPosition(event);
@@ -144,7 +147,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
 
     this.updateLastCoords();
@@ -154,7 +157,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
 
@@ -169,7 +172,7 @@ export default class TapGestureHandler extends GestureHandler {
     this.updateState(event);
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
@@ -179,7 +182,7 @@ export default class TapGestureHandler extends GestureHandler {
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected override onPointerOutOfBounds(event: AdaptedEvent): void {
     this.trySettingPosition(event);
     this.tracker.track(event);
 
@@ -255,18 +258,18 @@ export default class TapGestureHandler extends GestureHandler {
     );
   }
 
-  public activate(): void {
+  public override activate(): void {
     super.activate();
 
     this.end();
   }
 
-  protected onCancel(): void {
+  protected override onCancel(): void {
     this.resetProgress();
     this.clearTimeouts();
   }
 
-  protected resetProgress(): void {
+  protected override resetProgress(): void {
     this.clearTimeouts();
     this.tapsSoFar = 0;
     this.currentMaxNumberOfPointers = 0;
