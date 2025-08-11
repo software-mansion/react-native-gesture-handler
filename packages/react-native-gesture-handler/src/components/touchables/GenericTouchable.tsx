@@ -115,7 +115,7 @@ export default class GenericTouchable extends Component<
     }
   }
 
-  componentDidMount() {
+  override componentDidMount() {
     this.reset();
   }
   // Reset timeout to prevent memory leaks.
@@ -204,7 +204,7 @@ export default class GenericTouchable extends Component<
     this.props.onLongPress?.();
   };
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     // To prevent memory leaks
     this.reset();
   }
@@ -225,7 +225,7 @@ export default class GenericTouchable extends Component<
     }
   }
 
-  render() {
+  override render() {
     const hitSlop =
       (typeof this.props.hitSlop === 'number'
         ? {
