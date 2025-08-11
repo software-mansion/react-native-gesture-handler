@@ -50,7 +50,6 @@ function shouldHandleTouchEvents(config: Record<string, unknown>) {
 }
 
 const SHARED_VALUE_OFFSET = 1.618;
-let sharedValues: SharedValue[] = [];
 
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig } = RNGestureHandlerModule;
@@ -74,29 +73,28 @@ function bindSharedValues(config: any, tag: number) {
       continue;
     }
 
-    sharedValues.push(maybeSharedValue);
-
     config[key] = maybeSharedValue.value;
 
     Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
   }
 }
 
-function unbindSharedValues(tag: number) {
+function unbindSharedValues(config: any, tag: number) {
   if (Reanimated === undefined) {
     return;
   }
 
   const listenerId = tag + SHARED_VALUE_OFFSET;
 
-  sharedValues.forEach((sharedValue) => {
-    // @ts-ignore Reanimated won't be undefined because we check it above
-    Reanimated.runOnUI(() => {
-      sharedValue.removeListener(listenerId);
-    })();
-  });
+  for (const maybeSharedValue of Object.values(config)) {
+    if (!Reanimated.isSharedValue(maybeSharedValue)) {
+      continue;
+    }
 
-  sharedValues = [];
+    Reanimated.runOnUI(() => {
+      maybeSharedValue.removeListener(listenerId);
+    })();
+  }
 }
 
 export function useGesture(
@@ -157,7 +155,7 @@ export function useGesture(
     bindSharedValues(config, tag);
 
     return () => {
-      unbindSharedValues(tag);
+      unbindSharedValues(config, tag);
     };
   }, [tag, config]);
 
