@@ -74,15 +74,15 @@ export default {
     NodeManager.detachGestureHandler(handlerTag);
   },
   setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
-    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+    NodeManager.getHandler(handlerTag).setGestureConfig(newConfig);
 
     InteractionManager.instance.configureInteractions(
       NodeManager.getHandler(handlerTag),
       newConfig
     );
   },
-  updateGestureHandlerConfig(_handlerTag: number, _newConfig: Config) {
-    // TODO: To be implemented
+  updateGestureHandlerConfig(handlerTag: number, newConfig: Config) {
+    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {
     return NodeManager.getHandler(handlerTag);

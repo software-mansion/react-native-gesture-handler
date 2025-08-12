@@ -614,6 +614,11 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Handling config
   //
 
+  public setGestureConfig(config: Config) {
+    this.resetConfig();
+    this.updateGestureConfig(config);
+  }
+
   public updateGestureConfig({
     enabled = true,
     dispatchesAnimatedEvents = false,
