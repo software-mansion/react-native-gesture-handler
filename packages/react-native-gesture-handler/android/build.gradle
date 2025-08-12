@@ -152,7 +152,7 @@ android {
                 arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}",
                         "-DANDROID_STL=c++_shared",
-                        "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+                        "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
                 abiFilters(*reactNativeArchitectures())
             }
         }
