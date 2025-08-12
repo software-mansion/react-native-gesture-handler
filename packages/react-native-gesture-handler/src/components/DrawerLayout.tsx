@@ -263,7 +263,10 @@ export default class DrawerLayout extends Component<
     this.updateAnimatedEvent(props, this.state);
   }
 
-  shouldComponentUpdate(props: DrawerLayoutProps, state: DrawerLayoutState) {
+  override shouldComponentUpdate(
+    props: DrawerLayoutProps,
+    state: DrawerLayoutState
+  ) {
     if (
       this.props.drawerPosition !== props.drawerPosition ||
       this.props.drawerWidth !== props.drawerWidth ||
@@ -719,7 +722,7 @@ export default class DrawerLayout extends Component<
     this.props.onGestureRef?.(ref);
   };
 
-  render() {
+  override render() {
     const { drawerPosition, drawerLockMode, edgeWidth, minSwipeDistance } =
       this.props;
 

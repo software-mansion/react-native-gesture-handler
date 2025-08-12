@@ -25,7 +25,7 @@ We recommended to use Reanimated to implement gesture-driven animations with Ges
 
 ### Apps
 
-[Gesture Handler Example App](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example) – official gesture handler "showcase" app.
+[Gesture Handler Example App](https://github.com/software-mansion/react-native-gesture-handler/tree/main/apps/expo-example) – official gesture handler "showcase" app.
 
 ### Talks and workshops
 
