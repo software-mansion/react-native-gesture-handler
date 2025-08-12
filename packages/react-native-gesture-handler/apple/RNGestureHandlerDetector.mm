@@ -13,7 +13,7 @@
 
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
 
-@property (nonatomic, nonnull) NSMutableSet *nativeHandlersToAttach;
+@property (nonatomic, nonnull) NSMutableSet *attachedNativeHandlers;
 @property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
 
 @end
@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
     _props = defaultProps;
     _moduleId = -1;
-    _nativeHandlersToAttach = [NSMutableSet set];
+    _attachedNativeHandlers = [NSMutableSet set];
     _attachedHandlers = [NSMutableSet set];
   }
 
@@ -94,11 +94,13 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
 }
 
-- (void)addSubview:(UIView *)view
+- (void)didAddSubview:(UIView *)view
 {
-  [super addSubview:view];
+  for (const id handlerTag : _attachedNativeHandlers) {
+    [self tryAttachHandlerToChildView:handlerTag];
+  }
 
-  [self tryAttachHandlerToChildView];
+  [super didAddSubview:view];
 }
 
 - (void)willRemoveSubview:(UIView *)subview
@@ -152,7 +154,8 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
       if ([self shouldAttachGestureToSubview:handlerTag]) {
-        [_nativeHandlersToAttach addObject:handlerTag];
+        [_attachedNativeHandlers addObject:handlerTag];
+        [self tryAttachHandlerToChildView:handlerTag];
       } else {
         [handlerManager.registry attachHandlerWithTag:handlerTag
                                                toView:self
@@ -163,9 +166,8 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
       [_attachedHandlers removeObject:handlerTag];
+      [_attachedNativeHandlers removeObject:handlerTag];
     }
-
-    [self tryAttachHandlerToChildView];
   }
 
   [super updateProps:propsBase oldProps:oldPropsBase];
@@ -173,19 +175,14 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   self.clipsToBounds = NO;
 }
 
-- (void)tryAttachHandlerToChildView
+- (void)tryAttachHandlerToChildView:(NSNumber *)handlerTag
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [handlerManager.registry attachHandlerWithTag:handlerTag
+                                         toView:self.subviews[0]
+                                 withActionType:RNGestureHandlerActionTypeNativeDetector];
 
-  for (NSNumber *handlerTag in _nativeHandlersToAttach) {
-    [handlerManager.registry attachHandlerWithTag:handlerTag
-                                           toView:self.subviews[0]
-                                   withActionType:RNGestureHandlerActionTypeNativeDetector];
-
-    [_attachedHandlers addObject:handlerTag];
-  }
-
-  [_nativeHandlersToAttach removeAllObjects];
+  [_attachedHandlers addObject:handlerTag];
 }
 
 - (void)detachNativeGestureHandlers
