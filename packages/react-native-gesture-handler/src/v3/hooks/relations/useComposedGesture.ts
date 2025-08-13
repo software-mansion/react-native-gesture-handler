@@ -3,10 +3,19 @@ import {
   StateChangeEvent,
   UpdateEvent,
   TouchEvent,
+  ComposedGesture,
 } from '../../types';
+import { isComposedGesture } from '../utils';
+import { tagMessage } from '../../../utils';
 
-export function useComposedGesture(...gestures: NativeGesture[]) {
-  const tags = gestures.flatMap((gesture) => gesture.tag);
+// TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
+// eslint-disable-next-line @eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks, @eslint-react/hooks-extra/no-unnecessary-use-prefix
+export function useComposedGesture(
+  ...gestures: (NativeGesture | ComposedGesture)[]
+): ComposedGesture {
+  const tags = gestures.flatMap((gesture) =>
+    isComposedGesture(gesture) ? gesture.tags : gesture.tag
+  );
 
   const config = {
     shouldUseReanimated: gestures.some(
@@ -16,6 +25,14 @@ export function useComposedGesture(...gestures: NativeGesture[]) {
       (gesture) => gesture.config.dispatchesAnimatedEvents
     ),
   };
+
+  if (config.shouldUseReanimated && config.dispatchesAnimatedEvents) {
+    throw new Error(
+      tagMessage(
+        'Composed gestures cannot use both Reanimated and Animated events at the same time.'
+      )
+    );
+  }
 
   const onGestureHandlerStateChange = (
     event: StateChangeEvent<Record<string, unknown>>
@@ -57,7 +74,7 @@ export function useComposedGesture(...gestures: NativeGesture[]) {
   }
 
   return {
-    tag: tags,
+    tags,
     name: 'ComposedGesture',
     config,
     gestureEvents: {
@@ -66,5 +83,6 @@ export function useComposedGesture(...gestures: NativeGesture[]) {
       onGestureHandlerAnimatedEvent,
       onGestureHandlerTouchEvent,
     },
+    gestures,
   };
 }

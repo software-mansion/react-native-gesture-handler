@@ -7,6 +7,8 @@ import {
   GestureHandlerEvent,
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
+  NativeGesture,
+  ComposedGesture,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -108,4 +110,10 @@ export function checkMappingForChangeProperties(obj: Animated.Mapping) {
       );
     }
   }
+}
+
+export function isComposedGesture(
+  gesture: NativeGesture | ComposedGesture
+): gesture is ComposedGesture {
+  return 'tags' in gesture;
 }

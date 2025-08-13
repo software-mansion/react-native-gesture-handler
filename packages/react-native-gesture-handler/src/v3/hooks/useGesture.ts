@@ -146,7 +146,7 @@ export function useGesture(
   }, [config, tag]);
 
   return {
-    tag: [tag],
+    tag,
     name: type,
     config,
     gestureEvents: {
@@ -155,5 +155,7 @@ export function useGesture(
       onGestureHandlerTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
+    simultaneousHandlers: [],
+    waitFor: [],
   };
 }

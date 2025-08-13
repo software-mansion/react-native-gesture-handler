@@ -60,16 +60,44 @@ export type GestureType =
   | 'ManualGestureHandler'
   | 'NativeViewGestureHandler';
 
+export type ComposedGestureType =
+  | 'SimultaneousGesture'
+  | 'ExclusiveGesture'
+  | 'RaceGesture'
+  | 'ComposedGesture';
+
 export type GestureEvents = {
-  onGestureHandlerStateChange: (event: any) => void;
-  onGestureHandlerEvent: undefined | ((event: any) => void);
-  onGestureHandlerTouchEvent: (event: any) => void;
+  onGestureHandlerStateChange: (
+    event: StateChangeEvent<Record<string, unknown>>
+  ) => void;
+  onGestureHandlerEvent:
+    | undefined
+    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+  onGestureHandlerTouchEvent: (event: TouchEvent) => void;
   onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
 
-export interface NativeGesture {
-  tag: number[];
+export type GestureRelations = {
+  simultaneousGestures: number[];
+  exclusiveGestures: number[];
+};
+
+export type NativeGesture = {
+  tag: number;
   name: GestureType;
   config: Record<string, unknown>;
   gestureEvents: GestureEvents;
-}
+  simultaneousHandlers: number[];
+  waitFor: number[];
+};
+
+export type ComposedGesture = {
+  tags: number[];
+  name: ComposedGestureType;
+  config: {
+    shouldUseReanimated: boolean;
+    dispatchesAnimatedEvents: boolean;
+  };
+  gestureEvents: GestureEvents;
+  gestures: (NativeGesture | ComposedGesture)[];
+};
