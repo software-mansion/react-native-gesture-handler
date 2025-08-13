@@ -3,7 +3,7 @@ import { LongPressGestureConfig } from '../LongPressGestureHandler';
 import type { LongPressGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPayload> {
-  public config: BaseGestureConfig & LongPressGestureConfig = {};
+  public override config: BaseGestureConfig & LongPressGestureConfig = {};
 
   constructor() {
     super();

@@ -219,7 +219,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     };
   }
 
-  public resetManager(): void {
+  public override resetManager(): void {
     super.resetManager();
     this.trackedPointers.clear();
   }

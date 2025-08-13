@@ -70,7 +70,7 @@ export class ComposedGesture extends Gesture {
 }
 
 export class SimultaneousGesture extends ComposedGesture {
-  prepare() {
+  override prepare() {
     // This piece of magic works something like this:
     // for every gesture in the array
     const simultaneousArrays = this.gestures.map((gesture) =>
@@ -96,7 +96,7 @@ export class SimultaneousGesture extends ComposedGesture {
 }
 
 export class ExclusiveGesture extends ComposedGesture {
-  prepare() {
+  override prepare() {
     // Transforms the array of gestures into array of grouped raw (not composed) gestures
     // i.e. [gesture1, gesture2, ComposedGesture(gesture3, gesture4)] -> [[gesture1], [gesture2], [gesture3, gesture4]]
     const gestureArrays = this.gestures.map((gesture) =>

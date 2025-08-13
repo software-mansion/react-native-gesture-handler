@@ -744,8 +744,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (this.config.hitSlop.bottom !== undefined) {
-      bottom = width + this.config.hitSlop.bottom;
+      bottom = height + this.config.hitSlop.bottom;
     }
+
     if (this.config.hitSlop.width !== undefined) {
       if (this.config.hitSlop.left !== undefined) {
         right = left + this.config.hitSlop.width;
