@@ -7,36 +7,8 @@ import {
   SharedValue,
 } from '../../handlers/gestures/reanimatedWrapper';
 import { hash, prepareConfig, isAnimatedEvent } from './utils';
-import { AnimatedEvent } from '../types';
 import { tagMessage } from '../../utils';
-
-type GestureType =
-  | 'TapGestureHandler'
-  | 'LongPressGestureHandler'
-  | 'PanGestureHandler'
-  | 'PinchGestureHandler'
-  | 'RotationGestureHandler'
-  | 'FlingGestureHandler'
-  | 'ForceTouchGestureHandler'
-  | 'ManualGestureHandler'
-  | 'NativeViewGestureHandler';
-
-type GestureEvents = {
-  onGestureHandlerStateChange: (event: any) => void;
-  onGestureHandlerEvent: undefined | ((event: any) => void);
-  onGestureHandlerTouchEvent: (event: any) => void;
-  onReanimatedStateChange: undefined | ((event: any) => void);
-  onReanimatedUpdateEvent: undefined | ((event: any) => void);
-  onReanimatedTouchEvent: undefined | ((event: any) => void);
-  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
-};
-
-export interface NativeGesture {
-  tag: number;
-  name: GestureType;
-  config: Record<string, unknown>;
-  gestureEvents: GestureEvents;
-}
+import { GestureType, NativeGesture } from '../types';
 
 function hasWorkletEventHandlers(config: Record<string, unknown>) {
   return Object.values(config).some(
@@ -196,7 +168,7 @@ export function useGesture(
   }, [config, tag]);
 
   return {
-    tag: tag,
+    tag,
     name: type,
     config,
     gestureEvents: {
@@ -208,5 +180,7 @@ export function useGesture(
       onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
+    simultaneousHandlers: [],
+    waitFor: [],
   };
 }

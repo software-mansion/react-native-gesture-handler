@@ -8,6 +8,8 @@ import {
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
   UpdateEvent,
+  NativeGesture,
+  ComposedGesture,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -181,4 +183,10 @@ export function hash(str: string) {
     h = (h * 33) ^ str.charCodeAt(i);
   }
   return h >>> 0;
+}
+
+export function isComposedGesture(
+  gesture: NativeGesture | ComposedGesture
+): gesture is ComposedGesture {
+  return 'tags' in gesture;
 }

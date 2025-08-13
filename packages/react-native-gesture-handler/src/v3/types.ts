@@ -48,3 +48,63 @@ export type CallbackHandlers = Omit<
 export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping?: unknown;
 };
+
+export type GestureType =
+  | 'TapGestureHandler'
+  | 'LongPressGestureHandler'
+  | 'PanGestureHandler'
+  | 'PinchGestureHandler'
+  | 'RotationGestureHandler'
+  | 'FlingGestureHandler'
+  | 'ForceTouchGestureHandler'
+  | 'ManualGestureHandler'
+  | 'NativeViewGestureHandler';
+
+export type ComposedGestureType =
+  | 'SimultaneousGesture'
+  | 'ExclusiveGesture'
+  | 'RaceGesture'
+  | 'ComposedGesture';
+
+export type GestureEvents = {
+  onGestureHandlerStateChange: (
+    event: StateChangeEvent<Record<string, unknown>>
+  ) => void;
+  onGestureHandlerEvent:
+    | undefined
+    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+  onGestureHandlerTouchEvent: (event: TouchEvent) => void;
+  onReanimatedStateChange:
+    | undefined
+    | ((event: StateChangeEvent<Record<string, unknown>>) => void);
+  onReanimatedUpdateEvent:
+    | undefined
+    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+  onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
+  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
+};
+
+export type GestureRelations = {
+  simultaneousGestures: number[];
+  exclusiveGestures: number[];
+};
+
+export type NativeGesture = {
+  tag: number;
+  name: GestureType;
+  config: Record<string, unknown>;
+  gestureEvents: GestureEvents;
+  simultaneousHandlers: number[];
+  waitFor: number[];
+};
+
+export type ComposedGesture = {
+  tags: number[];
+  name: ComposedGestureType;
+  config: {
+    shouldUseReanimated: boolean;
+    dispatchesAnimatedEvents: boolean;
+  };
+  gestureEvents: GestureEvents;
+  gestures: (NativeGesture | ComposedGesture)[];
+};
