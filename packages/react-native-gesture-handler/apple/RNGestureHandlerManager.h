@@ -33,6 +33,8 @@
 
 - (void)updateGestureHandlerConfig:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 
+- (void)updateGestureHandlerRelations:(nonnull NSNumber *)handlerTag relations:(nonnull NSDictionary *)relations;
+
 - (void)dropGestureHandler:(nonnull NSNumber *)handlerTag;
 
 - (void)dropAllGestureHandlers;

@@ -96,8 +96,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     val handler = registry.getHandler(handlerTag) ?: return
     val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler<GestureHandler>(handler) ?: return
 
-    interactionManager.dropRelationsForHandlerWithTag(handlerTag)
-    interactionManager.configureInteractions(handler, config)
     factory.setConfig(handler, config)
   }
 
@@ -108,6 +106,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler<GestureHandler>(handler) ?: return
 
     factory.updateConfig(handler, config)
+  }
+
+  @ReactMethod
+  override fun configureRelations(handlerTagDouble: Double, relations: ReadableMap) {
+    val handlerTag = handlerTagDouble.toInt()
+    val handler = registry.getHandler(handlerTag) ?: return
+
+    interactionManager.dropRelationsForHandlerWithTag(handlerTag)
+    interactionManager.configureInteractions(handler, relations)
   }
 
   @ReactMethod
