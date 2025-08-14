@@ -44,8 +44,8 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
   const dfs = (
     node: NativeGesture | ComposedGesture,
-    waitFor: number[] = [],
-    simultaneousHandlers: Set<number> = new Set()
+    simultaneousHandlers: Set<number> = new Set(),
+    waitFor: number[] = []
   ) => {
     // If we are in the leaf node, we want to fill gesture relations arrays with current
     // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
@@ -94,7 +94,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         const length = waitFor.length;
 
         // We traverse the child, passing the current `waitFor` and `simultaneousHandlers`.
-        dfs(child, waitFor, simultaneousHandlers);
+        dfs(child, simultaneousHandlers, waitFor);
 
         // After traversing the child, we need to update `waitFor` and `simultaneousHandlers`
 
@@ -137,7 +137,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       // This means that child is a leaf node.
       else {
         // In the leaf node, we only care about filling `waitFor` array. First we traverse the child...
-        dfs(child, waitFor, simultaneousHandlers);
+        dfs(child, simultaneousHandlers, waitFor);
 
         // ..and when we go back we add the tag of the child to the `waitFor` array.
         if (node.name === 'ExclusiveGesture') {
@@ -147,7 +147,11 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
     });
   };
 
-  dfs(gesture);
+  if (gesture.name === 'SimultaneousGesture') {
+    dfs(gesture, new Set(gesture.tags));
+  } else {
+    dfs(gesture);
+  }
 
   return (
     <NativeDetectorComponent
