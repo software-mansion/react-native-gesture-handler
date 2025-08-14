@@ -9,12 +9,20 @@ import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
 
 export function useGestureStateChangeEvent(handlerTag: number, config: any) {
-  const handlers: CallbackHandlers = {
-    onBegin: config.onBegin,
-    onStart: config.onStart,
-    onEnd: config.onEnd,
-    onFinalize: config.onFinalize,
-  };
+  const handlers: CallbackHandlers = {};
+
+  if (config.onBegin) {
+    handlers.onBegin = config.onBegin;
+  }
+  if (config.onStart) {
+    handlers.onStart = config.onStart;
+  }
+  if (config.onEnd) {
+    handlers.onEnd = config.onEnd;
+  }
+  if (config.onFinalize) {
+    handlers.onFinalize = config.onFinalize;
+  }
 
   const onGestureHandlerStateChange = (
     event: StateChangeEvent<Record<string, unknown>>
@@ -62,6 +70,8 @@ export function useGestureStateChangeEvent(handlerTag: number, config: any) {
   if (config.disableReanimated) {
     return onGestureHandlerStateChange;
   }
+
+  console.log(handlers);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedHandler = Reanimated?.useHandler(handlers);

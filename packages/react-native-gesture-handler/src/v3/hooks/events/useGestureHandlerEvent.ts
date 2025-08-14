@@ -12,9 +12,11 @@ import { CallbackHandlers, UpdateEvent } from '../../types';
 import { tagMessage } from '../../../utils';
 
 export function useGestureHandlerEvent(handlerTag: number, config: any) {
-  const handlers: CallbackHandlers = {
-    onUpdate: config.onUpdate,
-  };
+  const handlers: CallbackHandlers = {};
+
+  if (config.onUpdate) {
+    handlers.onUpdate = config.onUpdate;
+  }
 
   const onGestureHandlerEvent = (
     event: UpdateEvent<Record<string, unknown>>,
@@ -54,6 +56,8 @@ export function useGestureHandlerEvent(handlerTag: number, config: any) {
       : (event: UpdateEvent<Record<string, unknown>>) =>
           onGestureHandlerEvent(event, jsContext);
   }
+
+  console.log(handlers);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedHandler = Reanimated?.useHandler(handlers);
