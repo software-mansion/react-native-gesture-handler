@@ -12,11 +12,9 @@ import { CallbackHandlers, UpdateEvent } from '../../types';
 import { tagMessage } from '../../../utils';
 
 export function useGestureHandlerEvent(handlerTag: number, config: any) {
-  const handlers: CallbackHandlers = {};
+  const { onUpdate } = config;
 
-  if (config.onUpdate) {
-    handlers.onUpdate = config.onUpdate;
-  }
+  const handlers: CallbackHandlers = { ...(onUpdate && { onUpdate }) };
 
   const onGestureHandlerEvent = (
     event: UpdateEvent<Record<string, unknown>>,

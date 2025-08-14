@@ -9,20 +9,14 @@ import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
 
 export function useGestureStateChangeEvent(handlerTag: number, config: any) {
-  const handlers: CallbackHandlers = {};
+  const { onBegin, onStart, onEnd, onFinalize } = config;
 
-  if (config.onBegin) {
-    handlers.onBegin = config.onBegin;
-  }
-  if (config.onStart) {
-    handlers.onStart = config.onStart;
-  }
-  if (config.onEnd) {
-    handlers.onEnd = config.onEnd;
-  }
-  if (config.onFinalize) {
-    handlers.onFinalize = config.onFinalize;
-  }
+  const handlers: CallbackHandlers = {
+    ...(onBegin && { onBegin }),
+    ...(onStart && { onStart }),
+    ...(onEnd && { onEnd }),
+    ...(onFinalize && { onFinalize }),
+  };
 
   const onGestureHandlerStateChange = (
     event: StateChangeEvent<Record<string, unknown>>

@@ -11,20 +11,15 @@ import { CallbackHandlers, TouchEvent } from '../../types';
 import { NativeSyntheticEvent } from 'react-native';
 
 export function useTouchEvent(handlerTag: number, config: any) {
-  const handlers: CallbackHandlers = {};
+  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
+    config;
 
-  if (config.onTouchesDown) {
-    handlers.onTouchesDown = config.onTouchesDown;
-  }
-  if (config.onTouchesMove) {
-    handlers.onTouchesMove = config.onTouchesMove;
-  }
-  if (config.onTouchesUp) {
-    handlers.onTouchesUp = config.onTouchesUp;
-  }
-  if (config.onTouchesCancelled) {
-    handlers.onTouchesCancelled = config.onTouchesCancelled;
-  }
+  const handlers: CallbackHandlers = {
+    ...(onTouchesDown && { onTouchesDown }),
+    ...(onTouchesMove && { onTouchesMove }),
+    ...(onTouchesUp && { onTouchesUp }),
+    ...(onTouchesCancelled && { onTouchesCancelled }),
+  };
 
   const onGestureHandlerTouchEvent = (event: TouchEvent) => {
     'worklet';
