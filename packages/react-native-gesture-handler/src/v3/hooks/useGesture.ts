@@ -182,5 +182,6 @@ export function useGesture(
     },
     simultaneousHandlers: [],
     waitFor: [],
+    blocksHandlers: [],
   };
 }

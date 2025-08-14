@@ -96,6 +96,7 @@ export type NativeGesture = {
   gestureEvents: GestureEvents;
   simultaneousHandlers: number[];
   waitFor: number[];
+  blocksHandlers: number[];
 };
 
 export type ComposedGesture = {
