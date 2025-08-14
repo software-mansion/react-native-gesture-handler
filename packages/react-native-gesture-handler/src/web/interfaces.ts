@@ -117,7 +117,6 @@ export interface ResultEvent<T extends ResultEventType = ResultEventType>
   timeStamp: number;
 }
 
-// We need to leave any for v2 compatibility
 export interface PropsRef {
   onGestureHandlerEvent: (e: ResultEvent) => void;
   onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
