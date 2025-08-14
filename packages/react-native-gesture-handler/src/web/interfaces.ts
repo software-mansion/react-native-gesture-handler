@@ -119,10 +119,10 @@ export interface ResultEvent<T extends ResultEventType = ResultEventType>
 
 // We need to leave any for v2 compatibility
 export interface PropsRef {
-  onGestureHandlerEvent: (e: any) => void;
-  onGestureHandlerAnimatedEvent?: (e: any) => void;
-  onGestureHandlerStateChange: (e: any) => void;
-  onGestureHandlerTouchEvent?: (e: any) => void;
+  onGestureHandlerEvent: (e: ResultEvent) => void;
+  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
+  onGestureHandlerStateChange: (e: ResultEvent) => void;
+  onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {
