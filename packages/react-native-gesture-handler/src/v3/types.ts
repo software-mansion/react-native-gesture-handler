@@ -49,22 +49,25 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping?: unknown;
 };
 
-export type GestureType =
-  | 'TapGestureHandler'
-  | 'LongPressGestureHandler'
-  | 'PanGestureHandler'
-  | 'PinchGestureHandler'
-  | 'RotationGestureHandler'
-  | 'FlingGestureHandler'
-  | 'ForceTouchGestureHandler'
-  | 'ManualGestureHandler'
-  | 'NativeViewGestureHandler';
+export enum SingleGestureType {
+  Tap = 'TapGestureHandler',
+  LongPress = 'LongPressGestureHandler',
+  Pan = 'PanGestureHandler',
+  Pinch = 'PinchGestureHandler',
+  Rotation = 'RotationGestureHandler',
+  Fling = 'FlingGestureHandler',
+  Manual = 'ManualGestureHandler',
+  Native = 'NativeGestureHandler',
+}
 
-export type ComposedGestureType =
-  | 'SimultaneousGesture'
-  | 'ExclusiveGesture'
-  | 'RaceGesture'
-  | 'ComposedGesture';
+export enum ComposedGestureType {
+  Simultaneous = 'SimultaneousGesture',
+  Exclusive = 'ExclusiveGesture',
+  Race = 'RaceGesture',
+}
+
+// TODO: Find better name
+export type HandlerType = SingleGestureType | ComposedGestureType;
 
 export type GestureEvents = {
   onGestureHandlerStateChange: (
@@ -91,7 +94,7 @@ export type GestureRelations = {
 
 export type NativeGesture = {
   tag: number;
-  name: GestureType;
+  type: HandlerType;
   config: Record<string, unknown>;
   gestureEvents: GestureEvents;
   simultaneousHandlers: number[];
@@ -101,7 +104,7 @@ export type NativeGesture = {
 
 export type ComposedGesture = {
   tags: number[];
-  name: ComposedGestureType;
+  type: ComposedGestureType;
   config: {
     shouldUseReanimated: boolean;
     dispatchesAnimatedEvents: boolean;

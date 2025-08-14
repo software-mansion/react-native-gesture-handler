@@ -1,5 +1,5 @@
 import React from 'react';
-import { NativeGesture, ComposedGesture } from './types';
+import { NativeGesture, ComposedGesture, ComposedGestureType } from './types';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 
 import { Animated, StyleSheet } from 'react-native';
@@ -73,8 +73,8 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         // we add the tags of the simultaneous gesture to the `simultaneousHandlers`.
         // This way when we traverse the child, we already have the tags of the simultaneous gestures
         if (
-          node.name !== 'SimultaneousGesture' &&
-          child.name === 'SimultaneousGesture'
+          node.type !== ComposedGestureType.Simultaneous &&
+          child.type === ComposedGestureType.Simultaneous
         ) {
           child.tags.forEach((tag) => simultaneousHandlers.add(tag));
         }
@@ -83,8 +83,8 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         // we remove the tags of the child gestures from the `simultaneousHandlers`,
         // as those are not simultaneous with each other.
         if (
-          node.name === 'SimultaneousGesture' &&
-          child.name !== 'SimultaneousGesture'
+          node.type === ComposedGestureType.Simultaneous &&
+          child.type !== ComposedGestureType.Simultaneous
         ) {
           child.tags.forEach((tag) => simultaneousHandlers.delete(tag));
         }
@@ -102,8 +102,8 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         // we want to delete the tags of the simultaneous gesture from the `simultaneousHandlers` -
         // those gestures are not simultaneous with each other anymore.
         if (
-          child.name === 'SimultaneousGesture' &&
-          node.name !== 'SimultaneousGesture'
+          child.type === ComposedGestureType.Simultaneous &&
+          node.type !== ComposedGestureType.Simultaneous
         ) {
           node.tags.forEach((tag) => simultaneousHandlers.delete(tag));
         }
@@ -112,15 +112,15 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         // we want to add the tags of the simultaneous gesture to the `simultaneousHandlers`,
         // as those gestures are simultaneous with other children of the current node.
         if (
-          child.name !== 'SimultaneousGesture' &&
-          node.name === 'SimultaneousGesture'
+          child.type !== ComposedGestureType.Simultaneous &&
+          node.type === ComposedGestureType.Simultaneous
         ) {
           node.tags.forEach((tag) => simultaneousHandlers.add(tag));
         }
 
         // If we go back to an exclusive gesture, we want to add the tags of the child gesture to the `waitFor` array.
         // This will allow us to pass exclusive gesture tags to the right subtree of the current node.
-        if (node.name === 'ExclusiveGesture') {
+        if (node.type === ComposedGestureType.Exclusive) {
           child.tags.forEach((tag) => waitFor.push(tag));
         }
 
@@ -128,8 +128,8 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         // to the previous state, siblings of the exclusive gesture are not exclusive with it. Since we use `push` method to
         // add tags to the `waitFor` array, we can override `length` property to reset it to the previous state.
         if (
-          child.name === 'ExclusiveGesture' &&
-          node.name !== 'ExclusiveGesture'
+          child.type === ComposedGestureType.Exclusive &&
+          node.type !== ComposedGestureType.Exclusive
         ) {
           waitFor.length = length;
         }
@@ -140,14 +140,17 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         dfs(child, simultaneousHandlers, waitFor);
 
         // ..and when we go back we add the tag of the child to the `waitFor` array.
-        if (node.name === 'ExclusiveGesture') {
+        if (node.type === ComposedGestureType.Exclusive) {
           waitFor.push(child.tag);
         }
       }
     });
   };
 
-  if (gesture.name === 'SimultaneousGesture') {
+  if (
+    isComposedGesture(gesture) &&
+    gesture.type === ComposedGestureType.Simultaneous
+  ) {
     dfs(gesture, new Set(gesture.tags));
   } else {
     dfs(gesture);

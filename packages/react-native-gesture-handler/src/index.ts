@@ -167,4 +167,6 @@ export { NativeDetector } from './v3/NativeDetector';
 
 export * from './v3/hooks/useGesture';
 
+export { HandlerType } from './v3/types';
+
 initialize();

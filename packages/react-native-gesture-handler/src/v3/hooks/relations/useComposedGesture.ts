@@ -4,6 +4,7 @@ import {
   UpdateEvent,
   TouchEvent,
   ComposedGesture,
+  ComposedGestureType,
 } from '../../types';
 import { isComposedGesture } from '../utils';
 import { tagMessage } from '../../../utils';
@@ -75,7 +76,7 @@ export function useComposedGesture(
 
   return {
     tags,
-    name: 'ComposedGesture',
+    type: ComposedGestureType.Race,
     config,
     gestureEvents: {
       onGestureHandlerStateChange,

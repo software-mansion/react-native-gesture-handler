@@ -8,7 +8,7 @@ import {
 } from '../../handlers/gestures/reanimatedWrapper';
 import { hash, prepareConfig, isAnimatedEvent } from './utils';
 import { tagMessage } from '../../utils';
-import { GestureType, NativeGesture } from '../types';
+import { HandlerType, NativeGesture } from '../types';
 
 function hasWorkletEventHandlers(config: Record<string, unknown>) {
   return Object.values(config).some(
@@ -79,7 +79,7 @@ function unbindSharedValues(config: any, handlerTag: number) {
 }
 
 export function useGesture(
-  type: GestureType,
+  type: HandlerType,
   config: Record<string, unknown>
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
@@ -169,7 +169,7 @@ export function useGesture(
 
   return {
     tag,
-    name: type,
+    type,
     config,
     gestureEvents: {
       onGestureHandlerStateChange,
