@@ -6,6 +6,7 @@ import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
 import { isComposedGesture } from './hooks/utils';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
@@ -47,11 +48,17 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
     simultaneousHandlers: Set<number> = new Set()
   ) => {
     // If we are in the leaf node, we want to fill gesture relations arrays with current
-    // waitFor and simultaneousHandlers.
+    // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
     // TODO: handle `simultaneousWithExternalGesture`, `requreExternalGestureToFail`, `blocksExternalGesture`
     if (!isComposedGesture(node)) {
       node.simultaneousHandlers.push(...simultaneousHandlers);
       node.waitFor.push(...waitFor);
+
+      RNGestureHandlerModule.configureRelations(node.tag, {
+        waitFor,
+        simultaneousHandlers: Array.from(simultaneousHandlers),
+        blocksHandlers: node.blocksHandlers || [], // TODO: handle `blocksExternalGesture`
+      });
 
       return;
     }
