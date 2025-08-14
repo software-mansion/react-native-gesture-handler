@@ -170,4 +170,6 @@ export * from './v3/hooks/relations/useSimultaneous';
 export * from './v3/hooks/relations/useExclusive';
 export * from './v3/hooks/relations/useRace';
 
+export { HandlerType } from './v3/types';
+
 initialize();
