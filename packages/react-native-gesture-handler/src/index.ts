@@ -162,8 +162,8 @@ export type {
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
 
-export type { NativeDetectorProps } from './v3/NativeDetector';
-export { NativeDetector } from './v3/NativeDetector';
+export type { NativeDetectorProps } from './v3/NativeDetector/NativeDetector';
+export { NativeDetector } from './v3/NativeDetector/NativeDetector';
 
 export * from './v3/hooks/useGesture';
 
