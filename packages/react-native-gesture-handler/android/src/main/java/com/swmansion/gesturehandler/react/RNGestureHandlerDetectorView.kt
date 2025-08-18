@@ -48,7 +48,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   override fun addView(child: View, index: Int, params: LayoutParams?) {
     super.addView(child, index, params)
 
-    tryAttachHandlerToChildView(child.id)
+    tryAttachNativeHandlersToChildView(child.id)
   }
 
   override fun removeViewAt(index: Int) {
@@ -95,11 +95,11 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val child = getChildAt(0)
 
     if (child != null) {
-      tryAttachHandlerToChildView(child.id)
+      tryAttachNativeHandlersToChildView(child.id)
     }
   }
 
-  private fun tryAttachHandlerToChildView(childId: Int) {
+  private fun tryAttachNativeHandlersToChildView(childId: Int) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
