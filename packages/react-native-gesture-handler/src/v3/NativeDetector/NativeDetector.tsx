@@ -7,6 +7,7 @@ import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../../utils';
 import { isComposedGesture } from '../hooks/utils';
 import { dfs } from './utils';
+import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
@@ -42,6 +43,12 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
     } else {
       dfs(gesture);
     }
+  } else {
+    RNGestureHandlerModule.configureRelations(gesture.tag, {
+      waitFor: gesture.gestureRelations.waitFor,
+      simultaneousHandlers: gesture.gestureRelations.simultaneousHandlers,
+      blocksHandlers: gesture.gestureRelations.blocksHandlers,
+    });
   }
 
   return (
