@@ -13,7 +13,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
   private var handlersToAttach: List<Int>? = null
-  private var attachedNativeHandlers: MutableSet<Int> = mutableSetOf()
+  private var nativeHandlers: MutableSet<Int> = mutableSetOf()
   private var attachedHandlers: MutableSet<Int> = mutableSetOf()
   private var moduleId: Int = -1
 
@@ -78,7 +78,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
         // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
         if (shouldAttachGestureToChildView(tag)) {
-          attachedNativeHandlers.add(tag)
+          nativeHandlers.add(tag)
         } else {
           registry.attachHandlerToView(tag, this.id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
 
@@ -86,7 +86,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         }
       } else if (entry.value == GestureHandlerMutation.Detach) {
         registry.detachHandler(tag)
-        attachedNativeHandlers.remove(tag)
+        nativeHandlers.remove(tag)
         attachedHandlers.remove(tag)
       }
     }
@@ -103,7 +103,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
-    for (tag in attachedNativeHandlers) {
+    for (tag in nativeHandlers) {
       registry.attachHandlerToView(tag, childId, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
 
       attachedHandlers.add(tag)
@@ -114,7 +114,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
-    for (tag in attachedNativeHandlers) {
+    for (tag in nativeHandlers) {
       registry.detachHandler(tag)
       attachedHandlers.remove(tag)
     }
