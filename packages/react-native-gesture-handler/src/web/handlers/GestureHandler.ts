@@ -615,33 +615,45 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public setGestureConfig(config: Config) {
+    if (!config.enabled) {
+      config.enabled = true;
+    }
+    if (!config.dispatchesAnimatedEvents) {
+      config.dispatchesAnimatedEvents = false;
+    }
     this.resetConfig();
     this.updateGestureConfig(config);
   }
 
-  public updateGestureConfig({
-    enabled = true,
-    dispatchesAnimatedEvents = false,
-    ...props
-  }: Config): void {
-    this._config = {
-      enabled,
-      dispatchesAnimatedEvents,
-      ...props,
-    };
-
-    if (this.enabled !== enabled) {
-      this.delegate.onEnabledChange(enabled);
+  public updateGestureConfig(config: Config): void {
+    if (config.enabled && this.enabled !== config.enabled) {
+      this.delegate.onEnabledChange(this.enabled);
+      this.enabled = config.enabled;
     }
 
-    this.enabled = enabled;
+    for (const key of Object.keys(config)) {
+      if (this.config[key] !== config[key]) {
+        this.config[key] = config[key];
+      }
+    }
 
-    if (this.config.shouldCancelWhenOutside !== undefined) {
+    if (
+      config.shouldCancelWhenOutside &&
+      this.config.shouldCancelWhenOutside !== undefined
+    ) {
       this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
     }
 
-    this.forAnimated = dispatchesAnimatedEvents;
-    this.validateHitSlops();
+    if (
+      config.dispatchesAnimatedEvent &&
+      this.config.dispatchesAnimatedEvents !== undefined
+    ) {
+      this.forAnimated = this.config.dispatchesAnimatedEvents;
+    }
+
+    if (config.hitSlop) {
+      this.validateHitSlops();
+    }
 
     if (this.enabled) {
       return;
