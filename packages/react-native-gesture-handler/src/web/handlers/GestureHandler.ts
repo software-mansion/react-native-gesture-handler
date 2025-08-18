@@ -615,12 +615,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public setGestureConfig(config: Config) {
-    if (config.enabled === undefined) {
-      config.enabled = true;
-    }
-    if (config.dispatchesAnimatedEvents === undefined) {
-      config.dispatchesAnimatedEvents = false;
-    }
     this.resetConfig();
     this.updateGestureConfig(config);
   }
@@ -628,27 +622,14 @@ export default abstract class GestureHandler implements IGestureHandler {
   public updateGestureConfig(config: Config): void {
     if (config.enabled !== undefined && this.enabled !== config.enabled) {
       this.delegate.onEnabledChange(this.enabled);
-      this.enabled = config.enabled;
     }
 
     for (const key of Object.keys(config)) {
-      if (this.config[key] !== config[key]) {
-        this.config[key] = config[key];
-      }
+      this.config[key] = config[key];
     }
 
-    if (
-      config.shouldCancelWhenOutside !== undefined &&
-      this.config.shouldCancelWhenOutside !== undefined
-    ) {
-      this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
-    }
-
-    if (
-      config.dispatchesAnimatedEvent !== undefined &&
-      this.config.dispatchesAnimatedEvents !== undefined
-    ) {
-      this.forAnimated = this.config.dispatchesAnimatedEvents;
+    if (config.dispatchesAnimatedEvent !== undefined) {
+      this.forAnimated = this.config.dispatchesAnimatedEvents!;
     }
 
     if (config.hitSlop !== undefined) {
@@ -803,7 +784,14 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
-  protected resetConfig(): void {}
+  protected resetConfig(): void {
+    this.enabled = true;
+    this.config.manualActivation = false;
+    this.config.shouldCancelWhenOutside = false;
+    this.config.mouseButton = undefined;
+    this.config.hitSlop = undefined;
+    this.config.dispatchesAnimatedEvents = false;
+  }
 
   public onDestroy(): void {
     GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
