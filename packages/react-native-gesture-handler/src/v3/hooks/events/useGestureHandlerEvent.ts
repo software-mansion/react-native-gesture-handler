@@ -55,8 +55,6 @@ export function useGestureHandlerEvent(handlerTag: number, config: any) {
           onGestureHandlerEvent(event, jsContext);
   }
 
-  console.log(handlers);
-
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedHandler = Reanimated?.useHandler(handlers);
   // eslint-disable-next-line react-hooks/rules-of-hooks
