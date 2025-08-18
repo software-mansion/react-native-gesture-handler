@@ -5,6 +5,7 @@ import {
   HandlerStateChangeEventPayload,
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
+import { ValueOf } from '../typeUtils';
 
 export type GestureUpdateEventWithData<T> = GestureEventPayload & {
   handlerData: T;
@@ -49,25 +50,28 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping?: unknown;
 };
 
-export enum SingleGestureType {
-  Tap = 'TapGestureHandler',
-  LongPress = 'LongPressGestureHandler',
-  Pan = 'PanGestureHandler',
-  Pinch = 'PinchGestureHandler',
-  Rotation = 'RotationGestureHandler',
-  Fling = 'FlingGestureHandler',
-  Manual = 'ManualGestureHandler',
-  Native = 'NativeGestureHandler',
-}
+export const SingleGestureType = {
+  Tap: 'TapGestureHandler',
+  LongPress: 'LongPressGestureHandler',
+  Pan: 'PanGestureHandler',
+  Pinch: 'PinchGestureHandler',
+  Rotation: 'RotationGestureHandler',
+  Fling: 'FlingGestureHandler',
+  Manual: 'ManualGestureHandler',
+  Native: 'NativeGestureHandler',
+} as const;
 
-export enum ComposedGestureType {
-  Simultaneous = 'SimultaneousGesture',
-  Exclusive = 'ExclusiveGesture',
-  Race = 'RaceGesture',
-}
+export const ComposedGestureType = {
+  Simultaneous: 'SimultaneousGesture',
+  Exclusive: 'ExclusiveGesture',
+  Race: 'RaceGesture',
+} as const;
 
 // TODO: Find better name
-export type HandlerType = SingleGestureType | ComposedGestureType;
+export const HandlerType = {
+  ...SingleGestureType,
+  ...ComposedGestureType,
+} as const;
 
 export type GestureEvents = {
   onGestureHandlerStateChange: (
@@ -81,23 +85,22 @@ export type GestureEvents = {
 };
 
 export type GestureRelations = {
-  simultaneousGestures: number[];
-  exclusiveGestures: number[];
-};
-
-export type NativeGesture = {
-  tag: number;
-  type: HandlerType;
-  config: Record<string, unknown>;
-  gestureEvents: GestureEvents;
   simultaneousHandlers: number[];
   waitFor: number[];
   blocksHandlers: number[];
 };
 
+export type NativeGesture = {
+  tag: number;
+  type: ValueOf<typeof HandlerType>;
+  config: Record<string, unknown>;
+  gestureEvents: GestureEvents;
+  gestureRelations: GestureRelations;
+};
+
 export type ComposedGesture = {
   tags: number[];
-  type: ComposedGestureType;
+  type: ValueOf<typeof ComposedGestureType>;
   config: {
     shouldUseReanimated: boolean;
     dispatchesAnimatedEvents: boolean;
@@ -105,3 +108,5 @@ export type ComposedGesture = {
   gestureEvents: GestureEvents;
   gestures: (NativeGesture | ComposedGesture)[];
 };
+
+export type Gesture = NativeGesture | ComposedGesture;

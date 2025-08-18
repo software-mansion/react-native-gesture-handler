@@ -7,7 +7,15 @@ import {
   SharedValue,
 } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
-import { HandlerType, NativeGesture } from '../types';
+import {
+  GestureRelations,
+  HandlerType,
+  NativeGesture,
+  ComposedGesture,
+  Gesture,
+} from '../types';
+import { isComposedGesture } from './utils';
+import { ValueOf } from '../../typeUtils';
 
 function hasWorkletEventHandlers(config: Record<string, unknown>) {
   return Object.values(config).some(
@@ -72,8 +80,39 @@ function unbindSharedValues(config: any, tag: number) {
   }
 }
 
+function prepareRelations(config: any): GestureRelations {
+  const extractHandlerTags = (otherHandler: Gesture | Gesture[]): number[] => {
+    if (!otherHandler) {
+      return [];
+    }
+
+    let otherTags: number[];
+
+    if (Array.isArray(otherHandler)) {
+      otherTags = otherHandler.flatMap(
+        (gesture: NativeGesture | ComposedGesture) =>
+          isComposedGesture(gesture) ? gesture.tags : gesture.tag
+      );
+    } else {
+      otherTags = isComposedGesture(otherHandler)
+        ? otherHandler.tags
+        : [otherHandler.tag];
+    }
+
+    return otherTags;
+  };
+
+  return {
+    simultaneousHandlers: extractHandlerTags(
+      config.simultaneousWithExternalGesture
+    ),
+    waitFor: extractHandlerTags(config.requireExternalGestureToFail),
+    blocksHandlers: extractHandlerTags(config.blocksExternalGesture),
+  };
+}
+
 export function useGesture(
-  type: HandlerType,
+  type: ValueOf<typeof HandlerType>,
   config: Record<string, unknown>
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
@@ -113,6 +152,8 @@ export function useGesture(
   config.dispatchesAnimatedEvents =
     !!onGestureHandlerAnimatedEvent &&
     '__isNative' in onGestureHandlerAnimatedEvent;
+
+  const gestureRelations = prepareRelations(config);
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
@@ -155,8 +196,6 @@ export function useGesture(
       onGestureHandlerTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
-    simultaneousHandlers: [],
-    waitFor: [],
-    blocksHandlers: [],
+    gestureRelations,
   };
 }

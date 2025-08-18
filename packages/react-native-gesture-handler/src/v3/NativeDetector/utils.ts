@@ -18,13 +18,13 @@ export const dfs = (
   // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
   // TODO: handle `simultaneousWithExternalGesture`, `requreExternalGestureToFail`, `blocksExternalGesture`
   if (!isComposedGesture(node)) {
-    node.simultaneousHandlers.push(...simultaneousHandlers);
-    node.waitFor.push(...waitFor);
+    node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
+    node.gestureRelations.waitFor.push(...waitFor);
 
     RNGestureHandlerModule.configureRelations(node.tag, {
-      waitFor,
-      simultaneousHandlers: Array.from(simultaneousHandlers),
-      blocksHandlers: node.blocksHandlers || [], // TODO: handle `blocksExternalGesture`
+      waitFor: node.gestureRelations.waitFor,
+      simultaneousHandlers: node.gestureRelations.simultaneousHandlers,
+      blocksHandlers: node.gestureRelations.blocksHandlers,
     });
 
     return;
