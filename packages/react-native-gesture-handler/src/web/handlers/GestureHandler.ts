@@ -615,10 +615,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public setGestureConfig(config: Config) {
-    if (!config.enabled) {
+    if (config.enabled === undefined) {
       config.enabled = true;
     }
-    if (!config.dispatchesAnimatedEvents) {
+    if (config.dispatchesAnimatedEvents === undefined) {
       config.dispatchesAnimatedEvents = false;
     }
     this.resetConfig();
@@ -626,7 +626,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public updateGestureConfig(config: Config): void {
-    if (config.enabled && this.enabled !== config.enabled) {
+    if (config.enabled !== undefined && this.enabled !== config.enabled) {
       this.delegate.onEnabledChange(this.enabled);
       this.enabled = config.enabled;
     }
@@ -638,20 +638,20 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (
-      config.shouldCancelWhenOutside &&
+      config.shouldCancelWhenOutside !== undefined &&
       this.config.shouldCancelWhenOutside !== undefined
     ) {
       this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
     }
 
     if (
-      config.dispatchesAnimatedEvent &&
+      config.dispatchesAnimatedEvent !== undefined &&
       this.config.dispatchesAnimatedEvents !== undefined
     ) {
       this.forAnimated = this.config.dispatchesAnimatedEvents;
     }
 
-    if (config.hitSlop) {
+    if (config.hitSlop !== undefined) {
       this.validateHitSlops();
     }
 
