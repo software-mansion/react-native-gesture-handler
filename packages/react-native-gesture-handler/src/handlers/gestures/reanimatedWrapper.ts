@@ -36,6 +36,9 @@ let Reanimated:
         events: string[],
         rebuild: boolean
       ) => (event: unknown) => void;
+      useComposedEventHandler<T>(
+        handlers: (((event: T) => void) | null)[]
+      ): (event: T) => void;
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
       isSharedValue: (value: unknown) => value is SharedValue<unknown>;
