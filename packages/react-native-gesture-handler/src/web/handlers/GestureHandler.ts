@@ -15,12 +15,18 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import IGestureHandler from './IGestureHandler';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import {
+  GestureTouchEvent,
+  MouseButton,
+} from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
-import { StateChangeEvent, TouchEvent, UpdateEvent } from '../../v3/types';
+import {
+  GestureStateChangeEventWithData,
+  GestureUpdateEventWithData,
+} from '../../v3/types';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -370,7 +376,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
       this.propsRef!.current;
 
-    const touchEvent: ResultEvent<TouchEvent> | undefined =
+    const touchEvent: ResultEvent<GestureTouchEvent> | undefined =
       this.transformTouchEvent(event);
 
     if (touchEvent) {
@@ -390,7 +396,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
-    this.ensurePropsRef();
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
@@ -449,7 +454,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformStateChangeEvent(
     newState: State,
     oldState: State
-  ): ResultEvent<StateChangeEvent<unknown>> {
+  ): ResultEvent<GestureStateChangeEventWithData<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
@@ -472,7 +477,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformUpdateEvent(
     newState: State
-  ): ResultEvent<UpdateEvent<unknown>> {
+  ): ResultEvent<GestureUpdateEventWithData<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
@@ -494,7 +499,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformTouchEvent(
     event: AdaptedEvent
-  ): ResultEvent<TouchEvent> | undefined {
+  ): ResultEvent<GestureTouchEvent> | undefined {
     const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
@@ -624,7 +629,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       });
     });
 
-    const cancelEvent: ResultEvent<TouchEvent> = {
+    const cancelEvent: ResultEvent<GestureTouchEvent> = {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.state,

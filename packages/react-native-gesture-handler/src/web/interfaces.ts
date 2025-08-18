@@ -4,10 +4,14 @@ import {
   MouseButton,
   TouchAction,
   StylusData,
+  GestureTouchEvent,
 } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { PointerType } from '../PointerType';
-import { GestureHandlerEvent } from '../v3/types';
+import {
+  GestureStateChangeEventWithData,
+  GestureUpdateEventWithData,
+} from '../v3/types';
 import { State } from '../State';
 
 export interface HitSlop {
@@ -110,7 +114,12 @@ export interface PointerData {
 }
 
 // Native event has to stay for v2 compatibility
-type ResultEventType = GestureHandlerEvent<unknown> | GestureHandlerNativeEvent;
+type ResultEventType =
+  | GestureUpdateEventWithData<unknown>
+  | GestureStateChangeEventWithData<unknown>
+  | GestureTouchEvent
+  | GestureHandlerNativeEvent;
+
 export interface ResultEvent<T extends ResultEventType = ResultEventType>
   extends Record<string, T | number> {
   nativeEvent: T;
