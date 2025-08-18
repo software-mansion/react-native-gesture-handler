@@ -13,7 +13,7 @@
 
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
 
-@property (nonatomic, nonnull) NSMutableSet *attachedNativeHandlers;
+@property (nonatomic, nonnull) NSMutableSet *nativeHandlers;
 @property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
 
 @end
@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
     _props = defaultProps;
     _moduleId = -1;
-    _attachedNativeHandlers = [NSMutableSet set];
+    _nativeHandlers = [NSMutableSet set];
     _attachedHandlers = [NSMutableSet set];
   }
 
@@ -96,11 +96,9 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
 - (void)didAddSubview:(UIView *)view
 {
-  for (const id handlerTag : _attachedNativeHandlers) {
-    [self tryAttachHandlerToChildView:handlerTag];
-  }
-
   [super didAddSubview:view];
+
+  [self tryAttachNativeHandlersToChildView];
 }
 
 - (void)willRemoveSubview:(UIView *)subview
@@ -154,8 +152,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
       if ([self shouldAttachGestureToSubview:handlerTag]) {
-        [_attachedNativeHandlers addObject:handlerTag];
-        [self tryAttachHandlerToChildView:handlerTag];
+        [_nativeHandlers addObject:handlerTag];
       } else {
         [handlerManager.registry attachHandlerWithTag:handlerTag
                                                toView:self
@@ -166,34 +163,38 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
       [_attachedHandlers removeObject:handlerTag];
-      [_attachedNativeHandlers removeObject:handlerTag];
+      [_nativeHandlers removeObject:handlerTag];
     }
   }
+  [self tryAttachNativeHandlersToChildView];
 
   [super updateProps:propsBase oldProps:oldPropsBase];
   // Override to force hittesting to work outside bounds
   self.clipsToBounds = NO;
 }
 
-- (void)tryAttachHandlerToChildView:(NSNumber *)handlerTag
+- (void)tryAttachNativeHandlersToChildView
 {
+  if (!self.subviews[0])
+    return;
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  [handlerManager.registry attachHandlerWithTag:handlerTag
-                                         toView:self.subviews[0]
-                                 withActionType:RNGestureHandlerActionTypeNativeDetector];
 
-  [_attachedHandlers addObject:handlerTag];
+  for (NSNumber *handlerTag in _nativeHandlers) {
+    [handlerManager.registry attachHandlerWithTag:handlerTag
+                                           toView:self.subviews[0]
+                                   withActionType:RNGestureHandlerActionTypeNativeDetector];
+
+    [_attachedHandlers addObject:handlerTag];
+  }
 }
 
 - (void)detachNativeGestureHandlers
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
-  for (NSNumber *handlerTag in _attachedHandlers) {
-    if ([self shouldAttachGestureToSubview:handlerTag]) {
-      [[handlerManager registry] detachHandlerWithTag:handlerTag];
-      [_attachedHandlers removeObject:handlerTag];
-    }
+  for (NSNumber *handlerTag in _nativeHandlers) {
+    [[handlerManager registry] detachHandlerWithTag:handlerTag];
+    [_attachedHandlers removeObject:handlerTag];
   }
 }
 

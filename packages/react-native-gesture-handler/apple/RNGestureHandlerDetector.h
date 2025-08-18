@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dispatchTouchEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerTouchEvent)event;
 
-- (void)tryAttachHandlerToChildView;
+- (void)tryAttachNativeHandlersToChildView;
 
 - (void)detachNativeGestureHandlers;
 
