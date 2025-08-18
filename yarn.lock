@@ -3465,6 +3465,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/slider@npm:4.5.6":
+  version: 4.5.6
+  resolution: "@react-native-community/slider@npm:4.5.6"
+  checksum: 10c0/6ff9b91b8f9af14fadccad101fc0abc17c864a5d2832483aef8813e67a93ad723053ed033141f71db8f7a128d3b1fdf4dd37f5c093901e7f041380a671090283
+  languageName: node
+  linkType: hard
+
 "@react-native-community/slider@npm:5.0.0":
   version: 5.0.0
   resolution: "@react-native-community/slider@npm:5.0.0"
@@ -11603,7 +11610,7 @@ __metadata:
     "@react-native-community/cli": "npm:15.0.1"
     "@react-native-community/cli-platform-android": "npm:15.0.1"
     "@react-native-community/cli-platform-ios": "npm:15.0.1"
-    "@react-native-community/slider": "patch:@react-native-community/slider@npm%3A5.0.0#~/.yarn/patches/@react-native-community-slider-npm-5.0.0-32e63cc751.patch"
+    "@react-native-community/slider": "npm:4.5.6"
     "@react-native-community/viewpager": "npm:5.0.11"
     "@react-native/babel-preset": "npm:0.78.0"
     "@react-native/eslint-config": "npm:0.78.0"
