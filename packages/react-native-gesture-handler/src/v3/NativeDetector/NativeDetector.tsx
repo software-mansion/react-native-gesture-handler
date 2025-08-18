@@ -36,13 +36,12 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
     );
   }
 
-  if (
-    isComposedGesture(gesture) &&
-    gesture.type === ComposedGestureType.Simultaneous
-  ) {
-    dfs(gesture, new Set(gesture.tags));
-  } else {
-    dfs(gesture);
+  if (isComposedGesture(gesture)) {
+    if (gesture.type === ComposedGestureType.Simultaneous) {
+      dfs(gesture, new Set(gesture.tags));
+    } else {
+      dfs(gesture);
+    }
   }
 
   return (
