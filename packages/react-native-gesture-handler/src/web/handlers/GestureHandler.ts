@@ -628,8 +628,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.config[key] = config[key];
     }
 
+    if (config.shouldCancelWhenOutside !== undefined) {
+      this.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
+    }
+
     if (config.dispatchesAnimatedEvent !== undefined) {
-      this.forAnimated = this.config.dispatchesAnimatedEvents!;
+      this.forAnimated = config.dispatchesAnimatedEvents!;
     }
 
     if (config.hitSlop !== undefined) {
