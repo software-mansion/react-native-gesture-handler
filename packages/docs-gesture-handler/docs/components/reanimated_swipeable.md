@@ -191,7 +191,7 @@ Unlike method `close`, this method does not trigger any animation.
 ### Example:
 
 For a more in-depth presentation of differences between the new and the legacy implementations,
-see [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/example/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
+see [swipeable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/release_tests/swipeableReanimation/index.tsx) from GestureHandler Example App.
 
 ```jsx
 import React from 'react';
