@@ -12,7 +12,7 @@ import { CallbackHandlers, UpdateEvent } from '../../types';
 import { tagMessage } from '../../../utils';
 
 export function useGestureHandlerEvent(handlerTag: number, config: any) {
-  const { onUpdate } = config;
+  const { onUpdate, changeEventCalculator } = config;
 
   const handlers: CallbackHandlers = { ...(onUpdate && { onUpdate }) };
 
@@ -35,8 +35,8 @@ export function useGestureHandlerEvent(handlerTag: number, config: any) {
     runWorkletCallback(
       CALLBACK_TYPE.UPDATE,
       handlers,
-      config.changeEventCalculator
-        ? config.changeEventCalculator(event, context.lastUpdateEvent)
+      changeEventCalculator
+        ? changeEventCalculator(event, context.lastUpdateEvent)
         : event
     );
 
