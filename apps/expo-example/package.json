@@ -14,7 +14,7 @@
   "dependencies": {
     "@expo/metro-runtime": "~6.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-community/slider": "patch:@react-native-community/slider@npm%3A5.0.0#~/.yarn/patches/@react-native-community-slider-npm-5.0.0-32e63cc751.patch",
+    "@react-native-community/slider": "patch:@react-native-community/slider@npm%3A4.5.7#~/.yarn/patches/@react-native-community-slider-npm-4.5.7-658e0e58c9.patch",
     "@react-native-community/viewpager": "5.0.11",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
@@ -28,12 +28,11 @@
     "react-dom": "19.1.0",
     "react-native": "0.81.0",
     "react-native-gesture-handler": "workspace:*",
-    "react-native-reanimated": "~4.0.2",
+    "react-native-reanimated": "^3.19.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.14.0",
     "react-native-svg": "15.12.1",
-    "react-native-web": "^0.21.0",
-    "react-native-worklets": "~0.4.1"
+    "react-native-web": "^0.21.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
