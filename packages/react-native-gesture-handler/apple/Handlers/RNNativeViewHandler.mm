@@ -14,12 +14,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/UIView+React.h>
-
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTScrollViewComponentView.h>
-#else
-#import <React/RCTScrollView.h>
-#endif // RCT_NEW_ARCH_ENABLED
 
 #pragma mark RNDummyGestureRecognizer
 
