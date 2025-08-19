@@ -75,8 +75,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       val tag = entry.key
 
       if (entry.value == GestureHandlerMutation.Attach) {
-        // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
-        // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
         if (shouldAttachGestureToChildView(tag)) {
           nativeHandlers.add(tag)
         } else {
@@ -91,9 +89,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       }
     }
 
-    // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
     val child = getChildAt(0)
 
+    // It might happen that `attachHandlers` will be called before children are added into view hierarchy.
     if (child != null) {
       tryAttachNativeHandlersToChildView(child.id)
     }

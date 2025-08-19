@@ -166,7 +166,11 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
       [_nativeHandlers removeObject:handlerTag];
     }
   }
-  [self tryAttachNativeHandlersToChildView];
+
+  // It might happen that `attachHandlers` will be called before children are added into view hierarchy.
+  if (!self.subviews[0]) {
+    [self tryAttachNativeHandlersToChildView];
+  }
 
   [super updateProps:propsBase oldProps:oldPropsBase];
   // Override to force hittesting to work outside bounds
@@ -175,8 +179,6 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
 - (void)tryAttachNativeHandlersToChildView
 {
-  if (!self.subviews[0])
-    return;
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   for (NSNumber *handlerTag in _nativeHandlers) {
