@@ -7,14 +7,12 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTViewManager.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
-#endif // RCT_NEW_ARCH_ENABLED
 
 #import "RNGHRuntimeDecorator.h"
 
@@ -31,15 +29,9 @@ using namespace gesturehandler;
 using namespace facebook;
 using namespace react;
 
-#ifdef RCT_NEW_ARCH_ENABLED
 @interface RNGestureHandlerModule () <RCTTurboModule, RCTTurboModuleWithJSIBindings>
 
 @end
-#else
-@interface RNGestureHandlerModule () <RCTUIManagerObserver>
-
-@end
-#endif // RCT_NEW_ARCH_ENABLED
 
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
@@ -55,7 +47,6 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   bool _uiRuntimeDecorated;
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
 
 static std::unordered_map<int, RNGestureHandlerManager *> _managers;
@@ -64,8 +55,6 @@ static std::unordered_map<int, RNGestureHandlerManager *> _managers;
 {
   return _managers[moduleId];
 }
-
-#endif // RCT_NEW_ARCH_ENABLED
 
 RCT_EXPORT_MODULE()
 
@@ -82,10 +71,6 @@ RCT_EXPORT_MODULE()
   });
 
   _managers[_moduleId] = nullptr;
-
-#ifndef RCT_NEW_ARCH_ENABLED
-  [self.bridge.uiManager.observerCoordinator removeObserver:self];
-#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (dispatch_queue_t)methodQueue
@@ -99,7 +84,6 @@ RCT_EXPORT_MODULE()
   return RCTGetUIManagerQueue();
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (void)installJSIBindingsWithRuntime:(jsi::Runtime &)rnRuntime
                           callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callinvoker
 {
@@ -113,9 +97,7 @@ RCT_EXPORT_MODULE()
     }
   });
 }
-#endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (void)initialize
 {
   static int nextModuleId = 0;
@@ -124,18 +106,6 @@ RCT_EXPORT_MODULE()
                                                                     viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
 }
-#else
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-
-  _manager = [[RNGestureHandlerManager alloc] initWithUIManager:bridge.uiManager
-                                                eventDispatcher:bridge.eventDispatcher];
-  _operations = [NSMutableArray new];
-
-  [bridge.uiManager.observerCoordinator addObserver:self];
-}
-#endif // RCT_NEW_ARCH_ENABLED
 
 - (bool)installUIRuntimeBindings
 {
@@ -219,7 +189,6 @@ RCT_EXPORT_MODULE()
 {
   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
   // On the old arch we rely on `uiManagerWillPerformMounting`
-#ifdef RCT_NEW_ARCH_ENABLED
   if (_operations.count == 0) {
     return;
   }
@@ -233,7 +202,6 @@ RCT_EXPORT_MODULE()
       operation(manager);
     }
   }];
-#endif // RCT_NEW_ARCH_ENABLED
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
@@ -287,34 +255,6 @@ RCT_EXPORT_MODULE()
   [_operations addObject:operation];
 }
 
-#ifndef RCT_NEW_ARCH_ENABLED
-
-#pragma mark - RCTUIManagerObserver
-
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
-{
-  [self uiManagerWillPerformMounting:uiManager];
-}
-
-- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
-{
-  if (_operations.count == 0) {
-    return;
-  }
-
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
-  [uiManager
-      addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RNGHUIView *> *viewRegistry) {
-        for (GestureHandlerOperation operation in operations) {
-          operation(self->_manager);
-        }
-      }];
-}
-
-#endif // RCT_NEW_ARCH_ENABLED
-
 #pragma mark Events
 
 - (NSArray<NSString *> *)supportedEvents
@@ -344,12 +284,10 @@ RCT_EXPORT_MODULE()
   };
 }
 
-#if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeRNGestureHandlerModuleSpecJSI>(params);
 }
-#endif
 
 @end

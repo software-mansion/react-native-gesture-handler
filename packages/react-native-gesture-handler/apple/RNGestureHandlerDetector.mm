@@ -13,7 +13,7 @@
 
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
 
-@property (nonatomic, nonnull) NSMutableSet *nativeHandlersToAttach;
+@property (nonatomic, nonnull) NSMutableSet *nativeHandlers;
 @property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
 
 @end
@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
     _props = defaultProps;
     _moduleId = -1;
-    _nativeHandlersToAttach = [NSMutableSet set];
+    _nativeHandlers = [NSMutableSet set];
     _attachedHandlers = [NSMutableSet set];
   }
 
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
 // TODO: I'm not sure whether this is the correct place for cleanup
 // Possibly allowing recycling and doing this in prepareForRecycle would be better
-- (void)willMoveToWindow:(UIWindow *)newWindow
+- (void)willMoveToWindow:(RNGHWindow *)newWindow
 {
   if (newWindow == nil) {
     RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
@@ -94,14 +94,14 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
 }
 
-- (void)addSubview:(UIView *)view
+- (void)didAddSubview:(RNGHUIView *)view
 {
-  [super addSubview:view];
+  [super didAddSubview:view];
 
-  [self tryAttachHandlerToChildView];
+  [self tryAttachNativeHandlersToChildView];
 }
 
-- (void)willRemoveSubview:(UIView *)subview
+- (void)willRemoveSubview:(RNGHUIView *)subview
 {
   [self detachNativeGestureHandlers];
 
@@ -152,7 +152,9 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
       if ([self shouldAttachGestureToSubview:handlerTag]) {
-        [_nativeHandlersToAttach addObject:handlerTag];
+        // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
+        // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
+        [_nativeHandlers addObject:handlerTag];
       } else {
         [handlerManager.registry attachHandlerWithTag:handlerTag
                                                toView:self
@@ -163,9 +165,13 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
       [_attachedHandlers removeObject:handlerTag];
+      [_nativeHandlers removeObject:handlerTag];
     }
+  }
 
-    [self tryAttachHandlerToChildView];
+  // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
+  if (!self.subviews[0]) {
+    [self tryAttachNativeHandlersToChildView];
   }
 
   [super updateProps:propsBase oldProps:oldPropsBase];
@@ -173,30 +179,26 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   self.clipsToBounds = NO;
 }
 
-- (void)tryAttachHandlerToChildView
+- (void)tryAttachNativeHandlersToChildView
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
-  for (NSNumber *handlerTag in _nativeHandlersToAttach) {
+  for (NSNumber *handlerTag in _nativeHandlers) {
     [handlerManager.registry attachHandlerWithTag:handlerTag
                                            toView:self.subviews[0]
                                    withActionType:RNGestureHandlerActionTypeNativeDetector];
 
     [_attachedHandlers addObject:handlerTag];
   }
-
-  [_nativeHandlersToAttach removeAllObjects];
 }
 
 - (void)detachNativeGestureHandlers
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
-  for (NSNumber *handlerTag in _attachedHandlers) {
-    if ([self shouldAttachGestureToSubview:handlerTag]) {
-      [[handlerManager registry] detachHandlerWithTag:handlerTag];
-      [_attachedHandlers removeObject:handlerTag];
-    }
+  for (NSNumber *handlerTag in _nativeHandlers) {
+    [[handlerManager registry] detachHandlerWithTag:handlerTag];
+    [_attachedHandlers removeObject:handlerTag];
   }
 }
 
