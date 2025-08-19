@@ -58,8 +58,7 @@ or with `npm` if you prefer:
 npm install --save react-native-gesture-handler
 ```
 
-After installation, wrap your entry point with `<GestureHandlerRootView>` or
-`gestureHandlerRootHOC`.
+After installation, wrap your entry point with `<GestureHandlerRootView>`.
 
 For example:
 
@@ -131,22 +130,17 @@ public class MainActivity extends ReactActivity {
 #### Usage with modals on Android
 
 On Android RNGH does not work by default because modals are not located under React Native Root view in native hierarchy.
-To fix that, components need to be wrapped with `gestureHandlerRootHOC` (it's no-op on iOS and web).
+To fix that, components need to be wrapped with `GestureHandlerRootView`.
 
 For example:
 
 ```js
-const ExampleWithHoc = gestureHandlerRootHOC(() => (
-    <View>
-      <DraggableBox />
-    </View>
-  );
-);
-
 export default function Example() {
   return (
     <Modal>
-      <ExampleWithHoc />
+      <GestureHandlerRootView>
+        <DraggableBox />
+      </GestureHandlerRootView>
     </Modal>
   );
 }
@@ -173,10 +167,9 @@ import 'react-native-gesture-handler';
 
 If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to follow a different setup for your Android app to work properly. The reason is that both native navigation libraries and Gesture Handler library need to use their own special subclasses of `ReactRootView`.
 
-Instead of changing Java code you will need to wrap every screen component using `gestureHandlerRootHOC` on the JS side. This can be done for example at the stage when you register your screens. Here's an example:
+Instead of changing Java code you will need to wrap every screen component using `GestureHandlerRootView` on the JS side. This can be done for example at the stage when you register your screens. Here's an example:
 
 ```js
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { Navigation } from 'react-native-navigation';
 
 import FirstTabScreen from './FirstTabScreen';
@@ -187,17 +180,35 @@ import PushedScreen from './PushedScreen';
 export function registerScreens() {
   Navigation.registerComponent(
     'example.FirstTabScreen',
-    () => gestureHandlerRootHOC(FirstTabScreen),
+    () => {
+      return (
+        <GestureHandlerRootView>
+          <FirstTabScreen />
+        </GestureHandlerRootView>
+      );
+    },
     () => FirstTabScreen
   );
   Navigation.registerComponent(
     'example.SecondTabScreen',
-    () => gestureHandlerRootHOC(SecondTabScreen),
+    () => {
+      return (
+        <GestureHandlerRootView>
+          <SecondTabScreen />
+        </GestureHandlerRootView>
+      );
+    },
     () => SecondTabScreen
   );
   Navigation.registerComponent(
     'example.PushedScreen',
-    () => gestureHandlerRootHOC(PushedScreen),
+    () => {
+      return (
+        <GestureHandlerRootView>
+          <PushedScreen />
+        </GestureHandlerRootView>
+      );
+    },
     () => PushedScreen
   );
 }
@@ -205,7 +216,7 @@ export function registerScreens() {
 
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
 
-Remember that you need to wrap each screen that you use in your app with `gestureHandlerRootHOC` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
+Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
 
 ### Testing
 
