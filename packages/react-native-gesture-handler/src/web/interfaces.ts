@@ -158,14 +158,6 @@ export enum EventTypes {
   CANCEL,
 }
 
-export enum TouchEventType {
-  UNDETERMINED,
-  DOWN,
-  MOVE,
-  UP,
-  CANCELLED,
-}
-
 export enum WheelDevice {
   UNDETERMINED,
   MOUSE,

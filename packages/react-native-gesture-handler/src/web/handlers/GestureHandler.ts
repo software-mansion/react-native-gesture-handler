@@ -6,7 +6,6 @@ import {
   PropsRef,
   ResultEvent,
   PointerData,
-  TouchEventType,
   EventTypes,
   GestureHandlerNativeEvent,
 } from '../interfaces';
@@ -27,6 +26,7 @@ import {
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
 } from '../../v3/types';
+import { TouchEventType } from '../../TouchEventType';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -556,17 +556,17 @@ export default abstract class GestureHandler implements IGestureHandler {
     switch (event.eventType) {
       case EventTypes.DOWN:
       case EventTypes.ADDITIONAL_POINTER_DOWN:
-        eventType = TouchEventType.DOWN;
+        eventType = TouchEventType.TOUCHES_DOWN;
         break;
       case EventTypes.UP:
       case EventTypes.ADDITIONAL_POINTER_UP:
-        eventType = TouchEventType.UP;
+        eventType = TouchEventType.TOUCHES_UP;
         break;
       case EventTypes.MOVE:
-        eventType = TouchEventType.MOVE;
+        eventType = TouchEventType.TOUCHES_MOVE;
         break;
       case EventTypes.CANCEL:
-        eventType = TouchEventType.CANCELLED;
+        eventType = TouchEventType.TOUCHES_CANCELLED;
         break;
     }
 
@@ -633,7 +633,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.state,
-        eventType: TouchEventType.CANCELLED,
+        eventType: TouchEventType.TOUCHES_CANCELLED,
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: all.length,
