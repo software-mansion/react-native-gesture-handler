@@ -71,7 +71,6 @@ RCT_EXPORT_MODULE()
   });
 
   _managers[_moduleId] = nullptr;
-
 }
 
 - (dispatch_queue_t)methodQueue

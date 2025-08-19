@@ -6,7 +6,8 @@
 
 #import "RNGestureHandlerManager.h"
 
-@interface RNGestureHandlerModule : RCTEventEmitter<NativeRNGestureHandlerModuleSpec, RCTJSDispatcherModule, RCTInitializing>
+@interface RNGestureHandlerModule
+    : RCTEventEmitter <NativeRNGestureHandlerModuleSpec, RCTJSDispatcherModule, RCTInitializing>
 
 + (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId;
 
