@@ -153,7 +153,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
     if (handlerChange.second == RNGestureHandlerMutationAttach) {
       if ([self shouldAttachGestureToSubview:handlerTag]) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
-        // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
+        // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
         [_nativeHandlers addObject:handlerTag];
       } else {
         [handlerManager.registry attachHandlerWithTag:handlerTag
