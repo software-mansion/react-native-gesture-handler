@@ -9,11 +9,13 @@ import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
 
 export function useGestureStateChangeEvent(handlerTag: number, config: any) {
+  const { onBegin, onStart, onEnd, onFinalize } = config;
+
   const handlers: CallbackHandlers = {
-    onBegin: config.onBegin,
-    onStart: config.onStart,
-    onEnd: config.onEnd,
-    onFinalize: config.onFinalize,
+    ...(onBegin && { onBegin }),
+    ...(onStart && { onStart }),
+    ...(onEnd && { onEnd }),
+    ...(onFinalize && { onFinalize }),
   };
 
   const onGestureHandlerStateChange = (
