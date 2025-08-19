@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 
 // TODO: I'm not sure whether this is the correct place for cleanup
 // Possibly allowing recycling and doing this in prepareForRecycle would be better
-- (void)willMoveToWindow:(UIWindow *)newWindow
+- (void)willMoveToWindow:(RNGHWindow *)newWindow
 {
   if (newWindow == nil) {
     RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
@@ -94,14 +94,14 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
 }
 
-- (void)addSubview:(UIView *)view
+- (void)addSubview:(RNGHUIView *)view
 {
   [super addSubview:view];
 
   [self tryAttachHandlerToChildView];
 }
 
-- (void)willRemoveSubview:(UIView *)subview
+- (void)willRemoveSubview:(RNGHUIView *)subview
 {
   [self detachNativeGestureHandlers];
 
