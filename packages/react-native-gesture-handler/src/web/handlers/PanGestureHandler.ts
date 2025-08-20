@@ -88,7 +88,6 @@ export default class PanGestureHandler extends GestureHandler {
     }
 
     if (config.minVelocityX !== undefined) {
-      this.config.minVelocityX = config.minVelocityX;
       this.minVelocityX = config.minVelocityX;
     }
 

@@ -625,6 +625,13 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public updateGestureConfig(config: Config): void {
+    // TODO: remove config dependency from class alltogether?
+    for (const key of Object.keys(config)) {
+      if (this.config[key] !== config[key]) {
+        this.config[key] = config[key];
+      }
+    }
+
     if (config.enabled !== undefined && this.enabled !== config.enabled) {
       this.enabled = config.enabled;
       this.delegate.onEnabledChange(this.enabled);
