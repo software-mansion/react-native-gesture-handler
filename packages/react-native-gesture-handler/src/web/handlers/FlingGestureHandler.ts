@@ -26,18 +26,15 @@ export default class FlingGestureHandler extends GestureHandler {
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
-  public override updateGestureConfig({
-    enabled = true,
-    ...props
-  }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
 
-    if (this.config.direction) {
-      this.direction = this.config.direction;
+    if (config.direction) {
+      this.direction = config.direction;
     }
 
-    if (this.config.numberOfPointers) {
-      this.numberOfPointersRequired = this.config.numberOfPointers;
+    if (config.numberOfPointers) {
+      this.numberOfPointersRequired = config.numberOfPointers;
     }
   }
 

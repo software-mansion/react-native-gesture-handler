@@ -61,113 +61,128 @@ export default class PanGestureHandler extends GestureHandler {
   private endWheelTimeout = 0;
   private wheelDevice = WheelDevice.UNDETERMINED;
 
-  public override updateGestureConfig({
-    enabled = true,
-    ...props
-  }: Config): void {
-    this.resetConfig();
-
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
     this.checkCustomActivationCriteria(this.customActivationProperties);
 
-    if (this.config.minDist !== undefined) {
-      this.minDistSq = this.config.minDist * this.config.minDist;
-    } else if (this.hasCustomActivationCriteria) {
+    if (config.minDist !== undefined) {
+      this.minDistSq = config.minDist * config.minDist;
+    } else if (
+      this.config.minDist === undefined &&
+      this.hasCustomActivationCriteria
+    ) {
       this.minDistSq = Number.MAX_SAFE_INTEGER;
     }
 
-    if (this.config.minPointers !== undefined) {
-      this.minPointers = this.config.minPointers;
+    if (config.minPointers !== undefined) {
+      this.minPointers = config.minPointers;
     }
 
-    if (this.config.maxPointers !== undefined) {
-      this.maxPointers = this.config.maxPointers;
+    if (config.maxPointers !== undefined) {
+      this.maxPointers = config.maxPointers;
     }
 
-    if (this.config.minVelocity !== undefined) {
-      this.minVelocityX = this.config.minVelocity;
-      this.minVelocityY = this.config.minVelocity;
+    if (config.minVelocity !== undefined) {
+      this.minVelocityX = config.minVelocity;
+      this.minVelocityY = config.minVelocity;
     }
 
-    if (this.config.minVelocityX !== undefined) {
-      this.minVelocityX = this.config.minVelocityX;
+    if (config.minVelocityX !== undefined) {
+      this.config.minVelocityX = config.minVelocityX;
+      this.minVelocityX = config.minVelocityX;
     }
 
-    if (this.config.minVelocityY !== undefined) {
-      this.minVelocityY = this.config.minVelocityY;
+    if (config.minVelocityY !== undefined) {
+      this.minVelocityY = config.minVelocityY;
     }
 
-    if (this.config.activateAfterLongPress !== undefined) {
-      this.activateAfterLongPress = this.config.activateAfterLongPress;
+    if (config.activateAfterLongPress !== undefined) {
+      this.activateAfterLongPress = config.activateAfterLongPress;
     }
 
-    if (this.config.activeOffsetXStart !== undefined) {
-      this.activeOffsetXStart = this.config.activeOffsetXStart;
-
-      if (this.config.activeOffsetXEnd === undefined) {
-        this.activeOffsetXEnd = Number.MAX_SAFE_INTEGER;
-      }
+    if (config.activeOffsetXStart !== undefined) {
+      this.activeOffsetXStart = config.activeOffsetXStart;
     }
 
-    if (this.config.activeOffsetXEnd !== undefined) {
-      this.activeOffsetXEnd = this.config.activeOffsetXEnd;
-
-      if (this.config.activeOffsetXStart === undefined) {
-        this.activeOffsetXStart = Number.MIN_SAFE_INTEGER;
-      }
+    if (config.activeOffsetXEnd !== undefined) {
+      this.activeOffsetXEnd = config.activeOffsetXEnd;
     }
 
-    if (this.config.failOffsetXStart !== undefined) {
-      this.failOffsetXStart = this.config.failOffsetXStart;
-
-      if (this.config.failOffsetXEnd === undefined) {
-        this.failOffsetXEnd = Number.MAX_SAFE_INTEGER;
-      }
+    if (
+      this.activeOffsetXStart !== undefined &&
+      this.activeOffsetXEnd === undefined
+    ) {
+      this.activeOffsetXEnd = Number.MAX_SAFE_INTEGER;
+    } else if (
+      this.activeOffsetXStart === undefined &&
+      this.activeOffsetXEnd !== undefined
+    ) {
+      this.activeOffsetXStart = Number.MIN_SAFE_INTEGER;
     }
 
-    if (this.config.failOffsetXEnd !== undefined) {
-      this.failOffsetXEnd = this.config.failOffsetXEnd;
-
-      if (this.config.failOffsetXStart === undefined) {
-        this.failOffsetXStart = Number.MIN_SAFE_INTEGER;
-      }
+    if (config.failOffsetXStart !== undefined) {
+      this.failOffsetXStart = config.failOffsetXStart;
     }
 
-    if (this.config.activeOffsetYStart !== undefined) {
-      this.activeOffsetYStart = this.config.activeOffsetYStart;
-
-      if (this.config.activeOffsetYEnd === undefined) {
-        this.activeOffsetYEnd = Number.MAX_SAFE_INTEGER;
-      }
+    if (config.failOffsetXEnd !== undefined) {
+      this.failOffsetXEnd = config.failOffsetXEnd;
     }
 
-    if (this.config.activeOffsetYEnd !== undefined) {
-      this.activeOffsetYEnd = this.config.activeOffsetYEnd;
-
-      if (this.config.activeOffsetYStart === undefined) {
-        this.activeOffsetYStart = Number.MIN_SAFE_INTEGER;
-      }
+    if (
+      this.failOffsetXStart !== undefined &&
+      this.failOffsetXEnd === undefined
+    ) {
+      this.failOffsetXEnd = Number.MAX_SAFE_INTEGER;
+    } else if (
+      this.failOffsetXStart === undefined &&
+      this.failOffsetXEnd !== undefined
+    ) {
+      this.failOffsetXStart = Number.MIN_SAFE_INTEGER;
     }
 
-    if (this.config.failOffsetYStart !== undefined) {
-      this.failOffsetYStart = this.config.failOffsetYStart;
-
-      if (this.config.failOffsetYEnd === undefined) {
-        this.failOffsetYEnd = Number.MAX_SAFE_INTEGER;
-      }
+    if (config.activeOffsetYStart !== undefined) {
+      this.activeOffsetYStart = config.activeOffsetYStart;
     }
 
-    if (this.config.failOffsetYEnd !== undefined) {
-      this.failOffsetYEnd = this.config.failOffsetYEnd;
-
-      if (this.config.failOffsetYStart === undefined) {
-        this.failOffsetYStart = Number.MIN_SAFE_INTEGER;
-      }
+    if (config.activeOffsetYEnd !== undefined) {
+      this.activeOffsetYEnd = config.activeOffsetYEnd;
     }
 
-    if (this.config.enableTrackpadTwoFingerGesture !== undefined) {
+    if (
+      this.activeOffsetYStart !== undefined &&
+      this.activeOffsetYEnd === undefined
+    ) {
+      this.activeOffsetYEnd = Number.MAX_SAFE_INTEGER;
+    } else if (
+      this.activeOffsetYStart === undefined &&
+      this.activeOffsetYEnd !== undefined
+    ) {
+      this.activeOffsetYStart = Number.MIN_SAFE_INTEGER;
+    }
+
+    if (config.failOffsetYStart !== undefined) {
+      this.failOffsetYStart = config.failOffsetYStart;
+    }
+
+    if (config.failOffsetYEnd !== undefined) {
+      this.failOffsetYEnd = config.failOffsetYEnd;
+    }
+
+    if (
+      this.failOffsetYStart !== undefined &&
+      this.failOffsetYEnd === undefined
+    ) {
+      this.failOffsetYEnd = Number.MAX_SAFE_INTEGER;
+    } else if (
+      this.failOffsetYStart === undefined &&
+      this.failOffsetYEnd !== undefined
+    ) {
+      this.failOffsetYStart = Number.MIN_SAFE_INTEGER;
+    }
+
+    if (config.enableTrackpadTwoFingerGesture !== undefined) {
       this.enableTrackpadTwoFingerGesture =
-        this.config.enableTrackpadTwoFingerGesture;
+        config.enableTrackpadTwoFingerGesture;
     }
   }
 

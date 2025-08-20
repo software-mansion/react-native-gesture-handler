@@ -41,22 +41,19 @@ export default class LongPressGestureHandler extends GestureHandler {
     };
   }
 
-  public override updateGestureConfig({
-    enabled = true,
-    ...props
-  }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
 
-    if (this.config.minDurationMs !== undefined) {
-      this.minDurationMs = this.config.minDurationMs;
+    if (config.minDurationMs !== undefined) {
+      this.minDurationMs = config.minDurationMs;
     }
 
-    if (this.config.maxDist !== undefined) {
-      this.maxDistSq = this.config.maxDist * this.config.maxDist;
+    if (config.maxDist !== undefined) {
+      this.maxDistSq = config.maxDist * config.maxDist;
     }
 
-    if (this.config.numberOfPointers !== undefined) {
-      this.numberOfPointers = this.config.numberOfPointers;
+    if (config.numberOfPointers !== undefined) {
+      this.numberOfPointers = config.numberOfPointers;
     }
   }
 
