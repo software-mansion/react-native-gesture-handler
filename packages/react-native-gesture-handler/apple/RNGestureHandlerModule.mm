@@ -157,8 +157,6 @@ RCT_EXPORT_MODULE()
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager updateGestureHandlerConfig:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
-
-  [self flushOperations];
 }
 
 - (void)dropGestureHandler:(double)handlerTag
