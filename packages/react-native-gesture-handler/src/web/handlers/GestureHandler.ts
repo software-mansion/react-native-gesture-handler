@@ -620,24 +620,36 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public updateGestureConfig(config: Config): void {
-    if (config.enabled !== undefined && this.enabled !== config.enabled) {
+    if (
+      config.enabled !== undefined &&
+      this.config.enabled !== config.enabled
+    ) {
+      this.config.enabled = config.enabled;
+      this.enabled = config.enabled;
       this.delegate.onEnabledChange(this.enabled);
     }
 
-    for (const key of Object.keys(config)) {
-      this.config[key] = config[key];
+    if (config.hitSlop !== undefined) {
+      this.config.hitSlop = config.hitSlop;
+      this.validateHitSlops();
+    }
+
+    if (config.dispatchesAnimatedEvents !== undefined) {
+      this.config.dispatchesAnimatedEvents = config.dispatchesAnimatedEvents;
+      this.forAnimated = config.dispatchesAnimatedEvents;
+    }
+
+    if (config.manualActivation !== undefined) {
+      this.config.manualActivation = config.manualActivation;
+    }
+
+    if (config.mouseButton !== undefined) {
+      this.config.mouseButton = config.mouseButton;
     }
 
     if (config.shouldCancelWhenOutside !== undefined) {
+      this.config.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
       this.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
-    }
-
-    if (config.dispatchesAnimatedEvent !== undefined) {
-      this.forAnimated = config.dispatchesAnimatedEvents!;
-    }
-
-    if (config.hitSlop !== undefined) {
-      this.validateHitSlops();
     }
 
     if (this.enabled) {
