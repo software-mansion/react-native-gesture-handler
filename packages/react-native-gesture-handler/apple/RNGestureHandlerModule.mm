@@ -154,8 +154,9 @@ RCT_EXPORT_MODULE()
 
 - (void)updateGestureHandlerConfig:(double)handlerTag newConfig:(NSDictionary *)config
 {
-  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  [manager updateGestureHandlerConfig:[NSNumber numberWithDouble:handlerTag] config:config];
+  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+    [manager updateGestureHandlerConfig:[NSNumber numberWithDouble:handlerTag] config:config];
+  }];
 }
 
 - (void)configureRelations:(double)handlerTag relations:(NSDictionary *)relations

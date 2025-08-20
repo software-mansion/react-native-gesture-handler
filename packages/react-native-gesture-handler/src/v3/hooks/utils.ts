@@ -12,6 +12,7 @@ import {
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
   'worklet';
@@ -116,4 +117,20 @@ export function isComposedGesture(
   gesture: NativeGesture | ComposedGesture
 ): gesture is ComposedGesture {
   return 'tags' in gesture;
+}
+
+export function prepareConfig(config: any) {
+  const copy = { ...config };
+
+  for (const key in copy) {
+    if (Reanimated?.isSharedValue(copy[key])) {
+      copy[key] = copy[key].value;
+    }
+  }
+
+  // TODO: Filter changes - passing functions (and possibly other types)
+  // causes a native crash
+  copy.onUpdate = null;
+
+  return copy;
 }
