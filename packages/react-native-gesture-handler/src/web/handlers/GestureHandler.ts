@@ -9,6 +9,7 @@ import {
   ResultTouchEvent,
   TouchEventType,
   EventTypes,
+  HitSlop,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -35,7 +36,12 @@ export default abstract class GestureHandler implements IGestureHandler {
   private actionType: ActionType | null = null;
   private forAnimated: boolean = false;
   private _handlerTag!: number;
+
   private _config: Config = { enabled: false };
+  private hitSlop?: HitSlop = undefined;
+  private manualActivation: boolean = false;
+  private mouseButton?: MouseButton = undefined;
+  private needsPointerData: boolean = false;
 
   private _tracker: PointerTracker = new PointerTracker();
 
@@ -68,7 +74,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
-
     this.delegate.init(viewRef, this);
   }
 
@@ -134,7 +139,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (
       this.tracker.trackedPointersCount > 0 &&
-      this.config.needsPointerData &&
+      this.needsPointerData &&
       this.isFinished()
     ) {
       this.cancelTouches();
@@ -201,7 +206,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public activate(force = false) {
     if (
-      (this.config.manualActivation !== true || force) &&
+      (this.manualActivation !== true || force) &&
       (this.state === State.UNDETERMINED || this.state === State.BEGAN)
     ) {
       this.delegate.onActivate();
@@ -356,7 +361,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected tryToSendTouchEvent(event: AdaptedEvent): void {
-    if (this.config.needsPointerData) {
+    if (this.needsPointerData) {
       this.sendTouchEvent(event);
     }
   }
@@ -626,8 +631,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (config.hitSlop !== undefined) {
-      // TODO: move hitSlop out of config
-      this.config.hitSlop = config.hitSlop;
+      this.hitSlop = config.hitSlop;
+      this.hitSlop = config.hitSlop;
       this.validateHitSlops();
     }
 
@@ -636,13 +641,15 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (config.manualActivation !== undefined) {
-      // TODO: move manualActivation out of config
-      this.config.manualActivation = config.manualActivation;
+      this.manualActivation = config.manualActivation;
     }
 
     if (config.mouseButton !== undefined) {
-      // TODO: move mouseButton out of config
-      this.config.mouseButton = config.mouseButton;
+      this.mouseButton = config.mouseButton;
+    }
+
+    if (config.needsPointerData !== undefined) {
+      this.needsPointerData = config.needsPointerData;
     }
 
     if (config.shouldCancelWhenOutside !== undefined) {
@@ -675,14 +682,14 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   private validateHitSlops(): void {
-    if (!this.config.hitSlop) {
+    if (!this.hitSlop) {
       return;
     }
 
     if (
-      this.config.hitSlop.left !== undefined &&
-      this.config.hitSlop.right !== undefined &&
-      this.config.hitSlop.width !== undefined
+      this.hitSlop.left !== undefined &&
+      this.hitSlop.right !== undefined &&
+      this.hitSlop.width !== undefined
     ) {
       throw new Error(
         'HitSlop Error: Cannot define left, right and width at the same time'
@@ -690,9 +697,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (
-      this.config.hitSlop.width !== undefined &&
-      this.config.hitSlop.left === undefined &&
-      this.config.hitSlop.right === undefined
+      this.hitSlop.width !== undefined &&
+      this.hitSlop.left === undefined &&
+      this.hitSlop.right === undefined
     ) {
       throw new Error(
         'HitSlop Error: When width is defined, either left or right has to be defined'
@@ -700,9 +707,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (
-      this.config.hitSlop.height !== undefined &&
-      this.config.hitSlop.top !== undefined &&
-      this.config.hitSlop.bottom !== undefined
+      this.hitSlop.height !== undefined &&
+      this.hitSlop.top !== undefined &&
+      this.hitSlop.bottom !== undefined
     ) {
       throw new Error(
         'HitSlop Error: Cannot define top, bottom and height at the same time'
@@ -710,9 +717,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (
-      this.config.hitSlop.height !== undefined &&
-      this.config.hitSlop.top === undefined &&
-      this.config.hitSlop.bottom === undefined
+      this.hitSlop.height !== undefined &&
+      this.hitSlop.top === undefined &&
+      this.hitSlop.bottom === undefined
     ) {
       throw new Error(
         'HitSlop Error: When height is defined, either top or bottom has to be defined'
@@ -721,7 +728,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   private checkHitSlop(): boolean {
-    if (!this.config.hitSlop) {
+    if (!this.hitSlop) {
       return true;
     }
 
@@ -732,45 +739,45 @@ export default abstract class GestureHandler implements IGestureHandler {
     let right: number = width;
     let bottom: number = height;
 
-    if (this.config.hitSlop.horizontal !== undefined) {
-      left -= this.config.hitSlop.horizontal;
-      right += this.config.hitSlop.horizontal;
+    if (this.hitSlop.horizontal !== undefined) {
+      left -= this.hitSlop.horizontal;
+      right += this.hitSlop.horizontal;
     }
 
-    if (this.config.hitSlop.vertical !== undefined) {
-      top -= this.config.hitSlop.vertical;
-      bottom += this.config.hitSlop.vertical;
+    if (this.hitSlop.vertical !== undefined) {
+      top -= this.hitSlop.vertical;
+      bottom += this.hitSlop.vertical;
     }
 
-    if (this.config.hitSlop.left !== undefined) {
-      left = -this.config.hitSlop.left;
+    if (this.hitSlop.left !== undefined) {
+      left = -this.hitSlop.left;
     }
 
-    if (this.config.hitSlop.right !== undefined) {
-      right = width + this.config.hitSlop.right;
+    if (this.hitSlop.right !== undefined) {
+      right = width + this.hitSlop.right;
     }
 
-    if (this.config.hitSlop.top !== undefined) {
-      top = -this.config.hitSlop.top;
+    if (this.hitSlop.top !== undefined) {
+      top = -this.hitSlop.top;
     }
 
-    if (this.config.hitSlop.bottom !== undefined) {
-      bottom = height + this.config.hitSlop.bottom;
+    if (this.hitSlop.bottom !== undefined) {
+      bottom = height + this.hitSlop.bottom;
     }
 
-    if (this.config.hitSlop.width !== undefined) {
-      if (this.config.hitSlop.left !== undefined) {
-        right = left + this.config.hitSlop.width;
-      } else if (this.config.hitSlop.right !== undefined) {
-        left = right - this.config.hitSlop.width;
+    if (this.hitSlop.width !== undefined) {
+      if (this.hitSlop.left !== undefined) {
+        right = left + this.hitSlop.width;
+      } else if (this.hitSlop.right !== undefined) {
+        left = right - this.hitSlop.width;
       }
     }
 
-    if (this.config.hitSlop.height !== undefined) {
-      if (this.config.hitSlop.top !== undefined) {
-        bottom = top + this.config.hitSlop.height;
-      } else if (this.config.hitSlop.bottom !== undefined) {
-        top = bottom - this.config.hitSlop.height;
+    if (this.hitSlop.height !== undefined) {
+      if (this.hitSlop.top !== undefined) {
+        bottom = top + this.hitSlop.height;
+      } else if (this.hitSlop.bottom !== undefined) {
+        top = bottom - this.hitSlop.height;
       }
     }
 
@@ -793,17 +800,18 @@ export default abstract class GestureHandler implements IGestureHandler {
   public isButtonInConfig(mouseButton: MouseButton | undefined) {
     return (
       !mouseButton ||
-      (!this.config.mouseButton && mouseButton === MouseButton.LEFT) ||
-      (this.config.mouseButton && mouseButton & this.config.mouseButton)
+      (!this.mouseButton && mouseButton === MouseButton.LEFT) ||
+      (this.mouseButton && mouseButton & this.mouseButton)
     );
   }
 
   protected resetConfig(): void {
     this.enabled = true;
-    this.config.manualActivation = false;
-    this.config.shouldCancelWhenOutside = false;
-    this.config.mouseButton = undefined;
-    this.config.hitSlop = undefined;
+    this.manualActivation = false;
+    this.shouldCancelWhenOutside = false;
+    this.mouseButton = undefined;
+    this.hitSlop = undefined;
+    this.needsPointerData = false;
     this.forAnimated = false;
   }
 
