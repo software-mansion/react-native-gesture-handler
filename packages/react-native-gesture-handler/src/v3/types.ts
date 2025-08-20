@@ -61,17 +61,26 @@ export const SingleGestureType = {
   Native: 'NativeGestureHandler',
 } as const;
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type SingleGestureType = ValueOf<typeof SingleGestureType>;
+
 export const ComposedGestureType = {
   Simultaneous: 'SimultaneousGesture',
   Exclusive: 'ExclusiveGesture',
   Race: 'RaceGesture',
 } as const;
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type ComposedGestureType = ValueOf<typeof ComposedGestureType>;
+
 // TODO: Find better name
 export const HandlerType = {
   ...SingleGestureType,
   ...ComposedGestureType,
 } as const;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type HandlerType = ValueOf<typeof HandlerType>;
 
 export type GestureEvents = {
   onGestureHandlerStateChange: (
@@ -92,7 +101,7 @@ export type GestureRelations = {
 
 export type NativeGesture = {
   tag: number;
-  type: ValueOf<typeof HandlerType>;
+  type: HandlerType;
   config: Record<string, unknown>;
   gestureEvents: GestureEvents;
   gestureRelations: GestureRelations;
@@ -100,7 +109,7 @@ export type NativeGesture = {
 
 export type ComposedGesture = {
   tags: number[];
-  type: ValueOf<typeof ComposedGestureType>;
+  type: ComposedGestureType;
   config: {
     shouldUseReanimated: boolean;
     dispatchesAnimatedEvents: boolean;

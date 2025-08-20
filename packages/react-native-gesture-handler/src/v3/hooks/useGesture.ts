@@ -9,13 +9,12 @@ import {
 import { tagMessage } from '../../utils';
 import {
   GestureRelations,
-  HandlerType,
   NativeGesture,
   ComposedGesture,
   Gesture,
+  SingleGestureType,
 } from '../types';
 import { isComposedGesture, prepareConfig } from './utils';
-import { ValueOf } from '../../typeUtils';
 
 function hasWorkletEventHandlers(config: Record<string, unknown>) {
   return Object.values(config).some(
@@ -111,7 +110,7 @@ function prepareRelations(config: any): GestureRelations {
 }
 
 export function useGesture(
-  type: ValueOf<typeof HandlerType>,
+  type: SingleGestureType,
   config: Record<string, unknown>
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
