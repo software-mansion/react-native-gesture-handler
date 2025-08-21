@@ -13,15 +13,16 @@ import {
 import { tapGestureHandlerProps } from '../../TapGestureHandler';
 import { hoverGestureHandlerProps } from '../hoverGesture';
 import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import {
-  HandlerStateChangeEvent,
-  baseGestureHandlerWithDetectorProps,
-} from '../../gestureHandlerCommon';
+import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
 import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
 import { onGestureHandlerEvent } from '../eventReceiver';
-import { PropsRef } from '../../../web/interfaces';
+import {
+  GestureHandlerNativeEvent,
+  PropsRef,
+  ResultEvent,
+} from '../../../web/interfaces';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -168,11 +169,11 @@ export function useForceRender() {
 
 export function useWebEventHandlers() {
   return useRef<PropsRef>({
-    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
-      onGestureHandlerEvent(e.nativeEvent);
+    onGestureHandlerEvent: (e: ResultEvent) => {
+      onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
     },
-    onGestureHandlerStateChange: (e: HandlerStateChangeEvent<unknown>) => {
-      onGestureHandlerEvent(e.nativeEvent);
+    onGestureHandlerStateChange: (e: ResultEvent) => {
+      onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
     },
   });
 }

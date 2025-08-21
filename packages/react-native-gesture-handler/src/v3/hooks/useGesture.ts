@@ -8,6 +8,7 @@ import {
 } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
 import { AnimatedEvent } from '../types';
+import { prepareConfig } from './utils';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -52,7 +53,7 @@ function shouldHandleTouchEvents(config: Record<string, unknown>) {
 const SHARED_VALUE_OFFSET = 1.618;
 
 // This is used to obtain HostFunction that can be executed on the UI thread
-const { updateGestureHandlerConfig } = RNGestureHandlerModule;
+const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
 
 function bindSharedValues(config: any, tag: number) {
   if (Reanimated === undefined) {
@@ -65,6 +66,7 @@ function bindSharedValues(config: any, tag: number) {
     'worklet';
     sharedValue.addListener(listenerId, (value) => {
       updateGestureHandlerConfig(tag, { [configKey]: value });
+      flushOperations();
     });
   };
 
@@ -72,8 +74,6 @@ function bindSharedValues(config: any, tag: number) {
     if (!Reanimated.isSharedValue(maybeSharedValue)) {
       continue;
     }
-
-    config[key] = maybeSharedValue.value;
 
     Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
   }
@@ -160,12 +160,9 @@ export function useGesture(
   }, [tag, config]);
 
   useEffect(() => {
-    // TODO: filter changes - passing functions (and possibly other types)
-    // causes a native crash
-    const animatedEvent = config.onUpdate;
-    config.onUpdate = null;
-    RNGestureHandlerModule.setGestureHandlerConfig(tag, config);
-    config.onUpdate = animatedEvent;
+    const preparedConfig = prepareConfig(config);
+
+    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
 
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);

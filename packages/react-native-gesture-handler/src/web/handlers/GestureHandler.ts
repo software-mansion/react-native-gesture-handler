@@ -6,10 +6,9 @@ import {
   PropsRef,
   ResultEvent,
   PointerData,
-  ResultTouchEvent,
-  TouchEventType,
   EventTypes,
   HitSlop,
+  GestureHandlerNativeEvent,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -18,14 +17,20 @@ import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import IGestureHandler from './IGestureHandler';
 import {
   ActiveCursor,
-  MouseButton,
   TouchAction,
   UserSelect,
+  GestureTouchEvent,
+  MouseButton,
 } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
+import {
+  GestureStateChangeEventWithData,
+  GestureUpdateEventWithData,
+} from '../../v3/types';
+import { TouchEventType } from '../../TouchEventType';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private lastSentState: State | null = null;
@@ -381,7 +386,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
       this.propsRef!.current;
 
-    const touchEvent: ResultTouchEvent | undefined =
+    const touchEvent: ResultEvent<GestureTouchEvent> | undefined =
       this.transformTouchEvent(event);
 
     if (touchEvent) {
@@ -401,18 +406,19 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   public sendEvent = (newState: State, oldState: State): void => {
-    this.ensurePropsRef();
     const {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
     }: PropsRef = this.propsRef!.current;
-    const resultEvent: ResultEvent = this.transformEventData(
-      newState,
-      oldState
-    );
+    const resultEvent: ResultEvent =
+      this.actionType !== ActionType.NATIVE_DETECTOR
+        ? this.transformEventData(newState, oldState)
+        : this.lastSentState !== newState
+          ? this.transformStateChangeEvent(newState, oldState)
+          : this.transformUpdateEvent(newState);
 
-    // In the new API oldState field has to be undefined, unless we send event state changed
+    // In the v2 API oldState field has to be undefined, unless we send event state changed
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
@@ -422,7 +428,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
     if (this.state === State.ACTIVE) {
-      resultEvent.nativeEvent.oldState = undefined;
+      if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+        (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
+          undefined;
+      }
       if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
@@ -430,10 +439,11 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
   };
 
-  private transformEventData(newState: State, oldState: State): ResultEvent {
-    if (!this.viewRef) {
-      throw new Error(tagMessage('Cannot handle event when target is null'));
-    }
+  private transformEventData(
+    newState: State,
+    oldState: State
+  ): ResultEvent<GestureHandlerNativeEvent> {
+    this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
         numberOfPointers: this.tracker.trackedPointersCount,
@@ -451,9 +461,55 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
+  private transformStateChangeEvent(
+    newState: State,
+    oldState: State
+  ): ResultEvent<GestureStateChangeEventWithData<unknown>> {
+    this.ensureViewRef(this.viewRef);
+    return {
+      nativeEvent: {
+        state: newState,
+        handlerTag: this.handlerTag,
+        pointerType: this.pointerType,
+        oldState: oldState,
+        numberOfPointers: this.tracker.trackedPointersCount,
+        handlerData: {
+          pointerInside: this.delegate.isPointerInBounds(
+            this.tracker.getAbsoluteCoordsAverage()
+          ),
+          ...this.transformNativeEvent(),
+          target: this.viewRef,
+        },
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
+  private transformUpdateEvent(
+    newState: State
+  ): ResultEvent<GestureUpdateEventWithData<unknown>> {
+    this.ensureViewRef(this.viewRef);
+    return {
+      nativeEvent: {
+        state: newState,
+        handlerTag: this.handlerTag,
+        pointerType: this.pointerType,
+        numberOfPointers: this.tracker.trackedPointersCount,
+        handlerData: {
+          pointerInside: this.delegate.isPointerInBounds(
+            this.tracker.getAbsoluteCoordsAverage()
+          ),
+          ...this.transformNativeEvent(),
+          target: this.viewRef,
+        },
+      },
+      timeStamp: Date.now(),
+    };
+  }
+
   private transformTouchEvent(
     event: AdaptedEvent
-  ): ResultTouchEvent | undefined {
+  ): ResultEvent<GestureTouchEvent> | undefined {
     const rect = this.delegate.measureView();
 
     const all: PointerData[] = [];
@@ -510,17 +566,17 @@ export default abstract class GestureHandler implements IGestureHandler {
     switch (event.eventType) {
       case EventTypes.DOWN:
       case EventTypes.ADDITIONAL_POINTER_DOWN:
-        eventType = TouchEventType.DOWN;
+        eventType = TouchEventType.TOUCHES_DOWN;
         break;
       case EventTypes.UP:
       case EventTypes.ADDITIONAL_POINTER_UP:
-        eventType = TouchEventType.UP;
+        eventType = TouchEventType.TOUCHES_UP;
         break;
       case EventTypes.MOVE:
-        eventType = TouchEventType.MOVE;
+        eventType = TouchEventType.TOUCHES_MOVE;
         break;
       case EventTypes.CANCEL:
-        eventType = TouchEventType.CANCELLED;
+        eventType = TouchEventType.TOUCHES_CANCELLED;
         break;
     }
 
@@ -583,11 +639,11 @@ export default abstract class GestureHandler implements IGestureHandler {
       });
     });
 
-    const cancelEvent: ResultTouchEvent = {
+    const cancelEvent: ResultEvent<GestureTouchEvent> = {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.state,
-        eventType: TouchEventType.CANCELLED,
+        eventType: TouchEventType.TOUCHES_CANCELLED,
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: all.length,
@@ -606,6 +662,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       throw new Error(
         tagMessage('Cannot handle event when component props are null')
       );
+    }
+  }
+
+  private ensureViewRef(viewRef: any): asserts viewRef is number {
+    if (!viewRef) {
+      throw new Error(tagMessage('Cannot handle event when target is null'));
     }
   }
 
@@ -957,10 +1019,10 @@ export default abstract class GestureHandler implements IGestureHandler {
 
 function invokeNullableMethod(
   method:
-    | ((event: ResultEvent | ResultTouchEvent) => void)
-    | { __getHandler: () => (event: ResultEvent | ResultTouchEvent) => void }
+    | ((event: ResultEvent) => void)
+    | { __getHandler: () => (event: ResultEvent) => void }
     | { __nodeConfig: { argMapping: unknown[] } },
-  event: ResultEvent | ResultTouchEvent
+  event: ResultEvent
 ): void {
   if (!method) {
     return;
@@ -992,7 +1054,7 @@ function invokeNullableMethod(
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const nativeValue = event.nativeEvent[key];
+    const nativeValue = (event.nativeEvent as any)[key];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (value?.setValue) {

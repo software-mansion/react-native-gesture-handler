@@ -3,6 +3,8 @@
 #import <UIKit/UIKit.h>
 
 typedef UIView RNGHUIView;
+typedef UIWindow RNGHWindow;
+typedef UIScrollView RNGHScrollView;
 typedef UITouch RNGHUITouch;
 typedef UIScrollView RNGHUIScrollView;
 
@@ -17,6 +19,8 @@ typedef UIScrollView RNGHUIScrollView;
 #import <React/RCTUIKit.h>
 
 typedef RCTUIView RNGHUIView;
+typedef NSWindow RNGHWindow;
+typedef NSScrollView RNGHScrollView;
 typedef RCTUITouch RNGHUITouch;
 typedef NSScrollView RNGHUIScrollView;
 

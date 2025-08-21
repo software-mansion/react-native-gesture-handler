@@ -3,10 +3,16 @@ import {
   ActiveCursor,
   MouseButton,
   TouchAction,
+  StylusData,
+  GestureTouchEvent,
 } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
-import { State } from '../State';
 import { PointerType } from '../PointerType';
+import {
+  GestureStateChangeEventWithData,
+  GestureUpdateEventWithData,
+} from '../v3/types';
+import { State } from '../State';
 
 export interface HitSlop {
   left?: number;
@@ -84,7 +90,8 @@ export interface Config extends Record<string, ConfigArgs> {
 }
 
 type NativeEventArgs = number | State | boolean | undefined;
-interface NativeEvent extends Record<string, NativeEventArgs> {
+export interface GestureHandlerNativeEvent
+  extends Record<string, NativeEventArgs> {
   numberOfPointers: number;
   state: State;
   pointerInside: boolean | undefined;
@@ -107,42 +114,24 @@ export interface PointerData {
   absoluteY: number;
 }
 
-type TouchNativeArgs = number | State | TouchEventType | PointerData[];
+// Native event has to stay for v2 compatibility
+type ResultEventType =
+  | GestureUpdateEventWithData<unknown>
+  | GestureStateChangeEventWithData<unknown>
+  | GestureTouchEvent
+  | GestureHandlerNativeEvent;
 
-interface NativeTouchEvent extends Record<string, TouchNativeArgs> {
-  handlerTag: number;
-  state: State;
-  eventType: TouchEventType;
-  changedTouches: PointerData[];
-  allTouches: PointerData[];
-  numberOfTouches: number;
-  pointerType: PointerType;
-}
-
-export interface ResultEvent extends Record<string, NativeEvent | number> {
-  nativeEvent: NativeEvent;
-  timeStamp: number;
-}
-
-export interface ResultTouchEvent
-  extends Record<string, NativeTouchEvent | number> {
-  nativeEvent: NativeTouchEvent;
+export interface ResultEvent<T extends ResultEventType = ResultEventType>
+  extends Record<string, T | number> {
+  nativeEvent: T;
   timeStamp: number;
 }
 
 export interface PropsRef {
-  onGestureHandlerEvent: (e: any) => void;
-  onGestureHandlerAnimatedEvent?: (e: any) => void;
-  onGestureHandlerStateChange: (e: any) => void;
-  onGestureHandlerTouchEvent?: (e: any) => void;
-}
-
-export interface StylusData {
-  tiltX: number;
-  tiltY: number;
-  azimuthAngle: number;
-  altitudeAngle: number;
-  pressure: number;
+  onGestureHandlerEvent: (e: ResultEvent) => void;
+  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
+  onGestureHandlerStateChange: (e: ResultEvent) => void;
+  onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {
@@ -168,14 +157,6 @@ export enum EventTypes {
   ENTER,
   LEAVE,
   CANCEL,
-}
-
-export enum TouchEventType {
-  UNDETERMINED,
-  DOWN,
-  MOVE,
-  UP,
-  CANCELLED,
 }
 
 export enum WheelDevice {
