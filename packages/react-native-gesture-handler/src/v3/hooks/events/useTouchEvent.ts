@@ -60,7 +60,7 @@ export function useTouchEvent(handlerTag: number, config: any) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedEvent = Reanimated?.useEvent(
     onGestureHandlerTouchEvent,
-    ['onGestureHandlerTouchEvent'],
+    ['onGestureHandlerReanimatedTouchEvent'],
     !!reanimatedHandler?.doDependenciesDiffer
   );
 

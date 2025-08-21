@@ -70,7 +70,7 @@ export function useGestureStateChangeEvent(handlerTag: number, config: any) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const reanimatedEvent = Reanimated?.useEvent(
     onGestureHandlerStateChange,
-    ['onGestureHandlerStateChange'],
+    ['onGestureHandlerReanimatedStateChange'],
     !!reanimatedHandler?.doDependenciesDiffer
   );
 

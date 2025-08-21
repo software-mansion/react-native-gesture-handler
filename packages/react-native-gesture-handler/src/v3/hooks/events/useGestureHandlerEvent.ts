@@ -63,7 +63,7 @@ export function useGestureHandlerEvent(handlerTag: number, config: any) {
       'worklet';
       onGestureHandlerEvent(event, reanimatedHandler?.context);
     },
-    ['onGestureHandlerEvent'],
+    ['onGestureHandlerReanimatedEvent'],
     !!reanimatedHandler?.doDependenciesDiffer
   );
 
