@@ -52,7 +52,7 @@ export function touchEventTypeToCallbackType(
   return CALLBACK_TYPE.UNDEFINED;
 }
 
-export function runWorkletCallback(
+export function runCallback(
   type: CALLBACK_TYPE,
   config: CallbackHandlers,
   event: GestureHandlerEvent<Record<string, unknown>>,

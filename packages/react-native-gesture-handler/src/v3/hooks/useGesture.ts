@@ -21,6 +21,9 @@ type GestureEvents = {
   onGestureHandlerStateChange: (event: any) => void;
   onGestureHandlerEvent: undefined | ((event: any) => void);
   onGestureHandlerTouchEvent: (event: any) => void;
+  onReanimatedStateChange: undefined | ((event: any) => void);
+  onReanimatedUpdateEvent: undefined | ((event: any) => void);
+  onReanimatedTouchEvent: undefined | ((event: any) => void);
   onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
 
@@ -69,8 +72,11 @@ export function useGesture(
   const {
     onGestureHandlerStateChange,
     onGestureHandlerEvent,
-    onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent,
+    onReanimatedStateChange,
+    onReanimatedUpdateEvent,
+    onReanimatedTouchEvent,
+    onGestureHandlerAnimatedEvent,
   } = useGestureCallbacks(tag, config);
 
   // This should never happen, but since we don't want to call hooks conditionally,
@@ -119,6 +125,9 @@ export function useGesture(
       onGestureHandlerStateChange,
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,
+      onReanimatedStateChange,
+      onReanimatedUpdateEvent,
+      onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
   };

@@ -1,7 +1,8 @@
+import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers } from '../../../types';
 import { onGestureHandlerTouchEvent } from '../onGestureHandlerTouchEvent';
 
-export function gestureTouchEvent(handlerTag: number, config: any) {
+export function useReanimatedTouchEvent(handlerTag: number, config: any) {
   const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
     config;
 
@@ -12,5 +13,13 @@ export function gestureTouchEvent(handlerTag: number, config: any) {
     ...(onTouchesCancelled ? { onTouchesCancelled } : {}),
   };
 
-  return onGestureHandlerTouchEvent(handlerTag, handlers);
+  const callback = onGestureHandlerTouchEvent(handlerTag, handlers);
+
+  const reanimatedHandler = Reanimated?.useHandler(handlers);
+
+  return Reanimated?.useEvent(
+    callback,
+    ['onGestureHandlerReanimatedTouchEvent'],
+    !!reanimatedHandler?.doDependenciesDiffer
+  );
 }
