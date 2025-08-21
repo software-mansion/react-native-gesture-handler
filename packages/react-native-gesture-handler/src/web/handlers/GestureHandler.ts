@@ -41,6 +41,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
   private forAnimated: boolean = false;
+  private forReanimated: boolean = false;
   private _handlerTag!: number;
   private _config: Config = { enabled: false };
 
@@ -373,21 +374,29 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
     this.ensurePropsRef();
-    const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
-      this.propsRef!.current;
+    const {
+      onGestureHandlerEvent,
+      onGestureHandlerTouchEvent,
+      onGestureHandlerReanimatedTouchEvent,
+    }: PropsRef = this.propsRef!.current;
 
     const touchEvent: ResultEvent<GestureTouchEvent> | undefined =
       this.transformTouchEvent(event);
 
     if (touchEvent) {
-      if (
-        onGestureHandlerTouchEvent &&
-        this.actionType === ActionType.NATIVE_DETECTOR
-      ) {
-        invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
-      } else {
-        invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+      if (this.actionType === ActionType.NATIVE_DETECTOR) {
+        if (this.forReanimated && onGestureHandlerReanimatedTouchEvent) {
+          invokeNullableMethod(
+            onGestureHandlerReanimatedTouchEvent,
+            touchEvent
+          );
+        } else if (onGestureHandlerTouchEvent) {
+          invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
+        }
+        return;
       }
+
+      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
     }
   }
 
@@ -400,6 +409,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
+      onGestureHandlerReanimatedEvent,
+      onGestureHandlerReanimatedStateChange,
     }: PropsRef = this.propsRef!.current;
     const resultEvent: ResultEvent =
       this.actionType !== ActionType.NATIVE_DETECTOR
@@ -415,7 +426,14 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
-      invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
+      if (this.forReanimated && onGestureHandlerReanimatedStateChange) {
+        invokeNullableMethod(
+          onGestureHandlerReanimatedStateChange,
+          resultEvent
+        );
+      } else {
+        invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
+      }
     }
     if (this.state === State.ACTIVE) {
       if (this.actionType !== ActionType.NATIVE_DETECTOR) {
@@ -424,6 +442,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       }
       if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
+      } else if (onGestureHandlerReanimatedEvent && this.forReanimated) {
+        invokeNullableMethod(onGestureHandlerReanimatedEvent, resultEvent);
       }
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     }
@@ -701,6 +721,10 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     this.forAnimated = dispatchesAnimatedEvents;
     this.validateHitSlops();
+
+    if (this.config.shouldUseReanimated !== undefined) {
+      this.forReanimated = this.config.shouldUseReanimated;
+    }
 
     if (this.enabled) {
       return;
