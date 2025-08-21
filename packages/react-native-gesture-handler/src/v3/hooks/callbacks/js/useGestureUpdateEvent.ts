@@ -1,17 +1,17 @@
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import { CALLBACK_TYPE } from '../../../../handlers/gestures/gesture';
 import {
   isAnimatedEvent,
   isEventForHandlerWithTag,
   runWorkletCallback,
-} from '../utils';
+} from '../../utils';
 import {
   Reanimated,
   ReanimatedContext,
-} from '../../../handlers/gestures/reanimatedWrapper';
-import { CallbackHandlers, UpdateEvent } from '../../types';
-import { tagMessage } from '../../../utils';
+} from '../../../../handlers/gestures/reanimatedWrapper';
+import { CallbackHandlers, UpdateEvent } from '../../../types';
+import { tagMessage } from '../../../../utils';
 
-export function useGestureHandlerEvent(handlerTag: number, config: any) {
+export function useGestureUpdateEvent(handlerTag: number, config: any) {
   const { onUpdate } = config;
 
   const handlers: CallbackHandlers = { ...(onUpdate && { onUpdate }) };

@@ -1,12 +1,12 @@
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import { CALLBACK_TYPE } from '../../../../handlers/gestures/gesture';
 import {
   isEventForHandlerWithTag,
   isNativeEvent,
   runWorkletCallback,
-} from '../utils';
-import { State } from '../../../State';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { CallbackHandlers, StateChangeEvent } from '../../types';
+} from '../../utils';
+import { State } from '../../../../State';
+import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
+import { CallbackHandlers, StateChangeEvent } from '../../../types';
 
 export function useGestureStateChangeEvent(handlerTag: number, config: any) {
   const { onBegin, onStart, onEnd, onFinalize } = config;

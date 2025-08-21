@@ -1,16 +1,16 @@
-import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { GestureTouchEvent } from '../../../../handlers/gestureHandlerCommon';
 import {
   isEventForHandlerWithTag,
   isNativeEvent,
   runWorkletCallback,
   touchEventTypeToCallbackType,
-} from '../utils';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { TouchEventType } from '../../../TouchEventType';
-import { CallbackHandlers, TouchEvent } from '../../types';
+} from '../../utils';
+import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
+import { TouchEventType } from '../../../../TouchEventType';
+import { CallbackHandlers, TouchEvent } from '../../../types';
 import { NativeSyntheticEvent } from 'react-native';
 
-export function useTouchEvent(handlerTag: number, config: any) {
+export function useGestureTouchEvent(handlerTag: number, config: any) {
   const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
     config;
 

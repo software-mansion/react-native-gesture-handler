@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
-import { useGestureEvent } from './useGestureEvent';
+import { useGestureCallbacks } from './useGestureCallbacks';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
 import { AnimatedEvent } from '../types';
@@ -71,7 +71,7 @@ export function useGesture(
     onGestureHandlerEvent,
     onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent,
-  } = useGestureEvent(tag, config);
+  } = useGestureCallbacks(tag, config);
 
   // This should never happen, but since we don't want to call hooks conditionally,
   // we have to mark these as possibly undefined to make TypeScript happy.
