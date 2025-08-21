@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RNGHEventTarget.h"
 #import "RNGHStylusData.h"
 #import "RNGHTouchEventType.h"
 #import "RNGHUIKit.h"
@@ -62,13 +63,13 @@
 @property (nonatomic, strong, readonly) NSNumber *handlerTag;
 @property (nonatomic, strong, readonly) RNGestureHandlerEventExtraData *extraData;
 @property (nonatomic, readonly) RNGestureHandlerState state;
-@property (nonatomic, readonly) BOOL forAnimated;
+@property (nonatomic, readonly) RNGestureHandlerEventTarget eventTarget;
 
 - (instancetype)initWithReactTag:(NSNumber *)reactTag
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
-                     forAnimated:(BOOL)forAnimated
+                       forTarget:(RNGestureHandlerEventTarget)eventTarget
                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 
 @end

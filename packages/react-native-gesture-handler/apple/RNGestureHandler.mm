@@ -147,6 +147,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _dispatchesAnimatedEvents = [RCTConvert BOOL:prop];
   }
 
+  prop = config[@"shouldUseReanimated"];
+  if (prop != nil) {
+    _dispatchesReanimatedEvents = [RCTConvert BOOL:prop];
+  }
+
   prop = config[@"manualActivation"];
   if (prop != nil) {
     self.manualActivation = [RCTConvert BOOL:prop];
@@ -348,12 +353,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 
   if (state == RNGestureHandlerStateActive) {
-    id touchEvent = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
-                                                         handlerTag:_tag
-                                                              state:state
-                                                          extraData:extraData
-                                                        forAnimated:_dispatchesAnimatedEvents
-                                                      coalescingKey:self->_eventCoalescingKey];
+    id touchEvent =
+        [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
+                                             handlerTag:_tag
+                                                  state:state
+                                              extraData:extraData
+                                              forTarget:_dispatchesAnimatedEvents ? RNGestureHandlerEventTargetAnimated
+                                                  : _dispatchesReanimatedEvents ? RNGestureHandlerEventTargetReanimated
+                                                                                : RNGestureHandlerEventTargetJS
+                                          coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
 }
@@ -370,30 +378,41 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   [self.emitter sendEvent:event
            withActionType:self.actionType
-              forAnimated:_dispatchesAnimatedEvents
+                forTarget:_dispatchesAnimatedEvents ? RNGestureHandlerEventTargetAnimated
+                    : _dispatchesReanimatedEvents   ? RNGestureHandlerEventTargetReanimated
+                                                    : RNGestureHandlerEventTargetJS
                   forView:[self findViewForEvents]];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
   if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
-    [self.emitter sendNativeTouchEventForGestureHandler:self withPointerType:_pointerType];
+    [self.emitter sendNativeTouchEventForGestureHandler:self
+                                        withPointerType:_pointerType
+                                              forTarget:_dispatchesAnimatedEvents ? RNGestureHandlerEventTargetAnimated
+                                                  : _dispatchesReanimatedEvents ? RNGestureHandlerEventTargetReanimated
+                                                                                : RNGestureHandlerEventTargetJS];
   } else {
     id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
                                             withChangedPointers:_pointerTracker.changedPointersData
                                                 withAllPointers:_pointerTracker.allPointersData
                                             withNumberOfTouches:_pointerTracker.trackedPointersCount
                                                 withPointerType:_pointerType];
-    id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
-                                                    handlerTag:_tag
-                                                         state:state
-                                                     extraData:extraData
-                                                   forAnimated:_dispatchesAnimatedEvents
-                                                 coalescingKey:[_tag intValue]];
+    id event =
+        [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
+                                             handlerTag:_tag
+                                                  state:state
+                                              extraData:extraData
+                                              forTarget:_dispatchesAnimatedEvents ? RNGestureHandlerEventTargetAnimated
+                                                  : _dispatchesReanimatedEvents ? RNGestureHandlerEventTargetReanimated
+                                                                                : RNGestureHandlerEventTargetJS
+                                          coalescingKey:[_tag intValue]];
 
     [self.emitter sendEvent:event
              withActionType:self.actionType
-                forAnimated:_dispatchesAnimatedEvents
+                  forTarget:_dispatchesAnimatedEvents ? RNGestureHandlerEventTargetAnimated
+                      : _dispatchesReanimatedEvents   ? RNGestureHandlerEventTargetReanimated
+                                                      : RNGestureHandlerEventTargetJS
                     forView:self.recognizer.view];
   }
 }

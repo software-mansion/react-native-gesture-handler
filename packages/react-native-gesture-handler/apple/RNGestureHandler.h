@@ -1,3 +1,4 @@
+#import "RNGHEventTarget.h"
 #import "RNGHUIKit.h"
 #import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerDirection.h"
@@ -40,11 +41,12 @@
 
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
-       forAnimated:(BOOL)forAnimated
+         forTarget:(RNGestureHandlerEventTarget)eventTarget
            forView:(nonnull RNGHUIView *)detectorView;
 
 - (void)sendNativeTouchEventForGestureHandler:(nonnull RNGestureHandler *)handler
-                              withPointerType:(NSInteger)pointerType;
+                              withPointerType:(NSInteger)pointerType
+                                    forTarget:(RNGestureHandlerEventTarget)eventTarget;
 
 @end
 
@@ -78,6 +80,7 @@
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
 @property (nonatomic) BOOL dispatchesAnimatedEvents;
+@property (nonatomic) BOOL dispatchesReanimatedEvents;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;

@@ -173,7 +173,7 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
-                     forAnimated:(BOOL)forAnimated
+                       forTarget:(RNGestureHandlerEventTarget)eventTarget
                    coalescingKey:(uint16_t)coalescingKey
 {
   if ((self = [super init])) {
@@ -182,7 +182,7 @@
     _state = state;
     _extraData = extraData;
     _coalescingKey = coalescingKey;
-    _forAnimated = forAnimated;
+    _eventTarget = eventTarget;
   }
   return self;
 }
@@ -191,7 +191,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSString *)eventName
 {
-  return _forAnimated ? @"onGestureHandlerAnimatedEvent" : @"onGestureHandlerEvent";
+  switch (_eventTarget) {
+    case RNGestureHandlerEventTargetJS:
+      return @"onGestureHandlerEvent";
+    case RNGestureHandlerEventTargetReanimated:
+      return @"onGestureHandlerReanimatedEvent";
+    case RNGestureHandlerEventTargetAnimated:
+      return @"onGestureHandlerAnimatedEvent";
+  }
 }
 
 - (BOOL)canCoalesce
@@ -211,7 +218,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSArray *)arguments
 {
-  if (_forAnimated) {
+  if (_eventTarget == RNGestureHandlerEventTargetAnimated) {
     NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];
@@ -223,7 +230,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];
     [body setObject:@(_state) forKey:@"state"];
-    return @[ self.viewTag, @"onGestureHandlerEvent", body ];
+    return @[
+      self.viewTag,
+      _eventTarget == RNGestureHandlerEventTargetReanimated ? @"onGestureHandlerReanimatedEvent"
+                                                            : @"onGestureHandlerEvent",
+      body
+    ];
   }
 }
 
