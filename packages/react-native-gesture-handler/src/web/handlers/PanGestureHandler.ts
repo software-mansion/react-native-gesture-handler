@@ -9,23 +9,10 @@ const DEFAULT_MAX_POINTERS = 10;
 const DEFAULT_MIN_DIST_SQ = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
 export default class PanGestureHandler extends GestureHandler {
-  private readonly customActivationProperties: string[] = [
-    'activeOffsetXStart',
-    'activeOffsetXEnd',
-    'failOffsetXStart',
-    'failOffsetXEnd',
-    'activeOffsetYStart',
-    'activeOffsetYEnd',
-    'failOffsetYStart',
-    'failOffsetYEnd',
-    'minVelocityX',
-    'minVelocityY',
-    'minVelocity',
-  ];
-
   public velocityX = 0;
   public velocityY = 0;
 
+  private minDist?: number = undefined;
   private minDistSq = DEFAULT_MIN_DIST_SQ;
 
   private activeOffsetXStart = -Number.MAX_SAFE_INTEGER;
@@ -61,18 +48,9 @@ export default class PanGestureHandler extends GestureHandler {
   private endWheelTimeout = 0;
   private wheelDevice = WheelDevice.UNDETERMINED;
 
+  private hasCustomActivationCriteria = false;
   public override updateGestureConfig(config: Config): void {
     super.updateGestureConfig(config);
-    this.checkCustomActivationCriteria(this.customActivationProperties);
-
-    if (config.minDist !== undefined) {
-      this.minDistSq = config.minDist * config.minDist;
-    } else if (
-      this.config.minDist === undefined &&
-      this.hasCustomActivationCriteria
-    ) {
-      this.minDistSq = Number.MAX_SAFE_INTEGER;
-    }
 
     if (config.minPointers !== undefined) {
       this.minPointers = config.minPointers;
@@ -85,14 +63,17 @@ export default class PanGestureHandler extends GestureHandler {
     if (config.minVelocity !== undefined) {
       this.minVelocityX = config.minVelocity;
       this.minVelocityY = config.minVelocity;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (config.minVelocityX !== undefined) {
       this.minVelocityX = config.minVelocityX;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (config.minVelocityY !== undefined) {
       this.minVelocityY = config.minVelocityY;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (config.activateAfterLongPress !== undefined) {
@@ -101,10 +82,12 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (config.activeOffsetXStart !== undefined) {
       this.activeOffsetXStart = config.activeOffsetXStart;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (config.activeOffsetXEnd !== undefined) {
       this.activeOffsetXEnd = config.activeOffsetXEnd;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (
@@ -121,10 +104,12 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (config.failOffsetXStart !== undefined) {
       this.failOffsetXStart = config.failOffsetXStart;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (config.failOffsetXEnd !== undefined) {
       this.failOffsetXEnd = config.failOffsetXEnd;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (
@@ -141,10 +126,12 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (config.activeOffsetYStart !== undefined) {
       this.activeOffsetYStart = config.activeOffsetYStart;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (config.activeOffsetYEnd !== undefined) {
       this.activeOffsetYEnd = config.activeOffsetYEnd;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (
@@ -161,10 +148,12 @@ export default class PanGestureHandler extends GestureHandler {
 
     if (config.failOffsetYStart !== undefined) {
       this.failOffsetYStart = config.failOffsetYStart;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (config.failOffsetYEnd !== undefined) {
       this.failOffsetYEnd = config.failOffsetYEnd;
+      this.hasCustomActivationCriteria = true;
     }
 
     if (
@@ -182,6 +171,13 @@ export default class PanGestureHandler extends GestureHandler {
     if (config.enableTrackpadTwoFingerGesture !== undefined) {
       this.enableTrackpadTwoFingerGesture =
         config.enableTrackpadTwoFingerGesture;
+    }
+
+    if (config.minDist !== undefined) {
+      this.minDist = config.minDist;
+      this.minDistSq = config.minDist * config.minDist;
+    } else if (this.minDist === undefined && this.hasCustomActivationCriteria) {
+      this.minDistSq = Number.MAX_SAFE_INTEGER;
     }
   }
 
@@ -202,12 +198,15 @@ export default class PanGestureHandler extends GestureHandler {
     this.minVelocityY = Number.MAX_SAFE_INTEGER;
     this.minVelocitySq = Number.MAX_SAFE_INTEGER;
 
+    this.minDist = undefined;
     this.minDistSq = DEFAULT_MIN_DIST_SQ;
 
     this.minPointers = DEFAULT_MIN_POINTERS;
     this.maxPointers = DEFAULT_MAX_POINTERS;
 
     this.activateAfterLongPress = 0;
+
+    this.hasCustomActivationCriteria = false;
   }
 
   protected override transformNativeEvent() {

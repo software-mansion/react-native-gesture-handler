@@ -27,8 +27,8 @@ export default class LongPressGestureHandler extends GestureHandler {
     propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ) {
-    if (this.config.enableContextMenu === undefined) {
-      this.config.enableContextMenu = false;
+    if (this.enableContextMenu === undefined) {
+      this.enableContextMenu = false;
     }
 
     super.init(ref, propsRef, actionType);

@@ -8,7 +8,6 @@ import PointerEventManager from './PointerEventManager';
 import { State } from '../../State';
 import { isPointerInBounds } from '../utils';
 import EventManager from './EventManager';
-import { Config } from '../interfaces';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
 import WheelEventManager from './WheelEventManager';
@@ -49,11 +48,9 @@ export class GestureHandlerWebDelegate
       touchAction: this.view.style.touchAction,
     };
 
-    const config = handler.config;
-
-    this.setUserSelect(config.enabled);
-    this.setTouchAction(config.enabled);
-    this.setContextMenu(config.enabled);
+    this.setUserSelect(handler.enabled);
+    this.setTouchAction(handler.enabled);
+    this.setContextMenu(handler.enabled);
 
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new KeyboardEventManager(this.view));
@@ -73,7 +70,7 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
-    this.removeContextMenuListeners(this.gestureHandler.config);
+    this.removeContextMenuListeners(this.gestureHandler.enableContextMenu);
     this._view = null;
     this.eventManagers = [];
   }
@@ -107,11 +104,11 @@ export class GestureHandlerWebDelegate
   }
 
   tryResetCursor() {
-    const config = this.gestureHandler.config;
+    const activeCursor = this.gestureHandler.activeCursor;
 
     if (
-      config.activeCursor &&
-      config.activeCursor !== 'auto' &&
+      activeCursor &&
+      activeCursor !== 'auto' &&
       this.gestureHandler.state === State.ACTIVE &&
       this.view
     ) {
@@ -119,30 +116,30 @@ export class GestureHandlerWebDelegate
     }
   }
 
-  private shouldDisableContextMenu(config: Config) {
+  private shouldDisableContextMenu(enableContextMenu?: boolean) {
     return (
-      (config.enableContextMenu === undefined &&
+      (enableContextMenu === undefined &&
         this.gestureHandler.isButtonInConfig(MouseButton.RIGHT)) ||
-      config.enableContextMenu === false
+      enableContextMenu === false
     );
   }
 
-  private addContextMenuListeners(config: Config): void {
+  private addContextMenuListeners(enableContextMenu?: boolean): void {
     this.ensureView(this.view);
 
-    if (this.shouldDisableContextMenu(config)) {
+    if (this.shouldDisableContextMenu(enableContextMenu)) {
       this.view.addEventListener('contextmenu', this.disableContextMenu);
-    } else if (config.enableContextMenu) {
+    } else if (enableContextMenu) {
       this.view.addEventListener('contextmenu', this.enableContextMenu);
     }
   }
 
-  private removeContextMenuListeners(config: Config): void {
+  private removeContextMenuListeners(enableContextMenu?: boolean): void {
     this.ensureView(this.view);
 
-    if (this.shouldDisableContextMenu(config)) {
+    if (this.shouldDisableContextMenu(enableContextMenu)) {
       this.view.removeEventListener('contextmenu', this.disableContextMenu);
-    } else if (config.enableContextMenu) {
+    } else if (enableContextMenu) {
       this.view.removeEventListener('contextmenu', this.enableContextMenu);
     }
   }
@@ -156,7 +153,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setUserSelect(isHandlerEnabled: boolean) {
-    const { userSelect } = this.gestureHandler.config;
+    const userSelect = this.gestureHandler.userSelect;
 
     this.ensureView(this.view);
 
@@ -170,7 +167,7 @@ export class GestureHandlerWebDelegate
   }
 
   private setTouchAction(isHandlerEnabled: boolean) {
-    const { touchAction } = this.gestureHandler.config;
+    const touchAction = this.gestureHandler.touchAction;
 
     this.ensureView(this.view);
 
@@ -185,12 +182,10 @@ export class GestureHandlerWebDelegate
   }
 
   private setContextMenu(isHandlerEnabled: boolean) {
-    const config = this.gestureHandler.config;
-
     if (isHandlerEnabled) {
-      this.addContextMenuListeners(config);
+      this.addContextMenuListeners(this.gestureHandler.enableContextMenu);
     } else {
-      this.removeContextMenuListeners(config);
+      this.removeContextMenuListeners(this.gestureHandler.enableContextMenu);
     }
   }
 
@@ -219,13 +214,12 @@ export class GestureHandlerWebDelegate
   }
 
   onActivate(): void {
-    const config = this.gestureHandler.config;
     this.ensureView(this.view);
     if (
       (!this.view.style.cursor || this.view.style.cursor === 'auto') &&
-      config.activeCursor
+      this.gestureHandler.activeCursor
     ) {
-      this.view.style.cursor = config.activeCursor;
+      this.view.style.cursor = this.gestureHandler.activeCursor;
     }
   }
 
@@ -241,8 +235,8 @@ export class GestureHandlerWebDelegate
     this.tryResetCursor();
   }
 
-  public destroy(config: Config): void {
-    this.removeContextMenuListeners(config);
+  public destroy(enableContextMenu?: boolean): void {
+    this.removeContextMenuListeners(enableContextMenu);
 
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
@@ -261,5 +255,9 @@ export class GestureHandlerWebDelegate
 
   public set view(value: HTMLElement) {
     this._view = value;
+  }
+
+  get initialized(): boolean {
+    return this.isInitialized;
   }
 }

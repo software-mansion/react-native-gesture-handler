@@ -16,7 +16,12 @@ import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import IGestureHandler from './IGestureHandler';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import {
+  ActiveCursor,
+  MouseButton,
+  TouchAction,
+  UserSelect,
+} from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
@@ -28,7 +33,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _state: State = State.UNDETERMINED;
 
   private _shouldCancelWhenOutside = false;
-  protected hasCustomActivationCriteria = false;
   private _enabled = false;
 
   private viewRef: number | null = null;
@@ -37,13 +41,16 @@ export default abstract class GestureHandler implements IGestureHandler {
   private forAnimated: boolean = false;
   private _handlerTag!: number;
 
-  private _config: Config = { enabled: false };
   private hitSlop?: HitSlop = undefined;
   private manualActivation: boolean = false;
   private mouseButton?: MouseButton = undefined;
   private needsPointerData: boolean = false;
-
   private _tracker: PointerTracker = new PointerTracker();
+
+  private _enableContextMenu: boolean = false;
+  private _activeCursor?: ActiveCursor = undefined;
+  private _touchAction?: TouchAction = undefined;
+  private _userSelect?: UserSelect = undefined;
 
   // Orchestrator properties
   private _activationIndex = 0;
@@ -625,13 +632,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public updateGestureConfig(config: Config): void {
-    // TODO: remove config dependency from class alltogether?
-    for (const key of Object.keys(config)) {
-      if (this.config[key] !== config[key]) {
-        this.config[key] = config[key];
-      }
-    }
-
     if (config.enabled !== undefined && this.enabled !== config.enabled) {
       this.enabled = config.enabled;
       this.delegate.onEnabledChange(this.enabled);
@@ -663,6 +663,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
     }
 
+    if (config.enableContextMenu !== undefined) {
+      this.enableContextMenu = config.enableContextMenu;
+    }
+
     if (this.enabled) {
       return;
     }
@@ -677,14 +681,6 @@ export default abstract class GestureHandler implements IGestureHandler {
       default:
         this.cancel(true);
         break;
-    }
-  }
-
-  protected checkCustomActivationCriteria(criterias: string[]): void {
-    for (const key in this.config) {
-      if (criterias.indexOf(key) >= 0) {
-        this.hasCustomActivationCriteria = true;
-      }
     }
   }
 
@@ -820,11 +816,12 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.hitSlop = undefined;
     this.needsPointerData = false;
     this.forAnimated = false;
+    this._enableContextMenu = false;
   }
 
   public onDestroy(): void {
     GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
-    this.delegate.destroy(this.config);
+    this.delegate.destroy(this.enableContextMenu);
   }
 
   //
@@ -836,10 +833,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   public set handlerTag(value: number) {
     this._handlerTag = value;
-  }
-
-  public get config(): Config {
-    return this._config;
   }
 
   public get delegate() {
@@ -904,6 +897,34 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected set shouldResetProgress(value) {
     this._shouldResetProgress = value;
+  }
+
+  public get enableContextMenu() {
+    return this._enableContextMenu;
+  }
+  protected set enableContextMenu(value) {
+    this._enableContextMenu = value;
+  }
+
+  public get activeCursor() {
+    return this._activeCursor;
+  }
+  protected set activeCursor(value) {
+    this._activeCursor = value;
+  }
+
+  public get touchAction() {
+    return this._touchAction;
+  }
+  protected set touchAction(value) {
+    this._touchAction = value;
+  }
+
+  public get userSelect() {
+    return this._userSelect;
+  }
+  protected set userSelect(value) {
+    this._userSelect = value;
   }
 
   public getTrackedPointersID(): number[] {
