@@ -7,7 +7,7 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
-import com.swmansion.gesturehandler.react.eventbuilders.LongPressGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.LongPressGestureHandlerEventDataBuilder
 
 class LongPressGestureHandler(context: Context) : GestureHandler() {
   var minDurationMs = DEFAULT_MIN_DURATION_MS

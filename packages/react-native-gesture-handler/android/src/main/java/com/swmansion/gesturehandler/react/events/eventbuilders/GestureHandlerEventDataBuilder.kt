@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.react.eventbuilders
+package com.swmansion.gesturehandler.react.events.eventbuilders
 
 import com.facebook.react.bridge.WritableMap
 import com.swmansion.gesturehandler.core.GestureHandler
