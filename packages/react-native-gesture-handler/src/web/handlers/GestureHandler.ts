@@ -667,6 +667,18 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.enableContextMenu = config.enableContextMenu;
     }
 
+    if (config.activeCursor !== undefined) {
+      this.activeCursor = config.activeCursor;
+    }
+
+    if (config.touchAction !== undefined) {
+      this.touchAction = config.touchAction;
+    }
+
+    if (config.userSelect !== undefined) {
+      this.userSelect = config.userSelect;
+    }
+
     if (this.enabled) {
       return;
     }
@@ -816,7 +828,10 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.hitSlop = undefined;
     this.needsPointerData = false;
     this.forAnimated = false;
-    this._enableContextMenu = false;
+    this.enableContextMenu = false;
+    this.activeCursor = undefined;
+    this.touchAction = undefined;
+    this.userSelect = undefined;
   }
 
   public onDestroy(): void {
