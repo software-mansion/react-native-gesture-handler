@@ -69,6 +69,7 @@ export function useGesture(
     Reanimated !== undefined && hasWorkletEventHandlers(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
 
+  // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const {
     onGestureHandlerStateChange,
     onGestureHandlerEvent,
@@ -90,9 +91,24 @@ export function useGesture(
     throw new Error(tagMessage('Failed to create event handlers.'));
   }
 
+  if (
+    config.shouldUseReanimated &&
+    (!onReanimatedStateChange ||
+      !onReanimatedUpdateEvent ||
+      !onReanimatedTouchEvent)
+  ) {
+    throw new Error(tagMessage('Failed to create reanimated event handlers.'));
+  }
+
   config.dispatchesAnimatedEvents =
     !!onGestureHandlerAnimatedEvent &&
     '__isNative' in onGestureHandlerAnimatedEvent;
+
+  if (config.dispatchesAnimatedEvents && config.shouldUseReanimated) {
+    throw new Error(
+      tagMessage('Cannot use Reanimated and Animated events at the same time.')
+    );
+  }
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
