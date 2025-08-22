@@ -126,3 +126,16 @@ export function prepareConfig(config: any) {
 
   return copy;
 }
+
+// Variant of djb2 hash function.
+// Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765
+export function hash(str: string) {
+  'worklet';
+  const len = str.length;
+  let h = 5381;
+
+  for (let i = 0; i < len; i++) {
+    h = (h * 33) ^ str.charCodeAt(i);
+  }
+  return h >>> 0;
+}
