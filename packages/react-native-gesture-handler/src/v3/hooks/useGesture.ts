@@ -2,10 +2,13 @@ import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../utils';
+import {
+  Reanimated,
+  SharedValue,
+} from '../../handlers/gestures/reanimatedWrapper';
+import { hash, prepareConfig, isAnimatedEvent } from './utils';
 import { AnimatedEvent } from '../types';
-import { isAnimatedEvent } from './utils';
+import { tagMessage } from '../../utils';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -48,6 +51,59 @@ function shouldHandleTouchEvents(config: Record<string, unknown>) {
     !!config.onTouchesUp ||
     !!config.onTouchesCancelled
   );
+}
+
+const SHARED_VALUE_OFFSET = 1.618;
+
+// This is used to obtain HostFunction that can be executed on the UI thread
+const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
+
+function bindSharedValues(config: any, handlerTag: number) {
+  if (Reanimated === undefined) {
+    return;
+  }
+
+  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
+
+  const attachListener = (sharedValue: SharedValue, configKey: string) => {
+    'worklet';
+    const keyHash = hash(configKey);
+    const listenerId = baseListenerId + keyHash;
+
+    sharedValue.addListener(listenerId, (value) => {
+      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
+      flushOperations();
+    });
+  };
+
+  for (const [key, maybeSharedValue] of Object.entries(config)) {
+    if (!Reanimated.isSharedValue(maybeSharedValue)) {
+      continue;
+    }
+
+    Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
+  }
+}
+
+function unbindSharedValues(config: any, handlerTag: number) {
+  if (Reanimated === undefined) {
+    return;
+  }
+
+  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
+
+  for (const [key, maybeSharedValue] of Object.entries(config)) {
+    if (!Reanimated.isSharedValue(maybeSharedValue)) {
+      continue;
+    }
+
+    const keyHash = hash(key);
+    const listenerId = baseListenerId + keyHash;
+
+    Reanimated.runOnUI(() => {
+      maybeSharedValue.removeListener(listenerId);
+    })();
+  }
 }
 
 export function useGesture(
@@ -122,12 +178,17 @@ export function useGesture(
   }, [type, tag]);
 
   useEffect(() => {
-    // TODO: filter changes - passing functions (and possibly other types)
-    // causes a native crash
-    const animatedEvent = config.onUpdate;
-    config.onUpdate = null;
-    RNGestureHandlerModule.updateGestureHandler(tag, config);
-    config.onUpdate = animatedEvent;
+    bindSharedValues(config, tag);
+
+    return () => {
+      unbindSharedValues(config, tag);
+    };
+  }, [tag, config]);
+
+  useEffect(() => {
+    const preparedConfig = prepareConfig(config);
+
+    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
 
     RNGestureHandlerModule.flushOperations();
   }, [config, tag]);

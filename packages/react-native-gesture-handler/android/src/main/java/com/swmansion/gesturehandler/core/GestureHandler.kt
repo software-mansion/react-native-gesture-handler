@@ -866,8 +866,12 @@ open class GestureHandler {
 
     fun create(context: Context?, handlerTag: Int): T = create(context).also { it.tag = handlerTag }
 
-    open fun setConfig(handler: T, config: ReadableMap) {
+    fun setConfig(handler: T, config: ReadableMap) {
       handler.resetConfig()
+      updateConfig(handler, config)
+    }
+
+    open fun updateConfig(handler: T, config: ReadableMap) {
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.shouldCancelWhenOutside = config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)
       }
