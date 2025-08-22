@@ -5,6 +5,7 @@ import { useGestureCallbacks } from './useGestureCallbacks';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
 import { AnimatedEvent } from '../types';
+import { isAnimatedEvent } from './utils';
 
 type GestureType =
   | 'TapGestureHandler'
@@ -68,6 +69,14 @@ export function useGesture(
   config.shouldUseReanimated =
     Reanimated !== undefined && hasWorkletEventHandlers(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
+  // TODO: Remove this when we properly type config
+  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate as any);
+
+  if (config.dispatchesAnimatedEvents && config.shouldUseReanimated) {
+    throw new Error(
+      tagMessage('Cannot use Reanimated and Animated events at the same time.')
+    );
+  }
 
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const {
@@ -98,16 +107,6 @@ export function useGesture(
       !onReanimatedTouchEvent)
   ) {
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
-  }
-
-  config.dispatchesAnimatedEvents =
-    !!onGestureHandlerAnimatedEvent &&
-    '__isNative' in onGestureHandlerAnimatedEvent;
-
-  if (config.dispatchesAnimatedEvents && config.shouldUseReanimated) {
-    throw new Error(
-      tagMessage('Cannot use Reanimated and Animated events at the same time.')
-    );
   }
 
   useMemo(() => {
