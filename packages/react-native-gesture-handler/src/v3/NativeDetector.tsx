@@ -50,7 +50,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         gesture.gestureEvents.onReanimatedUpdateEvent
       }
       onGestureHandlerReanimatedTouchEvent={
-        gesture.gestureEvents.onGestureHandlerTouchEvent
+        gesture.gestureEvents.onReanimatedTouchEvent
       }
       onGestureHandlerAnimatedEvent={
         gesture.gestureEvents.onGestureHandlerAnimatedEvent
