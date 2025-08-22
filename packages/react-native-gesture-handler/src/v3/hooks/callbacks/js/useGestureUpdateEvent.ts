@@ -1,12 +1,9 @@
-import { isAnimatedEvent } from '../../utils';
+import { extractUpdateHandlers, isAnimatedEvent } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
-import { CallbackHandlers } from '../../../types';
 import { onGestureHandlerEvent } from '../onGestureHandlerEvent';
 
 export function gestureUpdateEvent(handlerTag: number, config: any) {
-  const { onUpdate, changeEventCalculator } = config;
-
-  const handlers: CallbackHandlers = { ...(onUpdate ? { onUpdate } : {}) };
+  const { handlers, changeEventCalculator } = extractUpdateHandlers(config);
 
   const jsContext: ReanimatedContext = {
     lastUpdateEvent: undefined,

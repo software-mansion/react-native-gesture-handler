@@ -7,6 +7,7 @@ import {
   GestureHandlerEvent,
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
+  UpdateEvent,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -108,4 +109,47 @@ export function checkMappingForChangeProperties(obj: Animated.Mapping) {
       );
     }
   }
+}
+
+export function extractStateChangeHandlers(config: any): CallbackHandlers {
+  'worklet';
+  const { onBegin, onStart, onEnd, onFinalize } = config;
+
+  const handlers: CallbackHandlers = {
+    ...(onBegin ? { onBegin } : {}),
+    ...(onStart ? { onStart } : {}),
+    ...(onEnd ? { onEnd } : {}),
+    ...(onFinalize ? { onFinalize } : {}),
+  };
+
+  return handlers;
+}
+
+export function extractUpdateHandlers(config: any): {
+  handlers: CallbackHandlers;
+  changeEventCalculator?: (
+    current: UpdateEvent<Record<string, unknown>>,
+    previous?: UpdateEvent<Record<string, unknown>>
+  ) => UpdateEvent<Record<string, unknown>>;
+} {
+  'worklet';
+  const { onUpdate, changeEventCalculator } = config;
+
+  const handlers: CallbackHandlers = { ...(onUpdate ? { onUpdate } : {}) };
+
+  return { handlers, changeEventCalculator };
+}
+
+export function extractTouchHandlers(config: any): CallbackHandlers {
+  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
+    config;
+
+  const handlers: CallbackHandlers = {
+    ...(onTouchesDown ? { onTouchesDown } : {}),
+    ...(onTouchesMove ? { onTouchesMove } : {}),
+    ...(onTouchesUp ? { onTouchesUp } : {}),
+    ...(onTouchesCancelled ? { onTouchesCancelled } : {}),
+  };
+
+  return handlers;
 }

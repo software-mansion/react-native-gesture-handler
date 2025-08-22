@@ -1,11 +1,9 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
-import { CallbackHandlers } from '../../../types';
+import { extractUpdateHandlers } from '../../utils';
 import { onGestureHandlerEvent } from '../onGestureHandlerEvent';
 
 export function useReanimatedUpdateEvent(handlerTag: number, config: any) {
-  const { onUpdate, changeEventCalculator } = config;
-
-  const handlers: CallbackHandlers = { ...(onUpdate ? { onUpdate } : {}) };
+  const { handlers, changeEventCalculator } = extractUpdateHandlers(config);
 
   const reanimatedHandler = Reanimated?.useHandler(handlers);
 

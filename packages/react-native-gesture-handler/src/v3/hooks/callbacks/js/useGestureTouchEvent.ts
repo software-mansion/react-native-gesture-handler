@@ -1,16 +1,8 @@
-import { CallbackHandlers } from '../../../types';
+import { extractTouchHandlers } from '../../utils';
 import { onGestureHandlerTouchEvent } from '../onGestureHandlerTouchEvent';
 
 export function gestureTouchEvent(handlerTag: number, config: any) {
-  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
-    config;
-
-  const handlers: CallbackHandlers = {
-    ...(onTouchesDown ? { onTouchesDown } : {}),
-    ...(onTouchesMove ? { onTouchesMove } : {}),
-    ...(onTouchesUp ? { onTouchesUp } : {}),
-    ...(onTouchesCancelled ? { onTouchesCancelled } : {}),
-  };
+  const handlers = extractTouchHandlers(config);
 
   return onGestureHandlerTouchEvent(handlerTag, handlers);
 }
