@@ -381,9 +381,9 @@
   recognizer.activateAfterLongPress = NAN;
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   RNBetterPanGestureRecognizer *recognizer = (RNBetterPanGestureRecognizer *)_recognizer;
 
   APPLY_FLOAT_PROP(minVelocityX);

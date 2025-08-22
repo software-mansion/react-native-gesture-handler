@@ -65,7 +65,7 @@ export function updateHandlers(
       handler.config = newGestures[i].config;
       handler.handlers = newGestures[i].handlers;
 
-      RNGestureHandlerModule.updateGestureHandler(
+      RNGestureHandlerModule.setGestureHandlerConfig(
         handler.handlerTag,
         filterConfig(
           handler.config,
