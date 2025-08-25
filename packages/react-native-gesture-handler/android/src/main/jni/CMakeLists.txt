@@ -38,6 +38,10 @@ target_include_directories(
   "${REACT_NATIVE_DIR}/ReactCommon"
 )
 
+if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
+  target_compile_reactnative_options(${LIB_TARGET_NAME} PRIVATE)
+endif()
+
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
 
