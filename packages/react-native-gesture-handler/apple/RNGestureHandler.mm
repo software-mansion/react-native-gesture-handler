@@ -108,6 +108,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _handlersThatShouldWait = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
+  _dispatchesAnimatedEvents = NO;
+  _dispatchesReanimatedEvents = NO;
 #if !TARGET_OS_OSX
   _recognizer.cancelsTouchesInView = YES;
 #endif

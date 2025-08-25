@@ -132,6 +132,8 @@ open class GestureHandler {
     isEnabled = DEFAULT_IS_ENABLED
     hitSlop = DEFAULT_HIT_SLOP
     mouseButton = DEFAULT_MOUSE_BUTTON
+    dispatchesAnimatedEvents = DEFAULT_DISPATCHES_ANIMATED_EVENTS
+    dispatchesReanimatedEvents = DEFAULT_DISPATCHES_REANIMATED_EVENTS
   }
 
   fun hasCommonPointers(other: GestureHandler): Boolean {
@@ -978,6 +980,8 @@ open class GestureHandler {
     private const val DEFAULT_IS_ENABLED = true
     private val DEFAULT_HIT_SLOP = null
     private const val DEFAULT_MOUSE_BUTTON = 0
+    private const val DEFAULT_DISPATCHES_ANIMATED_EVENTS = false
+    private const val DEFAULT_DISPATCHES_REANIMATED_EVENTS = false
 
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1
