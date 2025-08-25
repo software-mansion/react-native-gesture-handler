@@ -18,7 +18,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var coalescingKey: Short = 0
   private var actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
-  private var eventTarget: EventTarget = EventTarget.JS
+  private lateinit var eventTarget: EventTarget
 
   private fun <T : GestureHandler> init(
     handler: T,
