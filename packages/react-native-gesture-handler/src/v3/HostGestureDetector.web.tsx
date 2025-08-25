@@ -9,7 +9,7 @@ export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
   children?: React.ReactNode;
-  logicChildren?: RefObject<Set<LogicChild>>;
+  logicChildren?: Set<LogicChild>;
 }
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
@@ -97,7 +97,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       attachedHandlerTags,
       attachedNativeHandlerTags
     );
-    props.logicChildren?.current.forEach((child) => {
+    console.log(props.logicChildren);
+    props.logicChildren?.forEach((child) => {
       attachHandlers(
         child.viewRef,
         child.propsRef,
@@ -115,7 +116,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         attachedHandlerTags,
         attachedNativeHandlerTags
       );
-      props.logicChildren?.current.forEach((child) => {
+      props.logicChildren?.forEach((child) => {
         detachHandlers(
           child.attachedHandlerTags.current,
           child.attachedHandlerTags,

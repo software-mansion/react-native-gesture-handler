@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { NativeDetectorProps, useDetectorContext } from './NativeDetector';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 
-export function LogicDetector(props: NativeDetectorProps) {
+export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();
   const viewRef = useRef(null);
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
@@ -36,4 +36,4 @@ export function LogicDetector(props: NativeDetectorProps) {
   }, [register, unregister]);
 
   return <Wrap ref={viewRef}>{props.children}</Wrap>;
-}
+};

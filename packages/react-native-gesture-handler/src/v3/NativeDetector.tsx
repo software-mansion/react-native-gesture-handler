@@ -1,4 +1,4 @@
-import React, { createContext, RefObject, useContext, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import { NativeGesture } from './hooks/useGesture';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 
@@ -26,8 +26,8 @@ type DetectorContextType = {
 const DetectorContext = createContext<DetectorContextType | null>(null);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
-  const logicChildren: RefObject<Set<LogicChild>> = useRef(
-    new Set<LogicChild>()
+  const [logicChildren, setLogicChildren] = useState<Set<LogicChild>>(
+    new Set()
   );
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
@@ -36,13 +36,17 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
-  const register = (child: LogicChild) => {
-    logicChildren.current.add(child);
-  };
+  const register = useCallback((child: LogicChild) => {
+    setLogicChildren((prev) => new Set(prev).add(child));
+  }, []);
 
-  const unregister = (child: LogicChild) => {
-    logicChildren.current.delete(child);
-  };
+  const unregister = useCallback((child: LogicChild) => {
+    setLogicChildren((prev) => {
+      const updated = new Set(prev);
+      updated.delete(child);
+      return updated;
+    });
+  }, []);
 
   // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
