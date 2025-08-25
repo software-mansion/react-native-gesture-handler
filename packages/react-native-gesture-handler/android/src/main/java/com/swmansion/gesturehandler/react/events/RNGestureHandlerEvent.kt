@@ -18,13 +18,13 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var coalescingKey: Short = 0
   private var actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
-  private lateinit var eventTarget: EventTarget
+  private lateinit var eventHandlerType: EventHandlerType
 
   private fun <T : GestureHandler> init(
     handler: T,
     actionType: Int,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
-    eventTarget: EventTarget,
+    eventHandlerType: EventHandlerType,
   ) {
     val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
       handler.viewForEvents!!
@@ -36,7 +36,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
     this.actionType = actionType
     this.dataBuilder = dataBuilder
-    this.eventTarget = eventTarget
+    this.eventHandlerType = eventHandlerType
     coalescingKey = handler.eventCoalescingKey
   }
 
@@ -46,14 +46,14 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   }
 
   override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-    if (eventTarget == EventTarget.Animated) {
+    if (eventHandlerType == EventHandlerType.ForAnimated) {
       NATIVE_DETECTOR_ANIMATED_EVENT_NAME
-    } else if (eventTarget == EventTarget.Reanimated) {
+    } else if (eventHandlerType == EventHandlerType.ForReanimated) {
       REANIMATED_EVENT_NAME
     } else {
       EVENT_NAME
     }
-  } else if (eventTarget == EventTarget.Animated) {
+  } else if (eventHandlerType == EventHandlerType.ForAnimated) {
     NATIVE_ANIMATED_EVENT_NAME
   } else {
     EVENT_NAME
@@ -87,9 +87,9 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
       handler: T,
       actionType: Int,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
-      eventTarget: EventTarget,
+      eventHandlerType: EventHandlerType,
     ): RNGestureHandlerEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
-      init(handler, actionType, dataBuilder, eventTarget)
+      init(handler, actionType, dataBuilder, eventHandlerType)
     }
 
     fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>): WritableMap = Arguments.createMap().apply {

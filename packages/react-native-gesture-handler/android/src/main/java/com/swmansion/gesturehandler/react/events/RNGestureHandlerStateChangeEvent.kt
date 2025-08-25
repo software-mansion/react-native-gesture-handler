@@ -19,7 +19,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   private var newState: Int = GestureHandler.STATE_UNDETERMINED
   private var oldState: Int = GestureHandler.STATE_UNDETERMINED
   private var actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
-  private lateinit var eventTarget: EventTarget
+  private lateinit var eventHandlerType: EventHandlerType
 
   private fun <T : GestureHandler> init(
     handler: T,
@@ -27,7 +27,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     oldState: Int,
     actionType: Int,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
-    eventTarget: EventTarget,
+    eventHandlerType: EventHandlerType,
   ) {
     val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
       handler.viewForEvents!!
@@ -41,7 +41,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     this.newState = newState
     this.oldState = oldState
     this.actionType = actionType
-    this.eventTarget = eventTarget
+    this.eventHandlerType = eventHandlerType
   }
 
   override fun onDispose() {
@@ -52,7 +52,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   }
 
   override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-    if (eventTarget == EventTarget.Reanimated) REANIMATED_EVENT_NAME else EVENT_NAME
+    if (eventHandlerType == EventHandlerType.ForReanimated) REANIMATED_EVENT_NAME else EVENT_NAME
   } else {
     EVENT_NAME
   }
@@ -83,12 +83,12 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
       oldState: Int,
       actionType: Int,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
-      eventTarget: EventTarget,
+      eventHandlerType: EventHandlerType,
     ): RNGestureHandlerStateChangeEvent = (
       EVENTS_POOL.acquire()
         ?: RNGestureHandlerStateChangeEvent()
       ).apply {
-      init(handler, newState, oldState, actionType, dataBuilder, eventTarget)
+      init(handler, newState, oldState, actionType, dataBuilder, eventHandlerType)
     }
 
     fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>, newState: Int, oldState: Int): WritableMap =

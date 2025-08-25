@@ -11,9 +11,9 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   private var extraData: WritableMap? = null
   private var coalescingKey: Short = 0
   private var actionType = GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API
-  private lateinit var eventTarget: EventTarget
+  private lateinit var eventHandlerType: EventHandlerType
 
-  private fun <T : GestureHandler> init(handler: T, actionType: Int, eventTarget: EventTarget) {
+  private fun <T : GestureHandler> init(handler: T, actionType: Int, eventHandlerType: EventHandlerType) {
     val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
       handler.viewForEvents!!
     } else {
@@ -25,7 +25,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     extraData = createEventData(handler)
     coalescingKey = handler.eventCoalescingKey
     this.actionType = actionType
-    this.eventTarget = eventTarget
+    this.eventHandlerType = eventHandlerType
   }
 
   override fun onDispose() {
@@ -34,7 +34,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   }
 
   override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-    if (eventTarget == EventTarget.Reanimated) REANIMATED_EVENT_NAME else NATIVE_EVENT_NAME
+    if (eventHandlerType == EventHandlerType.ForReanimated) REANIMATED_EVENT_NAME else NATIVE_EVENT_NAME
   } else {
     EVENT_NAME
   }
@@ -59,10 +59,13 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
       TOUCH_EVENTS_POOL_SIZE,
     )
 
-    fun <T : GestureHandler> obtain(handler: T, actionType: Int, eventTarget: EventTarget): RNGestureHandlerTouchEvent =
-      (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
-        init(handler, actionType, eventTarget)
-      }
+    fun <T : GestureHandler> obtain(
+      handler: T,
+      actionType: Int,
+      eventHandlerType: EventHandlerType,
+    ): RNGestureHandlerTouchEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
+      init(handler, actionType, eventHandlerType)
+    }
 
     fun <T : GestureHandler> createEventData(handler: T): WritableMap = Arguments.createMap().apply {
       putInt("handlerTag", handler.tag)

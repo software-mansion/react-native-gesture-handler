@@ -44,7 +44,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           handler,
           handler.actionType,
           handlerFactory.createEventBuilder(handler),
-          EventTarget.JS, // For API v2 compatibility
+          EventHandlerType.ForJS, // For API v2 compatibility
         )
         sendEventForReanimated(event)
       }
@@ -54,7 +54,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           handler,
           handler.actionType,
           handlerFactory.createEventBuilder(handler),
-          EventTarget.Animated,
+          EventHandlerType.ForAnimated,
         )
         sendEventForNativeAnimatedEvent(event)
       }
@@ -72,19 +72,19 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val eventTarget = if (handler.dispatchesAnimatedEvents) {
-          EventTarget.Animated
+        val eventHandlerType = if (handler.dispatchesAnimatedEvents) {
+          EventHandlerType.ForAnimated
         } else if (handler.dispatchesReanimatedEvents) {
-          EventTarget.Reanimated
+          EventHandlerType.ForReanimated
         } else {
-          EventTarget.JS
+          EventHandlerType.ForJS
         }
 
         val event = RNGestureHandlerEvent.obtain(
           handler,
           handler.actionType,
           handlerFactory.createEventBuilder(handler),
-          eventTarget,
+          eventHandlerType,
         )
 
         handler.viewForEvents!!.dispatchEvent(event)
@@ -111,7 +111,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           oldState,
           handler.actionType,
           handlerFactory.createEventBuilder(handler),
-          EventTarget.JS, // For API v2 compatibility
+          EventHandlerType.ForJS, // For API v2 compatibility
         )
         sendEventForReanimated(event)
       }
@@ -137,7 +137,11 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       }
 
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val eventTarget = if (handler.dispatchesReanimatedEvents) EventTarget.Reanimated else EventTarget.JS
+        val eventHandlerType = if (handler.dispatchesReanimatedEvents) {
+          EventHandlerType.ForReanimated
+        } else {
+          EventHandlerType.ForJS
+        }
 
         val event = RNGestureHandlerStateChangeEvent.obtain(
           handler,
@@ -145,7 +149,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           oldState,
           handler.actionType,
           handlerFactory.createEventBuilder(handler),
-          eventTarget,
+          eventHandlerType,
         )
 
         handler.viewForEvents!!.dispatchEvent(event)
@@ -175,7 +179,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         val event = RNGestureHandlerTouchEvent.obtain(
           handler,
           handler.actionType,
-          EventTarget.JS, // For API v2 compatibility
+          EventHandlerType.ForJS, // For API v2 compatibility
         )
         sendEventForReanimated(event)
       }
@@ -185,8 +189,12 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
       GestureHandler.ACTION_TYPE_NATIVE_DETECTOR -> {
-        val eventTarget = if (handler.dispatchesReanimatedEvents) EventTarget.Reanimated else EventTarget.JS
-        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType, eventTarget)
+        val eventHandlerType = if (handler.dispatchesReanimatedEvents) {
+          EventHandlerType.ForReanimated
+        } else {
+          EventHandlerType.ForJS
+        }
+        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType, eventHandlerType)
 
         handler.viewForEvents!!.dispatchEvent(event)
       }
