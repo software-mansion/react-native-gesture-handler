@@ -1,7 +1,7 @@
-import { Ref, useEffect, useRef } from 'react';
+import { Ref, RefObject, useEffect, useRef } from 'react';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
-import { PropsRef } from '../web/interfaces';
+import { LogicChild, PropsRef } from '../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../utils';
 
@@ -9,6 +9,7 @@ export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
   children?: React.ReactNode;
+  logicChildren?: RefObject<Set<LogicChild>>;
 }
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
@@ -19,7 +20,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const detachHandlers = (oldHandlerTags: Set<number>) => {
+  const detachHandlers = (
+    oldHandlerTags: Set<number>,
+    attachedHandlerTags: RefObject<Set<number>>,
+    attachedNativeHandlerTags: RefObject<Set<number>>
+  ) => {
     oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
       attachedNativeHandlerTags.current.delete(tag);
@@ -27,14 +32,24 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
   };
 
-  const attachHandlers = (currentHandlerTags: Set<number>) => {
+  const attachHandlers = (
+    viewRef: RefObject<Element | null>,
+    propsRef: RefObject<PropsRef>,
+    currentHandlerTags: Set<number>,
+    attachedHandlerTags: RefObject<Set<number>>,
+    attachedNativeHandlerTags: RefObject<Set<number>>
+  ) => {
     const oldHandlerTags =
       attachedHandlerTags.current.difference(currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(
       attachedHandlerTags.current
     );
 
-    detachHandlers(oldHandlerTags);
+    detachHandlers(
+      oldHandlerTags,
+      attachedHandlerTags,
+      attachedNativeHandlerTags
+    );
 
     newHandlerTags.forEach((tag) => {
       if (
@@ -67,16 +82,46 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   };
 
   useEffect(() => {
-    detachHandlers(attachedNativeHandlerTags.current);
+    detachHandlers(
+      attachedNativeHandlerTags.current,
+      attachedHandlerTags,
+      attachedNativeHandlerTags
+    );
   }, [children]);
 
   useEffect(() => {
-    attachHandlers(new Set(handlerTags));
+    attachHandlers(
+      viewRef,
+      propsRef,
+      new Set(handlerTags),
+      attachedHandlerTags,
+      attachedNativeHandlerTags
+    );
+    props.logicChildren?.current.forEach((child) => {
+      attachHandlers(
+        child.viewRef,
+        child.propsRef,
+        new Set(child.propsRef.current.handlerTags),
+        child.attachedHandlerTags,
+        child.attachedNativeHandlerTags
+      );
+    });
   }, [handlerTags, children]);
 
   useEffect(() => {
     return () => {
-      detachHandlers(attachedHandlerTags.current);
+      detachHandlers(
+        attachedHandlerTags.current,
+        attachedHandlerTags,
+        attachedNativeHandlerTags
+      );
+      props.logicChildren?.current.forEach((child) => {
+        detachHandlers(
+          child.attachedHandlerTags.current,
+          child.attachedHandlerTags,
+          child.attachedNativeHandlerTags
+        );
+      });
     };
   }, []);
 
