@@ -1,8 +1,8 @@
 import { extractStateChangeHandlers } from '../../utils';
-import { onGestureHandlerStateChange } from '../onGestureHandlerStateChange';
+import { getGestureHandlerStateChangeWorkletHandler } from '../GestureHandlerStateChangeWorkletHandler';
 
 export function gestureStateChangeEvent(handlerTag: number, config: any) {
   const handlers = extractStateChangeHandlers(config);
 
-  return onGestureHandlerStateChange(handlerTag, handlers);
+  return getGestureHandlerStateChangeWorkletHandler(handlerTag, handlers);
 }

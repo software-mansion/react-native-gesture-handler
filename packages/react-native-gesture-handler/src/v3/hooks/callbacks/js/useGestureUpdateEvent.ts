@@ -1,6 +1,6 @@
 import { extractUpdateHandlers, isAnimatedEvent } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
-import { onGestureHandlerEvent } from '../onGestureHandlerEvent';
+import { getGestureHandlerEventWorkletHandler } from '../GestureHandlerEventWorkletHandler';
 
 export function gestureUpdateEvent(handlerTag: number, config: any) {
   const { handlers, changeEventCalculator } = extractUpdateHandlers(config);
@@ -11,7 +11,7 @@ export function gestureUpdateEvent(handlerTag: number, config: any) {
 
   return isAnimatedEvent(config.onUpdate)
     ? undefined
-    : onGestureHandlerEvent(
+    : getGestureHandlerEventWorkletHandler(
         handlerTag,
         handlers,
         jsContext,
