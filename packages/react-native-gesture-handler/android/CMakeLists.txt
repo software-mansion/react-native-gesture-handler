@@ -14,6 +14,10 @@ add_library(
   ${rn_gesture_handler_codegen_SRCS}
 )
 
+if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
+  target_compile_reactnative_options(react_codegen_rngesturehandler_codegen PRIVATE)
+endif()
+
 target_include_directories(react_codegen_rngesturehandler_codegen PUBLIC ../shared/shadowNodes)
 target_include_directories(react_codegen_rngesturehandler_codegen PUBLIC ./build/generated/source/codegen/jni)
 
