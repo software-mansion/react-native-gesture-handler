@@ -2,11 +2,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RNGHEventTarget.h"
 #import "RNGHStylusData.h"
 #import "RNGHTouchEventType.h"
 #import "RNGHUIKit.h"
 #import "RNGestureHandlerActionType.h"
+#import "RNGestureHandlerEventHandlerType.h"
 #import "RNGestureHandlerState.h"
 
 @interface RNGestureHandlerEventExtraData : NSObject
@@ -63,13 +63,13 @@
 @property (nonatomic, strong, readonly) NSNumber *handlerTag;
 @property (nonatomic, strong, readonly) RNGestureHandlerEventExtraData *extraData;
 @property (nonatomic, readonly) RNGestureHandlerState state;
-@property (nonatomic, readonly) RNGestureHandlerEventTarget eventTarget;
+@property (nonatomic, readonly) RNGestureHandlerEventHandlerType eventHandlerType;
 
 - (instancetype)initWithReactTag:(NSNumber *)reactTag
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
-                       forTarget:(RNGestureHandlerEventTarget)eventTarget
+                  forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 
 @end

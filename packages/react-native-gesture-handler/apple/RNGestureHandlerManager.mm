@@ -9,9 +9,9 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
 
-#import "RNGHEventTarget.h"
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerActionType.h"
+#import "RNGestureHandlerEventHandlerType.h"
 #import "RNGestureHandlerNativeEventUtils.h"
 #import "RNGestureHandlerState.h"
 #import "RNRootViewGestureRecognizer.h"
@@ -298,24 +298,24 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
-         forTarget:(RNGestureHandlerEventTarget)eventTarget
+    forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
            forView:(RNGHUIView *)detectorView // Typing as RNGestureHandlerDetector is preferable
                                               // but results in a compilation error.
 {
   switch (actionType) {
     case RNGestureHandlerActionTypeNativeDetector: {
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
-        switch (eventTarget) {
-          case RNGestureHandlerEventTargetAnimated:
+        switch (eventHandlerType) {
+          case RNGestureHandlerEventHandlerTypeAnimated:
             [self sendEventForNativeAnimatedEvent:event];
             break;
-          case RNGestureHandlerEventTargetReanimated: {
+          case RNGestureHandlerEventHandlerTypeReanimated: {
             RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
             auto nativeEvent = [gestureEvent getReanimatedNativeEvent];
             [(RNGestureHandlerDetector *)detectorView dispatchReanimatedGestureEvent:nativeEvent];
             break;
           }
-          case RNGestureHandlerEventTargetJS: {
+          case RNGestureHandlerEventHandlerTypeJS: {
             RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
             auto nativeEvent = [gestureEvent getNativeEvent];
             [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
@@ -323,7 +323,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
           }
         }
       } else {
-        if (eventTarget == RNGestureHandlerEventTargetReanimated) {
+        if (eventHandlerType == RNGestureHandlerEventHandlerTypeReanimated) {
           auto nativeEvent = [event getReanimatedNativeEvent];
           [(RNGestureHandlerDetector *)detectorView dispatchReanimatedStateChangeEvent:nativeEvent];
         } else {
@@ -361,12 +361,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
 - (void)sendNativeTouchEventForGestureHandler:(RNGestureHandler *)handler
                               withPointerType:(NSInteger)pointerType
-                                    forTarget:(RNGestureHandlerEventTarget)eventTarget
+                               forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
 {
   RNGestureHandlerDetector *detector = (RNGestureHandlerDetector *)[handler findViewForEvents];
 
   // We have to double the logic since event types come from codegen.
-  if (eventTarget == RNGestureHandlerEventTargetReanimated) {
+  if (eventHandlerType == RNGestureHandlerEventHandlerTypeReanimated) {
     facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedTouchEvent nativeEvent = {
         .handlerTag = [handler.tag intValue],
         .state = static_cast<int>(handler.state),

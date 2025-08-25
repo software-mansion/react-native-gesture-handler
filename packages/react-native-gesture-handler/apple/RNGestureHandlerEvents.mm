@@ -173,7 +173,7 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
-                       forTarget:(RNGestureHandlerEventTarget)eventTarget
+                  forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
                    coalescingKey:(uint16_t)coalescingKey
 {
   if ((self = [super init])) {
@@ -182,7 +182,7 @@
     _state = state;
     _extraData = extraData;
     _coalescingKey = coalescingKey;
-    _eventTarget = eventTarget;
+    _eventHandlerType = eventHandlerType;
   }
   return self;
 }
@@ -191,12 +191,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSString *)eventName
 {
-  switch (_eventTarget) {
-    case RNGestureHandlerEventTargetJS:
+  switch (_eventHandlerType) {
+    case RNGestureHandlerEventHandlerTypeJS:
       return @"onGestureHandlerEvent";
-    case RNGestureHandlerEventTargetReanimated:
+    case RNGestureHandlerEventHandlerTypeReanimated:
       return @"onGestureHandlerReanimatedEvent";
-    case RNGestureHandlerEventTargetAnimated:
+    case RNGestureHandlerEventHandlerTypeAnimated:
       return @"onGestureHandlerAnimatedEvent";
   }
 }
@@ -218,7 +218,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSArray *)arguments
 {
-  if (_eventTarget == RNGestureHandlerEventTargetAnimated) {
+  if (_eventHandlerType == RNGestureHandlerEventHandlerTypeAnimated) {
     NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];
@@ -232,8 +232,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     [body setObject:@(_state) forKey:@"state"];
     return @[
       self.viewTag,
-      _eventTarget == RNGestureHandlerEventTargetReanimated ? @"onGestureHandlerReanimatedEvent"
-                                                            : @"onGestureHandlerEvent",
+      _eventHandlerType == RNGestureHandlerEventHandlerTypeReanimated ? @"onGestureHandlerReanimatedEvent"
+                                                                      : @"onGestureHandlerEvent",
       body
     ];
   }

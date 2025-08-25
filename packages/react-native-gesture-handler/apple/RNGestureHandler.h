@@ -1,7 +1,7 @@
-#import "RNGHEventTarget.h"
 #import "RNGHUIKit.h"
 #import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerDirection.h"
+#import "RNGestureHandlerEventHandlerType.h"
 #import "RNGestureHandlerEvents.h"
 #import "RNGestureHandlerPointerTracker.h"
 #import "RNGestureHandlerPointerType.h"
@@ -41,12 +41,12 @@
 
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event
     withActionType:(RNGestureHandlerActionType)actionType
-         forTarget:(RNGestureHandlerEventTarget)eventTarget
+    forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
            forView:(nonnull RNGHUIView *)detectorView;
 
 - (void)sendNativeTouchEventForGestureHandler:(nonnull RNGestureHandler *)handler
                               withPointerType:(NSInteger)pointerType
-                                    forTarget:(RNGestureHandlerEventTarget)eventTarget;
+                               forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType;
 
 @end
 
