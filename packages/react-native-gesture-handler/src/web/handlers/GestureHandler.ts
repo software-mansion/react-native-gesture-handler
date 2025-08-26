@@ -43,7 +43,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
-  private forAnimated: boolean = false;
+  private dispatchesAnimatedEvents: boolean = false;
   private _handlerTag!: number;
 
   private hitSlop?: HitSlop = undefined;
@@ -99,7 +99,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
-    this.forAnimated = false;
+    this.dispatchesAnimatedEvents = false;
 
     this.delegate.detach();
   }
@@ -432,7 +432,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
-      if (onGestureHandlerAnimatedEvent && this.forAnimated) {
+      if (onGestureHandlerAnimatedEvent && this.dispatchesAnimatedEvents) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
@@ -706,7 +706,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (config.dispatchesAnimatedEvents !== undefined) {
-      this.forAnimated = config.dispatchesAnimatedEvents;
+      this.dispatchesAnimatedEvents = config.dispatchesAnimatedEvents;
     }
 
     if (config.manualActivation !== undefined) {
@@ -889,7 +889,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.mouseButton = undefined;
     this.hitSlop = undefined;
     this.needsPointerData = false;
-    this.forAnimated = false;
+    this.dispatchesAnimatedEvents = false;
     this.enableContextMenu = false;
     this.activeCursor = undefined;
     this.touchAction = undefined;
