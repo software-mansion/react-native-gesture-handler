@@ -6,7 +6,7 @@ import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../../utils';
 import { isComposedGesture } from '../hooks/utils';
-import { dfs } from './utils';
+import { traverseGestureRelations } from './utils';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 
 export interface NativeDetectorProps {
@@ -38,11 +38,13 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   }
 
   if (isComposedGesture(gesture)) {
-    if (gesture.type === ComposedGestureType.Simultaneous) {
-      dfs(gesture, new Set(gesture.tags));
-    } else {
-      dfs(gesture);
-    }
+    traverseGestureRelations(
+      gesture,
+      new Set(
+        // If root is simultaneous, we want to add its tags to the set
+        gesture.type === ComposedGestureType.Simultaneous ? gesture.tags : []
+      )
+    );
   } else {
     RNGestureHandlerModule.configureRelations(gesture.tag, {
       waitFor: gesture.gestureRelations.waitFor,

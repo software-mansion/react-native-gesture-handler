@@ -9,9 +9,9 @@ import { isComposedGesture } from '../hooks/utils';
 import { ComposedGesture, ComposedGestureType, NativeGesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
-export const dfs = (
+export const traverseGestureRelations = (
   node: NativeGesture | ComposedGesture,
-  simultaneousHandlers: Set<number> = new Set(),
+  simultaneousHandlers: Set<number>,
   waitFor: number[] = []
 ) => {
   // If we are in the leaf node, we want to fill gesture relations arrays with current
@@ -61,7 +61,7 @@ export const dfs = (
       const length = waitFor.length;
 
       // We traverse the child, passing the current `waitFor` and `simultaneousHandlers`.
-      dfs(child, simultaneousHandlers, waitFor);
+      traverseGestureRelations(child, simultaneousHandlers, waitFor);
 
       // After traversing the child, we need to update `waitFor` and `simultaneousHandlers`
 
@@ -104,7 +104,7 @@ export const dfs = (
     // This means that child is a leaf node.
     else {
       // In the leaf node, we only care about filling `waitFor` array. First we traverse the child...
-      dfs(child, simultaneousHandlers, waitFor);
+      traverseGestureRelations(child, simultaneousHandlers, waitFor);
 
       // ..and when we go back we add the tag of the child to the `waitFor` array.
       if (node.type === ComposedGestureType.Exclusive) {
