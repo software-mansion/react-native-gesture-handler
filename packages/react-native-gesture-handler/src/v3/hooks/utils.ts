@@ -53,6 +53,16 @@ export function touchEventTypeToCallbackType(
   }
   return CALLBACK_TYPE.UNDEFINED;
 }
+export function isNativeEvent(
+  event: GestureHandlerEvent<unknown>
+): event is
+  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureTouchEvent> {
+  'worklet';
+
+  return 'nativeEvent' in event;
+}
 
 export function runCallback(
   type: CALLBACK_TYPE,
@@ -65,18 +75,7 @@ export function runCallback(
 
   // TODO: add proper types (likely boolean)
   // @ts-ignore It works, duh
-  handler?.(event, ...args);
-}
-
-export function isNativeEvent(
-  event: GestureHandlerEvent<unknown>
-): event is
-  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureTouchEvent> {
-  'worklet';
-
-  return 'nativeEvent' in event;
+  handler?.(isNativeEvent(event) ? event.nativeEvent : event, ...args);
 }
 
 export function isEventForHandlerWithTag(
