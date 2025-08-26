@@ -230,12 +230,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];
     [body setObject:@(_state) forKey:@"state"];
-    return @[
-      self.viewTag,
-      _eventHandlerType == RNGestureHandlerEventHandlerTypeReanimated ? @"onGestureHandlerReanimatedEvent"
-                                                                      : @"onGestureHandlerEvent",
-      body
-    ];
+    return @[ self.viewTag, @"onGestureHandlerEvent", body ];
   }
 }
 
