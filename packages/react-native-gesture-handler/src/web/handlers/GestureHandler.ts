@@ -696,7 +696,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   public updateGestureConfig(config: Config): void {
     if (config.enabled !== undefined && this.enabled !== config.enabled) {
       this.enabled = config.enabled;
-      this.delegate.onEnabledChange(this.enabled);
+      this.delegate.onEnabledChange();
     }
 
     if (config.hitSlop !== undefined) {
@@ -898,7 +898,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public onDestroy(): void {
     GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
-    this.delegate.destroy(this.enableContextMenu);
+    this.delegate.destroy();
   }
 
   //
