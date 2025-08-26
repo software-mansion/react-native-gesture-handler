@@ -159,6 +159,12 @@ RCT_EXPORT_MODULE()
   }];
 }
 
+- (void)configureRelations:(double)handlerTag relations:(NSDictionary *)relations
+{
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [manager updateGestureHandlerRelations:[NSNumber numberWithDouble:handlerTag] relations:relations];
+}
+
 - (void)dropGestureHandler:(double)handlerTag
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {

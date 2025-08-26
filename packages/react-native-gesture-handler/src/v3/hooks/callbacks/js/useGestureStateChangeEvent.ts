@@ -1,4 +1,4 @@
-import { extractStateChangeHandlers } from '../../utils';
+import { extractStateChangeHandlers } from '../../utils/EventHandlersUtils';
 import { getGestureHandlerStateChangeWorkletHandler } from '../GestureHandlerStateChangeWorkletHandler';
 
 // eslint-disable-next-line @eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks
