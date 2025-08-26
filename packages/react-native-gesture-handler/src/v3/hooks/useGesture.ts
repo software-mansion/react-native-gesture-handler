@@ -8,13 +8,13 @@ import {
 } from '../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../utils';
 import {
-  GestureRelations,
-  NativeGesture,
   ComposedGesture,
   Gesture,
+  GestureRelations,
+  NativeGesture,
   SingleGestureType,
 } from '../types';
-import { isComposedGesture, prepareConfig } from './utils';
+import { hash, isComposedGesture, prepareConfig } from './utils';
 
 function hasWorkletEventHandlers(config: Record<string, unknown>) {
   return Object.values(config).some(
@@ -36,17 +36,20 @@ const SHARED_VALUE_OFFSET = 1.618;
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
 
-function bindSharedValues(config: any, tag: number) {
+function bindSharedValues(config: any, handlerTag: number) {
   if (Reanimated === undefined) {
     return;
   }
 
-  const listenerId = tag + SHARED_VALUE_OFFSET;
+  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
 
   const attachListener = (sharedValue: SharedValue, configKey: string) => {
     'worklet';
+    const keyHash = hash(configKey);
+    const listenerId = baseListenerId + keyHash;
+
     sharedValue.addListener(listenerId, (value) => {
-      updateGestureHandlerConfig(tag, { [configKey]: value });
+      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
       flushOperations();
     });
   };
@@ -60,17 +63,20 @@ function bindSharedValues(config: any, tag: number) {
   }
 }
 
-function unbindSharedValues(config: any, tag: number) {
+function unbindSharedValues(config: any, handlerTag: number) {
   if (Reanimated === undefined) {
     return;
   }
 
-  const listenerId = tag + SHARED_VALUE_OFFSET;
+  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
 
-  for (const maybeSharedValue of Object.values(config)) {
+  for (const [key, maybeSharedValue] of Object.entries(config)) {
     if (!Reanimated.isSharedValue(maybeSharedValue)) {
       continue;
     }
+
+    const keyHash = hash(key);
+    const listenerId = baseListenerId + keyHash;
 
     Reanimated.runOnUI(() => {
       maybeSharedValue.removeListener(listenerId);

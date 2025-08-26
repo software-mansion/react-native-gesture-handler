@@ -28,7 +28,12 @@ void RNGHRuntimeDecorator::installRNRuntimeBindings(
           return jsi::Value::null();
         }
 
-        const auto shadowNode = shadowNodeFromValue(runtime, args[0]);
+#if REACT_NATIVE_MINOR_VERSION >= 81
+        auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+            runtime, args[0]);
+#else
+        auto shadowNode = shadowNodeFromValue(runtime, args[0]);
+#endif
 
 #ifndef ANDROID
         if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {

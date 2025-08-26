@@ -1,4 +1,4 @@
-import { Ref, useEffect, useRef } from 'react';
+import React, { Ref, useEffect, useRef } from 'react';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { ActionType } from '../../ActionType';
 import { PropsRef } from '../../web/interfaces';
@@ -42,14 +42,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
           tag
         ).shouldAttachGestureToChildView()
       ) {
-        if (!viewRef.current?.firstChild) {
-          throw new Error(
-            tagMessage('Detector expected to have a child element')
-          );
-        }
         RNGestureHandlerModule.attachGestureHandler(
           tag,
-          viewRef.current.firstChild,
+          viewRef.current!.firstChild,
           ActionType.NATIVE_DETECTOR,
           propsRef
         );
@@ -71,6 +66,12 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [children]);
 
   useEffect(() => {
+    if (React.Children.count(children) !== 1) {
+      throw new Error(
+        tagMessage('Detector expected to have exactly one child element')
+      );
+    }
+
     attachHandlers(new Set(handlerTags));
   }, [handlerTags, children]);
 

@@ -1,6 +1,11 @@
 project(GestureHandler)
 cmake_minimum_required(VERSION 3.9.0)
 
+string(
+  APPEND
+  CMAKE_CXX_FLAGS
+  " -DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_MINOR_VERSION}")
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 73)
     set(CMAKE_CXX_STANDARD 20)
@@ -32,6 +37,10 @@ target_include_directories(
   PRIVATE
   "${REACT_NATIVE_DIR}/ReactCommon"
 )
+
+if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
+  target_compile_reactnative_options(${LIB_TARGET_NAME} PRIVATE)
+endif()
 
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
