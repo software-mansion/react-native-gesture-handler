@@ -7,9 +7,11 @@ import {
   GestureHandlerEvent,
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
+  UpdateEvent,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
   'worklet';
@@ -51,8 +53,18 @@ export function touchEventTypeToCallbackType(
   }
   return CALLBACK_TYPE.UNDEFINED;
 }
+export function isNativeEvent(
+  event: GestureHandlerEvent<unknown>
+): event is
+  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureTouchEvent> {
+  'worklet';
 
-export function runWorkletCallback(
+  return 'nativeEvent' in event;
+}
+
+export function runCallback(
   type: CALLBACK_TYPE,
   config: CallbackHandlers,
   event: GestureHandlerEvent<Record<string, unknown>>,
@@ -63,18 +75,7 @@ export function runWorkletCallback(
 
   // TODO: add proper types (likely boolean)
   // @ts-ignore It works, duh
-  handler?.(event, ...args);
-}
-
-export function isNativeEvent(
-  event: GestureHandlerEvent<unknown>
-): event is
-  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureTouchEvent> {
-  'worklet';
-
-  return 'nativeEvent' in event;
+  handler?.(isNativeEvent(event) ? event.nativeEvent : event, ...args);
 }
 
 export function isEventForHandlerWithTag(
@@ -108,4 +109,76 @@ export function checkMappingForChangeProperties(obj: Animated.Mapping) {
       );
     }
   }
+}
+
+export function extractStateChangeHandlers(config: any): CallbackHandlers {
+  'worklet';
+  const { onBegin, onStart, onEnd, onFinalize } = config;
+
+  const handlers: CallbackHandlers = {
+    ...(onBegin ? { onBegin } : {}),
+    ...(onStart ? { onStart } : {}),
+    ...(onEnd ? { onEnd } : {}),
+    ...(onFinalize ? { onFinalize } : {}),
+  };
+
+  return handlers;
+}
+
+export function extractUpdateHandlers(config: any): {
+  handlers: CallbackHandlers;
+  changeEventCalculator?: (
+    current: UpdateEvent<Record<string, unknown>>,
+    previous?: UpdateEvent<Record<string, unknown>>
+  ) => UpdateEvent<Record<string, unknown>>;
+} {
+  'worklet';
+  const { onUpdate, changeEventCalculator } = config;
+
+  const handlers: CallbackHandlers = { ...(onUpdate ? { onUpdate } : {}) };
+
+  return { handlers, changeEventCalculator };
+}
+
+export function extractTouchHandlers(config: any): CallbackHandlers {
+  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
+    config;
+
+  const handlers: CallbackHandlers = {
+    ...(onTouchesDown ? { onTouchesDown } : {}),
+    ...(onTouchesMove ? { onTouchesMove } : {}),
+    ...(onTouchesUp ? { onTouchesUp } : {}),
+    ...(onTouchesCancelled ? { onTouchesCancelled } : {}),
+  };
+
+  return handlers;
+}
+
+export function prepareConfig(config: any) {
+  const copy = { ...config };
+
+  for (const key in copy) {
+    if (Reanimated?.isSharedValue(copy[key])) {
+      copy[key] = copy[key].value;
+    }
+  }
+
+  // TODO: Filter changes - passing functions (and possibly other types)
+  // causes a native crash
+  copy.onUpdate = null;
+
+  return copy;
+}
+
+// Variant of djb2 hash function.
+// Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765
+export function hash(str: string) {
+  'worklet';
+  const len = str.length;
+  let h = 5381;
+
+  for (let i = 0; i < len; i++) {
+    h = (h * 33) ^ str.charCodeAt(i);
+  }
+  return h >>> 0;
 }

@@ -2,13 +2,35 @@ import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
 import { UpdateEvent } from '../../v3/types';
 
-export interface SharedValue<T> {
-  value: T;
+export interface SharedValue<Value = unknown> {
+  value: Value;
+  get(): Value;
+  set(value: Value | ((value: Value) => Value)): void;
+  addListener: (listenerID: number, listener: (value: Value) => void) => void;
+  removeListener: (listenerID: number) => void;
+  modify: (
+    modifier?: <T extends Value>(value: T) => T,
+    forceUpdate?: boolean
+  ) => void;
 }
 
 export type ReanimatedContext = {
   lastUpdateEvent: UpdateEvent<Record<string, unknown>> | undefined;
 };
+
+interface WorkletProps {
+  __closure: unknown;
+  __workletHash: number;
+  __initData?: unknown;
+  __init?: () => unknown;
+  __stackDetails?: unknown;
+  __pluginVersion?: string;
+}
+
+type WorkletFunction<
+  TArgs extends unknown[] = unknown[],
+  TReturn = unknown,
+> = ((...args: TArgs) => TReturn) & WorkletProps;
 
 let Reanimated:
   | {
@@ -31,6 +53,15 @@ let Reanimated:
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
       isSharedValue: (value: unknown) => value is SharedValue<unknown>;
+      isWorkletFunction<
+        Args extends unknown[] = unknown[],
+        ReturnValue = unknown,
+      >(
+        value: unknown
+      ): value is WorkletFunction<Args, ReturnValue>;
+      runOnUI<A extends any[], R>(
+        fn: (...args: A) => R
+      ): (...args: Parameters<typeof fn>) => void;
     }
   | undefined;
 
