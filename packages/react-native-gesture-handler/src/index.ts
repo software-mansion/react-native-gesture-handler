@@ -166,6 +166,7 @@ export type { NativeDetectorProps } from './v3/NativeDetector/NativeDetector';
 export { NativeDetector } from './v3/NativeDetector/NativeDetector';
 
 export * from './v3/hooks/useGesture';
+export * from './v3/hooks/relations';
 
 export { HandlerType } from './v3/types';
 

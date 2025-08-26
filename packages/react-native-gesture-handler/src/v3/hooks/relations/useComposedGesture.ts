@@ -8,9 +8,9 @@ import {
 } from '../../types';
 import { isComposedGesture } from '../utils';
 import { tagMessage } from '../../../utils';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
-// eslint-disable-next-line @eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks, @eslint-react/hooks-extra/no-unnecessary-use-prefix
 export function useComposedGesture(
   ...gestures: (NativeGesture | ComposedGesture)[]
 ): ComposedGesture {
@@ -63,6 +63,24 @@ export function useComposedGesture(
     }
   };
 
+  const onReanimatedStateChange = Reanimated?.useComposedEventHandler(
+    gestures.map(
+      (gesture) => gesture.gestureEvents.onReanimatedStateChange || null
+    )
+  );
+
+  const onReanimatedUpdateEvent = Reanimated?.useComposedEventHandler(
+    gestures.map(
+      (gesture) => gesture.gestureEvents.onReanimatedUpdateEvent || null
+    )
+  );
+
+  const onReanimatedTouchEvent = Reanimated?.useComposedEventHandler(
+    gestures.map(
+      (gesture) => gesture.gestureEvents.onReanimatedTouchEvent || null
+    )
+  );
+
   let onGestureHandlerAnimatedEvent;
 
   for (const gesture of gestures) {
@@ -82,9 +100,9 @@ export function useComposedGesture(
       onGestureHandlerStateChange,
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,
-      onReanimatedStateChange: undefined,
-      onReanimatedUpdateEvent: undefined,
-      onReanimatedTouchEvent: undefined,
+      onReanimatedStateChange,
+      onReanimatedUpdateEvent,
+      onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
     gestures,
