@@ -91,18 +91,6 @@ export default class PanGestureHandler extends GestureHandler {
       this.hasCustomActivationCriteria = true;
     }
 
-    if (
-      this.activeOffsetXStart !== undefined &&
-      this.activeOffsetXEnd === undefined
-    ) {
-      this.activeOffsetXEnd = Number.MAX_SAFE_INTEGER;
-    } else if (
-      this.activeOffsetXStart === undefined &&
-      this.activeOffsetXEnd !== undefined
-    ) {
-      this.activeOffsetXStart = Number.MIN_SAFE_INTEGER;
-    }
-
     if (config.failOffsetXStart !== undefined) {
       this.failOffsetXStart = config.failOffsetXStart;
       this.hasCustomActivationCriteria = true;
@@ -111,18 +99,6 @@ export default class PanGestureHandler extends GestureHandler {
     if (config.failOffsetXEnd !== undefined) {
       this.failOffsetXEnd = config.failOffsetXEnd;
       this.hasCustomActivationCriteria = true;
-    }
-
-    if (
-      this.failOffsetXStart !== undefined &&
-      this.failOffsetXEnd === undefined
-    ) {
-      this.failOffsetXEnd = Number.MAX_SAFE_INTEGER;
-    } else if (
-      this.failOffsetXStart === undefined &&
-      this.failOffsetXEnd !== undefined
-    ) {
-      this.failOffsetXStart = Number.MIN_SAFE_INTEGER;
     }
 
     if (config.activeOffsetYStart !== undefined) {
@@ -135,18 +111,6 @@ export default class PanGestureHandler extends GestureHandler {
       this.hasCustomActivationCriteria = true;
     }
 
-    if (
-      this.activeOffsetYStart !== undefined &&
-      this.activeOffsetYEnd === undefined
-    ) {
-      this.activeOffsetYEnd = Number.MAX_SAFE_INTEGER;
-    } else if (
-      this.activeOffsetYStart === undefined &&
-      this.activeOffsetYEnd !== undefined
-    ) {
-      this.activeOffsetYStart = Number.MIN_SAFE_INTEGER;
-    }
-
     if (config.failOffsetYStart !== undefined) {
       this.failOffsetYStart = config.failOffsetYStart;
       this.hasCustomActivationCriteria = true;
@@ -155,18 +119,6 @@ export default class PanGestureHandler extends GestureHandler {
     if (config.failOffsetYEnd !== undefined) {
       this.failOffsetYEnd = config.failOffsetYEnd;
       this.hasCustomActivationCriteria = true;
-    }
-
-    if (
-      this.failOffsetYStart !== undefined &&
-      this.failOffsetYEnd === undefined
-    ) {
-      this.failOffsetYEnd = Number.MAX_SAFE_INTEGER;
-    } else if (
-      this.failOffsetYStart === undefined &&
-      this.failOffsetYEnd !== undefined
-    ) {
-      this.failOffsetYStart = Number.MIN_SAFE_INTEGER;
     }
 
     if (config.enableTrackpadTwoFingerGesture !== undefined) {
