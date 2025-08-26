@@ -15,12 +15,18 @@ export function useGestureCallbacks(handlerTag: number, config: any) {
   const onGestureHandlerEvent = gestureUpdateEvent(handlerTag, config);
   const onGestureHandlerTouchEvent = gestureTouchEvent(handlerTag, config);
 
-  const onReanimatedStateChange = useReanimatedStateChangeEvent(
-    handlerTag,
-    config
-  );
-  const onReanimatedUpdateEvent = useReanimatedUpdateEvent(handlerTag, config);
-  const onReanimatedTouchEvent = useReanimatedTouchEvent(handlerTag, config);
+  let onReanimatedStateChange;
+  let onReanimatedUpdateEvent;
+  let onReanimatedTouchEvent;
+
+  if (!config.disableReanimated) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    onReanimatedStateChange = useReanimatedStateChangeEvent(handlerTag, config);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    onReanimatedUpdateEvent = useReanimatedUpdateEvent(handlerTag, config);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    onReanimatedTouchEvent = useReanimatedTouchEvent(handlerTag, config);
+  }
 
   let onGestureHandlerAnimatedEvent: AnimatedEvent | undefined;
   if (isAnimatedEvent(config.onUpdate)) {

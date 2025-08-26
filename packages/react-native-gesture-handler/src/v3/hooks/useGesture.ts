@@ -123,7 +123,9 @@ export function useGesture(
 
   // This has to be done ASAP as other hooks depend `shouldUseReanimated`.
   config.shouldUseReanimated =
-    Reanimated !== undefined && hasWorkletEventHandlers(config);
+    !config.disableReanimated &&
+    Reanimated !== undefined &&
+    hasWorkletEventHandlers(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
   // TODO: Remove this when we properly type config
   config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate as any);
