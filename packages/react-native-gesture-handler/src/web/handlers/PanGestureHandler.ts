@@ -129,7 +129,7 @@ export default class PanGestureHandler extends GestureHandler {
     if (config.minDist !== undefined) {
       this.minDist = config.minDist;
       this.minDistSq = config.minDist * config.minDist;
-    } else if (this.hasCustomActivationCriteria) {
+    } else if (this.minDist === undefined && this.hasCustomActivationCriteria) {
       this.minDistSq = Number.MAX_SAFE_INTEGER;
     }
   }
