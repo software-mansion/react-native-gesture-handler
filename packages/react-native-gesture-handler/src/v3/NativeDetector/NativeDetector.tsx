@@ -5,9 +5,9 @@ import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../../utils';
-import { isComposedGesture } from '../hooks/utils';
 import { traverseGestureRelations } from './utils';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
+import { isComposedGesture } from '../hooks/utils/RelationUtils';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;

@@ -2,7 +2,8 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { tagMessage } from '../../../utils';
 import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, UpdateEvent } from '../../types';
-import { isEventForHandlerWithTag, runCallback } from '../utils';
+import { isEventForHandlerWithTag } from '../utils';
+import { runCallback } from '../utils/EventHandlersUtils';
 
 export function getGestureHandlerEventWorkletHandler(
   handlerTag: number,

@@ -1,4 +1,4 @@
-import { extractTouchHandlers } from '../../utils';
+import { extractTouchHandlers } from '../../utils/EventHandlersUtils';
 import { getGestureHandlerTouchEventWorkletHandler } from '../GestureHandlerTouchEventWorkletHandler';
 
 // eslint-disable-next-line @eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks

@@ -2,123 +2,20 @@ import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import {
-  Reanimated,
-  SharedValue,
-} from '../../handlers/gestures/reanimatedWrapper';
-import {
-  hash,
   prepareConfig,
   isAnimatedEvent,
-  isComposedGesture,
+  shouldHandleTouchEvents,
 } from './utils';
 import { tagMessage } from '../../utils';
+import { NativeGesture, SingleGestureType } from '../types';
 import {
-  GestureRelations,
-  NativeGesture,
-  ComposedGesture,
-  Gesture,
-  SingleGestureType,
-} from '../types';
-
-function hasWorkletEventHandlers(config: Record<string, unknown>) {
-  return Object.values(config).some(
-    (prop) => typeof prop === 'function' && '__workletHash' in prop
-  );
-}
-
-function shouldHandleTouchEvents(config: Record<string, unknown>) {
-  return (
-    !!config.onTouchesDown ||
-    !!config.onTouchesMove ||
-    !!config.onTouchesUp ||
-    !!config.onTouchesCancelled
-  );
-}
-
-const SHARED_VALUE_OFFSET = 1.618;
-
-// This is used to obtain HostFunction that can be executed on the UI thread
-const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
-
-function bindSharedValues(config: any, handlerTag: number) {
-  if (Reanimated === undefined) {
-    return;
-  }
-
-  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
-
-  const attachListener = (sharedValue: SharedValue, configKey: string) => {
-    'worklet';
-    const keyHash = hash(configKey);
-    const listenerId = baseListenerId + keyHash;
-
-    sharedValue.addListener(listenerId, (value) => {
-      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
-      flushOperations();
-    });
-  };
-
-  for (const [key, maybeSharedValue] of Object.entries(config)) {
-    if (!Reanimated.isSharedValue(maybeSharedValue)) {
-      continue;
-    }
-
-    Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
-  }
-}
-
-function unbindSharedValues(config: any, handlerTag: number) {
-  if (Reanimated === undefined) {
-    return;
-  }
-
-  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
-
-  for (const [key, maybeSharedValue] of Object.entries(config)) {
-    if (!Reanimated.isSharedValue(maybeSharedValue)) {
-      continue;
-    }
-
-    const keyHash = hash(key);
-    const listenerId = baseListenerId + keyHash;
-
-    Reanimated.runOnUI(() => {
-      maybeSharedValue.removeListener(listenerId);
-    })();
-  }
-}
-
-function prepareRelations(config: any): GestureRelations {
-  const extractHandlerTags = (otherHandler: Gesture | Gesture[]): number[] => {
-    if (!otherHandler) {
-      return [];
-    }
-
-    let otherTags: number[];
-
-    if (Array.isArray(otherHandler)) {
-      otherTags = otherHandler.flatMap(
-        (gesture: NativeGesture | ComposedGesture) =>
-          isComposedGesture(gesture) ? gesture.tags : gesture.tag
-      );
-    } else {
-      otherTags = isComposedGesture(otherHandler)
-        ? otherHandler.tags
-        : [otherHandler.tag];
-    }
-
-    return otherTags;
-  };
-
-  return {
-    simultaneousHandlers: extractHandlerTags(
-      config.simultaneousWithExternalGesture
-    ),
-    waitFor: extractHandlerTags(config.requireExternalGestureToFail),
-    blocksHandlers: extractHandlerTags(config.blocksExternalGesture),
-  };
-}
+  bindSharedValues,
+  hasWorkletEventHandlers,
+  unbindSharedValues,
+} from './utils/ReanimatedUtils';
+import { prepareRelations } from './utils/RelationUtils';
 
 export function useGesture(
   type: SingleGestureType,
