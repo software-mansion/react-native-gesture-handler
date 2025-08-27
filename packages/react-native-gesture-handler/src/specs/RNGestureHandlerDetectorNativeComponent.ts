@@ -50,6 +50,7 @@ export interface NativeProps extends ViewProps {
 
   handlerTags: Int32[];
   moduleId: Int32;
+  logicChildren: UnsafeMixed;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector', {
