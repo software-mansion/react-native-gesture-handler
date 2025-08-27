@@ -5,7 +5,7 @@ import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
-import { LogicChild } from '../web/interfaces';
+import { LogicDetectorProps } from '../web/interfaces';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
@@ -19,14 +19,14 @@ const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
 type DetectorContextType = {
-  register: (child: LogicChild) => void;
-  unregister: (child: LogicChild) => void;
+  register: (child: LogicDetectorProps) => void;
+  unregister: (child: LogicDetectorProps) => void;
 };
 
 const DetectorContext = createContext<DetectorContextType | null>(null);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
-  const [logicChildren, setLogicChildren] = useState<Set<LogicChild>>(
+  const [logicChildren, setLogicChildren] = useState<Set<LogicDetectorProps>>(
     new Set()
   );
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
@@ -36,12 +36,14 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
-  const register = useCallback((child: LogicChild) => {
-    setLogicChildren((prev) => new Set(prev).add(child));
+  const register = useCallback((child: LogicDetectorProps) => {
+    setLogicChildren((prev: Set<LogicDetectorProps>) =>
+      new Set(prev).add(child)
+    );
   }, []);
 
-  const unregister = useCallback((child: LogicChild) => {
-    setLogicChildren((prev) => {
+  const unregister = useCallback((child: LogicDetectorProps) => {
+    setLogicChildren((prev: Set<LogicDetectorProps>) => {
       const updated = new Set(prev);
       updated.delete(child);
       return updated;

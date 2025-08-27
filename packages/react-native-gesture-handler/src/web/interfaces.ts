@@ -135,11 +135,9 @@ export interface PropsRef {
   onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
 }
 
-export interface LogicChild {
+export interface LogicDetectorProps {
   viewRef: RefObject<Element | null>;
   propsRef: RefObject<GestureHandlerDetectorProps>;
-  attachedHandlerTags: RefObject<Set<number>>;
-  attachedNativeHandlerTags: RefObject<Set<number>>;
 }
 
 export interface AdaptedEvent {
