@@ -21,12 +21,12 @@ export default interface IGestureHandler {
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
-  enabled: boolean;
-  pointerType: PointerType;
+  readonly enabled: boolean;
+  readonly pointerType: PointerType;
   enableContextMenu: boolean;
-  activeCursor?: ActiveCursor;
-  touchAction?: TouchAction;
-  userSelect?: UserSelect;
+  readonly activeCursor?: ActiveCursor;
+  readonly touchAction?: TouchAction;
+  readonly userSelect?: UserSelect;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 

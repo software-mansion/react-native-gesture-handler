@@ -302,7 +302,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   protected onPointerDown(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
-    this.pointerType = event.pointerType;
+    this._pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.instance.cancelMouseAndPenGestures(this);
@@ -695,7 +695,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public updateGestureConfig(config: Config): void {
     if (config.enabled !== undefined && this.enabled !== config.enabled) {
-      this.enabled = config.enabled;
+      this._enabled = config.enabled;
       this.delegate.onEnabledChange();
     }
 
@@ -730,15 +730,15 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (config.activeCursor !== undefined) {
-      this.activeCursor = config.activeCursor;
+      this._activeCursor = config.activeCursor;
     }
 
     if (config.touchAction !== undefined) {
-      this.touchAction = config.touchAction;
+      this._touchAction = config.touchAction;
     }
 
     if (config.userSelect !== undefined) {
-      this.userSelect = config.userSelect;
+      this._userSelect = config.userSelect;
     }
 
     if (this.enabled) {
@@ -883,7 +883,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected resetConfig(): void {
-    this.enabled = true;
+    this._enabled = true;
     this.manualActivation = false;
     this.shouldCancelWhenOutside = false;
     this.mouseButton = undefined;
@@ -891,9 +891,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.needsPointerData = false;
     this.dispatchesAnimatedEvents = false;
     this.enableContextMenu = false;
-    this.activeCursor = undefined;
-    this.touchAction = undefined;
-    this.userSelect = undefined;
+    this._activeCursor = undefined;
+    this._touchAction = undefined;
+    this._userSelect = undefined;
   }
 
   public onDestroy(): void {
@@ -937,15 +937,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   public get enabled() {
     return this._enabled;
   }
-  protected set enabled(value) {
-    this._enabled = value;
-  }
 
   public get pointerType(): PointerType {
     return this._pointerType;
-  }
-  protected set pointerType(value: PointerType) {
-    this._pointerType = value;
   }
 
   public get active() {
@@ -986,22 +980,13 @@ export default abstract class GestureHandler implements IGestureHandler {
   public get activeCursor() {
     return this._activeCursor;
   }
-  protected set activeCursor(value) {
-    this._activeCursor = value;
-  }
 
   public get touchAction() {
     return this._touchAction;
   }
-  protected set touchAction(value) {
-    this._touchAction = value;
-  }
 
   public get userSelect() {
     return this._userSelect;
-  }
-  protected set userSelect(value) {
-    this._userSelect = value;
   }
 
   public getTrackedPointersID(): number[] {
