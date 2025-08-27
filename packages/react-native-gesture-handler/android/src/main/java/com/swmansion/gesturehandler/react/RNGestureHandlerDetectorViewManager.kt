@@ -36,4 +36,9 @@ class RNGestureHandlerDetectorViewManager :
   override fun setModuleId(view: RNGestureHandlerDetectorView, value: Int) {
     view.setModuleId(value)
   }
+
+  override fun onDropViewInstance(view: RNGestureHandlerDetectorView) {
+    view.onViewDrop()
+    super.onDropViewInstance(view)
+  }
 }

@@ -284,9 +284,9 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   recognizer.maxDistSq = NAN;
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
 
   APPLY_INT_PROP(numberOfTaps);

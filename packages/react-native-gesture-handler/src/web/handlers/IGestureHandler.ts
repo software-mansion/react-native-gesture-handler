@@ -1,5 +1,10 @@
 import type { PointerType } from '../../PointerType';
-import type { MouseButton } from '../../handlers/gestureHandlerCommon';
+import type {
+  ActiveCursor,
+  MouseButton,
+  TouchAction,
+  UserSelect,
+} from '../../handlers/gestureHandlerCommon';
 import type { State } from '../../State';
 import type { Config } from '../interfaces';
 import type EventManager from '../tools/EventManager';
@@ -11,14 +16,17 @@ export default interface IGestureHandler {
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
-  readonly config: Config;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
-  enabled: boolean;
-  pointerType: PointerType;
+  readonly enabled: boolean;
+  readonly pointerType: PointerType;
+  enableContextMenu: boolean;
+  readonly activeCursor?: ActiveCursor;
+  readonly touchAction?: TouchAction;
+  readonly userSelect?: UserSelect;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 
@@ -45,6 +53,7 @@ export default interface IGestureHandler {
 
   sendEvent: (newState: State, oldState: State) => void;
 
+  setGestureConfig: (config: Config) => void;
   updateGestureConfig: (config: Config) => void;
 
   isButton?: () => boolean;

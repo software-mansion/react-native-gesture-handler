@@ -7,6 +7,7 @@ import {
   ResultEvent,
   PointerData,
   EventTypes,
+  HitSlop,
   GestureHandlerNativeEvent,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
@@ -15,6 +16,9 @@ import InteractionManager from '../tools/InteractionManager';
 import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
 import IGestureHandler from './IGestureHandler';
 import {
+  ActiveCursor,
+  TouchAction,
+  UserSelect,
   GestureTouchEvent,
   MouseButton,
 } from '../../handlers/gestureHandlerCommon';
@@ -34,17 +38,24 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _state: State = State.UNDETERMINED;
 
   private _shouldCancelWhenOutside = false;
-  protected hasCustomActivationCriteria = false;
   private _enabled = false;
 
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
-  private forAnimated: boolean = false;
+  private dispatchesAnimatedEvents: boolean = false;
   private _handlerTag!: number;
-  private _config: Config = { enabled: false };
 
+  private hitSlop?: HitSlop = undefined;
+  private manualActivation: boolean = false;
+  private mouseButton?: MouseButton = undefined;
+  private needsPointerData: boolean = false;
   private _tracker: PointerTracker = new PointerTracker();
+
+  private _enableContextMenu: boolean = false;
+  private _activeCursor?: ActiveCursor = undefined;
+  private _touchAction?: TouchAction = undefined;
+  private _userSelect?: UserSelect = undefined;
 
   // Orchestrator properties
   private _activationIndex = 0;
@@ -75,7 +86,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
-
     this.delegate.init(viewRef, this);
   }
 
@@ -89,7 +99,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
-    this.forAnimated = false;
+    this.dispatchesAnimatedEvents = false;
 
     this.delegate.detach();
   }
@@ -141,7 +151,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (
       this.tracker.trackedPointersCount > 0 &&
-      this.config.needsPointerData &&
+      this.needsPointerData &&
       this.isFinished()
     ) {
       this.cancelTouches();
@@ -208,7 +218,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public activate(force = false) {
     if (
-      (this.config.manualActivation !== true || force) &&
+      (this.manualActivation !== true || force) &&
       (this.state === State.UNDETERMINED || this.state === State.BEGAN)
     ) {
       this.delegate.onActivate();
@@ -292,7 +302,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   protected onPointerDown(event: AdaptedEvent): void {
     GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(this);
-    this.pointerType = event.pointerType;
+    this._pointerType = event.pointerType;
 
     if (this.pointerType === PointerType.TOUCH) {
       GestureHandlerOrchestrator.instance.cancelMouseAndPenGestures(this);
@@ -363,7 +373,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected tryToSendTouchEvent(event: AdaptedEvent): void {
-    if (this.config.needsPointerData) {
+    if (this.needsPointerData) {
       this.sendTouchEvent(event);
     }
   }
@@ -422,7 +432,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
-      if (onGestureHandlerAnimatedEvent && this.forAnimated) {
+      if (onGestureHandlerAnimatedEvent && this.dispatchesAnimatedEvents) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
@@ -678,29 +688,58 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Handling config
   //
 
-  public updateGestureConfig({
-    enabled = true,
-    dispatchesAnimatedEvents = false,
-    ...props
-  }: Config): void {
-    this._config = {
-      enabled,
-      dispatchesAnimatedEvents,
-      ...props,
-    };
+  public setGestureConfig(config: Config) {
+    this.resetConfig();
+    this.updateGestureConfig(config);
+  }
 
-    if (this.enabled !== enabled) {
-      this.delegate.onEnabledChange(enabled);
+  public updateGestureConfig(config: Config): void {
+    if (config.enabled !== undefined && this.enabled !== config.enabled) {
+      this._enabled = config.enabled;
+      this.delegate.onEnabledChange();
     }
 
-    this.enabled = enabled;
-
-    if (this.config.shouldCancelWhenOutside !== undefined) {
-      this.shouldCancelWhenOutside = this.config.shouldCancelWhenOutside;
+    if (config.hitSlop !== undefined) {
+      this.hitSlop = config.hitSlop;
+      this.hitSlop = config.hitSlop;
+      this.validateHitSlops();
     }
 
-    this.forAnimated = dispatchesAnimatedEvents;
-    this.validateHitSlops();
+    if (config.dispatchesAnimatedEvents !== undefined) {
+      this.dispatchesAnimatedEvents = config.dispatchesAnimatedEvents;
+    }
+
+    if (config.manualActivation !== undefined) {
+      this.manualActivation = config.manualActivation;
+    }
+
+    if (config.mouseButton !== undefined) {
+      this.mouseButton = config.mouseButton;
+    }
+
+    if (config.needsPointerData !== undefined) {
+      this.needsPointerData = config.needsPointerData;
+    }
+
+    if (config.shouldCancelWhenOutside !== undefined) {
+      this.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
+    }
+
+    if (config.enableContextMenu !== undefined) {
+      this.enableContextMenu = config.enableContextMenu;
+    }
+
+    if (config.activeCursor !== undefined) {
+      this._activeCursor = config.activeCursor;
+    }
+
+    if (config.touchAction !== undefined) {
+      this._touchAction = config.touchAction;
+    }
+
+    if (config.userSelect !== undefined) {
+      this._userSelect = config.userSelect;
+    }
 
     if (this.enabled) {
       return;
@@ -719,23 +758,15 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
   }
 
-  protected checkCustomActivationCriteria(criterias: string[]): void {
-    for (const key in this.config) {
-      if (criterias.indexOf(key) >= 0) {
-        this.hasCustomActivationCriteria = true;
-      }
-    }
-  }
-
   private validateHitSlops(): void {
-    if (!this.config.hitSlop) {
+    if (!this.hitSlop) {
       return;
     }
 
     if (
-      this.config.hitSlop.left !== undefined &&
-      this.config.hitSlop.right !== undefined &&
-      this.config.hitSlop.width !== undefined
+      this.hitSlop.left !== undefined &&
+      this.hitSlop.right !== undefined &&
+      this.hitSlop.width !== undefined
     ) {
       throw new Error(
         'HitSlop Error: Cannot define left, right and width at the same time'
@@ -743,9 +774,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (
-      this.config.hitSlop.width !== undefined &&
-      this.config.hitSlop.left === undefined &&
-      this.config.hitSlop.right === undefined
+      this.hitSlop.width !== undefined &&
+      this.hitSlop.left === undefined &&
+      this.hitSlop.right === undefined
     ) {
       throw new Error(
         'HitSlop Error: When width is defined, either left or right has to be defined'
@@ -753,9 +784,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (
-      this.config.hitSlop.height !== undefined &&
-      this.config.hitSlop.top !== undefined &&
-      this.config.hitSlop.bottom !== undefined
+      this.hitSlop.height !== undefined &&
+      this.hitSlop.top !== undefined &&
+      this.hitSlop.bottom !== undefined
     ) {
       throw new Error(
         'HitSlop Error: Cannot define top, bottom and height at the same time'
@@ -763,9 +794,9 @@ export default abstract class GestureHandler implements IGestureHandler {
     }
 
     if (
-      this.config.hitSlop.height !== undefined &&
-      this.config.hitSlop.top === undefined &&
-      this.config.hitSlop.bottom === undefined
+      this.hitSlop.height !== undefined &&
+      this.hitSlop.top === undefined &&
+      this.hitSlop.bottom === undefined
     ) {
       throw new Error(
         'HitSlop Error: When height is defined, either top or bottom has to be defined'
@@ -774,7 +805,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   private checkHitSlop(): boolean {
-    if (!this.config.hitSlop) {
+    if (!this.hitSlop) {
       return true;
     }
 
@@ -785,45 +816,45 @@ export default abstract class GestureHandler implements IGestureHandler {
     let right: number = width;
     let bottom: number = height;
 
-    if (this.config.hitSlop.horizontal !== undefined) {
-      left -= this.config.hitSlop.horizontal;
-      right += this.config.hitSlop.horizontal;
+    if (this.hitSlop.horizontal !== undefined) {
+      left -= this.hitSlop.horizontal;
+      right += this.hitSlop.horizontal;
     }
 
-    if (this.config.hitSlop.vertical !== undefined) {
-      top -= this.config.hitSlop.vertical;
-      bottom += this.config.hitSlop.vertical;
+    if (this.hitSlop.vertical !== undefined) {
+      top -= this.hitSlop.vertical;
+      bottom += this.hitSlop.vertical;
     }
 
-    if (this.config.hitSlop.left !== undefined) {
-      left = -this.config.hitSlop.left;
+    if (this.hitSlop.left !== undefined) {
+      left = -this.hitSlop.left;
     }
 
-    if (this.config.hitSlop.right !== undefined) {
-      right = width + this.config.hitSlop.right;
+    if (this.hitSlop.right !== undefined) {
+      right = width + this.hitSlop.right;
     }
 
-    if (this.config.hitSlop.top !== undefined) {
-      top = -this.config.hitSlop.top;
+    if (this.hitSlop.top !== undefined) {
+      top = -this.hitSlop.top;
     }
 
-    if (this.config.hitSlop.bottom !== undefined) {
-      bottom = height + this.config.hitSlop.bottom;
+    if (this.hitSlop.bottom !== undefined) {
+      bottom = height + this.hitSlop.bottom;
     }
 
-    if (this.config.hitSlop.width !== undefined) {
-      if (this.config.hitSlop.left !== undefined) {
-        right = left + this.config.hitSlop.width;
-      } else if (this.config.hitSlop.right !== undefined) {
-        left = right - this.config.hitSlop.width;
+    if (this.hitSlop.width !== undefined) {
+      if (this.hitSlop.left !== undefined) {
+        right = left + this.hitSlop.width;
+      } else if (this.hitSlop.right !== undefined) {
+        left = right - this.hitSlop.width;
       }
     }
 
-    if (this.config.hitSlop.height !== undefined) {
-      if (this.config.hitSlop.top !== undefined) {
-        bottom = top + this.config.hitSlop.height;
-      } else if (this.config.hitSlop.bottom !== undefined) {
-        top = bottom - this.config.hitSlop.height;
+    if (this.hitSlop.height !== undefined) {
+      if (this.hitSlop.top !== undefined) {
+        bottom = top + this.hitSlop.height;
+      } else if (this.hitSlop.bottom !== undefined) {
+        top = bottom - this.hitSlop.height;
       }
     }
 
@@ -846,16 +877,28 @@ export default abstract class GestureHandler implements IGestureHandler {
   public isButtonInConfig(mouseButton: MouseButton | undefined) {
     return (
       !mouseButton ||
-      (!this.config.mouseButton && mouseButton === MouseButton.LEFT) ||
-      (this.config.mouseButton && mouseButton & this.config.mouseButton)
+      (!this.mouseButton && mouseButton === MouseButton.LEFT) ||
+      (this.mouseButton && mouseButton & this.mouseButton)
     );
   }
 
-  protected resetConfig(): void {}
+  protected resetConfig(): void {
+    this._enabled = true;
+    this.manualActivation = false;
+    this.shouldCancelWhenOutside = false;
+    this.mouseButton = undefined;
+    this.hitSlop = undefined;
+    this.needsPointerData = false;
+    this.dispatchesAnimatedEvents = false;
+    this.enableContextMenu = false;
+    this._activeCursor = undefined;
+    this._touchAction = undefined;
+    this._userSelect = undefined;
+  }
 
   public onDestroy(): void {
     GestureHandlerOrchestrator.instance.removeHandlerFromOrchestrator(this);
-    this.delegate.destroy(this.config);
+    this.delegate.destroy();
   }
 
   //
@@ -867,10 +910,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   public set handlerTag(value: number) {
     this._handlerTag = value;
-  }
-
-  public get config(): Config {
-    return this._config;
   }
 
   public get delegate() {
@@ -898,15 +937,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   public get enabled() {
     return this._enabled;
   }
-  protected set enabled(value) {
-    this._enabled = value;
-  }
 
   public get pointerType(): PointerType {
     return this._pointerType;
-  }
-  protected set pointerType(value: PointerType) {
-    this._pointerType = value;
   }
 
   public get active() {
@@ -935,6 +968,25 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected set shouldResetProgress(value) {
     this._shouldResetProgress = value;
+  }
+
+  public get enableContextMenu() {
+    return this._enableContextMenu;
+  }
+  protected set enableContextMenu(value) {
+    this._enableContextMenu = value;
+  }
+
+  public get activeCursor() {
+    return this._activeCursor;
+  }
+
+  public get touchAction() {
+    return this._touchAction;
+  }
+
+  public get userSelect() {
+    return this._userSelect;
   }
 
   public getTrackedPointersID(): number[] {

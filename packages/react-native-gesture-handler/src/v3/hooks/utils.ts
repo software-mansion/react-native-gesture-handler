@@ -10,6 +10,7 @@ import {
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 export function getHandler(type: CALLBACK_TYPE, config: CallbackHandlers) {
   'worklet';
@@ -108,4 +109,33 @@ export function checkMappingForChangeProperties(obj: Animated.Mapping) {
       );
     }
   }
+}
+
+export function prepareConfig(config: any) {
+  const copy = { ...config };
+
+  for (const key in copy) {
+    if (Reanimated?.isSharedValue(copy[key])) {
+      copy[key] = copy[key].value;
+    }
+  }
+
+  // TODO: Filter changes - passing functions (and possibly other types)
+  // causes a native crash
+  copy.onUpdate = null;
+
+  return copy;
+}
+
+// Variant of djb2 hash function.
+// Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765
+export function hash(str: string) {
+  'worklet';
+  const len = str.length;
+  let h = 5381;
+
+  for (let i = 0; i < len; i++) {
+    h = (h * 33) ^ str.charCodeAt(i);
+  }
+  return h >>> 0;
 }

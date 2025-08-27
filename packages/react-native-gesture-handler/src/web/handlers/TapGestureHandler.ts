@@ -31,38 +31,35 @@ export default class TapGestureHandler extends GestureHandler {
 
   private tapsSoFar = 0;
 
-  public override updateGestureConfig({
-    enabled = true,
-    ...props
-  }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
 
-    if (this.config.numberOfTaps !== undefined) {
-      this.numberOfTaps = this.config.numberOfTaps;
+    if (config.numberOfTaps !== undefined) {
+      this.numberOfTaps = config.numberOfTaps;
     }
 
-    if (this.config.maxDurationMs !== undefined) {
-      this.maxDurationMs = this.config.maxDurationMs;
+    if (config.maxDurationMs !== undefined) {
+      this.maxDurationMs = config.maxDurationMs;
     }
 
-    if (this.config.maxDelayMs !== undefined) {
-      this.maxDelayMs = this.config.maxDelayMs;
+    if (config.maxDelayMs !== undefined) {
+      this.maxDelayMs = config.maxDelayMs;
     }
 
-    if (this.config.maxDeltaX !== undefined) {
-      this.maxDeltaX = this.config.maxDeltaX;
+    if (config.maxDeltaX !== undefined) {
+      this.maxDeltaX = config.maxDeltaX;
     }
 
-    if (this.config.maxDeltaY !== undefined) {
-      this.maxDeltaY = this.config.maxDeltaY;
+    if (config.maxDeltaY !== undefined) {
+      this.maxDeltaY = config.maxDeltaY;
     }
 
-    if (this.config.maxDist !== undefined) {
-      this.maxDistSq = this.config.maxDist * this.config.maxDist;
+    if (config.maxDist !== undefined) {
+      this.maxDistSq = config.maxDist * config.maxDist;
     }
 
-    if (this.config.minPointers !== undefined) {
-      this.minNumberOfPointers = this.config.minPointers;
+    if (config.minPointers !== undefined) {
+      this.minNumberOfPointers = config.minPointers;
     }
   }
 
