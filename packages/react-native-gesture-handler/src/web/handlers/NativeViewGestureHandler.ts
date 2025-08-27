@@ -36,17 +36,14 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.buttonRole = view.getAttribute('role') === 'button';
   }
 
-  public override updateGestureConfig({
-    enabled = true,
-    ...props
-  }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
 
-    if (this.config.shouldActivateOnStart !== undefined) {
-      this.shouldActivateOnStart = this.config.shouldActivateOnStart;
+    if (config.shouldActivateOnStart !== undefined) {
+      this.shouldActivateOnStart = config.shouldActivateOnStart;
     }
-    if (this.config.disallowInterruption !== undefined) {
-      this.disallowInterruption = this.config.disallowInterruption;
+    if (config.disallowInterruption !== undefined) {
+      this.disallowInterruption = config.disallowInterruption;
     }
 
     const view = this.delegate.view as HTMLElement;
