@@ -11,9 +11,8 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface RNGestureHandlerButtonManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
+public interface RNGestureHandlerButtonManagerInterface<T extends View> {
   void setExclusive(T view, boolean value);
   void setForeground(T view, boolean value);
   void setBorderless(T view, boolean value);
