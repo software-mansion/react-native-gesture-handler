@@ -7,6 +7,7 @@ export enum StateMachineEvent {
   NATIVE_START = 'nativeStart',
   FINALIZE = 'finalize',
   LONG_PRESS_TOUCHES_DOWN = 'longPressTouchesDown',
+  CANCEL = 'cancel',
 }
 
 function getAndroidStatesConfig(
