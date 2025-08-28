@@ -1,20 +1,16 @@
-package com.swmansion.gesturehandler.react.eventbuilders
+package com.swmansion.gesturehandler.react.events.eventbuilders
 
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.PixelUtil
-import com.swmansion.gesturehandler.core.PanGestureHandler
+import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.StylusData
 
-class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) :
-  GestureHandlerEventDataBuilder<PanGestureHandler>(handler) {
+class HoverGestureHandlerEventDataBuilder(handler: HoverGestureHandler) :
+  GestureHandlerEventDataBuilder<HoverGestureHandler>(handler) {
   private val x: Float = handler.lastRelativePositionX
   private val y: Float = handler.lastRelativePositionY
   private val absoluteX: Float = handler.lastPositionInWindowX
   private val absoluteY: Float = handler.lastPositionInWindowY
-  private val translationX: Float = handler.translationX
-  private val translationY: Float = handler.translationY
-  private val velocityX: Float = handler.velocityX
-  private val velocityY: Float = handler.velocityY
   private val stylusData: StylusData = handler.stylusData
 
   override fun buildEventData(eventData: WritableMap) {
@@ -25,10 +21,6 @@ class PanGestureHandlerEventDataBuilder(handler: PanGestureHandler) :
       putDouble("y", PixelUtil.toDIPFromPixel(y).toDouble())
       putDouble("absoluteX", PixelUtil.toDIPFromPixel(absoluteX).toDouble())
       putDouble("absoluteY", PixelUtil.toDIPFromPixel(absoluteY).toDouble())
-      putDouble("translationX", PixelUtil.toDIPFromPixel(translationX).toDouble())
-      putDouble("translationY", PixelUtil.toDIPFromPixel(translationY).toDouble())
-      putDouble("velocityX", PixelUtil.toDIPFromPixel(velocityX).toDouble())
-      putDouble("velocityY", PixelUtil.toDIPFromPixel(velocityY).toDouble())
 
       if (stylusData.pressure != -1.0) {
         putMap("stylusData", stylusData.toReadableMap())

@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandler.react.events
 
 import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
@@ -11,8 +11,9 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   private var extraData: WritableMap? = null
   private var coalescingKey: Short = 0
   private var actionType = GestureHandler.ACTION_TYPE_JS_FUNCTION_NEW_API
+  private lateinit var eventHandlerType: EventHandlerType
 
-  private fun <T : GestureHandler> init(handler: T, actionType: Int) {
+  private fun <T : GestureHandler> init(handler: T, actionType: Int, eventHandlerType: EventHandlerType) {
     val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
       handler.viewForEvents!!
     } else {
@@ -24,6 +25,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     extraData = createEventData(handler)
     coalescingKey = handler.eventCoalescingKey
     this.actionType = actionType
+    this.eventHandlerType = eventHandlerType
   }
 
   override fun onDispose() {
@@ -32,7 +34,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   }
 
   override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-    NATIVE_EVENT_NAME
+    if (eventHandlerType == EventHandlerType.ForReanimated) REANIMATED_EVENT_NAME else NATIVE_EVENT_NAME
   } else {
     EVENT_NAME
   }
@@ -50,16 +52,20 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     const val EVENT_TOUCH_CANCELLED = 4
 
     const val EVENT_NAME = "onGestureHandlerEvent"
+    const val REANIMATED_EVENT_NAME = "onGestureHandlerReanimatedTouchEvent"
     const val NATIVE_EVENT_NAME = "onGestureHandlerTouchEvent"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerTouchEvent>(
       TOUCH_EVENTS_POOL_SIZE,
     )
 
-    fun <T : GestureHandler> obtain(handler: T, actionType: Int): RNGestureHandlerTouchEvent =
-      (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
-        init(handler, actionType)
-      }
+    fun <T : GestureHandler> obtain(
+      handler: T,
+      actionType: Int,
+      eventHandlerType: EventHandlerType,
+    ): RNGestureHandlerTouchEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerTouchEvent()).apply {
+      init(handler, actionType, eventHandlerType)
+    }
 
     fun <T : GestureHandler> createEventData(handler: T): WritableMap = Arguments.createMap().apply {
       putInt("handlerTag", handler.tag)

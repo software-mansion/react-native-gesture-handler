@@ -4,7 +4,7 @@
 // ref: https://github.com/facebook/react-native/commit/2fbbdbb2ce897e8da3f471b08b93f167d566db1d
 @file:Suppress("DEPRECATION")
 
-package com.swmansion.gesturehandler.react
+package com.swmansion.gesturehandler.react.events
 
 import androidx.core.util.Pools
 import com.facebook.react.bridge.Arguments
@@ -12,26 +12,19 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.swmansion.gesturehandler.core.GestureHandler
-import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
 
 class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>() {
   private var dataBuilder: GestureHandlerEventDataBuilder<*>? = null
   private var coalescingKey: Short = 0
   private var actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT
-  private var useAnimatedEvent = false
-
-  // On the new architecture, native animated expects event names prefixed with `top` instead of `on`,
-  // since we know when the native animated node is the target of the event we can use the different
-  // event name where appropriate.
-  // TODO: This is a workaround not as solution, but doing this properly would require a total overhaul of
-  // how GH sends events (which needs to be done, but maybe wait until the RN's apis stop changing)
-  private var useTopPrefixedName: Boolean = false
+  private lateinit var eventHandlerType: EventHandlerType
 
   private fun <T : GestureHandler> init(
     handler: T,
     actionType: Int,
     dataBuilder: GestureHandlerEventDataBuilder<T>,
-    useNativeAnimatedName: Boolean,
+    eventHandlerType: EventHandlerType,
   ) {
     val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
       handler.viewForEvents!!
@@ -43,8 +36,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
     this.actionType = actionType
     this.dataBuilder = dataBuilder
-    this.useTopPrefixedName = useNativeAnimatedName
-    this.useAnimatedEvent = useAnimatedEvent
+    this.eventHandlerType = eventHandlerType
     coalescingKey = handler.eventCoalescingKey
   }
 
@@ -53,9 +45,15 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR && useTopPrefixedName) {
-    NATIVE_DETECTOR_ANIMATED_EVENT_NAME
-  } else if (useTopPrefixedName) {
+  override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+    if (eventHandlerType == EventHandlerType.ForAnimated) {
+      NATIVE_DETECTOR_ANIMATED_EVENT_NAME
+    } else if (eventHandlerType == EventHandlerType.ForReanimated) {
+      REANIMATED_EVENT_NAME
+    } else {
+      EVENT_NAME
+    }
+  } else if (eventHandlerType == EventHandlerType.ForAnimated) {
     NATIVE_ANIMATED_EVENT_NAME
   } else {
     EVENT_NAME
@@ -73,6 +71,13 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   companion object {
     const val EVENT_NAME = "onGestureHandlerEvent"
+    const val REANIMATED_EVENT_NAME = "onGestureHandlerReanimatedEvent"
+
+    // On the new architecture, native animated expects event names prefixed with `top` instead of `on`,
+    // since we know when the native animated node is the target of the event we can use the different
+    // event name where appropriate.
+    // TODO: This is a workaround not as solution, but doing this properly would require a total overhaul of
+    // how GH sends events (which needs to be done, but maybe wait until the RN's apis stop changing)
     const val NATIVE_ANIMATED_EVENT_NAME = "topGestureHandlerEvent"
     const val NATIVE_DETECTOR_ANIMATED_EVENT_NAME = "topGestureHandlerAnimatedEvent"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
@@ -82,9 +87,9 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
       handler: T,
       actionType: Int,
       dataBuilder: GestureHandlerEventDataBuilder<T>,
-      useTopPrefixedName: Boolean = false,
+      eventHandlerType: EventHandlerType,
     ): RNGestureHandlerEvent = (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
-      init(handler, actionType, dataBuilder, useTopPrefixedName)
+      init(handler, actionType, dataBuilder, eventHandlerType)
     }
 
     fun createEventData(dataBuilder: GestureHandlerEventDataBuilder<*>): WritableMap = Arguments.createMap().apply {

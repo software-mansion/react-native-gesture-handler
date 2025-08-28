@@ -6,6 +6,8 @@ import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerInterface
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerEvent
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerStateChangeEvent
 
 /**
  * React native's view manager used for creating instances of []RNGestureHandlerRootView}. It

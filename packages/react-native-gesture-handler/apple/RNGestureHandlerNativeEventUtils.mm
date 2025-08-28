@@ -67,6 +67,19 @@ static folly::dynamic rngh_dynamicFromId(id value)
   return nativeEvent;
 }
 
+- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedEvent)getReanimatedNativeEvent
+{
+  folly::dynamic handlerData = rngh_dynamicFromId(self.extraData.data);
+
+  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedEvent nativeEvent = {
+      .handlerTag = [self.handlerTag intValue],
+      .state = static_cast<int>(self.state),
+      .handlerData = handlerData,
+  };
+
+  return nativeEvent;
+}
+
 @end
 
 @implementation RNGestureHandlerStateChange (NativeEvent)
@@ -76,6 +89,20 @@ static folly::dynamic rngh_dynamicFromId(id value)
   folly::dynamic handlerData = rngh_dynamicFromId(self.extraData.data);
 
   facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange nativeEvent = {
+      .handlerTag = [self.handlerTag intValue],
+      .state = static_cast<int>(self.state),
+      .oldState = static_cast<int>(self.previousState),
+      .handlerData = handlerData,
+  };
+
+  return nativeEvent;
+}
+
+- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedStateChange)getReanimatedNativeEvent
+{
+  folly::dynamic handlerData = rngh_dynamicFromId(self.extraData.data);
+
+  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedStateChange nativeEvent = {
       .handlerTag = [self.handlerTag intValue],
       .state = static_cast<int>(self.state),
       .oldState = static_cast<int>(self.previousState),
