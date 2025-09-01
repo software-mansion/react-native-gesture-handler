@@ -13,6 +13,7 @@ import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
 import { LogicDetectorProps } from './LogicDetector';
+import { runOnJS } from 'react-native-reanimated';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
@@ -94,21 +95,27 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
           gesture.gestureEvents.onGestureHandlerTouchEvent
         }
         onGestureHandlerLogicEvent={(e) => {
-          logicMethods.current
-            .get(e.nativeEvent.childTag)
-            ?.onGestureHandlerEvent(e);
+          const logicMethod = logicMethods.current.get(
+            e.nativeEvent.childTag
+          )?.onGestureHandlerEvent;
+          if (logicMethod) {
+            runOnJS(logicMethod);
+          }
         }}
         onGestureHandlerLogicStateChange={(e) => {
-          logicMethods.current
-            .get(e.nativeEvent.childTag)
-            ?.onGestureHandlerStateChange(e);
+          const logicMethod = logicMethods.current.get(
+            e.nativeEvent.childTag
+          )?.onGestureHandlerStateChange;
+          if (logicMethod) {
+            runOnJS(logicMethod);
+          }
         }}
         onGestureHandlerLogicTouchEvent={(e) => {
-          const touchEvent = logicMethods.current.get(
+          const logicMethod = logicMethods.current.get(
             e.nativeEvent.childTag
           )?.onGestureHandlerTouchEvent;
-          if (touchEvent) {
-            touchEvent(e);
+          if (logicMethod) {
+            runOnJS(logicMethod);
           }
         }}
         moduleId={globalThis._RNGH_MODULE_ID}
