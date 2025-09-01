@@ -13,8 +13,6 @@ import {
   GestureUpdateEventWithData,
 } from '../v3/types';
 import { State } from '../State';
-import { RefObject } from 'react';
-import { GestureHandlerDetectorProps } from '../v3/HostGestureDetector.web';
 
 export interface HitSlop {
   left?: number;
@@ -122,7 +120,11 @@ type ResultEventType =
   | GestureTouchEvent
   | GestureHandlerNativeEvent;
 
-export interface ResultEvent<T extends ResultEventType = ResultEventType>
+type LogicResultEventType = ResultEventType & {
+  childTag?: number;
+};
+
+export interface ResultEvent<T extends ResultEventType = LogicResultEventType>
   extends Record<string, T | number> {
   nativeEvent: T;
   timeStamp: number;
@@ -133,11 +135,10 @@ export interface PropsRef {
   onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
   onGestureHandlerStateChange: (e: ResultEvent) => void;
   onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
-}
 
-export interface LogicDetectorProps {
-  viewRef: RefObject<Element | null>;
-  propsRef: RefObject<GestureHandlerDetectorProps>;
+  onGestureHandlerLogicEvent?: (e: ResultEvent) => void;
+  onGestureHandlerLogicStateChange?: (e: ResultEvent) => void;
+  onGestureHandlerLogicTouchEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {

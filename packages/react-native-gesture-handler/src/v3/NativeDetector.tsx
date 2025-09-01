@@ -1,17 +1,29 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, {
+  createContext,
+  RefObject,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 import { NativeGesture } from './hooks/useGesture';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
-import { LogicDetectorProps } from '../web/interfaces';
+import { LogicDetectorProps } from './LogicDetector';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
   gesture: NativeGesture;
 }
 
+interface LogicMethods {
+  onGestureHandlerEvent: (e: unknown) => void;
+  onGestureHandlerStateChange: (e: unknown) => void;
+  onGestureHandlerTouchEvent?: (e: unknown) => void;
+}
 const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);
 
@@ -19,16 +31,18 @@ const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
 type DetectorContextType = {
-  register: (child: LogicDetectorProps) => void;
-  unregister: (child: LogicDetectorProps) => void;
+  register: (child: LogicDetectorProps, methods: LogicMethods) => void;
+  unregister: (child: number | RefObject<Element | null>) => void;
 };
 
 const DetectorContext = createContext<DetectorContextType | null>(null);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
-  const [logicChildren, setLogicChildren] = useState<Set<LogicDetectorProps>>(
-    new Set()
-  );
+  const [logicChildren, setLogicChildren] = useState<LogicDetectorProps[]>([]);
+  const logicMethods = useRef<
+    Map<number | RefObject<Element | null>, LogicMethods>
+  >(new Map());
+
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : // TODO: Remove this cast when we properly type config
@@ -36,19 +50,27 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
-  const register = useCallback((child: LogicDetectorProps) => {
-    setLogicChildren((prev: Set<LogicDetectorProps>) =>
-      new Set(prev).add(child)
-    );
-  }, []);
+  const register = useCallback(
+    (child: LogicDetectorProps, methods: LogicMethods) => {
+      if (child.viewTag !== -1) {
+        setLogicChildren((prev) => {
+          if (prev.some((c) => c.viewTag === child.viewTag)) {
+            return prev;
+          }
+          return [...prev, child];
+        });
+      }
+      logicMethods.current.set(child.viewTag, methods);
+    },
+    []
+  );
 
-  const unregister = useCallback((child: LogicDetectorProps) => {
-    setLogicChildren((prev: Set<LogicDetectorProps>) => {
-      const updated = new Set(prev);
-      updated.delete(child);
-      return updated;
-    });
-  }, []);
+  const unregister = useCallback(
+    (childTag: number | RefObject<Element | null>) => {
+      setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
+    },
+    []
+  );
 
   // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
@@ -58,7 +80,6 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       )
     );
   }
-
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
       <NativeDetectorComponent
@@ -72,6 +93,24 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         onGestureHandlerTouchEvent={
           gesture.gestureEvents.onGestureHandlerTouchEvent
         }
+        onGestureHandlerLogicEvent={(e) => {
+          logicMethods.current
+            .get(e.nativeEvent.childTag)
+            ?.onGestureHandlerEvent(e);
+        }}
+        onGestureHandlerLogicStateChange={(e) => {
+          logicMethods.current
+            .get(e.nativeEvent.childTag)
+            ?.onGestureHandlerStateChange(e);
+        }}
+        onGestureHandlerLogicTouchEvent={(e) => {
+          const touchEvent = logicMethods.current.get(
+            e.nativeEvent.childTag
+          )?.onGestureHandlerTouchEvent;
+          if (touchEvent) {
+            touchEvent(e);
+          }
+        }}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={[gesture.tag]}
         style={styles.detector}

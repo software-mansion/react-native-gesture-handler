@@ -37,6 +37,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected hasCustomActivationCriteria = false;
   private _enabled = false;
 
+  private childTag?: number;
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
@@ -69,19 +70,21 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected init(
     viewRef: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    childTag?: number
   ) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
+    this.childTag = childTag;
 
     this.delegate.init(viewRef, this);
   }
 
   public detach() {
     if (this.state === State.ACTIVE) {
-      this.cancel();
+      this.cancelTouches();
     } else {
       this.fail();
     }
@@ -90,6 +93,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.actionType = null;
     this.state = State.UNDETERMINED;
     this.forAnimated = false;
+    this.childTag = undefined;
 
     this.delegate.detach();
   }
@@ -373,8 +377,11 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
     this.ensurePropsRef();
-    const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
-      this.propsRef!.current;
+    const {
+      onGestureHandlerEvent,
+      onGestureHandlerTouchEvent,
+      onGestureHandlerLogicTouchEvent,
+    }: PropsRef = this.propsRef!.current;
 
     const touchEvent: ResultEvent<GestureTouchEvent> | undefined =
       this.transformTouchEvent(event);
@@ -385,6 +392,11 @@ export default abstract class GestureHandler implements IGestureHandler {
         this.actionType === ActionType.NATIVE_DETECTOR
       ) {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
+      } else if (
+        onGestureHandlerLogicTouchEvent &&
+        this.actionType === ActionType.LogicDetector
+      ) {
+        invokeNullableMethod(onGestureHandlerLogicTouchEvent, touchEvent);
       } else {
         invokeNullableMethod(onGestureHandlerEvent, touchEvent);
       }
@@ -400,32 +412,60 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
+      onGestureHandlerLogicStateChange,
+      onGestureHandlerLogicEvent,
     }: PropsRef = this.propsRef!.current;
+
     const resultEvent: ResultEvent =
-      this.actionType !== ActionType.NATIVE_DETECTOR
+      this.actionType !== ActionType.NATIVE_DETECTOR &&
+      this.actionType !== ActionType.LogicDetector
         ? this.transformEventData(newState, oldState)
         : this.lastSentState !== newState
           ? this.transformStateChangeEvent(newState, oldState)
           : this.transformUpdateEvent(newState);
 
+    // TODO: cleanup the logic detector types
+    if (this.actionType === ActionType.LogicDetector) {
+      resultEvent.nativeEvent = {
+        ...resultEvent.nativeEvent,
+        childTag: this.childTag,
+      };
+    }
     // In the v2 API oldState field has to be undefined, unless we send event state changed
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
-
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
-      invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
+      if (
+        onGestureHandlerLogicStateChange &&
+        this.actionType === ActionType.LogicDetector
+      ) {
+        invokeNullableMethod(onGestureHandlerLogicStateChange, resultEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
+      }
     }
     if (this.state === State.ACTIVE) {
-      if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+      if (
+        this.actionType !== ActionType.NATIVE_DETECTOR &&
+        this.actionType !== ActionType.LogicDetector
+      ) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
       if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
-      invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+
+      if (
+        onGestureHandlerLogicEvent &&
+        this.actionType === ActionType.LogicDetector
+      ) {
+        invokeNullableMethod(onGestureHandlerLogicEvent, resultEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+      }
     }
   };
 

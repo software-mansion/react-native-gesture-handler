@@ -311,6 +311,20 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
       }
       break;
     }
+    case RNGestureHandlerActionTypeLogicDetector: {
+      NSNumber *parentTag = [_registry getLogicParent:@(detectorView.tag)];
+      RNGHUIView *parentView = [self viewForReactTag:parentTag];
+      if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
+        // TODO: handle forAnimated
+        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+        auto nativeEvent = [gestureEvent getNativeLogicEvent:@(detectorView.tag)];
+        [(RNGestureHandlerDetector *)parentView dispatchLogicGestureEvent:nativeEvent];
+      } else {
+        auto nativeEvent = [event getNativeLogicEvent:@(detectorView.tag)];
+        [(RNGestureHandlerDetector *)parentView dispatchLogicStateChangeEvent:nativeEvent];
+      }
+      break;
+    }
 
     case RNGestureHandlerActionTypeReanimatedWorklet:
       [self sendEventForReanimated:event];
@@ -418,4 +432,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
+- (RNGHUIView *)viewForReactTag:(NSNumber *)reactTag
+{
+  return [_viewRegistry viewForReactTag:reactTag];
+}
 @end

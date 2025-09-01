@@ -1,10 +1,10 @@
 import { Ref, RefObject, useEffect, useRef } from 'react';
 import RNGestureHandlerModule from '../RNGestureHandlerModule.web';
 import { ActionType } from '../ActionType';
-import { LogicDetectorProps, PropsRef } from '../web/interfaces';
+import { PropsRef } from '../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../utils';
-
+import { LogicDetectorProps } from './LogicDetector.web';
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
@@ -44,11 +44,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     propsRef: RefObject<PropsRef>,
     currentHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>,
-    attachedNativeHandlerTags: Set<number>
+    attachedNativeHandlerTags: Set<number>,
+    childTag?: number
   ) => {
     const oldHandlerTags = attachedHandlerTags.difference(currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(attachedHandlerTags);
-
     detachHandlers(
       oldHandlerTags,
       attachedHandlerTags,
@@ -69,16 +69,18 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current.firstChild,
-          ActionType.NATIVE_DETECTOR,
-          propsRef
+          childTag ? ActionType.LogicDetector : ActionType.NATIVE_DETECTOR,
+          propsRef,
+          childTag
         );
         attachedNativeHandlerTags.add(tag);
       } else {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current,
-          ActionType.NATIVE_DETECTOR,
-          propsRef
+          childTag ? ActionType.LogicDetector : ActionType.NATIVE_DETECTOR,
+          propsRef,
+          childTag
         );
       }
       attachedHandlerTags.add(tag);
@@ -116,10 +118,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       if (attachedHandlerTags && attachedNativeHandlerTags) {
         attachHandlers(
           child.viewRef,
-          child.propsRef,
-          new Set(child.propsRef.current.handlerTags),
+          propsRef,
+          new Set(child.handlerTags),
           attachedHandlerTags,
-          attachedNativeHandlerTags
+          attachedNativeHandlerTags,
+          child.viewTag
         );
       }
     });

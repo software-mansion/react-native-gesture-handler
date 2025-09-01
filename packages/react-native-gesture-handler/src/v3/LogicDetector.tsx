@@ -1,12 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NativeDetectorProps, useDetectorContext } from './NativeDetector';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
+import { findNodeHandle } from 'react-native';
+
+export interface LogicDetectorProps {
+  viewTag: number;
+  moduleId: number;
+  handlerTags: number[];
+}
 
 export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();
   const viewRef = useRef(null);
-
-  const propsRef = useRef({
+  const [viewTag, setViewTag] = useState<number>(-1);
+  const logicMethods = {
     onGestureHandlerStateChange:
       props.gesture.gestureEvents.onGestureHandlerStateChange,
     onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent!,
@@ -14,22 +21,24 @@ export const LogicDetector = (props: NativeDetectorProps) => {
       props.gesture.gestureEvents.onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent:
       props.gesture.gestureEvents.onGestureHandlerTouchEvent,
-    moduleId: globalThis._RNGH_MODULE_ID,
-    handlerTags: [props.gesture.tag],
-  });
-
-  const logicChild = useRef({
-    viewRef: viewRef,
-    propsRef: propsRef,
-  });
+  };
+  useEffect(() => {
+    setViewTag(findNodeHandle(viewRef.current)!);
+  }, []);
 
   useEffect(() => {
-    register(logicChild.current);
+    const logicProps = {
+      viewTag: viewTag,
+      moduleId: globalThis._RNGH_MODULE_ID,
+      handlerTags: [props.gesture.tag],
+    };
+
+    register(logicProps, logicMethods);
 
     return () => {
-      unregister(logicChild.current);
+      unregister(viewTag);
     };
-  }, [register, unregister]);
+  }, [viewTag, props.gesture.tag, register, unregister]);
 
   return <Wrap ref={viewRef}>{props.children}</Wrap>;
 };
