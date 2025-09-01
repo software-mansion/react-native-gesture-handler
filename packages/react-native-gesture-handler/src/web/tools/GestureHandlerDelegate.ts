@@ -1,5 +1,3 @@
-import { Config } from '../interfaces';
-
 export interface MeasureResult {
   pageX: number;
   pageY: number;
@@ -21,7 +19,7 @@ export interface GestureHandlerDelegate<TComponent, THandler> {
   onEnd(): void;
   onCancel(): void;
   onFail(): void;
-  onEnabledChange(enabled: boolean): void;
+  onEnabledChange(): void;
 
-  destroy(config: Config): void;
+  destroy(): void;
 }

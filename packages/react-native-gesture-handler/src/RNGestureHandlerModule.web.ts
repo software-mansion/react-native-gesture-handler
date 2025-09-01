@@ -41,7 +41,7 @@ export default {
       NodeManager.getHandler(handlerTag),
       config as unknown as Config
     );
-    this.updateGestureHandler(handlerTag, config as unknown as Config);
+    this.setGestureHandlerConfig(handlerTag, config as unknown as Config);
   },
   attachGestureHandler(
     handlerTag: number,
@@ -79,13 +79,16 @@ export default {
 
     NodeManager.detachGestureHandler(handlerTag);
   },
-  updateGestureHandler(handlerTag: number, newConfig: Config) {
-    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
+  setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
+    NodeManager.getHandler(handlerTag).setGestureConfig(newConfig);
 
     InteractionManager.instance.configureInteractions(
       NodeManager.getHandler(handlerTag),
       newConfig
     );
+  },
+  updateGestureHandlerConfig(handlerTag: number, newConfig: Config) {
+    NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {
     return NodeManager.getHandler(handlerTag);

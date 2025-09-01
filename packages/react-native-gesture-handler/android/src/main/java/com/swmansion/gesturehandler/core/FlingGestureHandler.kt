@@ -132,8 +132,9 @@ class FlingGestureHandler : GestureHandler() {
 
     override fun create(context: Context?): FlingGestureHandler = FlingGestureHandler()
 
-    override fun setConfig(handler: FlingGestureHandler, config: ReadableMap) {
-      super.setConfig(handler, config)
+    override fun updateConfig(handler: FlingGestureHandler, config: ReadableMap) {
+      super.updateConfig(handler, config)
+
       if (config.hasKey(KEY_NUMBER_OF_POINTERS)) {
         handler.numberOfPointersRequired = config.getInt(KEY_NUMBER_OF_POINTERS)
       }

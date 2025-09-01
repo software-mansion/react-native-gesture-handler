@@ -141,9 +141,9 @@ API_AVAILABLE(ios(13.4))
 #endif
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
 
 #if CHECK_TARGET(13_4)
   if (@available(iOS 13.4, *)) {
