@@ -25,7 +25,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const logicChildren = useRef<Map<LogicDetectorProps, LogicChild>>(new Map());
+  const logicChildren = useRef<Map<number, LogicChild>>(new Map());
 
   const detachHandlers = (
     oldHandlerTags: Set<number>,
@@ -103,18 +103,29 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       attachedHandlerTags.current,
       attachedNativeHandlerTags.current
     );
+  }, [handlerTags, children]);
 
-    props.logicChildren?.forEach((child) => {
-      if (!logicChildren.current.has(child)) {
-        logicChildren.current.set(child, {
+  useEffect(() => {
+    const shouldKeepLogicChild: Map<number, boolean> = new Map();
+
+    for (const key of logicChildren.current.keys()) {
+      shouldKeepLogicChild.set(key, false);
+    }
+
+    props.logicChildren?.forEach((child, key) => {
+      if (!logicChildren.current.has(child.viewTag)) {
+        logicChildren.current.set(child.viewTag, {
           attachedHandlerTags: new Set(),
           attachedNativeHandlerTags: new Set(),
         });
       }
-      const attachedHandlerTags =
-        logicChildren.current.get(child)?.attachedHandlerTags;
-      const attachedNativeHandlerTags =
-        logicChildren.current.get(child)?.attachedNativeHandlerTags;
+      shouldKeepLogicChild.set(key.viewTag, true);
+      const attachedHandlerTags = logicChildren.current.get(
+        child.viewTag
+      )?.attachedHandlerTags;
+      const attachedNativeHandlerTags = logicChildren.current.get(
+        child.viewTag
+      )?.attachedNativeHandlerTags;
       if (attachedHandlerTags && attachedNativeHandlerTags) {
         attachHandlers(
           child.viewRef,
@@ -126,7 +137,23 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         );
       }
     });
-  }, [handlerTags, children]);
+
+    shouldKeepLogicChild.forEach((value, key) => {
+      if (value) {
+        const attachedHandlerTags =
+          logicChildren.current.get(key)?.attachedHandlerTags;
+        const attachedNativeHandlerTags =
+          logicChildren.current.get(key)?.attachedNativeHandlerTags;
+        if (attachedHandlerTags && attachedNativeHandlerTags) {
+          detachHandlers(
+            attachedHandlerTags,
+            attachedHandlerTags,
+            attachedNativeHandlerTags
+          );
+        }
+      }
+    });
+  }, [props.logicChildren]);
 
   useEffect(() => {
     return () => {
@@ -135,18 +162,12 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         attachedHandlerTags.current,
         attachedNativeHandlerTags.current
       );
-      props.logicChildren?.forEach((child) => {
-        const attachedHandlerTags =
-          logicChildren.current.get(child)?.attachedHandlerTags;
-        const attachedNativeHandlerTags =
-          logicChildren.current.get(child)?.attachedNativeHandlerTags;
-        if (attachedHandlerTags && attachedNativeHandlerTags) {
-          detachHandlers(
-            attachedHandlerTags,
-            attachedHandlerTags,
-            attachedNativeHandlerTags
-          );
-        }
+      logicChildren?.current.forEach((child) => {
+        detachHandlers(
+          child.attachedHandlerTags,
+          child.attachedHandlerTags,
+          child.attachedNativeHandlerTags
+        );
       });
     };
   }, []);

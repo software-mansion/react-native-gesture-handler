@@ -69,6 +69,12 @@ struct LogicChild {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
+    for (const auto &child : logicChildren) {
+      for (id handlerTag : child.second.attachedHandlers) {
+        [handlerManager.registry detachHandlerWithTag:handlerTag];
+      }
+    }
+    logicChildren.clear();
   }
 }
 
@@ -227,25 +233,40 @@ struct LogicChild {
            attachedHandlers:_attachedHandlers
              nativeHandlers:_nativeHandlers];
   [super updateProps:propsBase oldProps:oldPropsBase];
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+
+      std::unordered_map<int, bool>
+          shouldKeepLogicChild;
+  for (const std::pair<const int, LogicChild> &child : logicChildren) {
+    shouldKeepLogicChild[child.first] = false;
+  }
 
   for (const RNGestureHandlerDetectorLogicChildrenStruct &child : newProps.logicChildren) {
     if (logicChildren.find(child.viewTag) == logicChildren.end()) {
       // Initialize the vector for a new logic child
-      RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-      react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
-          logicChildren[child.viewTag]
-              .view = [handlerManager viewForReactTag:@(child.viewTag)];
+      logicChildren[child.viewTag].view = [handlerManager viewForReactTag:@(child.viewTag)];
       logicChildren[child.viewTag].handlerTags = {};
       logicChildren[child.viewTag].attachedHandlers = [NSMutableSet set];
       logicChildren[child.viewTag].nativeHandlers = [NSMutableSet set];
       [[handlerManager registry] registerLogicChild:@(child.viewTag) toParent:@(self.tag)];
     }
+    shouldKeepLogicChild[child.viewTag] = true;
     [self updatePropsInternal:child.handlerTags
                oldHandlerTags:logicChildren[child.viewTag].handlerTags
                       isLogic:true
                       viewTag:child.viewTag
              attachedHandlers:logicChildren[child.viewTag].attachedHandlers
                nativeHandlers:logicChildren[child.viewTag].nativeHandlers];
+  }
+
+  for (const auto &child : shouldKeepLogicChild) {
+    if (!child.second) {
+      for (id handlerTag : logicChildren[child.first].attachedHandlers) {
+        [handlerManager.registry detachHandlerWithTag:handlerTag];
+      }
+      logicChildren.erase(child.first);
+    }
   }
 
   // Override to force hittesting to work outside bounds
