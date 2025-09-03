@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
 import { NativeDetectorProps, useDetectorContext } from './NativeDetector';
-import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 
+import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 export interface LogicDetectorProps {
   viewTag: number;
   viewRef: RefObject<Element | null>;
@@ -16,9 +16,7 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   const logicMethods = {
     onGestureHandlerStateChange:
       props.gesture.gestureEvents.onGestureHandlerStateChange,
-    onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent!,
-    onGestureHandlerAnimatedEvent:
-      props.gesture.gestureEvents.onGestureHandlerAnimatedEvent,
+    onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
     onGestureHandlerTouchEvent:
       props.gesture.gestureEvents.onGestureHandlerTouchEvent,
   };
@@ -42,5 +40,6 @@ export const LogicDetector = (props: NativeDetectorProps) => {
     };
   }, [viewTag, props.gesture.tag, register, unregister]);
 
+  // fallback: still wrap if it's not a valid element
   return <Wrap ref={viewRef}>{props.children}</Wrap>;
 };

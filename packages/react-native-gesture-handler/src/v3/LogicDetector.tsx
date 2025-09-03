@@ -16,9 +16,7 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   const logicMethods = {
     onGestureHandlerStateChange:
       props.gesture.gestureEvents.onGestureHandlerStateChange,
-    onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent!,
-    onGestureHandlerAnimatedEvent:
-      props.gesture.gestureEvents.onGestureHandlerAnimatedEvent,
+    onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
     onGestureHandlerTouchEvent:
       props.gesture.gestureEvents.onGestureHandlerTouchEvent,
   };
