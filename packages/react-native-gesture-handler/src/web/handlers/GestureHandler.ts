@@ -25,7 +25,7 @@ import {
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
-import { tagMessage } from '../../utils';
+import { invokeNullableMethod, tagMessage } from '../../utils';
 import {
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
@@ -40,6 +40,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _shouldCancelWhenOutside = false;
   private _enabled = false;
 
+  private childTag?: number;
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
@@ -80,18 +81,21 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected init(
     viewRef: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType
+    actionType: ActionType,
+    childTag?: number
   ) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
+    this.childTag = childTag;
+
     this.delegate.init(viewRef, this);
   }
 
   public detach() {
     if (this.state === State.ACTIVE) {
-      this.cancel();
+      this.cancelTouches();
     } else {
       this.fail();
     }
@@ -99,6 +103,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
+    this.childTag = undefined;
     this.dispatchesAnimatedEvents = false;
 
     this.delegate.detach();
@@ -383,8 +388,11 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
     this.ensurePropsRef();
-    const { onGestureHandlerEvent, onGestureHandlerTouchEvent }: PropsRef =
-      this.propsRef!.current;
+    const {
+      onGestureHandlerEvent,
+      onGestureHandlerTouchEvent,
+      onGestureHandlerLogicTouchEvent,
+    }: PropsRef = this.propsRef!.current;
 
     const touchEvent: ResultEvent<GestureTouchEvent> | undefined =
       this.transformTouchEvent(event);
@@ -395,6 +403,11 @@ export default abstract class GestureHandler implements IGestureHandler {
         this.actionType === ActionType.NATIVE_DETECTOR
       ) {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
+      } else if (
+        onGestureHandlerLogicTouchEvent &&
+        this.actionType === ActionType.LogicDetector
+      ) {
+        invokeNullableMethod(onGestureHandlerLogicTouchEvent, touchEvent);
       } else {
         invokeNullableMethod(onGestureHandlerEvent, touchEvent);
       }
@@ -410,32 +423,60 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerEvent,
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
+      onGestureHandlerLogicStateChange,
+      onGestureHandlerLogicEvent,
     }: PropsRef = this.propsRef!.current;
+
     const resultEvent: ResultEvent =
-      this.actionType !== ActionType.NATIVE_DETECTOR
+      this.actionType !== ActionType.NATIVE_DETECTOR &&
+      this.actionType !== ActionType.LogicDetector
         ? this.transformEventData(newState, oldState)
         : this.lastSentState !== newState
           ? this.transformStateChangeEvent(newState, oldState)
           : this.transformUpdateEvent(newState);
 
+    // TODO: cleanup the logic detector types
+    if (this.actionType === ActionType.LogicDetector) {
+      resultEvent.nativeEvent = {
+        ...resultEvent.nativeEvent,
+        childTag: this.childTag,
+      };
+    }
     // In the v2 API oldState field has to be undefined, unless we send event state changed
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
-
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
-      invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
+      if (
+        onGestureHandlerLogicStateChange &&
+        this.actionType === ActionType.LogicDetector
+      ) {
+        invokeNullableMethod(onGestureHandlerLogicStateChange, resultEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
+      }
     }
     if (this.state === State.ACTIVE) {
-      if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+      if (
+        this.actionType !== ActionType.NATIVE_DETECTOR &&
+        this.actionType !== ActionType.LogicDetector
+      ) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
       if (onGestureHandlerAnimatedEvent && this.dispatchesAnimatedEvents) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
-      invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+
+      if (
+        onGestureHandlerLogicEvent &&
+        this.actionType === ActionType.LogicDetector
+      ) {
+        invokeNullableMethod(onGestureHandlerLogicEvent, resultEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, resultEvent);
+      }
     }
   };
 
@@ -1000,57 +1041,4 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.state === State.CANCELLED
     );
   }
-}
-
-function invokeNullableMethod(
-  method:
-    | ((event: ResultEvent) => void)
-    | { __getHandler: () => (event: ResultEvent) => void }
-    | { __nodeConfig: { argMapping: unknown[] } },
-  event: ResultEvent
-): void {
-  if (!method) {
-    return;
-  }
-
-  if (typeof method === 'function') {
-    method(event);
-    return;
-  }
-
-  if ('__getHandler' in method && typeof method.__getHandler === 'function') {
-    const handler = method.__getHandler();
-    invokeNullableMethod(handler, event);
-    return;
-  }
-
-  if (!('__nodeConfig' in method)) {
-    return;
-  }
-
-  const { argMapping }: { argMapping: unknown } = method.__nodeConfig;
-  if (!Array.isArray(argMapping)) {
-    return;
-  }
-
-  for (const [index, [key, value]] of argMapping.entries()) {
-    if (!(key in event.nativeEvent)) {
-      continue;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const nativeValue = (event.nativeEvent as any)[key];
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (value?.setValue) {
-      // Reanimated API
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      value.setValue(nativeValue);
-    } else {
-      // RN Animated API
-      method.__nodeConfig.argMapping[index] = [key, nativeValue];
-    }
-  }
-
-  return;
 }

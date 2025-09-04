@@ -24,8 +24,14 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   RNGestureHandlerMutationKeep,
 };
 
+struct LogicChild {
+  std::vector<int> handlerTags;
+  NSMutableSet *attachedHandlers;
+};
+
 @implementation RNGestureHandlerDetector {
   int _moduleId;
+  std::unordered_map<int, LogicChild> logicChildren;
 }
 
 #if TARGET_OS_OSX
@@ -61,6 +67,12 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
+    for (const auto &child : logicChildren) {
+      for (id handlerTag : child.second.attachedHandlers) {
+        [handlerManager.registry detachHandlerWithTag:handlerTag];
+      }
+    }
+    logicChildren.clear();
   }
 }
 
@@ -84,6 +96,30 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   if (_eventEmitter != nullptr) {
     std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
         ->onGestureHandlerTouchEvent(event);
+  }
+}
+
+- (void)dispatchLogicStateChangeEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicStateChange)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerLogicStateChange(event);
+  }
+}
+
+- (void)dispatchLogicGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicEvent)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerLogicEvent(event);
+  }
+}
+
+- (void)dispatchLogicTouchEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicTouchEvent)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerLogicTouchEvent(event);
   }
 }
 
@@ -125,25 +161,22 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   [super updateLayoutMetrics:newLayoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 }
 
-- (void)updateProps:(const Props::Shared &)propsBase oldProps:(const Props::Shared &)oldPropsBase
+- (void)updatePropsInternal:(const std::vector<int> &)handlerTags
+             oldHandlerTags:(const std::vector<int> &)oldHandlerTags
+                    isLogic:(bool)isLogic
+                    viewTag:(const int)viewTag
+           attachedHandlers:(NSMutableSet *)attachedHandlers
 {
-  const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(propsBase);
-  const auto &oldProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(oldPropsBase);
-
-  _moduleId = newProps.moduleId;
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
       std::unordered_map<int, RNGestureHandlerMutation>
           changes;
-
-  if (oldPropsBase != nullptr) {
-    for (const auto oldHandler : oldProps.handlerTags) {
-      changes[oldHandler] = RNGestureHandlerMutationDetach;
-    }
+  for (const auto oldHandler : oldHandlerTags) {
+    changes[oldHandler] = RNGestureHandlerMutationDetach;
   }
 
-  for (const auto newHandler : newProps.handlerTags) {
+  for (const auto newHandler : handlerTags) {
     changes[newHandler] = changes.contains(newHandler) ? RNGestureHandlerMutationKeep : RNGestureHandlerMutationAttach;
   }
 
@@ -156,15 +189,22 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
         [_nativeHandlers addObject:handlerTag];
       } else {
-        [handlerManager.registry attachHandlerWithTag:handlerTag
-                                               toView:self
-                                       withActionType:RNGestureHandlerActionTypeNativeDetector];
+        if (isLogic) {
+          NSLog(@"attach logic child %@", handlerTag);
 
-        [_attachedHandlers addObject:handlerTag];
+          [handlerManager attachGestureHandler:handlerTag
+                                 toViewWithTag:@(viewTag)
+                                withActionType:RNGestureHandlerActionTypeLogicDetector];
+        } else {
+          //          [handlerManager.registry attachHandlerWithTag:handlerTag
+          //                                                 toView:self
+          //                                         withActionType:RNGestureHandlerActionTypeNativeDetector];
+        }
+        [attachedHandlers addObject:handlerTag];
       }
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
-      [_attachedHandlers removeObject:handlerTag];
+      [attachedHandlers removeObject:handlerTag];
       [_nativeHandlers removeObject:handlerTag];
     }
   }
@@ -173,8 +213,56 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   if (!self.subviews[0]) {
     [self tryAttachNativeHandlersToChildView];
   }
+}
 
+- (void)updateProps:(const Props::Shared &)propsBase oldProps:(const Props::Shared &)oldPropsBase
+{
+  const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(propsBase);
+  const auto &oldProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(oldPropsBase);
+  _moduleId = newProps.moduleId;
+
+  static std::vector<int> emptyVector;
+  const std::vector<int> &oldHandlerTags = (oldPropsBase != nullptr) ? oldProps.handlerTags : emptyVector;
+
+  [self updatePropsInternal:newProps.handlerTags
+             oldHandlerTags:oldHandlerTags
+                    isLogic:false
+                    viewTag:-1
+           attachedHandlers:_attachedHandlers];
   [super updateProps:propsBase oldProps:oldPropsBase];
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+
+      std::unordered_map<int, bool>
+          shouldKeepLogicChild;
+  for (const std::pair<const int, LogicChild> &child : logicChildren) {
+    shouldKeepLogicChild[child.first] = false;
+  }
+
+  for (const RNGestureHandlerDetectorLogicChildrenStruct &child : newProps.logicChildren) {
+    if (logicChildren.find(child.viewTag) == logicChildren.end()) {
+      // Initialize the vector for a new logic child
+      logicChildren[child.viewTag].handlerTags = {};
+      logicChildren[child.viewTag].attachedHandlers = [NSMutableSet set];
+      [[handlerManager registry] registerLogicChild:@(child.viewTag) toParent:@(self.tag)];
+    }
+    shouldKeepLogicChild[child.viewTag] = true;
+    [self updatePropsInternal:child.handlerTags
+               oldHandlerTags:logicChildren[child.viewTag].handlerTags
+                      isLogic:true
+                      viewTag:child.viewTag
+             attachedHandlers:logicChildren[child.viewTag].attachedHandlers];
+  }
+
+  for (const auto &child : shouldKeepLogicChild) {
+    if (!child.second) {
+      for (id handlerTag : logicChildren[child.first].attachedHandlers) {
+        [handlerManager.registry detachHandlerWithTag:handlerTag];
+      }
+      logicChildren.erase(child.first);
+    }
+  }
+
   // Override to force hittesting to work outside bounds
   self.clipsToBounds = NO;
 }

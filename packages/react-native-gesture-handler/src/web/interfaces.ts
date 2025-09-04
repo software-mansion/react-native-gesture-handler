@@ -121,7 +121,11 @@ type ResultEventType =
   | GestureTouchEvent
   | GestureHandlerNativeEvent;
 
-export interface ResultEvent<T extends ResultEventType = ResultEventType>
+type LogicResultEventType = ResultEventType & {
+  childTag?: number;
+};
+
+export interface ResultEvent<T extends ResultEventType = LogicResultEventType>
   extends Record<string, T | number> {
   nativeEvent: T;
   timeStamp: number;
@@ -132,6 +136,10 @@ export interface PropsRef {
   onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
   onGestureHandlerStateChange: (e: ResultEvent) => void;
   onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
+
+  onGestureHandlerLogicEvent?: (e: ResultEvent) => void;
+  onGestureHandlerLogicStateChange?: (e: ResultEvent) => void;
+  onGestureHandlerLogicTouchEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {

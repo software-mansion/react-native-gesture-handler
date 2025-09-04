@@ -16,6 +16,14 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var nativeHandlers: MutableSet<Int> = mutableSetOf()
   private var attachedHandlers: MutableSet<Int> = mutableSetOf()
   private var moduleId: Int = -1
+  private var logicChildren: HashMap<Int, LogicChild> = hashMapOf()
+
+  class LogicChild {
+    var handlerTags: List<Int>? = null
+    var attachedHandlers: MutableSet<Int> = mutableSetOf()
+  }
+
+  data class LogicProps(val handlerTags: List<Int>, val moduleId: Int, val viewTag: Int)
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
@@ -26,15 +34,56 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       return
     }
 
-    attachHandlers(newHandlers)
+    attachHandlers(newHandlers, this.id, false, attachedHandlers)
   }
 
   fun setModuleId(id: Int) {
     assert(this.moduleId == -1) { "Tried to change moduleId of a native detector" }
 
     this.moduleId = id
-    this.attachHandlers(handlersToAttach ?: return)
+    this.attachHandlers(handlersToAttach ?: return, this.id, false, attachedHandlers)
     handlersToAttach = null
+  }
+
+  fun setLogicChildren(newLogicChildren: ReadableArray?) {
+    val shouldKeepLogicChild = HashMap<Int, Boolean>()
+    for (child in logicChildren) {
+      shouldKeepLogicChild[child.key] = false
+    }
+    val mappedChildren = mutableListOf<LogicProps>()
+
+    for (i in 0 until newLogicChildren!!.size()) {
+      val child = newLogicChildren.getMap(i) // Each element should be a ReadableMap
+
+      val handlerTagsArray = child!!.getArray("handlerTags")
+      val handlerTags = mutableListOf<Int>()
+      for (j in 0 until handlerTagsArray!!.size()) {
+        handlerTags.add(handlerTagsArray.getInt(j))
+      }
+
+      val moduleId = child.getInt("moduleId")
+      val viewTag = child.getInt("viewTag")
+
+      mappedChildren.add(
+        LogicProps(
+          handlerTags = handlerTags,
+          moduleId = moduleId,
+          viewTag = viewTag,
+        ),
+      )
+    }
+
+    for (child in logicChildren) {
+      shouldKeepLogicChild[child.key] = false
+    }
+
+    for (child in mappedChildren) {
+      if (!logicChildren.containsKey(child.viewTag)) {
+        logicChildren.put(child.viewTag, LogicChild())
+      }
+      shouldKeepLogicChild[child.viewTag] = true
+      attachHandlers(child.handlerTags, child.viewTag, true, logicChildren[child.viewTag]!!.attachedHandlers)
+    }
   }
 
   private fun shouldAttachGestureToChildView(tag: Int): Boolean {
@@ -57,7 +106,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     super.removeViewAt(index)
   }
 
-  private fun attachHandlers(newHandlers: List<Int>) {
+  private fun attachHandlers(
+    newHandlers: List<Int>,
+    viewTag: Int,
+    isLogic: Boolean,
+    attachedHandlers: MutableSet<Int>,
+  ) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
@@ -71,6 +125,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       changes[tag] = if (changes.containsKey(tag)) GestureHandlerMutation.Keep else GestureHandlerMutation.Attach
     }
 
+    val actionType = if (isLogic) {
+      GestureHandler.ACTION_TYPE_LOGIC_DETECTOR
+    } else {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+    }
+
     for (entry in changes) {
       val tag = entry.key
 
@@ -80,7 +140,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
           nativeHandlers.add(tag)
         } else {
-          registry.attachHandlerToView(tag, this.id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
+          registry.attachHandlerToView(tag, viewTag, actionType)
+          if (isLogic) {
+            registry.getHandler(tag)?.parentView = this
+          }
           attachedHandlers.add(tag)
         }
       } else if (entry.value == GestureHandlerMutation.Detach) {
@@ -131,6 +194,13 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     for (tag in attachedHandlers.toMutableSet()) {
       registry.detachHandler(tag)
       attachedHandlers.remove(tag)
+    }
+
+    for (child in logicChildren) {
+      for (tag in child.value.attachedHandlers) {
+        registry.detachHandler(tag)
+      }
+      child.value.attachedHandlers.clear()
     }
   }
 
