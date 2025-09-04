@@ -1,14 +1,11 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { extractTouchHandlers } from '../../utils';
-import { getGestureHandlerTouchEventWorkletHandler } from '../GestureHandlerTouchEventWorkletHandler';
+import { getTouchEventHandler } from '../touchEventHandler';
 
 export function useReanimatedTouchEvent(handlerTag: number, config: any) {
   const handlers = extractTouchHandlers(config);
 
-  const callback = getGestureHandlerTouchEventWorkletHandler(
-    handlerTag,
-    handlers
-  );
+  const callback = getTouchEventHandler(handlerTag, handlers);
 
   const reanimatedHandler = Reanimated?.useHandler(handlers);
 

@@ -1,6 +1,6 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { extractUpdateHandlers } from '../../utils';
-import { getGestureHandlerEventWorkletHandler } from '../GestureHandlerEventWorkletHandler';
+import { getUpdateHandler } from '../updateHandler';
 
 export function useReanimatedUpdateEvent(handlerTag: number, config: any) {
   const { handlers, changeEventCalculator } = extractUpdateHandlers(config);
@@ -18,7 +18,7 @@ export function useReanimatedUpdateEvent(handlerTag: number, config: any) {
 
   const reanimatedHandler = Reanimated?.useHandler(handlers);
 
-  const callback = getGestureHandlerEventWorkletHandler(
+  const callback = getUpdateHandler(
     handlerTag,
     handlers,
     reanimatedHandler?.context,

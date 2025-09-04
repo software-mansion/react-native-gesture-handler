@@ -4,7 +4,7 @@ import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper'
 import { CallbackHandlers, UpdateEvent } from '../../types';
 import { isEventForHandlerWithTag, runCallback } from '../utils';
 
-export function getGestureHandlerEventWorkletHandler(
+export function getUpdateHandler(
   handlerTag: number,
   callbacks: CallbackHandlers,
   context: ReanimatedContext | undefined,

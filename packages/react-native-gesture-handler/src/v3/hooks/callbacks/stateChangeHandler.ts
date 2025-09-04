@@ -3,7 +3,7 @@ import { State } from '../../../State';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
 import { isEventForHandlerWithTag, isNativeEvent, runCallback } from '../utils';
 
-export function getGestureHandlerStateChangeWorkletHandler(
+export function getStateChangeHandler(
   handlerTag: number,
   callbacks: CallbackHandlers
 ) {

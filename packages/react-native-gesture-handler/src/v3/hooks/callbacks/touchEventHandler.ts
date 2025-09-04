@@ -9,7 +9,7 @@ import {
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 
-export function getGestureHandlerTouchEventWorkletHandler(
+export function getTouchEventHandler(
   handlerTag: number,
   callbacks: CallbackHandlers
 ) {
