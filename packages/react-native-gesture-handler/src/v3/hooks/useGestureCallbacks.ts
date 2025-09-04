@@ -30,10 +30,7 @@ export function useGestureCallbacks(handlerTag: number, config: any) {
 
   let onGestureHandlerAnimatedEvent: AnimatedEvent | undefined;
   if (isAnimatedEvent(config.onUpdate)) {
-    for (const mapping of config.onUpdate._argMapping) {
-      checkMappingForChangeProperties(mapping);
-    }
-
+    checkMappingForChangeProperties(config.onUpdate);
     // TODO: Remove cast when config is properly typed.
     onGestureHandlerAnimatedEvent = config.onUpdate as AnimatedEvent;
   }

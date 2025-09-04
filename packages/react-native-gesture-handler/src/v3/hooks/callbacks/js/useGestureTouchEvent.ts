@@ -1,9 +1,8 @@
 import { extractTouchHandlers } from '../../utils/EventHandlersUtils';
-import { getGestureHandlerTouchEventWorkletHandler } from '../GestureHandlerTouchEventWorkletHandler';
+import { getTouchEventHandler } from '../touchEventHandler';
 
-// eslint-disable-next-line @eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks
 export function useGestureTouchEvent(handlerTag: number, config: any) {
   const handlers = extractTouchHandlers(config);
 
-  return getGestureHandlerTouchEventWorkletHandler(handlerTag, handlers);
+  return getTouchEventHandler(handlerTag, handlers);
 }

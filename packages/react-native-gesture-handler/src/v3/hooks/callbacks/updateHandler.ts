@@ -5,7 +5,7 @@ import { CallbackHandlers, UpdateEvent } from '../../types';
 import { isEventForHandlerWithTag } from '../utils';
 import { runCallback } from '../utils/EventHandlersUtils';
 
-export function getGestureHandlerEventWorkletHandler(
+export function getUpdateHandler(
   handlerTag: number,
   callbacks: CallbackHandlers,
   context: ReanimatedContext | undefined,
