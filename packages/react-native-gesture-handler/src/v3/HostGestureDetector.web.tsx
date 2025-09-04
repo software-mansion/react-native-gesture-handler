@@ -4,12 +4,19 @@ import { ActionType } from '../ActionType';
 import { PropsRef } from '../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../utils';
-import { LogicDetectorProps } from './LogicDetector.web';
+
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
   children?: React.ReactNode;
   logicChildren?: Set<LogicDetectorProps>;
+}
+
+export interface LogicDetectorProps {
+  viewTag: number;
+  moduleId: number;
+  handlerTags: number[];
+  viewRef: RefObject<Element | null>;
 }
 
 interface LogicChild {

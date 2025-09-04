@@ -1,13 +1,7 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
-import { NativeDetectorProps, useDetectorContext } from './NativeDetector';
-
+import { useEffect, useRef, useState } from 'react';
+import { useDetectorContext } from './NativeDetector';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
-export interface LogicDetectorProps {
-  viewTag: number;
-  viewRef: RefObject<Element | null>;
-  moduleId: number;
-  handlerTags: number[];
-}
+import { NativeDetectorProps } from './types';
 
 export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();

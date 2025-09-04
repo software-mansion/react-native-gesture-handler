@@ -1,13 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { NativeDetectorProps, useDetectorContext } from './NativeDetector';
+import { useDetectorContext } from './NativeDetector';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle } from 'react-native';
-
-export interface LogicDetectorProps {
-  viewTag: number;
-  moduleId: number;
-  handlerTags: number[];
-}
+import { NativeDetectorProps } from './types';
 
 export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();

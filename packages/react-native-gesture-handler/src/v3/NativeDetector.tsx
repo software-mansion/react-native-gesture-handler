@@ -6,24 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { NativeGesture } from './hooks/useGesture';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
-
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { invokeNullableMethod, tagMessage } from '../utils';
-import { LogicDetectorProps } from './LogicDetector';
+import { LogicDetectorProps, LogicMethods, NativeDetectorProps } from './types';
 
-export interface NativeDetectorProps {
-  children?: React.ReactNode;
-  gesture: NativeGesture;
-}
-
-interface LogicMethods {
-  onGestureHandlerEvent?: (e: any) => void;
-  onGestureHandlerStateChange?: (e: any) => void;
-  onGestureHandlerTouchEvent?: (e: any) => void;
-}
 const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);
 
