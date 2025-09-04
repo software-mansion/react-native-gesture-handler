@@ -1,4 +1,4 @@
-import { Animated, NativeSyntheticEvent } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
 import { CALLBACK_TYPE } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
 import {
@@ -97,16 +97,21 @@ export function isAnimatedEvent(
   return !!callback && '_argMapping' in callback;
 }
 
-export function checkMappingForChangeProperties(obj: Animated.Mapping) {
-  if (!('nativeEvent' in obj) || !('handlerData' in obj.nativeEvent)) {
-    return;
-  }
+export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
+  for (const mapping of animatedEvent._argMapping) {
+    if (
+      !mapping ||
+      !('nativeEvent' in mapping && 'handlerData' in mapping.nativeEvent)
+    ) {
+      continue;
+    }
 
-  for (const key in obj.nativeEvent.handlerData) {
-    if (key.startsWith('change')) {
-      throw new Error(
-        tagMessage(`${key} is not available when using Animated.Event.`)
-      );
+    for (const key in mapping.nativeEvent.handlerData) {
+      if (key.startsWith('change')) {
+        throw new Error(
+          tagMessage(`${key} is not available when using Animated.Event.`)
+        );
+      }
     }
   }
 }
