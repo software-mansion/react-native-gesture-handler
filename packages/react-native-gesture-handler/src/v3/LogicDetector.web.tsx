@@ -40,6 +40,5 @@ export const LogicDetector = (props: NativeDetectorProps) => {
     };
   }, [viewTag, props.gesture.tag, register, unregister]);
 
-  // fallback: still wrap if it's not a valid element
   return <Wrap ref={viewRef}>{props.children}</Wrap>;
 };

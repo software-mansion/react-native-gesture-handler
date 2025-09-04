@@ -39,9 +39,7 @@ const DetectorContext = createContext<DetectorContextType | null>(null);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   const [logicChildren, setLogicChildren] = useState<LogicDetectorProps[]>([]);
-  const logicMethods = useRef<
-    Map<number | RefObject<Element | null>, LogicMethods>
-  >(new Map());
+  const logicMethods = useRef<Map<number, LogicMethods>>(new Map());
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector

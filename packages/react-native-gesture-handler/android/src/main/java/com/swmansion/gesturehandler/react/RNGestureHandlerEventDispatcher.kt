@@ -86,6 +86,15 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
 
         handler.viewForEvents!!.dispatchEvent(event)
       }
+      GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+        val event = RNGestureHandlerEvent.obtain(
+          handler,
+          handler.actionType,
+          handlerFactory.createEventBuilder(handler),
+        )
+
+        handler.parentView?.dispatchEvent(event)
+      }
     }
   }
 
@@ -142,6 +151,17 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
 
         handler.viewForEvents!!.dispatchEvent(event)
       }
+
+      GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+        val event = RNGestureHandlerLogicStateChangeEvent.obtain(
+          handler,
+          newState,
+          oldState,
+          handler.actionType,
+          handlerFactory.createEventBuilder(handler),
+        )
+        handler.parentView?.dispatchEvent(event)
+      }
     }
   }
 
@@ -176,6 +196,11 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
 
         handler.viewForEvents!!.dispatchEvent(event)
+      }
+      GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+        val event = RNGestureHandlerLogicTouchEvent.obtain(handler, handler.actionType)
+
+        handler.parentView?.dispatchEvent(event)
       }
     }
   }

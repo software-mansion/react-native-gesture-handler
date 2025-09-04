@@ -25,9 +25,7 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
 };
 
 struct LogicChild {
-  RNGHUIView *view;
   std::vector<int> handlerTags;
-  NSMutableSet *nativeHandlers;
   NSMutableSet *attachedHandlers;
 };
 
@@ -168,8 +166,6 @@ struct LogicChild {
                     isLogic:(bool)isLogic
                     viewTag:(const int)viewTag
            attachedHandlers:(NSMutableSet *)attachedHandlers
-             nativeHandlers:(NSMutableSet *)nativeHandlers
-
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
@@ -191,23 +187,25 @@ struct LogicChild {
       if ([self shouldAttachGestureToSubview:handlerTag]) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
-        [nativeHandlers addObject:handlerTag];
+        [_nativeHandlers addObject:handlerTag];
       } else {
         if (isLogic) {
+          NSLog(@"attach logic child %@", handlerTag);
+
           [handlerManager attachGestureHandler:handlerTag
                                  toViewWithTag:@(viewTag)
                                 withActionType:RNGestureHandlerActionTypeLogicDetector];
         } else {
-          [handlerManager.registry attachHandlerWithTag:handlerTag
-                                                 toView:self
-                                         withActionType:RNGestureHandlerActionTypeNativeDetector];
+          //          [handlerManager.registry attachHandlerWithTag:handlerTag
+          //                                                 toView:self
+          //                                         withActionType:RNGestureHandlerActionTypeNativeDetector];
         }
         [attachedHandlers addObject:handlerTag];
       }
     } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
       [attachedHandlers removeObject:handlerTag];
-      [nativeHandlers removeObject:handlerTag];
+      [_nativeHandlers removeObject:handlerTag];
     }
   }
 
@@ -230,8 +228,7 @@ struct LogicChild {
              oldHandlerTags:oldHandlerTags
                     isLogic:false
                     viewTag:-1
-           attachedHandlers:_attachedHandlers
-             nativeHandlers:_nativeHandlers];
+           attachedHandlers:_attachedHandlers];
   [super updateProps:propsBase oldProps:oldPropsBase];
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
@@ -245,10 +242,8 @@ struct LogicChild {
   for (const RNGestureHandlerDetectorLogicChildrenStruct &child : newProps.logicChildren) {
     if (logicChildren.find(child.viewTag) == logicChildren.end()) {
       // Initialize the vector for a new logic child
-      logicChildren[child.viewTag].view = [handlerManager viewForReactTag:@(child.viewTag)];
       logicChildren[child.viewTag].handlerTags = {};
       logicChildren[child.viewTag].attachedHandlers = [NSMutableSet set];
-      logicChildren[child.viewTag].nativeHandlers = [NSMutableSet set];
       [[handlerManager registry] registerLogicChild:@(child.viewTag) toParent:@(self.tag)];
     }
     shouldKeepLogicChild[child.viewTag] = true;
@@ -256,8 +251,7 @@ struct LogicChild {
                oldHandlerTags:logicChildren[child.viewTag].handlerTags
                       isLogic:true
                       viewTag:child.viewTag
-             attachedHandlers:logicChildren[child.viewTag].attachedHandlers
-               nativeHandlers:logicChildren[child.viewTag].nativeHandlers];
+             attachedHandlers:logicChildren[child.viewTag].attachedHandlers];
   }
 
   for (const auto &child : shouldKeepLogicChild) {

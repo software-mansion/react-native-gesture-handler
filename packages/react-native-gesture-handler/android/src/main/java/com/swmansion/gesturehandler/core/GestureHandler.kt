@@ -31,9 +31,13 @@ open class GestureHandler {
   var tag = 0
   var view: View? = null
     private set
+
+  // parent view is used for logicDetector
+  var parentView: RNGestureHandlerDetectorView? = null
+
   val viewForEvents: RNGestureHandlerDetectorView
     get() {
-      assert(actionType == ACTION_TYPE_NATIVE_DETECTOR) {
+      assert(actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_LOGIC_DETECTOR) {
         "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
       }
 
@@ -996,6 +1000,8 @@ open class GestureHandler {
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     const val ACTION_TYPE_NATIVE_DETECTOR = 5
+
+    const val ACTION_TYPE_LOGIC_DETECTOR = 6
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
