@@ -132,7 +132,9 @@ export function useGesture(
 
   if (config.dispatchesAnimatedEvents && config.shouldUseReanimated) {
     throw new Error(
-      tagMessage('Cannot use Reanimated and Animated events at the same time.')
+      tagMessage(
+        `${type}: You cannot use Animated.Event together with callbacks running on the UI thread. Either remove Animated.Event from onUpdate, or set runOnJS property to true on the gesture.`
+      )
     );
   }
 
