@@ -313,7 +313,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData];
 }
 
-- (RNGestureHandlerEventHandlerType)chooseEventHandlerType
+- (RNGestureHandlerEventHandlerType)eventHandlerType
 {
   return _dispatchesAnimatedEvents  ? RNGestureHandlerEventHandlerTypeAnimated
       : _dispatchesReanimatedEvents ? RNGestureHandlerEventHandlerTypeReanimated
@@ -371,7 +371,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          handlerTag:_tag
                                                               state:state
                                                           extraData:extraData
-                                                     forHandlerType:[self chooseEventHandlerType]
+                                                     forHandlerType:[self eventHandlerType]
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
@@ -389,7 +389,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   [self.emitter sendEvent:event
            withActionType:self.actionType
-           forHandlerType:[self chooseEventHandlerType]
+           forHandlerType:[self eventHandlerType]
                   forView:[self findViewForEvents]];
 }
 
@@ -398,7 +398,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
     [self.emitter sendNativeTouchEventForGestureHandler:self
                                         withPointerType:_pointerType
-                                         forHandlerType:[self chooseEventHandlerType]];
+                                         forHandlerType:[self eventHandlerType]];
   } else {
     id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
                                             withChangedPointers:_pointerTracker.changedPointersData
@@ -409,12 +409,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                     handlerTag:_tag
                                                          state:state
                                                      extraData:extraData
-                                                forHandlerType:[self chooseEventHandlerType]
+                                                forHandlerType:[self eventHandlerType]
                                                  coalescingKey:[_tag intValue]];
 
     [self.emitter sendEvent:event
              withActionType:self.actionType
-             forHandlerType:[self chooseEventHandlerType]
+             forHandlerType:[self eventHandlerType]
                     forView:self.recognizer.view];
   }
 }
