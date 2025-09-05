@@ -14,8 +14,8 @@ import {
   bindSharedValues,
   hasWorkletEventHandlers,
   unbindSharedValues,
-} from './utils/ReanimatedUtils';
-import { prepareRelations } from './utils/RelationUtils';
+} from './utils/reanimatedUtils';
+import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture(
   type: SingleGestureType,

@@ -8,7 +8,7 @@ import {
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { isComposedGesture } from '../utils/RelationUtils';
+import { isComposedGesture } from '../utils/relationUtils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(

@@ -3,7 +3,7 @@ import { tagMessage } from '../../../utils';
 import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { CallbackHandlers, UpdateEvent } from '../../types';
 import { isEventForHandlerWithTag } from '../utils';
-import { runCallback } from '../utils/EventHandlersUtils';
+import { runCallback } from '../utils/eventHandlersUtils';
 
 export function getUpdateHandler(
   handlerTag: number,

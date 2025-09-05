@@ -7,7 +7,7 @@ import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../../utils';
 import { traverseGestureRelations } from './utils';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
-import { isComposedGesture } from '../hooks/utils/RelationUtils';
+import { isComposedGesture } from '../hooks/utils/relationUtils';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;

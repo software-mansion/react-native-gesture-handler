@@ -1,5 +1,5 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
-import { extractTouchHandlers } from '../../utils/EventHandlersUtils';
+import { extractTouchHandlers } from '../../utils/eventHandlersUtils';
 import { getTouchEventHandler } from '../touchEventHandler';
 
 export function useReanimatedTouchEvent(handlerTag: number, config: any) {

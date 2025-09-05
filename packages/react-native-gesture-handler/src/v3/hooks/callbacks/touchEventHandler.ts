@@ -6,7 +6,7 @@ import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import {
   runCallback,
   touchEventTypeToCallbackType,
-} from '../utils/EventHandlersUtils';
+} from '../utils/eventHandlersUtils';
 
 export function getTouchEventHandler(
   handlerTag: number,

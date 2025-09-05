@@ -1,6 +1,6 @@
 import { isAnimatedEvent } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
-import { extractUpdateHandlers } from '../../utils/EventHandlersUtils';
+import { extractUpdateHandlers } from '../../utils/eventHandlersUtils';
 import { getUpdateHandler } from '../updateHandler';
 
 export function useGestureUpdateEvent(handlerTag: number, config: any) {

@@ -5,7 +5,7 @@
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
-import { isComposedGesture } from '../hooks/utils/RelationUtils';
+import { isComposedGesture } from '../hooks/utils/relationUtils';
 import { ComposedGesture, ComposedGestureType, NativeGesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.

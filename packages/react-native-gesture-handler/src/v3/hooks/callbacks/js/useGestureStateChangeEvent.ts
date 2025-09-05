@@ -1,4 +1,4 @@
-import { extractStateChangeHandlers } from '../../utils/EventHandlersUtils';
+import { extractStateChangeHandlers } from '../../utils/eventHandlersUtils';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
 export function useGestureStateChangeEvent(handlerTag: number, config: any) {

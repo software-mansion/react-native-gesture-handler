@@ -1,5 +1,5 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
-import { extractStateChangeHandlers } from '../../utils/EventHandlersUtils';
+import { extractStateChangeHandlers } from '../../utils/eventHandlersUtils';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
 export function useReanimatedStateChangeEvent(handlerTag: number, config: any) {

@@ -1,5 +1,5 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
-import { extractUpdateHandlers } from '../../utils/EventHandlersUtils';
+import { extractUpdateHandlers } from '../../utils/eventHandlersUtils';
 import { getUpdateHandler } from '../updateHandler';
 
 export function useReanimatedUpdateEvent(handlerTag: number, config: any) {
