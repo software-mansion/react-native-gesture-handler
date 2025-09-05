@@ -15,6 +15,7 @@ export function prepareRelations(
   config: any,
   handlerTag: number
 ): GestureRelations {
+  // TODO: Handle composed gestures passed into external relations
   const extractHandlerTags = (otherHandler: Gesture | Gesture[]): number[] => {
     if (!otherHandler) {
       return [];
