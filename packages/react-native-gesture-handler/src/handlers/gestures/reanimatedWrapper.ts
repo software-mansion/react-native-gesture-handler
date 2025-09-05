@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
-import { UpdateEvent } from '../../v3/types';
+import { GestureCallbacks, UpdateEvent } from '../../v3/types';
 
 export interface SharedValue<Value = unknown> {
   value: Value;
@@ -41,7 +41,7 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
-      useHandler: (handlers: Record<string, unknown>) => {
+      useHandler: (handlers: GestureCallbacks<unknown>) => {
         doDependenciesDiffer: boolean;
         context: ReanimatedContext;
       };

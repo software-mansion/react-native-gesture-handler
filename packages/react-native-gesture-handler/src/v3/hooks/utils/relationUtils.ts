@@ -1,4 +1,5 @@
 import {
+  BaseGestureConfig,
   ComposedGesture,
   Gesture,
   GestureRelations,
@@ -12,11 +13,13 @@ export function isComposedGesture(
 }
 
 export function prepareRelations(
-  config: any,
+  config: BaseGestureConfig<unknown>,
   handlerTag: number
 ): GestureRelations {
   // TODO: Handle composed gestures passed into external relations
-  const extractHandlerTags = (otherHandler: Gesture | Gesture[]): number[] => {
+  const extractHandlerTags = (
+    otherHandler: Gesture | Gesture[] | undefined
+  ): number[] => {
     if (!otherHandler) {
       return [];
     }
@@ -40,9 +43,11 @@ export function prepareRelations(
   if (config.simultaneousWithExternalGesture) {
     if (Array.isArray(config.simultaneousWithExternalGesture)) {
       for (const gesture of config.simultaneousWithExternalGesture) {
+        // @ts-ignore TODO: handle composed gestures
         gesture.gestureRelations.simultaneousHandlers.push(handlerTag);
       }
     } else {
+      // @ts-ignore TODO: handle composed gestures
       config.simultaneousWithExternalGesture.gestureRelations.simultaneousHandlers.push(
         handlerTag
       );
