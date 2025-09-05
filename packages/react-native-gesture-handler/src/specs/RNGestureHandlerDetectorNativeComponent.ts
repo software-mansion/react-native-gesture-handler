@@ -44,9 +44,12 @@ type GestureHandlerTouchEvent = Readonly<{
 
 export interface NativeProps extends ViewProps {
   onGestureHandlerEvent?: DirectEventHandler<GestureHandlerEvent>;
-  onGestureHandlerAnimatedEvent?: DirectEventHandler<GestureHandlerEvent>;
   onGestureHandlerStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
   onGestureHandlerTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
+  onGestureHandlerReanimatedEvent?: DirectEventHandler<GestureHandlerEvent>;
+  onGestureHandlerReanimatedStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
+  onGestureHandlerReanimatedTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
+  onGestureHandlerAnimatedEvent?: DirectEventHandler<GestureHandlerEvent>;
 
   handlerTags: Int32[];
   moduleId: Int32;

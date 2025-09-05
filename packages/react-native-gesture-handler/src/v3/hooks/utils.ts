@@ -1,4 +1,4 @@
-import { Animated, NativeSyntheticEvent } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
 import { CALLBACK_TYPE } from '../../handlers/gestures/gesture';
 import { TouchEventType } from '../../TouchEventType';
 import {
@@ -7,6 +7,7 @@ import {
   GestureHandlerEvent,
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
+  UpdateEvent,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -52,8 +53,18 @@ export function touchEventTypeToCallbackType(
   }
   return CALLBACK_TYPE.UNDEFINED;
 }
+export function isNativeEvent(
+  event: GestureHandlerEvent<unknown>
+): event is
+  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureTouchEvent> {
+  'worklet';
 
-export function runWorkletCallback(
+  return 'nativeEvent' in event;
+}
+
+export function runCallback(
   type: CALLBACK_TYPE,
   config: CallbackHandlers,
   event: GestureHandlerEvent<Record<string, unknown>>,
@@ -64,18 +75,7 @@ export function runWorkletCallback(
 
   // TODO: add proper types (likely boolean)
   // @ts-ignore It works, duh
-  handler?.(event, ...args);
-}
-
-export function isNativeEvent(
-  event: GestureHandlerEvent<unknown>
-): event is
-  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureTouchEvent> {
-  'worklet';
-
-  return 'nativeEvent' in event;
+  handler?.(isNativeEvent(event) ? event.nativeEvent : event, ...args);
 }
 
 export function isEventForHandlerWithTag(
@@ -97,18 +97,66 @@ export function isAnimatedEvent(
   return !!callback && '_argMapping' in callback;
 }
 
-export function checkMappingForChangeProperties(obj: Animated.Mapping) {
-  if (!('nativeEvent' in obj) || !('handlerData' in obj.nativeEvent)) {
-    return;
-  }
+export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
+  for (const mapping of animatedEvent._argMapping) {
+    if (
+      !mapping ||
+      !('nativeEvent' in mapping && 'handlerData' in mapping.nativeEvent)
+    ) {
+      continue;
+    }
 
-  for (const key in obj.nativeEvent.handlerData) {
-    if (key.startsWith('change')) {
-      throw new Error(
-        tagMessage(`${key} is not available when using Animated.Event.`)
-      );
+    for (const key in mapping.nativeEvent.handlerData) {
+      if (key.startsWith('change')) {
+        throw new Error(
+          tagMessage(`${key} is not available when using Animated.Event.`)
+        );
+      }
     }
   }
+}
+
+export function extractStateChangeHandlers(config: any): CallbackHandlers {
+  'worklet';
+  const { onBegin, onStart, onEnd, onFinalize } = config;
+
+  const handlers: CallbackHandlers = {
+    ...(onBegin ? { onBegin } : {}),
+    ...(onStart ? { onStart } : {}),
+    ...(onEnd ? { onEnd } : {}),
+    ...(onFinalize ? { onFinalize } : {}),
+  };
+
+  return handlers;
+}
+
+export function extractUpdateHandlers(config: any): {
+  handlers: CallbackHandlers;
+  changeEventCalculator?: (
+    current: UpdateEvent<Record<string, unknown>>,
+    previous?: UpdateEvent<Record<string, unknown>>
+  ) => UpdateEvent<Record<string, unknown>>;
+} {
+  'worklet';
+  const { onUpdate, changeEventCalculator } = config;
+
+  const handlers: CallbackHandlers = { ...(onUpdate ? { onUpdate } : {}) };
+
+  return { handlers, changeEventCalculator };
+}
+
+export function extractTouchHandlers(config: any): CallbackHandlers {
+  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
+    config;
+
+  const handlers: CallbackHandlers = {
+    ...(onTouchesDown ? { onTouchesDown } : {}),
+    ...(onTouchesMove ? { onTouchesMove } : {}),
+    ...(onTouchesUp ? { onTouchesUp } : {}),
+    ...(onTouchesCancelled ? { onTouchesCancelled } : {}),
+  };
+
+  return handlers;
 }
 
 export function prepareConfig(config: any) {

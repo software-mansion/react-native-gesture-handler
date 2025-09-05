@@ -71,6 +71,7 @@
     "@eslint-react/no-array-index-key": "warn",
     "@eslint-react/hooks-extra/no-direct-set-state-in-use-effect": "warn",
     "@eslint-react/hooks-extra/prefer-use-state-lazy-initialization": "warn",
+    "@eslint-react/hooks-extra/ensure-custom-hooks-using-other-hooks": "warn",
     "no-redeclare": "off",
     "@typescript-eslint/no-redeclare": "error",
     "no-use-before-define": "off",

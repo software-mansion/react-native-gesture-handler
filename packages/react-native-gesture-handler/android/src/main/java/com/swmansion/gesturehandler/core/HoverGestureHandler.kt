@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNViewConfigurationHelper
-import com.swmansion.gesturehandler.react.eventbuilders.HoverGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.HoverGestureHandlerEventDataBuilder
 
 class HoverGestureHandler : GestureHandler() {
   private var handler: Handler? = null

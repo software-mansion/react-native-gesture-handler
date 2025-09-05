@@ -108,6 +108,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _handlersThatShouldWait = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
+  _dispatchesAnimatedEvents = NO;
+  _dispatchesReanimatedEvents = NO;
 #if !TARGET_OS_OSX
   _recognizer.cancelsTouchesInView = YES;
 #endif
@@ -150,6 +152,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"dispatchesAnimatedEvents"];
   if (prop != nil) {
     _dispatchesAnimatedEvents = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"shouldUseReanimated"];
+  if (prop != nil) {
+    _dispatchesReanimatedEvents = [RCTConvert BOOL:prop];
   }
 
   prop = config[@"manualActivation"];
@@ -306,6 +313,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData];
 }
 
+- (RNGestureHandlerEventHandlerType)eventHandlerType
+{
+  return _dispatchesAnimatedEvents  ? RNGestureHandlerEventHandlerTypeAnimated
+      : _dispatchesReanimatedEvents ? RNGestureHandlerEventHandlerTypeReanimated
+                                    : RNGestureHandlerEventHandlerTypeJS;
+}
+
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
@@ -357,7 +371,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          handlerTag:_tag
                                                               state:state
                                                           extraData:extraData
-                                                        forAnimated:_dispatchesAnimatedEvents
+                                                     forHandlerType:[self eventHandlerType]
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
@@ -375,14 +389,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   [self.emitter sendEvent:event
            withActionType:self.actionType
-              forAnimated:_dispatchesAnimatedEvents
+           forHandlerType:[self eventHandlerType]
                   forView:[self findViewForEvents]];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
   if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
-    [self.emitter sendNativeTouchEventForGestureHandler:self withPointerType:_pointerType];
+    [self.emitter sendNativeTouchEventForGestureHandler:self
+                                        withPointerType:_pointerType
+                                         forHandlerType:[self eventHandlerType]];
   } else {
     id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
                                             withChangedPointers:_pointerTracker.changedPointersData
@@ -393,12 +409,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                     handlerTag:_tag
                                                          state:state
                                                      extraData:extraData
-                                                   forAnimated:_dispatchesAnimatedEvents
+                                                forHandlerType:[self eventHandlerType]
                                                  coalescingKey:[_tag intValue]];
 
     [self.emitter sendEvent:event
              withActionType:self.actionType
-                forAnimated:_dispatchesAnimatedEvents
+             forHandlerType:[self eventHandlerType]
                     forView:self.recognizer.view];
   }
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.ViewConfiguration
-import com.swmansion.gesturehandler.react.eventbuilders.PinchGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.PinchGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class PinchGestureHandler : GestureHandler() {

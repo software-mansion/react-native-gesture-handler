@@ -19,8 +19,8 @@ import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
-import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
-import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
+import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -80,6 +80,7 @@ open class GestureHandler {
   private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
   var needsPointerData = false
   var dispatchesAnimatedEvents = false
+  var dispatchesReanimatedEvents = false
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -131,6 +132,8 @@ open class GestureHandler {
     isEnabled = DEFAULT_IS_ENABLED
     hitSlop = DEFAULT_HIT_SLOP
     mouseButton = DEFAULT_MOUSE_BUTTON
+    dispatchesAnimatedEvents = DEFAULT_DISPATCHES_ANIMATED_EVENTS
+    dispatchesReanimatedEvents = DEFAULT_DISPATCHES_REANIMATED_EVENTS
   }
 
   fun hasCommonPointers(other: GestureHandler): Boolean {
@@ -886,6 +889,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_DISPATCHES_ANIMATED_EVENTS)) {
         handler.dispatchesAnimatedEvents = config.getBoolean(KEY_DISPATCHES_ANIMATED_EVENTS)
       }
+      if (config.hasKey(KEY_SHOULD_USE_REANIMATED)) {
+        handler.dispatchesReanimatedEvents = config.getBoolean(KEY_SHOULD_USE_REANIMATED)
+      }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.manualActivation = config.getBoolean(KEY_MANUAL_ACTIVATION)
       }
@@ -901,6 +907,7 @@ open class GestureHandler {
       private const val KEY_ENABLED = "enabled"
       private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
       private const val KEY_DISPATCHES_ANIMATED_EVENTS = "dispatchesAnimatedEvents"
+      private const val KEY_SHOULD_USE_REANIMATED = "shouldUseReanimated"
       private const val KEY_MANUAL_ACTIVATION = "manualActivation"
       private const val KEY_MOUSE_BUTTON = "mouseButton"
       private const val KEY_HIT_SLOP = "hitSlop"
@@ -973,6 +980,8 @@ open class GestureHandler {
     private const val DEFAULT_IS_ENABLED = true
     private val DEFAULT_HIT_SLOP = null
     private const val DEFAULT_MOUSE_BUTTON = 0
+    private const val DEFAULT_DISPATCHES_ANIMATED_EVENTS = false
+    private const val DEFAULT_DISPATCHES_REANIMATED_EVENTS = false
 
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1
