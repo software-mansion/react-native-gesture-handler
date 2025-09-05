@@ -11,7 +11,10 @@ export function isComposedGesture(
   return 'tags' in gesture;
 }
 
-export function prepareRelations(config: any): GestureRelations {
+export function prepareRelations(
+  config: any,
+  handlerTag: number
+): GestureRelations {
   const extractHandlerTags = (otherHandler: Gesture | Gesture[]): number[] => {
     if (!otherHandler) {
       return [];
@@ -32,6 +35,18 @@ export function prepareRelations(config: any): GestureRelations {
 
     return otherTags;
   };
+
+  if (config.simultaneousWithExternalGesture) {
+    if (Array.isArray(config.simultaneousWithExternalGesture)) {
+      for (const gesture of config.simultaneousWithExternalGesture) {
+        gesture.gestureRelations.simultaneousHandlers.push(handlerTag);
+      }
+    } else {
+      config.simultaneousWithExternalGesture.gestureRelations.simultaneousHandlers.push(
+        handlerTag
+      );
+    }
+  }
 
   return {
     simultaneousHandlers: extractHandlerTags(

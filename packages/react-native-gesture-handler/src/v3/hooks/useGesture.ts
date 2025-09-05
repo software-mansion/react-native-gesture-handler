@@ -80,7 +80,7 @@ export function useGesture(
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
-  const gestureRelations = prepareRelations(config);
+  const gestureRelations = prepareRelations(config, tag);
 
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
