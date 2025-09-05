@@ -70,6 +70,9 @@ export function prepareConfig(config: any) {
   // TODO: Filter changes - passing functions (and possibly other types)
   // causes a native crash
   copy.onUpdate = null;
+  copy.simultaneousWithExternalGesture = null;
+  copy.requireExternalGestureToFail = null;
+  copy.blocksExternalGesture = null;
 
   return copy;
 }
