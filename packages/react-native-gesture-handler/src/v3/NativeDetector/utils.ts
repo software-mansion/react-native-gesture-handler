@@ -16,7 +16,6 @@ export const traverseGestureRelations = (
 ) => {
   // If we are in the leaf node, we want to fill gesture relations arrays with current
   // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
-  // TODO: handle `simultaneousWithExternalGesture`, `requreExternalGestureToFail`, `blocksExternalGesture`
   if (!isComposedGesture(node)) {
     node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
     node.gestureRelations.waitFor.push(...waitFor);
