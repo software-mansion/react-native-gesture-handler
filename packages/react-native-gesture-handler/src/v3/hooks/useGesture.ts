@@ -9,7 +9,7 @@ import {
   shouldHandleTouchEvents,
 } from './utils';
 import { tagMessage } from '../../utils';
-import { NativeGesture, SingleGestureType } from '../types';
+import { BaseGestureConfig, NativeGesture, SingleGestureType } from '../types';
 import {
   bindSharedValues,
   hasWorkletEventHandlers,
@@ -19,7 +19,7 @@ import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture(
   type: SingleGestureType,
-  config: Record<string, unknown>
+  config: BaseGestureConfig<unknown>
 ): NativeGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
@@ -38,8 +38,7 @@ export function useGesture(
     Reanimated !== undefined &&
     hasWorkletEventHandlers(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
-  // TODO: Remove this when we properly type config
-  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate as any);
+  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
 
   if (config.dispatchesAnimatedEvents && config.shouldUseReanimated) {
     throw new Error(

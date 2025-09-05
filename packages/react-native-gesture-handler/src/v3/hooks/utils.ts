@@ -1,9 +1,10 @@
 import { NativeSyntheticEvent } from 'react-native';
 import {
   AnimatedEvent,
+  BaseGestureConfig,
   GestureHandlerEvent,
-  GestureStateChangeEventWithData,
-  GestureUpdateEventWithData,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -12,8 +13,8 @@ import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 export function isNativeEvent(
   event: GestureHandlerEvent<unknown>
 ): event is
-  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureUpdateEvent<unknown>>
+  | NativeSyntheticEvent<GestureStateChangeEvent<unknown>>
   | NativeSyntheticEvent<GestureTouchEvent> {
   'worklet';
 
@@ -32,7 +33,10 @@ export function isEventForHandlerWithTag(
 }
 
 export function isAnimatedEvent(
-  callback: ((event: any) => void) | AnimatedEvent | undefined
+  callback:
+    | ((event: GestureUpdateEvent<unknown>) => void)
+    | AnimatedEvent
+    | undefined
 ): callback is AnimatedEvent {
   'worklet';
 
@@ -58,7 +62,7 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function prepareConfig(config: any) {
+export function prepareConfig(config: BaseGestureConfig<unknown>) {
   const copy = { ...config };
 
   for (const key in copy) {
@@ -69,15 +73,15 @@ export function prepareConfig(config: any) {
 
   // TODO: Filter changes - passing functions (and possibly other types)
   // causes a native crash
-  copy.onUpdate = null;
-  copy.simultaneousWithExternalGesture = null;
-  copy.requireExternalGestureToFail = null;
-  copy.blocksExternalGesture = null;
+  delete copy.onUpdate;
+  delete copy.simultaneousWithExternalGesture;
+  delete copy.requireExternalGestureToFail;
+  delete copy.blocksExternalGesture;
 
   return copy;
 }
 
-export function shouldHandleTouchEvents(config: Record<string, unknown>) {
+export function shouldHandleTouchEvents(config: BaseGestureConfig<unknown>) {
   return (
     !!config.onTouchesDown ||
     !!config.onTouchesMove ||

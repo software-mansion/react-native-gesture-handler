@@ -1,12 +1,12 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
-import { CallbackHandlers, StateChangeEvent } from '../../types';
+import { GestureCallbacks, StateChangeEvent } from '../../types';
 import { isEventForHandlerWithTag, isNativeEvent } from '../utils';
 import { runCallback } from '../utils/eventHandlersUtils';
 
 export function getStateChangeHandler(
   handlerTag: number,
-  callbacks: CallbackHandlers
+  callbacks: GestureCallbacks<unknown>
 ) {
   return (event: StateChangeEvent<Record<string, unknown>>) => {
     'worklet';

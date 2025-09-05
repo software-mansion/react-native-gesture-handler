@@ -7,14 +7,13 @@ import {
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
 import { ValueOf } from '../typeUtils';
 
-export type GestureUpdateEventWithData<T> = GestureEventPayload & {
+export type GestureUpdateEvent<T> = GestureEventPayload & {
   handlerData: T;
 };
 
-export type GestureStateChangeEventWithData<T> =
-  HandlerStateChangeEventPayload & {
-    handlerData: T;
-  };
+export type GestureStateChangeEvent<T> = HandlerStateChangeEventPayload & {
+  handlerData: T;
+};
 
 export type GestureHandlerEvent<T> =
   | UpdateEvent<T>
@@ -22,12 +21,12 @@ export type GestureHandlerEvent<T> =
   | TouchEvent;
 
 export type UpdateEvent<T> =
-  | GestureUpdateEventWithData<T>
-  | NativeSyntheticEvent<GestureUpdateEventWithData<T>>;
+  | GestureUpdateEvent<T>
+  | NativeSyntheticEvent<GestureUpdateEvent<T>>;
 
 export type StateChangeEvent<T> =
-  | GestureStateChangeEventWithData<T>
-  | NativeSyntheticEvent<GestureStateChangeEventWithData<T>>;
+  | GestureStateChangeEvent<T>
+  | NativeSyntheticEvent<GestureStateChangeEvent<T>>;
 
 export type TouchEvent =
   | GestureTouchEvent
@@ -109,7 +108,7 @@ export type GestureRelations = {
 export type NativeGesture = {
   tag: number;
   type: HandlerType;
-  config: Record<string, unknown>;
+  config: BaseGestureConfig<unknown>;
   gestureEvents: GestureEvents;
   gestureRelations: GestureRelations;
 };
@@ -125,4 +124,38 @@ export type ComposedGesture = {
   gestures: (NativeGesture | ComposedGesture)[];
 };
 
+export type ChangeCalculatorType = (
+  current: UpdateEvent<Record<string, unknown>>,
+  previous?: UpdateEvent<Record<string, unknown>>
+) => UpdateEvent<Record<string, unknown>>;
+
 export type Gesture = NativeGesture | ComposedGesture;
+
+interface ExternalRelations {
+  simultaneousWithExternalGesture?: Gesture | Gesture[];
+  requireExternalGestureToFail?: Gesture | Gesture[];
+  blocksExternalGesture?: Gesture | Gesture[];
+}
+
+export interface GestureCallbacks<T> {
+  onBegin?: (event: GestureStateChangeEvent<T>) => void;
+  onStart?: (event: GestureStateChangeEvent<T>) => void;
+  onEnd?: (event: GestureStateChangeEvent<T>, success: boolean) => void;
+  onFinalize?: (event: GestureStateChangeEvent<T>, success: boolean) => void;
+  onUpdate?: (event: GestureUpdateEvent<T>) => void | AnimatedEvent;
+  onTouchesDown?: (event: GestureTouchEvent) => void;
+  onTouchesMove?: (event: GestureTouchEvent) => void;
+  onTouchesUp?: (event: GestureTouchEvent) => void;
+  onTouchesCancelled?: (event: GestureTouchEvent) => void;
+}
+
+export interface BaseGestureConfig<T>
+  extends ExternalRelations,
+    GestureCallbacks<T>,
+    Record<string, unknown> {
+  disableReanimated?: boolean;
+  shouldUseReanimated?: boolean;
+  dispatchesAnimatedEvents?: boolean;
+  needsPointerData?: boolean;
+  changeEventCalculator?: ChangeCalculatorType;
+}

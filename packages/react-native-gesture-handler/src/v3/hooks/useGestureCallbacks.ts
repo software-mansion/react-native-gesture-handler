@@ -1,13 +1,16 @@
 import { useGestureStateChangeEvent } from './callbacks/js/useGestureStateChangeEvent';
 import { useGestureUpdateEvent } from './callbacks/js/useGestureUpdateEvent';
 import { useGestureTouchEvent } from './callbacks/js/useGestureTouchEvent';
-import { AnimatedEvent } from '../types';
+import { AnimatedEvent, BaseGestureConfig } from '../types';
 import { checkMappingForChangeProperties, isAnimatedEvent } from './utils';
 import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanimatedStateChangeEvent';
 import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
 import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
 
-export function useGestureCallbacks(handlerTag: number, config: any) {
+export function useGestureCallbacks(
+  handlerTag: number,
+  config: BaseGestureConfig<unknown>
+) {
   const onGestureHandlerStateChange = useGestureStateChangeEvent(
     handlerTag,
     config
@@ -31,8 +34,7 @@ export function useGestureCallbacks(handlerTag: number, config: any) {
   let onGestureHandlerAnimatedEvent: AnimatedEvent | undefined;
   if (isAnimatedEvent(config.onUpdate)) {
     checkMappingForChangeProperties(config.onUpdate);
-    // TODO: Remove cast when config is properly typed.
-    onGestureHandlerAnimatedEvent = config.onUpdate as AnimatedEvent;
+    onGestureHandlerAnimatedEvent = config.onUpdate;
   }
 
   return {
