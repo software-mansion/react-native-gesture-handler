@@ -18,6 +18,4 @@
 - (void)detachHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropAllHandlers;
-- (nullable NSNumber *)getLogicParent:(nonnull NSNumber *)child;
-- (void)registerLogicChild:(nonnull NSNumber *)child toParent:(nonnull NSNumber *)parent;
 @end

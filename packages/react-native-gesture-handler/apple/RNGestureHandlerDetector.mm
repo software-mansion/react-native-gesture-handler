@@ -244,7 +244,7 @@ struct LogicChild {
       // Initialize the vector for a new logic child
       logicChildren[child.viewTag].handlerTags = {};
       logicChildren[child.viewTag].attachedHandlers = [NSMutableSet set];
-      [[handlerManager registry] registerLogicChild:@(child.viewTag) toParent:@(self.tag)];
+      [[[handlerManager registry] handlerWithTag:@(child.viewTag)] setParentTag:@(self.tag)];
     }
     shouldKeepLogicChild[child.viewTag] = true;
     [self updatePropsInternal:child.handlerTags

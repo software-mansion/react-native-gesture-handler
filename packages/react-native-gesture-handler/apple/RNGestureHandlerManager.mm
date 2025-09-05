@@ -318,7 +318,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
       break;
     }
     case RNGestureHandlerActionTypeLogicDetector: {
-      NSNumber *parentTag = [_registry getLogicParent:@(detectorView.tag)];
+      NSNumber *parentTag = [[_registry handlerWithTag:event.handlerTag] getParentTag];
       RNGHUIView *parentView = [self viewForReactTag:parentTag];
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
         // TODO: handle forAnimated

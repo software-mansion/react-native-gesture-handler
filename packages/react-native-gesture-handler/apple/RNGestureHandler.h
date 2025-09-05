@@ -103,6 +103,9 @@
 - (nonnull RNGHUIView *)findViewForEvents;
 - (BOOL)wantsToAttachDirectlyToView;
 
+- (void)setParentTag:(nonnull NSNumber *)parentTag;
+- (nonnull NSNumber *)getParentTag;
+
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
 #else

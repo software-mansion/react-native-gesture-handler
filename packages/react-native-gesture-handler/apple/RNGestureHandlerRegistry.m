@@ -12,14 +12,12 @@
 
 @implementation RNGestureHandlerRegistry {
   NSMutableDictionary<NSNumber *, RNGestureHandler *> *_handlers;
-  NSMutableDictionary<NSNumber *, NSNumber *> *_logicChildMap;
 }
 
 - (instancetype)init
 {
   if ((self = [super init])) {
     _handlers = [NSMutableDictionary new];
-    _logicChildMap = [NSMutableDictionary new];
   }
   return self;
 }
@@ -32,16 +30,6 @@
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler
 {
   _handlers[gestureHandler.tag] = gestureHandler;
-}
-
-- (void)registerLogicChild:(NSNumber *)child toParent:(NSNumber *)parent
-{
-  _logicChildMap[child] = parent;
-}
-
-- (NSNumber *)getLogicParent:(NSNumber *)child
-{
-  return _logicChildMap[child];
 }
 
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag

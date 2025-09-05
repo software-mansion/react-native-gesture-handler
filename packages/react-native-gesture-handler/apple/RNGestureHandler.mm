@@ -76,6 +76,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   NSArray<NSNumber *> *_simultaneousHandlers;
   RNGHHitSlop _hitSlop;
   uint16_t _eventCoalescingKey;
+  NSNumber *_parentTag;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -672,6 +673,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (BOOL)wantsToAttachDirectlyToView
 {
   return NO;
+}
+
+- (void)setParentTag:(NSNumber *)parentTag
+{
+  _parentTag = parentTag;
+}
+
+- (NSNumber *)getParentTag
+{
+  return _parentTag;
 }
 
 @end
