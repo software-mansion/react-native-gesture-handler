@@ -5,6 +5,7 @@ import {
   HandlerStateChangeEventPayload,
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
+import { ValueOf } from '../typeUtils';
 
 export type GestureUpdateEventWithData<T> = GestureEventPayload & {
   handlerData: T;
@@ -48,3 +49,80 @@ export type CallbackHandlers = Omit<
 export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
+
+export const SingleGestureType = {
+  Tap: 'TapGestureHandler',
+  LongPress: 'LongPressGestureHandler',
+  Pan: 'PanGestureHandler',
+  Pinch: 'PinchGestureHandler',
+  Rotation: 'RotationGestureHandler',
+  Fling: 'FlingGestureHandler',
+  Manual: 'ManualGestureHandler',
+  Native: 'NativeGestureHandler',
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type SingleGestureType = ValueOf<typeof SingleGestureType>;
+
+export const ComposedGestureType = {
+  Simultaneous: 'SimultaneousGesture',
+  Exclusive: 'ExclusiveGesture',
+  Race: 'RaceGesture',
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type ComposedGestureType = ValueOf<typeof ComposedGestureType>;
+
+// TODO: Find better name
+export const HandlerType = {
+  ...SingleGestureType,
+  ...ComposedGestureType,
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type HandlerType = ValueOf<typeof HandlerType>;
+
+export type GestureEvents = {
+  onGestureHandlerStateChange: (
+    event: StateChangeEvent<Record<string, unknown>>
+  ) => void;
+  onGestureHandlerEvent:
+    | undefined
+    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+  onGestureHandlerTouchEvent: (event: TouchEvent) => void;
+  onReanimatedStateChange:
+    | undefined
+    | ((event: StateChangeEvent<Record<string, unknown>>) => void);
+  onReanimatedUpdateEvent:
+    | undefined
+    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+  onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
+  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
+};
+
+export type GestureRelations = {
+  simultaneousHandlers: number[];
+  waitFor: number[];
+  blocksHandlers: number[];
+};
+
+export type NativeGesture = {
+  tag: number;
+  type: HandlerType;
+  config: Record<string, unknown>;
+  gestureEvents: GestureEvents;
+  gestureRelations: GestureRelations;
+};
+
+export type ComposedGesture = {
+  tags: number[];
+  type: ComposedGestureType;
+  config: {
+    shouldUseReanimated: boolean;
+    dispatchesAnimatedEvents: boolean;
+  };
+  gestureEvents: GestureEvents;
+  gestures: (NativeGesture | ComposedGesture)[];
+};
+
+export type Gesture = NativeGesture | ComposedGesture;
