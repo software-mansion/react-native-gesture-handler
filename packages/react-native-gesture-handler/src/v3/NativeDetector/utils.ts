@@ -38,7 +38,9 @@ export const traverseGestureRelations = (
   node.gestures.forEach((child) => {
     // If child is composed gesture, we have to correctly fill `waitFor` and `simultaneousHandlers`.
     if (isComposedGesture(child)) {
-      // We have to update `simultaneousHandlers` before traversing the child.
+      // We have to update `simultaneousHandlers` before traversing the child (going top-down).
+      // Simultaneous is an all-to-all relation - it needs to be prepared when entering the node.
+      // Exclusive is a one-to-many relation - gesture depends on the preceding ones and not on itself - it should be prepared when leaving the node (bottom-up).
 
       // If we go from a non-simultaneous gesture to a simultaneous gesture,
       // we add the tags of the simultaneous gesture to the `simultaneousHandlers`.
