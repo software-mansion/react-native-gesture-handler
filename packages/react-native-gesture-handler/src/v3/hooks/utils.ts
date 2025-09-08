@@ -10,20 +10,20 @@ import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
-export function isNativeEvent(
-  event: GestureHandlerEvent<unknown>
+export function isNativeEvent<THandlerData>(
+  event: GestureHandlerEvent<THandlerData>
 ): event is
-  | NativeSyntheticEvent<GestureUpdateEvent<unknown>>
-  | NativeSyntheticEvent<GestureStateChangeEvent<unknown>>
+  | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>
+  | NativeSyntheticEvent<GestureStateChangeEvent<THandlerData>>
   | NativeSyntheticEvent<GestureTouchEvent> {
   'worklet';
 
   return 'nativeEvent' in event;
 }
 
-export function isEventForHandlerWithTag(
+export function isEventForHandlerWithTag<THandlerData>(
   handlerTag: number,
-  event: GestureHandlerEvent<Record<string, unknown>>
+  event: GestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
@@ -32,9 +32,9 @@ export function isEventForHandlerWithTag(
     : event.handlerTag === handlerTag;
 }
 
-export function isAnimatedEvent(
+export function isAnimatedEvent<THandlerData>(
   callback:
-    | ((event: GestureUpdateEvent<unknown>) => void)
+    | ((event: GestureUpdateEvent<THandlerData>) => void)
     | AnimatedEvent
     | undefined
 ): callback is AnimatedEvent {
@@ -62,11 +62,15 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function prepareConfig(config: BaseGestureConfig<unknown>) {
+export function prepareConfig<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
   const copy = { ...config };
 
   for (const key in copy) {
+    // @ts-ignore It is fine to use string as index
     if (Reanimated?.isSharedValue(copy[key])) {
+      // @ts-ignore It is fine to use string as index
       copy[key] = copy[key].value;
     }
   }
@@ -81,7 +85,9 @@ export function prepareConfig(config: BaseGestureConfig<unknown>) {
   return copy;
 }
 
-export function shouldHandleTouchEvents(config: BaseGestureConfig<unknown>) {
+export function shouldHandleTouchEvents<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
   return (
     !!config.onTouchesDown ||
     !!config.onTouchesMove ||

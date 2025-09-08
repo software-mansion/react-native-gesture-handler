@@ -7,18 +7,21 @@ import {
 } from '../../types';
 
 export function isComposedGesture(
-  gesture: NativeGesture | ComposedGesture
+  gesture: NativeGesture<unknown, unknown> | ComposedGesture
 ): gesture is ComposedGesture {
   return 'tags' in gesture;
 }
 
-export function prepareRelations(
-  config: BaseGestureConfig<unknown>,
+export function prepareRelations<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>,
   handlerTag: number
 ): GestureRelations {
   // TODO: Handle composed gestures passed into external relations
   const extractHandlerTags = (
-    otherHandler: Gesture | Gesture[] | undefined
+    otherHandler:
+      | Gesture<unknown, unknown>
+      | Gesture<unknown, unknown>[]
+      | undefined
   ): number[] => {
     if (!otherHandler) {
       return [];
@@ -28,7 +31,7 @@ export function prepareRelations(
 
     if (Array.isArray(otherHandler)) {
       otherTags = otherHandler.flatMap(
-        (gesture: NativeGesture | ComposedGesture) =>
+        (gesture: NativeGesture<unknown, unknown> | ComposedGesture) =>
           isComposedGesture(gesture) ? gesture.tags : gesture.tag
       );
     } else {

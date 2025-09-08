@@ -4,11 +4,11 @@ import { GestureCallbacks, StateChangeEvent } from '../../types';
 import { isEventForHandlerWithTag, isNativeEvent } from '../utils';
 import { runCallback } from '../utils/eventHandlersUtils';
 
-export function getStateChangeHandler(
+export function getStateChangeHandler<THandlerData>(
   handlerTag: number,
-  callbacks: GestureCallbacks<unknown>
+  callbacks: GestureCallbacks<THandlerData>
 ) {
-  return (event: StateChangeEvent<Record<string, unknown>>) => {
+  return (event: StateChangeEvent<THandlerData>) => {
     'worklet';
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {

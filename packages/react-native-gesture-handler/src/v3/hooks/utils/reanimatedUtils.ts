@@ -23,8 +23,8 @@ const SHARED_VALUE_OFFSET = 1.618;
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
 
-export function bindSharedValues(
-  config: BaseGestureConfig<unknown>,
+export function bindSharedValues<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>,
   handlerTag: number
 ) {
   if (Reanimated === undefined) {
@@ -53,8 +53,8 @@ export function bindSharedValues(
   }
 }
 
-export function unbindSharedValues(
-  config: BaseGestureConfig<unknown>,
+export function unbindSharedValues<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>,
   handlerTag: number
 ) {
   if (Reanimated === undefined) {
@@ -77,7 +77,9 @@ export function unbindSharedValues(
   }
 }
 
-export function hasWorkletEventHandlers(config: BaseGestureConfig<unknown>) {
+export function hasWorkletEventHandlers<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
   return Object.values(config).some(
     (prop) => typeof prop === 'function' && '__workletHash' in prop
   );

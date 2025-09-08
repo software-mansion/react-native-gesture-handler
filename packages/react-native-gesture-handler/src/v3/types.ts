@@ -4,43 +4,33 @@ import {
   GestureTouchEvent,
   HandlerStateChangeEventPayload,
 } from '../handlers/gestureHandlerCommon';
-import { HandlerCallbacks } from '../handlers/gestures/gesture';
 import { ValueOf } from '../typeUtils';
 
-export type GestureUpdateEvent<T> = GestureEventPayload & {
-  handlerData: T;
+export type GestureUpdateEvent<THandlerData> = GestureEventPayload & {
+  handlerData: THandlerData;
 };
 
-export type GestureStateChangeEvent<T> = HandlerStateChangeEventPayload & {
-  handlerData: T;
-};
+export type GestureStateChangeEvent<THandlerData> =
+  HandlerStateChangeEventPayload & {
+    handlerData: THandlerData;
+  };
 
-export type GestureHandlerEvent<T> =
-  | UpdateEvent<T>
-  | StateChangeEvent<T>
+export type GestureHandlerEvent<THandlerData> =
+  | UpdateEvent<THandlerData>
+  | StateChangeEvent<THandlerData>
   | TouchEvent;
 
-export type UpdateEvent<T> =
-  | GestureUpdateEvent<T>
-  | NativeSyntheticEvent<GestureUpdateEvent<T>>;
+export type UpdateEvent<THandlerData> =
+  | GestureUpdateEvent<THandlerData>
+  | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>;
 
-export type StateChangeEvent<T> =
-  | GestureStateChangeEvent<T>
-  | NativeSyntheticEvent<GestureStateChangeEvent<T>>;
+export type StateChangeEvent<THandlerData> =
+  | GestureStateChangeEvent<THandlerData>
+  | NativeSyntheticEvent<GestureStateChangeEvent<THandlerData>>;
 
 export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
-
-// TODO: Replace with v3 specific types
-export type CallbackHandlers = Omit<
-  HandlerCallbacks<Record<string, unknown>>,
-  | 'gestureId'
-  | 'handlerTag'
-  | 'isWorklet'
-  | 'changeEventCalculator'
-  | 'onChange'
->;
 
 // This is almost how Animated.event is typed in React Native. We add _argMapping in order to:
 // 1. Distinguish it from a regular function,
@@ -81,20 +71,18 @@ export const HandlerType = {
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type HandlerType = ValueOf<typeof HandlerType>;
 
-export type GestureEvents = {
-  onGestureHandlerStateChange: (
-    event: StateChangeEvent<Record<string, unknown>>
-  ) => void;
+export type GestureEvents<THandlerData> = {
+  onGestureHandlerStateChange: (event: StateChangeEvent<THandlerData>) => void;
   onGestureHandlerEvent:
     | undefined
-    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+    | ((event: UpdateEvent<THandlerData>) => void);
   onGestureHandlerTouchEvent: (event: TouchEvent) => void;
   onReanimatedStateChange:
     | undefined
-    | ((event: StateChangeEvent<Record<string, unknown>>) => void);
+    | ((event: StateChangeEvent<THandlerData>) => void);
   onReanimatedUpdateEvent:
     | undefined
-    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+    | ((event: UpdateEvent<THandlerData>) => void);
   onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
   onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
@@ -105,11 +93,11 @@ export type GestureRelations = {
   blocksHandlers: number[];
 };
 
-export type NativeGesture = {
+export type NativeGesture<THandlerData, TConfig> = {
   tag: number;
   type: HandlerType;
-  config: BaseGestureConfig<unknown>;
-  gestureEvents: GestureEvents;
+  config: BaseGestureConfig<THandlerData, TConfig>;
+  gestureEvents: GestureEvents<THandlerData>;
   gestureRelations: GestureRelations;
 };
 
@@ -120,42 +108,55 @@ export type ComposedGesture = {
     shouldUseReanimated: boolean;
     dispatchesAnimatedEvents: boolean;
   };
-  gestureEvents: GestureEvents;
-  gestures: (NativeGesture | ComposedGesture)[];
+  gestureEvents: GestureEvents<unknown>;
+  gestures: (NativeGesture<unknown, unknown> | ComposedGesture)[];
 };
 
-export type ChangeCalculatorType = (
-  current: UpdateEvent<Record<string, unknown>>,
-  previous?: UpdateEvent<Record<string, unknown>>
-) => UpdateEvent<Record<string, unknown>>;
+export type ChangeCalculatorType<THandlerData> = (
+  current: UpdateEvent<THandlerData>,
+  previous?: UpdateEvent<THandlerData>
+) => UpdateEvent<THandlerData>;
 
-export type Gesture = NativeGesture | ComposedGesture;
+export type Gesture<THandlerData, TConfig> =
+  | NativeGesture<THandlerData, TConfig>
+  | ComposedGesture;
 
 interface ExternalRelations {
-  simultaneousWithExternalGesture?: Gesture | Gesture[];
-  requireExternalGestureToFail?: Gesture | Gesture[];
-  blocksExternalGesture?: Gesture | Gesture[];
+  simultaneousWithExternalGesture?:
+    | Gesture<unknown, unknown>
+    | Gesture<unknown, unknown>[];
+  requireExternalGestureToFail?:
+    | Gesture<unknown, unknown>
+    | Gesture<unknown, unknown>[];
+  blocksExternalGesture?:
+    | Gesture<unknown, unknown>
+    | Gesture<unknown, unknown>[];
 }
 
-export interface GestureCallbacks<T> {
-  onBegin?: (event: GestureStateChangeEvent<T>) => void;
-  onStart?: (event: GestureStateChangeEvent<T>) => void;
-  onEnd?: (event: GestureStateChangeEvent<T>, success: boolean) => void;
-  onFinalize?: (event: GestureStateChangeEvent<T>, success: boolean) => void;
-  onUpdate?: (event: GestureUpdateEvent<T>) => void | AnimatedEvent;
+export interface GestureCallbacks<THandlerData> {
+  onBegin?: (event: GestureStateChangeEvent<THandlerData>) => void;
+  onStart?: (event: GestureStateChangeEvent<THandlerData>) => void;
+  onEnd?: (
+    event: GestureStateChangeEvent<THandlerData>,
+    success: boolean
+  ) => void;
+  onFinalize?: (
+    event: GestureStateChangeEvent<THandlerData>,
+    success: boolean
+  ) => void;
+  onUpdate?: (event: GestureUpdateEvent<THandlerData>) => void | AnimatedEvent;
   onTouchesDown?: (event: GestureTouchEvent) => void;
   onTouchesMove?: (event: GestureTouchEvent) => void;
   onTouchesUp?: (event: GestureTouchEvent) => void;
   onTouchesCancelled?: (event: GestureTouchEvent) => void;
 }
 
-export interface BaseGestureConfig<T>
-  extends ExternalRelations,
-    GestureCallbacks<T>,
-    Record<string, unknown> {
-  disableReanimated?: boolean;
-  shouldUseReanimated?: boolean;
-  dispatchesAnimatedEvents?: boolean;
-  needsPointerData?: boolean;
-  changeEventCalculator?: ChangeCalculatorType;
-}
+export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
+  GestureCallbacks<THandlerData> &
+  TConfig & {
+    disableReanimated?: boolean;
+    shouldUseReanimated?: boolean;
+    dispatchesAnimatedEvents?: boolean;
+    needsPointerData?: boolean;
+    changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+  };

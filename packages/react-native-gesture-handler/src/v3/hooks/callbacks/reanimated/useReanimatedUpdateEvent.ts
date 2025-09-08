@@ -3,9 +3,9 @@ import { BaseGestureConfig } from '../../../types';
 import { extractUpdateHandlers } from '../../utils/eventHandlersUtils';
 import { getUpdateHandler } from '../updateHandler';
 
-export function useReanimatedUpdateEvent(
+export function useReanimatedUpdateEvent<THandlerData, TConfig>(
   handlerTag: number,
-  config: BaseGestureConfig<unknown>
+  config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   const { handlers, changeEventCalculator } = extractUpdateHandlers(config);
 

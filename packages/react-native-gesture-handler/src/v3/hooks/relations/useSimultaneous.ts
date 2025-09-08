@@ -6,7 +6,7 @@ import {
 import { useComposedGesture } from './useComposedGesture';
 
 export function useSimultaneous(
-  ...gestures: (NativeGesture | ComposedGesture)[]
+  ...gestures: (NativeGesture<unknown, unknown> | ComposedGesture)[]
 ) {
   const composedGesture = useComposedGesture(...gestures);
 

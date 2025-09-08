@@ -8,13 +8,13 @@ import {
 } from '../../types';
 import { isNativeEvent } from '../utils';
 
-export function extractStateChangeHandlers(
-  config: BaseGestureConfig<unknown>
-): GestureCallbacks<unknown> {
+export function extractStateChangeHandlers<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+): GestureCallbacks<THandlerData> {
   'worklet';
   const { onBegin, onStart, onEnd, onFinalize } = config;
 
-  const handlers: GestureCallbacks<unknown> = {
+  const handlers: GestureCallbacks<THandlerData> = {
     ...(onBegin ? { onBegin } : {}),
     ...(onStart ? { onStart } : {}),
     ...(onEnd ? { onEnd } : {}),
@@ -24,31 +24,31 @@ export function extractStateChangeHandlers(
   return handlers;
 }
 
-type UpdateHandlersReturnType = {
-  handlers: GestureCallbacks<unknown>;
-  changeEventCalculator?: ChangeCalculatorType;
+type UpdateHandlersReturnType<THandlerData> = {
+  handlers: GestureCallbacks<THandlerData>;
+  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-export function extractUpdateHandlers(
-  config: BaseGestureConfig<unknown>
-): UpdateHandlersReturnType {
+export function extractUpdateHandlers<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+): UpdateHandlersReturnType<THandlerData> {
   'worklet';
   const { onUpdate, changeEventCalculator } = config;
 
-  const handlers: GestureCallbacks<unknown> = {
+  const handlers: GestureCallbacks<THandlerData> = {
     ...(onUpdate ? { onUpdate } : {}),
   };
 
   return { handlers, changeEventCalculator };
 }
 
-export function extractTouchHandlers(
-  config: BaseGestureConfig<unknown>
-): GestureCallbacks<unknown> {
+export function extractTouchHandlers<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+): GestureCallbacks<THandlerData> {
   const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
     config;
 
-  const handlers: GestureCallbacks<unknown> = {
+  const handlers: GestureCallbacks<THandlerData> = {
     ...(onTouchesDown ? { onTouchesDown } : {}),
     ...(onTouchesMove ? { onTouchesMove } : {}),
     ...(onTouchesUp ? { onTouchesUp } : {}),
@@ -58,9 +58,9 @@ export function extractTouchHandlers(
   return handlers;
 }
 
-export function getHandler(
+export function getHandler<THandlerData>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<unknown>
+  callbacks: GestureCallbacks<THandlerData>
 ) {
   'worklet';
   switch (type) {
@@ -102,10 +102,10 @@ export function touchEventTypeToCallbackType(
   return CALLBACK_TYPE.UNDEFINED;
 }
 
-export function runCallback(
+export function runCallback<THandlerData>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<unknown>,
-  event: GestureHandlerEvent<Record<string, unknown>>,
+  callbacks: GestureCallbacks<THandlerData>,
+  event: GestureHandlerEvent<THandlerData>,
   ...args: unknown[]
 ) {
   'worklet';

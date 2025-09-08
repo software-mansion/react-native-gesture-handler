@@ -7,9 +7,9 @@ import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanima
 import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
 import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
 
-export function useGestureCallbacks(
+export function useGestureCallbacks<THandlerData, TConfig>(
   handlerTag: number,
-  config: BaseGestureConfig<unknown>
+  config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   const onGestureHandlerStateChange = useGestureStateChangeEvent(
     handlerTag,

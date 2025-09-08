@@ -17,10 +17,10 @@ import {
 } from './utils/reanimatedUtils';
 import { prepareRelations } from './utils/relationUtils';
 
-export function useGesture(
+export function useGesture<THandlerData, TConfig>(
   type: SingleGestureType,
-  config: BaseGestureConfig<unknown>
-): NativeGesture {
+  config: BaseGestureConfig<THandlerData, TConfig>
+): NativeGesture<THandlerData, TConfig> {
   const tag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
 

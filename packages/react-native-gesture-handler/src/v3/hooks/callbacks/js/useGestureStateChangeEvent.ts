@@ -2,9 +2,9 @@ import { BaseGestureConfig } from '../../../types';
 import { extractStateChangeHandlers } from '../../utils/eventHandlersUtils';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
-export function useGestureStateChangeEvent(
+export function useGestureStateChangeEvent<THandlerData, TConfig>(
   handlerTag: number,
-  config: BaseGestureConfig<unknown>
+  config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   const handlers = extractStateChangeHandlers(config);
 

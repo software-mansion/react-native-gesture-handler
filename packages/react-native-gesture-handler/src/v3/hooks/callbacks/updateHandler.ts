@@ -9,13 +9,13 @@ import {
 import { isEventForHandlerWithTag } from '../utils';
 import { runCallback } from '../utils/eventHandlersUtils';
 
-export function getUpdateHandler(
+export function getUpdateHandler<THandlerData>(
   handlerTag: number,
-  callbacks: GestureCallbacks<unknown>,
-  context: ReanimatedContext | undefined,
-  changeEventCalculator?: ChangeCalculatorType
+  callbacks: GestureCallbacks<THandlerData>,
+  context: ReanimatedContext<THandlerData> | undefined,
+  changeEventCalculator?: ChangeCalculatorType<THandlerData>
 ) {
-  return (event: UpdateEvent<Record<string, unknown>>) => {
+  return (event: UpdateEvent<THandlerData>) => {
     'worklet';
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
