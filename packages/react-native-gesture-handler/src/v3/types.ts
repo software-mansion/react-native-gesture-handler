@@ -5,7 +5,6 @@ import {
   HandlerStateChangeEventPayload,
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
-import { ValueOf } from '../typeUtils';
 
 export type GestureUpdateEventWithData<T> = GestureEventPayload & {
   handlerData: T;
@@ -50,37 +49,22 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export const SingleGestureType = {
-  Tap: 'TapGestureHandler',
-  LongPress: 'LongPressGestureHandler',
-  Pan: 'PanGestureHandler',
-  Pinch: 'PinchGestureHandler',
-  Rotation: 'RotationGestureHandler',
-  Fling: 'FlingGestureHandler',
-  Manual: 'ManualGestureHandler',
-  Native: 'NativeGestureHandler',
-} as const;
+export enum SingleGestureType {
+  Tap = 'TapGestureHandler',
+  LongPress = 'LongPressGestureHandler',
+  Pan = 'PanGestureHandler',
+  Pinch = 'PinchGestureHandler',
+  Rotation = 'RotationGestureHandler',
+  Fling = 'FlingGestureHandler',
+  Manual = 'ManualGestureHandler',
+  Native = 'NativeGestureHandler',
+}
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type SingleGestureType = ValueOf<typeof SingleGestureType>;
-
-export const ComposedGestureType = {
-  Simultaneous: 'SimultaneousGesture',
-  Exclusive: 'ExclusiveGesture',
-  Race: 'RaceGesture',
-} as const;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ComposedGestureType = ValueOf<typeof ComposedGestureType>;
-
-// TODO: Find better name
-export const HandlerType = {
-  ...SingleGestureType,
-  ...ComposedGestureType,
-} as const;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type HandlerType = ValueOf<typeof HandlerType>;
+export enum ComposedGestureType {
+  Simultaneous = 'SimultaneousGesture',
+  Exclusive = 'ExclusiveGesture',
+  Race = 'RaceGesture',
+}
 
 export type GestureEvents = {
   onGestureHandlerStateChange: (
@@ -108,7 +92,7 @@ export type GestureRelations = {
 
 export type NativeGesture = {
   tag: number;
-  type: HandlerType;
+  type: SingleGestureType;
   config: Record<string, unknown>;
   gestureEvents: GestureEvents;
   gestureRelations: GestureRelations;
