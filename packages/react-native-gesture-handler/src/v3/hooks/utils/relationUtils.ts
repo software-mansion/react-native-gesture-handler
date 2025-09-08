@@ -1,42 +1,36 @@
-import {
-  ComposedGesture,
-  Gesture,
-  GestureRelations,
-  NativeGesture,
-} from '../../types';
+import { ComposedGesture, Gesture, GestureRelations } from '../../types';
 
 export function isComposedGesture(
-  gesture: NativeGesture | ComposedGesture
+  gesture: Gesture
 ): gesture is ComposedGesture {
   return 'tags' in gesture;
 }
 
+function extractHandlerTags(otherHandler: Gesture | Gesture[]): number[] {
+  if (!otherHandler) {
+    return [];
+  }
+
+  let otherTags: number[];
+
+  if (Array.isArray(otherHandler)) {
+    otherTags = otherHandler.flatMap((gesture: Gesture) =>
+      isComposedGesture(gesture) ? gesture.tags : gesture.tag
+    );
+  } else {
+    otherTags = isComposedGesture(otherHandler)
+      ? otherHandler.tags
+      : [otherHandler.tag];
+  }
+
+  return otherTags;
+}
+
+// TODO: Handle composed gestures passed into external relations
 export function prepareRelations(
   config: any,
   handlerTag: number
 ): GestureRelations {
-  // TODO: Handle composed gestures passed into external relations
-  const extractHandlerTags = (otherHandler: Gesture | Gesture[]): number[] => {
-    if (!otherHandler) {
-      return [];
-    }
-
-    let otherTags: number[];
-
-    if (Array.isArray(otherHandler)) {
-      otherTags = otherHandler.flatMap(
-        (gesture: NativeGesture | ComposedGesture) =>
-          isComposedGesture(gesture) ? gesture.tags : gesture.tag
-      );
-    } else {
-      otherTags = isComposedGesture(otherHandler)
-        ? otherHandler.tags
-        : [otherHandler.tag];
-    }
-
-    return otherTags;
-  };
-
   if (config.simultaneousWithExternalGesture) {
     if (Array.isArray(config.simultaneousWithExternalGesture)) {
       for (const gesture of config.simultaneousWithExternalGesture) {
