@@ -106,7 +106,7 @@ export type ComposedGesture = {
     dispatchesAnimatedEvents: boolean;
   };
   gestureEvents: GestureEvents;
-  gestures: (NativeGesture | ComposedGesture)[];
+  gestures: Gesture[];
 };
 
 export type Gesture = NativeGesture | ComposedGesture;
