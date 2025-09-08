@@ -67,24 +67,9 @@ static folly::dynamic rngh_dynamicFromId(id value)
   return nativeEvent;
 }
 
-- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicEvent)getNativeLogicEvent:
-    (NSNumber *)childTag
-{
-  folly::dynamic handlerData = rngh_dynamicFromId(self.extraData.data);
-
-  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicEvent nativeEvent = {
-      .handlerTag = [self.handlerTag intValue],
-      .state = static_cast<int>(self.state),
-      .handlerData = handlerData,
-      .childTag = [childTag intValue]};
-
-  return nativeEvent;
-}
 @end
 
 @implementation RNGestureHandlerStateChange (NativeEvent)
-
-// TODO: unify logic getter
 
 - (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)getNativeEvent
 {
@@ -100,18 +85,4 @@ static folly::dynamic rngh_dynamicFromId(id value)
   return nativeEvent;
 }
 
-- (facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicStateChange)getNativeLogicEvent:
-    (NSNumber *)childTag
-{
-  folly::dynamic handlerData = rngh_dynamicFromId(self.extraData.data);
-
-  facebook::react::RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicStateChange nativeEvent = {
-      .handlerTag = [self.handlerTag intValue],
-      .state = static_cast<int>(self.state),
-      .oldState = static_cast<int>(self.previousState),
-      .handlerData = handlerData,
-      .childTag = [childTag intValue]};
-
-  return nativeEvent;
-}
 @end

@@ -72,36 +72,50 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
       <NativeDetectorComponent
-        onGestureHandlerStateChange={
-          gesture.gestureEvents.onGestureHandlerStateChange
-        }
-        onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
+        onGestureHandlerStateChange={(e) => {
+          if (!logicMethods.current.has(e.nativeEvent.handlerTag)) {
+            invokeNullableMethod(
+              gesture.gestureEvents.onGestureHandlerStateChange,
+              e
+            );
+          } else {
+            invokeNullableMethod(
+              logicMethods.current.get(e.nativeEvent.handlerTag)?.current
+                ?.onGestureHandlerStateChange,
+              e
+            );
+          }
+        }}
+        onGestureHandlerEvent={(e) => {
+          if (!logicMethods.current.has(e.nativeEvent.handlerTag)) {
+            invokeNullableMethod(
+              gesture.gestureEvents.onGestureHandlerEvent,
+              e
+            );
+          } else {
+            invokeNullableMethod(
+              logicMethods.current.get(e.nativeEvent.handlerTag)?.current
+                ?.onGestureHandlerEvent,
+              e
+            );
+          }
+        }}
         onGestureHandlerAnimatedEvent={
           gesture.gestureEvents.onGestureHandlerAnimatedEvent
         }
-        onGestureHandlerTouchEvent={
-          gesture.gestureEvents.onGestureHandlerTouchEvent
-        }
-        onGestureHandlerLogicEvent={(e) => {
-          invokeNullableMethod(
-            logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-              ?.onGestureHandlerEvent,
-            e
-          );
-        }}
-        onGestureHandlerLogicStateChange={(e) => {
-          invokeNullableMethod(
-            logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-              ?.onGestureHandlerStateChange,
-            e
-          );
-        }}
-        onGestureHandlerLogicTouchEvent={(e) => {
-          invokeNullableMethod(
-            logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-              ?.onGestureHandlerTouchEvent,
-            e
-          );
+        onGestureHandlerTouchEvent={(e) => {
+          if (!logicMethods.current.has(e.nativeEvent.handlerTag)) {
+            invokeNullableMethod(
+              gesture.gestureEvents.onGestureHandlerTouchEvent,
+              e
+            );
+          } else {
+            invokeNullableMethod(
+              logicMethods.current.get(e.nativeEvent.handlerTag)?.current
+                ?.onGestureHandlerTouchEvent,
+              e
+            );
+          }
         }}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={[gesture.tag]}

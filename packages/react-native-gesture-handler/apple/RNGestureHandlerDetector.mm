@@ -99,30 +99,6 @@ struct LogicChild {
   }
 }
 
-- (void)dispatchLogicStateChangeEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicStateChange)event
-{
-  if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
-        ->onGestureHandlerLogicStateChange(event);
-  }
-}
-
-- (void)dispatchLogicGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicEvent)event
-{
-  if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
-        ->onGestureHandlerLogicEvent(event);
-  }
-}
-
-- (void)dispatchLogicTouchEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerLogicTouchEvent)event
-{
-  if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
-        ->onGestureHandlerLogicTouchEvent(event);
-  }
-}
-
 - (BOOL)shouldAttachGestureToSubview:(NSNumber *)handlerTag
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
@@ -190,7 +166,7 @@ struct LogicChild {
         [_nativeHandlers addObject:handlerTag];
       } else {
         if (isLogic) {
-          NSLog(@"attach logic child %@", handlerTag);
+          [[[handlerManager registry] handlerWithTag:handlerTag] setParentTag:@(self.tag)];
 
           [handlerManager attachGestureHandler:handlerTag
                                  toViewWithTag:@(viewTag)
@@ -233,20 +209,18 @@ struct LogicChild {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
-      std::unordered_map<int, bool>
-          shouldKeepLogicChild;
+      NSMutableSet *logicChildrenToDelete = [NSMutableSet set];
   for (const std::pair<const int, LogicChild> &child : logicChildren) {
-    shouldKeepLogicChild[child.first] = false;
+    [logicChildrenToDelete addObject:@(child.first)];
   }
 
   for (const RNGestureHandlerDetectorLogicChildrenStruct &child : newProps.logicChildren) {
     if (logicChildren.find(child.viewTag) == logicChildren.end()) {
-      // Initialize the vector for a new logic child
       logicChildren[child.viewTag].handlerTags = {};
       logicChildren[child.viewTag].attachedHandlers = [NSMutableSet set];
-      [[[handlerManager registry] handlerWithTag:@(child.viewTag)] setParentTag:@(self.tag)];
     }
-    shouldKeepLogicChild[child.viewTag] = true;
+
+    [logicChildrenToDelete removeObject:@(child.viewTag)];
     [self updatePropsInternal:child.handlerTags
                oldHandlerTags:logicChildren[child.viewTag].handlerTags
                       isLogic:true
@@ -254,12 +228,9 @@ struct LogicChild {
              attachedHandlers:logicChildren[child.viewTag].attachedHandlers];
   }
 
-  for (const auto &child : shouldKeepLogicChild) {
-    if (!child.second) {
-      for (id handlerTag : logicChildren[child.first].attachedHandlers) {
-        [handlerManager.registry detachHandlerWithTag:handlerTag];
-      }
-      logicChildren.erase(child.first);
+  for (const NSNumber *childTag : logicChildrenToDelete) {
+    for (id handlerTag : logicChildren[childTag.intValue].attachedHandlers) {
+      [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }
 

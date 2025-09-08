@@ -54,10 +54,6 @@ export interface NativeProps extends ViewProps {
   onGestureHandlerStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
   onGestureHandlerTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
 
-  onGestureHandlerLogicEvent?: DirectEventHandler<GestureHandlerEvent>;
-  onGestureHandlerLogicStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
-  onGestureHandlerLogicTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
-
   handlerTags: Int32[];
   moduleId: Int32;
   logicChildren: LogicProps[];

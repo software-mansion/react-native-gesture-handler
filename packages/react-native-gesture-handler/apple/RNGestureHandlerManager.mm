@@ -321,13 +321,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
       NSNumber *parentTag = [[_registry handlerWithTag:event.handlerTag] getParentTag];
       RNGHUIView *parentView = [self viewForReactTag:parentTag];
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
-        // TODO: handle forAnimated
         RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
-        auto nativeEvent = [gestureEvent getNativeLogicEvent:@(detectorView.tag)];
-        [(RNGestureHandlerDetector *)parentView dispatchLogicGestureEvent:nativeEvent];
+        auto nativeEvent = [gestureEvent getNativeEvent];
+        [(RNGestureHandlerDetector *)parentView dispatchGestureEvent:nativeEvent];
       } else {
-        auto nativeEvent = [event getNativeLogicEvent:@(detectorView.tag)];
-        [(RNGestureHandlerDetector *)parentView dispatchLogicStateChangeEvent:nativeEvent];
+        auto nativeEvent = [event getNativeEvent];
+        [(RNGestureHandlerDetector *)parentView dispatchStateChangeEvent:nativeEvent];
       }
       break;
     }
