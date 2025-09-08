@@ -6,7 +6,7 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import com.facebook.react.bridge.ReadableMap
-import com.swmansion.gesturehandler.react.eventbuilders.FlingGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.FlingGestureHandlerEventDataBuilder
 
 class FlingGestureHandler : GestureHandler() {
   var numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED

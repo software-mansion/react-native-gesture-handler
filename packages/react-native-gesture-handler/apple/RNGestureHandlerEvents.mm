@@ -173,7 +173,7 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        extraData:(RNGestureHandlerEventExtraData *)extraData
-                     forAnimated:(BOOL)forAnimated
+                  forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
                    coalescingKey:(uint16_t)coalescingKey
 {
   if ((self = [super init])) {
@@ -182,7 +182,7 @@
     _state = state;
     _extraData = extraData;
     _coalescingKey = coalescingKey;
-    _forAnimated = forAnimated;
+    _eventHandlerType = eventHandlerType;
   }
   return self;
 }
@@ -191,7 +191,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSString *)eventName
 {
-  return _forAnimated ? @"onGestureHandlerAnimatedEvent" : @"onGestureHandlerEvent";
+  switch (_eventHandlerType) {
+    case RNGestureHandlerEventHandlerTypeJS:
+      return @"onGestureHandlerEvent";
+    case RNGestureHandlerEventHandlerTypeReanimated:
+      return @"onGestureHandlerReanimatedEvent";
+    case RNGestureHandlerEventHandlerTypeAnimated:
+      return @"onGestureHandlerAnimatedEvent";
+  }
 }
 
 - (BOOL)canCoalesce
@@ -211,7 +218,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSArray *)arguments
 {
-  if (_forAnimated) {
+  if (_eventHandlerType == RNGestureHandlerEventHandlerTypeAnimated) {
     NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
     [body setObject:_viewTag forKey:@"target"];
     [body setObject:_handlerTag forKey:@"handlerTag"];

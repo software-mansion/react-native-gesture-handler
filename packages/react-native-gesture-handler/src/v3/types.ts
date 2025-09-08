@@ -1,4 +1,4 @@
-import { NativeSyntheticEvent } from 'react-native';
+import { Animated, NativeSyntheticEvent } from 'react-native';
 import {
   GestureEventPayload,
   GestureTouchEvent,
@@ -21,6 +21,9 @@ export type GestureEvents = {
   onGestureHandlerStateChange: (event: any) => void;
   onGestureHandlerEvent: undefined | ((event: any) => void);
   onGestureHandlerTouchEvent: (event: any) => void;
+  onReanimatedStateChange: undefined | ((event: any) => void);
+  onReanimatedUpdateEvent: undefined | ((event: any) => void);
+  onReanimatedTouchEvent: undefined | ((event: any) => void);
   onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
 
@@ -71,7 +74,7 @@ export type CallbackHandlers = Omit<
 // 1. Distinguish it from a regular function,
 // 2. Have access to the _argMapping property to check for usage of `change*` callbacks.
 export type AnimatedEvent = ((...args: any[]) => void) & {
-  _argMapping?: unknown;
+  _argMapping: (Animated.Mapping | null)[];
 };
 
 export interface LogicDetectorProps {

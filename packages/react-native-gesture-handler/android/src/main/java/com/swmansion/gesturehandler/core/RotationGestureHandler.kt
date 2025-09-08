@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.PointF
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.core.RotationGestureDetector.OnRotationGestureListener
-import com.swmansion.gesturehandler.react.eventbuilders.RotationGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.RotationGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler() {

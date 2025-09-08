@@ -117,6 +117,15 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
             );
           }
         }}
+        onGestureHandlerReanimatedStateChange={
+          gesture.gestureEvents.onReanimatedStateChange
+        }
+        onGestureHandlerReanimatedEvent={
+          gesture.gestureEvents.onReanimatedUpdateEvent
+        }
+        onGestureHandlerReanimatedTouchEvent={
+          gesture.gestureEvents.onReanimatedTouchEvent
+        }
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={[gesture.tag]}
         style={styles.detector}

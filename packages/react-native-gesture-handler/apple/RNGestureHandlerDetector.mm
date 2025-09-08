@@ -99,6 +99,31 @@ struct LogicChild {
   }
 }
 
+- (void)dispatchReanimatedStateChangeEvent:
+    (RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedStateChange)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerReanimatedStateChange(event);
+  }
+}
+
+- (void)dispatchReanimatedGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedEvent)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerReanimatedEvent(event);
+  }
+}
+
+- (void)dispatchReanimatedTouchEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerReanimatedTouchEvent)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerReanimatedTouchEvent(event);
+  }
+}
+
 - (BOOL)shouldAttachGestureToSubview:(NSNumber *)handlerTag
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];

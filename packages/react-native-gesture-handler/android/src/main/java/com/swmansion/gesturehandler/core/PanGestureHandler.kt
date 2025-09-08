@@ -10,7 +10,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
-import com.swmansion.gesturehandler.react.eventbuilders.PanGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.PanGestureHandlerEventDataBuilder
 
 class PanGestureHandler(context: Context?) : GestureHandler() {
   var velocityX = 0f
