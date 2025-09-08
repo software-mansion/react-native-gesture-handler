@@ -6,7 +6,12 @@
 
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
-import { ComposedGesture, ComposedGestureType, NativeGesture } from '../types';
+import {
+  ComposedGesture,
+  ComposedGestureType,
+  Gesture,
+  NativeGesture,
+} from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseGestureRelations = (
@@ -112,3 +117,21 @@ export const traverseGestureRelations = (
     }
   });
 };
+
+export function configureRelations(gesture: Gesture) {
+  if (isComposedGesture(gesture)) {
+    traverseGestureRelations(
+      gesture,
+      new Set(
+        // If root is simultaneous, we want to add its tags to the set
+        gesture.type === ComposedGestureType.Simultaneous ? gesture.tags : []
+      )
+    );
+  } else {
+    RNGestureHandlerModule.configureRelations(gesture.tag, {
+      waitFor: gesture.gestureRelations.waitFor,
+      simultaneousHandlers: gesture.gestureRelations.simultaneousHandlers,
+      blocksHandlers: gesture.gestureRelations.blocksHandlers,
+    });
+  }
+}
