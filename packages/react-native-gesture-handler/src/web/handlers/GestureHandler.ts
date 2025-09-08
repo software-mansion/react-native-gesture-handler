@@ -405,7 +405,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
       } else if (
         onGestureHandlerLogicTouchEvent &&
-        this.actionType === ActionType.LogicDetector
+        this.actionType === ActionType.LOGIC_DETECTOR
       ) {
         invokeNullableMethod(onGestureHandlerLogicTouchEvent, touchEvent);
       } else {
@@ -429,14 +429,14 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     const resultEvent: ResultEvent =
       this.actionType !== ActionType.NATIVE_DETECTOR &&
-      this.actionType !== ActionType.LogicDetector
+      this.actionType !== ActionType.LOGIC_DETECTOR
         ? this.transformEventData(newState, oldState)
         : this.lastSentState !== newState
           ? this.transformStateChangeEvent(newState, oldState)
           : this.transformUpdateEvent(newState);
 
     // TODO: cleanup the logic detector types
-    if (this.actionType === ActionType.LogicDetector) {
+    if (this.actionType === ActionType.LOGIC_DETECTOR) {
       resultEvent.nativeEvent = {
         ...resultEvent.nativeEvent,
         childTag: this.childTag,
@@ -450,7 +450,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.lastSentState = newState;
       if (
         onGestureHandlerLogicStateChange &&
-        this.actionType === ActionType.LogicDetector
+        this.actionType === ActionType.LOGIC_DETECTOR
       ) {
         invokeNullableMethod(onGestureHandlerLogicStateChange, resultEvent);
       } else {
@@ -460,7 +460,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (this.state === State.ACTIVE) {
       if (
         this.actionType !== ActionType.NATIVE_DETECTOR &&
-        this.actionType !== ActionType.LogicDetector
+        this.actionType !== ActionType.LOGIC_DETECTOR
       ) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
@@ -471,7 +471,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       if (
         onGestureHandlerLogicEvent &&
-        this.actionType === ActionType.LogicDetector
+        this.actionType === ActionType.LOGIC_DETECTOR
       ) {
         invokeNullableMethod(onGestureHandlerLogicEvent, resultEvent);
       } else {

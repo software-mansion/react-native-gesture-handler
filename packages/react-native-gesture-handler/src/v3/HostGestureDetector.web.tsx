@@ -19,11 +19,6 @@ export interface LogicDetectorProps {
   viewRef: RefObject<Element | null>;
 }
 
-interface LogicChild {
-  attachedHandlerTags: Set<number>;
-  attachedNativeHandlerTags: Set<number>;
-}
-
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
@@ -32,16 +27,15 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const attachedHandlerTags = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlerTags = useRef<Set<number>>(new Set<number>());
 
-  const logicChildren = useRef<Map<number, LogicChild>>(new Map());
+  const logicChildren = useRef<Map<number, Set<number>>>(new Map());
 
   const detachHandlers = (
     oldHandlerTags: Set<number>,
-    attachedHandlerTags: Set<number>,
-    attachedNativeHandlerTags: Set<number>
+    attachedHandlerTags: Set<number>
   ) => {
     oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
-      attachedNativeHandlerTags.delete(tag);
+      attachedNativeHandlerTags.current.delete(tag);
       attachedHandlerTags.delete(tag);
     });
   };
@@ -51,16 +45,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     propsRef: RefObject<PropsRef>,
     currentHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>,
-    attachedNativeHandlerTags: Set<number>,
     isLogic: boolean
   ) => {
     const oldHandlerTags = attachedHandlerTags.difference(currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(attachedHandlerTags);
-    detachHandlers(
-      oldHandlerTags,
-      attachedHandlerTags,
-      attachedNativeHandlerTags
-    );
+    detachHandlers(oldHandlerTags, attachedHandlerTags);
 
     newHandlerTags.forEach((tag) => {
       if (
@@ -74,12 +63,12 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
           ActionType.NATIVE_DETECTOR,
           propsRef
         );
-        attachedNativeHandlerTags.add(tag);
+        attachedNativeHandlerTags.current.add(tag);
       } else {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current,
-          isLogic ? ActionType.LogicDetector : ActionType.NATIVE_DETECTOR,
+          isLogic ? ActionType.LOGIC_DETECTOR : ActionType.NATIVE_DETECTOR,
           propsRef
         );
       }
@@ -90,8 +79,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   useEffect(() => {
     detachHandlers(
       attachedNativeHandlerTags.current,
-      attachedHandlerTags.current,
-      attachedNativeHandlerTags.current
+      attachedHandlerTags.current
     );
   }, [children]);
 
@@ -107,74 +95,47 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       propsRef,
       new Set(handlerTags),
       attachedHandlerTags.current,
-      attachedNativeHandlerTags.current,
       false
     );
   }, [handlerTags, children]);
 
   useEffect(() => {
-    const shouldKeepLogicChild: Map<number, boolean> = new Map();
+    const logicChildrenToDelete: Set<number> = new Set();
 
     for (const key of logicChildren.current.keys()) {
-      shouldKeepLogicChild.set(key, false);
+      logicChildrenToDelete.add(key);
     }
 
-    props.logicChildren?.forEach((child, key) => {
+    props.logicChildren?.forEach((child) => {
       if (!logicChildren.current.has(child.viewTag)) {
-        logicChildren.current.set(child.viewTag, {
-          attachedHandlerTags: new Set(),
-          attachedNativeHandlerTags: new Set(),
-        });
+        logicChildren.current.set(child.viewTag, new Set());
       }
-      shouldKeepLogicChild.set(key.viewTag, true);
-      const attachedHandlerTags = logicChildren.current.get(
-        child.viewTag
-      )?.attachedHandlerTags;
-      const attachedNativeHandlerTags = logicChildren.current.get(
-        child.viewTag
-      )?.attachedNativeHandlerTags;
-      if (attachedHandlerTags && attachedNativeHandlerTags) {
-        attachHandlers(
-          child.viewRef,
-          propsRef,
-          new Set(child.handlerTags),
-          attachedHandlerTags,
-          attachedNativeHandlerTags,
-          true
-        );
-      }
+      logicChildrenToDelete.delete(child.viewTag);
+      attachHandlers(
+        child.viewRef,
+        propsRef,
+        new Set(child.handlerTags),
+        logicChildren.current.get(child.viewTag)!,
+        true
+      );
     });
 
-    shouldKeepLogicChild.forEach((value, key) => {
-      if (value) {
-        const attachedHandlerTags =
-          logicChildren.current.get(key)?.attachedHandlerTags;
-        const attachedNativeHandlerTags =
-          logicChildren.current.get(key)?.attachedNativeHandlerTags;
-        if (attachedHandlerTags && attachedNativeHandlerTags) {
-          detachHandlers(
-            attachedHandlerTags,
-            attachedHandlerTags,
-            attachedNativeHandlerTags
-          );
-        }
+    logicChildrenToDelete.forEach((childTag) => {
+      if (attachedHandlerTags && attachedNativeHandlerTags) {
+        detachHandlers(
+          logicChildren.current.get(childTag)!,
+          logicChildren.current.get(childTag)!
+        );
       }
+      logicChildren.current.delete(childTag);
     });
   }, [props.logicChildren]);
 
   useEffect(() => {
     return () => {
-      detachHandlers(
-        attachedHandlerTags.current,
-        attachedHandlerTags.current,
-        attachedNativeHandlerTags.current
-      );
+      detachHandlers(attachedHandlerTags.current, attachedHandlerTags.current);
       logicChildren?.current.forEach((child) => {
-        detachHandlers(
-          child.attachedHandlerTags,
-          child.attachedHandlerTags,
-          child.attachedNativeHandlerTags
-        );
+        detachHandlers(child, child);
       });
     };
   }, []);

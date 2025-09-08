@@ -37,8 +37,8 @@ class RNGestureHandlerDetectorViewManager :
     view.setModuleId(value)
   }
 
-  override fun setLogicChildren(view: RNGestureHandlerDetectorView?, value: ReadableArray?) {
-    view?.setLogicChildren(value)
+  override fun setLogicChildren(view: RNGestureHandlerDetectorView, value: ReadableArray?) {
+    view.setLogicChildren(value)
   }
 
   override fun onDropViewInstance(view: RNGestureHandlerDetectorView) {
