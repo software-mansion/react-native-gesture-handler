@@ -52,7 +52,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     currentHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>,
     attachedNativeHandlerTags: Set<number>,
-    childTag?: number
+    isLogic: boolean
   ) => {
     const oldHandlerTags = attachedHandlerTags.difference(currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(attachedHandlerTags);
@@ -79,9 +79,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current,
-          childTag ? ActionType.LogicDetector : ActionType.NATIVE_DETECTOR,
-          propsRef,
-          childTag
+          isLogic ? ActionType.LogicDetector : ActionType.NATIVE_DETECTOR,
+          propsRef
         );
       }
       attachedHandlerTags.add(tag);
@@ -108,7 +107,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       propsRef,
       new Set(handlerTags),
       attachedHandlerTags.current,
-      attachedNativeHandlerTags.current
+      attachedNativeHandlerTags.current,
+      false
     );
   }, [handlerTags, children]);
 
@@ -140,7 +140,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
           new Set(child.handlerTags),
           attachedHandlerTags,
           attachedNativeHandlerTags,
-          child.viewTag
+          true
         );
       }
     });

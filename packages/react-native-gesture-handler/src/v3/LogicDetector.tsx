@@ -8,16 +8,27 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
-  const logicMethods = {
+  const logicMethods = useRef({
     onGestureHandlerStateChange:
       props.gesture.gestureEvents.onGestureHandlerStateChange,
     onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
     onGestureHandlerTouchEvent:
       props.gesture.gestureEvents.onGestureHandlerTouchEvent,
-  };
+  });
+
   useEffect(() => {
     setViewTag(findNodeHandle(viewRef.current)!);
   }, []);
+
+  useEffect(() => {
+    logicMethods.current = {
+      onGestureHandlerStateChange:
+        props.gesture.gestureEvents.onGestureHandlerStateChange,
+      onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
+      onGestureHandlerTouchEvent:
+        props.gesture.gestureEvents.onGestureHandlerTouchEvent,
+    };
+  }, [props.gesture.gestureEvents]);
 
   useEffect(() => {
     const logicProps = {

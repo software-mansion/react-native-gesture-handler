@@ -13,26 +13,11 @@ type GestureHandlerEvent = Readonly<{
   handlerData: UnsafeMixed;
 }>;
 
-type GestureHandlerLogicEvent = Readonly<{
-  handlerTag: Int32;
-  state: Int32;
-  handlerData: UnsafeMixed;
-  childTag: Int32;
-}>;
-
 type GestureHandlerStateChangeEvent = Readonly<{
   handlerTag: Int32;
   state: Int32;
   oldState: Int32;
   handlerData: UnsafeMixed;
-}>;
-
-type GestureHandlerLogicStateChangeEvent = Readonly<{
-  handlerTag: Int32;
-  state: Int32;
-  oldState: Int32;
-  handlerData: UnsafeMixed;
-  childTag: Int32;
 }>;
 
 type GestureHandlerTouchEvent = Readonly<{
@@ -57,29 +42,6 @@ type GestureHandlerTouchEvent = Readonly<{
   pointerType: Int32;
 }>;
 
-type GestureHandlerLogicTouchEvent = Readonly<{
-  handlerTag: Int32;
-  numberOfTouches: Int32;
-  state: Int32;
-  eventType: Int32;
-  allTouches: {
-    id: Int32;
-    x: Double;
-    y: Double;
-    absoluteX: Double;
-    absoluteY: Double;
-  }[];
-  changedTouches: {
-    id: Int32;
-    x: Double;
-    y: Double;
-    absoluteX: Double;
-    absoluteY: Double;
-  }[];
-  pointerType: Int32;
-  childTag: Int32;
-}>;
-
 export interface LogicProps {
   handlerTags: Int32[];
   moduleId: Int32;
@@ -92,9 +54,9 @@ export interface NativeProps extends ViewProps {
   onGestureHandlerStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
   onGestureHandlerTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
 
-  onGestureHandlerLogicEvent?: DirectEventHandler<GestureHandlerLogicEvent>;
-  onGestureHandlerLogicStateChange?: DirectEventHandler<GestureHandlerLogicStateChangeEvent>;
-  onGestureHandlerLogicTouchEvent?: DirectEventHandler<GestureHandlerLogicTouchEvent>;
+  onGestureHandlerLogicEvent?: DirectEventHandler<GestureHandlerEvent>;
+  onGestureHandlerLogicStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
+  onGestureHandlerLogicTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
 
   handlerTags: Int32[];
   moduleId: Int32;

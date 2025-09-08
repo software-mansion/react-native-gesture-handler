@@ -19,15 +19,18 @@ const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
 type DetectorContextType = {
-  register: (child: LogicDetectorProps, methods: LogicMethods) => void;
-  unregister: (child: number | RefObject<Element | null>) => void;
+  register: (
+    child: LogicDetectorProps,
+    methods: RefObject<LogicMethods>
+  ) => void;
+  unregister: (child: number) => void;
 };
 
 const DetectorContext = createContext<DetectorContextType | null>(null);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   const [logicChildren, setLogicChildren] = useState<LogicDetectorProps[]>([]);
-  const logicMethods = useRef<Map<number, LogicMethods>>(new Map());
+  const logicMethods = useRef<Map<number, RefObject<LogicMethods>>>(new Map());
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
@@ -37,7 +40,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       : HostGestureDetector;
 
   const register = useCallback(
-    (child: LogicDetectorProps, methods: LogicMethods) => {
+    (child: LogicDetectorProps, methods: RefObject<LogicMethods>) => {
       if (child.viewTag !== -1) {
         setLogicChildren((prev) => {
           if (prev.some((c) => c.viewTag === child.viewTag)) {
@@ -46,17 +49,16 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
           return [...prev, child];
         });
       }
-      logicMethods.current.set(child.viewTag, methods);
+      child.handlerTags.forEach((tag) => {
+        logicMethods.current.set(tag, methods);
+      });
     },
     []
   );
 
-  const unregister = useCallback(
-    (childTag: number | RefObject<Element | null>) => {
-      setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
-    },
-    []
-  );
+  const unregister = useCallback((childTag: number) => {
+    setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
+  }, []);
 
   // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
@@ -82,21 +84,21 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         }
         onGestureHandlerLogicEvent={(e) => {
           invokeNullableMethod(
-            logicMethods.current.get(e.nativeEvent.childTag)
+            logicMethods.current.get(e.nativeEvent.handlerTag)?.current
               ?.onGestureHandlerEvent,
             e
           );
         }}
         onGestureHandlerLogicStateChange={(e) => {
           invokeNullableMethod(
-            logicMethods.current.get(e.nativeEvent.childTag)
+            logicMethods.current.get(e.nativeEvent.handlerTag)?.current
               ?.onGestureHandlerStateChange,
             e
           );
         }}
         onGestureHandlerLogicTouchEvent={(e) => {
           invokeNullableMethod(
-            logicMethods.current.get(e.nativeEvent.childTag)
+            logicMethods.current.get(e.nativeEvent.handlerTag)?.current
               ?.onGestureHandlerTouchEvent,
             e
           );
