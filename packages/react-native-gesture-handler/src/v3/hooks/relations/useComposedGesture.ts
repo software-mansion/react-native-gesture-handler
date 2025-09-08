@@ -12,6 +12,7 @@ import { isComposedGesture } from '../utils/relationUtils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
+  type: ComposedGestureType,
   ...gestures: (NativeGesture | ComposedGesture)[]
 ): ComposedGesture {
   const tags = gestures.flatMap((gesture) =>
@@ -94,7 +95,7 @@ export function useComposedGesture(
 
   return {
     tags,
-    type: ComposedGestureType.Race,
+    type,
     config,
     gestureEvents: {
       onGestureHandlerStateChange,
