@@ -2,7 +2,6 @@ import { Insets } from 'react-native';
 import {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
-  NativeViewGestureHandlerPayload,
 } from '../../handlers/GestureHandlerEventPayload';
 import {
   TouchData,
@@ -73,30 +72,6 @@ const isTouchWithinInset = (
   (touch?.locationX ?? 0) > -(inset.left ?? 0) &&
   (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
-const finalizeGestureToPressableEvent = (
-  _event: GestureStateChangeEvent<NativeViewGestureHandlerPayload>
-): PressableEvent => {
-  const timestamp = Date.now();
-
-  // As far as I can see, there isn't a conventional way of getting targetId with the data we get
-  const targetId = 0;
-
-  return {
-    nativeEvent: {
-      touches: [],
-      changedTouches: [],
-      identifier: -1,
-      locationX: -1,
-      locationY: -1,
-      pageX: -1,
-      pageY: -1,
-      target: targetId,
-      timestamp,
-      force: undefined,
-    },
-  };
-};
-
 const gestureToPressableEvent = (
   event: GestureStateChangeEvent<
     HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
@@ -160,7 +135,6 @@ export {
   numberAsInset,
   addInsets,
   isTouchWithinInset,
-  finalizeGestureToPressableEvent,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
 };
