@@ -20,9 +20,9 @@ export function useComposedGesture(
   );
 
   if (containsDuplicates(tags)) {
-    console.warn(
+    throw new Error(
       tagMessage(
-        'Using the same gesture more than once in gesture composition can lead to unexpected behavior.'
+        'Each gesture can be used only once in the gesture composition.'
       )
     );
   }
