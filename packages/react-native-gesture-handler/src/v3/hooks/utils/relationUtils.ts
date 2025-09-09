@@ -53,7 +53,5 @@ export function prepareRelations(
 }
 
 export function containsDuplicates(tags: number[]) {
-  const tagSet = new Set(tags);
-
-  return tagSet.size !== tags.length;
+  return new Set(tags).size !== tags.length;
 }
