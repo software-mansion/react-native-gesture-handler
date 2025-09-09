@@ -8,7 +8,7 @@ import {
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { isComposedGesture } from '../utils/relationUtils';
+import { containsDuplicates, isComposedGesture } from '../utils/relationUtils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
@@ -18,6 +18,14 @@ export function useComposedGesture(
   const tags = gestures.flatMap((gesture) =>
     isComposedGesture(gesture) ? gesture.tags : gesture.tag
   );
+
+  if (containsDuplicates(tags)) {
+    console.warn(
+      tagMessage(
+        'Using the same gesture more than once in gesture composition can lead to unexpected behavior.'
+      )
+    );
+  }
 
   const config = {
     shouldUseReanimated: gestures.some(

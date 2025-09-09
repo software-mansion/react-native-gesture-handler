@@ -51,3 +51,9 @@ export function prepareRelations(
     blocksHandlers: extractHandlerTags(config.blocksExternalGesture),
   };
 }
+
+export function containsDuplicates(tags: number[]) {
+  const tagSet = new Set(tags);
+
+  return tagSet.size !== tags.length;
+}
