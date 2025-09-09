@@ -44,7 +44,6 @@ type GestureHandlerTouchEvent = Readonly<{
 
 export interface LogicProps {
   handlerTags: Int32[];
-  moduleId: Int32;
   viewTag: Int32;
 }
 

@@ -16,9 +16,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var nativeHandlers: MutableSet<Int> = mutableSetOf()
   private var attachedHandlers: MutableSet<Int> = mutableSetOf()
   private var moduleId: Int = -1
-  private var logicChildren: HashMap<Int, MutableSet<Int>> = hashMapOf()
+  private var logicChildren: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
 
-  data class LogicProps(val handlerTags: List<Int>, val moduleId: Int, val viewTag: Int)
+  data class LogicProps(val handlerTags: List<Int>, val viewTag: Int)
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
@@ -29,46 +29,25 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       return
     }
 
-    attachHandlers(newHandlers, this.id, false, attachedHandlers)
+    attachHandlers(newHandlers)
   }
 
   fun setModuleId(id: Int) {
     assert(this.moduleId == -1) { "Tried to change moduleId of a native detector" }
 
     this.moduleId = id
-    this.attachHandlers(handlersToAttach ?: return, this.id, false, attachedHandlers)
+    this.attachHandlers(handlersToAttach ?: return)
     handlersToAttach = null
   }
 
   fun setLogicChildren(newLogicChildren: ReadableArray?) {
-    val logicChildrenToDelete = HashSet<Int>()
+    val logicChildrenToDelete: MutableSet<Int> = mutableSetOf()
 
     for (child in logicChildren) {
       logicChildrenToDelete.add(child.key)
     }
 
-    val mappedChildren = mutableListOf<LogicProps>()
-
-    for (i in 0 until newLogicChildren!!.size()) {
-      val child = newLogicChildren.getMap(i) // Each element should be a ReadableMap
-
-      val handlerTagsArray = child!!.getArray("handlerTags")
-      val handlerTags = mutableListOf<Int>()
-      for (j in 0 until handlerTagsArray!!.size()) {
-        handlerTags.add(handlerTagsArray.getInt(j))
-      }
-
-      val moduleId = child.getInt("moduleId")
-      val viewTag = child.getInt("viewTag")
-
-      mappedChildren.add(
-        LogicProps(
-          handlerTags = handlerTags,
-          moduleId = moduleId,
-          viewTag = viewTag,
-        ),
-      )
-    }
+    val mappedChildren = newLogicChildren?.mapLogicProps().orEmpty()
 
     for (child in mappedChildren) {
       if (!logicChildren.containsKey(child.viewTag)) {
@@ -78,7 +57,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       attachHandlers(
         child.handlerTags,
         child.viewTag,
-        true,
+        GestureHandler.ACTION_TYPE_LOGIC_DETECTOR,
         logicChildren[child.viewTag]!!,
       )
     }
@@ -113,9 +92,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
   private fun attachHandlers(
     newHandlers: List<Int>,
-    viewTag: Int,
-    isLogic: Boolean,
-    attachedHandlers: MutableSet<Int>,
+    viewTag: Int = this.id,
+    actionType: Int = GestureHandler.ACTION_TYPE_NATIVE_DETECTOR,
+    attachedHandlers: MutableSet<Int> = this.attachedHandlers,
   ) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
@@ -130,12 +109,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       changes[tag] = if (changes.containsKey(tag)) GestureHandlerMutation.Keep else GestureHandlerMutation.Attach
     }
 
-    val actionType = if (isLogic) {
-      GestureHandler.ACTION_TYPE_LOGIC_DETECTOR
-    } else {
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
-    }
-
     for (entry in changes) {
       val tag = entry.key
 
@@ -146,7 +119,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
           nativeHandlers.add(tag)
         } else {
           registry.attachHandlerToView(tag, viewTag, actionType)
-          if (isLogic) {
+          if (actionType == GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
             registry.getHandler(tag)?.parentView = this
           }
           attachedHandlers.add(tag)
@@ -207,6 +180,34 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       }
       child.value.clear()
     }
+  }
+
+  private fun ReadableArray.mapLogicProps(): List<LogicProps> {
+    val mappedChildren = mutableListOf<LogicProps>()
+
+    for (i in 0 until this.size()) {
+      val child = this.getMap(i) ?: continue
+
+      val handlerTagsArray = child.getArray("handlerTags")
+      val handlerTags = mutableListOf<Int>()
+
+      if (handlerTagsArray != null) {
+        for (j in 0 until handlerTagsArray.size()) {
+          handlerTags.add(handlerTagsArray.getInt(j))
+        }
+      }
+
+      val viewTag = child.getInt("viewTag")
+
+      mappedChildren.add(
+        LogicProps(
+          handlerTags = handlerTags,
+          viewTag = viewTag,
+        ),
+      )
+    }
+
+    return mappedChildren
   }
 
   companion object {

@@ -14,7 +14,6 @@ export interface GestureHandlerDetectorProps extends PropsRef {
 
 export interface LogicDetectorProps {
   viewTag: number;
-  moduleId: number;
   handlerTags: number[];
   viewRef: RefObject<Element | null>;
 }
@@ -45,7 +44,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     propsRef: RefObject<PropsRef>,
     currentHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>,
-    isLogic: boolean
+    actionType: ActionType
   ) => {
     const oldHandlerTags = attachedHandlerTags.difference(currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(attachedHandlerTags);
@@ -60,7 +59,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current!.firstChild,
-          ActionType.NATIVE_DETECTOR,
+          actionType,
           propsRef
         );
         attachedNativeHandlerTags.current.add(tag);
@@ -68,7 +67,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current,
-          isLogic ? ActionType.LOGIC_DETECTOR : ActionType.NATIVE_DETECTOR,
+          actionType,
           propsRef
         );
       }
@@ -95,7 +94,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       propsRef,
       new Set(handlerTags),
       attachedHandlerTags.current,
-      false
+      ActionType.NATIVE_DETECTOR
     );
   }, [handlerTags, children]);
 
@@ -116,7 +115,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         propsRef,
         new Set(child.handlerTags),
         logicChildren.current.get(child.viewTag)!,
-        true
+        ActionType.LOGIC_DETECTOR
       );
     });
 

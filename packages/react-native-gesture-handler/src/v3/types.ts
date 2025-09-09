@@ -79,7 +79,6 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
 
 export interface LogicDetectorProps {
   viewTag: number;
-  moduleId: number;
   handlerTags: number[];
 }
 

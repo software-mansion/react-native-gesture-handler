@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDetectorContext } from './NativeDetector';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
-import { findNodeHandle } from 'react-native';
+import { findNodeHandle, Platform } from 'react-native';
 import { NativeDetectorProps } from './types';
 
 export const LogicDetector = (props: NativeDetectorProps) => {
@@ -22,7 +22,16 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   });
 
   useEffect(() => {
-    setViewTag(findNodeHandle(viewRef.current)!);
+    if (Platform.OS === 'web') {
+      if (viewRef.current != null) {
+        setViewTag(viewRef.current);
+      }
+    } else {
+      const tag = findNodeHandle(viewRef.current);
+      if (tag != null) {
+        setViewTag(tag);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -42,11 +51,14 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   }, [props.gesture.gestureEvents]);
 
   useEffect(() => {
-    const logicProps = {
-      viewTag: viewTag,
-      moduleId: globalThis._RNGH_MODULE_ID,
-      handlerTags: [props.gesture.tag],
-    };
+    if (viewTag === -1) {
+      return;
+    }
+
+    const logicProps =
+      Platform.OS === 'web'
+        ? { viewRef, viewTag, handlerTags: [props.gesture.tag] }
+        : { viewTag, handlerTags: [props.gesture.tag] };
 
     register(logicProps, logicMethods);
 

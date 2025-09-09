@@ -9,7 +9,7 @@ import React, {
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
-import { tagMessage } from '../utils';
+import { invokeNullableMethod, tagMessage } from '../utils';
 import { LogicDetectorProps, LogicMethods, NativeDetectorProps } from './types';
 
 const AnimatedNativeDetector =
@@ -41,14 +41,13 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   const register = useCallback(
     (child: LogicDetectorProps, methods: RefObject<LogicMethods>) => {
-      if (child.viewTag !== -1) {
-        setLogicChildren((prev) => {
-          if (prev.some((c) => c.viewTag === child.viewTag)) {
-            return prev;
-          }
-          return [...prev, child];
-        });
-      }
+      setLogicChildren((prev) => {
+        if (prev.some((c) => c.viewTag === child.viewTag)) {
+          return prev;
+        }
+        return [...prev, child];
+      });
+
       child.handlerTags.forEach((tag) => {
         logicMethods.current.set(tag, methods);
       });
@@ -107,27 +106,21 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
             ? gesture.gestureEvents.onReanimatedStateChange
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onReanimatedStateChange;
-          if (method) {
-            method(e);
-          }
+          invokeNullableMethod(method, e);
         }}
         onGestureHandlerReanimatedEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onReanimatedUpdateEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onReanimatedUpdateEvent;
-          if (method) {
-            method(e);
-          }
+          invokeNullableMethod(method, e);
         }}
         onGestureHandlerReanimatedTouchEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onReanimatedTouchEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onReanimatedTouchEvent;
-          if (method) {
-            method(e);
-          }
+          invokeNullableMethod(method, e);
         }}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={[gesture.tag]}

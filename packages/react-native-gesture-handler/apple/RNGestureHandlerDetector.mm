@@ -162,11 +162,11 @@ struct LogicChild {
   [super updateLayoutMetrics:newLayoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 }
 
-- (void)updatePropsInternal:(const std::vector<int> &)handlerTags
-             oldHandlerTags:(const std::vector<int> &)oldHandlerTags
-                    isLogic:(bool)isLogic
-                    viewTag:(const int)viewTag
-           attachedHandlers:(NSMutableSet *)attachedHandlers
+- (void)attachHandlers:(const std::vector<int> &)handlerTags
+        oldHandlerTags:(const std::vector<int> &)oldHandlerTags
+            actionType:(RNGestureHandlerActionType)actionType
+               viewTag:(const int)viewTag
+      attachedHandlers:(NSMutableSet *)attachedHandlers
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
@@ -190,16 +190,12 @@ struct LogicChild {
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
         [_nativeHandlers addObject:handlerTag];
       } else {
-        if (isLogic) {
+        if (actionType == RNGestureHandlerActionTypeLogicDetector) {
           [[[handlerManager registry] handlerWithTag:handlerTag] setParentTag:@(self.tag)];
 
-          [handlerManager attachGestureHandler:handlerTag
-                                 toViewWithTag:@(viewTag)
-                                withActionType:RNGestureHandlerActionTypeLogicDetector];
+          [handlerManager attachGestureHandler:handlerTag toViewWithTag:@(viewTag) withActionType:actionType];
         } else {
-          //          [handlerManager.registry attachHandlerWithTag:handlerTag
-          //                                                 toView:self
-          //                                         withActionType:RNGestureHandlerActionTypeNativeDetector];
+          [handlerManager.registry attachHandlerWithTag:handlerTag toView:self withActionType:actionType];
         }
         [attachedHandlers addObject:handlerTag];
       }
@@ -225,11 +221,12 @@ struct LogicChild {
   static std::vector<int> emptyVector;
   const std::vector<int> &oldHandlerTags = (oldPropsBase != nullptr) ? oldProps.handlerTags : emptyVector;
 
-  [self updatePropsInternal:newProps.handlerTags
-             oldHandlerTags:oldHandlerTags
-                    isLogic:false
-                    viewTag:-1
-           attachedHandlers:_attachedHandlers];
+  [self attachHandlers:newProps.handlerTags
+        oldHandlerTags:oldHandlerTags
+            actionType:RNGestureHandlerActionTypeNativeDetector
+               viewTag:-1
+      attachedHandlers:_attachedHandlers];
+
   [super updateProps:propsBase oldProps:oldPropsBase];
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
@@ -246,11 +243,12 @@ struct LogicChild {
     }
 
     [logicChildrenToDelete removeObject:@(child.viewTag)];
-    [self updatePropsInternal:child.handlerTags
-               oldHandlerTags:logicChildren[child.viewTag].handlerTags
-                      isLogic:true
-                      viewTag:child.viewTag
-             attachedHandlers:logicChildren[child.viewTag].attachedHandlers];
+
+    [self attachHandlers:child.handlerTags
+          oldHandlerTags:logicChildren[child.viewTag].handlerTags
+              actionType:RNGestureHandlerActionTypeLogicDetector
+                 viewTag:child.viewTag
+        attachedHandlers:logicChildren[child.viewTag].attachedHandlers];
   }
 
   for (const NSNumber *childTag : logicChildrenToDelete) {
