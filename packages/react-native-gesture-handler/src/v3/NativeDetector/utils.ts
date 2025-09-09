@@ -5,8 +5,16 @@
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
-import { isComposedGesture } from '../hooks/utils/relationUtils';
-import { ComposedGesture, ComposedGestureType, NativeGesture } from '../types';
+import {
+  isComposedGesture,
+  prepareRelations,
+} from '../hooks/utils/relationUtils';
+import {
+  ComposedGesture,
+  ComposedGestureType,
+  Gesture,
+  NativeGesture,
+} from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseGestureRelations = (
@@ -17,6 +25,8 @@ export const traverseGestureRelations = (
   // If we are in the leaf node, we want to fill gesture relations arrays with current
   // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
   if (!isComposedGesture(node)) {
+    node.gestureRelations = prepareRelations(node.config, node.tag);
+
     node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
     node.gestureRelations.waitFor.push(...waitFor);
 
@@ -33,7 +43,9 @@ export const traverseGestureRelations = (
   node.gestures.forEach((child) => {
     // If child is composed gesture, we have to correctly fill `waitFor` and `simultaneousHandlers`.
     if (isComposedGesture(child)) {
-      // We have to update `simultaneousHandlers` before traversing the child.
+      // We have to update `simultaneousHandlers` before traversing the child (going top-down).
+      // Simultaneous is an all-to-all relation - it needs to be prepared when entering the node.
+      // Exclusive is a one-to-many relation - gesture depends on the preceding ones and not on itself - it should be prepared when leaving the node (bottom-up).
 
       // If we go from a non-simultaneous gesture to a simultaneous gesture,
       // we add the tags of the simultaneous gesture to the `simultaneousHandlers`.
@@ -112,3 +124,20 @@ export const traverseGestureRelations = (
     }
   });
 };
+
+export function configureRelations(gesture: Gesture<unknown, unknown>) {
+  if (isComposedGesture(gesture)) {
+    traverseGestureRelations(
+      gesture,
+      new Set(
+        // If root is simultaneous, we want to add its tags to the set
+        gesture.type === ComposedGestureType.Simultaneous ? gesture.tags : []
+      )
+    );
+  } else {
+    RNGestureHandlerModule.configureRelations(
+      gesture.tag,
+      prepareRelations(gesture.config, gesture.tag)
+    );
+  }
+}

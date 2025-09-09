@@ -1,16 +1,11 @@
-import {
-  ComposedGesture,
-  ComposedGestureType,
-  NativeGesture,
-} from '../../types';
+import { ComposedGestureType, Gesture } from '../../types';
 import { useComposedGesture } from './useComposedGesture';
 
-export function useSimultaneous(
-  ...gestures: (NativeGesture<unknown, unknown> | ComposedGesture)[]
-) {
-  const composedGesture = useComposedGesture(...gestures);
-
-  composedGesture.type = ComposedGestureType.Simultaneous;
+export function useSimultaneous(...gestures: Gesture<unknown, unknown>[]) {
+  const composedGesture = useComposedGesture(
+    ComposedGestureType.Simultaneous,
+    ...gestures
+  );
 
   return composedGesture;
 }

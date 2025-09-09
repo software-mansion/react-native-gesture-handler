@@ -1,22 +1,31 @@
 import {
-  NativeGesture,
   StateChangeEvent,
   UpdateEvent,
   TouchEvent,
   ComposedGesture,
   ComposedGestureType,
+  Gesture,
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { isComposedGesture } from '../utils/relationUtils';
+import { containsDuplicates, isComposedGesture } from '../utils/relationUtils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
-  ...gestures: (NativeGesture<unknown, unknown> | ComposedGesture)[]
+  type: ComposedGestureType,
+  ...gestures: Gesture<unknown, unknown>[]
 ): ComposedGesture {
   const tags = gestures.flatMap((gesture) =>
     isComposedGesture(gesture) ? gesture.tags : gesture.tag
   );
+
+  if (containsDuplicates(tags)) {
+    console.warn(
+      tagMessage(
+        'Using the same gesture more than once in gesture composition can lead to unexpected behavior.'
+      )
+    );
+  }
 
   const config = {
     shouldUseReanimated: gestures.some(
@@ -90,7 +99,7 @@ export function useComposedGesture(
 
   return {
     tags,
-    type: ComposedGestureType.Race,
+    type,
     config,
     gestureEvents: {
       onGestureHandlerStateChange,

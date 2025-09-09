@@ -4,7 +4,6 @@ import {
   GestureTouchEvent,
   HandlerStateChangeEventPayload,
 } from '../handlers/gestureHandlerCommon';
-import { ValueOf } from '../typeUtils';
 
 export type GestureUpdateEvent<THandlerData> = GestureEventPayload & {
   handlerData: THandlerData;
@@ -39,37 +38,22 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export const SingleGestureType = {
-  Tap: 'TapGestureHandler',
-  LongPress: 'LongPressGestureHandler',
-  Pan: 'PanGestureHandler',
-  Pinch: 'PinchGestureHandler',
-  Rotation: 'RotationGestureHandler',
-  Fling: 'FlingGestureHandler',
-  Manual: 'ManualGestureHandler',
-  Native: 'NativeGestureHandler',
-} as const;
+export enum SingleGestureType {
+  Tap = 'TapGestureHandler',
+  LongPress = 'LongPressGestureHandler',
+  Pan = 'PanGestureHandler',
+  Pinch = 'PinchGestureHandler',
+  Rotation = 'RotationGestureHandler',
+  Fling = 'FlingGestureHandler',
+  Manual = 'ManualGestureHandler',
+  Native = 'NativeGestureHandler',
+}
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type SingleGestureType = ValueOf<typeof SingleGestureType>;
-
-export const ComposedGestureType = {
-  Simultaneous: 'SimultaneousGesture',
-  Exclusive: 'ExclusiveGesture',
-  Race: 'RaceGesture',
-} as const;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ComposedGestureType = ValueOf<typeof ComposedGestureType>;
-
-// TODO: Find better name
-export const HandlerType = {
-  ...SingleGestureType,
-  ...ComposedGestureType,
-} as const;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type HandlerType = ValueOf<typeof HandlerType>;
+export enum ComposedGestureType {
+  Simultaneous = 'SimultaneousGesture',
+  Exclusive = 'ExclusiveGesture',
+  Race = 'RaceGesture',
+}
 
 export type GestureEvents<THandlerData> = {
   onGestureHandlerStateChange: (event: StateChangeEvent<THandlerData>) => void;
@@ -95,7 +79,7 @@ export type GestureRelations = {
 
 export type NativeGesture<THandlerData, TConfig> = {
   tag: number;
-  type: HandlerType;
+  type: SingleGestureType;
   config: BaseGestureConfig<THandlerData, TConfig>;
   gestureEvents: GestureEvents<THandlerData>;
   gestureRelations: GestureRelations;
@@ -109,7 +93,7 @@ export type ComposedGesture = {
     dispatchesAnimatedEvents: boolean;
   };
   gestureEvents: GestureEvents<unknown>;
-  gestures: (NativeGesture<unknown, unknown> | ComposedGesture)[];
+  gestures: Gesture<unknown, unknown>[];
 };
 
 export type ChangeCalculatorType<THandlerData> = (

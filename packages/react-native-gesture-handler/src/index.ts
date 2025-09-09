@@ -168,6 +168,6 @@ export { NativeDetector } from './v3/NativeDetector/NativeDetector';
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
 
-export { HandlerType } from './v3/types';
+export { SingleGestureType } from './v3/types';
 
 initialize();
