@@ -94,7 +94,7 @@ const gestureToPressableEvent = (
       pageX: event.absoluteX,
       pageY: event.absoluteY,
       target: targetId,
-      timestamp,
+      timestamp: timestamp,
       force: undefined,
     },
   };
