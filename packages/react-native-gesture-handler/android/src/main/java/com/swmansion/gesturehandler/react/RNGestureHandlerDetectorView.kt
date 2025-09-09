@@ -41,11 +41,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   fun setLogicChildren(newLogicChildren: ReadableArray?) {
-    val logicChildrenToDelete: MutableSet<Int> = mutableSetOf()
-
-    for (child in logicChildren) {
-      logicChildrenToDelete.add(child.key)
-    }
+    val logicChildrenToDelete = logicChildren.keys.toMutableSet()
 
     val mappedChildren = newLogicChildren?.mapLogicProps().orEmpty()
 
@@ -99,20 +95,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
-    val changes = mutableMapOf<Int, GestureHandlerMutation>()
-
-    for (tag in attachedHandlers) {
-      changes[tag] = GestureHandlerMutation.Detach
-    }
+    val handlersToDetach = attachedHandlers.toMutableSet()
 
     for (tag in newHandlers) {
-      changes[tag] = if (changes.containsKey(tag)) GestureHandlerMutation.Keep else GestureHandlerMutation.Attach
-    }
-
-    for (entry in changes) {
-      val tag = entry.key
-
-      if (entry.value == GestureHandlerMutation.Attach) {
+      handlersToDetach.remove(tag)
+      if (!attachedHandlers.contains(tag)) {
+        // attach handler
         if (shouldAttachGestureToChildView(tag)) {
           // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
@@ -124,11 +112,13 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
           }
           attachedHandlers.add(tag)
         }
-      } else if (entry.value == GestureHandlerMutation.Detach) {
-        registry.detachHandler(tag)
-        nativeHandlers.remove(tag)
-        attachedHandlers.remove(tag)
       }
+    }
+
+    for (tag in handlersToDetach) {
+      registry.detachHandler(tag)
+      nativeHandlers.remove(tag)
+      attachedHandlers.remove(tag)
     }
 
     val child = getChildAt(0)
@@ -208,13 +198,5 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
 
     return mappedChildren
-  }
-
-  companion object {
-    private enum class GestureHandlerMutation {
-      Attach,
-      Detach,
-      Keep,
-    }
   }
 }

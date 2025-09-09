@@ -18,20 +18,9 @@
 
 @end
 
-typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
-  RNGestureHandlerMutationAttach = 1,
-  RNGestureHandlerMutationDetach,
-  RNGestureHandlerMutationKeep,
-};
-
-struct LogicChild {
-  std::vector<int> handlerTags;
-  NSMutableSet *attachedHandlers;
-};
-
 @implementation RNGestureHandlerDetector {
   int _moduleId;
-  std::unordered_map<int, LogicChild> logicChildren;
+  std::unordered_map<int, NSMutableSet *> logicChildren;
 }
 
 #if TARGET_OS_OSX
@@ -68,7 +57,7 @@ struct LogicChild {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
     for (const auto &child : logicChildren) {
-      for (id handlerTag : child.second.attachedHandlers) {
+      for (id handlerTag : child.second) {
         [handlerManager.registry detachHandlerWithTag:handlerTag];
       }
     }
@@ -163,7 +152,6 @@ struct LogicChild {
 }
 
 - (void)attachHandlers:(const std::vector<int> &)handlerTags
-        oldHandlerTags:(const std::vector<int> &)oldHandlerTags
             actionType:(RNGestureHandlerActionType)actionType
                viewTag:(const int)viewTag
       attachedHandlers:(NSMutableSet *)attachedHandlers
@@ -171,39 +159,32 @@ struct LogicChild {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
-      std::unordered_map<int, RNGestureHandlerMutation>
-          changes;
-  for (const auto oldHandler : oldHandlerTags) {
-    changes[oldHandler] = RNGestureHandlerMutationDetach;
-  }
+      NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
 
-  for (const auto newHandler : handlerTags) {
-    changes[newHandler] = changes.contains(newHandler) ? RNGestureHandlerMutationKeep : RNGestureHandlerMutationAttach;
-  }
-
-  for (const auto handlerChange : changes) {
-    NSNumber *handlerTag = [NSNumber numberWithInt:handlerChange.first];
-
-    if (handlerChange.second == RNGestureHandlerMutationAttach) {
-      if ([self shouldAttachGestureToSubview:handlerTag]) {
+  for (const int tag : handlerTags) {
+    [handlersToDetach removeObject:@(tag)];
+    if (![attachedHandlers containsObject:@(tag)]) {
+      if ([self shouldAttachGestureToSubview:@(tag)]) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
-        [_nativeHandlers addObject:handlerTag];
+        [_nativeHandlers addObject:@(tag)];
       } else {
         if (actionType == RNGestureHandlerActionTypeLogicDetector) {
-          [[[handlerManager registry] handlerWithTag:handlerTag] setParentTag:@(self.tag)];
+          [[[handlerManager registry] handlerWithTag:@(tag)] setParentTag:@(self.tag)];
 
-          [handlerManager attachGestureHandler:handlerTag toViewWithTag:@(viewTag) withActionType:actionType];
+          [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
         } else {
-          [handlerManager.registry attachHandlerWithTag:handlerTag toView:self withActionType:actionType];
+          [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
         }
-        [attachedHandlers addObject:handlerTag];
+        [attachedHandlers addObject:@(tag)];
       }
-    } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
-      [handlerManager.registry detachHandlerWithTag:handlerTag];
-      [attachedHandlers removeObject:handlerTag];
-      [_nativeHandlers removeObject:handlerTag];
     }
+  }
+
+  for (const id tag : handlersToDetach) {
+    [handlerManager.registry detachHandlerWithTag:tag];
+    [attachedHandlers removeObject:tag];
+    [_nativeHandlers removeObject:tag];
   }
 
   // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
@@ -219,10 +200,8 @@ struct LogicChild {
   _moduleId = newProps.moduleId;
 
   static std::vector<int> emptyVector;
-  const std::vector<int> &oldHandlerTags = (oldPropsBase != nullptr) ? oldProps.handlerTags : emptyVector;
 
   [self attachHandlers:newProps.handlerTags
-        oldHandlerTags:oldHandlerTags
             actionType:RNGestureHandlerActionTypeNativeDetector
                viewTag:-1
       attachedHandlers:_attachedHandlers];
@@ -232,27 +211,25 @@ struct LogicChild {
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
       NSMutableSet *logicChildrenToDelete = [NSMutableSet set];
-  for (const std::pair<const int, LogicChild> &child : logicChildren) {
+  for (const std::pair<const int, NSMutableSet *> &child : logicChildren) {
     [logicChildrenToDelete addObject:@(child.first)];
   }
 
   for (const RNGestureHandlerDetectorLogicChildrenStruct &child : newProps.logicChildren) {
     if (logicChildren.find(child.viewTag) == logicChildren.end()) {
-      logicChildren[child.viewTag].handlerTags = {};
-      logicChildren[child.viewTag].attachedHandlers = [NSMutableSet set];
+      logicChildren[child.viewTag] = [NSMutableSet set];
     }
 
     [logicChildrenToDelete removeObject:@(child.viewTag)];
 
     [self attachHandlers:child.handlerTags
-          oldHandlerTags:logicChildren[child.viewTag].handlerTags
               actionType:RNGestureHandlerActionTypeLogicDetector
                  viewTag:child.viewTag
-        attachedHandlers:logicChildren[child.viewTag].attachedHandlers];
+        attachedHandlers:logicChildren[child.viewTag]];
   }
 
   for (const NSNumber *childTag : logicChildrenToDelete) {
-    for (id handlerTag : logicChildren[childTag.intValue].attachedHandlers) {
+    for (id handlerTag : logicChildren[childTag.intValue]) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }
