@@ -79,7 +79,6 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         } else {
           EventHandlerType.ForJS
         }
-
         val event = RNGestureHandlerEvent.obtain(
           handler,
           handler.actionType,
@@ -90,10 +89,18 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         handler.viewForEvents!!.dispatchEvent(event)
       }
       GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+        val eventHandlerType = if (handler.dispatchesAnimatedEvents) {
+          EventHandlerType.ForAnimated
+        } else if (handler.dispatchesReanimatedEvents) {
+          EventHandlerType.ForReanimated
+        } else {
+          EventHandlerType.ForJS
+        }
         val event = RNGestureHandlerEvent.obtain(
           handler,
           handler.actionType,
           handlerFactory.createEventBuilder(handler),
+          eventHandlerType,
         )
 
         handler.parentView?.dispatchEvent(event)
@@ -165,12 +172,19 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
       }
 
       GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+        val eventHandlerType = if (handler.dispatchesReanimatedEvents) {
+          EventHandlerType.ForReanimated
+        } else {
+          EventHandlerType.ForJS
+        }
+
         val event = RNGestureHandlerStateChangeEvent.obtain(
           handler,
           newState,
           oldState,
           handler.actionType,
           handlerFactory.createEventBuilder(handler),
+          eventHandlerType,
         )
         handler.parentView?.dispatchEvent(event)
       }
@@ -219,7 +233,13 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         handler.viewForEvents!!.dispatchEvent(event)
       }
       GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
-        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType)
+        val eventHandlerType = if (handler.dispatchesReanimatedEvents) {
+          EventHandlerType.ForReanimated
+        } else {
+          EventHandlerType.ForJS
+        }
+
+        val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType, eventHandlerType)
 
         handler.parentView?.dispatchEvent(event)
       }

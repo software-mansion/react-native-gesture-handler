@@ -303,6 +303,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                                               // but results in a compilation error.
 {
   switch (actionType) {
+    case RNGestureHandlerActionTypeLogicDetector: {
+      NSNumber *parentTag = [[_registry handlerWithTag:event.handlerTag] getParentTag];
+      detectorView = [self viewForReactTag:parentTag];
+    }
     case RNGestureHandlerActionTypeNativeDetector: {
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
         switch (eventHandlerType) {
@@ -330,19 +334,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
           auto nativeEvent = [event getNativeEvent];
           [(RNGestureHandlerDetector *)detectorView dispatchStateChangeEvent:nativeEvent];
         }
-      }
-      break;
-    }
-    case RNGestureHandlerActionTypeLogicDetector: {
-      NSNumber *parentTag = [[_registry handlerWithTag:event.handlerTag] getParentTag];
-      RNGHUIView *parentView = [self viewForReactTag:parentTag];
-      if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
-        auto nativeEvent = [gestureEvent getNativeEvent];
-        [(RNGestureHandlerDetector *)parentView dispatchGestureEvent:nativeEvent];
-      } else {
-        auto nativeEvent = [event getNativeEvent];
-        [(RNGestureHandlerDetector *)parentView dispatchStateChangeEvent:nativeEvent];
       }
       break;
     }

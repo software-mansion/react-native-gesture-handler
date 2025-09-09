@@ -14,6 +14,11 @@ export const LogicDetector = (props: NativeDetectorProps) => {
     onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
     onGestureHandlerTouchEvent:
       props.gesture.gestureEvents.onGestureHandlerTouchEvent,
+    onReanimatedStateChange:
+      props.gesture.gestureEvents.onReanimatedStateChange,
+    onReanimatedUpdateEvent:
+      props.gesture.gestureEvents.onReanimatedUpdateEvent,
+    onReanimatedTouchEvent: props.gesture.gestureEvents.onReanimatedTouchEvent,
   });
 
   useEffect(() => {
@@ -27,6 +32,12 @@ export const LogicDetector = (props: NativeDetectorProps) => {
       onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
       onGestureHandlerTouchEvent:
         props.gesture.gestureEvents.onGestureHandlerTouchEvent,
+      onReanimatedStateChange:
+        props.gesture.gestureEvents.onReanimatedStateChange,
+      onReanimatedUpdateEvent:
+        props.gesture.gestureEvents.onReanimatedUpdateEvent,
+      onReanimatedTouchEvent:
+        props.gesture.gestureEvents.onReanimatedTouchEvent,
     };
   }, [props.gesture.gestureEvents]);
 
