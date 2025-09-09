@@ -15,7 +15,6 @@ import {
   hasWorkletEventHandlers,
   unbindSharedValues,
 } from './utils/reanimatedUtils';
-import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture(
   type: SingleGestureType,
@@ -80,8 +79,6 @@ export function useGesture(
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
-  const gestureRelations = prepareRelations(config, tag);
-
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
     RNGestureHandlerModule.flushOperations();
@@ -123,6 +120,10 @@ export function useGesture(
       onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
-    gestureRelations,
+    gestureRelations: {
+      simultaneousHandlers: [],
+      waitFor: [],
+      blocksHandlers: [],
+    },
   };
 }

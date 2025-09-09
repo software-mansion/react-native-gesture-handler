@@ -5,7 +5,10 @@
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
-import { isComposedGesture } from '../hooks/utils/relationUtils';
+import {
+  isComposedGesture,
+  prepareRelations,
+} from '../hooks/utils/relationUtils';
 import {
   ComposedGesture,
   ComposedGestureType,
@@ -22,6 +25,8 @@ export const traverseGestureRelations = (
   // If we are in the leaf node, we want to fill gesture relations arrays with current
   // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
   if (!isComposedGesture(node)) {
+    node.gestureRelations = prepareRelations(node.config, node.tag);
+
     node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
     node.gestureRelations.waitFor.push(...waitFor);
 
@@ -130,10 +135,9 @@ export function configureRelations(gesture: Gesture) {
       )
     );
   } else {
-    RNGestureHandlerModule.configureRelations(gesture.tag, {
-      waitFor: gesture.gestureRelations.waitFor,
-      simultaneousHandlers: gesture.gestureRelations.simultaneousHandlers,
-      blocksHandlers: gesture.gestureRelations.blocksHandlers,
-    });
+    RNGestureHandlerModule.configureRelations(
+      gesture.tag,
+      prepareRelations(gesture.config, gesture.tag)
+    );
   }
 }
