@@ -9,8 +9,9 @@ import React, {
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
-import { invokeNullableMethod, tagMessage } from '../utils';
+import { tagMessage } from '../utils';
 import { LogicDetectorProps, LogicMethods, NativeDetectorProps } from './types';
+import { invokeNullableMethod } from './hooks/utils';
 
 const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);

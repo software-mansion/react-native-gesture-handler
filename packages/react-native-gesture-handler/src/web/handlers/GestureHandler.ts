@@ -25,7 +25,7 @@ import {
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
-import { invokeNullableMethod, tagMessage } from '../../utils';
+import { tagMessage } from '../../utils';
 import {
   GestureStateChangeEventWithData,
   GestureUpdateEventWithData,
@@ -1017,4 +1017,57 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.state === State.CANCELLED
     );
   }
+}
+
+function invokeNullableMethod(
+  method:
+    | ((event: ResultEvent) => void)
+    | { __getHandler: () => (event: ResultEvent) => void }
+    | { __nodeConfig: { argMapping: unknown[] } },
+  event: ResultEvent
+): void {
+  if (!method) {
+    return;
+  }
+
+  if (typeof method === 'function') {
+    method(event);
+    return;
+  }
+
+  if ('__getHandler' in method && typeof method.__getHandler === 'function') {
+    const handler = method.__getHandler();
+    invokeNullableMethod(handler, event);
+    return;
+  }
+
+  if (!('__nodeConfig' in method)) {
+    return;
+  }
+
+  const { argMapping }: { argMapping: unknown } = method.__nodeConfig;
+  if (!Array.isArray(argMapping)) {
+    return;
+  }
+
+  for (const [index, [key, value]] of argMapping.entries()) {
+    if (!(key in event.nativeEvent)) {
+      continue;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const nativeValue = (event.nativeEvent as any)[key];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (value?.setValue) {
+      // Reanimated API
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+      value.setValue(nativeValue);
+    } else {
+      // RN Animated API
+      method.__nodeConfig.argMapping[index] = [key, nativeValue];
+    }
+  }
+
+  return;
 }

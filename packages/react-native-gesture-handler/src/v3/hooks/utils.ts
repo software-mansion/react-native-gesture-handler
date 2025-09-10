@@ -187,3 +187,31 @@ export function hash(str: string) {
   }
   return h >>> 0;
 }
+
+export function invokeNullableMethod(
+  method:
+    | ((event: any) => void)
+    | { workletEventHandler: { worklet: (event: any) => void } }
+    | null
+    | undefined,
+  event: any
+): void {
+  if (!method) {
+    return;
+  }
+
+  if (typeof method === 'function') {
+    method(event);
+    return;
+  }
+
+  if ('workletEventHandler' in method) {
+    const we = method.workletEventHandler;
+    if ('worklet' in we) {
+      invokeNullableMethod(we.worklet, event);
+    }
+    return;
+  }
+
+  return;
+}
