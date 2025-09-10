@@ -397,9 +397,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (touchEvent) {
       if (this.actionType === ActionType.NATIVE_DETECTOR) {
-        if (this.forReanimated && onGestureHandlerReanimatedTouchEvent) {
+        if (this.forReanimated) {
           invokeNullableMethod(
-            onGestureHandlerReanimatedTouchEvent,
+            onGestureHandlerReanimatedTouchEvent!,
             touchEvent
           );
           return;
@@ -409,8 +409,8 @@ export default abstract class GestureHandler implements IGestureHandler {
         }
       }
 
-      if (this.forReanimated && onGestureHandlerReanimatedEvent) {
-        invokeNullableMethod(onGestureHandlerReanimatedEvent, touchEvent);
+      if (this.forReanimated) {
+        invokeNullableMethod(onGestureHandlerReanimatedEvent!, touchEvent);
       }
 
       invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -443,24 +443,23 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
-      if (this.forReanimated && onGestureHandlerReanimatedStateChange) {
-        invokeNullableMethod(
-          onGestureHandlerReanimatedStateChange,
-          resultEvent
-        );
-      } else {
-        invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
-      }
+      invokeNullableMethod(
+        this.forReanimated
+          ? onGestureHandlerReanimatedStateChange!
+          : onGestureHandlerStateChange,
+        resultEvent
+      );
     }
     if (this.state === State.ACTIVE) {
       if (this.actionType !== ActionType.NATIVE_DETECTOR) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
-      if (onGestureHandlerReanimatedEvent && this.forReanimated) {
-        invokeNullableMethod(onGestureHandlerReanimatedEvent, resultEvent);
-      } else if (onGestureHandlerAnimatedEvent && this.forAnimated) {
-        invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
+
+      if (this.forReanimated) {
+        invokeNullableMethod(onGestureHandlerReanimatedEvent!, resultEvent);
+      } else if (this.forAnimated) {
+        invokeNullableMethod(onGestureHandlerAnimatedEvent!, resultEvent);
       }
 
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
