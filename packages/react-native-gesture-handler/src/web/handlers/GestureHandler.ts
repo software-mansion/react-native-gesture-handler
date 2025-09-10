@@ -397,9 +397,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (touchEvent) {
       if (this.actionType === ActionType.NATIVE_DETECTOR) {
-        if (this.forReanimated && onGestureHandlerReanimatedTouchEvent) {
+        if (this.forReanimated) {
           invokeNullableMethod(
-            onGestureHandlerReanimatedTouchEvent,
+            onGestureHandlerReanimatedTouchEvent!,
             touchEvent
           );
           return;
@@ -411,9 +411,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       if (this.forReanimated) {
         invokeNullableMethod(onGestureHandlerReanimatedEvent!, touchEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, touchEvent);
       }
-
-      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
     }
   }
 
@@ -460,9 +460,9 @@ export default abstract class GestureHandler implements IGestureHandler {
         invokeNullableMethod(onGestureHandlerReanimatedEvent!, resultEvent);
       } else if (this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent!, resultEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, resultEvent);
       }
-
-      invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     }
   };
 
