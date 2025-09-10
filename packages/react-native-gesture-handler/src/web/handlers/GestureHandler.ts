@@ -388,6 +388,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     const {
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,
+      onGestureHandlerReanimatedEvent,
       onGestureHandlerReanimatedTouchEvent,
     }: PropsRef = this.propsRef!.current;
 
@@ -407,7 +408,11 @@ export default abstract class GestureHandler implements IGestureHandler {
           return;
         }
       }
-      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+      if (this.forReanimated && onGestureHandlerReanimatedEvent) {
+        invokeNullableMethod(onGestureHandlerReanimatedEvent, touchEvent);
+      } else {
+        invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+      }
     }
   }
 
@@ -451,11 +456,12 @@ export default abstract class GestureHandler implements IGestureHandler {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
-    } else if (onGestureHandlerReanimatedEvent && this.forReanimated) {
-      invokeNullableMethod(onGestureHandlerReanimatedEvent, resultEvent);
-      if (onGestureHandlerAnimatedEvent && this.forAnimated) {
+      if (onGestureHandlerReanimatedEvent && this.forReanimated) {
+        invokeNullableMethod(onGestureHandlerReanimatedEvent, resultEvent);
+      } else if (onGestureHandlerAnimatedEvent && this.forAnimated) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
+
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     }
   };
