@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDetectorContext } from './NativeDetector';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
@@ -21,15 +21,16 @@ export const LogicDetector = (props: NativeDetectorProps) => {
     onReanimatedTouchEvent: props.gesture.gestureEvents.onReanimatedTouchEvent,
   });
 
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      if (viewRef.current != null) {
-        setViewTag(viewRef.current);
-      }
-    } else {
-      const tag = findNodeHandle(viewRef.current);
-      if (tag != null) {
-        setViewTag(tag);
+  const handleRef = useCallback((node: any) => {
+    viewRef.current = node;
+    if (node) {
+      if (Platform.OS === 'web') {
+        setViewTag(node);
+      } else {
+        const tag = findNodeHandle(node);
+        if (tag != null) {
+          setViewTag(tag);
+        }
       }
     }
   }, []);
@@ -67,5 +68,5 @@ export const LogicDetector = (props: NativeDetectorProps) => {
     };
   }, [viewTag, props.gesture.tag, register, unregister]);
 
-  return <Wrap ref={viewRef}>{props.children}</Wrap>;
+  return <Wrap ref={handleRef}>{props.children}</Wrap>;
 };
