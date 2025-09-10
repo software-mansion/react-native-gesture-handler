@@ -10,7 +10,7 @@ import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
-import { LogicDetectorProps, LogicMethods, NativeDetectorProps } from './types';
+import { LogicChildrenProps, LogicMethods, NativeDetectorProps } from './types';
 import { invokeNullableMethod } from './hooks/utils';
 
 const AnimatedNativeDetector =
@@ -21,7 +21,7 @@ const ReanimatedNativeDetector =
 
 type DetectorContextType = {
   register: (
-    child: LogicDetectorProps,
+    child: LogicChildrenProps,
     methods: RefObject<LogicMethods>
   ) => void;
   unregister: (child: number) => void;
@@ -30,7 +30,7 @@ type DetectorContextType = {
 const DetectorContext = createContext<DetectorContextType | null>(null);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
-  const [logicChildren, setLogicChildren] = useState<LogicDetectorProps[]>([]);
+  const [logicChildren, setLogicChildren] = useState<LogicChildrenProps[]>([]);
   const logicMethods = useRef<Map<number, RefObject<LogicMethods>>>(new Map());
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
@@ -41,7 +41,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       : HostGestureDetector;
 
   const register = useCallback(
-    (child: LogicDetectorProps, methods: RefObject<LogicMethods>) => {
+    (child: LogicChildrenProps, methods: RefObject<LogicMethods>) => {
       setLogicChildren((prev) => {
         if (prev.some((c) => c.viewTag === child.viewTag)) {
           return prev;
