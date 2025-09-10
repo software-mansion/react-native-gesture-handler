@@ -114,10 +114,16 @@ export const traverseGestureRelations = (
     }
     // This means that child is a leaf node.
     else {
-      // In the leaf node, we only care about filling `waitFor` array. First we traverse the child...
+      // We don't want to mark gesture as simultaneous with itself, so we remove its tag from the set.
+      const hasRemovedTag = simultaneousHandlers.delete(child.tag);
+
       traverseGestureRelations(child, simultaneousHandlers, waitFor);
 
-      // ..and when we go back we add the tag of the child to the `waitFor` array.
+      if (hasRemovedTag) {
+        simultaneousHandlers.add(child.tag);
+      }
+
+      // In the leaf node, we only care about filling `waitFor` array.
       if (node.type === ComposedGestureType.Exclusive) {
         waitFor.push(child.tag);
       }
