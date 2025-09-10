@@ -408,11 +408,12 @@ export default abstract class GestureHandler implements IGestureHandler {
           return;
         }
       }
+
       if (this.forReanimated && onGestureHandlerReanimatedEvent) {
         invokeNullableMethod(onGestureHandlerReanimatedEvent, touchEvent);
-      } else {
-        invokeNullableMethod(onGestureHandlerEvent, touchEvent);
       }
+
+      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
     }
   }
 
