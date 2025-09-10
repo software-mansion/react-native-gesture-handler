@@ -34,12 +34,21 @@ export function prepareRelations(
   if (config.simultaneousWithExternalGesture) {
     if (Array.isArray(config.simultaneousWithExternalGesture)) {
       for (const gesture of config.simultaneousWithExternalGesture) {
-        gesture.gestureRelations.simultaneousHandlers.push(handlerTag);
+        const simultaneousHandlers =
+          gesture.gestureRelations.simultaneousHandlers;
+
+        if (!simultaneousHandlers.includes(handlerTag)) {
+          simultaneousHandlers.push(handlerTag);
+        }
       }
     } else {
-      config.simultaneousWithExternalGesture.gestureRelations.simultaneousHandlers.push(
-        handlerTag
-      );
+      const simultaneousHandlers =
+        config.simultaneousWithExternalGesture.gestureRelations
+          .simultaneousHandlers;
+
+      if (!simultaneousHandlers.includes(handlerTag)) {
+        simultaneousHandlers.push(handlerTag);
+      }
     }
   }
 

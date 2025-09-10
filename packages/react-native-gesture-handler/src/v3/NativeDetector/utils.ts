@@ -135,9 +135,10 @@ export function configureRelations(gesture: Gesture) {
       )
     );
   } else {
-    RNGestureHandlerModule.configureRelations(
-      gesture.tag,
-      prepareRelations(gesture.config, gesture.tag)
-    );
+    const relations = prepareRelations(gesture.config, gesture.tag);
+
+    gesture.gestureRelations = relations;
+
+    RNGestureHandlerModule.configureRelations(gesture.tag, relations);
   }
 }
