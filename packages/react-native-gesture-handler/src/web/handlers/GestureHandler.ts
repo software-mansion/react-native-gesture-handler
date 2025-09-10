@@ -409,11 +409,12 @@ export default abstract class GestureHandler implements IGestureHandler {
         }
       }
 
-      if (this.forReanimated) {
-        invokeNullableMethod(onGestureHandlerReanimatedEvent!, touchEvent);
-      } else {
-        invokeNullableMethod(onGestureHandlerEvent, touchEvent);
-      }
+      invokeNullableMethod(
+        this.forReanimated
+          ? onGestureHandlerReanimatedEvent!
+          : onGestureHandlerEvent,
+        touchEvent
+      );
     }
   }
 
@@ -456,13 +457,14 @@ export default abstract class GestureHandler implements IGestureHandler {
           undefined;
       }
 
-      if (this.forReanimated) {
-        invokeNullableMethod(onGestureHandlerReanimatedEvent!, resultEvent);
-      } else if (this.forAnimated) {
-        invokeNullableMethod(onGestureHandlerAnimatedEvent!, resultEvent);
-      } else {
-        invokeNullableMethod(onGestureHandlerEvent, resultEvent);
-      }
+      invokeNullableMethod(
+        this.forReanimated
+          ? onGestureHandlerReanimatedEvent!
+          : this.forAnimated
+            ? onGestureHandlerAnimatedEvent!
+            : onGestureHandlerEvent,
+        resultEvent
+      );
     }
   };
 
