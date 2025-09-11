@@ -35,8 +35,15 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
       attachedNativeHandlerTags.current.delete(tag);
-      attachedHandlerTags.delete(tag);
     });
+
+    if (oldHandlerTags === attachedHandlerTags) {
+      attachedHandlerTags.clear();
+    } else {
+      for (const tag of oldHandlerTags) {
+        oldHandlerTags.delete(tag);
+      }
+    }
   };
 
   const attachHandlers = (
