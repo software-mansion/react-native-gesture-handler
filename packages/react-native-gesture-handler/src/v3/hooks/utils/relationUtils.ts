@@ -51,7 +51,6 @@ function makeSimultaneousWithExternalGestureSymmetric(
   }
 }
 
-// TODO: Handle composed gestures passed into external relations
 export function prepareRelations(
   config: any,
   handlerTag: number
