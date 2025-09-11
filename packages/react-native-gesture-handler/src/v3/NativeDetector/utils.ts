@@ -9,16 +9,11 @@ import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
-import {
-  ComposedGesture,
-  ComposedGestureType,
-  Gesture,
-  NativeGesture,
-} from '../types';
+import { ComposedGestureType, Gesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseGestureRelations = (
-  node: NativeGesture | ComposedGesture,
+  node: Gesture,
   simultaneousHandlers: Set<number>,
   waitFor: number[] = []
 ) => {

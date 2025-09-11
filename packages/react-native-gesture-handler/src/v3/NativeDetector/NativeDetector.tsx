@@ -1,5 +1,5 @@
 import React from 'react';
-import { NativeGesture, ComposedGesture } from '../types';
+import { Gesture } from '../types';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
@@ -9,7 +9,7 @@ import { isComposedGesture } from '../hooks/utils/relationUtils';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
-  gesture: NativeGesture | ComposedGesture;
+  gesture: Gesture;
 }
 
 const AnimatedNativeDetector =
