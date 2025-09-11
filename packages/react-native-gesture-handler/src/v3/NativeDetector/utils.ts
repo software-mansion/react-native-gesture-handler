@@ -139,10 +139,9 @@ export function configureRelations(gesture: Gesture) {
 
     traverseAndConfigureRelations(gesture, simultaneousHandlers);
   } else {
-    const relations = prepareRelations(gesture.config, gesture.tag);
-
-    gesture.gestureRelations = relations;
-
-    RNGestureHandlerModule.configureRelations(gesture.tag, relations);
+    RNGestureHandlerModule.configureRelations(
+      gesture.tag,
+      gesture.gestureRelations
+    );
   }
 }
