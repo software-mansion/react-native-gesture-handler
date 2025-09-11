@@ -91,6 +91,7 @@ export interface LogicMethods {
   onGestureHandlerEvent?: (e: any) => void;
   onGestureHandlerStateChange?: (e: any) => void;
   onGestureHandlerTouchEvent?: (e: any) => void;
+  onGestureHandlerAnimatedEvent?: (e: any) => void;
   onReanimatedStateChange?: (e: any) => void;
   onReanimatedUpdateEvent?: (e: any) => void;
   onReanimatedTouchEvent?: (e: any) => void;

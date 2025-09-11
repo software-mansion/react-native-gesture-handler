@@ -77,30 +77,28 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
             ? gesture.gestureEvents.onGestureHandlerStateChange
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onGestureHandlerStateChange;
-          if (method) {
-            method(e);
-          }
+          invokeNullableMethod(method, e);
         }}
         onGestureHandlerEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onGestureHandlerEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onGestureHandlerEvent;
-          if (method) {
-            method(e);
-          }
+          invokeNullableMethod(method, e);
         }}
-        onGestureHandlerAnimatedEvent={
-          gesture.gestureEvents.onGestureHandlerAnimatedEvent
-        }
+        onGestureHandlerAnimatedEvent={(e) => {
+          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
+            ? gesture.gestureEvents.onGestureHandlerAnimatedEvent
+            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
+                ?.onGestureHandlerAnimatedEvent;
+          invokeNullableMethod(method, e);
+        }}
         onGestureHandlerTouchEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onGestureHandlerTouchEvent
+            ? gesture.gestureEvents.onGestureHandlerEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onGestureHandlerTouchEvent;
-          if (method) {
-            method(e);
-          }
+                ?.onGestureHandlerEvent;
+          invokeNullableMethod(method, e);
         }}
         onGestureHandlerReanimatedStateChange={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)

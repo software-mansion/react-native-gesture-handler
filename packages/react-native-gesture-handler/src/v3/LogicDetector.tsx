@@ -12,6 +12,8 @@ export const LogicDetector = (props: NativeDetectorProps) => {
     onGestureHandlerStateChange:
       props.gesture.gestureEvents.onGestureHandlerStateChange,
     onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
+    onGestureHandlerAnimatedEvent:
+      props.gesture.gestureEvents.onGestureHandlerAnimatedEvent,
     onGestureHandlerTouchEvent:
       props.gesture.gestureEvents.onGestureHandlerTouchEvent,
     onReanimatedStateChange:
@@ -42,6 +44,8 @@ export const LogicDetector = (props: NativeDetectorProps) => {
       onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
       onGestureHandlerTouchEvent:
         props.gesture.gestureEvents.onGestureHandlerTouchEvent,
+      onGestureHandlerAnimatedEvent:
+        props.gesture.gestureEvents.onGestureHandlerAnimatedEvent,
       onReanimatedStateChange:
         props.gesture.gestureEvents.onReanimatedStateChange,
       onReanimatedUpdateEvent:
