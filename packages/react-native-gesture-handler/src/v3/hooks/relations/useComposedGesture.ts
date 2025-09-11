@@ -123,6 +123,7 @@ export function useComposedGesture(
       onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
+    externalSimultaneousHandlers: [],
     gestures,
   };
 }

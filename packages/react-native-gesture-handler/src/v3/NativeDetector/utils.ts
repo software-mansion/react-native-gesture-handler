@@ -133,13 +133,16 @@ export const traverseGestureRelations = (
 
 export function configureRelations(gesture: Gesture) {
   if (isComposedGesture(gesture)) {
-    traverseGestureRelations(
-      gesture,
-      new Set(
-        // If root is simultaneous, we want to add its tags to the set
-        gesture.type === ComposedGestureType.Simultaneous ? gesture.tags : []
-      )
+    const simultaneousHandlers = new Set<number>(
+      gesture.externalSimultaneousHandlers
     );
+
+    // If root is simultaneous, we want to add its tags to the set
+    if (gesture.type === ComposedGestureType.Simultaneous) {
+      gesture.tags.forEach((tag) => simultaneousHandlers.add(tag));
+    }
+
+    traverseGestureRelations(gesture, simultaneousHandlers);
   } else {
     const relations = prepareRelations(gesture.config, gesture.tag);
 

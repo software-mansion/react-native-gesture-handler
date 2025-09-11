@@ -26,31 +26,40 @@ function extractHandlerTags(otherHandler: Gesture | Gesture[]): number[] {
   return otherTags;
 }
 
+function makeSimultaneousWithExternalGestureSymmetric(
+  otherHandler: Gesture | Gesture[],
+  handlerTag: number
+) {
+  if (!otherHandler) {
+    return;
+  }
+
+  const processSingleGesture = (gesture: Gesture) => {
+    const simultaneousHandlers = isComposedGesture(gesture)
+      ? gesture.externalSimultaneousHandlers
+      : gesture.gestureRelations.simultaneousHandlers;
+
+    if (!simultaneousHandlers.includes(handlerTag)) {
+      simultaneousHandlers.push(handlerTag);
+    }
+  };
+
+  if (Array.isArray(otherHandler)) {
+    otherHandler.forEach(processSingleGesture);
+  } else {
+    processSingleGesture(otherHandler);
+  }
+}
+
 // TODO: Handle composed gestures passed into external relations
 export function prepareRelations(
   config: any,
   handlerTag: number
 ): GestureRelations {
-  if (config.simultaneousWithExternalGesture) {
-    if (Array.isArray(config.simultaneousWithExternalGesture)) {
-      for (const gesture of config.simultaneousWithExternalGesture) {
-        const simultaneousHandlers =
-          gesture.gestureRelations.simultaneousHandlers;
-
-        if (!simultaneousHandlers.includes(handlerTag)) {
-          simultaneousHandlers.push(handlerTag);
-        }
-      }
-    } else {
-      const simultaneousHandlers =
-        config.simultaneousWithExternalGesture.gestureRelations
-          .simultaneousHandlers;
-
-      if (!simultaneousHandlers.includes(handlerTag)) {
-        simultaneousHandlers.push(handlerTag);
-      }
-    }
-  }
+  makeSimultaneousWithExternalGestureSymmetric(
+    config.simultaneousWithExternalGesture,
+    handlerTag
+  );
 
   return {
     simultaneousHandlers: extractHandlerTags(

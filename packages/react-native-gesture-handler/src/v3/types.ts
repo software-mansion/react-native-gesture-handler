@@ -106,6 +106,7 @@ export type ComposedGesture = {
     dispatchesAnimatedEvents: boolean;
   };
   gestureEvents: GestureEvents;
+  externalSimultaneousHandlers: number[];
   gestures: Gesture[];
 };
 
