@@ -12,7 +12,7 @@ import {
 import { ComposedGestureType, Gesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
-export const traverseGestureRelations = (
+export const traverseAndConfigureRelations = (
   node: Gesture,
   simultaneousHandlers: Set<number>,
   waitFor: number[] = []
@@ -67,7 +67,7 @@ export const traverseGestureRelations = (
       const length = waitFor.length;
 
       // We traverse the child, passing the current `waitFor` and `simultaneousHandlers`.
-      traverseGestureRelations(child, simultaneousHandlers, waitFor);
+      traverseAndConfigureRelations(child, simultaneousHandlers, waitFor);
 
       // After traversing the child, we need to update `waitFor` and `simultaneousHandlers`
 
@@ -112,7 +112,7 @@ export const traverseGestureRelations = (
       // We don't want to mark gesture as simultaneous with itself, so we remove its tag from the set.
       const hasRemovedTag = simultaneousHandlers.delete(child.tag);
 
-      traverseGestureRelations(child, simultaneousHandlers, waitFor);
+      traverseAndConfigureRelations(child, simultaneousHandlers, waitFor);
 
       if (hasRemovedTag) {
         simultaneousHandlers.add(child.tag);
@@ -137,7 +137,7 @@ export function configureRelations(gesture: Gesture) {
       gesture.tags.forEach((tag) => simultaneousHandlers.add(tag));
     }
 
-    traverseGestureRelations(gesture, simultaneousHandlers);
+    traverseAndConfigureRelations(gesture, simultaneousHandlers);
   } else {
     const relations = prepareRelations(gesture.config, gesture.tag);
 
