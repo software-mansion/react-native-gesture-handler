@@ -48,10 +48,9 @@ export default class RotationGestureHandler extends GestureHandler {
   public override init(
     ref: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    childTag?: number
+    actionType: ActionType
   ): void {
-    super.init(ref, propsRef, actionType, childTag);
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = false;
   }

@@ -121,11 +121,7 @@ type ResultEventType =
   | GestureTouchEvent
   | GestureHandlerNativeEvent;
 
-type LogicResultEventType = ResultEventType & {
-  childTag?: number;
-};
-
-export interface ResultEvent<T extends ResultEventType = LogicResultEventType>
+export interface ResultEvent<T extends ResultEventType = ResultEventType>
   extends Record<string, T | number> {
   nativeEvent: T;
   timeStamp: number;

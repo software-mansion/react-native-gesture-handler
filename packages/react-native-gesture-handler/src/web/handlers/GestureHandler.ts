@@ -40,7 +40,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _shouldCancelWhenOutside = false;
   private _enabled = false;
 
-  private childTag?: number;
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
   private actionType: ActionType | null = null;
@@ -81,14 +80,12 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected init(
     viewRef: number,
     propsRef: React.RefObject<PropsRef>,
-    actionType: ActionType,
-    childTag?: number
+    actionType: ActionType
   ) {
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
-    this.childTag = childTag;
 
     this.delegate.init(viewRef, this);
   }
@@ -103,7 +100,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = null;
     this.actionType = null;
     this.state = State.UNDETERMINED;
-    this.childTag = undefined;
     this.dispatchesAnimatedEvents = false;
 
     this.delegate.detach();
@@ -425,13 +421,6 @@ export default abstract class GestureHandler implements IGestureHandler {
           ? this.transformStateChangeEvent(newState, oldState)
           : this.transformUpdateEvent(newState);
 
-    // TODO: cleanup the logic detector types
-    if (this.actionType === ActionType.LOGIC_DETECTOR) {
-      resultEvent.nativeEvent = {
-        ...resultEvent.nativeEvent,
-        childTag: this.childTag,
-      };
-    }
     // In the v2 API oldState field has to be undefined, unless we send event state changed
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
