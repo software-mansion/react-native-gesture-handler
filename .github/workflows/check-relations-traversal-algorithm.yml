@@ -16,7 +16,7 @@ jobs:
 
     runs-on: ubuntu-latest
     concurrency:
-      group: static-root-${{ github.ref }}
+      group: jest-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
