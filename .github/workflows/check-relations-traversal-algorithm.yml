@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - packages/react-native-gesture-handler/src/v3/**
+      - packages/react-native-gesture-handler/src/__tests__/RelationsTraversal.test.tsx
   push:
     branches:
       - main
