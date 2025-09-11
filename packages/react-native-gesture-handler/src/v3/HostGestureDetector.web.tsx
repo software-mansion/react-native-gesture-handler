@@ -41,7 +41,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       attachedHandlerTags.clear();
     } else {
       for (const tag of oldHandlerTags) {
-        oldHandlerTags.delete(tag);
+        attachedHandlerTags.delete(tag);
       }
     }
   };
