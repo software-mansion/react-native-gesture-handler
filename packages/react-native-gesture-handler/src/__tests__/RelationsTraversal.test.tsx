@@ -438,3 +438,79 @@ describe('Complex relations with external gestures', () => {
     expect(pan5.gestureRelations.waitFor).toStrictEqual([]);
   });
 });
+
+describe('External relations with composed gestures', () => {
+  test('Case 1', () => {
+    const pan1 = renderHook(() =>
+      useGesture(SingleGestureType.Pan, {
+        disableReanimated: true,
+      })
+    ).result.current;
+
+    const pan2 = renderHook(() =>
+      useGesture(SingleGestureType.Pan, {
+        disableReanimated: true,
+      })
+    ).result.current;
+
+    const composedGesture = renderHook(() => useSimultaneous(pan1, pan2)).result
+      .current;
+
+    const pan3 = renderHook(() =>
+      useGesture(SingleGestureType.Pan, {
+        disableReanimated: true,
+        simultaneousWithExternalGesture: composedGesture,
+      })
+    ).result.current;
+
+    configureRelations(composedGesture);
+    configureRelations(pan3);
+
+    expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan2.tag, pan3.tag].sort()
+    );
+    expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.tag, pan3.tag].sort()
+    );
+    expect(pan3.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.tag, pan2.tag].sort()
+    );
+  });
+
+  test('Case 1 - reversed order of configuring relations', () => {
+    const pan1 = renderHook(() =>
+      useGesture(SingleGestureType.Pan, {
+        disableReanimated: true,
+      })
+    ).result.current;
+
+    const pan2 = renderHook(() =>
+      useGesture(SingleGestureType.Pan, {
+        disableReanimated: true,
+      })
+    ).result.current;
+
+    const composedGesture = renderHook(() => useSimultaneous(pan1, pan2)).result
+      .current;
+
+    const pan3 = renderHook(() =>
+      useGesture(SingleGestureType.Pan, {
+        disableReanimated: true,
+        simultaneousWithExternalGesture: composedGesture,
+      })
+    ).result.current;
+
+    configureRelations(pan3);
+    configureRelations(composedGesture);
+
+    expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan2.tag, pan3.tag].sort()
+    );
+    expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.tag, pan3.tag].sort()
+    );
+    expect(pan3.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
+      [pan1.tag, pan2.tag].sort()
+    );
+  });
+});
