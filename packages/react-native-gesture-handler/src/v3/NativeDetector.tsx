@@ -95,9 +95,9 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         }}
         onGestureHandlerTouchEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onGestureHandlerEvent
+            ? gesture.gestureEvents.onGestureHandlerTouchEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onGestureHandlerEvent;
+                ?.onGestureHandlerTouchEvent;
           invokeNullableMethod(method, e);
         }}
         onGestureHandlerReanimatedStateChange={(e) => {
