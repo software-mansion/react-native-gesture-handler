@@ -175,5 +175,8 @@ export function useWebEventHandlers() {
     onGestureHandlerStateChange: (e: ResultEvent) => {
       onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
     },
+    onGestureHandlerTouchEvent: () => {
+      // no-op
+    },
   });
 }
