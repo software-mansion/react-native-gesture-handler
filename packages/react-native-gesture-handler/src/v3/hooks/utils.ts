@@ -211,9 +211,8 @@ export function invokeDetectorEvent(
   }
 
   if ('workletEventHandler' in method) {
-    const we = method.workletEventHandler;
-    if ('worklet' in we) {
-      invokeDetectorEvent(we.worklet, event);
+    if ('worklet' in method.workletEventHandler) {
+      invokeDetectorEvent(method.workletEventHandler.worklet, event);
     }
     return;
   }
