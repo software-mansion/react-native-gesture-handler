@@ -175,7 +175,8 @@ export function useWebEventHandlers() {
     onGestureHandlerStateChange: (e: ResultEvent) => {
       onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
     },
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onGestureHandlerTouchEvent: () => {}, // no-op
+    onGestureHandlerTouchEvent: () => {
+      // no-op
+    },
   });
 }
