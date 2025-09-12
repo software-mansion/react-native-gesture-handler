@@ -121,12 +121,10 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
 
     logicChildrenToDelete.forEach((childTag) => {
-      if (attachedHandlers && attachedNativeHandlers) {
-        detachHandlers(
-          attachedLogicHandlers.current.get(childTag)!,
-          attachedLogicHandlers.current.get(childTag)!
-        );
-      }
+      detachHandlers(
+        attachedLogicHandlers.current.get(childTag)!,
+        attachedLogicHandlers.current.get(childTag)!
+      );
       attachedLogicHandlers.current.delete(childTag);
     });
   }, [props.logicChildren]);
