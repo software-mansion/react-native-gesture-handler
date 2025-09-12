@@ -8541,12 +8541,12 @@ __metadata:
     react-dom: "npm:19.1.0"
     react-native: "npm:0.81.0"
     react-native-gesture-handler: "workspace:*"
-    react-native-reanimated: "npm:4.0.2"
+    react-native-reanimated: "npm:^4.0.2"
     react-native-safe-area-context: "npm:~5.6.0"
     react-native-screens: "npm:~4.14.0"
     react-native-svg: "npm:15.12.1"
     react-native-web: "npm:^0.21.0"
-    react-native-worklets: "npm:0.4.0"
+    react-native-worklets: "npm:^0.4.0"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
@@ -14458,21 +14458,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:4.0.2":
-  version: 4.0.2
-  resolution: "react-native-reanimated@npm:4.0.2"
-  dependencies:
-    react-native-is-edge-to-edge: "npm:^1.2.1"
-    semver: "npm:7.7.2"
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-    react: "*"
-    react-native: "*"
-    react-native-worklets: ">=0.4.0"
-  checksum: 10c0/422aa8308c586dd37d53760860aa963ef5f569d9fce3c03a3ce3d5592e5c93d6bd399567f616b2db2c3156712d9bc3c99d4380f454b8ed9dceedb525dd171ee9
-  languageName: node
-  linkType: hard
-
 "react-native-reanimated@npm:^3.18.0":
   version: 3.19.1
   resolution: "react-native-reanimated@npm:3.19.1"
@@ -14497,7 +14482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:^4.1.0":
+"react-native-reanimated@npm:^4.0.2, react-native-reanimated@npm:^4.1.0":
   version: 4.1.0
   resolution: "react-native-reanimated@npm:4.1.0"
   dependencies:
@@ -14607,9 +14592,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:0.4.0":
-  version: 0.4.0
-  resolution: "react-native-worklets@npm:0.4.0"
+"react-native-worklets@npm:^0.4.0":
+  version: 0.4.2
+  resolution: "react-native-worklets@npm:0.4.2"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -14625,7 +14610,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/768ef67c1701f2354cda48f44ea337fd57cfa463acdeb65dc7808461aaa92a56c0f33d5ac6880d6d22cc5765b6751caa45307402b20f6575d3183b7029e3567a
+  checksum: 10c0/23965d7df3e5532f5eb339bfef2e35cd5a3d0c5d6e262485bee6680707b3bff74ca1803d06bb77762636443f3597a4788ac708488b53976740caab2af2998460
   languageName: node
   linkType: hard
 
