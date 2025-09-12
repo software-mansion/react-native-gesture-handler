@@ -26,10 +26,8 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     eventHandlerType: EventHandlerType,
   ) {
-    val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+    val view = if (GestureHandler.isV3Api(handler.actionType)) {
       handler.viewForEvents
-    } else if (handler.actionType == GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
-      handler.parentView!!
     } else {
       handler.view!!
     }

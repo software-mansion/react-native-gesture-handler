@@ -304,8 +304,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 {
   switch (actionType) {
     case RNGestureHandlerActionTypeLogicDetector: {
-      NSNumber *parentTag = [[_registry handlerWithTag:event.handlerTag] getParentTag];
-      detectorView = [self viewForReactTag:parentTag];
+      NSNumber *hostDetectorTag = [[_registry handlerWithTag:event.handlerTag] getHostDetectorTag];
+      detectorView = [self viewForReactTag:hostDetectorTag];
     }
     case RNGestureHandlerActionTypeNativeDetector: {
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {

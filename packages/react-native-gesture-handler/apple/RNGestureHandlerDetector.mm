@@ -170,7 +170,7 @@
         [_nativeHandlers addObject:@(tag)];
       } else {
         if (actionType == RNGestureHandlerActionTypeLogicDetector) {
-          [[[handlerManager registry] handlerWithTag:@(tag)] setParentTag:@(self.tag)];
+          [[[handlerManager registry] handlerWithTag:@(tag)] setHostDetectorTag:@(self.tag)];
 
           [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
         } else {

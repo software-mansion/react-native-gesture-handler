@@ -76,7 +76,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   NSArray<NSNumber *> *_simultaneousHandlers;
   RNGHHitSlop _hitSlop;
   uint16_t _eventCoalescingKey;
-  NSNumber *_parentTag;
+  NSNumber *_hostDetectorTag;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -691,14 +691,14 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return NO;
 }
 
-- (void)setParentTag:(NSNumber *)parentTag
+- (void)setHostDetectorTag:(NSNumber *)hostDetectorTag
 {
-  _parentTag = parentTag;
+  _hostDetectorTag = hostDetectorTag;
 }
 
-- (NSNumber *)getParentTag
+- (NSNumber *)getHostDetectorTag
 {
-  return _parentTag;
+  return _hostDetectorTag;
 }
 
 @end

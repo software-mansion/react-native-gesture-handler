@@ -107,7 +107,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         } else {
           registry.attachHandlerToView(tag, viewTag, actionType)
           if (actionType == GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
-            registry.getHandler(tag)?.parentView = this
+            registry.getHandler(tag)?.hostDetectorView = this
           }
           attachedHandlers.add(tag)
         }
