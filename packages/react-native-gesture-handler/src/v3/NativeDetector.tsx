@@ -3,7 +3,7 @@ import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
-import { LogicChildrenProps, LogicMethods, NativeDetectorProps } from './types';
+import { LogicChildren, LogicMethods, NativeDetectorProps } from './types';
 import { invokeDetectorEvent } from './hooks/utils';
 import { DetectorContext } from './useDetectorContext';
 
@@ -14,7 +14,7 @@ const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
-  const [logicChildren, setLogicChildren] = useState<LogicChildrenProps[]>([]);
+  const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
   const logicMethods = useRef<Map<number, RefObject<LogicMethods>>>(new Map());
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
@@ -25,7 +25,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       : HostGestureDetector;
 
   const register = useCallback(
-    (child: LogicChildrenProps, methods: RefObject<LogicMethods>) => {
+    (child: LogicChildren, methods: RefObject<LogicMethods>) => {
       setLogicChildren((prev) => {
         if (prev.some((c) => c.viewTag === child.viewTag)) {
           return prev;

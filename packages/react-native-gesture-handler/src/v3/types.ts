@@ -77,7 +77,7 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export interface LogicChildrenProps {
+export interface LogicChildren {
   viewTag: number;
   handlerTags: number[];
 }

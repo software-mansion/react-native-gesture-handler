@@ -18,7 +18,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var moduleId: Int = -1
   private var logicChildren: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
 
-  data class LogicProps(val handlerTags: List<Int>, val viewTag: Int)
+  data class LogicChildren(val handlerTags: List<Int>, val viewTag: Int)
 
   fun setHandlerTags(handlerTags: ReadableArray?) {
     val newHandlers = handlerTags?.toArrayList()?.map { (it as Double).toInt() } ?: emptyList()
@@ -43,7 +43,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   fun setLogicChildren(newLogicChildren: ReadableArray?) {
     val logicChildrenToDelete = logicChildren.keys.toMutableSet()
 
-    val mappedChildren = newLogicChildren?.mapLogicProps().orEmpty()
+    val mappedChildren = newLogicChildren?.mapLogicChildren().orEmpty()
 
     for (child in mappedChildren) {
       if (!logicChildren.containsKey(child.viewTag)) {
@@ -171,8 +171,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
   }
 
-  private fun ReadableArray.mapLogicProps(): List<LogicProps> {
-    val mappedChildren = mutableListOf<LogicProps>()
+  private fun ReadableArray.mapLogicChildren(): List<LogicChildren> {
+    val mappedChildren = mutableListOf<LogicChildren>()
 
     for (i in 0 until this.size()) {
       val child = this.getMap(i) ?: continue
@@ -189,7 +189,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       val viewTag = child.getInt("viewTag")
 
       mappedChildren.add(
-        LogicProps(
+        LogicChildren(
           handlerTags = handlerTags,
           viewTag = viewTag,
         ),
