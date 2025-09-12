@@ -1,33 +1,17 @@
-import React, {
-  createContext,
-  RefObject,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from 'react';
+import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
 import { LogicChildrenProps, LogicMethods, NativeDetectorProps } from './types';
 import { invokeNullableMethod } from './hooks/utils';
+import { DetectorContext } from './useDetectorContext';
 
 const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);
 
 const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
-
-type DetectorContextType = {
-  register: (
-    child: LogicChildrenProps,
-    methods: RefObject<LogicMethods>
-  ) => void;
-  unregister: (child: number) => void;
-};
-
-const DetectorContext = createContext<DetectorContextType | null>(null);
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   const [logicChildren, setLogicChildren] = useState<LogicChildrenProps[]>([]);
@@ -129,14 +113,6 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       </NativeDetectorComponent>
     </DetectorContext.Provider>
   );
-}
-
-export function useDetectorContext() {
-  const ctx = useContext(DetectorContext);
-  if (!ctx) {
-    throw new Error('Logic detector must be under a Native Detector');
-  }
-  return ctx;
 }
 
 const styles = StyleSheet.create({
