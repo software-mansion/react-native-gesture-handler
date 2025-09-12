@@ -9,7 +9,7 @@ import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
-import { ComposedGestureType, Gesture } from '../types';
+import { ComposedGestureName, Gesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseAndConfigureRelations = (
@@ -46,8 +46,8 @@ export const traverseAndConfigureRelations = (
       // we add the tags of the simultaneous gesture to the `simultaneousHandlers`.
       // This way when we traverse the child, we already have the tags of the simultaneous gestures
       if (
-        node.type !== ComposedGestureType.Simultaneous &&
-        child.type === ComposedGestureType.Simultaneous
+        node.type !== ComposedGestureName.Simultaneous &&
+        child.type === ComposedGestureName.Simultaneous
       ) {
         child.tags.forEach((tag) => simultaneousHandlers.add(tag));
       }
@@ -56,8 +56,8 @@ export const traverseAndConfigureRelations = (
       // we remove the tags of the child gestures from the `simultaneousHandlers`,
       // as those are not simultaneous with each other.
       if (
-        node.type === ComposedGestureType.Simultaneous &&
-        child.type !== ComposedGestureType.Simultaneous
+        node.type === ComposedGestureName.Simultaneous &&
+        child.type !== ComposedGestureName.Simultaneous
       ) {
         child.tags.forEach((tag) => simultaneousHandlers.delete(tag));
       }
@@ -75,8 +75,8 @@ export const traverseAndConfigureRelations = (
       // we want to delete the tags of the simultaneous gesture from the `simultaneousHandlers` -
       // those gestures are not simultaneous with each other anymore.
       if (
-        child.type === ComposedGestureType.Simultaneous &&
-        node.type !== ComposedGestureType.Simultaneous
+        child.type === ComposedGestureName.Simultaneous &&
+        node.type !== ComposedGestureName.Simultaneous
       ) {
         node.tags.forEach((tag) => simultaneousHandlers.delete(tag));
       }
@@ -85,15 +85,15 @@ export const traverseAndConfigureRelations = (
       // we want to add the tags of the simultaneous gesture to the `simultaneousHandlers`,
       // as those gestures are simultaneous with other children of the current node.
       if (
-        child.type !== ComposedGestureType.Simultaneous &&
-        node.type === ComposedGestureType.Simultaneous
+        child.type !== ComposedGestureName.Simultaneous &&
+        node.type === ComposedGestureName.Simultaneous
       ) {
         node.tags.forEach((tag) => simultaneousHandlers.add(tag));
       }
 
       // If we go back to an exclusive gesture, we want to add the tags of the child gesture to the `waitFor` array.
       // This will allow us to pass exclusive gesture tags to the right subtree of the current node.
-      if (node.type === ComposedGestureType.Exclusive) {
+      if (node.type === ComposedGestureName.Exclusive) {
         child.tags.forEach((tag) => waitFor.push(tag));
       }
 
@@ -101,8 +101,8 @@ export const traverseAndConfigureRelations = (
       // to the previous state, siblings of the exclusive gesture are not exclusive with it. Since we use `push` method to
       // add tags to the `waitFor` array, we can override `length` property to reset it to the previous state.
       if (
-        child.type === ComposedGestureType.Exclusive &&
-        node.type !== ComposedGestureType.Exclusive
+        child.type === ComposedGestureName.Exclusive &&
+        node.type !== ComposedGestureName.Exclusive
       ) {
         waitFor.length = length;
       }
@@ -119,7 +119,7 @@ export const traverseAndConfigureRelations = (
       }
 
       // In the leaf node, we only care about filling `waitFor` array.
-      if (node.type === ComposedGestureType.Exclusive) {
+      if (node.type === ComposedGestureName.Exclusive) {
         waitFor.push(child.tag);
       }
     }
@@ -133,7 +133,7 @@ export function configureRelations(gesture: Gesture) {
     );
 
     // If root is simultaneous, we want to add its tags to the set
-    if (gesture.type === ComposedGestureType.Simultaneous) {
+    if (gesture.type === ComposedGestureName.Simultaneous) {
       gesture.tags.forEach((tag) => simultaneousHandlers.add(tag));
     }
 

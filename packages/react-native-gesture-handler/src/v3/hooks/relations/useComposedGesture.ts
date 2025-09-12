@@ -3,7 +3,7 @@ import {
   UpdateEvent,
   TouchEvent,
   ComposedGesture,
-  ComposedGestureType,
+  ComposedGestureName,
   Gesture,
 } from '../../types';
 import { tagMessage } from '../../../utils';
@@ -12,7 +12,7 @@ import { containsDuplicates, isComposedGesture } from '../utils/relationUtils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
-  type: ComposedGestureType,
+  type: ComposedGestureName,
   ...gestures: Gesture[]
 ): ComposedGesture {
   const tags = gestures.flatMap((gesture) =>
