@@ -1,0 +1,37 @@
+name: Test relations traversal algorithm
+
+on:
+  pull_request:
+    paths:
+      - packages/react-native-gesture-handler/src/v3/**
+      - packages/react-native-gesture-handler/src/__tests__/RelationsTraversal.test.tsx
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  check:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: ubuntu-latest
+    concurrency:
+      group: jest-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install node dependencies
+        run: yarn --immutable
+
+      - name: Run tests
+        working-directory: packages/react-native-gesture-handler
+        run: yarn test RelationsTraversal
