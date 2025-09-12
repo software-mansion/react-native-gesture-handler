@@ -1,13 +1,13 @@
-import { ComposedGestureType, Gesture } from '../../types';
+import { ComposedGestureName, Gesture } from '../../types';
 import { useComposedGesture } from './useComposedGesture';
 
 export function useExclusive(...gestures: Gesture<unknown, unknown>[]) {
   const composedGesture = useComposedGesture(
-    ComposedGestureType.Exclusive,
+    ComposedGestureName.Exclusive,
     ...gestures
   );
 
-  composedGesture.type = ComposedGestureType.Exclusive;
+  composedGesture.type = ComposedGestureName.Exclusive;
 
   return composedGesture;
 }

@@ -9,17 +9,18 @@ import {
   shouldHandleTouchEvents,
 } from './utils';
 import { tagMessage } from '../../utils';
-import { BaseGestureConfig, NativeGesture, SingleGestureType } from '../types';
+import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
 import {
   bindSharedValues,
   hasWorkletEventHandlers,
   unbindSharedValues,
 } from './utils/reanimatedUtils';
+import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture<THandlerData, TConfig>(
-  type: SingleGestureType,
+  type: SingleGestureName,
   config: BaseGestureConfig<THandlerData, TConfig>
-): NativeGesture<THandlerData, TConfig> {
+): SingleGesture<THandlerData, TConfig> {
   const tag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
 
@@ -78,6 +79,8 @@ export function useGesture<THandlerData, TConfig>(
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
+  const gestureRelations = prepareRelations(config, tag);
+
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
     RNGestureHandlerModule.flushOperations();
@@ -119,10 +122,6 @@ export function useGesture<THandlerData, TConfig>(
       onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
-    gestureRelations: {
-      simultaneousHandlers: [],
-      waitFor: [],
-      blocksHandlers: [],
-    },
+    gestureRelations,
   };
 }

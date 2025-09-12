@@ -38,7 +38,7 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export enum SingleGestureType {
+export enum SingleGestureName {
   Tap = 'TapGestureHandler',
   LongPress = 'LongPressGestureHandler',
   Pan = 'PanGestureHandler',
@@ -49,7 +49,7 @@ export enum SingleGestureType {
   Native = 'NativeGestureHandler',
 }
 
-export enum ComposedGestureType {
+export enum ComposedGestureName {
   Simultaneous = 'SimultaneousGesture',
   Exclusive = 'ExclusiveGesture',
   Race = 'RaceGesture',
@@ -77,9 +77,9 @@ export type GestureRelations = {
   blocksHandlers: number[];
 };
 
-export type NativeGesture<THandlerData, TConfig> = {
+export type SingleGesture<THandlerData, TConfig> = {
   tag: number;
-  type: SingleGestureType;
+  type: SingleGestureName;
   config: BaseGestureConfig<THandlerData, TConfig>;
   gestureEvents: GestureEvents<THandlerData>;
   gestureRelations: GestureRelations;
@@ -87,12 +87,13 @@ export type NativeGesture<THandlerData, TConfig> = {
 
 export type ComposedGesture = {
   tags: number[];
-  type: ComposedGestureType;
+  type: ComposedGestureName;
   config: {
     shouldUseReanimated: boolean;
     dispatchesAnimatedEvents: boolean;
   };
   gestureEvents: GestureEvents<unknown>;
+  externalSimultaneousHandlers: number[];
   gestures: Gesture<unknown, unknown>[];
 };
 
@@ -102,7 +103,7 @@ export type ChangeCalculatorType<THandlerData> = (
 ) => UpdateEvent<THandlerData>;
 
 export type Gesture<THandlerData, TConfig> =
-  | NativeGesture<THandlerData, TConfig>
+  | SingleGesture<THandlerData, TConfig>
   | ComposedGesture;
 
 interface ExternalRelations {

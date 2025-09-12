@@ -9,16 +9,11 @@ import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
-import {
-  ComposedGesture,
-  ComposedGestureType,
-  Gesture,
-  NativeGesture,
-} from '../types';
+import { ComposedGestureName, Gesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
-export const traverseGestureRelations = (
-  node: NativeGesture<unknown, unknown> | ComposedGesture,
+export const traverseAndConfigureRelations = (
+  node: Gesture<unknown, unknown>,
   simultaneousHandlers: Set<number>,
   waitFor: number[] = []
 ) => {
@@ -51,8 +46,8 @@ export const traverseGestureRelations = (
       // we add the tags of the simultaneous gesture to the `simultaneousHandlers`.
       // This way when we traverse the child, we already have the tags of the simultaneous gestures
       if (
-        node.type !== ComposedGestureType.Simultaneous &&
-        child.type === ComposedGestureType.Simultaneous
+        node.type !== ComposedGestureName.Simultaneous &&
+        child.type === ComposedGestureName.Simultaneous
       ) {
         child.tags.forEach((tag) => simultaneousHandlers.add(tag));
       }
@@ -61,8 +56,8 @@ export const traverseGestureRelations = (
       // we remove the tags of the child gestures from the `simultaneousHandlers`,
       // as those are not simultaneous with each other.
       if (
-        node.type === ComposedGestureType.Simultaneous &&
-        child.type !== ComposedGestureType.Simultaneous
+        node.type === ComposedGestureName.Simultaneous &&
+        child.type !== ComposedGestureName.Simultaneous
       ) {
         child.tags.forEach((tag) => simultaneousHandlers.delete(tag));
       }
@@ -72,7 +67,7 @@ export const traverseGestureRelations = (
       const length = waitFor.length;
 
       // We traverse the child, passing the current `waitFor` and `simultaneousHandlers`.
-      traverseGestureRelations(child, simultaneousHandlers, waitFor);
+      traverseAndConfigureRelations(child, simultaneousHandlers, waitFor);
 
       // After traversing the child, we need to update `waitFor` and `simultaneousHandlers`
 
@@ -80,8 +75,8 @@ export const traverseGestureRelations = (
       // we want to delete the tags of the simultaneous gesture from the `simultaneousHandlers` -
       // those gestures are not simultaneous with each other anymore.
       if (
-        child.type === ComposedGestureType.Simultaneous &&
-        node.type !== ComposedGestureType.Simultaneous
+        child.type === ComposedGestureName.Simultaneous &&
+        node.type !== ComposedGestureName.Simultaneous
       ) {
         node.tags.forEach((tag) => simultaneousHandlers.delete(tag));
       }
@@ -90,15 +85,15 @@ export const traverseGestureRelations = (
       // we want to add the tags of the simultaneous gesture to the `simultaneousHandlers`,
       // as those gestures are simultaneous with other children of the current node.
       if (
-        child.type !== ComposedGestureType.Simultaneous &&
-        node.type === ComposedGestureType.Simultaneous
+        child.type !== ComposedGestureName.Simultaneous &&
+        node.type === ComposedGestureName.Simultaneous
       ) {
         node.tags.forEach((tag) => simultaneousHandlers.add(tag));
       }
 
       // If we go back to an exclusive gesture, we want to add the tags of the child gesture to the `waitFor` array.
       // This will allow us to pass exclusive gesture tags to the right subtree of the current node.
-      if (node.type === ComposedGestureType.Exclusive) {
+      if (node.type === ComposedGestureName.Exclusive) {
         child.tags.forEach((tag) => waitFor.push(tag));
       }
 
@@ -106,19 +101,25 @@ export const traverseGestureRelations = (
       // to the previous state, siblings of the exclusive gesture are not exclusive with it. Since we use `push` method to
       // add tags to the `waitFor` array, we can override `length` property to reset it to the previous state.
       if (
-        child.type === ComposedGestureType.Exclusive &&
-        node.type !== ComposedGestureType.Exclusive
+        child.type === ComposedGestureName.Exclusive &&
+        node.type !== ComposedGestureName.Exclusive
       ) {
         waitFor.length = length;
       }
     }
     // This means that child is a leaf node.
     else {
-      // In the leaf node, we only care about filling `waitFor` array. First we traverse the child...
-      traverseGestureRelations(child, simultaneousHandlers, waitFor);
+      // We don't want to mark gesture as simultaneous with itself, so we remove its tag from the set.
+      const hasRemovedTag = simultaneousHandlers.delete(child.tag);
 
-      // ..and when we go back we add the tag of the child to the `waitFor` array.
-      if (node.type === ComposedGestureType.Exclusive) {
+      traverseAndConfigureRelations(child, simultaneousHandlers, waitFor);
+
+      if (hasRemovedTag) {
+        simultaneousHandlers.add(child.tag);
+      }
+
+      // In the leaf node, we only care about filling `waitFor` array.
+      if (node.type === ComposedGestureName.Exclusive) {
         waitFor.push(child.tag);
       }
     }
@@ -127,17 +128,20 @@ export const traverseGestureRelations = (
 
 export function configureRelations(gesture: Gesture<unknown, unknown>) {
   if (isComposedGesture(gesture)) {
-    traverseGestureRelations(
-      gesture,
-      new Set(
-        // If root is simultaneous, we want to add its tags to the set
-        gesture.type === ComposedGestureType.Simultaneous ? gesture.tags : []
-      )
+    const simultaneousHandlers = new Set<number>(
+      gesture.externalSimultaneousHandlers
     );
+
+    // If root is simultaneous, we want to add its tags to the set
+    if (gesture.type === ComposedGestureName.Simultaneous) {
+      gesture.tags.forEach((tag) => simultaneousHandlers.add(tag));
+    }
+
+    traverseAndConfigureRelations(gesture, simultaneousHandlers);
   } else {
     RNGestureHandlerModule.configureRelations(
       gesture.tag,
-      prepareRelations(gesture.config, gesture.tag)
+      gesture.gestureRelations
     );
   }
 }

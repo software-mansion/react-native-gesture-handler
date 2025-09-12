@@ -1,13 +1,7 @@
-import {
-  BaseGestureConfig,
-  ComposedGesture,
-  Gesture,
-  GestureRelations,
-  NativeGesture,
-} from '../../types';
+import { ComposedGesture, Gesture, GestureRelations } from '../../types';
 
 export function isComposedGesture(
-  gesture: NativeGesture<unknown, unknown> | ComposedGesture
+  gesture: Gesture<unknown, unknown>
 ): gesture is ComposedGesture {
   return 'tags' in gesture;
 }
@@ -37,24 +31,42 @@ function extractHandlerTags(
   return otherTags;
 }
 
-// TODO: Handle composed gestures passed into external relations
-export function prepareRelations<THandlerData, TConfig>(
-  config: BaseGestureConfig<THandlerData, TConfig>,
+function makeSimultaneousWithExternalGestureSymmetric(
+  otherHandler:
+    | Gesture<unknown, unknown>
+    | Gesture<unknown, unknown>[]
+    | undefined,
+  handlerTag: number
+) {
+  if (!otherHandler) {
+    return;
+  }
+
+  const processSingleGesture = (gesture: Gesture<unknown, unknown>) => {
+    const simultaneousHandlers = isComposedGesture(gesture)
+      ? gesture.externalSimultaneousHandlers
+      : gesture.gestureRelations.simultaneousHandlers;
+
+    if (!simultaneousHandlers.includes(handlerTag)) {
+      simultaneousHandlers.push(handlerTag);
+    }
+  };
+
+  if (Array.isArray(otherHandler)) {
+    otherHandler.forEach(processSingleGesture);
+  } else {
+    processSingleGesture(otherHandler);
+  }
+}
+
+export function prepareRelations(
+  config: any,
   handlerTag: number
 ): GestureRelations {
-  if (config.simultaneousWithExternalGesture) {
-    if (Array.isArray(config.simultaneousWithExternalGesture)) {
-      for (const gesture of config.simultaneousWithExternalGesture) {
-        // @ts-ignore TODO: handle composed gestures
-        gesture.gestureRelations.simultaneousHandlers.push(handlerTag);
-      }
-    } else {
-      // @ts-ignore TODO: handle composed gestures
-      config.simultaneousWithExternalGesture.gestureRelations.simultaneousHandlers.push(
-        handlerTag
-      );
-    }
-  }
+  makeSimultaneousWithExternalGestureSymmetric(
+    config.simultaneousWithExternalGesture,
+    handlerTag
+  );
 
   return {
     simultaneousHandlers: extractHandlerTags(
@@ -66,7 +78,5 @@ export function prepareRelations<THandlerData, TConfig>(
 }
 
 export function containsDuplicates(tags: number[]) {
-  const tagSet = new Set(tags);
-
-  return tagSet.size !== tags.length;
+  return new Set(tags).size !== tags.length;
 }

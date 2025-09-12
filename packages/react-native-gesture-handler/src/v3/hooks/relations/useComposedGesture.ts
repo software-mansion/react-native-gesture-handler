@@ -3,7 +3,7 @@ import {
   UpdateEvent,
   TouchEvent,
   ComposedGesture,
-  ComposedGestureType,
+  ComposedGestureName,
   Gesture,
 } from '../../types';
 import { tagMessage } from '../../../utils';
@@ -12,7 +12,7 @@ import { containsDuplicates, isComposedGesture } from '../utils/relationUtils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
-  type: ComposedGestureType,
+  type: ComposedGestureName,
   ...gestures: Gesture<unknown, unknown>[]
 ): ComposedGesture {
   const tags = gestures.flatMap((gesture) =>
@@ -20,9 +20,9 @@ export function useComposedGesture(
   );
 
   if (containsDuplicates(tags)) {
-    console.warn(
+    throw new Error(
       tagMessage(
-        'Using the same gesture more than once in gesture composition can lead to unexpected behavior.'
+        'Each gesture can be used only once in the gesture composition.'
       )
     );
   }
@@ -88,12 +88,21 @@ export function useComposedGesture(
 
   let onGestureHandlerAnimatedEvent;
 
-  for (const gesture of gestures) {
-    if (gesture.gestureEvents.onGestureHandlerAnimatedEvent) {
-      onGestureHandlerAnimatedEvent =
-        gesture.gestureEvents.onGestureHandlerAnimatedEvent;
+  const gesturesWithAnimatedEvent = gestures.filter(
+    (gesture) =>
+      gesture.gestureEvents.onGestureHandlerAnimatedEvent !== undefined
+  );
 
-      break;
+  if (gesturesWithAnimatedEvent.length > 0) {
+    onGestureHandlerAnimatedEvent =
+      gesturesWithAnimatedEvent[0].gestureEvents.onGestureHandlerAnimatedEvent;
+
+    if (__DEV__ && gesturesWithAnimatedEvent.length > 1) {
+      console.warn(
+        tagMessage(
+          'Composed gesture can handle only one Animated event. The first one will be used, others will be ignored.'
+        )
+      );
     }
   }
 
@@ -110,6 +119,7 @@ export function useComposedGesture(
       onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
+    externalSimultaneousHandlers: [],
     gestures,
   };
 }

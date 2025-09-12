@@ -3,7 +3,7 @@ import { Animated, Button, useAnimatedValue } from 'react-native';
 import {
   GestureHandlerRootView,
   NativeDetector,
-  SingleGestureType,
+  SingleGestureName,
   useGesture,
 } from 'react-native-gesture-handler';
 
@@ -18,7 +18,7 @@ export default function App() {
     }
   );
 
-  const gesture = useGesture(SingleGestureType.Pan, {
+  const gesture = useGesture(SingleGestureName.Pan, {
     onUpdate: event,
   });
 
