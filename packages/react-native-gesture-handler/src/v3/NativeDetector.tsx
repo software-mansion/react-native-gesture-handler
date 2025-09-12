@@ -4,7 +4,7 @@ import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../utils';
 import { LogicChildrenProps, LogicMethods, NativeDetectorProps } from './types';
-import { invokeNullableMethod } from './hooks/utils';
+import { invokeDetectorEvent } from './hooks/utils';
 import { DetectorContext } from './useDetectorContext';
 
 const AnimatedNativeDetector =
@@ -61,49 +61,49 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
             ? gesture.gestureEvents.onGestureHandlerStateChange
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onGestureHandlerStateChange;
-          invokeNullableMethod(method, e);
+          invokeDetectorEvent(method, e);
         }}
         onGestureHandlerEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onGestureHandlerEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onGestureHandlerEvent;
-          invokeNullableMethod(method, e);
+          invokeDetectorEvent(method, e);
         }}
         onGestureHandlerAnimatedEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onGestureHandlerAnimatedEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onGestureHandlerAnimatedEvent;
-          invokeNullableMethod(method, e);
+          invokeDetectorEvent(method, e);
         }}
         onGestureHandlerTouchEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onGestureHandlerTouchEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onGestureHandlerTouchEvent;
-          invokeNullableMethod(method, e);
+          invokeDetectorEvent(method, e);
         }}
         onGestureHandlerReanimatedStateChange={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onReanimatedStateChange
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onReanimatedStateChange;
-          invokeNullableMethod(method, e);
+          invokeDetectorEvent(method, e);
         }}
         onGestureHandlerReanimatedEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onReanimatedUpdateEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onReanimatedUpdateEvent;
-          invokeNullableMethod(method, e);
+          invokeDetectorEvent(method, e);
         }}
         onGestureHandlerReanimatedTouchEvent={(e) => {
           const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
             ? gesture.gestureEvents.onReanimatedTouchEvent
             : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
                 ?.onReanimatedTouchEvent;
-          invokeNullableMethod(method, e);
+          invokeDetectorEvent(method, e);
         }}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={[gesture.tag]}

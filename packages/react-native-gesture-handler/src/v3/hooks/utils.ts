@@ -188,7 +188,7 @@ export function hash(str: string) {
   return h >>> 0;
 }
 
-export function invokeNullableMethod(
+export function invokeDetectorEvent(
   method:
     | ((event: any) => void)
     | { workletEventHandler: { worklet: (event: any) => void } }
@@ -208,7 +208,7 @@ export function invokeNullableMethod(
   if ('workletEventHandler' in method) {
     const we = method.workletEventHandler;
     if ('worklet' in we) {
-      invokeNullableMethod(we.worklet, event);
+      invokeDetectorEvent(we.worklet, event);
     }
     return;
   }
