@@ -15,12 +15,12 @@
 
 @property (nonatomic, nonnull) NSMutableSet *nativeHandlers;
 @property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
+@property (nonatomic) std::unordered_map<int, NSMutableSet *> attachedLogicHandlers;
 
 @end
 
 @implementation RNGestureHandlerDetector {
   int _moduleId;
-  std::unordered_map<int, NSMutableSet *> logicChildren;
 }
 
 #if TARGET_OS_OSX
@@ -56,12 +56,12 @@
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
-    for (const auto &child : logicChildren) {
+    for (const auto &child : _attachedLogicHandlers) {
       for (id handlerTag : child.second) {
         [handlerManager.registry detachHandlerWithTag:handlerTag];
       }
     }
-    logicChildren.clear();
+    _attachedLogicHandlers.clear();
   }
 }
 
@@ -211,13 +211,13 @@
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
       NSMutableSet *logicChildrenToDelete = [NSMutableSet set];
-  for (const std::pair<const int, NSMutableSet *> &child : logicChildren) {
+  for (const std::pair<const int, NSMutableSet *> &child : _attachedLogicHandlers) {
     [logicChildrenToDelete addObject:@(child.first)];
   }
 
   for (const RNGestureHandlerDetectorLogicChildrenStruct &child : newProps.logicChildren) {
-    if (logicChildren.find(child.viewTag) == logicChildren.end()) {
-      logicChildren[child.viewTag] = [NSMutableSet set];
+    if (_attachedLogicHandlers.find(child.viewTag) == _attachedLogicHandlers.end()) {
+      _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
     }
 
     [logicChildrenToDelete removeObject:@(child.viewTag)];
@@ -225,11 +225,11 @@
     [self attachHandlers:child.handlerTags
               actionType:RNGestureHandlerActionTypeLogicDetector
                  viewTag:child.viewTag
-        attachedHandlers:logicChildren[child.viewTag]];
+        attachedHandlers:_attachedLogicHandlers[child.viewTag]];
   }
 
   for (const NSNumber *childTag : logicChildrenToDelete) {
-    for (id handlerTag : logicChildren[childTag.intValue]) {
+    for (id handlerTag : _attachedLogicHandlers[childTag.intValue]) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }

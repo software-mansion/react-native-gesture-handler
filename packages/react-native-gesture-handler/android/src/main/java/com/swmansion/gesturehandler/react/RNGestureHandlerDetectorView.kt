@@ -15,8 +15,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private var handlersToAttach: List<Int>? = null
   private var nativeHandlers: MutableSet<Int> = mutableSetOf()
   private var attachedHandlers: MutableSet<Int> = mutableSetOf()
+  private var attachedLogicHandlers: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
   private var moduleId: Int = -1
-  private var logicChildren: MutableMap<Int, MutableSet<Int>> = mutableMapOf()
 
   data class LogicChildren(val handlerTags: List<Int>, val viewTag: Int)
 
@@ -41,20 +41,20 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   fun setLogicChildren(newLogicChildren: ReadableArray?) {
-    val logicChildrenToDelete = logicChildren.keys.toMutableSet()
+    val logicChildrenToDelete = attachedLogicHandlers.keys.toMutableSet()
 
     val mappedChildren = newLogicChildren?.mapLogicChildren().orEmpty()
 
     for (child in mappedChildren) {
-      if (!logicChildren.containsKey(child.viewTag)) {
-        logicChildren.put(child.viewTag, mutableSetOf())
+      if (!attachedLogicHandlers.containsKey(child.viewTag)) {
+        attachedLogicHandlers.put(child.viewTag, mutableSetOf())
       }
       logicChildrenToDelete.remove(child.viewTag)
       attachHandlers(
         child.handlerTags,
         child.viewTag,
         GestureHandler.ACTION_TYPE_LOGIC_DETECTOR,
-        logicChildren[child.viewTag]!!,
+        attachedLogicHandlers[child.viewTag]!!,
       )
     }
 
@@ -62,7 +62,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       val registry = RNGestureHandlerModule.registries[moduleId]
         ?: throw Exception("Tried to access a non-existent registry")
       registry.detachHandler(childTag)
-      logicChildren.remove(childTag)
+      attachedLogicHandlers.remove(childTag)
     }
   }
 
@@ -163,7 +163,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       attachedHandlers.remove(tag)
     }
 
-    for (child in logicChildren) {
+    for (child in attachedLogicHandlers) {
       for (tag in child.value) {
         registry.detachHandler(tag)
       }
