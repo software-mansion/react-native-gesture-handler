@@ -188,6 +188,11 @@ export function hash(str: string) {
   return h >>> 0;
 }
 
+// Some event handlers are plain functions, whereas those marked as worklets
+// are wrapped in objects under eventMethod.workletEventHandler.worklet.
+// This function normalises invocation so that both forms can be called safely.
+// Note: this worklet unpacking is essentially a workaround since we need to
+// decide on the JS side which handle logic to execute.
 export function invokeDetectorEvent(
   method:
     | ((event: any) => void)
