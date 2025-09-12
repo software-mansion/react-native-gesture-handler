@@ -1,4 +1,4 @@
-import { extractTouchHandlers } from '../../utils';
+import { extractTouchHandlers } from '../../utils/eventHandlersUtils';
 import { getTouchEventHandler } from '../touchEventHandler';
 
 export function useGestureTouchEvent(handlerTag: number, config: any) {

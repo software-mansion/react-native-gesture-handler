@@ -59,6 +59,9 @@ let Reanimated:
       >(
         value: unknown
       ): value is WorkletFunction<Args, ReturnValue>;
+      useComposedEventHandler<T>(
+        handlers: (((event: T) => void) | null)[]
+      ): (event: T) => void;
       runOnUI<A extends any[], R>(
         fn: (...args: A) => R
       ): (...args: Parameters<typeof fn>) => void;
