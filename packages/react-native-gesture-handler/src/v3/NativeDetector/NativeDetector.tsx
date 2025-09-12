@@ -9,7 +9,7 @@ import { isComposedGesture } from '../hooks/utils/relationUtils';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
-  gesture: Gesture<unknown, unknown>;
+  gesture: Gesture;
 }
 
 const AnimatedNativeDetector =

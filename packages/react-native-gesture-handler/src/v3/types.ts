@@ -94,7 +94,7 @@ export type ComposedGesture = {
   };
   gestureEvents: GestureEvents<unknown>;
   externalSimultaneousHandlers: number[];
-  gestures: Gesture<unknown, unknown>[];
+  gestures: Gesture[];
 };
 
 export type ChangeCalculatorType<THandlerData> = (
@@ -102,20 +102,14 @@ export type ChangeCalculatorType<THandlerData> = (
   previous?: UpdateEvent<THandlerData>
 ) => UpdateEvent<THandlerData>;
 
-export type Gesture<THandlerData, TConfig> =
+export type Gesture<THandlerData = unknown, TConfig = unknown> =
   | SingleGesture<THandlerData, TConfig>
   | ComposedGesture;
 
 interface ExternalRelations {
-  simultaneousWithExternalGesture?:
-    | Gesture<unknown, unknown>
-    | Gesture<unknown, unknown>[];
-  requireExternalGestureToFail?:
-    | Gesture<unknown, unknown>
-    | Gesture<unknown, unknown>[];
-  blocksExternalGesture?:
-    | Gesture<unknown, unknown>
-    | Gesture<unknown, unknown>[];
+  simultaneousWithExternalGesture?: Gesture | Gesture[];
+  requireExternalGestureToFail?: Gesture | Gesture[];
+  blocksExternalGesture?: Gesture | Gesture[];
 }
 
 export interface GestureCallbacks<THandlerData> {

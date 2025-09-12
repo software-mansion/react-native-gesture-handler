@@ -1,16 +1,13 @@
 import { ComposedGesture, Gesture, GestureRelations } from '../../types';
 
 export function isComposedGesture(
-  gesture: Gesture<unknown, unknown>
+  gesture: Gesture
 ): gesture is ComposedGesture {
   return 'tags' in gesture;
 }
 
 function extractHandlerTags(
-  otherHandler:
-    | Gesture<unknown, unknown>
-    | Gesture<unknown, unknown>[]
-    | undefined
+  otherHandler: Gesture | Gesture[] | undefined
 ): number[] {
   if (!otherHandler) {
     return [];
@@ -19,7 +16,7 @@ function extractHandlerTags(
   let otherTags: number[];
 
   if (Array.isArray(otherHandler)) {
-    otherTags = otherHandler.flatMap((gesture: Gesture<unknown, unknown>) =>
+    otherTags = otherHandler.flatMap((gesture: Gesture) =>
       isComposedGesture(gesture) ? gesture.tags : gesture.tag
     );
   } else {
@@ -32,17 +29,14 @@ function extractHandlerTags(
 }
 
 function makeSimultaneousWithExternalGestureSymmetric(
-  otherHandler:
-    | Gesture<unknown, unknown>
-    | Gesture<unknown, unknown>[]
-    | undefined,
+  otherHandler: Gesture | Gesture[] | undefined,
   handlerTag: number
 ) {
   if (!otherHandler) {
     return;
   }
 
-  const processSingleGesture = (gesture: Gesture<unknown, unknown>) => {
+  const processSingleGesture = (gesture: Gesture) => {
     const simultaneousHandlers = isComposedGesture(gesture)
       ? gesture.externalSimultaneousHandlers
       : gesture.gestureRelations.simultaneousHandlers;

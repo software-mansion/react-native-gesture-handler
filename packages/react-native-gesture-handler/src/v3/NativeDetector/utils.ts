@@ -13,7 +13,7 @@ import { ComposedGestureName, Gesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseAndConfigureRelations = (
-  node: Gesture<unknown, unknown>,
+  node: Gesture,
   simultaneousHandlers: Set<number>,
   waitFor: number[] = []
 ) => {
@@ -126,7 +126,7 @@ export const traverseAndConfigureRelations = (
   });
 };
 
-export function configureRelations(gesture: Gesture<unknown, unknown>) {
+export function configureRelations(gesture: Gesture) {
   if (isComposedGesture(gesture)) {
     const simultaneousHandlers = new Set<number>(
       gesture.externalSimultaneousHandlers

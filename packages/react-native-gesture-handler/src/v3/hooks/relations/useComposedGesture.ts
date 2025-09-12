@@ -13,7 +13,7 @@ import { containsDuplicates, isComposedGesture } from '../utils/relationUtils';
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
   type: ComposedGestureName,
-  ...gestures: Gesture<unknown, unknown>[]
+  ...gestures: Gesture[]
 ): ComposedGesture {
   const tags = gestures.flatMap((gesture) =>
     isComposedGesture(gesture) ? gesture.tags : gesture.tag
