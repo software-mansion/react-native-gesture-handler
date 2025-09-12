@@ -44,9 +44,7 @@ export function useComposedGesture(
     );
   }
 
-  const onGestureHandlerStateChange = (
-    event: StateChangeEvent<Record<string, unknown>>
-  ) => {
+  const onGestureHandlerStateChange = (event: StateChangeEvent<unknown>) => {
     for (const gesture of gestures) {
       if (gesture.gestureEvents.onGestureHandlerStateChange) {
         gesture.gestureEvents.onGestureHandlerStateChange(event);
@@ -54,9 +52,7 @@ export function useComposedGesture(
     }
   };
 
-  const onGestureHandlerEvent = (
-    event: UpdateEvent<Record<string, unknown>>
-  ) => {
+  const onGestureHandlerEvent = (event: UpdateEvent<unknown>) => {
     for (const gesture of gestures) {
       if (gesture.gestureEvents.onGestureHandlerEvent) {
         gesture.gestureEvents.onGestureHandlerEvent(event);

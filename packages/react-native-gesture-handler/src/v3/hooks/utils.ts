@@ -1,28 +1,29 @@
 import { NativeSyntheticEvent } from 'react-native';
 import {
   AnimatedEvent,
+  BaseGestureConfig,
   GestureHandlerEvent,
-  GestureStateChangeEventWithData,
-  GestureUpdateEventWithData,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
-export function isNativeEvent(
-  event: GestureHandlerEvent<unknown>
+export function isNativeEvent<THandlerData>(
+  event: GestureHandlerEvent<THandlerData>
 ): event is
-  | NativeSyntheticEvent<GestureUpdateEventWithData<unknown>>
-  | NativeSyntheticEvent<GestureStateChangeEventWithData<unknown>>
+  | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>
+  | NativeSyntheticEvent<GestureStateChangeEvent<THandlerData>>
   | NativeSyntheticEvent<GestureTouchEvent> {
   'worklet';
 
   return 'nativeEvent' in event;
 }
 
-export function isEventForHandlerWithTag(
+export function isEventForHandlerWithTag<THandlerData>(
   handlerTag: number,
-  event: GestureHandlerEvent<Record<string, unknown>>
+  event: GestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
@@ -31,8 +32,11 @@ export function isEventForHandlerWithTag(
     : event.handlerTag === handlerTag;
 }
 
-export function isAnimatedEvent(
-  callback: ((event: any) => void) | AnimatedEvent | undefined
+export function isAnimatedEvent<THandlerData>(
+  callback:
+    | ((event: GestureUpdateEvent<THandlerData>) => void)
+    | AnimatedEvent
+    | undefined
 ): callback is AnimatedEvent {
   'worklet';
 
@@ -58,26 +62,32 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function prepareConfig(config: any) {
+export function prepareConfig<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
   const copy = { ...config };
 
   for (const key in copy) {
+    // @ts-ignore It is fine to use string as index
     if (Reanimated?.isSharedValue(copy[key])) {
+      // @ts-ignore It is fine to use string as index
       copy[key] = copy[key].value;
     }
   }
 
   // TODO: Filter changes - passing functions (and possibly other types)
   // causes a native crash
-  copy.onUpdate = null;
-  copy.simultaneousWithExternalGesture = null;
-  copy.requireExternalGestureToFail = null;
-  copy.blocksExternalGesture = null;
+  delete copy.onUpdate;
+  delete copy.simultaneousWithExternalGesture;
+  delete copy.requireExternalGestureToFail;
+  delete copy.blocksExternalGesture;
 
   return copy;
 }
 
-export function shouldHandleTouchEvents(config: Record<string, unknown>) {
+export function shouldHandleTouchEvents<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
   return (
     !!config.onTouchesDown ||
     !!config.onTouchesMove ||

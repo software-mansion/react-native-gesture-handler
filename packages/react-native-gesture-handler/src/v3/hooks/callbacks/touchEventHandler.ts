@@ -1,5 +1,5 @@
 import { NativeSyntheticEvent } from 'react-native';
-import { CallbackHandlers, TouchEvent } from '../../types';
+import { GestureCallbacks, TouchEvent } from '../../types';
 import { isEventForHandlerWithTag, isNativeEvent } from '../utils';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
@@ -8,9 +8,9 @@ import {
   touchEventTypeToCallbackType,
 } from '../utils/eventHandlersUtils';
 
-export function getTouchEventHandler(
+export function getTouchEventHandler<THandlerData>(
   handlerTag: number,
-  callbacks: CallbackHandlers
+  callbacks: GestureCallbacks<THandlerData>
 ) {
   return (event: TouchEvent) => {
     'worklet';
