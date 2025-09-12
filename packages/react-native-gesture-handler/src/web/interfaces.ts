@@ -131,7 +131,7 @@ export interface ResultEvent<T extends ResultEventType = ResultEventType>
 export interface PropsRef {
   onGestureHandlerEvent: (e: ResultEvent) => void;
   onGestureHandlerStateChange: (e: ResultEvent) => void;
-  onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
+  onGestureHandlerTouchEvent: (e: ResultEvent) => void;
   onGestureHandlerReanimatedEvent?: (e: ResultEvent) => void;
   onGestureHandlerReanimatedStateChange?: (e: ResultEvent) => void;
   onGestureHandlerReanimatedTouchEvent?: (e: ResultEvent) => void;
