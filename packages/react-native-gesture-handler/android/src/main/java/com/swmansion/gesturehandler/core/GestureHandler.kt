@@ -32,7 +32,7 @@ open class GestureHandler {
   var view: View? = null
     private set
 
-  // parent view is used for logicDetector
+  // Parent view is used for Logic Detector
   var parentView: RNGestureHandlerDetectorView? = null
 
   val viewForEvents: RNGestureHandlerDetectorView
