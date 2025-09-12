@@ -49,7 +49,7 @@ class RNGestureHandlerButtonWrapperShadowNode final
   }
 
   void layout(LayoutContext layoutContext) override;
-  void appendChild(const ShadowNode::Shared &child) override;
+  void appendChild(const std::shared_ptr<const ShadowNode> &child) override;
 
  private:
   void initialize();

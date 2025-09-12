@@ -55,7 +55,7 @@ void RNGestureHandlerButtonWrapperShadowNode::prepareChildren() {
 }
 
 void RNGestureHandlerButtonWrapperShadowNode::appendChild(
-    const ShadowNode::Shared &child) {
+    const std::shared_ptr<const ShadowNode> &child) {
   YogaLayoutableShadowNode::appendChild(child);
   prepareChildren();
 }
