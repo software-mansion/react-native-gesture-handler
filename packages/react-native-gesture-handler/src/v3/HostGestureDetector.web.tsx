@@ -102,11 +102,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [handlerTags, children]);
 
   useEffect(() => {
-    const logicChildrenToDelete: Set<number> = new Set();
-
-    for (const key of attachedLogicHandlers.current.keys()) {
-      logicChildrenToDelete.add(key);
-    }
+    const logicChildrenToDelete: Set<number> = new Set(
+      attachedLogicHandlers.current.keys()
+    );
 
     props.logicChildren?.forEach((child) => {
       if (!attachedLogicHandlers.current.has(child.viewTag)) {
