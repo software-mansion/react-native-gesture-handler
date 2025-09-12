@@ -41,7 +41,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   fun setLogicChildren(newLogicChildren: ReadableArray?) {
-    val logicChildrenToDelete = attachedLogicHandlers.keys.toMutableSet()
+    val logicHandlersToDetach = attachedLogicHandlers.keys.toMutableSet()
 
     val mappedChildren = newLogicChildren?.mapLogicChildren().orEmpty()
 
@@ -49,7 +49,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       if (!attachedLogicHandlers.containsKey(child.viewTag)) {
         attachedLogicHandlers.put(child.viewTag, mutableSetOf())
       }
-      logicChildrenToDelete.remove(child.viewTag)
+      logicHandlersToDetach.remove(child.viewTag)
       attachHandlers(
         child.handlerTags,
         child.viewTag,
@@ -58,11 +58,11 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       )
     }
 
-    for (childTag in logicChildrenToDelete) {
+    for (tag in logicHandlersToDetach) {
       val registry = RNGestureHandlerModule.registries[moduleId]
         ?: throw Exception("Tried to access a non-existent registry")
-      registry.detachHandler(childTag)
-      attachedLogicHandlers.remove(childTag)
+      registry.detachHandler(tag)
+      attachedLogicHandlers.remove(tag)
     }
   }
 
