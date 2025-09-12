@@ -37,7 +37,7 @@ open class GestureHandler {
 
   val viewForEvents: RNGestureHandlerDetectorView
     get() {
-      assert(actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_LOGIC_DETECTOR) {
+      assert(isV3Api(actionType)) {
         "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
       }
 
@@ -1045,6 +1045,10 @@ open class GestureHandler {
       }
       return null
     }
+
+    @JvmStatic
+    fun isV3Api(actionType: Int): Boolean =
+      actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_LOGIC_DETECTOR
   }
 
   private data class PointerData(
