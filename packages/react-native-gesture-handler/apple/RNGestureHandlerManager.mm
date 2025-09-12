@@ -303,6 +303,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                                               // but results in a compilation error.
 {
   switch (actionType) {
+    case RNGestureHandlerActionTypeLogicDetector: {
+      NSNumber *hostDetectorTag = [[_registry handlerWithTag:event.handlerTag] getHostDetectorTag];
+      detectorView = [self viewForReactTag:hostDetectorTag];
+    }
     case RNGestureHandlerActionTypeNativeDetector: {
       if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
         switch (eventHandlerType) {
@@ -477,4 +481,8 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
+- (RNGHUIView *)viewForReactTag:(NSNumber *)reactTag
+{
+  return [_viewRegistry viewForReactTag:reactTag];
+}
 @end

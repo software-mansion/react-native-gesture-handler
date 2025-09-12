@@ -6,6 +6,34 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
 
+export type GestureType =
+  | 'TapGestureHandler'
+  | 'LongPressGestureHandler'
+  | 'PanGestureHandler'
+  | 'PinchGestureHandler'
+  | 'RotationGestureHandler'
+  | 'FlingGestureHandler'
+  | 'ForceTouchGestureHandler'
+  | 'ManualGestureHandler'
+  | 'NativeViewGestureHandler';
+
+export type GestureEvents = {
+  onGestureHandlerStateChange: (event: any) => void;
+  onGestureHandlerEvent: undefined | ((event: any) => void);
+  onGestureHandlerTouchEvent: (event: any) => void;
+  onReanimatedStateChange: undefined | ((event: any) => void);
+  onReanimatedUpdateEvent: undefined | ((event: any) => void);
+  onReanimatedTouchEvent: undefined | ((event: any) => void);
+  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
+};
+
+export interface NativeGesture {
+  tag: number;
+  name: GestureType;
+  config: Record<string, unknown>;
+  gestureEvents: GestureEvents;
+}
+
 export type GestureUpdateEventWithData<T> = GestureEventPayload & {
   handlerData: T;
 };
@@ -48,3 +76,23 @@ export type CallbackHandlers = Omit<
 export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
+
+export interface LogicChildren {
+  viewTag: number;
+  handlerTags: number[];
+}
+
+export interface NativeDetectorProps {
+  children?: React.ReactNode;
+  gesture: NativeGesture;
+}
+
+export interface LogicMethods {
+  onGestureHandlerEvent?: (e: any) => void;
+  onGestureHandlerStateChange?: (e: any) => void;
+  onGestureHandlerTouchEvent?: (e: any) => void;
+  onGestureHandlerAnimatedEvent?: (e: any) => void;
+  onReanimatedStateChange?: (e: any) => void;
+  onReanimatedUpdateEvent?: (e: any) => void;
+  onReanimatedTouchEvent?: (e: any) => void;
+}

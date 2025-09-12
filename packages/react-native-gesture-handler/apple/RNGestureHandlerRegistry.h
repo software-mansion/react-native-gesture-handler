@@ -18,5 +18,4 @@
 - (void)detachHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropAllHandlers;
-
 @end

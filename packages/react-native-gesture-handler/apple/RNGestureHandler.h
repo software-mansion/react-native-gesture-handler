@@ -106,6 +106,9 @@
 - (nonnull RNGHUIView *)findViewForEvents;
 - (BOOL)wantsToAttachDirectlyToView;
 
+- (void)setHostDetectorTag:(nonnull NSNumber *)hostDetectorTag;
+- (nonnull NSNumber *)getHostDetectorTag;
+
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
 #else

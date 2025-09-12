@@ -26,8 +26,8 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     eventHandlerType: EventHandlerType,
   ) {
-    val view = if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
-      handler.viewForEvents!!
+    val view = if (GestureHandler.isV3Api(handler.actionType)) {
+      handler.viewForEvents
     } else {
       handler.view!!
     }
@@ -45,7 +45,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+  override fun getEventName() = if (GestureHandler.isV3Api(actionType)) {
     if (eventHandlerType == EventHandlerType.ForAnimated) {
       NATIVE_DETECTOR_ANIMATED_EVENT_NAME
     } else if (eventHandlerType == EventHandlerType.ForReanimated) {
@@ -63,7 +63,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   override fun getCoalescingKey() = coalescingKey
 
-  override fun getEventData(): WritableMap = if (actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+  override fun getEventData(): WritableMap = if (GestureHandler.isV3Api(actionType)) {
     createNativeEventData(dataBuilder!!)
   } else {
     createEventData(dataBuilder!!)

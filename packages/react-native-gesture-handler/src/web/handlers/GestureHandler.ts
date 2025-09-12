@@ -24,7 +24,7 @@ import {
 } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType } from '../../ActionType';
+import { ActionType, isV3Api } from '../../ActionType';
 import { tagMessage } from '../../utils';
 import {
   GestureStateChangeEventWithData,
@@ -86,12 +86,13 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
+
     this.delegate.init(viewRef, this);
   }
 
   public detach() {
     if (this.state === State.ACTIVE) {
-      this.cancel();
+      this.cancelTouches();
     } else {
       this.fail();
     }
@@ -390,10 +391,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.transformTouchEvent(event);
 
     if (touchEvent) {
-      if (
-        onGestureHandlerTouchEvent &&
-        this.actionType === ActionType.NATIVE_DETECTOR
-      ) {
+      if (onGestureHandlerTouchEvent && isV3Api(this.actionType)) {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
       } else {
         invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -411,30 +409,30 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerStateChange,
       onGestureHandlerAnimatedEvent,
     }: PropsRef = this.propsRef!.current;
-    const resultEvent: ResultEvent =
-      this.actionType !== ActionType.NATIVE_DETECTOR
-        ? this.transformEventData(newState, oldState)
-        : this.lastSentState !== newState
-          ? this.transformStateChangeEvent(newState, oldState)
-          : this.transformUpdateEvent(newState);
+
+    const resultEvent: ResultEvent = !isV3Api(this.actionType)
+      ? this.transformEventData(newState, oldState)
+      : this.lastSentState !== newState
+        ? this.transformStateChangeEvent(newState, oldState)
+        : this.transformUpdateEvent(newState);
 
     // In the v2 API oldState field has to be undefined, unless we send event state changed
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
-
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
     if (this.state === State.ACTIVE) {
-      if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+      if (!isV3Api(this.actionType)) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
       if (onGestureHandlerAnimatedEvent && this.dispatchesAnimatedEvents) {
         invokeNullableMethod(onGestureHandlerAnimatedEvent, resultEvent);
       }
+
       invokeNullableMethod(onGestureHandlerEvent, resultEvent);
     }
   };
