@@ -199,8 +199,6 @@
   const auto &oldProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(oldPropsBase);
   _moduleId = newProps.moduleId;
 
-  static std::vector<int> emptyVector;
-
   [self attachHandlers:newProps.handlerTags
             actionType:RNGestureHandlerActionTypeNativeDetector
                viewTag:-1
