@@ -2,6 +2,8 @@ import { NativeSyntheticEvent } from 'react-native';
 import {
   AnimatedEvent,
   BaseGestureConfig,
+  ChangeCalculatorType,
+  DiffCalculatorType,
   ExcludeInternalConfigProps,
   ExtractedGestureHandlerEvent,
   GestureHandlerEvent,
@@ -129,4 +131,24 @@ export function remapProps<TConfig extends object, TInternalConfig>(
   });
 
   return newConfig;
+}
+
+export function getChangeEventCalculator<THandlerData>(
+  diffCalculator: DiffCalculatorType<THandlerData>
+): ChangeCalculatorType<THandlerData> {
+  'worklet';
+  return (
+    current: GestureUpdateEvent<THandlerData>,
+    previous?: GestureUpdateEvent<THandlerData>
+  ) => {
+    const currentEventData = current.handlerData;
+    const previousEventData = previous ? previous.handlerData : null;
+
+    const changePayload = diffCalculator(currentEventData, previousEventData);
+
+    const resultEvent = { ...current };
+    resultEvent.handlerData = { ...currentEventData, ...changePayload };
+
+    return resultEvent;
+  };
 }

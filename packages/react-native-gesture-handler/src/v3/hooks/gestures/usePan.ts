@@ -2,11 +2,11 @@ import { StylusData } from '../../../handlers/gestureHandlerCommon';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureUpdateEvent,
+  HandlerData,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { remapProps } from '../utils';
+import { getChangeEventCalculator, remapProps } from '../utils';
 
 type CommonPanGestureProps = {
   /**
@@ -239,29 +239,19 @@ function transformPanProps(
   }
 }
 
-function changeEventCalculator(
-  current: GestureUpdateEvent<PanHandlerData>,
-  previous?: GestureUpdateEvent<PanHandlerData>
-): GestureUpdateEvent<PanHandlerData> {
+function diffCalculator(
+  current: HandlerData<PanHandlerData>,
+  previous: HandlerData<PanHandlerData> | null
+) {
   'worklet';
-
-  const currentEventData = current.handlerData;
-  const previousEventData = previous ? previous.handlerData : null;
-
-  const changePayload = previousEventData
-    ? {
-        changeX: currentEventData.translationX - previousEventData.translationX,
-        changeY: currentEventData.translationY - previousEventData.translationY,
-      }
-    : {
-        changeX: currentEventData.translationX,
-        changeY: currentEventData.translationY,
-      };
-
-  const resultEvent = { ...current };
-  resultEvent.handlerData = { ...currentEventData, ...changePayload };
-
-  return resultEvent;
+  return {
+    changeX: previous
+      ? current.translationX - previous.translationX
+      : current.translationX,
+    changeY: previous
+      ? current.translationY - previous.translationY
+      : current.translationY,
+  };
 }
 
 export function usePan(config: PanGestureConfig) {
@@ -276,7 +266,7 @@ export function usePan(config: PanGestureConfig) {
 
   transformPanProps(panConfig);
 
-  panConfig.changeEventCalculator = changeEventCalculator;
+  panConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
   return useGesture<PanHandlerData, PanGestureInternalProps>(
     SingleGestureName.Pan,

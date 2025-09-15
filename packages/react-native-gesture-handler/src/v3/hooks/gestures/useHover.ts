@@ -3,11 +3,11 @@ import { HoverEffect } from '../../../handlers/gestures/hoverGesture';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureUpdateEvent,
+  HandlerData,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
+import { cloneConfig, getChangeEventCalculator } from '../utils';
 
 type HoverGestureProps = {
   /**
@@ -40,34 +40,21 @@ type HoverGestureInternalConfig = BaseGestureConfig<
 export type HoverGestureConfig =
   ExcludeInternalConfigProps<HoverGestureInternalConfig>;
 
-function changeEventCalculator(
-  current: GestureUpdateEvent<HoverHandlerData>,
-  previous?: GestureUpdateEvent<HoverHandlerData>
-): GestureUpdateEvent<HoverHandlerData> {
+function diffCalculator(
+  current: HandlerData<HoverHandlerData>,
+  previous: HandlerData<HoverHandlerData> | null
+) {
   'worklet';
-
-  const currentEventData = current.handlerData;
-  const previousEventData = previous ? previous.handlerData : null;
-
-  const changePayload = previousEventData
-    ? {
-        changeX: currentEventData.x - previousEventData.x,
-        changeY: currentEventData.y - previousEventData.y,
-      }
-    : {
-        changeX: currentEventData.x,
-        changeY: currentEventData.y,
-      };
-
-  const resultEvent = { ...current };
-  resultEvent.handlerData = { ...currentEventData, ...changePayload };
-
-  return resultEvent;
+  return {
+    changeX: previous ? current.x - previous.x : current.x,
+    changeY: previous ? current.y - previous.y : current.y,
+  };
 }
 
 export function useHover(config: HoverGestureConfig) {
   const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureProps>(config);
-  hoverConfig.changeEventCalculator = changeEventCalculator;
+
+  hoverConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }

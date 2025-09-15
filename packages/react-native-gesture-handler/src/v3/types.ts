@@ -121,6 +121,11 @@ export type ChangeCalculatorType<THandlerData> = (
   previous?: GestureUpdateEvent<THandlerData>
 ) => GestureUpdateEvent<THandlerData>;
 
+export type DiffCalculatorType<THandlerData> = (
+  current: HandlerData<THandlerData>,
+  previous: HandlerData<THandlerData> | null
+) => Partial<HandlerData<THandlerData>>;
+
 export type Gesture<THandlerData = unknown, TConfig = unknown> =
   | SingleGesture<THandlerData, TConfig>
   | ComposedGesture;

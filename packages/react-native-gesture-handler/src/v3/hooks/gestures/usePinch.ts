@@ -1,11 +1,11 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureUpdateEvent,
+  HandlerData,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
+import { cloneConfig, getChangeEventCalculator } from '../utils';
 
 type PinchGestureProps = {};
 
@@ -25,31 +25,20 @@ type PinchGestureInternalConfig = BaseGestureConfig<
 export type PinchGestureConfig =
   ExcludeInternalConfigProps<PinchGestureInternalConfig>;
 
-function changeEventCalculator(
-  current: GestureUpdateEvent<PinchHandlerData>,
-  previous?: GestureUpdateEvent<PinchHandlerData>
-): GestureUpdateEvent<PinchHandlerData> {
+function diffCalculator(
+  current: HandlerData<PinchHandlerData>,
+  previous: HandlerData<PinchHandlerData> | null
+) {
   'worklet';
-
-  const currentEventData = current.handlerData;
-  const previousEventData = previous ? previous.handlerData : null;
-
-  const changePayload = {
-    scaleChange: previousEventData
-      ? currentEventData.scale / previousEventData.scale
-      : currentEventData.scale,
+  return {
+    scaleChange: previous ? current.scale / previous.scale : current.scale,
   };
-
-  const resultEvent = { ...current };
-  resultEvent.handlerData = { ...currentEventData, ...changePayload };
-
-  return resultEvent;
 }
 
 export function usePinch(config: PinchGestureConfig) {
   const pinchConfig = cloneConfig<PinchHandlerData, PinchGestureProps>(config);
 
-  pinchConfig.changeEventCalculator = changeEventCalculator;
+  pinchConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }

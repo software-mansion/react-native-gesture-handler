@@ -1,11 +1,11 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureUpdateEvent,
+  HandlerData,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
+import { cloneConfig, getChangeEventCalculator } from '../utils';
 
 type RotationGestureProps = {};
 
@@ -25,25 +25,16 @@ type RotationGestureInternalConfig = BaseGestureConfig<
 export type RotationGestureConfig =
   ExcludeInternalConfigProps<RotationGestureInternalConfig>;
 
-function changeEventCalculator(
-  current: GestureUpdateEvent<RotationHandlerData>,
-  previous?: GestureUpdateEvent<RotationHandlerData>
-): GestureUpdateEvent<RotationHandlerData> {
+function diffCalculator(
+  current: HandlerData<RotationHandlerData>,
+  previous: HandlerData<RotationHandlerData> | null
+) {
   'worklet';
-
-  const currentEventData = current.handlerData;
-  const previousEventData = previous ? previous.handlerData : null;
-
-  const changePayload = {
-    rotationChange: previousEventData
-      ? currentEventData.rotation - previousEventData.rotation
-      : currentEventData.rotation,
+  return {
+    rotationChange: previous
+      ? current.rotation - previous.rotation
+      : current.rotation,
   };
-
-  const resultEvent = { ...current };
-  resultEvent.handlerData = { ...currentEventData, ...changePayload };
-
-  return resultEvent;
 }
 
 export function useRotation(config: RotationGestureConfig) {
@@ -51,7 +42,8 @@ export function useRotation(config: RotationGestureConfig) {
     config
   );
 
-  rotationConfig.changeEventCalculator = changeEventCalculator;
+  rotationConfig.changeEventCalculator =
+    getChangeEventCalculator(diffCalculator);
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }
