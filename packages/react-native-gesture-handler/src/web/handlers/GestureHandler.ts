@@ -453,7 +453,6 @@ export default abstract class GestureHandler implements IGestureHandler {
         ),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
-        target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
         pointerType: this.pointerType,
       },
@@ -474,11 +473,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         oldState: oldState,
         numberOfPointers: this.tracker.trackedPointersCount,
         handlerData: {
-          pointerInside: this.delegate.isPointerInBounds(
-            this.tracker.getAbsoluteCoordsAverage()
-          ),
           ...this.transformNativeEvent(),
-          target: this.viewRef,
         },
       },
       timeStamp: Date.now(),
@@ -496,11 +491,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         pointerType: this.pointerType,
         numberOfPointers: this.tracker.trackedPointersCount,
         handlerData: {
-          pointerInside: this.delegate.isPointerInBounds(
-            this.tracker.getAbsoluteCoordsAverage()
-          ),
           ...this.transformNativeEvent(),
-          target: this.viewRef,
         },
       },
       timeStamp: Date.now(),

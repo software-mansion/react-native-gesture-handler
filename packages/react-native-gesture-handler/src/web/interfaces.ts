@@ -96,7 +96,6 @@ export interface GestureHandlerNativeEvent
   state: State;
   pointerInside: boolean | undefined;
   handlerTag: number;
-  target: number;
   oldState?: State;
   pointerType: PointerType;
 }
