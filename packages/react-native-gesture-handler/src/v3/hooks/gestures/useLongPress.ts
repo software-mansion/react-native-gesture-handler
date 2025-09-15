@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { remapProps } from '../utils';
 
-export interface LongPressGestureHandlerProps {
+type LongPressGestureHandlerProps = {
   /**
    * Minimum time, expressed in milliseconds, that a finger must remain pressed on
    * the corresponding view. The default value is 500.
@@ -25,7 +25,7 @@ export interface LongPressGestureHandlerProps {
    * Determine exact number of points required to handle the long press gesture.
    */
   numberOfPointers?: number;
-}
+};
 
 type LongPressGestureHandlerPropsInternal = {
   minDurationMs?: number;
