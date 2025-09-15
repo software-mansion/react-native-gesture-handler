@@ -27,6 +27,15 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const attachedNativeHandlers = useRef<Set<number>>(new Set<number>());
   const attachedLogicHandlers = useRef<Map<number, Set<number>>>(new Map());
 
+  const detachAllHandlers = (attachedHandlerTags: Set<number>) => {
+    // Separate function to reduce the number of conditions
+    attachedHandlerTags.forEach((tag) => {
+      RNGestureHandlerModule.detachGestureHandler(tag);
+      attachedNativeHandlers.current.delete(tag);
+    });
+    attachedHandlerTags.clear();
+  };
+
   const detachHandlers = (
     oldHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>
@@ -34,15 +43,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     oldHandlerTags.forEach((tag) => {
       RNGestureHandlerModule.detachGestureHandler(tag);
       attachedNativeHandlers.current.delete(tag);
+      attachedHandlerTags.delete(tag);
     });
-
-    if (oldHandlerTags === attachedHandlerTags) {
-      attachedHandlerTags.clear();
-    } else {
-      for (const tag of oldHandlerTags) {
-        attachedHandlerTags.delete(tag);
-      }
-    }
   };
 
   const attachHandlers = (
@@ -121,19 +123,15 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
 
     logicHandlersToDetach.forEach((tag) => {
-      detachHandlers(
-        attachedLogicHandlers.current.get(tag)!,
-        attachedLogicHandlers.current.get(tag)!
-      );
-      attachedLogicHandlers.current.delete(tag);
+      detachAllHandlers(attachedLogicHandlers.current.get(tag)!);
     });
   }, [props.logicChildren]);
 
   useEffect(() => {
     return () => {
-      detachHandlers(attachedHandlers.current, attachedHandlers.current);
-      attachedLogicHandlers?.current.forEach((child) => {
-        detachHandlers(child, child);
+      detachAllHandlers(attachedHandlers.current);
+      attachedLogicHandlers?.current.forEach((childHandlerTags) => {
+        detachAllHandlers(childHandlerTags);
       });
     };
   }, []);
