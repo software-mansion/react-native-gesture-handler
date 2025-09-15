@@ -64,6 +64,10 @@ export function useLongPress(config: LongPressGestureConfig) {
     LongPressGestureInternalConfig
   >(config, LongPressPropsMapping);
 
+  if (longPressConfig.shouldCancelWhenOutside === undefined) {
+    longPressConfig.shouldCancelWhenOutside = true;
+  }
+
   return useGesture<LongPressHandlerData, LongPressGesturePropsInternal>(
     SingleGestureName.LongPress,
     longPressConfig

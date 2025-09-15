@@ -1,8 +1,13 @@
 import { Animated, NativeSyntheticEvent } from 'react-native';
 import {
+  ActiveCursor,
   GestureEventPayload,
   GestureTouchEvent,
   HandlerStateChangeEventPayload,
+  HitSlop,
+  MouseButton,
+  TouchAction,
+  UserSelect,
 } from '../handlers/gestureHandlerCommon';
 import { PointerType } from '../PointerType';
 
@@ -151,6 +156,14 @@ export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   TConfig &
   InternalConfigProps<THandlerData> & {
     disableReanimated?: boolean;
+    enabled?: boolean;
+    shouldCancelWhenOutside?: boolean;
+    hitSlop?: HitSlop;
+    userSelect?: UserSelect;
+    activeCursor?: ActiveCursor;
+    mouseButton?: MouseButton;
+    enableContextMenu?: boolean;
+    touchAction?: TouchAction;
   };
 
 export type ExcludeInternalConfigProps<T> = Omit<
