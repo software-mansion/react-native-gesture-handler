@@ -21,3 +21,6 @@ export { useManual } from './useManual';
 
 export type { NativeViewGestureConfig } from './useNative';
 export { useNative } from './useNative';
+
+export type { PanGestureConfig } from './usePan';
+export { usePan } from './usePan';
