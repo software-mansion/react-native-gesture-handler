@@ -1,14 +1,15 @@
 import React from 'react';
-import { NativeGesture } from './hooks/useGesture';
-import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
-
+import { Gesture } from '../types';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
-import { tagMessage } from '../utils';
+import { tagMessage } from '../../utils';
+import { configureRelations } from './utils';
+import { isComposedGesture } from '../hooks/utils/relationUtils';
 
 export interface NativeDetectorProps {
   children?: React.ReactNode;
-  gesture: NativeGesture;
+  gesture: Gesture;
 }
 
 const AnimatedNativeDetector =
@@ -34,21 +35,29 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
     );
   }
 
+  configureRelations(gesture);
+
   return (
     <NativeDetectorComponent
+      // @ts-ignore TODO: Fix types
       onGestureHandlerStateChange={
         gesture.gestureEvents.onGestureHandlerStateChange
       }
+      // @ts-ignore TODO: Fix types
       onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
+      // @ts-ignore TODO: Fix types
       onGestureHandlerTouchEvent={
         gesture.gestureEvents.onGestureHandlerTouchEvent
       }
+      // @ts-ignore TODO: Fix types
       onGestureHandlerReanimatedStateChange={
         gesture.gestureEvents.onReanimatedStateChange
       }
+      // @ts-ignore TODO: Fix types
       onGestureHandlerReanimatedEvent={
         gesture.gestureEvents.onReanimatedUpdateEvent
       }
+      // @ts-ignore TODO: Fix types
       onGestureHandlerReanimatedTouchEvent={
         gesture.gestureEvents.onReanimatedTouchEvent
       }
@@ -56,7 +65,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
         gesture.gestureEvents.onGestureHandlerAnimatedEvent
       }
       moduleId={globalThis._RNGH_MODULE_ID}
-      handlerTags={[gesture.tag]}
+      handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
       style={styles.detector}>
       {children}
     </NativeDetectorComponent>
