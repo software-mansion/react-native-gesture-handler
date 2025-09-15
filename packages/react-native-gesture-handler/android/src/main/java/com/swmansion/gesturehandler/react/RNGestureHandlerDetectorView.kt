@@ -173,29 +173,20 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
   private fun ReadableArray.mapLogicChildren(): List<LogicChildren> {
     val mappedChildren = mutableListOf<LogicChildren>()
-
     for (i in 0 until this.size()) {
       val child = this.getMap(i) ?: continue
-
-      val handlerTagsArray = child.getArray("handlerTags")
-      val handlerTags = mutableListOf<Int>()
-
-      if (handlerTagsArray != null) {
-        for (j in 0 until handlerTagsArray.size()) {
-          handlerTags.add(handlerTagsArray.getInt(j))
-        }
-      }
-
+      val handlerTags = child.getArray("handlerTags")?.toIntList().orEmpty()
       val viewTag = child.getInt("viewTag")
 
       mappedChildren.add(
         LogicChildren(
-          handlerTags = handlerTags,
-          viewTag = viewTag,
+          handlerTags,
+          viewTag,
         ),
       )
     }
-
     return mappedChildren
   }
 }
+
+private fun ReadableArray.toIntList(): List<Int> = (0 until size()).map { getInt(it) }
