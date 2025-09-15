@@ -1018,7 +1018,6 @@ open class GestureHandler {
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     const val ACTION_TYPE_NATIVE_DETECTOR = 5
-
     const val ACTION_TYPE_LOGIC_DETECTOR = 6
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
