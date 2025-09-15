@@ -2,6 +2,7 @@ import { NativeSyntheticEvent } from 'react-native';
 import {
   AnimatedEvent,
   BaseGestureConfig,
+  ExcludeInternalConfigProps,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
@@ -94,6 +95,12 @@ export function shouldHandleTouchEvents<THandlerData, TConfig>(
     !!config.onTouchesUp ||
     !!config.onTouchesCancelled
   );
+}
+
+export function cloneConfig<THandlerData, TConfig>(
+  config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>
+): BaseGestureConfig<THandlerData, TConfig> {
+  return { ...config } as BaseGestureConfig<THandlerData, TConfig>;
 }
 
 export function remapProps<TConfig extends object, TInternalConfig>(
