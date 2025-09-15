@@ -15,3 +15,6 @@ export { useRotation } from './useRotation';
 
 export type { HoverGestureConfig } from './useHover';
 export { useHover } from './useHover';
+
+export type { ManualGestureConfig } from './useManual';
+export { useManual } from './useManual';
