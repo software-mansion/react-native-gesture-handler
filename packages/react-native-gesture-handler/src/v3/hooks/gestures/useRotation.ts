@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type RotationGestureHandlerProps = {};
+type RotationGestureProps = {};
 
 type RotationHandlerData = {
   rotation: number;
@@ -17,17 +17,16 @@ type RotationHandlerData = {
 
 type RotationGestureInternalConfig = BaseGestureConfig<
   RotationHandlerData,
-  RotationGestureHandlerProps
+  RotationGestureProps
 >;
 
 export type RotationGestureConfig =
   ExcludeInternalConfigProps<RotationGestureInternalConfig>;
 
 export function useRotation(config: RotationGestureConfig) {
-  const rotationConfig = cloneConfig<
-    RotationHandlerData,
-    RotationGestureHandlerProps
-  >(config);
+  const rotationConfig = cloneConfig<RotationHandlerData, RotationGestureProps>(
+    config
+  );
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }

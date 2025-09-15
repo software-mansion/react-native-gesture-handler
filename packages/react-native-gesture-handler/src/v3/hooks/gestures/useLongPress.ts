@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { remapProps } from '../utils';
 
-type LongPressGestureHandlerProps = {
+type LongPressGestureProps = {
   /**
    * Minimum time, expressed in milliseconds, that a finger must remain pressed on
    * the corresponding view. The default value is 500.
@@ -27,7 +27,7 @@ type LongPressGestureHandlerProps = {
   numberOfPointers?: number;
 };
 
-type LongPressGestureHandlerPropsInternal = {
+type LongPressGesturePropsInternal = {
   minDurationMs?: number;
   maxDist?: number;
   numberOfPointers?: number;
@@ -42,17 +42,17 @@ type LongPressHandlerData = {
 };
 
 export type LongPressGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<LongPressHandlerData, LongPressGestureHandlerProps>
+  BaseGestureConfig<LongPressHandlerData, LongPressGestureProps>
 >;
 
 type LongPressGestureInternalConfig = BaseGestureConfig<
   LongPressHandlerData,
-  LongPressGestureHandlerPropsInternal
+  LongPressGesturePropsInternal
 >;
 
 const LongPressPropsMapping = new Map<
-  keyof LongPressGestureHandlerProps,
-  keyof LongPressGestureHandlerPropsInternal
+  keyof LongPressGestureProps,
+  keyof LongPressGesturePropsInternal
 >([
   ['minDuration', 'minDurationMs'],
   ['maxDistance', 'maxDist'],
@@ -64,7 +64,7 @@ export function useLongPress(config: LongPressGestureConfig) {
     LongPressGestureInternalConfig
   >(config, LongPressPropsMapping);
 
-  return useGesture<LongPressHandlerData, LongPressGestureHandlerPropsInternal>(
+  return useGesture<LongPressHandlerData, LongPressGesturePropsInternal>(
     SingleGestureName.LongPress,
     longPressConfig
   );

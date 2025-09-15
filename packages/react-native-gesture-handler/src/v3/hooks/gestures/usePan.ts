@@ -7,7 +7,7 @@ import {
 import { useGesture } from '../useGesture';
 import { remapProps } from '../utils';
 
-type CommonPanProps = {
+type CommonPanGestureProps = {
   /**
    * Minimum distance the finger (or multiple finger) need to travel before the
    * handler activates. Expressed in points.
@@ -46,7 +46,7 @@ type CommonPanProps = {
   activateAfterLongPress?: number;
 };
 
-export type PanGestureHandlerProps = CommonPanProps & {
+export type PanGestureProps = CommonPanGestureProps & {
   /**
    * Range along X axis (in points) where fingers travels without activation of
    * handler. Moving outside of this range implies activation of handler. Range
@@ -92,7 +92,7 @@ export type PanGestureHandlerProps = CommonPanProps & {
   failOffsetX?: number | [failOffsetXStart: number, failOffsetXEnd: number];
 };
 
-type PanGestureInternalProps = CommonPanProps & {
+type PanGestureInternalProps = CommonPanGestureProps & {
   minDist?: number;
   activeOffsetYStart?: number;
   activeOffsetYEnd?: number;
@@ -117,7 +117,7 @@ type PanHandlerData = {
 };
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<PanHandlerData, PanGestureHandlerProps>
+  BaseGestureConfig<PanHandlerData, PanGestureProps>
 >;
 
 type PanGestureInternalConfig = BaseGestureConfig<
@@ -126,7 +126,7 @@ type PanGestureInternalConfig = BaseGestureConfig<
 >;
 
 const PanPropsMapping = new Map<
-  keyof PanGestureHandlerProps,
+  keyof PanGestureProps,
   keyof PanGestureInternalProps
 >([['minDistance', 'minDist']]);
 

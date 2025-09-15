@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type PinchGestureHandlerProps = {};
+type PinchGestureProps = {};
 
 type PinchHandlerData = {
   scale: number;
@@ -17,16 +17,14 @@ type PinchHandlerData = {
 
 type PinchGestureInternalConfig = BaseGestureConfig<
   PinchHandlerData,
-  PinchGestureHandlerProps
+  PinchGestureProps
 >;
 
 export type PinchGestureConfig =
   ExcludeInternalConfigProps<PinchGestureInternalConfig>;
 
 export function usePinch(config: PinchGestureConfig) {
-  const pinchConfig = cloneConfig<PinchHandlerData, PinchGestureHandlerProps>(
-    config
-  );
+  const pinchConfig = cloneConfig<PinchHandlerData, PinchGestureProps>(config);
 
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }

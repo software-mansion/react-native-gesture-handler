@@ -6,23 +6,22 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type ManualGestureHandlerProps = {};
+type ManualGestureProps = {};
 
 type ManualHandlerData = {};
 
 type ManualGestureInternalConfig = BaseGestureConfig<
   ManualHandlerData,
-  ManualGestureHandlerProps
+  ManualGestureProps
 >;
 
 export type ManualGestureConfig =
   ExcludeInternalConfigProps<ManualGestureInternalConfig>;
 
 export function useManual(config: ManualGestureConfig) {
-  const manualConfig = cloneConfig<
-    ManualHandlerData,
-    ManualGestureHandlerProps
-  >(config);
+  const manualConfig = cloneConfig<ManualHandlerData, ManualGestureProps>(
+    config
+  );
 
   return useGesture(SingleGestureName.Manual, manualConfig);
 }

@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type NativeViewGestureHandlerProps = {
+type NativeViewGestureProps = {
   /**
    * Android only.
    *
@@ -26,18 +26,18 @@ type NativeViewHandlerData = {
   pointerInside: boolean;
 };
 
-type NativeViewGestureHandlerInternalConfig = BaseGestureConfig<
+type NativeViewGestureInternalConfig = BaseGestureConfig<
   NativeViewHandlerData,
-  NativeViewGestureHandlerProps
+  NativeViewGestureProps
 >;
 
 export type NativeViewGestureConfig =
-  ExcludeInternalConfigProps<NativeViewGestureHandlerInternalConfig>;
+  ExcludeInternalConfigProps<NativeViewGestureInternalConfig>;
 
 export function useNative(config: NativeViewGestureConfig) {
   const nativeConfig = cloneConfig<
     NativeViewHandlerData,
-    NativeViewGestureHandlerProps
+    NativeViewGestureProps
   >(config);
 
   return useGesture(SingleGestureName.Native, nativeConfig);

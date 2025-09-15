@@ -8,7 +8,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type HoverGestureHandlerProps = {
+type HoverGestureProps = {
   /**
    * Visual effect applied to the view while the view is hovered. The possible values are:
    *
@@ -31,16 +31,14 @@ type HoverHandlerData = {
 
 type HoverGestureInternalConfig = BaseGestureConfig<
   HoverHandlerData,
-  HoverGestureHandlerProps
+  HoverGestureProps
 >;
 
 export type HoverGestureConfig =
   ExcludeInternalConfigProps<HoverGestureInternalConfig>;
 
 export function useHover(config: HoverGestureConfig) {
-  const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureHandlerProps>(
-    config
-  );
+  const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureProps>(config);
 
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }

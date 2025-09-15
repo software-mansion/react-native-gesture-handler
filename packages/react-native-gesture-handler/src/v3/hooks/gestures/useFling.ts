@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type FlingGestureHandlerProps = {
+type FlingGestureProps = {
   /**
    * Expressed allowed direction of movement. It's possible to pass one or many
    * directions in one parameter:
@@ -38,16 +38,14 @@ type FlingHandlerData = {
 
 type FlingGestureInternalConfig = BaseGestureConfig<
   FlingHandlerData,
-  FlingGestureHandlerProps
+  FlingGestureProps
 >;
 
 export type FlingGestureConfig =
   ExcludeInternalConfigProps<FlingGestureInternalConfig>;
 
 export function useFling(config: FlingGestureConfig) {
-  const flingConfig = cloneConfig<FlingHandlerData, FlingGestureHandlerProps>(
-    config
-  );
+  const flingConfig = cloneConfig<FlingHandlerData, FlingGestureProps>(config);
 
   return useGesture(SingleGestureName.Fling, flingConfig);
 }

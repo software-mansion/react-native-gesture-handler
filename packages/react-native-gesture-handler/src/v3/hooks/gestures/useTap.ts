@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { remapProps } from '../utils';
 
-type TapGestureHandlerProps = {
+type TapGestureProps = {
   /**
    * Minimum number of pointers (fingers) required to be placed before the
    * handler activates. Should be a positive integer.
@@ -57,7 +57,7 @@ type TapGestureHandlerProps = {
   maxDistance?: number;
 };
 
-type TapGestureHandlerPropsInternal = {
+type TapGestureInternalProps = {
   minPointers?: number;
   numberOfTaps?: number;
   maxDeltaX?: number;
@@ -75,17 +75,17 @@ type TapHandlerData = {
 };
 
 export type TapGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<TapHandlerData, TapGestureHandlerProps>
+  BaseGestureConfig<TapHandlerData, TapGestureProps>
 >;
 
 type TapGestureInternalConfig = BaseGestureConfig<
   TapHandlerData,
-  TapGestureHandlerPropsInternal
+  TapGestureInternalProps
 >;
 
 const TapPropsMapping = new Map<
-  keyof TapGestureHandlerProps,
-  keyof TapGestureHandlerPropsInternal
+  keyof TapGestureProps,
+  keyof TapGestureInternalProps
 >([
   ['maxDistance', 'maxDist'],
   ['maxDuration', 'maxDurationMs'],
@@ -98,7 +98,7 @@ export function useTap(config: TapGestureConfig) {
     TapPropsMapping
   );
 
-  return useGesture<TapHandlerData, TapGestureHandlerPropsInternal>(
+  return useGesture<TapHandlerData, TapGestureInternalProps>(
     SingleGestureName.Tap,
     tapConfig
   );
