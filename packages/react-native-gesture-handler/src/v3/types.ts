@@ -49,7 +49,7 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export enum SingleGestureType {
+export enum SingleGestureName {
   Tap = 'TapGestureHandler',
   LongPress = 'LongPressGestureHandler',
   Pan = 'PanGestureHandler',
@@ -60,7 +60,7 @@ export enum SingleGestureType {
   Native = 'NativeGestureHandler',
 }
 
-export enum ComposedGestureType {
+export enum ComposedGestureName {
   Simultaneous = 'SimultaneousGesture',
   Exclusive = 'ExclusiveGesture',
   Race = 'RaceGesture',
@@ -90,9 +90,9 @@ export type GestureRelations = {
   blocksHandlers: number[];
 };
 
-export type NativeGesture = {
+export type SingleGesture = {
   tag: number;
-  type: SingleGestureType;
+  type: SingleGestureName;
   config: Record<string, unknown>;
   gestureEvents: GestureEvents;
   gestureRelations: GestureRelations;
@@ -100,7 +100,7 @@ export type NativeGesture = {
 
 export type ComposedGesture = {
   tags: number[];
-  type: ComposedGestureType;
+  type: ComposedGestureName;
   config: {
     shouldUseReanimated: boolean;
     dispatchesAnimatedEvents: boolean;
@@ -110,4 +110,4 @@ export type ComposedGesture = {
   gestures: Gesture[];
 };
 
-export type Gesture = NativeGesture | ComposedGesture;
+export type Gesture = SingleGesture | ComposedGesture;

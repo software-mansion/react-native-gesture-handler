@@ -9,7 +9,7 @@ import {
   shouldHandleTouchEvents,
 } from './utils';
 import { tagMessage } from '../../utils';
-import { NativeGesture, SingleGestureType } from '../types';
+import { SingleGesture, SingleGestureName } from '../types';
 import {
   bindSharedValues,
   hasWorkletEventHandlers,
@@ -18,9 +18,9 @@ import {
 import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture(
-  type: SingleGestureType,
+  type: SingleGestureName,
   config: Record<string, unknown>
-): NativeGesture {
+): SingleGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
 

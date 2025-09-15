@@ -6,7 +6,9 @@ export function isComposedGesture(
   return 'tags' in gesture;
 }
 
-function extractHandlerTags(otherHandler: Gesture | Gesture[]): number[] {
+function extractHandlerTags(
+  otherHandler: Gesture | Gesture[] | undefined
+): number[] {
   if (!otherHandler) {
     return [];
   }
@@ -27,7 +29,7 @@ function extractHandlerTags(otherHandler: Gesture | Gesture[]): number[] {
 }
 
 function makeSimultaneousWithExternalGestureSymmetric(
-  otherHandler: Gesture | Gesture[],
+  otherHandler: Gesture | Gesture[] | undefined,
   handlerTag: number
 ) {
   if (!otherHandler) {
