@@ -9,10 +9,10 @@ export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
   children?: React.ReactNode;
-  logicChildren?: Set<LogicChildrenProps>;
+  logicChildren?: Set<LogicChildrenWeb>;
 }
 
-export interface LogicChildrenProps {
+export interface LogicChildrenWeb {
   viewTag: number;
   handlerTags: number[];
   viewRef: RefObject<Element | null>;
