@@ -95,3 +95,24 @@ export function shouldHandleTouchEvents<THandlerData, TConfig>(
     !!config.onTouchesCancelled
   );
 }
+
+export function remapProps<TConfig extends object, TInternalConfig>(
+  config: TConfig,
+  propsMapping: Map<string, string>
+): TInternalConfig {
+  type MergedConfig = TConfig & TInternalConfig;
+
+  const newConfig = { ...config } as MergedConfig;
+
+  propsMapping.forEach((internalKey, key) => {
+    if (key in newConfig) {
+      newConfig[internalKey as keyof MergedConfig] =
+        newConfig[key as keyof MergedConfig];
+
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete newConfig[key as keyof MergedConfig];
+    }
+  });
+
+  return newConfig;
+}

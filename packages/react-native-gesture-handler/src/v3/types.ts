@@ -130,12 +130,21 @@ export interface GestureCallbacks<THandlerData> {
   onTouchesCancelled?: (event: GestureTouchEvent) => void;
 }
 
+export type InternalConfigProps<THandlerData> = {
+  shouldUseReanimated?: boolean;
+  dispatchesAnimatedEvents?: boolean;
+  needsPointerData?: boolean;
+  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+};
+
 export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   GestureCallbacks<THandlerData> &
-  TConfig & {
+  TConfig &
+  InternalConfigProps<THandlerData> & {
     disableReanimated?: boolean;
-    shouldUseReanimated?: boolean;
-    dispatchesAnimatedEvents?: boolean;
-    needsPointerData?: boolean;
-    changeEventCalculator?: ChangeCalculatorType<THandlerData>;
   };
+
+export type ExcludeInternalConfigProps<T> = Omit<
+  T,
+  keyof InternalConfigProps<unknown>
+>;
