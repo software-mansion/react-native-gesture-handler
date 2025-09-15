@@ -83,7 +83,10 @@ type TapGestureInternalConfig = BaseGestureConfig<
   TapGestureHandlerPropsInternal
 >;
 
-const TapPropsMapping = new Map([
+const TapPropsMapping = new Map<
+  keyof TapGestureHandlerProps,
+  keyof TapGestureHandlerPropsInternal
+>([
   ['maxDistance', 'maxDist'],
   ['maxDuration', 'maxDurationMs'],
   ['maxDelay', 'maxDelayMs'],
@@ -95,5 +98,8 @@ export function useTap(config: TapGestureConfig) {
     TapPropsMapping
   );
 
-  return useGesture(SingleGestureName.Tap, tapConfig);
+  return useGesture<TapHandlerData, TapGestureHandlerPropsInternal>(
+    SingleGestureName.Tap,
+    tapConfig
+  );
 }
