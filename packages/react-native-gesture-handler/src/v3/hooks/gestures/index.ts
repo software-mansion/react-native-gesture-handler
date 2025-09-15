@@ -9,3 +9,6 @@ export { useLongPress } from './useLongPress';
 
 export type { PinchGestureConfig } from './usePinch';
 export { usePinch } from './usePinch';
+
+export type { RotationGestureConfig } from './useRotation';
+export { useRotation } from './useRotation';
