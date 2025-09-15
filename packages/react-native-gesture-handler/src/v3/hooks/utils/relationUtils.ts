@@ -1,7 +1,7 @@
 import { ComposedGesture, Gesture, GestureRelations } from '../../types';
 
-export function isComposedGesture(
-  gesture: Gesture
+export function isComposedGesture<THandlerData, TConfig>(
+  gesture: Gesture<THandlerData, TConfig>
 ): gesture is ComposedGesture {
   return 'tags' in gesture;
 }

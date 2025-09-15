@@ -7,9 +7,9 @@ import { tagMessage } from '../../utils';
 import { configureRelations } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 
-export interface NativeDetectorProps {
+export interface NativeDetectorProps<THandlerData, TConfig> {
   children?: React.ReactNode;
-  gesture: Gesture;
+  gesture: Gesture<THandlerData, TConfig>;
 }
 
 const AnimatedNativeDetector =
@@ -18,7 +18,10 @@ const AnimatedNativeDetector =
 const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
-export function NativeDetector({ gesture, children }: NativeDetectorProps) {
+export function NativeDetector<THandlerData, TConfig>({
+  gesture,
+  children,
+}: NativeDetectorProps<THandlerData, TConfig>) {
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : // TODO: Remove this cast when we properly type config
