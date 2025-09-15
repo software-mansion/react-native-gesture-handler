@@ -196,7 +196,6 @@
 - (void)updateProps:(const Props::Shared &)propsBase oldProps:(const Props::Shared &)oldPropsBase
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(propsBase);
-  const auto &oldProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(oldPropsBase);
   _moduleId = newProps.moduleId;
 
   [self attachHandlers:newProps.handlerTags
