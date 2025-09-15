@@ -130,11 +130,123 @@ const PanPropsMapping = new Map<
   keyof PanGestureInternalProps
 >([['minDistance', 'minDist']]);
 
+function validatePanConfig(config: PanGestureConfig) {
+  if (
+    Array.isArray(config.activeOffsetX) &&
+    (config.activeOffsetX[0] > 0 || config.activeOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of activeOffsetX should be negative, and the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(config.activeOffsetY) &&
+    (config.activeOffsetY[0] > 0 || config.activeOffsetY[1] < 0)
+  ) {
+    throw new Error(
+      `First element of activeOffsetY should be negative, and the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(config.failOffsetX) &&
+    (config.failOffsetX[0] > 0 || config.failOffsetX[1] < 0)
+  ) {
+    throw new Error(
+      `First element of failOffsetX should be negative, and the second one should be positive`
+    );
+  }
+
+  if (
+    Array.isArray(config.failOffsetY) &&
+    (config.failOffsetY[0] > 0 || config.failOffsetY[1] < 0)
+  ) {
+    throw new Error(
+      `First element of failOffsetY should be negative, and the second one should be positive`
+    );
+  }
+
+  if (config.minDistance && (config.failOffsetX || config.failOffsetY)) {
+    throw new Error(
+      `It is not supported to use minDistance with failOffsetX or failOffsetY, use activeOffsetX and activeOffsetY instead`
+    );
+  }
+
+  if (config.minDistance && (config.activeOffsetX || config.activeOffsetY)) {
+    throw new Error(
+      `It is not supported to use minDistance with activeOffsetX or activeOffsetY`
+    );
+  }
+}
+
+function transformPanProps(
+  config: PanGestureConfig & PanGestureInternalConfig
+) {
+  if (config.activeOffsetX !== undefined) {
+    if (Array.isArray(config.activeOffsetX)) {
+      config.activeOffsetXStart = config.activeOffsetX[0];
+      config.activeOffsetXEnd = config.activeOffsetX[1];
+    } else if (config.activeOffsetX < 0) {
+      config.activeOffsetXStart = config.activeOffsetX;
+    } else {
+      config.activeOffsetXEnd = config.activeOffsetX;
+    }
+
+    delete config.activeOffsetX;
+  }
+
+  if (config.activeOffsetY !== undefined) {
+    if (Array.isArray(config.activeOffsetY)) {
+      config.activeOffsetYStart = config.activeOffsetY[0];
+      config.activeOffsetYEnd = config.activeOffsetY[1];
+    } else if (config.activeOffsetY < 0) {
+      config.activeOffsetYStart = config.activeOffsetY;
+    } else {
+      config.activeOffsetYEnd = config.activeOffsetY;
+    }
+
+    delete config.activeOffsetY;
+  }
+
+  if (config.failOffsetX !== undefined) {
+    if (Array.isArray(config.failOffsetX)) {
+      config.failOffsetXStart = config.failOffsetX[0];
+      config.failOffsetXEnd = config.failOffsetX[1];
+    } else if (config.failOffsetX < 0) {
+      config.failOffsetXStart = config.failOffsetX;
+    } else {
+      config.failOffsetXEnd = config.failOffsetX;
+    }
+
+    delete config.failOffsetX;
+  }
+
+  if (config.failOffsetY !== undefined) {
+    if (Array.isArray(config.failOffsetY)) {
+      config.failOffsetYStart = config.failOffsetY[0];
+      config.failOffsetYEnd = config.failOffsetY[1];
+    } else if (config.failOffsetY < 0) {
+      config.failOffsetYStart = config.failOffsetY;
+    } else {
+      config.failOffsetYEnd = config.failOffsetY;
+    }
+
+    delete config.failOffsetY;
+  }
+}
+
 export function usePan(config: PanGestureConfig) {
+  if (__DEV__) {
+    validatePanConfig(config);
+  }
+
   const panConfig = remapProps<PanGestureConfig, PanGestureInternalConfig>(
     config,
     PanPropsMapping
   );
+
+  transformPanProps(panConfig);
 
   return useGesture<PanHandlerData, PanGestureInternalProps>(
     SingleGestureName.Pan,
