@@ -2,6 +2,7 @@ import { StylusData } from '../../../handlers/gestureHandlerCommon';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureUpdateEvent,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
@@ -114,6 +115,8 @@ type PanHandlerData = {
   velocityX: number;
   velocityY: number;
   stylusData: StylusData;
+  changeX?: number;
+  changeY?: number;
 };
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
@@ -236,6 +239,31 @@ function transformPanProps(
   }
 }
 
+function changeEventCalculator(
+  current: GestureUpdateEvent<PanHandlerData>,
+  previous?: GestureUpdateEvent<PanHandlerData>
+): GestureUpdateEvent<PanHandlerData> {
+  'worklet';
+
+  const currentEventData = current.handlerData;
+  const previousEventData = previous ? previous.handlerData : null;
+
+  const changePayload = previousEventData
+    ? {
+        changeX: currentEventData.translationX - previousEventData.translationX,
+        changeY: currentEventData.translationY - previousEventData.translationY,
+      }
+    : {
+        changeX: currentEventData.translationX,
+        changeY: currentEventData.translationY,
+      };
+
+  const resultEvent = { ...current };
+  resultEvent.handlerData = { ...currentEventData, ...changePayload };
+
+  return resultEvent;
+}
+
 export function usePan(config: PanGestureConfig) {
   if (__DEV__) {
     validatePanConfig(config);
@@ -247,6 +275,8 @@ export function usePan(config: PanGestureConfig) {
   );
 
   transformPanProps(panConfig);
+
+  panConfig.changeEventCalculator = changeEventCalculator;
 
   return useGesture<PanHandlerData, PanGestureInternalProps>(
     SingleGestureName.Pan,
