@@ -2,21 +2,21 @@ import { tagMessage } from '../utils';
 import { useExclusive, useRace, useSimultaneous } from '../v3/hooks/relations';
 import { useGesture } from '../v3/hooks/useGesture';
 import { configureRelations } from '../v3/NativeDetector/utils';
-import { NativeGesture, SingleGestureType } from '../v3/types';
+import { SingleGesture, SingleGestureName } from '../v3/types';
 import { renderHook } from '@testing-library/react-native';
 
 describe('Ensure only one leaf node', () => {
-  let pan1: NativeGesture, pan2: NativeGesture, pan3: NativeGesture;
+  let pan1: SingleGesture, pan2: SingleGesture, pan3: SingleGesture;
 
   beforeEach(() => {
     pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
   });
 
@@ -47,14 +47,14 @@ describe('Ensure only one leaf node', () => {
 });
 
 describe('Simple relations', () => {
-  let pan1: NativeGesture, pan2: NativeGesture;
+  let pan1: SingleGesture, pan2: SingleGesture;
 
   beforeEach(() => {
     pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
   });
 
@@ -101,16 +101,16 @@ describe('Simple relations', () => {
 describe('External relations', () => {
   test('simultaneousWithExternalGesture', () => {
     const pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     const pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         simultaneousWithExternalGesture: pan1,
       })
     ).result.current;
     const pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         simultaneousWithExternalGesture: [pan1, pan2],
       })
@@ -133,16 +133,16 @@ describe('External relations', () => {
 
   test('requireExternalGestureToFail', () => {
     const pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     const pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         requireExternalGestureToFail: pan1,
       })
     ).result.current;
     const pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         requireExternalGestureToFail: [pan1, pan2],
       })
@@ -159,16 +159,16 @@ describe('External relations', () => {
 
   test('blocksExternalGesture', () => {
     const pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     const pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         blocksExternalGesture: pan1,
       })
     ).result.current;
     const pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         blocksExternalGesture: [pan1, pan2],
       })
@@ -188,28 +188,28 @@ describe('External relations', () => {
 });
 
 describe('Complex relations', () => {
-  let pan1: NativeGesture, pan2: NativeGesture, pan3: NativeGesture;
-  let tap1: NativeGesture, tap2: NativeGesture, tap3: NativeGesture;
+  let pan1: SingleGesture, pan2: SingleGesture, pan3: SingleGesture;
+  let tap1: SingleGesture, tap2: SingleGesture, tap3: SingleGesture;
 
   beforeEach(() => {
     tap1 = renderHook(() =>
-      useGesture(SingleGestureType.Tap, { disableReanimated: true })
+      useGesture(SingleGestureName.Tap, { disableReanimated: true })
     ).result.current;
     tap2 = renderHook(() =>
-      useGesture(SingleGestureType.Tap, { disableReanimated: true })
+      useGesture(SingleGestureName.Tap, { disableReanimated: true })
     ).result.current;
     tap3 = renderHook(() =>
-      useGesture(SingleGestureType.Tap, { disableReanimated: true })
+      useGesture(SingleGestureName.Tap, { disableReanimated: true })
     ).result.current;
 
     pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
     pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, { disableReanimated: true })
+      useGesture(SingleGestureName.Pan, { disableReanimated: true })
     ).result.current;
   });
 
@@ -298,31 +298,31 @@ describe('Complex relations', () => {
 describe('Complex relations with external gestures', () => {
   test('Case 1', () => {
     const pan5 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
 
     const pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         simultaneousWithExternalGesture: pan5,
       })
     ).result.current;
     const pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         simultaneousWithExternalGesture: pan5,
       })
     ).result.current;
     const pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         requireExternalGestureToFail: pan5,
       })
     ).result.current;
     const pan4 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         requireExternalGestureToFail: pan5,
       })
@@ -370,33 +370,33 @@ describe('Complex relations with external gestures', () => {
 
   test('Case 2', () => {
     const pan4 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
 
     const pan5 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
 
     const pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         simultaneousWithExternalGesture: [pan4, pan5],
       })
     ).result.current;
 
     const pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         requireExternalGestureToFail: [pan4, pan5],
       })
     ).result.current;
 
     const pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
@@ -442,13 +442,13 @@ describe('Complex relations with external gestures', () => {
 describe('External relations with composed gestures', () => {
   test('Case 1', () => {
     const pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
 
     const pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
@@ -457,7 +457,7 @@ describe('External relations with composed gestures', () => {
       .current;
 
     const pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         simultaneousWithExternalGesture: composedGesture,
       })
@@ -479,13 +479,13 @@ describe('External relations with composed gestures', () => {
 
   test('Case 1 - reversed order of configuring relations', () => {
     const pan1 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
 
     const pan2 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
       })
     ).result.current;
@@ -494,7 +494,7 @@ describe('External relations with composed gestures', () => {
       .current;
 
     const pan3 = renderHook(() =>
-      useGesture(SingleGestureType.Pan, {
+      useGesture(SingleGestureName.Pan, {
         disableReanimated: true,
         simultaneousWithExternalGesture: composedGesture,
       })
