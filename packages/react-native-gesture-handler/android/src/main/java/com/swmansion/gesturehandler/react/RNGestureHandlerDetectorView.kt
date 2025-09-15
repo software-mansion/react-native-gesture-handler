@@ -60,10 +60,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       )
     }
 
-    for (tag in logicHandlersToDetach) {
-      val registry = RNGestureHandlerModule.registries[moduleId]
-        ?: throw Exception("Tried to access a non-existent registry")
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
 
+    for (tag in logicHandlersToDetach) {
       registry.detachHandler(tag)
       attachedLogicHandlers.remove(tag)
     }
