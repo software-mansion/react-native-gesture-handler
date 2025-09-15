@@ -12,3 +12,6 @@ export { usePinch } from './usePinch';
 
 export type { RotationGestureConfig } from './useRotation';
 export { useRotation } from './useRotation';
+
+export type { HoverGestureConfig } from './useHover';
+export { useHover } from './useHover';

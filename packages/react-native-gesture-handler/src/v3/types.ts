@@ -47,6 +47,7 @@ export enum SingleGestureName {
   Fling = 'FlingGestureHandler',
   Manual = 'ManualGestureHandler',
   Native = 'NativeGestureHandler',
+  Hover = 'HoverGestureHandler',
 }
 
 export enum ComposedGestureName {
