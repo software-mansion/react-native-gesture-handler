@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
 import { NativeDetectorProps } from './types';
-import useDetectorContext from './useDetectorContext';
+import { useDetectorContext } from './useDetectorContext';
 
 export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();
