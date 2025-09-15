@@ -1054,7 +1054,6 @@ open class GestureHandler {
       return null
     }
 
-    @JvmStatic
     fun isV3Api(actionType: Int): Boolean =
       actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_LOGIC_DETECTOR
   }
