@@ -17,16 +17,6 @@ export type GestureType =
   | 'ManualGestureHandler'
   | 'NativeViewGestureHandler';
 
-export type GestureEvents = {
-  onGestureHandlerStateChange: (event: any) => void;
-  onGestureHandlerEvent: undefined | ((event: any) => void);
-  onGestureHandlerTouchEvent: (event: any) => void;
-  onReanimatedStateChange: undefined | ((event: any) => void);
-  onReanimatedUpdateEvent: undefined | ((event: any) => void);
-  onReanimatedTouchEvent: undefined | ((event: any) => void);
-  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
-};
-
 export interface NativeGesture {
   tag: number;
   name: GestureType;
@@ -82,11 +72,6 @@ export interface LogicChildren {
   handlerTags: number[];
 }
 
-export interface NativeDetectorProps {
-  children?: React.ReactNode;
-  gesture: NativeGesture;
-}
-
 export interface LogicMethods {
   onGestureHandlerEvent?: (e: any) => void;
   onGestureHandlerStateChange?: (e: any) => void;
@@ -96,3 +81,66 @@ export interface LogicMethods {
   onReanimatedUpdateEvent?: (e: any) => void;
   onReanimatedTouchEvent?: (e: any) => void;
 }
+
+export enum SingleGestureName {
+  Tap = 'TapGestureHandler',
+  LongPress = 'LongPressGestureHandler',
+  Pan = 'PanGestureHandler',
+  Pinch = 'PinchGestureHandler',
+  Rotation = 'RotationGestureHandler',
+  Fling = 'FlingGestureHandler',
+  Manual = 'ManualGestureHandler',
+  Native = 'NativeGestureHandler',
+}
+
+export enum ComposedGestureName {
+  Simultaneous = 'SimultaneousGesture',
+  Exclusive = 'ExclusiveGesture',
+  Race = 'RaceGesture',
+}
+
+export type GestureEvents = {
+  onGestureHandlerStateChange: (
+    event: StateChangeEvent<Record<string, unknown>>
+  ) => void;
+  onGestureHandlerEvent:
+    | undefined
+    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+  onGestureHandlerTouchEvent: (event: TouchEvent) => void;
+  onReanimatedStateChange:
+    | undefined
+    | ((event: StateChangeEvent<Record<string, unknown>>) => void);
+  onReanimatedUpdateEvent:
+    | undefined
+    | ((event: UpdateEvent<Record<string, unknown>>) => void);
+  onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
+  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
+};
+
+export type GestureRelations = {
+  simultaneousHandlers: number[];
+  waitFor: number[];
+  blocksHandlers: number[];
+};
+
+export type SingleGesture = {
+  tag: number;
+  type: SingleGestureName;
+  config: Record<string, unknown>;
+  gestureEvents: GestureEvents;
+  gestureRelations: GestureRelations;
+};
+
+export type ComposedGesture = {
+  tags: number[];
+  type: ComposedGestureName;
+  config: {
+    shouldUseReanimated: boolean;
+    dispatchesAnimatedEvents: boolean;
+  };
+  gestureEvents: GestureEvents;
+  externalSimultaneousHandlers: number[];
+  gestures: Gesture[];
+};
+
+export type Gesture = SingleGesture | ComposedGesture;

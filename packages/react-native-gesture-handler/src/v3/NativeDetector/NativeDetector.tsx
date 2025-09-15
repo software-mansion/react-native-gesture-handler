@@ -1,11 +1,18 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
-import { Reanimated } from '../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
-import { tagMessage } from '../utils';
-import { LogicChildren, LogicMethods, NativeDetectorProps } from './types';
-import { invokeDetectorEvent } from './hooks/utils';
-import { DetectorContext } from './useDetectorContext';
+import { tagMessage } from '../../utils';
+import { LogicChildren, LogicMethods, Gesture } from '../types';
+import { invokeDetectorEvent } from '../hooks/utils';
+import { DetectorContext } from '../useDetectorContext';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import { configureRelations } from './utils';
+import { isComposedGesture } from '../hooks/utils/relationUtils';
+
+export interface NativeDetectorProps {
+  children?: React.ReactNode;
+  gesture: Gesture;
+}
 
 const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);
@@ -52,6 +59,8 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       )
     );
   }
+
+  configureRelations(gesture);
 
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
@@ -106,7 +115,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
           invokeDetectorEvent(method, e);
         }}
         moduleId={globalThis._RNGH_MODULE_ID}
-        handlerTags={[gesture.tag]}
+        handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
         style={styles.detector}
         logicChildren={logicChildren}>
         {children}

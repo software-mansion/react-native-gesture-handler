@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
-import { NativeDetectorProps } from './types';
 import { useDetectorContext } from './useDetectorContext';
+import { NativeDetectorProps } from './NativeDetector/NativeDetector';
+import { isComposedGesture } from './hooks/utils/relationUtils';
 
 export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();
@@ -62,15 +63,26 @@ export const LogicDetector = (props: NativeDetectorProps) => {
 
     const logicProps =
       Platform.OS === 'web'
-        ? { viewRef, viewTag, handlerTags: [props.gesture.tag] }
-        : { viewTag, handlerTags: [props.gesture.tag] };
+        ? {
+            viewRef,
+            viewTag,
+            handlerTags: isComposedGesture(props.gesture)
+              ? props.gesture.tags
+              : [props.gesture.tag],
+          }
+        : {
+            viewTag,
+            handlerTags: isComposedGesture(props.gesture)
+              ? props.gesture.tags
+              : [props.gesture.tag],
+          };
 
     register(logicProps, logicMethods);
 
     return () => {
       unregister(viewTag);
     };
-  }, [viewTag, props.gesture.tag, register, unregister]);
+  }, [viewTag, props.gesture, register, unregister]);
 
   return <Wrap ref={handleRef}>{props.children}</Wrap>;
 };
