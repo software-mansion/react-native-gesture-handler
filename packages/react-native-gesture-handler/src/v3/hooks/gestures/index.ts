@@ -18,3 +18,6 @@ export { useHover } from './useHover';
 
 export type { ManualGestureConfig } from './useManual';
 export { useManual } from './useManual';
+
+export type { NativeViewGestureConfig } from './useNative';
+export { useNative } from './useNative';
