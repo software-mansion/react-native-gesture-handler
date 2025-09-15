@@ -3,3 +3,6 @@ export { useTap } from './useTap';
 
 export type { FlingGestureConfig } from './useFling';
 export { useFling } from './useFling';
+
+export type { LongPressGestureConfig } from './useLongPress';
+export { useLongPress } from './useLongPress';
