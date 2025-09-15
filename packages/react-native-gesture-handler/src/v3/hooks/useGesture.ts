@@ -2,114 +2,25 @@ import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import {
-  Reanimated,
-  SharedValue,
-} from '../../handlers/gestures/reanimatedWrapper';
-import { hash, prepareConfig, isAnimatedEvent } from './utils';
-import { AnimatedEvent } from '../types';
+  prepareConfig,
+  isAnimatedEvent,
+  shouldHandleTouchEvents,
+} from './utils';
 import { tagMessage } from '../../utils';
-
-type GestureType =
-  | 'TapGestureHandler'
-  | 'LongPressGestureHandler'
-  | 'PanGestureHandler'
-  | 'PinchGestureHandler'
-  | 'RotationGestureHandler'
-  | 'FlingGestureHandler'
-  | 'ForceTouchGestureHandler'
-  | 'ManualGestureHandler'
-  | 'NativeViewGestureHandler';
-
-type GestureEvents = {
-  onGestureHandlerStateChange: (event: any) => void;
-  onGestureHandlerEvent: undefined | ((event: any) => void);
-  onGestureHandlerTouchEvent: (event: any) => void;
-  onReanimatedStateChange: undefined | ((event: any) => void);
-  onReanimatedUpdateEvent: undefined | ((event: any) => void);
-  onReanimatedTouchEvent: undefined | ((event: any) => void);
-  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
-};
-
-export interface NativeGesture {
-  tag: number;
-  name: GestureType;
-  config: Record<string, unknown>;
-  gestureEvents: GestureEvents;
-}
-
-function hasWorkletEventHandlers(config: Record<string, unknown>) {
-  return Object.values(config).some(
-    (prop) => typeof prop === 'function' && '__workletHash' in prop
-  );
-}
-
-function shouldHandleTouchEvents(config: Record<string, unknown>) {
-  return (
-    !!config.onTouchesDown ||
-    !!config.onTouchesMove ||
-    !!config.onTouchesUp ||
-    !!config.onTouchesCancelled
-  );
-}
-
-const SHARED_VALUE_OFFSET = 1.618;
-
-// This is used to obtain HostFunction that can be executed on the UI thread
-const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
-
-function bindSharedValues(config: any, handlerTag: number) {
-  if (Reanimated === undefined) {
-    return;
-  }
-
-  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
-
-  const attachListener = (sharedValue: SharedValue, configKey: string) => {
-    'worklet';
-    const keyHash = hash(configKey);
-    const listenerId = baseListenerId + keyHash;
-
-    sharedValue.addListener(listenerId, (value) => {
-      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
-      flushOperations();
-    });
-  };
-
-  for (const [key, maybeSharedValue] of Object.entries(config)) {
-    if (!Reanimated.isSharedValue(maybeSharedValue)) {
-      continue;
-    }
-
-    Reanimated.runOnUI(attachListener)(maybeSharedValue, key);
-  }
-}
-
-function unbindSharedValues(config: any, handlerTag: number) {
-  if (Reanimated === undefined) {
-    return;
-  }
-
-  const baseListenerId = handlerTag + SHARED_VALUE_OFFSET;
-
-  for (const [key, maybeSharedValue] of Object.entries(config)) {
-    if (!Reanimated.isSharedValue(maybeSharedValue)) {
-      continue;
-    }
-
-    const keyHash = hash(key);
-    const listenerId = baseListenerId + keyHash;
-
-    Reanimated.runOnUI(() => {
-      maybeSharedValue.removeListener(listenerId);
-    })();
-  }
-}
+import { SingleGesture, SingleGestureName } from '../types';
+import {
+  bindSharedValues,
+  hasWorkletEventHandlers,
+  unbindSharedValues,
+} from './utils/reanimatedUtils';
+import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture(
-  type: GestureType,
+  type: SingleGestureName,
   config: Record<string, unknown>
-): NativeGesture {
+): SingleGesture {
   const tag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
 
@@ -169,6 +80,8 @@ export function useGesture(
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
+  const gestureRelations = prepareRelations(config, tag);
+
   useMemo(() => {
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
     RNGestureHandlerModule.flushOperations();
@@ -198,8 +111,8 @@ export function useGesture(
   }, [config, tag]);
 
   return {
-    tag: tag,
-    name: type,
+    tag,
+    type,
     config,
     gestureEvents: {
       onGestureHandlerStateChange,
@@ -210,5 +123,6 @@ export function useGesture(
       onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
     },
+    gestureRelations,
   };
 }

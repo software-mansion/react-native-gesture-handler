@@ -1,7 +1,8 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import { CallbackHandlers, StateChangeEvent } from '../../types';
-import { isEventForHandlerWithTag, isNativeEvent, runCallback } from '../utils';
+import { isEventForHandlerWithTag, isNativeEvent } from '../utils';
+import { runCallback } from '../utils/eventHandlersUtils';
 
 export function getStateChangeHandler(
   handlerTag: number,

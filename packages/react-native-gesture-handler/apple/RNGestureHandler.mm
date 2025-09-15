@@ -103,9 +103,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.enabled = YES;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
-  _handlersToWaitFor = nil;
-  _simultaneousHandlers = nil;
-  _handlersThatShouldWait = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
   _dispatchesAnimatedEvents = NO;
@@ -123,10 +120,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)updateConfig:(NSDictionary *)config
 {
-  _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
-  _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
-  _handlersThatShouldWait = [RCTConvert NSNumberArray:config[@"blocksHandlers"]];
-
   id prop = config[@"enabled"];
   if (prop != nil) {
     self.enabled = [RCTConvert BOOL:prop];
@@ -189,6 +182,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       RCTLogError(@"Cannot have all of top, bottom and height defined");
     }
   }
+}
+
+- (void)updateRelations:(NSDictionary *)relations
+{
+  _handlersToWaitFor = [RCTConvert NSNumberArray:relations[@"waitFor"]];
+  _simultaneousHandlers = [RCTConvert NSNumberArray:relations[@"simultaneousHandlers"]];
+  _handlersThatShouldWait = [RCTConvert NSNumberArray:relations[@"blocksHandlers"]];
 }
 
 - (void)setEnabled:(BOOL)enabled
