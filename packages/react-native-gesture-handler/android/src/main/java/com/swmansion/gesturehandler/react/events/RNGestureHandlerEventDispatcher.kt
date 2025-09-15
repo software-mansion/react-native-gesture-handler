@@ -79,6 +79,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         } else {
           EventHandlerType.ForJS
         }
+
         val event = RNGestureHandlerEvent.obtain(
           handler,
           handler.actionType,
