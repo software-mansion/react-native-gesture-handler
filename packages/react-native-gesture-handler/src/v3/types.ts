@@ -4,14 +4,22 @@ import {
   GestureTouchEvent,
   HandlerStateChangeEventPayload,
 } from '../handlers/gestureHandlerCommon';
+import { PointerType } from '../PointerType';
+
+export type BaseHandlerData = {
+  numberOfPointers: number;
+  pointerType: PointerType;
+};
+
+export type HandlerData<T> = BaseHandlerData & T;
 
 export type GestureUpdateEvent<THandlerData> = GestureEventPayload & {
-  handlerData: THandlerData;
+  handlerData: HandlerData<THandlerData>;
 };
 
 export type GestureStateChangeEvent<THandlerData> =
   HandlerStateChangeEventPayload & {
-    handlerData: THandlerData;
+    handlerData: HandlerData<THandlerData>;
   };
 
 export type GestureHandlerEvent<THandlerData> =
