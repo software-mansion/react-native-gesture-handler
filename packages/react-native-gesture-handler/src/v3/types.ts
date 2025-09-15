@@ -32,6 +32,11 @@ export type GestureHandlerEvent<THandlerData> =
   | StateChangeEvent<THandlerData>
   | TouchEvent;
 
+export type ExtractedGestureHandlerEvent<THandlerData> =
+  | GestureUpdateEvent<THandlerData>
+  | GestureStateChangeEvent<THandlerData>
+  | GestureTouchEvent;
+
 export type UpdateEvent<THandlerData> =
   | GestureUpdateEvent<THandlerData>
   | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>;
@@ -112,9 +117,9 @@ export type ComposedGesture = {
 };
 
 export type ChangeCalculatorType<THandlerData> = (
-  current: UpdateEvent<THandlerData>,
-  previous?: UpdateEvent<THandlerData>
-) => UpdateEvent<THandlerData>;
+  current: GestureUpdateEvent<THandlerData>,
+  previous?: GestureUpdateEvent<THandlerData>
+) => GestureUpdateEvent<THandlerData>;
 
 export type Gesture<THandlerData = unknown, TConfig = unknown> =
   | SingleGesture<THandlerData, TConfig>

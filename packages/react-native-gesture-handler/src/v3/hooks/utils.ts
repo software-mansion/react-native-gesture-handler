@@ -3,6 +3,7 @@ import {
   AnimatedEvent,
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  ExtractedGestureHandlerEvent,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
@@ -22,15 +23,21 @@ export function isNativeEvent<THandlerData>(
   return 'nativeEvent' in event;
 }
 
-export function isEventForHandlerWithTag<THandlerData>(
-  handlerTag: number,
+export function maybeExtractNativeEvent<THandlerData>(
   event: GestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
-  return isNativeEvent(event)
-    ? event.nativeEvent.handlerTag === handlerTag
-    : event.handlerTag === handlerTag;
+  return isNativeEvent(event) ? event.nativeEvent : event;
+}
+
+export function isEventForHandlerWithTag<THandlerData>(
+  handlerTag: number,
+  event: ExtractedGestureHandlerEvent<THandlerData>
+) {
+  'worklet';
+
+  return event.handlerTag === handlerTag;
 }
 
 export function isAnimatedEvent<THandlerData>(
