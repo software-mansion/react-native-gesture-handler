@@ -6,24 +6,6 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import { HandlerCallbacks } from '../handlers/gestures/gesture';
 
-export type GestureType =
-  | 'TapGestureHandler'
-  | 'LongPressGestureHandler'
-  | 'PanGestureHandler'
-  | 'PinchGestureHandler'
-  | 'RotationGestureHandler'
-  | 'FlingGestureHandler'
-  | 'ForceTouchGestureHandler'
-  | 'ManualGestureHandler'
-  | 'NativeViewGestureHandler';
-
-export interface NativeGesture {
-  tag: number;
-  name: GestureType;
-  config: Record<string, unknown>;
-  gestureEvents: GestureEvents;
-}
-
 export type GestureUpdateEventWithData<T> = GestureEventPayload & {
   handlerData: T;
 };
