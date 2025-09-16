@@ -62,57 +62,39 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   configureRelations(gesture);
 
+  const handleGestureEvent = (key: keyof LogicMethods, e: any) => {
+    const handlerTag = e.nativeEvent.handlerTag;
+
+    const method = !logicMethods.current.has(handlerTag)
+      ? gesture.gestureEvents[key]
+      : logicMethods.current.get(handlerTag)?.current?.[key];
+
+    invokeDetectorEvent(method, e);
+  };
+
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
       <NativeDetectorComponent
         onGestureHandlerStateChange={(e) => {
-          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onGestureHandlerStateChange
-            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onGestureHandlerStateChange;
-          invokeDetectorEvent(method, e);
+          handleGestureEvent('onGestureHandlerStateChange', e);
         }}
         onGestureHandlerEvent={(e) => {
-          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onGestureHandlerEvent
-            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onGestureHandlerEvent;
-          invokeDetectorEvent(method, e);
+          handleGestureEvent('onGestureHandlerEvent', e);
         }}
         onGestureHandlerAnimatedEvent={(e) => {
-          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onGestureHandlerAnimatedEvent
-            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onGestureHandlerAnimatedEvent;
-          invokeDetectorEvent(method, e);
+          handleGestureEvent('onGestureHandlerAnimatedEvent', e);
         }}
         onGestureHandlerTouchEvent={(e) => {
-          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onGestureHandlerTouchEvent
-            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onGestureHandlerTouchEvent;
-          invokeDetectorEvent(method, e);
+          handleGestureEvent('onGestureHandlerTouchEvent', e);
         }}
         onGestureHandlerReanimatedStateChange={(e) => {
-          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onReanimatedStateChange
-            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onReanimatedStateChange;
-          invokeDetectorEvent(method, e);
+          handleGestureEvent('onReanimatedStateChange', e);
         }}
         onGestureHandlerReanimatedEvent={(e) => {
-          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onReanimatedUpdateEvent
-            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onReanimatedUpdateEvent;
-          invokeDetectorEvent(method, e);
+          handleGestureEvent('onReanimatedUpdateEvent', e);
         }}
         onGestureHandlerReanimatedTouchEvent={(e) => {
-          const method = !logicMethods.current.has(e.nativeEvent.handlerTag)
-            ? gesture.gestureEvents.onReanimatedTouchEvent
-            : logicMethods.current.get(e.nativeEvent.handlerTag)?.current
-                ?.onReanimatedTouchEvent;
-          invokeDetectorEvent(method, e);
+          handleGestureEvent('onReanimatedTouchEvent', e);
         }}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
