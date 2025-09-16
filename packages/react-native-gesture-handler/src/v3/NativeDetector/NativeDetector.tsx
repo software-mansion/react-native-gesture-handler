@@ -41,25 +41,25 @@ export function NativeDetector<THandlerData, TConfig>({
 
   return (
     <NativeDetectorComponent
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerStateChange={
         gesture.gestureEvents.onGestureHandlerStateChange
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerTouchEvent={
         gesture.gestureEvents.onGestureHandlerTouchEvent
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedStateChange={
         gesture.gestureEvents.onReanimatedStateChange
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedEvent={
         gesture.gestureEvents.onReanimatedUpdateEvent
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedTouchEvent={
         gesture.gestureEvents.onReanimatedTouchEvent
       }
