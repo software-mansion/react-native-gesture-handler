@@ -448,9 +448,6 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         numberOfPointers: this.tracker.trackedPointersCount,
         state: newState,
-        pointerInside: this.delegate.isPointerInBounds(
-          this.tracker.getAbsoluteCoordsAverage()
-        ),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
         oldState: newState !== oldState ? oldState : undefined,
