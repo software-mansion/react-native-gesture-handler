@@ -11,7 +11,7 @@ export const DetectorContext = createContext<DetectorContextType | null>(null);
 export function useDetectorContext() {
   const ctx = useContext(DetectorContext);
   if (!ctx) {
-    throw new Error('Logic detector must be under a Native Detector');
+    throw new Error('Logic detector must be a descendant of a Native Detector');
   }
   return ctx;
 }
