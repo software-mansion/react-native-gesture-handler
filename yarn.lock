@@ -3461,24 +3461,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/slider@npm:4.5.7":
-  version: 4.5.7
-  resolution: "@react-native-community/slider@npm:4.5.7"
-  checksum: 10c0/9154c88972eb97ecb53190ff215148b41ec195619991e51061f543dc67c8b2463d1d195dd9c166755b8db1cc4d5a1ae8a152c3ecd5d3285cc4a14c35fddb3716
-  languageName: node
-  linkType: hard
-
 "@react-native-community/slider@npm:5.0.1":
   version: 5.0.1
   resolution: "@react-native-community/slider@npm:5.0.1"
   checksum: 10c0/b2e712bf97057704ebbd00506de3b6df69b41da111234dfda94926641dd27fdd2186b31b3ba6d8b63e9804411eba7a70b74e293a4eefd3d433561bc61b5b5c3b
-  languageName: node
-  linkType: hard
-
-"@react-native-community/slider@patch:@react-native-community/slider@npm%3A4.5.7#~/.yarn/patches/@react-native-community-slider-npm-4.5.7-658e0e58c9.patch":
-  version: 4.5.7
-  resolution: "@react-native-community/slider@patch:@react-native-community/slider@npm%3A4.5.7#~/.yarn/patches/@react-native-community-slider-npm-4.5.7-658e0e58c9.patch::version=4.5.7&hash=190821"
-  checksum: 10c0/80be851a46ef064df27c239a79f1ab9223b9762ce86ec6ccccc89e2095123110d8381f24ae36912d4a2e9e828ca0e3ca5c56f3ebbb551a3156c9a93a1da26398
   languageName: node
   linkType: hard
 
@@ -6670,7 +6656,7 @@ __metadata:
     "@react-native-community/cli": "npm:18.0.0"
     "@react-native-community/cli-platform-android": "npm:18.0.0"
     "@react-native-community/cli-platform-ios": "npm:18.0.0"
-    "@react-native-community/slider": "patch:@react-native-community/slider@npm%3A4.5.7#~/.yarn/patches/@react-native-community-slider-npm-4.5.7-658e0e58c9.patch"
+    "@react-native-community/slider": "npm:5.0.1"
     "@react-native-community/viewpager": "npm:5.0.11"
     "@react-native/babel-preset": "npm:0.79.0"
     "@react-native/eslint-config": "npm:0.79.0"
