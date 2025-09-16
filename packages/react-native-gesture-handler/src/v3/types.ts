@@ -1,15 +1,23 @@
 import { Animated, NativeSyntheticEvent } from 'react-native';
 import {
   ActiveCursor,
-  GestureEventPayload,
   GestureTouchEvent,
-  HandlerStateChangeEventPayload,
   HitSlop,
   MouseButton,
   TouchAction,
   UserSelect,
 } from '../handlers/gestureHandlerCommon';
 import { PointerType } from '../PointerType';
+
+import { State } from '../State';
+
+export interface EventPayload {
+  handlerTag: number;
+  state: State;
+}
+export interface StateChangeEventPayload extends EventPayload {
+  oldState: State;
+}
 
 export type BaseHandlerData = {
   numberOfPointers: number;
@@ -18,14 +26,13 @@ export type BaseHandlerData = {
 
 export type HandlerData<T> = BaseHandlerData & T;
 
-export type GestureUpdateEvent<THandlerData> = GestureEventPayload & {
+export type GestureUpdateEvent<THandlerData> = EventPayload & {
   handlerData: HandlerData<THandlerData>;
 };
 
-export type GestureStateChangeEvent<THandlerData> =
-  HandlerStateChangeEventPayload & {
-    handlerData: HandlerData<THandlerData>;
-  };
+export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload & {
+  handlerData: HandlerData<THandlerData>;
+};
 
 export type GestureHandlerEvent<THandlerData> =
   | UpdateEvent<THandlerData>
