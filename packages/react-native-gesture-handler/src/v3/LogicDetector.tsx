@@ -61,6 +61,16 @@ export const LogicDetector = (props: NativeDetectorProps) => {
       return;
     }
 
+    // Native Detector differentiates Logic Children through a viewTag,
+    // thus if viewTag changes we have to reregister
+    unregister(viewTag);
+  }, [viewTag]);
+
+  useEffect(() => {
+    if (viewTag === -1) {
+      return;
+    }
+
     const logicProps =
       Platform.OS === 'web'
         ? {

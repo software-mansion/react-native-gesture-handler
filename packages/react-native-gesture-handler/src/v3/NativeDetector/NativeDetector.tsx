@@ -33,9 +33,13 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   const register = useCallback(
     (child: LogicChildren, methods: RefObject<LogicMethods>) => {
       setLogicChildren((prev) => {
-        if (prev.some((c) => c.viewTag === child.viewTag)) {
-          return prev;
+        const index = prev.findIndex((c) => c.viewTag === child.viewTag);
+        if (index !== -1) {
+          const updated = [...prev];
+          updated[index] = child;
+          return updated;
         }
+
         return [...prev, child];
       });
 
