@@ -66,7 +66,7 @@ export enum SingleGestureName {
   Rotation = 'RotationGestureHandler',
   Fling = 'FlingGestureHandler',
   Manual = 'ManualGestureHandler',
-  Native = 'NativeGestureHandler',
+  Native = 'NativeViewGestureHandler',
   Hover = 'HoverGestureHandler',
 }
 
