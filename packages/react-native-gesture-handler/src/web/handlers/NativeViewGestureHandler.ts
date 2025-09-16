@@ -183,4 +183,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
   public isButton(): boolean {
     return this.buttonRole;
   }
+
+  protected override transformNativeEvent(): Record<string, unknown> {
+    return {
+      pointerInside: this.delegate.isPointerInBounds(
+        this.tracker.getAbsoluteCoordsAverage()
+      ),
+    };
+  }
 }

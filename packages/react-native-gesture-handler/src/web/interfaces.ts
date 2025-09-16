@@ -91,9 +91,7 @@ export interface GestureHandlerNativeEvent
   extends Record<string, NativeEventArgs> {
   numberOfPointers: number;
   state: State;
-  pointerInside: boolean | undefined;
   handlerTag: number;
-  target: number;
   oldState?: State;
   pointerType: PointerType;
 }

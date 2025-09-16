@@ -1,18 +1,22 @@
 import { Animated, NativeSyntheticEvent } from 'react-native';
-import {
-  GestureEventPayload,
-  GestureTouchEvent,
-  HandlerStateChangeEventPayload,
-} from '../handlers/gestureHandlerCommon';
+import { GestureTouchEvent } from '../handlers/gestureHandlerCommon';
+import { State } from '../State';
 
-export type GestureUpdateEvent<THandlerData> = GestureEventPayload & {
+export interface EventPayload {
+  handlerTag: number;
+  state: State;
+}
+export interface StateChangeEventPayload extends EventPayload {
+  oldState: State;
+}
+
+export type GestureUpdateEvent<THandlerData> = EventPayload & {
   handlerData: THandlerData;
 };
 
-export type GestureStateChangeEvent<THandlerData> =
-  HandlerStateChangeEventPayload & {
-    handlerData: THandlerData;
-  };
+export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload & {
+  handlerData: THandlerData;
+};
 
 export type GestureHandlerEvent<THandlerData> =
   | UpdateEvent<THandlerData>
