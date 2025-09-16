@@ -4,15 +4,15 @@ import { HandlerCallbacks } from '../handlers/gestures/gesture';
 import { ValueOf } from '../typeUtils';
 import { State } from '../State';
 
-export interface NativeEventPayload {
+export interface EventPayload {
   handlerTag: number;
   state: ValueOf<typeof State>;
 }
-export interface NativeStateChangeEventPayload extends NativeEventPayload {
+export interface NativeStateChangeEventPayload extends EventPayload {
   oldState: ValueOf<typeof State>;
 }
 
-export type GestureUpdateEventWithData<T> = NativeEventPayload & {
+export type GestureUpdateEventWithData<T> = EventPayload & {
   handlerData: T;
 };
 
