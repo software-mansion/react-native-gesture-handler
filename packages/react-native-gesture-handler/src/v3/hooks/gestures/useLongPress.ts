@@ -27,7 +27,7 @@ type LongPressGestureProps = {
   numberOfPointers?: number;
 };
 
-type LongPressGesturePropsInternal = {
+type LongPressGestureInternalProps = {
   minDurationMs?: number;
   maxDist?: number;
   numberOfPointers?: number;
@@ -47,12 +47,12 @@ export type LongPressGestureConfig = ExcludeInternalConfigProps<
 
 type LongPressGestureInternalConfig = BaseGestureConfig<
   LongPressHandlerData,
-  LongPressGesturePropsInternal
+  LongPressGestureInternalProps
 >;
 
 const LongPressPropsMapping = new Map<
   keyof LongPressGestureProps,
-  keyof LongPressGesturePropsInternal
+  keyof LongPressGestureInternalProps
 >([
   ['minDuration', 'minDurationMs'],
   ['maxDistance', 'maxDist'],
@@ -68,7 +68,7 @@ export function useLongPress(config: LongPressGestureConfig) {
     longPressConfig.shouldCancelWhenOutside = true;
   }
 
-  return useGesture<LongPressHandlerData, LongPressGesturePropsInternal>(
+  return useGesture<LongPressHandlerData, LongPressGestureInternalProps>(
     SingleGestureName.LongPress,
     longPressConfig
   );
