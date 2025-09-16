@@ -1,5 +1,5 @@
 import { createContext, RefObject, useContext } from 'react';
-import { LogicChildren, LogicMethods } from './types';
+import { LogicChildren, LogicMethods } from '../types';
 
 type DetectorContextType = {
   register: (child: LogicChildren, methods: RefObject<LogicMethods>) => void;

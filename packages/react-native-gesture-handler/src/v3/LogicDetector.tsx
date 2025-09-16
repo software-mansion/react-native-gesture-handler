@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
-import { useDetectorContext } from './useDetectorContext';
+import { useDetectorContext } from './NativeDetector/useDetectorContext';
 import { NativeDetectorProps } from './NativeDetector/NativeDetector';
 import { isComposedGesture } from './hooks/utils/relationUtils';
 
