@@ -11,11 +11,11 @@ import { PointerType } from '../PointerType';
 
 import { State } from '../State';
 
-export interface EventPayload {
+interface EventPayload {
   handlerTag: number;
   state: State;
 }
-export interface StateChangeEventPayload extends EventPayload {
+interface StateChangeEventPayload extends EventPayload {
   oldState: State;
 }
 
