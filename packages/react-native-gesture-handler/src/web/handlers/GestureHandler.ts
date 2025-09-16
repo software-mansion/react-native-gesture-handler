@@ -460,7 +460,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
-  private transformStateChangeEvent(
+  protected transformStateChangeEvent(
     newState: State,
     oldState: State
   ): ResultEvent<GestureStateChangeEventWithData<unknown>> {
@@ -480,7 +480,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
-  private transformUpdateEvent(
+  protected transformUpdateEvent(
     newState: State
   ): ResultEvent<GestureUpdateEventWithData<unknown>> {
     this.ensureViewRef(this.viewRef);
@@ -498,7 +498,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
-  private transformTouchEvent(
+  protected transformTouchEvent(
     event: AdaptedEvent
   ): ResultEvent<GestureTouchEvent> | undefined {
     const rect = this.delegate.measureView();
