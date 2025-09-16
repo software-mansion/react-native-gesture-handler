@@ -10,14 +10,6 @@ export interface StateChangeEventPayload extends EventPayload {
   oldState: State;
 }
 
-export type GestureUpdateEventWithData<T> = EventPayload & {
-  handlerData: T;
-};
-
-export type GestureStateChangeEventWithData<T> = StateChangeEventPayload & {
-  handlerData: T;
-};
-
 export type GestureUpdateEvent<THandlerData> = EventPayload & {
   handlerData: THandlerData;
 };

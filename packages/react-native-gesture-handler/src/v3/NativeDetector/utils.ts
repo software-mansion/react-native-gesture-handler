@@ -139,9 +139,9 @@ export function configureRelations(gesture: Gesture) {
 
     traverseAndConfigureRelations(gesture, simultaneousHandlers);
   } else {
-    RNGestureHandlerModule.configureRelations(
-      gesture.tag,
-      gesture.gestureRelations
-    );
+    // RNGestureHandlerModule.configureRelations(
+    //   gesture.tag,
+    //   gesture.gestureRelations
+    // );
   }
 }
