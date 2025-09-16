@@ -1,14 +1,10 @@
 import { Platform } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config, PropsRef, ResultEvent } from '../interfaces';
+import { AdaptedEvent, Config, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import { ActionType } from '../../ActionType';
-import {
-  GestureStateChangeEventWithData,
-  GestureUpdateEventWithData,
-} from '../../v3/types';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
@@ -188,40 +184,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     return this.buttonRole;
   }
 
-  protected override transformStateChangeEvent(
-    newState: State,
-    oldState: State
-  ): ResultEvent<GestureStateChangeEventWithData<unknown>> {
-    const result = super.transformStateChangeEvent(newState, oldState);
+  protected override transformNativeEvent(): Record<string, unknown> {
     return {
-      ...result,
-      nativeEvent: {
-        ...result.nativeEvent,
-        handlerData: {
-          ...result.nativeEvent.handlerData!,
-          pointerInside: this.delegate.isPointerInBounds(
-            this.tracker.getAbsoluteCoordsAverage()
-          ),
-        },
-      },
-    };
-  }
-
-  protected override transformUpdateEvent(
-    newState: State
-  ): ResultEvent<GestureUpdateEventWithData<unknown>> {
-    const result = super.transformUpdateEvent(newState);
-    return {
-      ...result,
-      nativeEvent: {
-        ...result.nativeEvent,
-        handlerData: {
-          ...result.nativeEvent.handlerData!,
-          pointerInside: this.delegate.isPointerInBounds(
-            this.tracker.getAbsoluteCoordsAverage()
-          ),
-        },
-      },
+      pointerInside: this.delegate.isPointerInBounds(
+        this.tracker.getAbsoluteCoordsAverage()
+      ),
     };
   }
 }
