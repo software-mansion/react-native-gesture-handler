@@ -6,9 +6,8 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type ManualGestureProps = {};
-
-type ManualHandlerData = {};
+type ManualGestureProps = Record<string, never>;
+type ManualHandlerData = Record<string, never>;
 
 type ManualGestureInternalConfig = BaseGestureConfig<
   ManualHandlerData,

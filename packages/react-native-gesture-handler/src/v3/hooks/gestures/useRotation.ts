@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type RotationGestureProps = {};
+type RotationGestureProps = Record<string, never>;
 
 type RotationHandlerData = {
   rotation: number;

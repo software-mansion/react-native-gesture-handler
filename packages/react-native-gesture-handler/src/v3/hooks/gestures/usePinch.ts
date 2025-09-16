@@ -6,7 +6,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type PinchGestureProps = {};
+type PinchGestureProps = Record<string, never>;
 
 type PinchHandlerData = {
   scale: number;
