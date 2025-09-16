@@ -124,6 +124,4 @@ export function invokeDetectorEvent(
     }
     return;
   }
-
-  return;
 }
