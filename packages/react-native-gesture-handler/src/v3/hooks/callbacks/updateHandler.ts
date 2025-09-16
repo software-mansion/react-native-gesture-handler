@@ -41,7 +41,6 @@ export function getUpdateHandler<THandlerData>(
         : event
     );
 
-    // TODO: Investigate why this is always undefined
     context.lastUpdateEvent = event;
   };
 }
