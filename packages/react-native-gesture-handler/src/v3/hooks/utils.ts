@@ -141,6 +141,7 @@ export function getChangeEventCalculator<THandlerData>(
     current: GestureUpdateEvent<THandlerData>,
     previous?: GestureUpdateEvent<THandlerData>
   ) => {
+    'worklet';
     const currentEventData = current.handlerData;
     const previousEventData = previous ? previous.handlerData : null;
 
