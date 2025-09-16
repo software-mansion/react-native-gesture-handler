@@ -1,20 +1,21 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { tagMessage } from '../../../utils';
 import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
-import { CallbackHandlers, UpdateEvent } from '../../types';
+import {
+  ChangeCalculatorType,
+  GestureCallbacks,
+  UpdateEvent,
+} from '../../types';
 import { isEventForHandlerWithTag } from '../utils';
 import { runCallback } from '../utils/eventHandlersUtils';
 
-export function getUpdateHandler(
+export function getUpdateHandler<THandlerData>(
   handlerTag: number,
-  callbacks: CallbackHandlers,
-  context: ReanimatedContext | undefined,
-  changeEventCalculator?: (
-    current: UpdateEvent<Record<string, unknown>>,
-    previous?: UpdateEvent<Record<string, unknown>>
-  ) => UpdateEvent<Record<string, unknown>>
+  callbacks: GestureCallbacks<THandlerData>,
+  context: ReanimatedContext<THandlerData> | undefined,
+  changeEventCalculator?: ChangeCalculatorType<THandlerData>
 ) {
-  return (event: UpdateEvent<Record<string, unknown>>) => {
+  return (event: UpdateEvent<THandlerData>) => {
     'worklet';
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {

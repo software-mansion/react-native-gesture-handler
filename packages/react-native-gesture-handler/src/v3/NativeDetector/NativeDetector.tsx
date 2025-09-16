@@ -26,8 +26,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : // TODO: Remove this cast when we properly type config
-      (gesture.config.shouldUseReanimated as boolean)
+    : gesture.config.shouldUseReanimated
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
