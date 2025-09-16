@@ -454,7 +454,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     };
   }
 
-  protected transformStateChangeEvent(
+  private transformStateChangeEvent(
     newState: State,
     oldState: State
   ): ResultEvent<GestureStateChangeEvent<unknown>> {
