@@ -469,10 +469,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         state: newState,
         handlerTag: this.handlerTag,
-        pointerType: this.pointerType,
         oldState: oldState,
-        numberOfPointers: this.tracker.trackedPointersCount,
         handlerData: {
+          numberOfPointers: this.tracker.trackedPointersCount,
+          pointerType: this.pointerType,
           ...this.transformNativeEvent(),
         },
       },
@@ -488,9 +488,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         state: newState,
         handlerTag: this.handlerTag,
-        pointerType: this.pointerType,
-        numberOfPointers: this.tracker.trackedPointersCount,
         handlerData: {
+          pointerType: this.pointerType,
+          numberOfPointers: this.tracker.trackedPointersCount,
           ...this.transformNativeEvent(),
         },
       },
