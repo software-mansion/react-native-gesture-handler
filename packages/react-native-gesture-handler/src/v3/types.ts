@@ -160,7 +160,7 @@ export type InternalConfigProps<THandlerData> = {
 
 export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   GestureCallbacks<THandlerData> &
-  TConfig &
+  FilterNeverProperties<TConfig> &
   InternalConfigProps<THandlerData> & {
     disableReanimated?: boolean;
     enabled?: boolean;
@@ -177,3 +177,15 @@ export type ExcludeInternalConfigProps<T> = Omit<
   T,
   keyof InternalConfigProps<unknown>
 >;
+
+// Some handlers do not have specific properties (e.g. `Pinch`), therefore we mark those prop types as `Record<string, never>`.
+// Doing intersection with those types results in type which cannot have any property. In order to fix that,
+// we filter out properties with `never` values.
+//
+// This piece of magic works like this:
+// 1. We iterate over all keys of T using `keyof T`
+// 2. We check if the type of property is `never` using conditional types (`T[K] extends never ? never : K`).
+//    If it is, we replace the key with `never`, i.e. we delete it. Otherwise we keep it as is.
+type FilterNeverProperties<T> = {
+  [K in keyof T as T[K] extends never ? never : K]: T[K];
+};
