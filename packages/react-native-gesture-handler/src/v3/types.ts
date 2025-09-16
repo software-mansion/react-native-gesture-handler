@@ -1,6 +1,5 @@
 import { Animated, NativeSyntheticEvent } from 'react-native';
 import { GestureTouchEvent } from '../handlers/gestureHandlerCommon';
-import { HandlerCallbacks } from '../handlers/gestures/gesture';
 import { State } from '../State';
 
 export interface EventPayload {
@@ -15,18 +14,17 @@ export type GestureUpdateEventWithData<T> = EventPayload & {
   handlerData: T;
 };
 
-export type GestureStateChangeEventWithData<T> =
-  StateChangeEventPayload & {
-    handlerData: T;
+export type GestureStateChangeEventWithData<T> = StateChangeEventPayload & {
+  handlerData: T;
+};
 
 export type GestureUpdateEvent<THandlerData> = EventPayload & {
   handlerData: THandlerData;
 };
 
-export type GestureStateChangeEvent<THandlerData> =
-  HandlerStateChangeEventPayload & {
-    handlerData: THandlerData;
-  };
+export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload & {
+  handlerData: THandlerData;
+};
 
 export type GestureHandlerEvent<THandlerData> =
   | UpdateEvent<THandlerData>
