@@ -1,8 +1,12 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
+import { BaseGestureConfig } from '../../../types';
 import { extractUpdateHandlers } from '../../utils/eventHandlersUtils';
 import { getUpdateHandler } from '../updateHandler';
 
-export function useReanimatedUpdateEvent(handlerTag: number, config: any) {
+export function useReanimatedUpdateEvent<THandlerData, TConfig>(
+  handlerTag: number,
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
   const { handlers, changeEventCalculator } = extractUpdateHandlers(config);
 
   // We don't want to call hooks conditionally, therefore `useHandler` and `useEvent` will be always called.

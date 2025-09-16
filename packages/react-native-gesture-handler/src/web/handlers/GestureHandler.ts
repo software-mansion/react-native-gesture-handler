@@ -26,10 +26,7 @@ import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
-import {
-  GestureStateChangeEventWithData,
-  GestureUpdateEventWithData,
-} from '../../v3/types';
+import { GestureStateChangeEvent, GestureUpdateEvent } from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
 
 export default abstract class GestureHandler implements IGestureHandler {
@@ -460,7 +457,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected transformStateChangeEvent(
     newState: State,
     oldState: State
-  ): ResultEvent<GestureStateChangeEventWithData<unknown>> {
+  ): ResultEvent<GestureStateChangeEvent<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
@@ -479,7 +476,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformUpdateEvent(
     newState: State
-  ): ResultEvent<GestureUpdateEventWithData<unknown>> {
+  ): ResultEvent<GestureUpdateEvent<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {

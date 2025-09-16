@@ -3,6 +3,7 @@ import {
   Reanimated,
   SharedValue,
 } from '../../../handlers/gestures/reanimatedWrapper';
+import { BaseGestureConfig } from '../../types';
 
 // Variant of djb2 hash function.
 // Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765
@@ -22,7 +23,10 @@ const SHARED_VALUE_OFFSET = 1.618;
 // This is used to obtain HostFunction that can be executed on the UI thread
 const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
 
-export function bindSharedValues(config: any, handlerTag: number) {
+export function bindSharedValues<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>,
+  handlerTag: number
+) {
   if (Reanimated === undefined) {
     return;
   }
@@ -49,7 +53,10 @@ export function bindSharedValues(config: any, handlerTag: number) {
   }
 }
 
-export function unbindSharedValues(config: any, handlerTag: number) {
+export function unbindSharedValues<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>,
+  handlerTag: number
+) {
   if (Reanimated === undefined) {
     return;
   }
@@ -70,7 +77,9 @@ export function unbindSharedValues(config: any, handlerTag: number) {
   }
 }
 
-export function hasWorkletEventHandlers(config: Record<string, unknown>) {
+export function hasWorkletEventHandlers<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
   return Object.values(config).some(
     (prop) => typeof prop === 'function' && '__workletHash' in prop
   );
