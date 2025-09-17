@@ -9,20 +9,7 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   const { register, unregister } = useDetectorContext();
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
-  const logicMethods = useRef({
-    onGestureHandlerStateChange:
-      props.gesture.gestureEvents.onGestureHandlerStateChange,
-    onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
-    onGestureHandlerAnimatedEvent:
-      props.gesture.gestureEvents.onGestureHandlerAnimatedEvent,
-    onGestureHandlerTouchEvent:
-      props.gesture.gestureEvents.onGestureHandlerTouchEvent,
-    onReanimatedStateChange:
-      props.gesture.gestureEvents.onReanimatedStateChange,
-    onReanimatedUpdateEvent:
-      props.gesture.gestureEvents.onReanimatedUpdateEvent,
-    onReanimatedTouchEvent: props.gesture.gestureEvents.onReanimatedTouchEvent,
-  });
+  const logicMethods = useRef(props.gesture.gestureEvents);
 
   const handleRef = useCallback((node: any) => {
     viewRef.current = node;
@@ -39,21 +26,7 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   }, []);
 
   useEffect(() => {
-    logicMethods.current = {
-      onGestureHandlerStateChange:
-        props.gesture.gestureEvents.onGestureHandlerStateChange,
-      onGestureHandlerEvent: props.gesture.gestureEvents.onGestureHandlerEvent,
-      onGestureHandlerTouchEvent:
-        props.gesture.gestureEvents.onGestureHandlerTouchEvent,
-      onGestureHandlerAnimatedEvent:
-        props.gesture.gestureEvents.onGestureHandlerAnimatedEvent,
-      onReanimatedStateChange:
-        props.gesture.gestureEvents.onReanimatedStateChange,
-      onReanimatedUpdateEvent:
-        props.gesture.gestureEvents.onReanimatedUpdateEvent,
-      onReanimatedTouchEvent:
-        props.gesture.gestureEvents.onReanimatedTouchEvent,
-    };
+    logicMethods.current = props.gesture.gestureEvents;
   }, [props.gesture.gestureEvents]);
 
   useEffect(() => {
