@@ -203,6 +203,14 @@
       attachedHandlers:_attachedHandlers];
 
   [super updateProps:propsBase oldProps:oldPropsBase];
+  [self updateLogicChildren:newProps.logicChildren];
+
+  // Override to force hittesting to work outside bounds
+  self.clipsToBounds = NO;
+}
+
+- (void)updateLogicChildren:(const std::vector<RNGestureHandlerDetectorLogicChildrenStruct> &)logicChildren
+{
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
@@ -211,7 +219,7 @@
     [logicHandlersToDetach addObject:@(child.first)];
   }
 
-  for (const RNGestureHandlerDetectorLogicChildrenStruct &child : newProps.logicChildren) {
+  for (const RNGestureHandlerDetectorLogicChildrenStruct &child : logicChildren) {
     if (_attachedLogicHandlers.find(child.viewTag) == _attachedLogicHandlers.end()) {
       _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
     }
@@ -229,9 +237,6 @@
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
   }
-
-  // Override to force hittesting to work outside bounds
-  self.clipsToBounds = NO;
 }
 
 - (void)tryAttachNativeHandlersToChildView
