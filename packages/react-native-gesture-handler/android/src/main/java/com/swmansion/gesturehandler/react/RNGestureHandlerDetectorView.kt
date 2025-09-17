@@ -47,7 +47,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     for (child in mappedChildren) {
       if (!attachedLogicHandlers.containsKey(child.viewTag)) {
-        attachedLogicHandlers.put(child.viewTag, mutableSetOf())
+        attachedLogicHandlers[child.viewTag] = mutableSetOf()
       }
 
       logicChildrenToDetach.remove(child.viewTag)
