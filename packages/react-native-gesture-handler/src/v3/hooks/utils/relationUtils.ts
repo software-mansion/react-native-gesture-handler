@@ -1,4 +1,9 @@
-import { ComposedGesture, Gesture, GestureRelations } from '../../types';
+import {
+  BaseGestureConfig,
+  ComposedGesture,
+  Gesture,
+  GestureRelations,
+} from '../../types';
 
 export function isComposedGesture(
   gesture: Gesture
@@ -53,8 +58,8 @@ function makeSimultaneousWithExternalGestureSymmetric(
   }
 }
 
-export function prepareRelations(
-  config: any,
+export function prepareRelations<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>,
   handlerTag: number
 ): GestureRelations {
   makeSimultaneousWithExternalGestureSymmetric(
