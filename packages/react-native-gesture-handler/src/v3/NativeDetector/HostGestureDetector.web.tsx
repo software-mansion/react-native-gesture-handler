@@ -104,7 +104,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [handlerTags, children]);
 
   useEffect(() => {
-    const logicHandlersToDetach: Set<number> = new Set(
+    const logicChildrenToDetach: Set<number> = new Set(
       attachedLogicHandlers.current.keys()
     );
 
@@ -112,7 +112,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       if (!attachedLogicHandlers.current.has(child.viewTag)) {
         attachedLogicHandlers.current.set(child.viewTag, new Set());
       }
-      logicHandlersToDetach.delete(child.viewTag);
+      logicChildrenToDetach.delete(child.viewTag);
       attachHandlers(
         child.viewRef,
         propsRef,
@@ -122,7 +122,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       );
     });
 
-    logicHandlersToDetach.forEach((tag) => {
+    logicChildrenToDetach.forEach((tag) => {
       detachAllHandlers(attachedLogicHandlers.current.get(tag)!);
     });
   }, [props.logicChildren]);

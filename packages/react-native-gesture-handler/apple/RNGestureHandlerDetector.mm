@@ -214,9 +214,9 @@
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
-      NSMutableSet *logicHandlersToDetach = [NSMutableSet set];
+      NSMutableSet *logicChildrenToDetach = [NSMutableSet set];
   for (const std::pair<const int, NSMutableSet *> &child : _attachedLogicHandlers) {
-    [logicHandlersToDetach addObject:@(child.first)];
+    [logicChildrenToDetach addObject:@(child.first)];
   }
 
   for (const RNGestureHandlerDetectorLogicChildrenStruct &child : logicChildren) {
@@ -224,7 +224,7 @@
       _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
     }
 
-    [logicHandlersToDetach removeObject:@(child.viewTag)];
+    [logicChildrenToDetach removeObject:@(child.viewTag)];
 
     [self attachHandlers:child.handlerTags
               actionType:RNGestureHandlerActionTypeLogicDetector
@@ -232,7 +232,7 @@
         attachedHandlers:_attachedLogicHandlers[child.viewTag]];
   }
 
-  for (const NSNumber *tag : logicHandlersToDetach) {
+  for (const NSNumber *tag : logicChildrenToDetach) {
     for (id handlerTag : _attachedLogicHandlers[tag.intValue]) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
