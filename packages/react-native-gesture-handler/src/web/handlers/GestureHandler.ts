@@ -26,10 +26,7 @@ import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
-import {
-  GestureStateChangeEventWithData,
-  GestureUpdateEventWithData,
-} from '../../v3/types';
+import { GestureStateChangeEvent, GestureUpdateEvent } from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
 
 export default abstract class GestureHandler implements IGestureHandler {
@@ -469,12 +466,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         numberOfPointers: this.tracker.trackedPointersCount,
         state: newState,
-        pointerInside: this.delegate.isPointerInBounds(
-          this.tracker.getAbsoluteCoordsAverage()
-        ),
         ...this.transformNativeEvent(),
         handlerTag: this.handlerTag,
-        target: this.viewRef,
         oldState: newState !== oldState ? oldState : undefined,
         pointerType: this.pointerType,
       },
@@ -485,21 +478,17 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformStateChangeEvent(
     newState: State,
     oldState: State
-  ): ResultEvent<GestureStateChangeEventWithData<unknown>> {
+  ): ResultEvent<GestureStateChangeEvent<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
         state: newState,
         handlerTag: this.handlerTag,
-        pointerType: this.pointerType,
         oldState: oldState,
-        numberOfPointers: this.tracker.trackedPointersCount,
         handlerData: {
-          pointerInside: this.delegate.isPointerInBounds(
-            this.tracker.getAbsoluteCoordsAverage()
-          ),
+          numberOfPointers: this.tracker.trackedPointersCount,
+          pointerType: this.pointerType,
           ...this.transformNativeEvent(),
-          target: this.viewRef,
         },
       },
       timeStamp: Date.now(),
@@ -508,20 +497,16 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformUpdateEvent(
     newState: State
-  ): ResultEvent<GestureUpdateEventWithData<unknown>> {
+  ): ResultEvent<GestureUpdateEvent<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
         state: newState,
         handlerTag: this.handlerTag,
-        pointerType: this.pointerType,
-        numberOfPointers: this.tracker.trackedPointersCount,
         handlerData: {
-          pointerInside: this.delegate.isPointerInBounds(
-            this.tracker.getAbsoluteCoordsAverage()
-          ),
+          pointerType: this.pointerType,
+          numberOfPointers: this.tracker.trackedPointersCount,
           ...this.transformNativeEvent(),
-          target: this.viewRef,
         },
       },
       timeStamp: Date.now(),
