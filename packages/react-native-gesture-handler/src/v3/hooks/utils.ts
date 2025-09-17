@@ -95,33 +95,3 @@ export function shouldHandleTouchEvents<THandlerData, TConfig>(
     !!config.onTouchesCancelled
   );
 }
-
-// Some event handlers are plain functions, whereas those marked as worklets
-// are wrapped in objects under eventMethod.workletEventHandler.worklet.
-// This function normalises invocation so that both forms can be called safely.
-// Note: this worklet unpacking is essentially a workaround since we need to
-// decide on the JS side which handle logic to execute.
-export function invokeDetectorEvent(
-  method:
-    | ((event: any) => void)
-    | { workletEventHandler: { worklet: (event: any) => void } }
-    | null
-    | undefined,
-  event: any
-): void {
-  if (!method) {
-    return;
-  }
-
-  if (typeof method === 'function') {
-    method(event);
-    return;
-  }
-
-  if ('workletEventHandler' in method) {
-    if ('worklet' in method.workletEventHandler) {
-      invokeDetectorEvent(method.workletEventHandler.worklet, event);
-    }
-    return;
-  }
-}
