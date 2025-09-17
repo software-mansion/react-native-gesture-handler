@@ -5,11 +5,12 @@
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
+import { tagMessage } from '../../utils';
 import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
-import { ComposedGestureName, Gesture } from '../types';
+import { ComposedGestureName, Gesture, GestureHandlerEvent } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseAndConfigureRelations = (
@@ -151,13 +152,17 @@ export function configureRelations(gesture: Gesture) {
 // This function normalises invocation so that both forms can be called safely.
 // Note: this worklet unpacking is essentially a workaround since we need to
 // decide on the JS side which handle logic to execute.
-export function invokeDetectorEvent(
+export function invokeDetectorEvent<T>(
   method:
-    | ((event: any) => void)
-    | { workletEventHandler: { worklet: (event: any) => void } }
+    | ((event: GestureHandlerEvent<T>) => void)
+    | {
+        workletEventHandler: {
+          worklet: (event: GestureHandlerEvent<T>) => void;
+        };
+      }
     | null
     | undefined,
-  event: any
+  event: GestureHandlerEvent<T>
 ): void {
   if (!method) {
     return;
@@ -174,4 +179,15 @@ export function invokeDetectorEvent(
     }
     return;
   }
+}
+
+export function getHandlerTag<T>(e: GestureHandlerEvent<T>): number {
+  if ('nativeEvent' in e) {
+    return (e.nativeEvent as any).handlerTag;
+  }
+  if ('handlerTag' in e) {
+    return (e as any).handlerTag;
+  }
+
+  throw new Error(tagMessage('Cannot extract handler tag from event'));
 }

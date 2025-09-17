@@ -1,8 +1,11 @@
 import { createContext, RefObject, useContext } from 'react';
-import { LogicChildren, LogicMethods } from '../types';
+import { GestureEvents, LogicChildren } from '../types';
 
 type DetectorContextType = {
-  register: (child: LogicChildren, methods: RefObject<LogicMethods>) => void;
+  register: (
+    child: LogicChildren,
+    methods: RefObject<GestureEvents<unknown>>
+  ) => void;
   unregister: (child: number) => void;
 };
 

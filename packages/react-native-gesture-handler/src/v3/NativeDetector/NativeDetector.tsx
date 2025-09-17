@@ -2,10 +2,19 @@ import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { tagMessage } from '../../utils';
-import { LogicChildren, LogicMethods, Gesture } from '../types';
+import {
+  LogicChildren,
+  Gesture,
+  GestureEvents,
+  GestureHandlerEvent,
+} from '../types';
 import { DetectorContext } from './useDetectorContext';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { configureRelations, invokeDetectorEvent } from './utils';
+import {
+  configureRelations,
+  getHandlerTag,
+  invokeDetectorEvent,
+} from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 
 export interface NativeDetectorProps {
@@ -21,7 +30,9 @@ const ReanimatedNativeDetector =
 
 export function NativeDetector({ gesture, children }: NativeDetectorProps) {
   const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
-  const logicMethods = useRef<Map<number, RefObject<LogicMethods>>>(new Map());
+  const logicMethods = useRef<Map<number, RefObject<GestureEvents<unknown>>>>(
+    new Map()
+  );
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
@@ -30,7 +41,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       : HostGestureDetector;
 
   const register = useCallback(
-    (child: LogicChildren, methods: RefObject<LogicMethods>) => {
+    (child: LogicChildren, methods: RefObject<GestureEvents<unknown>>) => {
       setLogicChildren((prev) => {
         const index = prev.findIndex((c) => c.viewTag === child.viewTag);
         if (index !== -1) {
@@ -64,38 +75,46 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   configureRelations(gesture);
 
-  const handleGestureEvent = (key: keyof LogicMethods, e: any) => {
-    const handlerTag = e.nativeEvent.handlerTag;
-
+  const handleGestureEvent = (
+    key: keyof GestureEvents<unknown>,
+    e: GestureHandlerEvent<unknown>
+  ) => {
+    const handlerTag = getHandlerTag(e);
     const method = !logicMethods.current.has(handlerTag)
       ? gesture.gestureEvents[key]
       : logicMethods.current.get(handlerTag)?.current?.[key];
-
-    invokeDetectorEvent(method, e);
+    invokeDetectorEvent(method as (e: GestureHandlerEvent<unknown>) => void, e);
   };
 
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
       <NativeDetectorComponent
         onGestureHandlerStateChange={(e) => {
+          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
           handleGestureEvent('onGestureHandlerStateChange', e);
         }}
         onGestureHandlerEvent={(e) => {
+          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
           handleGestureEvent('onGestureHandlerEvent', e);
         }}
         onGestureHandlerAnimatedEvent={(e) => {
+          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
           handleGestureEvent('onGestureHandlerAnimatedEvent', e);
         }}
         onGestureHandlerTouchEvent={(e) => {
+          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
           handleGestureEvent('onGestureHandlerTouchEvent', e);
         }}
         onGestureHandlerReanimatedStateChange={(e) => {
+          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
           handleGestureEvent('onReanimatedStateChange', e);
         }}
         onGestureHandlerReanimatedEvent={(e) => {
+          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
           handleGestureEvent('onReanimatedUpdateEvent', e);
         }}
         onGestureHandlerReanimatedTouchEvent={(e) => {
+          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
           handleGestureEvent('onReanimatedTouchEvent', e);
         }}
         moduleId={globalThis._RNGH_MODULE_ID}
