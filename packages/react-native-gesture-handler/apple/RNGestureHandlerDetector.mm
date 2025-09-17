@@ -215,11 +215,11 @@
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
       NSMutableSet *logicChildrenToDetach = [NSMutableSet set];
-  for (const std::pair<const int, NSMutableSet *> &child : _attachedLogicHandlers) {
+  for (const auto &child : _attachedLogicHandlers) {
     [logicChildrenToDetach addObject:@(child.first)];
   }
 
-  for (const RNGestureHandlerDetectorLogicChildrenStruct &child : logicChildren) {
+  for (const auto &child : logicChildren) {
     if (_attachedLogicHandlers.find(child.viewTag) == _attachedLogicHandlers.end()) {
       _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
     }
