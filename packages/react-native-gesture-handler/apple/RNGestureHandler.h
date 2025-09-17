@@ -81,6 +81,7 @@
 @property (nonatomic) BOOL manualActivation;
 @property (nonatomic) BOOL dispatchesAnimatedEvents;
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
+@property (nonatomic, nonnull, assign) NSNumber *hostDetectorTag;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
@@ -106,9 +107,6 @@
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
 - (nonnull RNGHUIView *)findViewForEvents;
 - (BOOL)wantsToAttachDirectlyToView;
-
-- (void)setHostDetectorTag:(nonnull NSNumber *)hostDetectorTag;
-- (nonnull NSNumber *)getHostDetectorTag;
 
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
