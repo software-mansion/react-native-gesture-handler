@@ -72,27 +72,45 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function prepareConfig<THandlerData, TConfig>(
+const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
+  // Callbacks
+  'onBegin',
+  'onStart',
+  'onUpdate',
+  'onEnd',
+  'onFinalize',
+  'onTouchesDown',
+  'onTouchesMove',
+  'onTouchesUp',
+  'onTouchesCancelled',
+
+  // Config props
+  'changeEventCalculator',
+  'disableReanimated',
+
+  // Relations
+  'simultaneousWithExternalGesture',
+  'requireExternalGestureToFail',
+  'blocksExternalGesture',
+]);
+
+export function prepareConfig<THandlerData, TConfig extends object>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  const copy = { ...config };
+  // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
+  const filteredConfig: BaseGestureConfig<THandlerData, TConfig> = {};
 
-  for (const key in copy) {
-    // @ts-ignore It is fine to use string as index
-    if (Reanimated?.isSharedValue(copy[key])) {
-      // @ts-ignore It is fine to use string as index
-      copy[key] = copy[key].value;
+  for (const [key, value] of Object.entries(config)) {
+    if (PropsToFilter.has(key)) {
+      continue;
     }
+
+    Object.assign(filteredConfig, {
+      [key]: Reanimated?.isSharedValue(value) ? value.value : value,
+    });
   }
 
-  // TODO: Filter changes - passing functions (and possibly other types)
-  // causes a native crash
-  delete copy.onUpdate;
-  delete copy.simultaneousWithExternalGesture;
-  delete copy.requireExternalGestureToFail;
-  delete copy.blocksExternalGesture;
-
-  return copy;
+  return filteredConfig;
 }
 
 export function shouldHandleTouchEvents<THandlerData, TConfig>(
