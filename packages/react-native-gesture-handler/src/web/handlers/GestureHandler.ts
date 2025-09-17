@@ -24,7 +24,7 @@ import {
 } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType, isV3Api } from '../../ActionType';
+import { ActionType, usesNativeOrLogicDetector } from '../../ActionType';
 import { tagMessage } from '../../utils';
 import { GestureStateChangeEvent, GestureUpdateEvent } from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
@@ -388,7 +388,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.transformTouchEvent(event);
 
     if (touchEvent) {
-      if (onGestureHandlerTouchEvent && isV3Api(this.actionType)) {
+      if (
+        onGestureHandlerTouchEvent &&
+        usesNativeOrLogicDetector(this.actionType)
+      ) {
         invokeNullableMethod(onGestureHandlerTouchEvent, touchEvent);
       } else {
         invokeNullableMethod(onGestureHandlerEvent, touchEvent);
@@ -407,7 +410,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerAnimatedEvent,
     }: PropsRef = this.propsRef!.current;
 
-    const resultEvent: ResultEvent = !isV3Api(this.actionType)
+    const resultEvent: ResultEvent = !usesNativeOrLogicDetector(this.actionType)
       ? this.transformEventData(newState, oldState)
       : this.lastSentState !== newState
         ? this.transformStateChangeEvent(newState, oldState)
@@ -422,7 +425,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       invokeNullableMethod(onGestureHandlerStateChange, resultEvent);
     }
     if (this.state === State.ACTIVE) {
-      if (!isV3Api(this.actionType)) {
+      if (!usesNativeOrLogicDetector(this.actionType)) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }

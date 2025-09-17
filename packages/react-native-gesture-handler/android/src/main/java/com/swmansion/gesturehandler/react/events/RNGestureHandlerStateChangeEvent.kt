@@ -29,7 +29,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     eventHandlerType: EventHandlerType,
   ) {
-    val view = if (GestureHandler.isV3Api(handler.actionType)) {
+    val view = if (GestureHandler.usesNativeOrLogicDetector(handler.actionType)) {
       handler.viewForEvents
     } else {
       handler.view!!
@@ -51,7 +51,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (GestureHandler.isV3Api(actionType)) {
+  override fun getEventName() = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
     if (eventHandlerType == EventHandlerType.ForReanimated) REANIMATED_EVENT_NAME else EVENT_NAME
   } else {
     EVENT_NAME
@@ -63,7 +63,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   // TODO: coalescing
   override fun getCoalescingKey(): Short = 0
 
-  override fun getEventData(): WritableMap = if (GestureHandler.isV3Api(actionType)) {
+  override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
     createNativeEventData(dataBuilder!!, newState, oldState)
   } else {
     createEventData(dataBuilder!!, newState, oldState)
