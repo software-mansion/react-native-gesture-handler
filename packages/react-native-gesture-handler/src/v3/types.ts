@@ -252,5 +252,4 @@ type Simplify<T> =
       : {
           // For a generic object, retain the original structure while forcing an object type
           [K in keyof T]: T[K];
-          // eslint-disable-next-line @typescript-eslint/ban-types
-        } & {};
+        } & NonNullable<unknown>;
