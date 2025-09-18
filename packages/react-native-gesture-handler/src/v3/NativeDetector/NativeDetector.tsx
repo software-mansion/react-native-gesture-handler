@@ -75,48 +75,50 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   configureRelations(gesture);
 
-  const handleGestureEvent = (
-    key: keyof GestureEvents<unknown>,
-    e: GestureHandlerEvent<unknown>
-  ) => {
-    const handlerTag = getHandlerTag(e);
-    const method = !logicMethods.current.has(handlerTag)
-      ? gesture.gestureEvents[key]
-      : logicMethods.current.get(handlerTag)?.current?.[key];
-    invokeDetectorEvent(method as (e: GestureHandlerEvent<unknown>) => void, e);
+  const handleGestureEvent = (key: keyof GestureEvents<unknown>) => {
+    return (e: GestureHandlerEvent<unknown>) => {
+      const handlerTag = getHandlerTag(e);
+
+      const method = !logicMethods.current.has(handlerTag)
+        ? gesture.gestureEvents[key]
+        : logicMethods.current.get(handlerTag)?.current?.[key];
+
+      invokeDetectorEvent(
+        method as (e: GestureHandlerEvent<unknown>) => void,
+        e
+      );
+    };
   };
 
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
       <NativeDetectorComponent
-        onGestureHandlerStateChange={(e) => {
-          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-          handleGestureEvent('onGestureHandlerStateChange', e);
-        }}
-        onGestureHandlerEvent={(e) => {
-          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-          handleGestureEvent('onGestureHandlerEvent', e);
-        }}
-        onGestureHandlerAnimatedEvent={(e) => {
-          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-          handleGestureEvent('onGestureHandlerAnimatedEvent', e);
-        }}
-        onGestureHandlerTouchEvent={(e) => {
-          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-          handleGestureEvent('onGestureHandlerTouchEvent', e);
-        }}
-        onGestureHandlerReanimatedStateChange={(e) => {
-          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-          handleGestureEvent('onReanimatedStateChange', e);
-        }}
-        onGestureHandlerReanimatedEvent={(e) => {
-          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-          handleGestureEvent('onReanimatedUpdateEvent', e);
-        }}
-        onGestureHandlerReanimatedTouchEvent={(e) => {
-          // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-          handleGestureEvent('onReanimatedTouchEvent', e);
-        }}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerStateChange={handleGestureEvent(
+          'onGestureHandlerStateChange'
+        )}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerAnimatedEvent={handleGestureEvent(
+          'onGestureHandlerAnimatedEvent'
+        )}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerTouchEvent={handleGestureEvent(
+          'onGestureHandlerTouchEvent'
+        )}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerReanimatedStateChange={handleGestureEvent(
+          'onReanimatedStateChange'
+        )}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerReanimatedEvent={handleGestureEvent(
+          'onReanimatedUpdateEvent'
+        )}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerReanimatedTouchEvent={handleGestureEvent(
+          'onReanimatedTouchEvent'
+        )}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
         style={styles.detector}
