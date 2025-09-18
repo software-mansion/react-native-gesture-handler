@@ -171,7 +171,7 @@ function validatePanConfig(config: PanGestureConfig) {
   validateOffsetsArray(config.failOffsetY, 'failOffsetY');
 
   if (
-    config.minDistance &&
+    config.minDistance !== undefined &&
     (config.failOffsetX !== undefined || config.failOffsetY !== undefined)
   ) {
     throw new Error(
@@ -180,7 +180,7 @@ function validatePanConfig(config: PanGestureConfig) {
   }
 
   if (
-    config.minDistance &&
+    config.minDistance !== undefined &&
     (config.activeOffsetX !== undefined || config.activeOffsetY !== undefined)
   ) {
     throw new Error(
