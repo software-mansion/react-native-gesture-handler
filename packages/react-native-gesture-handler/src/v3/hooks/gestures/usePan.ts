@@ -154,10 +154,10 @@ function validateOffsetsArray(
     return;
   }
 
-  const first = maybeUnpackValue(offsets[0]);
-  const second = maybeUnpackValue(offsets[1]);
+  const offsetStart = maybeUnpackValue(offsets[0]);
+  const offsetEnd = maybeUnpackValue(offsets[1]);
 
-  if (first > 0 || second < 0) {
+  if (offsetStart > 0 || offsetEnd < 0) {
     throw new Error(
       `First element of ${propName} should be negative, and the second one should be positive`
     );
