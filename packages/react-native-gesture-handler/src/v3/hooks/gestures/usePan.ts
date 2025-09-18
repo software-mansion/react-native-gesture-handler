@@ -5,7 +5,6 @@ import {
   HandlerData,
   SingleGestureName,
   WithSharedValue,
-  TOrSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import {
@@ -141,10 +140,7 @@ const PanPropsMapping = new Map<
 >([['minDistance', 'minDist']]);
 
 function validateOffsetsArray(
-  offsets:
-    | TOrSharedValue<number>
-    | [TOrSharedValue<number>, TOrSharedValue<number>]
-    | undefined,
+  offsets: WithSharedValue<number | [number, number] | undefined>,
   propName: string
 ) {
   if (offsets === undefined) {

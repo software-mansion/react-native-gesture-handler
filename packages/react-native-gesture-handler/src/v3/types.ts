@@ -221,7 +221,7 @@ export interface SharedValue<Value = unknown> {
 // Apply SharedValue recursively. P is used to make sure that composed types won't be expanded.
 // For example, if we pass `HoverEffect` as P, then resulting type will have HoverEffect | SharedValue<HoverEffect>,
 // not HoverEffect, SharedValue<HoverEffect.NONE>, ...
-export type WithSharedValue<T extends object, P = never> = {
+type WithSharedValueRecursive<T extends object, P> = {
   [K in keyof T]: Exclude<T[K], undefined> extends P
     ? Simplify<TOrSharedValue<T[K]>>
     : // Special case for boolean as passing `boolean` as P doesn't look ok.
@@ -229,21 +229,21 @@ export type WithSharedValue<T extends object, P = never> = {
       ? boolean | SharedValue<boolean>
       : // Special handling for tuples [number, number].
         T[K] extends [number, number]
-        ? [MaybeWithSharedValue<number, P>, MaybeWithSharedValue<number, P>]
+        ? [WithSharedValue<number, P>, WithSharedValue<number, P>]
         : // Default case: apply the MaybeWithSharedValue logic recursively or as a direct SharedValue wrap.
-          MaybeWithSharedValue<T[K], P>;
+          WithSharedValue<T[K], P>;
 };
 
 export type TOrSharedValue<T> = T | SharedValue<Exclude<T, undefined>>;
 
 // Utility type that decides whether to recurse for objects or apply SharedValue directly.
-type MaybeWithSharedValue<T, P> = T extends object
-  ? WithSharedValue<T, P>
+export type WithSharedValue<T, P = never> = T extends object
+  ? WithSharedValueRecursive<T, P>
   : Simplify<TOrSharedValue<T>>;
 
 // Simplifies types for end users.
 // For example, changes TOrSharedValue<number> into number | SharedValue<number>.
-export type Simplify<T> =
+type Simplify<T> =
   T extends SharedValue<never>
     ? never
     : T extends SharedValue<any>
