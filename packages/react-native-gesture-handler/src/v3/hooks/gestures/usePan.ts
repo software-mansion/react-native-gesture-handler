@@ -5,7 +5,7 @@ import {
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { remapProps } from '../utils';
+import { cloneConfig, remapProps } from '../utils';
 
 type CommonPanGestureProps = {
   /**
@@ -241,8 +241,12 @@ export function usePan(config: PanGestureConfig) {
     validatePanConfig(config);
   }
 
-  const panConfig = remapProps<PanGestureConfig, PanGestureInternalConfig>(
-    config,
+  const panConfig = cloneConfig<PanHandlerData, PanGestureInternalProps>(
+    config
+  );
+
+  remapProps<PanGestureConfig, PanGestureInternalConfig>(
+    panConfig,
     PanPropsMapping
   );
 

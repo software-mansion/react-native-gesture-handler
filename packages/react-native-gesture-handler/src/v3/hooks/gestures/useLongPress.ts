@@ -4,7 +4,7 @@ import {
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { remapProps } from '../utils';
+import { cloneConfig, remapProps } from '../utils';
 
 type LongPressGestureProps = {
   /**
@@ -59,10 +59,15 @@ const LongPressPropsMapping = new Map<
 ]);
 
 export function useLongPress(config: LongPressGestureConfig) {
-  const longPressConfig = remapProps<
-    LongPressGestureConfig,
-    LongPressGestureInternalConfig
-  >(config, LongPressPropsMapping);
+  const longPressConfig = cloneConfig<
+    LongPressHandlerData,
+    LongPressGestureInternalProps
+  >(config);
+
+  remapProps<LongPressGestureConfig, LongPressGestureInternalConfig>(
+    longPressConfig,
+    LongPressPropsMapping
+  );
 
   if (longPressConfig.shouldCancelWhenOutside === undefined) {
     longPressConfig.shouldCancelWhenOutside = true;

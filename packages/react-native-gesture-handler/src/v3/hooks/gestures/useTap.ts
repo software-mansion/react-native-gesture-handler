@@ -4,7 +4,7 @@ import {
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { remapProps } from '../utils';
+import { cloneConfig, remapProps } from '../utils';
 
 type TapGestureProps = {
   /**
@@ -93,8 +93,12 @@ const TapPropsMapping = new Map<
 ]);
 
 export function useTap(config: TapGestureConfig) {
-  const tapConfig = remapProps<TapGestureConfig, TapGestureInternalConfig>(
-    config,
+  const tapConfig = cloneConfig<TapHandlerData, TapGestureInternalProps>(
+    config
+  );
+
+  remapProps<TapGestureConfig, TapGestureInternalConfig>(
+    tapConfig,
     TapPropsMapping
   );
 
