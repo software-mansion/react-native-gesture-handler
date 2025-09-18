@@ -218,13 +218,11 @@ export interface SharedValue<Value = unknown> {
   ) => void;
 }
 
-type ExcludeUndefined<T> = T extends undefined ? never : T;
-
 // Apply SharedValue recursively. P is used to make sure that composed types won't be expanded.
 // For example, if we pass `HoverEffect` as P, then resulting type will have HoverEffect | SharedValue<HoverEffect>,
 // not HoverEffect, SharedValue<HoverEffect.NONE>, ...
 export type WithSharedValue<T extends object, P = never> = {
-  [K in keyof T]: ExcludeUndefined<T[K]> extends P
+  [K in keyof T]: Exclude<T[K], undefined> extends P
     ? Simplify<TOrSharedValue<T[K]>>
     : // Special case for boolean as passing `boolean` as P doesn't look ok.
       boolean extends T[K]
@@ -236,7 +234,7 @@ export type WithSharedValue<T extends object, P = never> = {
           MaybeWithSharedValue<T[K], P>;
 };
 
-export type TOrSharedValue<T> = T | SharedValue<ExcludeUndefined<T>>;
+export type TOrSharedValue<T> = T | SharedValue<Exclude<T, undefined>>;
 
 // Utility type that decides whether to recurse for objects or apply SharedValue directly.
 type MaybeWithSharedValue<T, P> = T extends object
