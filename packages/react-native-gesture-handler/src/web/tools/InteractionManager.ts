@@ -1,5 +1,6 @@
+import { GestureRelations } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
-import { Config, Handler } from '../interfaces';
+import { Config } from '../interfaces';
 
 export default class InteractionManager {
   private static _instance: InteractionManager;
@@ -11,12 +12,15 @@ export default class InteractionManager {
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
   private constructor() {}
 
-  public configureInteractions(handler: IGestureHandler, config: Config) {
+  public configureInteractions(
+    handler: IGestureHandler,
+    config: GestureRelations | Config
+  ) {
     this.dropRelationsForHandlerWithTag(handler.handlerTag);
 
     if (config.waitFor) {
       const waitFor: number[] = [];
-      config.waitFor.forEach((otherHandler: Handler): void => {
+      config.waitFor.forEach((otherHandler): void => {
         // New API reference
         if (typeof otherHandler === 'number') {
           waitFor.push(otherHandler);
@@ -31,7 +35,7 @@ export default class InteractionManager {
 
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
-      config.simultaneousHandlers.forEach((otherHandler: Handler): void => {
+      config.simultaneousHandlers.forEach((otherHandler): void => {
         if (typeof otherHandler === 'number') {
           simultaneousHandlers.push(otherHandler);
         } else {
@@ -44,7 +48,7 @@ export default class InteractionManager {
 
     if (config.blocksHandlers) {
       const blocksHandlers: number[] = [];
-      config.blocksHandlers.forEach((otherHandler: Handler): void => {
+      config.blocksHandlers.forEach((otherHandler): void => {
         if (typeof otherHandler === 'number') {
           blocksHandlers.push(otherHandler);
         } else {
