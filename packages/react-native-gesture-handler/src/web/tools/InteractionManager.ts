@@ -1,5 +1,6 @@
 import { GestureRelations } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
+import { Config } from '../interfaces';
 
 export default class InteractionManager {
   private static _instance: InteractionManager;
@@ -13,14 +14,20 @@ export default class InteractionManager {
 
   public configureInteractions(
     handler: IGestureHandler,
-    config: GestureRelations
+    config: GestureRelations | Config
   ) {
     this.dropRelationsForHandlerWithTag(handler.handlerTag);
 
     if (config.waitFor) {
       const waitFor: number[] = [];
       config.waitFor.forEach((otherHandler): void => {
-        waitFor.push(otherHandler);
+        // New API reference
+        if (typeof otherHandler === 'number') {
+          waitFor.push(otherHandler);
+        } else {
+          // Old API reference
+          waitFor.push(otherHandler.handlerTag);
+        }
       });
 
       this.waitForRelations.set(handler.handlerTag, waitFor);
@@ -29,7 +36,11 @@ export default class InteractionManager {
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
       config.simultaneousHandlers.forEach((otherHandler): void => {
-        simultaneousHandlers.push(otherHandler);
+        if (typeof otherHandler === 'number') {
+          simultaneousHandlers.push(otherHandler);
+        } else {
+          simultaneousHandlers.push(otherHandler.handlerTag);
+        }
       });
 
       this.simultaneousRelations.set(handler.handlerTag, simultaneousHandlers);
@@ -38,7 +49,11 @@ export default class InteractionManager {
     if (config.blocksHandlers) {
       const blocksHandlers: number[] = [];
       config.blocksHandlers.forEach((otherHandler): void => {
-        blocksHandlers.push(otherHandler);
+        if (typeof otherHandler === 'number') {
+          blocksHandlers.push(otherHandler);
+        } else {
+          blocksHandlers.push(otherHandler.handlerTag);
+        }
       });
 
       this.blocksHandlersRelations.set(handler.handlerTag, blocksHandlers);

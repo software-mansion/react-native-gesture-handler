@@ -726,6 +726,15 @@ export default abstract class GestureHandler implements IGestureHandler {
       this._userSelect = config.userSelect;
     }
 
+    if (
+      config.waitFor !== undefined &&
+      config.simultaneousHandlers !== undefined &&
+      config.blocksHandlers !== undefined
+    ) {
+      // Compatiblity with old api, it will never happen on new api
+      InteractionManager.instance.configureInteractions(this, config);
+    }
+
     if (this.enabled) {
       return;
     }
