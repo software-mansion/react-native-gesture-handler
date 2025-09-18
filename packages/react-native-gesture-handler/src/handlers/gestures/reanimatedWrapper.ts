@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
-import { UpdateEvent } from '../../v3/types';
+import { GestureCallbacks, UpdateEvent } from '../../v3/types';
 
 export interface SharedValue<Value = unknown> {
   value: Value;
@@ -14,8 +14,8 @@ export interface SharedValue<Value = unknown> {
   ) => void;
 }
 
-export type ReanimatedContext = {
-  lastUpdateEvent: UpdateEvent<Record<string, unknown>> | undefined;
+export type ReanimatedContext<THandlerData> = {
+  lastUpdateEvent: UpdateEvent<THandlerData> | undefined;
 };
 
 interface WorkletProps {
@@ -41,9 +41,9 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
-      useHandler: (handlers: Record<string, unknown>) => {
+      useHandler: <THandlerData>(handlers: GestureCallbacks<THandlerData>) => {
         doDependenciesDiffer: boolean;
-        context: ReanimatedContext;
+        context: ReanimatedContext<THandlerData>;
       };
       useEvent: <T>(
         callback: (event: T) => void,

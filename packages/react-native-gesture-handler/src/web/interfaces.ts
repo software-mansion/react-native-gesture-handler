@@ -8,10 +8,7 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import { Directions } from '../Directions';
 import { PointerType } from '../PointerType';
-import {
-  GestureStateChangeEventWithData,
-  GestureUpdateEventWithData,
-} from '../v3/types';
+import { GestureStateChangeEvent, GestureUpdateEvent } from '../v3/types';
 import { State } from '../State';
 
 export interface HitSlop {
@@ -94,9 +91,7 @@ export interface GestureHandlerNativeEvent
   extends Record<string, NativeEventArgs> {
   numberOfPointers: number;
   state: State;
-  pointerInside: boolean | undefined;
   handlerTag: number;
-  target: number;
   oldState?: State;
   pointerType: PointerType;
 }
@@ -116,8 +111,8 @@ export interface PointerData {
 
 // Native event has to stay for v2 compatibility
 type ResultEventType =
-  | GestureUpdateEventWithData<unknown>
-  | GestureStateChangeEventWithData<unknown>
+  | GestureUpdateEvent<unknown>
+  | GestureStateChangeEvent<unknown>
   | GestureTouchEvent
   | GestureHandlerNativeEvent;
 
