@@ -9,7 +9,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
 
-type HoverGestureProps = {
+type HoverGestureProperties = {
   /**
    * Visual effect applied to the view while the view is hovered. The possible values are:
    *
@@ -34,7 +34,7 @@ type HoverHandlerData = {
 
 type HoverGestureInternalConfig = BaseGestureConfig<
   HoverHandlerData,
-  HoverGestureProps
+  HoverGestureProperties
 >;
 
 export type HoverGestureConfig =
@@ -52,7 +52,9 @@ function diffCalculator(
 }
 
 export function useHover(config: HoverGestureConfig) {
-  const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureProps>(config);
+  const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureProperties>(
+    config
+  );
 
   hoverConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 

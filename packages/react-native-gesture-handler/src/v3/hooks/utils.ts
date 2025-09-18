@@ -131,24 +131,22 @@ export function cloneConfig<THandlerData, TConfig>(
 }
 
 export function remapProps<TConfig extends object, TInternalConfig>(
-  config: TConfig,
+  config: TConfig & TInternalConfig,
   propsMapping: Map<string, string>
 ): TInternalConfig {
   type MergedConfig = TConfig & TInternalConfig;
 
-  const newConfig = { ...config } as MergedConfig;
-
   propsMapping.forEach((internalKey, key) => {
-    if (key in newConfig) {
-      newConfig[internalKey as keyof MergedConfig] =
-        newConfig[key as keyof MergedConfig];
+    if (key in config) {
+      config[internalKey as keyof MergedConfig] =
+        config[key as keyof MergedConfig];
 
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete newConfig[key as keyof MergedConfig];
+      delete config[key as keyof MergedConfig];
     }
   });
 
-  return newConfig;
+  return config;
 }
 
 export function getChangeEventCalculator<THandlerData>(
