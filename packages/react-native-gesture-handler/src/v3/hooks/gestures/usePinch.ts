@@ -7,7 +7,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
 
-type PinchGestureProps = Record<string, never>;
+type PinchGestureProperties = Record<string, never>;
 
 type PinchHandlerData = {
   scale: number;
@@ -19,7 +19,7 @@ type PinchHandlerData = {
 
 type PinchGestureInternalConfig = BaseGestureConfig<
   PinchHandlerData,
-  PinchGestureProps
+  PinchGestureProperties
 >;
 
 export type PinchGestureConfig =
@@ -36,7 +36,9 @@ function diffCalculator(
 }
 
 export function usePinch(config: PinchGestureConfig) {
-  const pinchConfig = cloneConfig<PinchHandlerData, PinchGestureProps>(config);
+  const pinchConfig = cloneConfig<PinchHandlerData, PinchGestureProperties>(
+    config
+  );
 
   pinchConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 

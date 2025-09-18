@@ -4,9 +4,9 @@ import {
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { remapProps } from '../utils';
+import { cloneConfig, remapProps } from '../utils';
 
-type LongPressGestureProps = {
+type LongPressGestureProperties = {
   /**
    * Minimum time, expressed in milliseconds, that a finger must remain pressed on
    * the corresponding view. The default value is 500.
@@ -27,7 +27,7 @@ type LongPressGestureProps = {
   numberOfPointers?: number;
 };
 
-type LongPressGestureInternalProps = {
+type LongPressGestureInternalProperties = {
   minDurationMs?: number;
   maxDist?: number;
   numberOfPointers?: number;
@@ -42,33 +42,38 @@ type LongPressHandlerData = {
 };
 
 export type LongPressGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<LongPressHandlerData, LongPressGestureProps>
+  BaseGestureConfig<LongPressHandlerData, LongPressGestureProperties>
 >;
 
 type LongPressGestureInternalConfig = BaseGestureConfig<
   LongPressHandlerData,
-  LongPressGestureInternalProps
+  LongPressGestureInternalProperties
 >;
 
 const LongPressPropsMapping = new Map<
-  keyof LongPressGestureProps,
-  keyof LongPressGestureInternalProps
+  keyof LongPressGestureProperties,
+  keyof LongPressGestureInternalProperties
 >([
   ['minDuration', 'minDurationMs'],
   ['maxDistance', 'maxDist'],
 ]);
 
 export function useLongPress(config: LongPressGestureConfig) {
-  const longPressConfig = remapProps<
-    LongPressGestureConfig,
-    LongPressGestureInternalConfig
-  >(config, LongPressPropsMapping);
+  const longPressConfig = cloneConfig<
+    LongPressHandlerData,
+    LongPressGestureInternalProperties
+  >(config);
+
+  remapProps<LongPressGestureConfig, LongPressGestureInternalConfig>(
+    longPressConfig,
+    LongPressPropsMapping
+  );
 
   if (longPressConfig.shouldCancelWhenOutside === undefined) {
     longPressConfig.shouldCancelWhenOutside = true;
   }
 
-  return useGesture<LongPressHandlerData, LongPressGestureInternalProps>(
+  return useGesture<LongPressHandlerData, LongPressGestureInternalProperties>(
     SingleGestureName.LongPress,
     longPressConfig
   );
