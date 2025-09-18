@@ -398,7 +398,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (this.actionType === ActionType.NATIVE_DETECTOR) {
       invokeNullableMethod(
         this.forReanimated
-          ? onGestureHandlerReanimatedTouchEvent!
+          ? onGestureHandlerReanimatedTouchEvent
           : onGestureHandlerTouchEvent,
         touchEvent
       );
@@ -435,7 +435,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.lastSentState = newState;
       invokeNullableMethod(
         this.forReanimated
-          ? onGestureHandlerReanimatedStateChange!
+          ? onGestureHandlerReanimatedStateChange
           : onGestureHandlerStateChange,
         resultEvent
       );
@@ -448,9 +448,9 @@ export default abstract class GestureHandler implements IGestureHandler {
 
       invokeNullableMethod(
         this.forReanimated
-          ? onGestureHandlerReanimatedEvent!
+          ? onGestureHandlerReanimatedEvent
           : this.forAnimated
-            ? onGestureHandlerAnimatedEvent!
+            ? onGestureHandlerAnimatedEvent
             : onGestureHandlerEvent,
         resultEvent
       );
@@ -667,7 +667,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     if (this.actionType === ActionType.NATIVE_DETECTOR) {
       invokeNullableMethod(
         this.forReanimated
-          ? onGestureHandlerReanimatedTouchEvent!
+          ? onGestureHandlerReanimatedTouchEvent
           : onGestureHandlerTouchEvent,
         cancelEvent
       );
@@ -1030,7 +1030,9 @@ function invokeNullableMethod(
   method:
     | ((event: ResultEvent) => void)
     | { __getHandler: () => (event: ResultEvent) => void }
-    | { __nodeConfig: { argMapping: unknown[] } },
+    | { __nodeConfig: { argMapping: unknown[] } }
+    | null
+    | undefined,
   event: ResultEvent
 ): void {
   if (!method) {
