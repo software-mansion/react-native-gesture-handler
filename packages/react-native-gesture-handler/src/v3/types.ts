@@ -168,20 +168,23 @@ export type InternalConfigProps<THandlerData> = {
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
+type CommonGestureConfig = {
+  disableReanimated?: boolean;
+  enabled?: boolean;
+  shouldCancelWhenOutside?: boolean;
+  hitSlop?: HitSlop;
+  userSelect?: UserSelect;
+  activeCursor?: ActiveCursor;
+  mouseButton?: MouseButton;
+  enableContextMenu?: boolean;
+  touchAction?: TouchAction;
+};
+
 export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   GestureCallbacks<THandlerData> &
   FilterNeverProperties<TConfig> &
-  InternalConfigProps<THandlerData> & {
-    disableReanimated?: boolean;
-    enabled?: boolean;
-    shouldCancelWhenOutside?: boolean;
-    hitSlop?: HitSlop;
-    userSelect?: UserSelect;
-    activeCursor?: ActiveCursor;
-    mouseButton?: MouseButton;
-    enableContextMenu?: boolean;
-    touchAction?: TouchAction;
-  };
+  InternalConfigProps<THandlerData> &
+  CommonGestureConfig;
 
 export type ExcludeInternalConfigProps<T> = Omit<
   T,
@@ -199,3 +202,33 @@ export type ExcludeInternalConfigProps<T> = Omit<
 type FilterNeverProperties<T> = {
   [K in keyof T as T[K] extends never ? never : K]: T[K];
 };
+
+export interface SharedValue<Value = unknown> {
+  value: Value;
+  get(): Value;
+  set(value: Value | ((value: Value) => Value)): void;
+  addListener: (listenerID: number, listener: (value: Value) => void) => void;
+  removeListener: (listenerID: number) => void;
+  modify: (
+    modifier?: <T extends Value>(value: T) => T,
+    forceUpdate?: boolean
+  ) => void;
+}
+
+type NoUndef<T> = T extends undefined ? never : T;
+
+type Primitive = string | number;
+
+export type WithSharedValue<T> = T extends boolean
+  ? boolean | SharedValue<boolean>
+  : T extends Primitive
+    ? T | SharedValue<NoUndef<T>>
+    : T extends [infer U, infer V]
+      ? [WithSharedValue<U>, WithSharedValue<V>]
+      : T extends (infer U)[]
+        ? WithSharedValue<U>[]
+        : T extends object
+          ? { [K in keyof T]: T[K] | WithSharedValue<T[K]> }
+          : never;
+
+export type TOrSharedValue<T> = T | SharedValue<T>;

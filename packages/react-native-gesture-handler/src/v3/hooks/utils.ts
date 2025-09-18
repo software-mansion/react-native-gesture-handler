@@ -9,6 +9,7 @@ import {
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
+  TOrSharedValue,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -51,6 +52,12 @@ export function isAnimatedEvent<THandlerData>(
   'worklet';
 
   return !!callback && '_argMapping' in callback;
+}
+
+export function maybeUnpackValue<T>(v: TOrSharedValue<T>) {
+  'worklet';
+
+  return Reanimated?.isSharedValue(v) ? v.value : v;
 }
 
 export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
