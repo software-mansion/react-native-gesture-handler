@@ -7,7 +7,7 @@ import {
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
 
-type RotationGestureProps = Record<string, never>;
+type RotationGestureProperties = Record<string, never>;
 
 type RotationHandlerData = {
   rotation: number;
@@ -19,7 +19,7 @@ type RotationHandlerData = {
 
 type RotationGestureInternalConfig = BaseGestureConfig<
   RotationHandlerData,
-  RotationGestureProps
+  RotationGestureProperties
 >;
 
 export type RotationGestureConfig =
@@ -38,9 +38,10 @@ function diffCalculator(
 }
 
 export function useRotation(config: RotationGestureConfig) {
-  const rotationConfig = cloneConfig<RotationHandlerData, RotationGestureProps>(
-    config
-  );
+  const rotationConfig = cloneConfig<
+    RotationHandlerData,
+    RotationGestureProperties
+  >(config);
 
   rotationConfig.changeEventCalculator =
     getChangeEventCalculator(diffCalculator);

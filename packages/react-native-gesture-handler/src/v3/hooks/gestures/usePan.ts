@@ -12,9 +12,10 @@ import {
   getChangeEventCalculator,
   maybeUnpackValue,
   remapProps,
+  cloneConfig,
 } from '../utils';
 
-type CommonPanGestureProps = {
+type CommonPanGestureProperties = {
   /**
    * Minimum distance the finger (or multiple finger) need to travel before the
    * handler activates. Expressed in points.
@@ -53,8 +54,8 @@ type CommonPanGestureProps = {
   activateAfterLongPress?: number;
 };
 
-export type PanGestureProps = WithSharedValue<
-  CommonPanGestureProps & {
+export type PanGestureProperties = WithSharedValue<
+  CommonPanGestureProperties & {
     /**
      * Range along X axis (in points) where fingers travels without activation of
      * handler. Moving outside of this range implies activation of handler. Range
@@ -97,8 +98,8 @@ export type PanGestureProps = WithSharedValue<
   }
 >;
 
-type PanGestureInternalProps = WithSharedValue<
-  CommonPanGestureProps & {
+type PanGestureInternalProperties = WithSharedValue<
+  CommonPanGestureProperties & {
     minDist?: number;
     activeOffsetYStart?: number;
     activeOffsetYEnd?: number;
@@ -126,17 +127,17 @@ type PanHandlerData = {
 };
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<PanHandlerData, PanGestureProps>
+  BaseGestureConfig<PanHandlerData, PanGestureProperties>
 >;
 
 type PanGestureInternalConfig = BaseGestureConfig<
   PanHandlerData,
-  PanGestureInternalProps
+  PanGestureInternalProperties
 >;
 
 const PanPropsMapping = new Map<
-  keyof PanGestureProps,
-  keyof PanGestureInternalProps
+  keyof PanGestureProperties,
+  keyof PanGestureInternalProperties
 >([['minDistance', 'minDist']]);
 
 function validateOffsetsArray(
@@ -281,8 +282,12 @@ export function usePan(config: PanGestureConfig) {
     validatePanConfig(config);
   }
 
-  const panConfig = remapProps<PanGestureConfig, PanGestureInternalConfig>(
-    config,
+  const panConfig = cloneConfig<PanHandlerData, PanGestureInternalProperties>(
+    config
+  );
+
+  remapProps<PanGestureConfig, PanGestureInternalConfig>(
+    panConfig,
     PanPropsMapping
   );
 
@@ -290,7 +295,7 @@ export function usePan(config: PanGestureConfig) {
 
   panConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
-  return useGesture<PanHandlerData, PanGestureInternalProps>(
+  return useGesture<PanHandlerData, PanGestureInternalProperties>(
     SingleGestureName.Pan,
     panConfig
   );

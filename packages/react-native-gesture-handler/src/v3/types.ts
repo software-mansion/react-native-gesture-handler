@@ -26,12 +26,12 @@ export type BaseHandlerData = {
 
 export type HandlerData<T> = BaseHandlerData & T;
 
-export type GestureUpdateEvent<THandlerData> = EventPayload & {
-  handlerData: HandlerData<THandlerData>;
+export type GestureUpdateEvent<T> = EventPayload & {
+  handlerData: HandlerData<T>;
 };
 
-export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload & {
-  handlerData: HandlerData<THandlerData>;
+export type GestureStateChangeEvent<T> = StateChangeEventPayload & {
+  handlerData: HandlerData<T>;
 };
 
 export type GestureHandlerEvent<THandlerData> =
