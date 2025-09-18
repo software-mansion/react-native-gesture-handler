@@ -2,11 +2,12 @@ import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGestureName,
+  WithSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type NativeViewGestureProps = {
+type NativeViewGestureProps = WithSharedValue<{
   /**
    * Android only.
    *
@@ -20,7 +21,7 @@ type NativeViewGestureProps = {
    * `NativeViewGestureHandler` receives an `ACTIVE` state event.
    */
   disallowInterruption?: boolean;
-};
+}>;
 
 type NativeViewHandlerData = {
   pointerInside: boolean;

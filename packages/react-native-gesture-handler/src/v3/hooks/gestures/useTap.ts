@@ -2,11 +2,12 @@ import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGestureName,
+  WithSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { remapProps } from '../utils';
 
-type TapGestureProps = {
+type TapGestureProps = WithSharedValue<{
   /**
    * Minimum number of pointers (fingers) required to be placed before the
    * handler activates. Should be a positive integer.
@@ -55,9 +56,9 @@ type TapGestureProps = {
    * activated, it will fail to recognize the gesture.
    */
   maxDistance?: number;
-};
+}>;
 
-type TapGestureInternalProps = {
+type TapGestureInternalProps = WithSharedValue<{
   minPointers?: number;
   numberOfTaps?: number;
   maxDeltaX?: number;
@@ -65,7 +66,7 @@ type TapGestureInternalProps = {
   maxDurationMs?: number;
   maxDelayMs?: number;
   maxDist?: number;
-};
+}>;
 
 type TapHandlerData = {
   x: number;

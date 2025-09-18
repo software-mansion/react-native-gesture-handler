@@ -2,11 +2,12 @@ import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGestureName,
+  WithSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
 
-type FlingGestureProps = {
+type FlingGestureProps = WithSharedValue<{
   /**
    * Expressed allowed direction of movement. It's possible to pass one or many
    * directions in one parameter:
@@ -27,7 +28,7 @@ type FlingGestureProps = {
    * Determine exact number of points required to handle the fling gesture.
    */
   numberOfPointers?: number;
-};
+}>;
 
 type FlingHandlerData = {
   x: number;
