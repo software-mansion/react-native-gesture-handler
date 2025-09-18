@@ -154,8 +154,8 @@ function validateOffsetsArray(
     return;
   }
 
-  const first = maybeUnpackValue(offsets[0]) as number;
-  const second = maybeUnpackValue(offsets[1]) as number;
+  const first = maybeUnpackValue(offsets[0]);
+  const second = maybeUnpackValue(offsets[1]);
 
   if (first > 0 || second < 0) {
     throw new Error(
@@ -197,7 +197,7 @@ function transformPanProps(
       config.activeOffsetXStart = config.activeOffsetX[0];
       config.activeOffsetXEnd = config.activeOffsetX[1];
     } else {
-      const offsetValue = maybeUnpackValue(config.activeOffsetX) as number;
+      const offsetValue = maybeUnpackValue(config.activeOffsetX);
 
       if (offsetValue < 0) {
         config.activeOffsetXStart = config.activeOffsetX;
@@ -214,7 +214,7 @@ function transformPanProps(
       config.activeOffsetYStart = config.activeOffsetY[0];
       config.activeOffsetYEnd = config.activeOffsetY[1];
     } else {
-      const offsetValue = maybeUnpackValue(config.activeOffsetY) as number;
+      const offsetValue = maybeUnpackValue(config.activeOffsetY);
 
       if (offsetValue < 0) {
         config.activeOffsetYStart = config.activeOffsetY;
@@ -231,7 +231,7 @@ function transformPanProps(
       config.failOffsetXStart = config.failOffsetX[0];
       config.failOffsetXEnd = config.failOffsetX[1];
     } else {
-      const offsetValue = maybeUnpackValue(config.failOffsetX) as number;
+      const offsetValue = maybeUnpackValue(config.failOffsetX);
 
       if (offsetValue < 0) {
         config.failOffsetXStart = config.failOffsetX;
@@ -248,7 +248,7 @@ function transformPanProps(
       config.failOffsetYStart = config.failOffsetY[0];
       config.failOffsetYEnd = config.failOffsetY[1];
     } else {
-      const offsetValue = maybeUnpackValue(config.failOffsetY) as number;
+      const offsetValue = maybeUnpackValue(config.failOffsetY);
 
       if (offsetValue < 0) {
         config.failOffsetYStart = config.failOffsetY;

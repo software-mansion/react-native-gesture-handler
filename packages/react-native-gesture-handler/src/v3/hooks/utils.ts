@@ -57,7 +57,7 @@ export function isAnimatedEvent<THandlerData>(
 export function maybeUnpackValue<T>(v: TOrSharedValue<T>) {
   'worklet';
 
-  return Reanimated?.isSharedValue(v) ? v.value : v;
+  return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
 }
 
 export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
