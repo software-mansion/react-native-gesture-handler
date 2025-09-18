@@ -4701,6 +4701,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-native@npm:^0.73.0":
+  version: 0.73.0
+  resolution: "@types/react-native@npm:0.73.0"
+  dependencies:
+    react-native: "npm:*"
+  checksum: 10c0/81b8824f3bea30f18f92bb1e7c69777801b6b91a603c712173179b10e8fd6754f3594841dc452d0fc4a4cdc597e366fdf7839d27e0c5c5957f7dadde65882212
+  languageName: node
+  linkType: hard
+
 "@types/react-test-renderer@npm:^19.0.0, @types/react-test-renderer@npm:^19.1.0":
   version: 19.1.0
   resolution: "@types/react-test-renderer@npm:19.1.0"
@@ -14180,6 +14189,7 @@ __metadata:
   resolution: "react-native-gesture-handler-monorepo@workspace:."
   dependencies:
     "@types/react": "npm:^19.0.12"
+    "@types/react-native": "npm:^0.73.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.9.0"
     "@typescript-eslint/parser": "npm:^6.9.0"
     eslint: "npm:^8.57.0"
