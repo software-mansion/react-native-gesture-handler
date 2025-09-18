@@ -182,6 +182,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       RCTLogError(@"Cannot have all of top, bottom and height defined");
     }
   }
+
+  if (config[@"waitFor"] != nil and config[@"simultaneousHandlers"] != nil and config[@"blocksHandlers"] != nil) {
+    // Compatibility with old api, it will never happen on new api
+    [self updateRelations:config];
+  }
 }
 
 - (void)updateRelations:(NSDictionary *)relations

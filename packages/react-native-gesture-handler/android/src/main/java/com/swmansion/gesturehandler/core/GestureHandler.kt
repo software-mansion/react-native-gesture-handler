@@ -19,6 +19,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
+import com.swmansion.gesturehandler.react.RNGestureHandlerInteractionManager
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
@@ -863,7 +864,7 @@ open class GestureHandler {
   abstract class Factory<T : GestureHandler> {
     abstract val type: Class<T>
     abstract val name: String
-
+    private val interactionManager = RNGestureHandlerInteractionManager()
     protected abstract fun create(context: Context?): T
 
     fun create(context: Context?, handlerTag: Int): T = create(context).also { it.tag = handlerTag }
@@ -898,6 +899,11 @@ open class GestureHandler {
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
         handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
       }
+      if (config.hasKey(WAIT_FOR) && config.hasKey(SIMULTANEOUS_HANDLERS) && config.hasKey(BLOCKS_HANDLERS)) {
+        // Compatibility with old api, it will never happen on new api
+        interactionManager.dropRelationsForHandlerWithTag(handler.tag)
+        interactionManager.configureInteractions(handler, config)
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
@@ -919,6 +925,9 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
+      private const val WAIT_FOR = "waitFor"
+      private const val SIMULTANEOUS_HANDLERS = "simultaneousHandlers"
+      private const val BLOCKS_HANDLERS = "blocksHandlers"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
