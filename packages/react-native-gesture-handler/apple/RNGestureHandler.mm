@@ -183,8 +183,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     }
   }
 
-  if (config[@"waitFor"] != nil and config[@"simultaneousHandlers"] != nil and config[@"blocksHandlers"] != nil) {
-    // Compatibility with old api, it will never happen on new api
+  if (_actionType != RNGestureHandlerActionTypeNativeDetector) {
     [self updateRelations:config];
   }
 }
