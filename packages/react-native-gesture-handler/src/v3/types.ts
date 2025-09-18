@@ -168,17 +168,20 @@ export type InternalConfigProps<THandlerData> = {
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-type CommonGestureConfig = {
-  disableReanimated?: boolean;
-  enabled?: boolean;
-  shouldCancelWhenOutside?: boolean;
-  hitSlop?: HitSlop;
-  userSelect?: UserSelect;
-  activeCursor?: ActiveCursor;
-  mouseButton?: MouseButton;
-  enableContextMenu?: boolean;
-  touchAction?: TouchAction;
-};
+type CommonGestureConfig = WithSharedValue<
+  {
+    disableReanimated?: boolean;
+    enabled?: boolean;
+    shouldCancelWhenOutside?: boolean;
+    hitSlop?: HitSlop;
+    userSelect?: UserSelect;
+    activeCursor?: ActiveCursor;
+    mouseButton?: MouseButton;
+    enableContextMenu?: boolean;
+    touchAction?: TouchAction;
+  },
+  HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
+>;
 
 export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   GestureCallbacks<THandlerData> &
@@ -217,18 +220,27 @@ export interface SharedValue<Value = unknown> {
 
 type NoUndef<T> = T extends undefined ? never : T;
 
-type Primitive = string | number;
+export type WithSharedValue<T extends object, P = never> = {
+  [K in keyof T]: NoUndef<T[K]> extends P
+    ? Simplify<TOrSharedValue<T[K]>>
+    : boolean extends T[K]
+      ? boolean | SharedValue<boolean>
+      : T[K] extends [number, number]
+        ? [MaybeWithSharedValue<number, P>, MaybeWithSharedValue<number, P>]
+        : MaybeWithSharedValue<T[K], P>;
+};
 
-export type WithSharedValue<T> = T extends boolean
-  ? boolean | SharedValue<boolean>
-  : T extends Primitive
-    ? T | SharedValue<NoUndef<T>>
-    : T extends [infer U, infer V]
-      ? [WithSharedValue<U>, WithSharedValue<V>]
-      : T extends (infer U)[]
-        ? WithSharedValue<U>[]
-        : T extends object
-          ? { [K in keyof T]: T[K] | WithSharedValue<T[K]> }
-          : never;
+export type TOrSharedValue<T> = T | SharedValue<NoUndef<T>>;
 
-export type TOrSharedValue<T> = T | SharedValue<T>;
+type MaybeWithSharedValue<T, P> = T extends object
+  ? WithSharedValue<T, P>
+  : Simplify<TOrSharedValue<T>>;
+
+export type Simplify<T> =
+  T extends SharedValue<never>
+    ? never
+    : T extends SharedValue<any>
+      ? T
+      : {
+          [K in keyof T]: T[K];
+        } & {};
