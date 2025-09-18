@@ -246,9 +246,11 @@ export type WithSharedValue<T, P = never> = T extends object
 type Simplify<T> =
   T extends SharedValue<never>
     ? never
-    : T extends SharedValue<any>
+    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      T extends SharedValue<any>
       ? T
       : {
           // For a generic object, retain the original structure while forcing an object type
           [K in keyof T]: T[K];
+          // eslint-disable-next-line @typescript-eslint/ban-types
         } & {};
