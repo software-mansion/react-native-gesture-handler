@@ -10,11 +10,7 @@ import {
 } from '../types';
 import { DetectorContext } from './useDetectorContext';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import {
-  configureRelations,
-  getHandlerTag,
-  invokeDetectorEvent,
-} from './utils';
+import { configureRelations } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 
 export interface NativeDetectorProps {
@@ -77,18 +73,52 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   const handleGestureEvent = (key: keyof GestureEvents<unknown>) => {
     return (e: GestureHandlerEvent<unknown>) => {
-      const handlerTag = getHandlerTag(e);
+      if (gesture.gestureEvents[key]) {
+        gesture.gestureEvents[key](e);
+      }
 
-      const method = !logicMethods.current.has(handlerTag)
-        ? gesture.gestureEvents[key]
-        : logicMethods.current.get(handlerTag)?.current?.[key];
-
-      invokeDetectorEvent(
-        method as (e: GestureHandlerEvent<unknown>) => void,
-        e
-      );
+      logicMethods.current.forEach((ref) => {
+        const method = ref.current?.[key];
+        if (method) {
+          method(e);
+        }
+      });
     };
   };
+
+  const getHandlers = useCallback(
+    (key: keyof GestureEvents<unknown>) => {
+      const handlers: ((e: GestureHandlerEvent<unknown>) => void)[] = [];
+
+      if (gesture.gestureEvents[key]) {
+        handlers.push(
+          gesture.gestureEvents[key] as (
+            e: GestureHandlerEvent<unknown>
+          ) => void
+        );
+      }
+
+      logicMethods.current.forEach((ref) => {
+        const handler = ref.current?.[key];
+        if (handler) {
+          handlers.push(handler as (e: GestureHandlerEvent<unknown>) => void);
+        }
+      });
+
+      return handlers;
+    },
+    [logicChildren, gesture.gestureEvents]
+  );
+
+  const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
+    getHandlers('onReanimatedUpdateEvent')
+  );
+  const reanimedStateChangeHandler = Reanimated?.useComposedEventHandler(
+    getHandlers('onReanimatedStateChange')
+  );
+  const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
+    getHandlers('onReanimatedTouchEvent')
+  );
 
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
@@ -108,17 +138,11 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
           'onGestureHandlerTouchEvent'
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedStateChange={handleGestureEvent(
-          'onReanimatedStateChange'
-        )}
+        onGestureHandlerReanimatedStateChange={reanimatedEventHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedEvent={handleGestureEvent(
-          'onReanimatedUpdateEvent'
-        )}
+        onGestureHandlerReanimatedEvent={reanimedStateChangeHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedTouchEvent={handleGestureEvent(
-          'onReanimatedTouchEvent'
-        )}
+        onGestureHandlerReanimatedTouchEvent={reanimatedTouchEventHandler}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
         style={styles.detector}
