@@ -1,18 +1,10 @@
 import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
-import { GestureCallbacks, GestureUpdateEvent } from '../../v3/types';
-
-export interface SharedValue<Value = unknown> {
-  value: Value;
-  get(): Value;
-  set(value: Value | ((value: Value) => Value)): void;
-  addListener: (listenerID: number, listener: (value: Value) => void) => void;
-  removeListener: (listenerID: number) => void;
-  modify: (
-    modifier?: <T extends Value>(value: T) => T,
-    forceUpdate?: boolean
-  ) => void;
-}
+import {
+  GestureCallbacks,
+  GestureUpdateEvent,
+  SharedValue,
+} from '../../v3/types';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEvent<THandlerData> | undefined;
@@ -52,7 +44,7 @@ let Reanimated:
       ) => (event: unknown) => void;
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
-      isSharedValue: (value: unknown) => value is SharedValue<unknown>;
+      isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
       isWorkletFunction<
         Args extends unknown[] = unknown[],
         ReturnValue = unknown,
