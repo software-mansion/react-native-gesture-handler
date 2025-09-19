@@ -19,7 +19,6 @@ import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
-import com.swmansion.gesturehandler.react.RNGestureHandlerInteractionManager
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
@@ -864,7 +863,6 @@ open class GestureHandler {
   abstract class Factory<T : GestureHandler> {
     abstract val type: Class<T>
     abstract val name: String
-    private val interactionManager = RNGestureHandlerInteractionManager()
     protected abstract fun create(context: Context?): T
 
     fun create(context: Context?, handlerTag: Int): T = create(context).also { it.tag = handlerTag }
@@ -898,10 +896,6 @@ open class GestureHandler {
       }
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
         handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
-      }
-      if (handler.actionType != ACTION_TYPE_NATIVE_DETECTOR) {
-        interactionManager.dropRelationsForHandlerWithTag(handler.tag)
-        interactionManager.configureInteractions(handler, config)
       }
     }
 
