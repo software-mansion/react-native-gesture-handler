@@ -7,9 +7,9 @@ import { tagMessage } from '../../utils';
 import { configureRelations } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 
-export interface NativeDetectorProps {
+export interface NativeDetectorProps<THandlerData, TConfig> {
   children?: React.ReactNode;
-  gesture: Gesture;
+  gesture: Gesture<THandlerData, TConfig>;
 }
 
 const AnimatedNativeDetector =
@@ -18,7 +18,10 @@ const AnimatedNativeDetector =
 const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
-export function NativeDetector({ gesture, children }: NativeDetectorProps) {
+export function NativeDetector<THandlerData, TConfig>({
+  gesture,
+  children,
+}: NativeDetectorProps<THandlerData, TConfig>) {
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : gesture.config.shouldUseReanimated
@@ -38,25 +41,25 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   return (
     <NativeDetectorComponent
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerStateChange={
         gesture.gestureEvents.onGestureHandlerStateChange
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerTouchEvent={
         gesture.gestureEvents.onGestureHandlerTouchEvent
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedStateChange={
         gesture.gestureEvents.onReanimatedStateChange
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedEvent={
         gesture.gestureEvents.onReanimatedUpdateEvent
       }
-      // @ts-ignore TODO: Fix types
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedTouchEvent={
         gesture.gestureEvents.onReanimatedTouchEvent
       }

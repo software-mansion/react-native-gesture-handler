@@ -170,4 +170,6 @@ export * from './v3/hooks/relations';
 
 export { SingleGestureName } from './v3/types';
 
+export * from './v3/hooks/gestures';
+
 initialize();
