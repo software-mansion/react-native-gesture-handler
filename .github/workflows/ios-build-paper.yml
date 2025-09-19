@@ -15,7 +15,7 @@ jobs:
   build:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
 
-    runs-on: macos-14
+    runs-on: self-hosted
     env:
       WORKING_DIRECTORY: apps/expo-example
     concurrency:
