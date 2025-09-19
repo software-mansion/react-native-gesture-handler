@@ -863,6 +863,7 @@ open class GestureHandler {
   abstract class Factory<T : GestureHandler> {
     abstract val type: Class<T>
     abstract val name: String
+
     protected abstract fun create(context: Context?): T
 
     fun create(context: Context?, handlerTag: Int): T = create(context).also { it.tag = handlerTag }
