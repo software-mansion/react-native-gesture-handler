@@ -1,11 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
 import { useDetectorContext } from './NativeDetector/useDetectorContext';
 import { NativeDetectorProps } from './NativeDetector/NativeDetector';
 import { isComposedGesture } from './hooks/utils/relationUtils';
+import { GestureEvents } from './types';
 
-export const LogicDetector = (props: NativeDetectorProps) => {
+export function LogicDetector<THandlerData, TConfig>(
+  props: NativeDetectorProps<THandlerData, TConfig>
+) {
   const { register, unregister } = useDetectorContext();
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
@@ -60,7 +63,7 @@ export const LogicDetector = (props: NativeDetectorProps) => {
               : [props.gesture.tag],
           };
 
-    register(logicProps, logicMethods);
+    register(logicProps, logicMethods as RefObject<GestureEvents<unknown>>);
 
     return () => {
       unregister(viewTag);
@@ -68,4 +71,4 @@ export const LogicDetector = (props: NativeDetectorProps) => {
   }, [viewTag, props.gesture, register, unregister]);
 
   return <Wrap ref={handleRef}>{props.children}</Wrap>;
-};
+}

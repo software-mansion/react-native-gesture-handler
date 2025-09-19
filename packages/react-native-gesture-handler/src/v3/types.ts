@@ -1,21 +1,37 @@
 import { Animated, NativeSyntheticEvent } from 'react-native';
-import { GestureTouchEvent } from '../handlers/gestureHandlerCommon';
+import {
+  ActiveCursor,
+  GestureTouchEvent,
+  HitSlop,
+  MouseButton,
+  TouchAction,
+  UserSelect,
+} from '../handlers/gestureHandlerCommon';
+import { PointerType } from '../PointerType';
+
 import { State } from '../State';
 
-export interface EventPayload {
+interface EventPayload {
   handlerTag: number;
   state: State;
 }
-export interface StateChangeEventPayload extends EventPayload {
+interface StateChangeEventPayload extends EventPayload {
   oldState: State;
 }
 
-export type GestureUpdateEvent<THandlerData> = EventPayload & {
-  handlerData: THandlerData;
+export type BaseHandlerData = {
+  numberOfPointers: number;
+  pointerType: PointerType;
 };
 
-export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload & {
-  handlerData: THandlerData;
+export type HandlerData<T> = BaseHandlerData & T;
+
+export type GestureUpdateEvent<T> = EventPayload & {
+  handlerData: HandlerData<T>;
+};
+
+export type GestureStateChangeEvent<T> = StateChangeEventPayload & {
+  handlerData: HandlerData<T>;
 };
 
 export type GestureHandlerEvent<THandlerData> =
@@ -55,7 +71,8 @@ export enum SingleGestureName {
   Rotation = 'RotationGestureHandler',
   Fling = 'FlingGestureHandler',
   Manual = 'ManualGestureHandler',
-  Native = 'NativeGestureHandler',
+  Native = 'NativeViewGestureHandler',
+  Hover = 'HoverGestureHandler',
 }
 
 export enum ComposedGestureName {
@@ -139,12 +156,41 @@ export interface GestureCallbacks<THandlerData> {
   onTouchesCancelled?: (event: GestureTouchEvent) => void;
 }
 
+export type InternalConfigProps<THandlerData> = {
+  shouldUseReanimated?: boolean;
+  dispatchesAnimatedEvents?: boolean;
+  needsPointerData?: boolean;
+  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+};
+
 export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   GestureCallbacks<THandlerData> &
-  TConfig & {
+  FilterNeverProperties<TConfig> &
+  InternalConfigProps<THandlerData> & {
     disableReanimated?: boolean;
-    shouldUseReanimated?: boolean;
-    dispatchesAnimatedEvents?: boolean;
-    needsPointerData?: boolean;
-    changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+    enabled?: boolean;
+    shouldCancelWhenOutside?: boolean;
+    hitSlop?: HitSlop;
+    userSelect?: UserSelect;
+    activeCursor?: ActiveCursor;
+    mouseButton?: MouseButton;
+    enableContextMenu?: boolean;
+    touchAction?: TouchAction;
   };
+
+export type ExcludeInternalConfigProps<T> = Omit<
+  T,
+  keyof InternalConfigProps<unknown>
+>;
+
+// Some handlers do not have specific properties (e.g. `Pinch`), therefore we mark those prop types as `Record<string, never>`.
+// Doing intersection with those types results in type which cannot have any property. In order to fix that,
+// we filter out properties with `never` values.
+//
+// This piece of magic works like this:
+// 1. We iterate over all keys of T using `keyof T`
+// 2. We check if the type of property is `never` using conditional types (`T[K] extends never ? never : K`).
+//    If it is, we replace the key with `never`, i.e. we delete it. Otherwise we keep it as is.
+type FilterNeverProperties<T> = {
+  [K in keyof T as T[K] extends never ? never : K]: T[K];
+};

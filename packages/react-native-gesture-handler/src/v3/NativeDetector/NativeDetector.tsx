@@ -13,9 +13,9 @@ import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { configureRelations } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 
-export interface NativeDetectorProps {
+export interface NativeDetectorProps<THandlerData, TConfig> {
   children?: React.ReactNode;
-  gesture: Gesture;
+  gesture: Gesture<THandlerData, TConfig>;
 }
 
 const AnimatedNativeDetector =
@@ -24,7 +24,10 @@ const AnimatedNativeDetector =
 const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
-export function NativeDetector({ gesture, children }: NativeDetectorProps) {
+export function NativeDetector<THandlerData, TConfig>({
+  gesture,
+  children,
+}: NativeDetectorProps<THandlerData, TConfig>) {
   const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
   const logicMethods = useRef<Map<number, RefObject<GestureEvents<unknown>>>>(
     new Map()
@@ -71,8 +74,8 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   configureRelations(gesture);
 
-  const handleGestureEvent = (key: keyof GestureEvents<unknown>) => {
-    return (e: GestureHandlerEvent<unknown>) => {
+  const handleGestureEvent = (key: keyof GestureEvents<THandlerData>) => {
+    return (e: GestureHandlerEvent<THandlerData>) => {
       if (gesture.gestureEvents[key]) {
         gesture.gestureEvents[key](e);
       }
@@ -88,7 +91,7 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
 
   const getHandlers = useCallback(
     (key: keyof GestureEvents<unknown>) => {
-      const handlers: ((e: GestureHandlerEvent<unknown>) => void)[] = [];
+      const handlers: ((e: GestureHandlerEvent<THandlerData>) => void)[] = [];
 
       if (gesture.gestureEvents[key]) {
         handlers.push(
@@ -101,7 +104,9 @@ export function NativeDetector({ gesture, children }: NativeDetectorProps) {
       logicMethods.current.forEach((ref) => {
         const handler = ref.current?.[key];
         if (handler) {
-          handlers.push(handler as (e: GestureHandlerEvent<unknown>) => void);
+          handlers.push(
+            handler as (e: GestureHandlerEvent<THandlerData>) => void
+          );
         }
       });
 

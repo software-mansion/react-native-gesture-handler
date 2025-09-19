@@ -6,6 +6,7 @@ import type { Config, PropsRef } from './web/interfaces';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
 import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
+import { GestureRelations } from './v3/types';
 
 // init method is called inside attachGestureHandler function. However, this function may
 // fail when received view is not valid HTML element. On the other hand, dropGestureHandler
@@ -36,10 +37,6 @@ export default {
     NodeManager.createGestureHandler(
       handlerTag,
       new GestureClass(new GestureHandlerWebDelegate())
-    );
-    InteractionManager.instance.configureInteractions(
-      NodeManager.getHandler(handlerTag),
-      config as unknown as Config
     );
     this.setGestureHandlerConfig(handlerTag, config as unknown as Config);
   },
@@ -75,11 +72,6 @@ export default {
   },
   setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).setGestureConfig(newConfig);
-
-    InteractionManager.instance.configureInteractions(
-      NodeManager.getHandler(handlerTag),
-      newConfig
-    );
   },
   updateGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
@@ -94,6 +86,12 @@ export default {
     }
 
     NodeManager.dropGestureHandler(handlerTag);
+  },
+  configureRelations(handlerTag: number, relations: GestureRelations) {
+    InteractionManager.instance.configureInteractions(
+      NodeManager.getHandler(handlerTag),
+      relations
+    );
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},

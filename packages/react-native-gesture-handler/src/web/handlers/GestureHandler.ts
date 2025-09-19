@@ -764,6 +764,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       this._userSelect = config.userSelect;
     }
 
+    if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+      InteractionManager.instance.configureInteractions(this, config);
+    }
+
     if (this.enabled) {
       return;
     }
