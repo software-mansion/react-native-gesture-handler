@@ -182,6 +182,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       RCTLogError(@"Cannot have all of top, bottom and height defined");
     }
   }
+
+  if (_actionType != RNGestureHandlerActionTypeNativeDetector) {
+    [self updateRelations:config];
+  }
 }
 
 - (void)updateRelations:(NSDictionary *)relations
