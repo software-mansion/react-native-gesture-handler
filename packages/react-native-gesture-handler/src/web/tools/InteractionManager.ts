@@ -1,6 +1,6 @@
 import { GestureRelations } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
-import { Config } from '../interfaces';
+import { Config, Handler } from '../interfaces';
 
 export default class InteractionManager {
   private static _instance: InteractionManager;
@@ -20,7 +20,7 @@ export default class InteractionManager {
 
     if (config.waitFor) {
       const waitFor: number[] = [];
-      config.waitFor.forEach((otherHandler): void => {
+      config.waitFor.forEach((otherHandler: Handler | number): void => {
         // New API reference
         if (typeof otherHandler === 'number') {
           waitFor.push(otherHandler);
@@ -35,20 +35,22 @@ export default class InteractionManager {
 
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
-      config.simultaneousHandlers.forEach((otherHandler): void => {
-        if (typeof otherHandler === 'number') {
-          simultaneousHandlers.push(otherHandler);
-        } else {
-          simultaneousHandlers.push(otherHandler.handlerTag);
+      config.simultaneousHandlers.forEach(
+        (otherHandler: Handler | number): void => {
+          if (typeof otherHandler === 'number') {
+            simultaneousHandlers.push(otherHandler);
+          } else {
+            simultaneousHandlers.push(otherHandler.handlerTag);
+          }
         }
-      });
+      );
 
       this.simultaneousRelations.set(handler.handlerTag, simultaneousHandlers);
     }
 
     if (config.blocksHandlers) {
       const blocksHandlers: number[] = [];
-      config.blocksHandlers.forEach((otherHandler): void => {
+      config.blocksHandlers.forEach((otherHandler: Handler | number): void => {
         if (typeof otherHandler === 'number') {
           blocksHandlers.push(otherHandler);
         } else {
