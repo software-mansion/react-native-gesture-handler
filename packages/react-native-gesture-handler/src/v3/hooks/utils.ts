@@ -2,6 +2,7 @@ import { NativeSyntheticEvent } from 'react-native';
 import {
   AnimatedEvent,
   BaseGestureConfig,
+  ExcludeInternalConfigProps,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
@@ -94,4 +95,29 @@ export function shouldHandleTouchEvents<THandlerData, TConfig>(
     !!config.onTouchesUp ||
     !!config.onTouchesCancelled
   );
+}
+
+export function cloneConfig<THandlerData, TConfig>(
+  config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>
+): BaseGestureConfig<THandlerData, TConfig> {
+  return { ...config } as BaseGestureConfig<THandlerData, TConfig>;
+}
+
+export function remapProps<TConfig extends object, TInternalConfig>(
+  config: TConfig & TInternalConfig,
+  propsMapping: Map<string, string>
+): TInternalConfig {
+  type MergedConfig = TConfig & TInternalConfig;
+
+  propsMapping.forEach((internalKey, key) => {
+    if (key in config) {
+      config[internalKey as keyof MergedConfig] =
+        config[key as keyof MergedConfig];
+
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete config[key as keyof MergedConfig];
+    }
+  });
+
+  return config;
 }

@@ -52,6 +52,7 @@ export interface Config extends Record<string, ConfigArgs> {
   touchAction?: TouchAction;
   manualActivation?: boolean;
   dispatchesAnimatedEvents?: false;
+  shouldUseReanimated?: boolean;
   needsPointerData?: false;
 
   activateAfterLongPress?: number;
@@ -124,9 +125,12 @@ export interface ResultEvent<T extends ResultEventType = ResultEventType>
 
 export interface PropsRef {
   onGestureHandlerEvent: (e: ResultEvent) => void;
-  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
   onGestureHandlerStateChange: (e: ResultEvent) => void;
-  onGestureHandlerTouchEvent?: (e: ResultEvent) => void;
+  onGestureHandlerTouchEvent: (e: ResultEvent) => void;
+  onGestureHandlerReanimatedEvent?: (e: ResultEvent) => void;
+  onGestureHandlerReanimatedStateChange?: (e: ResultEvent) => void;
+  onGestureHandlerReanimatedTouchEvent?: (e: ResultEvent) => void;
+  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {

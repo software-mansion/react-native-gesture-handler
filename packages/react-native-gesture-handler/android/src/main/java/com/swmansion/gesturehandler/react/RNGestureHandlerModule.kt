@@ -98,6 +98,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     val factory = RNGestureHandlerFactoryUtil.findFactoryForHandler<GestureHandler>(handler) ?: return
 
     factory.setConfig(handler, config)
+
+    if (handler.actionType != GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
+      interactionManager.dropRelationsForHandlerWithTag(handlerTag)
+      interactionManager.configureInteractions(handler, config)
+    }
   }
 
   @ReactMethod
