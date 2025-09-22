@@ -74,11 +74,10 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   };
 
   useEffect(() => {
-    const newHandlerTags = attachedHandlers.current.difference(
+    attachedHandlers.current = attachedHandlers.current.difference(
       attachedNativeHandlers.current
     );
-    attachedNativeHandlers.current.clear();
-    detachHandlers(newHandlerTags, attachedNativeHandlers.current);
+    detachHandlers(attachedHandlers.current, attachedNativeHandlers.current);
   }, [children]);
 
   useEffect(() => {
