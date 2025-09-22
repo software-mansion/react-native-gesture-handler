@@ -170,13 +170,13 @@
         [_nativeHandlers addObject:@(tag)];
       } else {
         if (actionType == RNGestureHandlerActionTypeLogicDetector) {
-          [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorTag = @(self.tag);
           [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
         } else {
           [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
         }
         [attachedHandlers addObject:@(tag)];
       }
+      [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorTag = @(self.tag);
     }
   }
 
@@ -187,7 +187,7 @@
   }
 
   // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
-  if (!self.subviews[0]) {
+  if (self.subviews[0]) {
     [self tryAttachNativeHandlersToChildView];
   }
 }
