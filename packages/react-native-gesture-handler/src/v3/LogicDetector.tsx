@@ -16,14 +16,16 @@ export function LogicDetector<THandlerData, TConfig>(
 
   const handleRef = useCallback((node: any) => {
     viewRef.current = node;
-    if (node) {
-      if (Platform.OS === 'web') {
-        setViewTag(node);
-      } else {
-        const tag = findNodeHandle(node);
-        if (tag != null) {
-          setViewTag(tag);
-        }
+    if (!node) {
+      return;
+    }
+
+    if (Platform.OS === 'web') {
+      setViewTag(node);
+    } else {
+      const tag = findNodeHandle(node);
+      if (tag != null) {
+        setViewTag(tag);
       }
     }
   }, []);
