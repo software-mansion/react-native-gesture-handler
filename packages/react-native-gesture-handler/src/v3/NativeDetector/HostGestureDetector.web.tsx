@@ -72,10 +72,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       );
     }
 
-    attachHandlers(new Set(handlerTags));
+    const newHandlerTags = new Set(handlerTags);
+    attachHandlers(newHandlerTags);
 
     return () => {
-      detachHandlers(attachedNativeHandlerTags.current);
+      detachHandlers(newHandlerTags);
     };
   }, [handlerTags, children]);
 
