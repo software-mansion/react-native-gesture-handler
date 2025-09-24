@@ -187,6 +187,7 @@ android {
         exclude "**/libreactnative.so"
         exclude "**/libjsi.so"
         exclude "**/libc++_shared.so"
+        exclude "**/libfbjni.so"
     }
 
     sourceSets.main {
