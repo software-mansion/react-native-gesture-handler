@@ -67,11 +67,7 @@ export function updateHandlers(
 
       RNGestureHandlerModule.setGestureHandlerConfig(
         handler.handlerTag,
-        filterConfig(
-          handler.config,
-          ALLOWED_PROPS,
-          extractGestureRelations(handler)
-        )
+        filterConfig(handler.config, ALLOWED_PROPS)
       );
 
       RNGestureHandlerModule.configureRelations(
