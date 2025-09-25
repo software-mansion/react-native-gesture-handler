@@ -63,11 +63,12 @@ export function attachHandlers({
     for (const handler of gesturesToAttach) {
       RNGestureHandlerModule.setGestureHandlerConfig(
         handler.handlerTag,
-        filterConfig(
-          handler.config,
-          ALLOWED_PROPS,
-          extractGestureRelations(handler)
-        )
+        filterConfig(handler.config, ALLOWED_PROPS)
+      );
+
+      RNGestureHandlerModule.configureRelations(
+        handler.handlerTag,
+        extractGestureRelations(handler)
       );
     }
 
