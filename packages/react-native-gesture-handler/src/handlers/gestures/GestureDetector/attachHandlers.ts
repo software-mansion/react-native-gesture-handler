@@ -69,6 +69,11 @@ export function attachHandlers({
           extractGestureRelations(handler)
         )
       );
+
+      RNGestureHandlerModule.configureRelations(
+        handler.handlerTag,
+        extractGestureRelations(handler)
+      );
     }
 
     scheduleFlushOperations();

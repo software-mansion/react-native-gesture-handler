@@ -405,6 +405,9 @@ export default function createHandler<
         this.handlerTag,
         newConfig
       );
+
+      RNGestureHandlerModule.configureRelations(this.handlerTag, newConfig);
+
       scheduleFlushOperations();
     };
 
