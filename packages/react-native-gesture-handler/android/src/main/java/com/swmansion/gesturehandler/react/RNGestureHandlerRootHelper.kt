@@ -110,12 +110,12 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+  fun dispatchTouchEvent(event: MotionEvent): Boolean {
     // We mark `mPassingTouch` before we get into `mOrchestrator.onTouchEvent` so that we can tell
     // if `requestDisallow` has been called as a result of a normal gesture handling process or
     // as a result of one of the gesture handlers activating
     passingTouch = true
-    orchestrator!!.onTouchEvent(ev)
+    orchestrator!!.onTouchEvent(event)
     passingTouch = false
     return shouldIntercept
   }

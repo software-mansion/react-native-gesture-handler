@@ -2,7 +2,7 @@ const { getDefaultConfig } = require('@react-native/metro-config');
 const { mergeConfig } = require('metro-config');
 
 const path = require('path');
-const exclusionList = require('metro-config/src/defaults/exclusionList');
+const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 const escape = require('escape-string-regexp');
 
 // Gesture handler tries to require 'react-native-reanimated' inside a try...catch
