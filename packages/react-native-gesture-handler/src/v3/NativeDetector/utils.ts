@@ -147,3 +147,5 @@ export function configureRelations<THandlerData, TConfig>(
     );
   }
 }
+
+export const EMPTY_SET = new Set<number>();
