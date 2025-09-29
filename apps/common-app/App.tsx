@@ -82,6 +82,9 @@ import ManualExample from './src/simple/manual';
 import SimpleFling from './src/simple/fling';
 
 import { Icon } from '@swmansion/icons';
+import Lock from './src/v3_api/lock/lock';
+import V3Fling from './src/v3_api/fling/fling';
+import LogicDetectorExample from './src/v3_api/svg/svg';
 
 interface Example {
   name: string;
@@ -97,6 +100,14 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',
     data: [{ name: 'Empty Example', component: EmptyExample }],
+  },
+  {
+    sectionTitle: 'V3 api',
+    data: [
+      { name: 'V3 Fling', component: V3Fling },
+      { name: 'Svg', component: LogicDetectorExample },
+      { name: 'Lock', component: Lock },
+    ],
   },
   {
     sectionTitle: 'New api',
