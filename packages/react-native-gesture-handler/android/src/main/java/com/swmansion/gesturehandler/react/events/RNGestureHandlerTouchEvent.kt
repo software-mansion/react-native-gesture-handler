@@ -39,7 +39,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     EVENT_NAME
   }
 
-  override fun canCoalesce() = true
+  override fun canCoalesce() = !GestureHandler.usesNativeOrLogicDetector(actionType)
 
   override fun getCoalescingKey() = coalescingKey
   override fun getEventData(): WritableMap? = extraData
