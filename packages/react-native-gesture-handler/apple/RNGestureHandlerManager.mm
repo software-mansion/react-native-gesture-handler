@@ -312,36 +312,17 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     case RNGestureHandlerActionTypeLogicDetector: {
       NSNumber *hostDetectorTag = [_registry handlerWithTag:event.handlerTag].hostDetectorTag;
       detectorView = [self viewForReactTag:hostDetectorTag];
-      // intentionally fall through to RNGestureHandlerActionTypeNativeDetector
+      [self sendNativeOrLogicEvent:event
+                    withActionType:actionType
+                    forHandlerType:eventHandlerType
+                           forView:detectorView];
+      break;
     }
     case RNGestureHandlerActionTypeNativeDetector: {
-      if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
-        switch (eventHandlerType) {
-          case RNGestureHandlerEventHandlerTypeAnimated:
-            [self sendEventForNativeAnimatedEvent:event];
-            break;
-          case RNGestureHandlerEventHandlerTypeReanimated: {
-            RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
-            auto nativeEvent = [gestureEvent getReanimatedNativeEvent];
-            [(RNGestureHandlerDetector *)detectorView dispatchReanimatedGestureEvent:nativeEvent];
-            break;
-          }
-          case RNGestureHandlerEventHandlerTypeJS: {
-            RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
-            auto nativeEvent = [gestureEvent getNativeEvent];
-            [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
-            break;
-          }
-        }
-      } else {
-        if (eventHandlerType == RNGestureHandlerEventHandlerTypeReanimated) {
-          auto nativeEvent = [event getReanimatedNativeEvent];
-          [(RNGestureHandlerDetector *)detectorView dispatchReanimatedStateChangeEvent:nativeEvent];
-        } else {
-          auto nativeEvent = [event getNativeEvent];
-          [(RNGestureHandlerDetector *)detectorView dispatchStateChangeEvent:nativeEvent];
-        }
-      }
+      [self sendNativeOrLogicEvent:event
+                    withActionType:actionType
+                    forHandlerType:eventHandlerType
+                           forView:detectorView];
       break;
     }
 
@@ -486,6 +467,40 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   // Delivers the event to JS as a device event.
   NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
   [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
+}
+
+- (void)sendNativeOrLogicEvent:(RNGestureHandlerStateChange *)event
+                withActionType:(RNGestureHandlerActionType)actionType
+                forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
+                       forView:(RNGHUIView *)detectorView
+{
+  if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
+    switch (eventHandlerType) {
+      case RNGestureHandlerEventHandlerTypeAnimated:
+        [self sendEventForNativeAnimatedEvent:event];
+        break;
+      case RNGestureHandlerEventHandlerTypeReanimated: {
+        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+        auto nativeEvent = [gestureEvent getReanimatedNativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchReanimatedGestureEvent:nativeEvent];
+        break;
+      }
+      case RNGestureHandlerEventHandlerTypeJS: {
+        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+        auto nativeEvent = [gestureEvent getNativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
+        break;
+      }
+    }
+  } else {
+    if (eventHandlerType == RNGestureHandlerEventHandlerTypeReanimated) {
+      auto nativeEvent = [event getReanimatedNativeEvent];
+      [(RNGestureHandlerDetector *)detectorView dispatchReanimatedStateChangeEvent:nativeEvent];
+    } else {
+      auto nativeEvent = [event getNativeEvent];
+      [(RNGestureHandlerDetector *)detectorView dispatchStateChangeEvent:nativeEvent];
+    }
+  }
 }
 
 - (RNGHUIView *)viewForReactTag:(NSNumber *)reactTag
