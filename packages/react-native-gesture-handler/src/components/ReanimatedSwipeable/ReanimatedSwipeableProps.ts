@@ -9,10 +9,12 @@ type SwipeableExcludes = Exclude<
   'onGestureEvent' | 'onHandlerStateChange'
 >;
 
-export enum SwipeDirection {
-  LEFT = 'left',
-  RIGHT = 'right',
-}
+export const SwipeDirection = {
+  LEFT: 'left',
+  RIGHT: 'right',
+} as const;
+
+type SwipeDirection = (typeof SwipeDirection)[keyof typeof SwipeDirection];
 
 export interface SwipeableProps
   extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
@@ -87,44 +89,32 @@ export interface SwipeableProps
   /**
    * Called when action panel gets open (either right or left).
    */
-  onSwipeableOpen?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
+  onSwipeableOpen?: (direction: SwipeDirection) => void;
 
   /**
    * Called when action panel is closed.
    */
-  onSwipeableClose?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
+  onSwipeableClose?: (direction: SwipeDirection) => void;
 
   /**
    * Called when action panel starts animating on open (either right or left).
    */
-  onSwipeableWillOpen?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
+  onSwipeableWillOpen?: (direction: SwipeDirection) => void;
 
   /**
    * Called when action panel starts animating on close.
    */
-  onSwipeableWillClose?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
+  onSwipeableWillClose?: (direction: SwipeDirection) => void;
 
   /**
    * Called when action panel starts being shown on dragging to open.
    */
-  onSwipeableOpenStartDrag?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
+  onSwipeableOpenStartDrag?: (direction: SwipeDirection) => void;
 
   /**
    * Called when action panel starts being shown on dragging to close.
    */
-  onSwipeableCloseStartDrag?: (
-    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
-  ) => void;
+  onSwipeableCloseStartDrag?: (direction: SwipeDirection) => void;
 
   /**
    * `progress`: Equals `0` when `swipeable` is closed, `1` when `swipeable` is opened.
