@@ -46,8 +46,8 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    changeX: previous ? current.x - previous.x : current.x,
-    changeY: previous ? current.y - previous.y : current.y,
+    changeX: previous ? current.x - previous.x : 0,
+    changeY: previous ? current.y - previous.y : 0,
   };
 }
 

@@ -31,9 +31,7 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    rotationChange: previous
-      ? current.rotation - previous.rotation
-      : current.rotation,
+    rotationChange: previous ? current.rotation - previous.rotation : 0,
   };
 }
 
