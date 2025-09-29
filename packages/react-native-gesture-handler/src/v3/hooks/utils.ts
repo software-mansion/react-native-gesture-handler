@@ -5,7 +5,7 @@ import {
   ChangeCalculatorType,
   DiffCalculatorType,
   ExcludeInternalConfigProps,
-  ExtractedGestureHandlerEvent,
+  UnpackedGestureHandlerEvent,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
@@ -35,7 +35,7 @@ export function maybeExtractNativeEvent<THandlerData>(
 
 export function isEventForHandlerWithTag<THandlerData>(
   handlerTag: number,
-  event: ExtractedGestureHandlerEvent<THandlerData>
+  event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
