@@ -28,8 +28,8 @@ type HoverHandlerData = {
   absoluteX: number;
   absoluteY: number;
   stylusData: StylusData;
-  changeX?: number;
-  changeY?: number;
+  changeX: number;
+  changeY: number;
 };
 
 type HoverGestureInternalConfig = BaseGestureConfig<

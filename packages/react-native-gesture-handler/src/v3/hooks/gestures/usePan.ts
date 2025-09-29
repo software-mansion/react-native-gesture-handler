@@ -115,8 +115,8 @@ type PanHandlerData = {
   velocityX: number;
   velocityY: number;
   stylusData: StylusData;
-  changeX?: number;
-  changeY?: number;
+  changeX: number;
+  changeY: number;
 };
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
