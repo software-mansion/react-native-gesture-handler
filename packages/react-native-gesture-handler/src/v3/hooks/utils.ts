@@ -145,9 +145,8 @@ export function getChangeEventCalculator<THandlerData>(
 
     const changePayload = diffCalculator(currentEventData, previousEventData);
 
-    const resultEvent = { ...current };
-    resultEvent.handlerData = { ...currentEventData, ...changePayload };
+    current.handlerData = { ...currentEventData, ...changePayload };
 
-    return resultEvent;
+    return current;
   };
 }
