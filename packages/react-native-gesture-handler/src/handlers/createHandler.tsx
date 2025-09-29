@@ -405,6 +405,16 @@ export default function createHandler<
         this.handlerTag,
         newConfig
       );
+
+      RNGestureHandlerModule.configureRelations(
+        this.handlerTag,
+        filterConfig(this.config, [
+          'waitFor',
+          'simultaneousHandlers',
+          'blocksHandlers',
+        ])
+      );
+
       scheduleFlushOperations();
     };
 

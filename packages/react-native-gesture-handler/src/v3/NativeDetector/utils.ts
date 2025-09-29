@@ -146,4 +146,6 @@ export function configureRelations<THandlerData, TConfig>(
       gesture.gestureRelations
     );
   }
+
+  RNGestureHandlerModule.flushOperations();
 }
