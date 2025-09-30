@@ -223,7 +223,7 @@ export interface SharedValue<Value = unknown> {
 // not HoverEffect, SharedValue<HoverEffect.NONE>, ...
 type WithSharedValueRecursive<T extends object, P> = {
   [K in keyof T]: Exclude<T[K], undefined> extends P
-    ? Simplify<TOrSharedValue<T[K]>>
+    ? Simplify<SharedValueOrT<T[K]>>
     : // Special case for boolean as passing `boolean` as P doesn't look ok.
       boolean extends T[K]
       ? boolean | SharedValue<boolean>
@@ -234,12 +234,12 @@ type WithSharedValueRecursive<T extends object, P> = {
           WithSharedValue<T[K], P>;
 };
 
-export type TOrSharedValue<T> = T | SharedValue<Exclude<T, undefined>>;
+export type SharedValueOrT<T> = T | SharedValue<Exclude<T, undefined>>;
 
 // Utility type that decides whether to recurse for objects or apply SharedValue directly.
 export type WithSharedValue<T, P = never> = T extends object
   ? WithSharedValueRecursive<T, P>
-  : Simplify<TOrSharedValue<T>>;
+  : Simplify<SharedValueOrT<T>>;
 
 // Simplifies types for end users.
 // For example, changes TOrSharedValue<number> into number | SharedValue<number>.
