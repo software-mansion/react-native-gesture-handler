@@ -53,48 +53,50 @@ type CommonPanGestureProperties = {
   activateAfterLongPress?: number;
 };
 
+type OffsetProps = {
+  /**
+   * Range along X axis (in points) where fingers travels without activation of
+   * handler. Moving outside of this range implies activation of handler. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
+  activeOffsetY?: number | [number, number];
+
+  /**
+   * Range along X axis (in points) where fingers travels without activation of
+   * handler. Moving outside of this range implies activation of handler. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
+  activeOffsetX?: number | [number, number];
+
+  /**
+   * When the finger moves outside this range (in points) along Y axis and
+   * handler hasn't yet activated it will fail recognizing the gesture. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
+  failOffsetY?: number | [number, number];
+
+  /**
+   * When the finger moves outside this range (in points) along X axis and
+   * handler hasn't yet activated it will fail recognizing the gesture. Range
+   * can be given as an array or a single number. If range is set as an array,
+   * first value must be lower or equal to 0, a the second one higher or equal
+   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
+   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+   */
+  failOffsetX?: number | [number, number];
+};
+
 export type PanGestureProperties = WithSharedValue<
-  CommonPanGestureProperties & {
-    /**
-     * Range along X axis (in points) where fingers travels without activation of
-     * handler. Moving outside of this range implies activation of handler. Range
-     * can be given as an array or a single number. If range is set as an array,
-     * first value must be lower or equal to 0, a the second one higher or equal
-     * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-     * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-     */
-    activeOffsetY?: number | [number, number];
-
-    /**
-     * Range along X axis (in points) where fingers travels without activation of
-     * handler. Moving outside of this range implies activation of handler. Range
-     * can be given as an array or a single number. If range is set as an array,
-     * first value must be lower or equal to 0, a the second one higher or equal
-     * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-     * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-     */
-    activeOffsetX?: number | [number, number];
-
-    /**
-     * When the finger moves outside this range (in points) along Y axis and
-     * handler hasn't yet activated it will fail recognizing the gesture. Range
-     * can be given as an array or a single number. If range is set as an array,
-     * first value must be lower or equal to 0, a the second one higher or equal
-     * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-     * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-     */
-    failOffsetY?: number | [number, number];
-
-    /**
-     * When the finger moves outside this range (in points) along X axis and
-     * handler hasn't yet activated it will fail recognizing the gesture. Range
-     * can be given as an array or a single number. If range is set as an array,
-     * first value must be lower or equal to 0, a the second one higher or equal
-     * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-     * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-     */
-    failOffsetX?: number | [number, number];
-  }
+  CommonPanGestureProperties & OffsetProps
 >;
 
 type PanGestureInternalProperties = WithSharedValue<
@@ -186,76 +188,40 @@ function validatePanConfig(config: PanGestureConfig) {
   }
 }
 
+function transformOffsetProp(
+  config: PanGestureConfig & PanGestureInternalConfig,
+  propName: keyof OffsetProps
+) {
+  const propValue = config[propName];
+
+  if (propValue === undefined) {
+    return;
+  }
+
+  if (Array.isArray(propValue)) {
+    config[`${propName}Start`] = propValue[0];
+    config[`${propName}End`] = propValue[1];
+  } else {
+    const offsetValue = maybeUnpackValue(propValue);
+
+    if (offsetValue < 0) {
+      config[`${propName}Start`] = propValue;
+    } else {
+      config[`${propName}End`] = propValue;
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  delete config[propName];
+}
+
 function transformPanProps(
   config: PanGestureConfig & PanGestureInternalConfig
 ) {
-  if (config.activeOffsetX !== undefined) {
-    if (Array.isArray(config.activeOffsetX)) {
-      config.activeOffsetXStart = config.activeOffsetX[0];
-      config.activeOffsetXEnd = config.activeOffsetX[1];
-    } else {
-      const offsetValue = maybeUnpackValue(config.activeOffsetX);
-
-      if (offsetValue < 0) {
-        config.activeOffsetXStart = config.activeOffsetX;
-      } else {
-        config.activeOffsetXEnd = config.activeOffsetX;
-      }
-    }
-
-    delete config.activeOffsetX;
-  }
-
-  if (config.activeOffsetY !== undefined) {
-    if (Array.isArray(config.activeOffsetY)) {
-      config.activeOffsetYStart = config.activeOffsetY[0];
-      config.activeOffsetYEnd = config.activeOffsetY[1];
-    } else {
-      const offsetValue = maybeUnpackValue(config.activeOffsetY);
-
-      if (offsetValue < 0) {
-        config.activeOffsetYStart = config.activeOffsetY;
-      } else {
-        config.activeOffsetYEnd = config.activeOffsetY;
-      }
-    }
-
-    delete config.activeOffsetY;
-  }
-
-  if (config.failOffsetX !== undefined) {
-    if (Array.isArray(config.failOffsetX)) {
-      config.failOffsetXStart = config.failOffsetX[0];
-      config.failOffsetXEnd = config.failOffsetX[1];
-    } else {
-      const offsetValue = maybeUnpackValue(config.failOffsetX);
-
-      if (offsetValue < 0) {
-        config.failOffsetXStart = config.failOffsetX;
-      } else {
-        config.failOffsetXEnd = config.failOffsetX;
-      }
-    }
-
-    delete config.failOffsetX;
-  }
-
-  if (config.failOffsetY !== undefined) {
-    if (Array.isArray(config.failOffsetY)) {
-      config.failOffsetYStart = config.failOffsetY[0];
-      config.failOffsetYEnd = config.failOffsetY[1];
-    } else {
-      const offsetValue = maybeUnpackValue(config.failOffsetY);
-
-      if (offsetValue < 0) {
-        config.failOffsetYStart = config.failOffsetY;
-      } else {
-        config.failOffsetYEnd = config.failOffsetY;
-      }
-    }
-
-    delete config.failOffsetY;
-  }
+  transformOffsetProp(config, 'activeOffsetY');
+  transformOffsetProp(config, 'failOffsetX');
+  transformOffsetProp(config, 'failOffsetY');
+  transformOffsetProp(config, 'activeOffsetX');
 }
 
 function diffCalculator(
