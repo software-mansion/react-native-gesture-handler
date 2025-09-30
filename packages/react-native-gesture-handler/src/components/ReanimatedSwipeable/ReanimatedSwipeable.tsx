@@ -11,7 +11,11 @@ import Animated, {
   runOnUI,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import { SwipeableProps, SwipeableMethods, SwipeDirection } from '.';
+import {
+  SwipeableProps,
+  SwipeableMethods,
+  SwipeDirection,
+} from './ReanimatedSwipeableProps';
 import { Gesture } from '../..';
 import {
   GestureStateChangeEvent,
