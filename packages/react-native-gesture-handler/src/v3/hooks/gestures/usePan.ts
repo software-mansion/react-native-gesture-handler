@@ -121,8 +121,8 @@ type PanHandlerData = {
   velocityX: number;
   velocityY: number;
   stylusData: StylusData;
-  changeX?: number;
-  changeY?: number;
+  changeX: number;
+  changeY: number;
 };
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
@@ -264,12 +264,8 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    changeX: previous
-      ? current.translationX - previous.translationX
-      : current.translationX,
-    changeY: previous
-      ? current.translationY - previous.translationY
-      : current.translationY,
+    changeX: previous ? current.translationX - previous.translationX : 0,
+    changeY: previous ? current.translationY - previous.translationY : 0,
   };
 }
 

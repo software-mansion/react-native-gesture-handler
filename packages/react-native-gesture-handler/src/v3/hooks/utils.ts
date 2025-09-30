@@ -5,7 +5,7 @@ import {
   ChangeCalculatorType,
   DiffCalculatorType,
   ExcludeInternalConfigProps,
-  ExtractedGestureHandlerEvent,
+  UnpackedGestureHandlerEvent,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
@@ -36,7 +36,7 @@ export function maybeExtractNativeEvent<THandlerData>(
 
 export function isEventForHandlerWithTag<THandlerData>(
   handlerTag: number,
-  event: ExtractedGestureHandlerEvent<THandlerData>
+  event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
@@ -152,9 +152,8 @@ export function getChangeEventCalculator<THandlerData>(
 
     const changePayload = diffCalculator(currentEventData, previousEventData);
 
-    const resultEvent = { ...current };
-    resultEvent.handlerData = { ...currentEventData, ...changePayload };
+    current.handlerData = { ...currentEventData, ...changePayload };
 
-    return resultEvent;
+    return current;
   };
 }

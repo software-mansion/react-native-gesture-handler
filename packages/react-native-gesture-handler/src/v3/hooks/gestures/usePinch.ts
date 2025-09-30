@@ -14,7 +14,7 @@ type PinchHandlerData = {
   focalX: number;
   focalY: number;
   velocity: number;
-  scaleChange?: number;
+  scaleChange: number;
 };
 
 type PinchGestureInternalConfig = BaseGestureConfig<
@@ -31,7 +31,7 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    scaleChange: previous ? current.scale / previous.scale : current.scale,
+    scaleChange: previous ? current.scale / previous.scale : 0,
   };
 }
 

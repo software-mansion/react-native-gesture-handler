@@ -39,7 +39,7 @@ export type GestureHandlerEvent<THandlerData> =
   | StateChangeEvent<THandlerData>
   | TouchEvent;
 
-export type ExtractedGestureHandlerEvent<THandlerData> =
+export type UnpackedGestureHandlerEvent<THandlerData> =
   | GestureUpdateEvent<THandlerData>
   | GestureStateChangeEvent<THandlerData>
   | GestureTouchEvent;

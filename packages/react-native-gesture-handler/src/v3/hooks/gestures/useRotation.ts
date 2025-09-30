@@ -14,7 +14,7 @@ type RotationHandlerData = {
   anchorX: number;
   anchorY: number;
   velocity: number;
-  rotationChange?: number;
+  rotationChange: number;
 };
 
 type RotationGestureInternalConfig = BaseGestureConfig<
@@ -31,9 +31,7 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    rotationChange: previous
-      ? current.rotation - previous.rotation
-      : current.rotation,
+    rotationChange: previous ? current.rotation - previous.rotation : 0,
   };
 }
 

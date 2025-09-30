@@ -32,8 +32,8 @@ type HoverHandlerData = {
   absoluteX: number;
   absoluteY: number;
   stylusData: StylusData;
-  changeX?: number;
-  changeY?: number;
+  changeX: number;
+  changeY: number;
 };
 
 type HoverGestureInternalConfig = BaseGestureConfig<
@@ -50,8 +50,8 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    changeX: previous ? current.x - previous.x : current.x,
-    changeY: previous ? current.y - previous.y : current.y,
+    changeX: previous ? current.x - previous.x : 0,
+    changeY: previous ? current.y - previous.y : 0,
   };
 }
 
