@@ -87,6 +87,7 @@ import LogicDetectorExample from './src/v3_api/svg/svg';
 import V3Hover from './src/v3_api/hover/index';
 import V3Overlap from './src/v3_api/overlap/index';
 import V3Calculator from './src/v3_api/calculator/index';
+import V3Velocity from './src/v3_api/velocity_test/index';
 
 import { Icon } from '@swmansion/icons';
 
@@ -114,6 +115,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'V3 Hover', component: V3Hover },
       { name: 'V3 Overlap', component: V3Overlap },
       { name: 'V3 Calculator', component: V3Calculator },
+      { name: 'V3 Velocity Test', component: V3Velocity },
     ],
   },
   {
