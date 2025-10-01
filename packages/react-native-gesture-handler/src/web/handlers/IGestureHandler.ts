@@ -21,7 +21,7 @@ export default interface IGestureHandler {
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
-  readonly enabled: boolean;
+  readonly enabled: boolean | null;
   readonly pointerType: PointerType;
   enableContextMenu: boolean;
   readonly activeCursor?: ActiveCursor;

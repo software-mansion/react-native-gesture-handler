@@ -38,8 +38,6 @@ export class GestureHandlerWebDelegate
       );
     }
 
-    this.isInitialized = true;
-
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
@@ -48,10 +46,6 @@ export class GestureHandlerWebDelegate
       touchAction: this.view.style.touchAction,
     };
 
-    this.setUserSelect();
-    this.setTouchAction();
-    this.setContextMenu();
-
     this.eventManagers.push(new PointerEventManager(this.view));
     this.eventManagers.push(new KeyboardEventManager(this.view));
     this.eventManagers.push(new WheelEventManager(this.view));
@@ -59,6 +53,8 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)
     );
+
+    this.isInitialized = true;
   }
 
   detach(): void {
@@ -68,8 +64,9 @@ export class GestureHandlerWebDelegate
     };
 
     this.eventManagers.forEach((manager) => {
-      manager.unregisterListeners();
+      manager.enable(false);
     });
+
     this.removeContextMenuListeners();
     this._view = null;
     this.eventManagers = [];
@@ -198,15 +195,9 @@ export class GestureHandlerWebDelegate
     this.setTouchAction();
     this.setContextMenu();
 
-    if (this.gestureHandler.enabled) {
-      this.eventManagers.forEach((manager) => {
-        manager.registerListeners();
-      });
-    } else {
-      this.eventManagers.forEach((manager) => {
-        manager.unregisterListeners();
-      });
-    }
+    this.eventManagers.forEach((manager) => {
+      manager.enable(this.gestureHandler.enabled);
+    });
   }
 
   onBegin(): void {

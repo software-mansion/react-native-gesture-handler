@@ -35,7 +35,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private _state: State = State.UNDETERMINED;
 
   private _shouldCancelWhenOutside = false;
-  private _enabled = false;
+  private _enabled: boolean | null = null;
 
   private viewRef: number | null = null;
   private propsRef: React.RefObject<PropsRef> | null = null;
@@ -707,16 +707,28 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Handling config
   //
 
+  // Helper function to correctly set enabled property
+  private updateEnabled(enabled: boolean | null) {
+    if (enabled === undefined) {
+      if (this._enabled) {
+        return;
+      }
+
+      this._enabled = true;
+    } else if (this._enabled !== enabled) {
+      this._enabled = enabled;
+    }
+
+    this.delegate.onEnabledChange();
+  }
+
   public setGestureConfig(config: Config) {
     this.resetConfig();
     this.updateGestureConfig(config);
   }
 
   public updateGestureConfig(config: Config): void {
-    if (config.enabled !== undefined && this.enabled !== config.enabled) {
-      this._enabled = config.enabled;
-      this.delegate.onEnabledChange();
-    }
+    this.updateEnabled(config.enabled);
 
     if (config.hitSlop !== undefined) {
       this.hitSlop = config.hitSlop;
@@ -906,7 +918,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected resetConfig(): void {
-    this._enabled = true;
+    this._enabled = null;
     this.manualActivation = false;
     this.shouldCancelWhenOutside = false;
     this.mouseButton = undefined;
