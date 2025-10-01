@@ -15,8 +15,9 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
   private readonly mouseButtonsMapper = new Map<number, MouseButton>();
   private lastPosition: Point;
+  private shouldSendHoverEvents: boolean;
 
-  constructor(view: HTMLElement) {
+  constructor(view: HTMLElement, shouldSendHoverEvents: boolean) {
     super(view);
 
     this.mouseButtonsMapper.set(0, MouseButton.LEFT);
@@ -29,6 +30,8 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       x: -Infinity,
       y: -Infinity,
     };
+
+    this.shouldSendHoverEvents = shouldSendHoverEvents;
   }
 
   private pointerDownCallback = (event: PointerEvent) => {
@@ -82,6 +85,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerMoveCallback = (event: PointerEvent) => {
+    if (!this.shouldSendHoverEvents && this.activePointersCounter === 0) {
+      return;
+    }
+
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
     const target = event.target as HTMLElement;
 

@@ -12,6 +12,7 @@ import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
 import WheelEventManager from './WheelEventManager';
 import { tagMessage } from '../../utils';
+import HoverGestureHandler from '../handlers/HoverGestureHandler';
 
 interface DefaultViewStyles {
   userSelect: string;
@@ -52,7 +53,11 @@ export class GestureHandlerWebDelegate
     this.setTouchAction();
     this.setContextMenu();
 
-    this.eventManagers.push(new PointerEventManager(this.view));
+    const shouldSendHoverEvents = handler instanceof HoverGestureHandler;
+
+    this.eventManagers.push(
+      new PointerEventManager(this.view, shouldSendHoverEvents)
+    );
     this.eventManagers.push(new KeyboardEventManager(this.view));
     this.eventManagers.push(new WheelEventManager(this.view));
 
