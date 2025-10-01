@@ -60,7 +60,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   }
 
   // Unfortunately getCoalescingKey is not considered when sending event to C++, therefore we have to disable coalescing in v3
-  override fun canCoalesce() = actionType != GestureHandler.ACTION_TYPE_NATIVE_DETECTOR
+  override fun canCoalesce() = !GestureHandler.usesNativeOrLogicDetector(actionType)
 
   override fun getCoalescingKey() = coalescingKey
 

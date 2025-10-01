@@ -262,13 +262,13 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-      if (super.onInterceptTouchEvent(ev)) {
+    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+      if (super.onInterceptTouchEvent(event)) {
         return true
       }
       // We call `onTouchEvent` and wait until button changes state to `pressed`, if it's pressed
       // we return true so that the gesture handler can activate.
-      onTouchEvent(ev)
+      onTouchEvent(event)
       return isPressed
     }
 

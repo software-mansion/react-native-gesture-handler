@@ -4,6 +4,7 @@ import { ActionType } from '../../ActionType';
 import { PropsRef } from '../../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../../utils';
+import { EMPTY_SET } from './utils';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -26,7 +27,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const attachedHandlers = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlers = useRef<Set<number>>(new Set<number>());
   const attachedLogicHandlers = useRef<Map<number, Set<number>>>(new Map());
-  const emptySet = new Set<number>();
 
   const detachHandlers = (
     currentHandlerTags: Set<number>,
@@ -74,11 +74,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   };
 
   useEffect(() => {
-    attachedHandlers.current = attachedHandlers.current.difference(
-      attachedNativeHandlers.current
-    );
-    detachHandlers(attachedHandlers.current, attachedNativeHandlers.current);
-  }, [children]);
+    propsRef.current = props;
+  }, [props]);
 
   useEffect(() => {
     if (React.Children.count(children) !== 1) {
@@ -97,6 +94,13 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       attachedHandlers.current,
       ActionType.NATIVE_DETECTOR
     );
+
+    return () => {
+      detachHandlers(EMPTY_SET, attachedHandlers.current);
+      attachedLogicHandlers?.current.forEach((childHandlerTags) => {
+        detachHandlers(EMPTY_SET, childHandlerTags);
+      });
+    };
   }, [handlerTags, children]);
 
   useEffect(() => {
@@ -126,18 +130,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
 
     logicChildrenToDetach.forEach((tag) => {
-      detachHandlers(emptySet, attachedLogicHandlers.current.get(tag)!);
+      detachHandlers(EMPTY_SET, attachedLogicHandlers.current.get(tag)!);
     });
   }, [props.logicChildren]);
-
-  useEffect(() => {
-    return () => {
-      detachHandlers(emptySet, attachedHandlers.current);
-      attachedLogicHandlers?.current.forEach((childHandlerTags) => {
-        detachHandlers(emptySet, childHandlerTags);
-      });
-    };
-  }, []);
 
   return (
     <View style={{ display: 'contents' }} ref={viewRef as Ref<View>}>

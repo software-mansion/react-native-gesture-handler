@@ -49,21 +49,16 @@ export function LogicDetector<THandlerData, TConfig>(
       return;
     }
 
-    const logicProps =
-      Platform.OS === 'web'
-        ? {
-            viewRef,
-            viewTag,
-            handlerTags: isComposedGesture(props.gesture)
-              ? props.gesture.tags
-              : [props.gesture.tag],
-          }
-        : {
-            viewTag,
-            handlerTags: isComposedGesture(props.gesture)
-              ? props.gesture.tags
-              : [props.gesture.tag],
-          };
+    const logicProps = {
+      viewTag,
+      handlerTags: isComposedGesture(props.gesture)
+        ? props.gesture.tags
+        : [props.gesture.tag],
+    };
+
+    if (Platform.OS === 'web') {
+      Object.assign(logicProps, { viewRef });
+    }
 
     register(logicProps, logicMethods as RefObject<GestureEvents<unknown>>);
 
