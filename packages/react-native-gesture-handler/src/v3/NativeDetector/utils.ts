@@ -146,6 +146,8 @@ export function configureRelations<THandlerData, TConfig>(
       gesture.gestureRelations
     );
   }
+
+  RNGestureHandlerModule.flushOperations();
 }
 
 export const EMPTY_SET = new Set<number>();

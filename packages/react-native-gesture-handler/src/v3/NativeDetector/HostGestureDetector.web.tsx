@@ -74,11 +74,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   };
 
   useEffect(() => {
-    attachedHandlers.current = attachedHandlers.current.difference(
-      attachedNativeHandlers.current
-    );
-    detachHandlers(attachedHandlers.current, attachedNativeHandlers.current);
-  }, [children]);
+    propsRef.current = props;
+  }, [props]);
 
   useEffect(() => {
     if (React.Children.count(children) !== 1) {
@@ -97,6 +94,13 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       attachedHandlers.current,
       ActionType.NATIVE_DETECTOR
     );
+
+    return () => {
+      detachHandlers(EMPTY_SET, attachedHandlers.current);
+      attachedLogicHandlers?.current.forEach((childHandlerTags) => {
+        detachHandlers(EMPTY_SET, childHandlerTags);
+      });
+    };
   }, [handlerTags, children]);
 
   useEffect(() => {
@@ -129,15 +133,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       detachHandlers(EMPTY_SET, attachedLogicHandlers.current.get(tag)!);
     });
   }, [props.logicChildren]);
-
-  useEffect(() => {
-    return () => {
-      detachHandlers(EMPTY_SET, attachedHandlers.current);
-      attachedLogicHandlers?.current.forEach((childHandlerTags) => {
-        detachHandlers(EMPTY_SET, childHandlerTags);
-      });
-    };
-  }, []);
 
   return (
     <View style={{ display: 'contents' }} ref={viewRef as Ref<View>}>
