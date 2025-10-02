@@ -245,8 +245,12 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    changeX: previous ? current.translationX - previous.translationX : 0,
-    changeY: previous ? current.translationY - previous.translationY : 0,
+    changeX: previous
+      ? current.translationX - previous.translationX
+      : current.translationX,
+    changeY: previous
+      ? current.translationY - previous.translationY
+      : current.translationY,
   };
 }
 
