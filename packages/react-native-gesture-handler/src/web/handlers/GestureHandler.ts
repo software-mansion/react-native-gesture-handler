@@ -9,7 +9,6 @@ import {
   EventTypes,
   HitSlop,
   GestureHandlerNativeEvent,
-  GestureHandlerName,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -27,11 +26,15 @@ import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType } from '../../ActionType';
 import { tagMessage } from '../../utils';
-import { GestureStateChangeEvent, GestureUpdateEvent } from '../../v3/types';
+import {
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+  SingleGestureName,
+} from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
 
 export default abstract class GestureHandler implements IGestureHandler {
-  private _name!: GestureHandlerName;
+  private _name!: SingleGestureName;
   private lastSentState: State | null = null;
 
   private _state: State = State.UNDETERMINED;
@@ -1019,7 +1022,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     return this._name;
   }
 
-  protected set name(value: GestureHandlerName) {
+  protected set name(value: SingleGestureName) {
     this._name = value;
   }
 

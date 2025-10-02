@@ -1,10 +1,6 @@
 import { State } from '../../State';
-import {
-  AdaptedEvent,
-  Config,
-  EventTypes,
-  GestureHandlerName,
-} from '../interfaces';
+import { SingleGestureName } from '../../v3/types';
+import { AdaptedEvent, Config, EventTypes } from '../interfaces';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 import GestureHandler from './GestureHandler';
@@ -42,7 +38,7 @@ export default class TapGestureHandler extends GestureHandler {
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
   ) {
     super(delegate);
-    this.name = GestureHandlerName.Tap;
+    this.name = SingleGestureName.Tap;
   }
 
   public override updateGestureConfig(config: Config): void {

@@ -1,11 +1,7 @@
 import { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import {
-  AdaptedEvent,
-  Config,
-  GestureHandlerName,
-  PropsRef,
-} from '../interfaces';
+import { SingleGestureName } from '../../v3/types';
+import { AdaptedEvent, Config, PropsRef } from '../interfaces';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 import GestureHandler from './GestureHandler';
@@ -34,7 +30,7 @@ export default class LongPressGestureHandler extends GestureHandler {
   ) {
     super(delegate);
 
-    this.name = GestureHandlerName.LongPress;
+    this.name = SingleGestureName.LongPress;
   }
 
   public override init(

@@ -1,16 +1,12 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import {
-  AdaptedEvent,
-  Config,
-  GestureHandlerName,
-  WheelDevice,
-} from '../interfaces';
+import { AdaptedEvent, Config, WheelDevice } from '../interfaces';
 import { StylusData } from '../../handlers/gestureHandlerCommon';
 
 import GestureHandler from './GestureHandler';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import IGestureHandler from './IGestureHandler';
+import { SingleGestureName } from '../../v3/types';
 
 const DEFAULT_MIN_POINTERS = 1;
 const DEFAULT_MAX_POINTERS = 10;
@@ -62,7 +58,7 @@ export default class PanGestureHandler extends GestureHandler {
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
   ) {
     super(delegate);
-    this.name = GestureHandlerName.Pan;
+    this.name = SingleGestureName.Pan;
   }
 
   public override updateGestureConfig(config: Config): void {
