@@ -64,7 +64,7 @@ export class GestureHandlerWebDelegate
     };
 
     this.eventManagers.forEach((manager) => {
-      manager.enable(false);
+      manager.setEnabled(false);
     });
 
     this.removeContextMenuListeners();
@@ -196,7 +196,7 @@ export class GestureHandlerWebDelegate
     this.setContextMenu();
 
     this.eventManagers.forEach((manager) => {
-      manager.enable(this.gestureHandler.enabled);
+      manager.setEnabled(this.gestureHandler.enabled);
     });
   }
 

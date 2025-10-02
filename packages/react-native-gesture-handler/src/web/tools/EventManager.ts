@@ -94,7 +94,7 @@ export default abstract class EventManager<T> {
     this.pointersInBounds.splice(index, 1);
   }
 
-  public enable(value: boolean | null) {
+  public setEnabled(value: boolean | null) {
     if (value) {
       this.registerListeners();
     } else {
