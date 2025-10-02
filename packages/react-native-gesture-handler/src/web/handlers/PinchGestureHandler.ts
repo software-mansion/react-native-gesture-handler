@@ -1,12 +1,14 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, PropsRef } from '../interfaces';
+import { AdaptedEvent, GestureHandlerName, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
   ScaleGestureListener,
 } from '../detectors/ScaleGestureDetector';
 import { ActionType } from '../../ActionType';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;
@@ -48,6 +50,13 @@ export default class PinchGestureHandler extends GestureHandler {
   private scaleGestureDetector: ScaleGestureDetector = new ScaleGestureDetector(
     this.scaleDetectorListener
   );
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = GestureHandlerName.Pinch;
+  }
 
   public override init(
     ref: number,

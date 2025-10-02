@@ -9,6 +9,7 @@ import {
   EventTypes,
   HitSlop,
   GestureHandlerNativeEvent,
+  GestureHandlerName,
 } from '../interfaces';
 import EventManager from '../tools/EventManager';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
@@ -30,6 +31,7 @@ import { GestureStateChangeEvent, GestureUpdateEvent } from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
 
 export default abstract class GestureHandler implements IGestureHandler {
+  private _name!: GestureHandlerName;
   private lastSentState: State | null = null;
 
   private _state: State = State.UNDETERMINED;
@@ -1011,6 +1013,14 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public get userSelect() {
     return this._userSelect;
+  }
+
+  public get name() {
+    return this._name;
+  }
+
+  protected set name(value: GestureHandlerName) {
+    this._name = value;
   }
 
   public getTrackedPointersID(): number[] {

@@ -6,7 +6,7 @@ import type {
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
 import type { State } from '../../State';
-import type { Config } from '../interfaces';
+import type { Config, GestureHandlerName } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
@@ -18,6 +18,7 @@ export default interface IGestureHandler {
   handlerTag: number;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
+  readonly name: GestureHandlerName;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;

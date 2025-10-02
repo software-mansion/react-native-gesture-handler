@@ -172,3 +172,16 @@ export type GestureHandlerRef = {
 export type SVGRef = {
   elementRef: { current: SVGElement };
 };
+
+export enum GestureHandlerName {
+  Tap = 'TapGestureHandler',
+  Pan = 'PanGestureHandler',
+  LongPress = 'LongPressGestureHandler',
+  Pinch = 'PinchGestureHandler',
+  Rotation = 'RotationGestureHandler',
+  Fling = 'FlingGestureHandler',
+  NativeView = 'NativeViewGestureHandler',
+  ForceTouch = 'ForceTouchGestureHandler',
+  Manual = 'ManualGestureHandler',
+  Hover = 'HoverGestureHandler',
+}

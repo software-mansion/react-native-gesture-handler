@@ -1,8 +1,15 @@
 import { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import {
+  AdaptedEvent,
+  Config,
+  GestureHandlerName,
+  PropsRef,
+} from '../interfaces';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 import GestureHandler from './GestureHandler';
+import IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MIN_DURATION_MS = 500;
 const DEFAULT_MAX_DIST_DP = 10;
@@ -21,6 +28,14 @@ export default class LongPressGestureHandler extends GestureHandler {
   private previousTime = 0;
 
   private activationTimeout: number | undefined;
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+
+    this.name = GestureHandlerName.LongPress;
+  }
 
   public override init(
     ref: number,

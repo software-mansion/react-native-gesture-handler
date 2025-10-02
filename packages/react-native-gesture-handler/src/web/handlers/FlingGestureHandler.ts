@@ -1,10 +1,12 @@
 import { State } from '../../State';
 import { DiagonalDirections, Directions } from '../../Directions';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent, Config, GestureHandlerName } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import Vector from '../tools/Vector';
 import { coneToDeviation } from '../utils';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;
@@ -25,6 +27,14 @@ export default class FlingGestureHandler extends GestureHandler {
 
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+
+    this.name = GestureHandlerName.Fling;
+  }
 
   public override updateGestureConfig(config: Config): void {
     super.updateGestureConfig(config);

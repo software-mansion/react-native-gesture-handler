@@ -1,10 +1,17 @@
 import { Platform } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import {
+  AdaptedEvent,
+  Config,
+  GestureHandlerName,
+  PropsRef,
+} from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import { ActionType } from '../../ActionType';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
@@ -16,6 +23,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startX = 0;
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = GestureHandlerName.NativeView;
+  }
 
   public override init(
     ref: number,

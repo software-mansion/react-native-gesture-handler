@@ -1,11 +1,20 @@
 import { State } from '../../State';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, GestureHandlerName } from '../interfaces';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
 import GestureHandler from './GestureHandler';
 import { StylusData } from '../../handlers/gestureHandlerCommon';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
 
 export default class HoverGestureHandler extends GestureHandler {
   private stylusData: StylusData | undefined;
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = GestureHandlerName.Hover;
+  }
 
   protected override transformNativeEvent(): Record<string, unknown> {
     return {
