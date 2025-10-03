@@ -1,6 +1,5 @@
-import { NativeSyntheticEvent } from 'react-native';
 import { GestureCallbacks, TouchEvent } from '../../types';
-import { isEventForHandlerWithTag, isNativeEvent } from '../utils';
+import { isEventForHandlerWithTag, maybeExtractNativeEvent } from '../utils';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import {
@@ -12,30 +11,18 @@ export function getTouchEventHandler<THandlerData>(
   handlerTag: number,
   callbacks: GestureCallbacks<THandlerData>
 ) {
-  return (event: TouchEvent) => {
+  return (sourceEvent: TouchEvent) => {
     'worklet';
+
+    const event = maybeExtractNativeEvent(sourceEvent) as GestureTouchEvent;
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
     }
 
-    if (
-      isNativeEvent(event) &&
-      event.nativeEvent.eventType !== TouchEventType.UNDETERMINED
-    ) {
+    if (event.eventType !== TouchEventType.UNDETERMINED) {
       runCallback(
-        touchEventTypeToCallbackType(
-          (event as NativeSyntheticEvent<GestureTouchEvent>).nativeEvent
-            .eventType
-        ),
-        callbacks,
-        event
-      );
-    } else if (
-      (event as GestureTouchEvent).eventType !== TouchEventType.UNDETERMINED
-    ) {
-      runCallback(
-        touchEventTypeToCallbackType((event as GestureTouchEvent).eventType),
+        touchEventTypeToCallbackType(event.eventType),
         callbacks,
         event
       );
