@@ -106,6 +106,8 @@ export type SingleGesture<THandlerData, TConfig> = {
   gestureRelations: GestureRelations;
 };
 
+export type SingleGestureType = SingleGesture<unknown, unknown>;
+
 export type ComposedGesture = {
   tags: number[];
   type: ComposedGestureName;

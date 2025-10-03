@@ -168,7 +168,11 @@ export { NativeDetector } from './v3/NativeDetector/NativeDetector';
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
 
-export { SingleGestureName } from './v3/types';
+export {
+  SingleGestureName,
+  SingleGestureType,
+  ComposedGesture as ComposedGestureType,
+} from './v3/types';
 
 export * from './v3/hooks/gestures';
 
