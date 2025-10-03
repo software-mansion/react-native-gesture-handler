@@ -3,10 +3,9 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import {
   BaseGestureConfig,
   ChangeCalculatorType,
+  UnpackedGestureHandlerEvent,
   GestureCallbacks,
-  GestureHandlerEvent,
 } from '../../types';
-import { isNativeEvent } from '../utils';
 
 export function extractStateChangeHandlers<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
@@ -105,7 +104,7 @@ export function touchEventTypeToCallbackType(
 export function runCallback<THandlerData>(
   type: CALLBACK_TYPE,
   callbacks: GestureCallbacks<THandlerData>,
-  event: GestureHandlerEvent<THandlerData>,
+  event: UnpackedGestureHandlerEvent<THandlerData>,
   ...args: unknown[]
 ) {
   'worklet';
@@ -113,5 +112,5 @@ export function runCallback<THandlerData>(
 
   // TODO: add proper types (likely boolean)
   // @ts-ignore It works, duh
-  handler?.(isNativeEvent(event) ? event.nativeEvent : event, ...args);
+  handler?.(event, ...args);
 }

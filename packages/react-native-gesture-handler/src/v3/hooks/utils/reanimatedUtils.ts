@@ -1,9 +1,6 @@
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import {
-  Reanimated,
-  SharedValue,
-} from '../../../handlers/gestures/reanimatedWrapper';
-import { BaseGestureConfig } from '../../types';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { BaseGestureConfig, SharedValue } from '../../types';
 
 // Variant of djb2 hash function.
 // Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765

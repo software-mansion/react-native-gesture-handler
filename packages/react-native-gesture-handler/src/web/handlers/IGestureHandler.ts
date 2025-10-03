@@ -10,6 +10,7 @@ import type { Config } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
+import { SingleGestureName } from '../../v3/types';
 
 export default interface IGestureHandler {
   active: boolean;
@@ -18,6 +19,7 @@ export default interface IGestureHandler {
   handlerTag: number;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
+  readonly name: SingleGestureName;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
