@@ -261,4 +261,7 @@ export function usePan(config: PanGestureConfig) {
 }
 
 export type PanGestureEvent = GestureEvents<PanHandlerData>;
-export type PanGesture = SingleGesture<PanHandlerData, PanGestureProperties>;
+export type PanGestureType = SingleGesture<
+  PanHandlerData,
+  PanGestureProperties
+>;

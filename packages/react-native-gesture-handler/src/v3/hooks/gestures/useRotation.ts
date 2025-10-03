@@ -35,7 +35,7 @@ export function useRotation(config: RotationGestureConfig) {
 }
 
 export type RotationGestureEvent = GestureEvents<RotationHandlerData>;
-export type RotationGesture = SingleGesture<
+export type RotationGestureType = SingleGesture<
   RotationHandlerData,
   RotationGestureProperties
 >;

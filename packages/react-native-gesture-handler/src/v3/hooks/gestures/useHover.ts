@@ -48,7 +48,7 @@ export function useHover(config: HoverGestureConfig) {
 }
 
 export type HoverGestureEvent = GestureEvents<HoverHandlerData>;
-export type HoverGesture = SingleGesture<
+export type HoverGestureType = SingleGesture<
   HoverHandlerData,
   HoverGestureProperties
 >;
