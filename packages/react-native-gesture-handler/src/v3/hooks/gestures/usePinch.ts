@@ -34,7 +34,7 @@ export function usePinch(config: PinchGestureConfig) {
 }
 
 export type PinchGestureEvent = GestureEvents<PinchHandlerData>;
-export type PinchGestureType = SingleGesture<
+export type PinchGesture = SingleGesture<
   PinchHandlerData,
   PinchGestureProperties
 >;

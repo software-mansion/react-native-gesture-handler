@@ -55,7 +55,7 @@ export function useFling(config: FlingGestureConfig) {
 }
 
 export type FlingGestureEvent = GestureEvents<FlingHandlerData>;
-export type FlingGestureType = SingleGesture<
+export type FlingGesture = SingleGesture<
   FlingHandlerData,
   FlingGestureProperties
 >;

@@ -46,7 +46,7 @@ export function useNative(config: NativeViewGestureConfig) {
 }
 
 export type NativeGestureEvent = GestureEvents<NativeViewHandlerData>;
-export type NativeGestureType = SingleGesture<
+export type NativeGesture = SingleGesture<
   NativeViewHandlerData,
   NativeViewGestureProperties
 >;

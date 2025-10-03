@@ -82,7 +82,7 @@ export function useLongPress(config: LongPressGestureConfig) {
 }
 
 export type LongPressGestureEvent = GestureEvents<LongPressHandlerData>;
-export type LongPressGestureType = SingleGesture<
+export type LongPressGesture = SingleGesture<
   LongPressHandlerData,
   LongPressGestureProperties
 >;

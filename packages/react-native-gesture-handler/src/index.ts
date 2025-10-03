@@ -54,20 +54,20 @@ export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
-export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
-export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
-export type { FlingGestureType as FlingGesture } from './handlers/gestures/flingGesture';
-export type { LongPressGestureType as LongPressGesture } from './handlers/gestures/longPressGesture';
-export type { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGesture';
-export type { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
-export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
-export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
-export type { HoverGestureType as HoverGesture } from './handlers/gestures/hoverGesture';
+export type { TapGestureType } from './handlers/gestures/tapGesture';
+export type { PanGestureType } from './handlers/gestures/panGesture';
+export type { FlingGestureType } from './handlers/gestures/flingGesture';
+export type { LongPressGestureType } from './handlers/gestures/longPressGesture';
+export type { PinchGestureType } from './handlers/gestures/pinchGesture';
+export type { RotationGestureType } from './handlers/gestures/rotationGesture';
+export type { ForceTouchGestureType } from './handlers/gestures/forceTouchGesture';
+export type { ManualGestureType } from './handlers/gestures/manualGesture';
+export type { HoverGestureType } from './handlers/gestures/hoverGesture';
 export type {
-  ComposedGestureType as ComposedGesture,
-  RaceGestureType as RaceGesture,
-  SimultaneousGestureType as SimultaneousGesture,
-  ExclusiveGestureType as ExclusiveGesture,
+  ComposedGestureType,
+  RaceGestureType,
+  SimultaneousGestureType,
+  ExclusiveGestureType,
 } from './handlers/gestures/gestureComposition';
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
@@ -168,10 +168,7 @@ export { NativeDetector } from './v3/NativeDetector/NativeDetector';
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
 
-export {
-  SingleGestureName,
-  ComposedGesture as ComposedGestureType,
-} from './v3/types';
+export { SingleGestureName, ComposedGesture } from './v3/types';
 
 export * from './v3/hooks/gestures';
 

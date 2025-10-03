@@ -28,7 +28,7 @@ export function useManual(config: ManualGestureConfig) {
 }
 
 export type ManualGestureEvent = GestureEvents<ManualHandlerData>;
-export type ManualGestureType = SingleGesture<
+export type ManualGesture = SingleGesture<
   ManualHandlerData,
   ManualGestureProperties
 >;
