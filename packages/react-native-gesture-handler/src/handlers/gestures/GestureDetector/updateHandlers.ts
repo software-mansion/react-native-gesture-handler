@@ -75,6 +75,11 @@ export function updateHandlers(
         extractGestureRelations(handler)
       );
 
+      RNGestureHandlerModule.configureRelations(
+        handler.handlerTag,
+        extractGestureRelations(handler)
+      );
+
       registerHandler(handler.handlerTag, handler, handler.config.testId);
     }
 

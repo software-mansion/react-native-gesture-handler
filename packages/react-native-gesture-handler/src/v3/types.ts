@@ -39,6 +39,11 @@ export type GestureHandlerEvent<THandlerData> =
   | StateChangeEvent<THandlerData>
   | TouchEvent;
 
+export type UnpackedGestureHandlerEvent<THandlerData> =
+  | GestureUpdateEvent<THandlerData>
+  | GestureStateChangeEvent<THandlerData>
+  | GestureTouchEvent;
+
 export type UpdateEvent<THandlerData> =
   | GestureUpdateEvent<THandlerData>
   | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>;
@@ -57,6 +62,11 @@ export type TouchEvent =
 export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
+
+export interface LogicChildren {
+  viewTag: number;
+  handlerTags: number[];
+}
 
 export enum SingleGestureName {
   Tap = 'TapGestureHandler',
@@ -119,9 +129,14 @@ export type ComposedGesture = {
 };
 
 export type ChangeCalculatorType<THandlerData> = (
-  current: UpdateEvent<THandlerData>,
-  previous?: UpdateEvent<THandlerData>
-) => UpdateEvent<THandlerData>;
+  current: GestureUpdateEvent<THandlerData>,
+  previous?: GestureUpdateEvent<THandlerData>
+) => GestureUpdateEvent<THandlerData>;
+
+export type DiffCalculatorType<THandlerData> = (
+  current: HandlerData<THandlerData>,
+  previous: HandlerData<THandlerData> | null
+) => Partial<HandlerData<THandlerData>>;
 
 export type Gesture<THandlerData = unknown, TConfig = unknown> =
   | SingleGesture<THandlerData, TConfig>

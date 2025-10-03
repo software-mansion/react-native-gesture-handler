@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
-import { GestureCallbacks, UpdateEvent } from '../../v3/types';
+import { GestureCallbacks, GestureUpdateEvent } from '../../v3/types';
 
 export interface SharedValue<Value = unknown> {
   value: Value;
@@ -15,7 +15,7 @@ export interface SharedValue<Value = unknown> {
 }
 
 export type ReanimatedContext<THandlerData> = {
-  lastUpdateEvent: UpdateEvent<THandlerData> | undefined;
+  lastUpdateEvent: GestureUpdateEvent<THandlerData> | undefined;
 };
 
 interface WorkletProps {

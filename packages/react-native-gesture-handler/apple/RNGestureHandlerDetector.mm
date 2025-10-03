@@ -15,14 +15,9 @@
 
 @property (nonatomic, nonnull) NSMutableSet *nativeHandlers;
 @property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
+@property (nonatomic) std::unordered_map<int, NSMutableSet *> attachedLogicHandlers;
 
 @end
-
-typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
-  RNGestureHandlerMutationAttach = 1,
-  RNGestureHandlerMutationDetach,
-  RNGestureHandlerMutationKeep,
-};
 
 @implementation RNGestureHandlerDetector {
   int _moduleId;
@@ -61,6 +56,12 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
+    for (const auto &child : _attachedLogicHandlers) {
+      for (id handlerTag : child.second) {
+        [handlerManager.registry detachHandlerWithTag:handlerTag];
+      }
+    }
+    _attachedLogicHandlers.clear();
   }
 }
 
@@ -150,58 +151,92 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerMutation) {
   [super updateLayoutMetrics:newLayoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 }
 
-- (void)updateProps:(const Props::Shared &)propsBase oldProps:(const Props::Shared &)oldPropsBase
+- (void)attachHandlers:(const std::vector<int> &)handlerTags
+            actionType:(RNGestureHandlerActionType)actionType
+               viewTag:(const int)viewTag
+      attachedHandlers:(NSMutableSet *)attachedHandlers
 {
-  const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(propsBase);
-  const auto &oldProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(oldPropsBase);
-
-  _moduleId = newProps.moduleId;
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
-      std::unordered_map<int, RNGestureHandlerMutation>
-          changes;
+      NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
 
-  if (oldPropsBase != nullptr) {
-    for (const auto oldHandler : oldProps.handlerTags) {
-      changes[oldHandler] = RNGestureHandlerMutationDetach;
-    }
-  }
-
-  for (const auto newHandler : newProps.handlerTags) {
-    changes[newHandler] = changes.contains(newHandler) ? RNGestureHandlerMutationKeep : RNGestureHandlerMutationAttach;
-  }
-
-  for (const auto handlerChange : changes) {
-    NSNumber *handlerTag = [NSNumber numberWithInt:handlerChange.first];
-
-    if (handlerChange.second == RNGestureHandlerMutationAttach) {
-      if ([self shouldAttachGestureToSubview:handlerTag]) {
+  for (const int tag : handlerTags) {
+    [handlersToDetach removeObject:@(tag)];
+    if (![attachedHandlers containsObject:@(tag)]) {
+      if ([self shouldAttachGestureToSubview:@(tag)]) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
-        [_nativeHandlers addObject:handlerTag];
+        [_nativeHandlers addObject:@(tag)];
       } else {
-        [handlerManager.registry attachHandlerWithTag:handlerTag
-                                               toView:self
-                                       withActionType:RNGestureHandlerActionTypeNativeDetector];
-
-        [_attachedHandlers addObject:handlerTag];
+        if (actionType == RNGestureHandlerActionTypeLogicDetector) {
+          [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
+        } else {
+          [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
+        }
+        [attachedHandlers addObject:@(tag)];
       }
-    } else if (handlerChange.second == RNGestureHandlerMutationDetach) {
-      [handlerManager.registry detachHandlerWithTag:handlerTag];
-      [_attachedHandlers removeObject:handlerTag];
-      [_nativeHandlers removeObject:handlerTag];
+      [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorTag = @(self.tag);
     }
+  }
+
+  for (const id tag : handlersToDetach) {
+    [handlerManager.registry detachHandlerWithTag:tag];
+    [attachedHandlers removeObject:tag];
+    [_nativeHandlers removeObject:tag];
   }
 
   // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
-  if (!self.subviews[0]) {
+  if (self.subviews[0]) {
     [self tryAttachNativeHandlersToChildView];
   }
+}
+
+- (void)updateProps:(const Props::Shared &)propsBase oldProps:(const Props::Shared &)oldPropsBase
+{
+  const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(propsBase);
+  _moduleId = newProps.moduleId;
+
+  [self attachHandlers:newProps.handlerTags
+            actionType:RNGestureHandlerActionTypeNativeDetector
+               viewTag:-1
+      attachedHandlers:_attachedHandlers];
 
   [super updateProps:propsBase oldProps:oldPropsBase];
+  [self updateLogicChildren:newProps.logicChildren];
+
   // Override to force hittesting to work outside bounds
   self.clipsToBounds = NO;
+}
+
+- (void)updateLogicChildren:(const std::vector<RNGestureHandlerDetectorLogicChildrenStruct> &)logicChildren
+{
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+
+      NSMutableSet *logicChildrenToDetach = [NSMutableSet set];
+  for (const auto &child : _attachedLogicHandlers) {
+    [logicChildrenToDetach addObject:@(child.first)];
+  }
+
+  for (const auto &child : logicChildren) {
+    if (_attachedLogicHandlers.find(child.viewTag) == _attachedLogicHandlers.end()) {
+      _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
+    }
+
+    [logicChildrenToDetach removeObject:@(child.viewTag)];
+
+    [self attachHandlers:child.handlerTags
+              actionType:RNGestureHandlerActionTypeLogicDetector
+                 viewTag:child.viewTag
+        attachedHandlers:_attachedLogicHandlers[child.viewTag]];
+  }
+
+  for (const NSNumber *tag : logicChildrenToDetach) {
+    for (id handlerTag : _attachedLogicHandlers[tag.intValue]) {
+      [handlerManager.registry detachHandlerWithTag:handlerTag];
+    }
+  }
 }
 
 - (void)tryAttachNativeHandlersToChildView

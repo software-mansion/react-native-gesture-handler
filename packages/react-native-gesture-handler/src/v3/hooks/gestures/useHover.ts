@@ -3,10 +3,11 @@ import { HoverEffect } from '../../../handlers/gestures/hoverGesture';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  HandlerData,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
+import { cloneConfig, getChangeEventCalculator } from '../utils';
 
 type HoverGestureProperties = {
   /**
@@ -27,6 +28,8 @@ type HoverHandlerData = {
   absoluteX: number;
   absoluteY: number;
   stylusData: StylusData;
+  changeX: number;
+  changeY: number;
 };
 
 type HoverGestureInternalConfig = BaseGestureConfig<
@@ -37,10 +40,23 @@ type HoverGestureInternalConfig = BaseGestureConfig<
 export type HoverGestureConfig =
   ExcludeInternalConfigProps<HoverGestureInternalConfig>;
 
+function diffCalculator(
+  current: HandlerData<HoverHandlerData>,
+  previous: HandlerData<HoverHandlerData> | null
+) {
+  'worklet';
+  return {
+    changeX: previous ? current.x - previous.x : 0,
+    changeY: previous ? current.y - previous.y : 0,
+  };
+}
+
 export function useHover(config: HoverGestureConfig) {
   const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureProperties>(
     config
   );
+
+  hoverConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
