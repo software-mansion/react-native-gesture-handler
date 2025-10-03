@@ -26,10 +26,15 @@ import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType, usesNativeOrLogicDetector } from '../../ActionType';
 import { tagMessage } from '../../utils';
-import { GestureStateChangeEvent, GestureUpdateEvent } from '../../v3/types';
+import {
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+  SingleGestureName,
+} from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
 
 export default abstract class GestureHandler implements IGestureHandler {
+  private _name!: SingleGestureName;
   private lastSentState: State | null = null;
 
   private _state: State = State.UNDETERMINED;
@@ -1011,6 +1016,14 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   public get userSelect() {
     return this._userSelect;
+  }
+
+  public get name() {
+    return this._name;
+  }
+
+  protected set name(value: SingleGestureName) {
+    this._name = value;
   }
 
   public getTrackedPointersID(): number[] {

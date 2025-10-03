@@ -2,10 +2,14 @@ import { NativeSyntheticEvent } from 'react-native';
 import {
   AnimatedEvent,
   BaseGestureConfig,
+  ChangeCalculatorType,
+  DiffCalculatorType,
   ExcludeInternalConfigProps,
+  UnpackedGestureHandlerEvent,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
+  SharedValueOrT,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -22,15 +26,21 @@ export function isNativeEvent<THandlerData>(
   return 'nativeEvent' in event;
 }
 
-export function isEventForHandlerWithTag<THandlerData>(
-  handlerTag: number,
+export function maybeExtractNativeEvent<THandlerData>(
   event: GestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
-  return isNativeEvent(event)
-    ? event.nativeEvent.handlerTag === handlerTag
-    : event.handlerTag === handlerTag;
+  return isNativeEvent(event) ? event.nativeEvent : event;
+}
+
+export function isEventForHandlerWithTag<THandlerData>(
+  handlerTag: number,
+  event: UnpackedGestureHandlerEvent<THandlerData>
+) {
+  'worklet';
+
+  return event.handlerTag === handlerTag;
 }
 
 export function isAnimatedEvent<THandlerData>(
@@ -42,6 +52,12 @@ export function isAnimatedEvent<THandlerData>(
   'worklet';
 
   return !!callback && '_argMapping' in callback;
+}
+
+export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
+  'worklet';
+
+  return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
 }
 
 export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
@@ -120,4 +136,24 @@ export function remapProps<TConfig extends object, TInternalConfig>(
   });
 
   return config;
+}
+
+export function getChangeEventCalculator<THandlerData>(
+  diffCalculator: DiffCalculatorType<THandlerData>
+): ChangeCalculatorType<THandlerData> {
+  'worklet';
+  return (
+    current: GestureUpdateEvent<THandlerData>,
+    previous?: GestureUpdateEvent<THandlerData>
+  ) => {
+    'worklet';
+    const currentEventData = current.handlerData;
+    const previousEventData = previous ? previous.handlerData : null;
+
+    const changePayload = diffCalculator(currentEventData, previousEventData);
+
+    current.handlerData = { ...currentEventData, ...changePayload };
+
+    return current;
+  };
 }
