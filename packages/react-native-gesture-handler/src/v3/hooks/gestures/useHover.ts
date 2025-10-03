@@ -5,22 +5,26 @@ import {
   ExcludeInternalConfigProps,
   HandlerData,
   SingleGestureName,
+  WithSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
 
-type HoverGestureProperties = {
-  /**
-   * Visual effect applied to the view while the view is hovered. The possible values are:
-   *
-   * - `HoverEffect.None`
-   * - `HoverEffect.Lift`
-   * - `HoverEffect.Highlight`
-   *
-   * Defaults to `HoverEffect.None`
-   */
-  hoverEffect?: HoverEffect;
-};
+type HoverGestureProperties = WithSharedValue<
+  {
+    /**
+     * Visual effect applied to the view while the view is hovered. The possible values are:
+     *
+     * - `HoverEffect.None`
+     * - `HoverEffect.Lift`
+     * - `HoverEffect.Highlight`
+     *
+     * Defaults to `HoverEffect.None`
+     */
+    hoverEffect?: HoverEffect;
+  },
+  HoverEffect
+>;
 
 type HoverHandlerData = {
   x: number;
@@ -28,8 +32,8 @@ type HoverHandlerData = {
   absoluteX: number;
   absoluteY: number;
   stylusData: StylusData;
-  changeX?: number;
-  changeY?: number;
+  changeX: number;
+  changeY: number;
 };
 
 type HoverGestureInternalConfig = BaseGestureConfig<
@@ -46,8 +50,8 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    changeX: previous ? current.x - previous.x : current.x,
-    changeY: previous ? current.y - previous.y : current.y,
+    changeX: previous ? current.x - previous.x : 0,
+    changeY: previous ? current.y - previous.y : 0,
   };
 }
 

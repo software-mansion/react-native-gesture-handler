@@ -14,7 +14,7 @@ type PinchHandlerData = {
   focalX: number;
   focalY: number;
   velocity: number;
-  scaleChange?: number;
+  scaleChange: number;
 };
 
 type PinchGestureInternalConfig = BaseGestureConfig<

@@ -94,20 +94,16 @@ export function useGesture<THandlerData, TConfig>(
   }, [type, tag]);
 
   useEffect(() => {
+    const preparedConfig = prepareConfig(config);
+    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
+    RNGestureHandlerModule.flushOperations();
+
     bindSharedValues(config, tag);
 
     return () => {
       unbindSharedValues(config, tag);
     };
   }, [tag, config]);
-
-  useEffect(() => {
-    const preparedConfig = prepareConfig(config);
-
-    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
-
-    RNGestureHandlerModule.flushOperations();
-  }, [config, tag]);
 
   return {
     tag,

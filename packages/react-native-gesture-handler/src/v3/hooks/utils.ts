@@ -5,10 +5,11 @@ import {
   ChangeCalculatorType,
   DiffCalculatorType,
   ExcludeInternalConfigProps,
-  ExtractedGestureHandlerEvent,
+  UnpackedGestureHandlerEvent,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
+  SharedValueOrT,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -35,7 +36,7 @@ export function maybeExtractNativeEvent<THandlerData>(
 
 export function isEventForHandlerWithTag<THandlerData>(
   handlerTag: number,
-  event: ExtractedGestureHandlerEvent<THandlerData>
+  event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
@@ -51,6 +52,12 @@ export function isAnimatedEvent<THandlerData>(
   'worklet';
 
   return !!callback && '_argMapping' in callback;
+}
+
+export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
+  'worklet';
+
+  return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
 }
 
 export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
@@ -163,9 +170,8 @@ export function getChangeEventCalculator<THandlerData>(
 
     const changePayload = diffCalculator(currentEventData, previousEventData);
 
-    const resultEvent = { ...current };
-    resultEvent.handlerData = { ...currentEventData, ...changePayload };
+    current.handlerData = { ...currentEventData, ...changePayload };
 
-    return resultEvent;
+    return current;
   };
 }

@@ -14,7 +14,7 @@ type RotationHandlerData = {
   anchorX: number;
   anchorY: number;
   velocity: number;
-  rotationChange?: number;
+  rotationChange: number;
 };
 
 type RotationGestureInternalConfig = BaseGestureConfig<

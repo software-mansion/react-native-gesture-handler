@@ -1,5 +1,5 @@
+import { SharedValue } from '../../../v3/types';
 import { GestureType, HandlerCallbacks } from '../gesture';
-import { SharedValue } from '../reanimatedWrapper';
 
 export interface AttachedGestureState {
   // Array of gestures that should be attached to the view under that gesture detector
