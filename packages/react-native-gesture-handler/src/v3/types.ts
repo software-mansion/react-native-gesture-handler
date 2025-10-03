@@ -11,6 +11,12 @@ import { PointerType } from '../PointerType';
 
 import { State } from '../State';
 
+import { panGestureHandlerProps } from '../handlers/PanGestureHandler';
+import { tapGestureHandlerProps } from '../handlers/TapGestureHandler';
+import { nativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+import { longPressGestureHandlerProps } from '../handlers/LongPressGestureHandler';
+import { flingGestureHandlerProps } from '../handlers/FlingGestureHandler';
+
 interface EventPayload {
   handlerTag: number;
   state: State;
@@ -168,7 +174,7 @@ export type InternalConfigProps<THandlerData> = {
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-type CommonGestureConfig = WithSharedValue<
+export type CommonGestureConfig = WithSharedValue<
   {
     disableReanimated?: boolean;
     enabled?: boolean;
@@ -253,3 +259,15 @@ type Simplify<T> =
           // For a generic object, retain the original structure while forcing an object type
           [K in keyof T]: T[K];
         } & NonNullable<unknown>;
+
+export type WithAcceptedConfig<T> =
+  | T
+  | keyof CommonGestureConfig
+  | keyof InternalConfigProps<unknown>;
+
+export type HandlersPropsWhiteList =
+  | Set<WithAcceptedConfig<(typeof panGestureHandlerProps)[number]>>
+  | Set<WithAcceptedConfig<(typeof tapGestureHandlerProps)[number]>>
+  | Set<WithAcceptedConfig<(typeof nativeViewGestureHandlerProps)[number]>>
+  | Set<WithAcceptedConfig<(typeof longPressGestureHandlerProps)[number]>>
+  | Set<WithAcceptedConfig<(typeof flingGestureHandlerProps)[number]>>;
