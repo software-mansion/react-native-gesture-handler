@@ -1,6 +1,8 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEvents,
+  SingleGesture,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
@@ -107,3 +109,6 @@ export function useTap(config: TapGestureConfig) {
     tapConfig
   );
 }
+
+export type TapGestureEvent = GestureEvents<TapHandlerData>;
+export type TapGesture = SingleGesture<TapHandlerData, TapGestureProperties>;

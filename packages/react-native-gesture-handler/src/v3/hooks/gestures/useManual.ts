@@ -1,6 +1,8 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEvents,
+  SingleGesture,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
@@ -24,3 +26,9 @@ export function useManual(config: ManualGestureConfig) {
 
   return useGesture(SingleGestureName.Manual, manualConfig);
 }
+
+export type ManualGestureEvent = GestureEvents<ManualHandlerData>;
+export type ManualGesture = SingleGesture<
+  ManualHandlerData,
+  ManualGestureProperties
+>;

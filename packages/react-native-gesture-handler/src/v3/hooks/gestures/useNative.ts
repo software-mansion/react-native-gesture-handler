@@ -1,6 +1,8 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEvents,
+  SingleGesture,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
@@ -42,3 +44,9 @@ export function useNative(config: NativeViewGestureConfig) {
 
   return useGesture(SingleGestureName.Native, nativeConfig);
 }
+
+export type NativeGestureEvent = GestureEvents<NativeViewHandlerData>;
+export type NativeGesture = SingleGesture<
+  NativeViewHandlerData,
+  NativeViewGestureProperties
+>;

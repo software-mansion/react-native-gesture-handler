@@ -2,6 +2,8 @@ import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   HandlerData,
+  GestureEvents,
+  SingleGesture,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
@@ -46,3 +48,9 @@ export function useRotation(config: RotationGestureConfig) {
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }
+
+export type RotationGestureEvent = GestureEvents<RotationHandlerData>;
+export type RotationGesture = SingleGesture<
+  RotationHandlerData,
+  RotationGestureProperties
+>;
