@@ -42,6 +42,11 @@ type GestureHandlerTouchEvent = Readonly<{
   pointerType: Int32;
 }>;
 
+export interface LogicChildrenProps {
+  handlerTags: Int32[];
+  viewTag: Int32;
+}
+
 export interface NativeProps extends ViewProps {
   onGestureHandlerEvent?: DirectEventHandler<GestureHandlerEvent>;
   onGestureHandlerStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
@@ -53,6 +58,7 @@ export interface NativeProps extends ViewProps {
 
   handlerTags: Int32[];
   moduleId: Int32;
+  logicChildren: LogicChildrenProps[];
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerDetector', {

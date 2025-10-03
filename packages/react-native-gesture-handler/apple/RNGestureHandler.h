@@ -81,6 +81,7 @@
 @property (nonatomic) BOOL manualActivation;
 @property (nonatomic) BOOL dispatchesAnimatedEvents;
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
+@property (nonatomic, nonnull, assign) NSNumber *hostDetectorTag;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
