@@ -5,22 +5,26 @@ import {
   ExcludeInternalConfigProps,
   HandlerData,
   SingleGestureName,
+  WithSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
 
-type HoverGestureProperties = {
-  /**
-   * Visual effect applied to the view while the view is hovered. The possible values are:
-   *
-   * - `HoverEffect.None`
-   * - `HoverEffect.Lift`
-   * - `HoverEffect.Highlight`
-   *
-   * Defaults to `HoverEffect.None`
-   */
-  hoverEffect?: HoverEffect;
-};
+type HoverGestureProperties = WithSharedValue<
+  {
+    /**
+     * Visual effect applied to the view while the view is hovered. The possible values are:
+     *
+     * - `HoverEffect.None`
+     * - `HoverEffect.Lift`
+     * - `HoverEffect.Highlight`
+     *
+     * Defaults to `HoverEffect.None`
+     */
+    hoverEffect?: HoverEffect;
+  },
+  HoverEffect
+>;
 
 type HoverHandlerData = {
   x: number;
