@@ -31,7 +31,7 @@ function diffCalculator(
 ) {
   'worklet';
   return {
-    scaleChange: previous ? current.scale / previous.scale : 0,
+    scaleChange: previous ? current.scale / previous.scale : current.scale,
   };
 }
 
