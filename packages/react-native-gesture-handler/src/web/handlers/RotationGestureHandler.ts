@@ -6,6 +6,9 @@ import RotationGestureDetector, {
   RotationGestureListener,
 } from '../detectors/RotationGestureDetector';
 import { ActionType } from '../../ActionType';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
+import { SingleGestureName } from '../../v3/types';
 
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
@@ -44,6 +47,13 @@ export default class RotationGestureHandler extends GestureHandler {
 
   private rotationGestureDetector: RotationGestureDetector =
     new RotationGestureDetector(this.rotationGestureListener);
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = SingleGestureName.Rotation;
+  }
 
   public override init(
     ref: number,
