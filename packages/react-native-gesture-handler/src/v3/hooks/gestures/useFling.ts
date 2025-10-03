@@ -1,6 +1,8 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEvents,
+  SingleGesture,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
@@ -51,3 +53,9 @@ export function useFling(config: FlingGestureConfig) {
 
   return useGesture(SingleGestureName.Fling, flingConfig);
 }
+
+export type FlingGestureEvent = GestureEvents<FlingHandlerData>;
+export type FlingGesture = SingleGesture<
+  FlingHandlerData,
+  FlingGestureProperties
+>;

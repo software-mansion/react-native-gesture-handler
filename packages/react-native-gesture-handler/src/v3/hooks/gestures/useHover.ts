@@ -3,6 +3,8 @@ import { HoverEffect } from '../../../handlers/gestures/hoverGesture';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  GestureEvents,
+  SingleGesture,
   SingleGestureName,
 } from '../../types';
 import { useGesture } from '../useGesture';
@@ -44,3 +46,9 @@ export function useHover(config: HoverGestureConfig) {
 
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
+
+export type HoverGestureEvent = GestureEvents<HoverHandlerData>;
+export type HoverGesture = SingleGesture<
+  HoverHandlerData,
+  HoverGestureProperties
+>;
