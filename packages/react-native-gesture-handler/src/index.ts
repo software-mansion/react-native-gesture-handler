@@ -170,7 +170,6 @@ export * from './v3/hooks/relations';
 
 export {
   SingleGestureName,
-  SingleGestureType,
   ComposedGesture as ComposedGestureType,
 } from './v3/types';
 
