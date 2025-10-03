@@ -94,7 +94,7 @@ export function useGesture<THandlerData, TConfig>(
   }, [type, tag]);
 
   useEffect(() => {
-    const preparedConfig = prepareConfig(config);
+    const preparedConfig = prepareConfig(type, config);
     RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
     RNGestureHandlerModule.flushOperations();
 
