@@ -1,28 +1,19 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from '../NativeDetector/HostGestureDetector';
-import { tagMessage } from '../../utils';
-import {
-  LogicChildren,
-  Gesture,
-  GestureEvents,
-  GestureHandlerEvent,
-} from '../types';
+import { LogicChildren, GestureEvents, GestureHandlerEvent } from '../types';
 import { DetectorContext } from './useDetectorContext';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { configureRelations } from '../NativeDetector/utils';
+import {
+  configureRelations,
+  ensureNativeDetectorComponent,
+} from '../NativeDetector/utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
-
-export interface NativeDetectorProps<THandlerData, TConfig> {
-  children?: React.ReactNode;
-  gesture: Gesture<THandlerData, TConfig>;
-}
-
-const AnimatedNativeDetector =
-  Animated.createAnimatedComponent(HostGestureDetector);
-
-const ReanimatedNativeDetector =
-  Reanimated?.default.createAnimatedComponent(HostGestureDetector);
+import {
+  AnimatedNativeDetector,
+  NativeDetectorProps,
+  nativeDetectorStyles,
+  ReanimatedNativeDetector,
+} from '../NativeDetector/NativeDetector';
 
 export function DelegateDetector<THandlerData, TConfig>({
   gesture,
@@ -62,17 +53,6 @@ export function DelegateDetector<THandlerData, TConfig>({
   const unregister = useCallback((childTag: number) => {
     setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
   }, []);
-
-  // It might happen only with ReanimatedNativeDetector
-  if (!NativeDetectorComponent) {
-    throw new Error(
-      tagMessage(
-        'Gesture expects to run on the UI thread, but failed to create the Reanimated NativeDetector.'
-      )
-    );
-  }
-
-  configureRelations(gesture);
 
   const handleGestureEvent = (key: keyof GestureEvents<THandlerData>) => {
     return (e: GestureHandlerEvent<THandlerData>) => {
@@ -125,6 +105,9 @@ export function DelegateDetector<THandlerData, TConfig>({
     getHandlers('onReanimatedTouchEvent')
   );
 
+  ensureNativeDetectorComponent(NativeDetectorComponent);
+  configureRelations(gesture);
+
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
       <NativeDetectorComponent
@@ -150,18 +133,10 @@ export function DelegateDetector<THandlerData, TConfig>({
         onGestureHandlerReanimatedTouchEvent={reanimatedTouchEventHandler}
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
-        style={styles.detector}
+        style={nativeDetectorStyles.detector}
         logicChildren={logicChildren}>
         {children}
       </NativeDetectorComponent>
     </DetectorContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  detector: {
-    display: 'contents',
-    // TODO: remove, debug info only
-    backgroundColor: 'red',
-  },
-});
