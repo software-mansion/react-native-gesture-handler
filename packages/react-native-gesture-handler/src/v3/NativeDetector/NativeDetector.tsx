@@ -3,8 +3,7 @@ import { Gesture } from '../types';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
-import { tagMessage } from '../../utils';
-import { configureRelations } from './utils';
+import { configureRelations, ensureNativeDetectorComponent } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
 
 export interface NativeDetectorProps<THandlerData, TConfig> {
@@ -12,10 +11,10 @@ export interface NativeDetectorProps<THandlerData, TConfig> {
   gesture: Gesture<THandlerData, TConfig>;
 }
 
-const AnimatedNativeDetector =
+export const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);
 
-const ReanimatedNativeDetector =
+export const ReanimatedNativeDetector =
   Reanimated?.default.createAnimatedComponent(HostGestureDetector);
 
 export function NativeDetector<THandlerData, TConfig>({
@@ -28,15 +27,7 @@ export function NativeDetector<THandlerData, TConfig>({
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
-  // It might happen only with ReanimatedNativeDetector
-  if (!NativeDetectorComponent) {
-    throw new Error(
-      tagMessage(
-        'Gesture expects to run on the UI thread, but failed to create the Reanimated NativeDetector.'
-      )
-    );
-  }
-
+  ensureNativeDetectorComponent(NativeDetectorComponent);
   configureRelations(gesture);
 
   return (
@@ -68,13 +59,13 @@ export function NativeDetector<THandlerData, TConfig>({
       }
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
-      style={styles.detector}>
+      style={nativeDetectorStyles.detector}>
       {children}
     </NativeDetectorComponent>
   );
 }
 
-const styles = StyleSheet.create({
+export const nativeDetectorStyles = StyleSheet.create({
   detector: {
     display: 'contents',
     // TODO: remove, debug info only
