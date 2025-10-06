@@ -5,8 +5,11 @@ import {
   GestureStateChangeEvent,
   StateChangeEvent,
 } from '../../types';
-import { isEventForHandlerWithTag, maybeExtractNativeEvent } from '../utils';
-import { runCallback } from '../utils/eventHandlersUtils';
+import {
+  isEventForHandlerWithTag,
+  maybeExtractNativeEvent,
+  runCallback,
+} from '../utils';
 
 export function getStateChangeHandler<THandlerData>(
   handlerTag: number,

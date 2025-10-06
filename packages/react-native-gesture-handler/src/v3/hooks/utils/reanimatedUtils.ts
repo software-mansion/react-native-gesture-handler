@@ -1,6 +1,6 @@
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { BaseGestureConfig, SharedValue } from '../../types';
+import { BaseGestureConfig, SharedValue, SharedValueOrT } from '../../types';
 
 // Variant of djb2 hash function.
 // Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765
@@ -80,4 +80,10 @@ export function hasWorkletEventHandlers<THandlerData, TConfig>(
   return Object.values(config).some(
     (prop) => typeof prop === 'function' && '__workletHash' in prop
   );
+}
+
+export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
+  'worklet';
+
+  return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
 }

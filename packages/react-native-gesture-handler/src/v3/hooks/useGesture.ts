@@ -7,15 +7,13 @@ import {
   prepareConfig,
   isAnimatedEvent,
   shouldHandleTouchEvents,
-} from './utils';
-import { tagMessage } from '../../utils';
-import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
-import {
+  prepareRelations,
   bindSharedValues,
   hasWorkletEventHandlers,
   unbindSharedValues,
-} from './utils/reanimatedUtils';
-import { prepareRelations } from './utils/relationUtils';
+} from './utils';
+import { tagMessage } from '../../utils';
+import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
