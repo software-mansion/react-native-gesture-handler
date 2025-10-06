@@ -153,6 +153,7 @@ export { default as Pressable } from './components/Pressable';
 export type { NativeDetectorProps } from './v3/NativeDetector/NativeDetector';
 export { NativeDetector } from './v3/NativeDetector/NativeDetector';
 
+export { LogicDetector } from './v3/LogicDetector';
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
 
