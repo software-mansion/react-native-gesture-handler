@@ -10,12 +10,12 @@ import {
 import { PointerType } from '../PointerType';
 
 import { State } from '../State';
-
-import { panGestureHandlerProps } from '../handlers/PanGestureHandler';
-import { tapGestureHandlerProps } from '../handlers/TapGestureHandler';
-import { nativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
-import { longPressGestureHandlerProps } from '../handlers/LongPressGestureHandler';
-import { flingGestureHandlerProps } from '../handlers/FlingGestureHandler';
+import { PanGestureNativeProperties } from './hooks/gestures/pan/PanProperties';
+import { FlingGestureNativeProperties } from './hooks/gestures/fling/FlingProperties';
+import { HoverGestureNativeProperties } from './hooks/gestures/hover/HoverProperties';
+import { LongPressGestureNativeProperties } from './hooks/gestures/longPress/LongPressProperties';
+import { NativeGestureNativeProperties } from './hooks/gestures/native/NativeProperties';
+import { TapGestureNativeConfig } from './hooks/gestures/tap/TapProperties';
 
 interface EventPayload {
   handlerTag: number;
@@ -265,14 +265,10 @@ type Simplify<T> =
           [K in keyof T]: T[K];
         } & NonNullable<unknown>;
 
-export type WithAcceptedConfig<T> =
-  | T
-  | keyof CommonGestureConfig
-  | keyof InternalConfigProps<unknown>;
-
 export type HandlersPropsWhiteList =
-  | Set<WithAcceptedConfig<(typeof panGestureHandlerProps)[number]>>
-  | Set<WithAcceptedConfig<(typeof tapGestureHandlerProps)[number]>>
-  | Set<WithAcceptedConfig<(typeof nativeViewGestureHandlerProps)[number]>>
-  | Set<WithAcceptedConfig<(typeof longPressGestureHandlerProps)[number]>>
-  | Set<WithAcceptedConfig<(typeof flingGestureHandlerProps)[number]>>;
+  | Set<keyof PanGestureNativeProperties>
+  | Set<keyof FlingGestureNativeProperties>
+  | Set<keyof HoverGestureNativeProperties>
+  | Set<keyof LongPressGestureNativeProperties>
+  | Set<keyof NativeGestureNativeProperties>
+  | Set<keyof TapGestureNativeConfig>;

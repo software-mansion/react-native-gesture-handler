@@ -3,11 +3,10 @@ import {
   ExcludeInternalConfigProps,
   HandlerData,
   SingleGestureName,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../utils';
-
-type PinchGestureProperties = Record<string, never>;
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import { PinchGestureNativeProperties } from './PinchProperties';
 
 type PinchHandlerData = {
   scale: number;
@@ -16,6 +15,8 @@ type PinchHandlerData = {
   velocity: number;
   scaleChange: number;
 };
+
+type PinchGestureProperties = PinchGestureNativeProperties;
 
 type PinchGestureInternalConfig = BaseGestureConfig<
   PinchHandlerData,
