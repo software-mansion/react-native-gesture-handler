@@ -1,6 +1,4 @@
-import React from 'react';
-import { Gesture } from '../types';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { configureRelations, ensureNativeDetectorComponent } from './utils';
@@ -21,6 +19,11 @@ export function NativeDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: NativeDetectorProps<THandlerData, TConfig>) {
+  const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
+  const logicMethods = useRef<Map<number, RefObject<GestureEvents<unknown>>>>(
+    new Map()
+  );
+
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : gesture.config.shouldUseReanimated
@@ -30,32 +33,31 @@ export function NativeDetector<THandlerData, TConfig>({
   ensureNativeDetectorComponent(NativeDetectorComponent);
   configureRelations(gesture);
 
-  return (
-    <NativeDetectorComponent
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerStateChange={
-        gesture.gestureEvents.onGestureHandlerStateChange
+  const handleGestureEvent = (key: keyof GestureEvents<THandlerData>) => {
+    return (e: GestureHandlerEvent<THandlerData>) => {
+      if (gesture.gestureEvents[key]) {
+        gesture.gestureEvents[key](e);
       }
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerTouchEvent={
-        gesture.gestureEvents.onGestureHandlerTouchEvent
-      }
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerReanimatedStateChange={
-        gesture.gestureEvents.onReanimatedStateChange
-      }
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerReanimatedEvent={
-        gesture.gestureEvents.onReanimatedUpdateEvent
-      }
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerReanimatedTouchEvent={
-        gesture.gestureEvents.onReanimatedTouchEvent
-      }
-      onGestureHandlerAnimatedEvent={
-        gesture.gestureEvents.onGestureHandlerAnimatedEvent
+
+      logicMethods.current.forEach((ref) => {
+        const method = ref.current?.[key];
+        if (method) {
+          method(e);
+        }
+      });
+    };
+  };
+
+  const getHandlers = useCallback(
+    (key: keyof GestureEvents<unknown>) => {
+      const handlers: ((e: GestureHandlerEvent<THandlerData>) => void)[] = [];
+
+      if (gesture.gestureEvents[key]) {
+        handlers.push(
+          gesture.gestureEvents[key] as (
+            e: GestureHandlerEvent<unknown>
+          ) => void
+        );
       }
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
