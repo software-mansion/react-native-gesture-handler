@@ -7,7 +7,6 @@ import {
   View,
   Alert,
   TouchableHighlightProps as RNTouchableHighlightProps,
-  Button,
 } from 'react-native';
 
 import {
@@ -29,6 +28,7 @@ import { PinchableBox } from '../../recipes/scaleAndRotate';
 import { PressBox } from '../../basic/multitap';
 
 import { LoremIpsum } from '../../common';
+import { InfoButton } from './InfoButton';
 
 const WrappedSlider = createNativeWrapper(Slider, {
   shouldCancelWhenOutside: false,
@@ -172,14 +172,41 @@ class Combo extends Component<ComboProps> {
               <RectButton
                 style={styles.rectButton}
                 onPress={() => Alert.alert('First row clicked')}>
-                <Button title="first" />
+                <Text style={styles.buttonText}>
+                  Swipe this row & observe highlight delay
+                </Text>
+                {/* Info icon will cancel when you scroll in the direction of the scrollview
+                  but if you move finger horizontally it would allow you to "re-enter" into
+                  an active state. This is typical for most of the buttons on iOS (but not
+                  on Android where the touch cancels as soon as you leave the area of the
+                  button). */}
+                <InfoButton name="first" />
               </RectButton>
             </Swipeable>
             <View style={styles.buttonDelimiter} />
             <RectButton
               style={styles.rectButton}
               onPress={() => Alert.alert('Second row clicked')}>
-              <Button title="second" />
+              <Text style={styles.buttonText}>
+                Second info icon will block scrolling
+              </Text>
+              {/* Info icon will block interaction with other gesture handlers including
+                  the scrollview handler its a descendant of. This is typical for buttons
+                  embedded in a scrollable content on iOS. */}
+              <InfoButton disallowInterruption name="second" />
+            </RectButton>
+            <View style={styles.buttonDelimiter} />
+            <RectButton
+              style={styles.rectButton}
+              onPress={() => Alert.alert('Third row clicked')}>
+              <Text style={styles.buttonText}>
+                This one will cancel when you drag outside
+              </Text>
+              {/* Info icon will cancel when you drag your finger outside of its bounds and
+                  then back unlike all the previous icons that would activate when you re-enter
+                  their activation area. This is a typical bahaviour for android but less frequent
+                  for most of the iOS native apps. */}
+              <InfoButton shouldCancelWhenOutside name="third" />
             </RectButton>
           </View>
           <LoremIpsum />
@@ -218,6 +245,10 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     backgroundColor: '#999',
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
   },
   slider: {
     margin: 10,
