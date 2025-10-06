@@ -45,9 +45,7 @@ jobs:
             **/package.json
             **/yarn.lock
           files_ignore: |
-            packages/react-native-gesture-handler/DrawerLayout/package.json
             packages/react-native-gesture-handler/ReanimatedDrawerLayout/package.json
-            packages/react-native-gesture-handler/Swipeable/package.json
             packages/react-native-gesture-handler/ReanimatedSwipeable/package.json
             packages/react-native-gesture-handler/jest-utils/package.json
 
