@@ -4,11 +4,12 @@ import {
   GestureEvents,
   SingleGesture,
   SingleGestureName,
+  WithSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, remapProps } from '../utils';
 
-type TapGestureProperties = {
+type TapGestureProperties = WithSharedValue<{
   /**
    * Minimum number of pointers (fingers) required to be placed before the
    * handler activates. Should be a positive integer.
@@ -57,9 +58,9 @@ type TapGestureProperties = {
    * activated, it will fail to recognize the gesture.
    */
   maxDistance?: number;
-};
+}>;
 
-type TapGestureInternalProperties = {
+type TapGestureInternalProperties = WithSharedValue<{
   minPointers?: number;
   numberOfTaps?: number;
   maxDeltaX?: number;
@@ -67,7 +68,7 @@ type TapGestureInternalProperties = {
   maxDurationMs?: number;
   maxDelayMs?: number;
   maxDist?: number;
-};
+}>;
 
 type TapHandlerData = {
   x: number;

@@ -1,48 +1,46 @@
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
-import { GestureCallbacks, StateChangeEvent } from '../../types';
-import { isEventForHandlerWithTag, isNativeEvent } from '../utils';
+import {
+  GestureCallbacks,
+  GestureStateChangeEvent,
+  StateChangeEvent,
+} from '../../types';
+import { isEventForHandlerWithTag, maybeExtractNativeEvent } from '../utils';
 import { runCallback } from '../utils/eventHandlersUtils';
 
 export function getStateChangeHandler<THandlerData>(
   handlerTag: number,
   callbacks: GestureCallbacks<THandlerData>
 ) {
-  return (event: StateChangeEvent<THandlerData>) => {
+  return (sourceEvent: StateChangeEvent<THandlerData>) => {
     'worklet';
+
+    const event = maybeExtractNativeEvent(
+      sourceEvent
+    ) as GestureStateChangeEvent<THandlerData>;
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
     }
 
-    let oldState: State | undefined;
-    let state: State | undefined;
-
-    if (isNativeEvent(event)) {
-      oldState = event.nativeEvent.oldState;
-      state = event.nativeEvent.state;
-    } else {
-      oldState = event.oldState;
-      state = event.state;
-    }
-
-    if (oldState === State.UNDETERMINED && state === State.BEGAN) {
+    if (event.oldState === State.UNDETERMINED && event.state === State.BEGAN) {
       runCallback(CALLBACK_TYPE.BEGAN, callbacks, event);
     } else if (
-      (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
-      state === State.ACTIVE
+      (event.oldState === State.BEGAN ||
+        event.oldState === State.UNDETERMINED) &&
+      event.state === State.ACTIVE
     ) {
       runCallback(CALLBACK_TYPE.START, callbacks, event);
-    } else if (oldState !== state && state === State.END) {
-      if (oldState === State.ACTIVE) {
+    } else if (event.oldState !== event.state && event.state === State.END) {
+      if (event.oldState === State.ACTIVE) {
         runCallback(CALLBACK_TYPE.END, callbacks, event, true);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
     } else if (
-      (state === State.FAILED || state === State.CANCELLED) &&
-      state !== oldState
+      (event.state === State.FAILED || event.state === State.CANCELLED) &&
+      event.state !== event.oldState
     ) {
-      if (oldState === State.ACTIVE) {
+      if (event.oldState === State.ACTIVE) {
         runCallback(CALLBACK_TYPE.END, callbacks, event, false);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);

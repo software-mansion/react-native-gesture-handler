@@ -4,11 +4,12 @@ import {
   GestureEvents,
   SingleGesture,
   SingleGestureName,
+  WithSharedValue,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, remapProps } from '../utils';
 
-type LongPressGestureProperties = {
+type LongPressGestureProperties = WithSharedValue<{
   /**
    * Minimum time, expressed in milliseconds, that a finger must remain pressed on
    * the corresponding view. The default value is 500.
@@ -27,13 +28,13 @@ type LongPressGestureProperties = {
    * Determine exact number of points required to handle the long press gesture.
    */
   numberOfPointers?: number;
-};
+}>;
 
-type LongPressGestureInternalProperties = {
+type LongPressGestureInternalProperties = WithSharedValue<{
   minDurationMs?: number;
   maxDist?: number;
   numberOfPointers?: number;
-};
+}>;
 
 type LongPressHandlerData = {
   x: number;
