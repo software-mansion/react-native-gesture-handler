@@ -1,19 +1,16 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
-import HostGestureDetector from '../NativeDetector/HostGestureDetector';
-import { LogicChildren, GestureEvents, GestureHandlerEvent } from '../types';
+import HostGestureDetector from '../HostGestureDetector';
+import { LogicChildren, GestureEvents, GestureHandlerEvent } from '../../types';
 import { DetectorContext } from './useDetectorContext';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import {
-  configureRelations,
-  ensureNativeDetectorComponent,
-} from '../NativeDetector/utils';
-import { isComposedGesture } from '../hooks/utils/relationUtils';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { configureRelations, ensureNativeDetectorComponent } from '../utils';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import {
   AnimatedNativeDetector,
   NativeDetectorProps,
   nativeDetectorStyles,
   ReanimatedNativeDetector,
-} from '../NativeDetector/NativeDetector';
+} from '../NativeDetector';
 
 export function DelegateDetector<THandlerData, TConfig>({
   gesture,

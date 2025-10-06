@@ -162,11 +162,11 @@ export type {
 } from './components/DrawerLayout';
 export { default as DrawerLayout } from './components/DrawerLayout';
 
-export type { NativeDetectorProps } from './v3/NativeDetector/NativeDetector';
-export { NativeDetector } from './v3/NativeDetector/NativeDetector';
+export type { NativeDetectorProps } from './v3/Detectors/NativeDetector';
+export { NativeDetector } from './v3/Detectors/NativeDetector';
 
-export { LogicDetector } from './v3/LogicDetector/LogicDetector';
-export { DelegateDetector } from './v3/LogicDetector/DelegateDetector';
+export { LogicDetector } from './v3/Detectors/LogicDetector/LogicDetector';
+export { DelegateDetector } from './v3/Detectors/LogicDetector/DelegateDetector';
 
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';

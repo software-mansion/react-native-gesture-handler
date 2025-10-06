@@ -1,5 +1,5 @@
 import { createContext, RefObject, useContext } from 'react';
-import { GestureEvents, LogicChildren } from '../types';
+import { GestureEvents, LogicChildren } from '../../types';
 
 type DetectorContextType = {
   register: (

@@ -1,10 +1,10 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { Wrap } from '../../handlers/gestures/GestureDetector/Wrap';
+import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
 import { useDetectorContext } from './useDetectorContext';
-import { NativeDetectorProps } from '../NativeDetector/NativeDetector';
-import { isComposedGesture } from '../hooks/utils/relationUtils';
-import { GestureEvents } from '../types';
+import { NativeDetectorProps } from '../NativeDetector';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import { GestureEvents } from '../../types';
 
 export function LogicDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
