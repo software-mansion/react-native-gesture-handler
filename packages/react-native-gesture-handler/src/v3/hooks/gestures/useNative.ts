@@ -1,10 +1,10 @@
-import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
+  GestureHandlerEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
