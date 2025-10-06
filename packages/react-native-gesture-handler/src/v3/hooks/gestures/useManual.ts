@@ -1,7 +1,7 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   SingleGestureName,
 } from '../../types';
@@ -27,7 +27,7 @@ export function useManual(config: ManualGestureConfig) {
   return useGesture(SingleGestureName.Manual, manualConfig);
 }
 
-export type ManualGestureEvent = GestureEvents<ManualHandlerData>;
+export type ManualGestureEvent = GestureHandlerEvent<ManualHandlerData>;
 export type ManualGesture = SingleGesture<
   ManualHandlerData,
   ManualGestureProperties

@@ -1,9 +1,9 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import { StylusData } from '../../../handlers/gestureHandlerCommon';
 import { HoverEffect } from '../../../handlers/gestures/hoverGesture';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   HandlerData,
   SingleGestureName,
@@ -67,7 +67,7 @@ export function useHover(config: HoverGestureConfig) {
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
 
-export type HoverGestureEvent = GestureEvents<HoverHandlerData>;
+export type HoverGestureEvent = GestureHandlerEvent<HoverHandlerData>;
 export type HoverGesture = SingleGesture<
   HoverHandlerData,
   HoverGestureProperties

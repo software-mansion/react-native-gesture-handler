@@ -1,7 +1,7 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   HandlerData,
   SingleGestureName,
@@ -47,7 +47,7 @@ export function usePinch(config: PinchGestureConfig) {
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }
 
-export type PinchGestureEvent = GestureEvents<PinchHandlerData>;
+export type PinchGestureEvent = GestureHandlerEvent<PinchHandlerData>;
 export type PinchGesture = SingleGesture<
   PinchHandlerData,
   PinchGestureProperties

@@ -1,7 +1,7 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
@@ -111,5 +111,5 @@ export function useTap(config: TapGestureConfig) {
   );
 }
 
-export type TapGestureEvent = GestureEvents<TapHandlerData>;
+export type TapGestureEvent = GestureHandlerEvent<TapHandlerData>;
 export type TapGesture = SingleGesture<TapHandlerData, TapGestureProperties>;

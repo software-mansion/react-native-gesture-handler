@@ -1,7 +1,7 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   HandlerData,
   SingleGestureName,
@@ -51,7 +51,7 @@ export function useRotation(config: RotationGestureConfig) {
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }
 
-export type RotationGestureEvent = GestureEvents<RotationHandlerData>;
+export type RotationGestureEvent = GestureHandlerEvent<RotationHandlerData>;
 export type RotationGesture = SingleGesture<
   RotationHandlerData,
   RotationGestureProperties

@@ -1,7 +1,7 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
@@ -82,7 +82,7 @@ export function useLongPress(config: LongPressGestureConfig) {
   );
 }
 
-export type LongPressGestureEvent = GestureEvents<LongPressHandlerData>;
+export type LongPressGestureEvent = GestureHandlerEvent<LongPressHandlerData>;
 export type LongPressGesture = SingleGesture<
   LongPressHandlerData,
   LongPressGestureProperties

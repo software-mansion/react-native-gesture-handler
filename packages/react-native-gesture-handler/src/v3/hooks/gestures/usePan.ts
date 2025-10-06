@@ -1,8 +1,8 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import { StylusData } from '../../../handlers/gestureHandlerCommon';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   HandlerData,
   SingleGestureName,
@@ -265,5 +265,5 @@ export function usePan(config: PanGestureConfig) {
   );
 }
 
-export type PanGestureEvent = GestureEvents<PanHandlerData>;
+export type PanGestureEvent = GestureHandlerEvent<PanHandlerData>;
 export type PanGesture = SingleGesture<PanHandlerData, PanGestureProperties>;

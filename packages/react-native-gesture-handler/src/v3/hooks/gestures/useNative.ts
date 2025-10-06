@@ -1,7 +1,7 @@
+import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
-  GestureEvents,
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
@@ -46,7 +46,7 @@ export function useNative(config: NativeViewGestureConfig) {
   return useGesture(SingleGestureName.Native, nativeConfig);
 }
 
-export type NativeGestureEvent = GestureEvents<NativeViewHandlerData>;
+export type NativeGestureEvent = GestureHandlerEvent<NativeViewHandlerData>;
 export type NativeGesture = SingleGesture<
   NativeViewHandlerData,
   NativeViewGestureProperties
