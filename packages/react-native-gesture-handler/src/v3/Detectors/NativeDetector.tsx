@@ -1,21 +1,13 @@
 import React from 'react';
-import { Gesture } from '../types';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { configureRelations, ensureNativeDetectorComponent } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
-
-export interface NativeDetectorProps<THandlerData, TConfig> {
-  children?: React.ReactNode;
-  gesture: Gesture<THandlerData, TConfig>;
-}
-
-export const AnimatedNativeDetector =
-  Animated.createAnimatedComponent(HostGestureDetector);
-
-export const ReanimatedNativeDetector =
-  Reanimated?.default.createAnimatedComponent(HostGestureDetector);
+import {
+  AnimatedNativeDetector,
+  NativeDetectorProps,
+  nativeDetectorStyles,
+  ReanimatedNativeDetector,
+} from './common';
 
 export function NativeDetector<THandlerData, TConfig>({
   gesture,
@@ -64,11 +56,3 @@ export function NativeDetector<THandlerData, TConfig>({
     </NativeDetectorComponent>
   );
 }
-
-export const nativeDetectorStyles = StyleSheet.create({
-  detector: {
-    display: 'contents',
-    // TODO: remove, debug info only
-    backgroundColor: 'red',
-  },
-});

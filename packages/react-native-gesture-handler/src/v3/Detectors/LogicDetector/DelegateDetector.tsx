@@ -10,7 +10,7 @@ import {
   NativeDetectorProps,
   nativeDetectorStyles,
   ReanimatedNativeDetector,
-} from '../NativeDetector';
+} from '../common';
 
 export function DelegateDetector<THandlerData, TConfig>({
   gesture,
