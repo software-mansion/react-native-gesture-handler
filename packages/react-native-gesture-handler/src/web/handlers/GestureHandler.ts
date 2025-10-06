@@ -24,7 +24,7 @@ import {
 } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType } from '../../ActionType';
+import { ActionType, usesNativeOrLogicDetector } from '../../ActionType';
 import { tagMessage } from '../../utils';
 import {
   GestureStateChangeEvent,
@@ -89,6 +89,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.viewRef = viewRef;
     this.actionType = actionType;
     this.state = State.UNDETERMINED;
+
     this.delegate.init(viewRef, this);
   }
 
@@ -400,7 +401,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (this.actionType === ActionType.NATIVE_DETECTOR) {
+    if (usesNativeOrLogicDetector(this.actionType)) {
       invokeNullableMethod(
         this.forReanimated
           ? onGestureHandlerReanimatedTouchEvent
@@ -424,18 +425,17 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerReanimatedEvent,
       onGestureHandlerReanimatedStateChange,
     }: PropsRef = this.propsRef!.current;
-    const resultEvent: ResultEvent =
-      this.actionType !== ActionType.NATIVE_DETECTOR
-        ? this.transformEventData(newState, oldState)
-        : this.lastSentState !== newState
-          ? this.transformStateChangeEvent(newState, oldState)
-          : this.transformUpdateEvent(newState);
+
+    const resultEvent: ResultEvent = !usesNativeOrLogicDetector(this.actionType)
+      ? this.transformEventData(newState, oldState)
+      : this.lastSentState !== newState
+        ? this.transformStateChangeEvent(newState, oldState)
+        : this.transformUpdateEvent(newState);
 
     // In the v2 API oldState field has to be undefined, unless we send event state changed
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
-
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
       invokeNullableMethod(
@@ -446,7 +446,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       );
     }
     if (this.state === State.ACTIVE) {
-      if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+      if (!usesNativeOrLogicDetector(this.actionType)) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }
