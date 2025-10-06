@@ -1,12 +1,12 @@
-import { FlingGestureEvent, FlingGesture } from './useFling';
-import { HoverGestureEvent, HoverGesture } from './useHover';
-import { LongPressGestureEvent, LongPressGesture } from './useLongPress';
-import { ManualGestureEvent, ManualGesture } from './useManual';
-import { NativeGestureEvent, NativeGesture } from './useNative';
-import { PanGestureEvent, PanGesture } from './usePan';
-import { PinchGestureEvent, PinchGesture } from './usePinch';
-import { RotationGestureEvent, RotationGesture } from './useRotation';
-import { TapGestureEvent, TapGesture } from './useTap';
+import type { FlingGestureEvent, FlingGesture } from './useFling';
+import type { HoverGestureEvent, HoverGesture } from './useHover';
+import type { LongPressGestureEvent, LongPressGesture } from './useLongPress';
+import type { ManualGestureEvent, ManualGesture } from './useManual';
+import type { NativeGestureEvent, NativeGesture } from './useNative';
+import type { PanGestureEvent, PanGesture } from './usePan';
+import type { PinchGestureEvent, PinchGesture } from './usePinch';
+import type { RotationGestureEvent, RotationGesture } from './useRotation';
+import type { TapGestureEvent, TapGesture } from './useTap';
 
 export type { TapGestureConfig } from './useTap';
 export type { TapGesture, TapGestureEvent };
