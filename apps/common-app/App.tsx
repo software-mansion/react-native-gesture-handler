@@ -22,7 +22,6 @@ import {
   TouchablesIndex,
   TouchableExample,
 } from './src/release_tests/touchables';
-import Rows from './src/release_tests/rows';
 import NestedFling from './src/release_tests/nestedFling';
 import MouseButtons from './src/release_tests/mouseButtons';
 import ContextMenu from './src/release_tests/contextMenu';
@@ -180,7 +179,6 @@ const EXAMPLES: ExamplesSection[] = [
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
-      { name: 'Rows', component: Rows },
       { name: 'Nested Fling', component: NestedFling },
       {
         name: 'Combo',
