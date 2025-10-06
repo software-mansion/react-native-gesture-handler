@@ -4,8 +4,8 @@ import {
   PanGestureHandlerEventPayload,
   Gesture,
   GestureDetector,
-  PanGesture,
-  TapGesture,
+  PanGestureType,
+  TapGestureType,
 } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle } from 'react-native-reanimated';
 
@@ -22,8 +22,8 @@ interface DraggableProps {
   isActive: boolean;
   translation: AnimatedPostion;
   position: { x: number; y: number };
-  dragGesture: PanGesture;
-  tapEndGesture: TapGesture;
+  dragGesture: PanGestureType;
+  tapEndGesture: TapGestureType;
   tileSize: number;
   rowGap: number;
   columnGap: number;
