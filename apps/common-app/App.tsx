@@ -46,7 +46,6 @@ import Draggable from './src/basic/draggable';
 import MultiTap from './src/basic/multitap';
 import BouncingBox from './src/basic/bouncing';
 import PanResponder from './src/basic/panResponder';
-import HorizontalDrawer from './src/basic/horizontalDrawer';
 import PagerAndDrawer from './src/basic/pagerAndDrawer';
 import ForceTouch from './src/basic/forcetouch';
 import Fling from './src/basic/fling';
@@ -129,7 +128,6 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Multitap', component: MultiTap },
       { name: 'Bouncing box', component: BouncingBox },
       { name: 'Pan responder', component: PanResponder },
-      { name: 'Horizontal drawer', component: HorizontalDrawer },
       {
         name: 'Pager & drawer',
         component: PagerAndDrawer,
