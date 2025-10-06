@@ -1,4 +1,3 @@
-import { GestureHandlerEvent } from 'react-native-reanimated/lib/typescript/hook';
 import { StylusData } from '../../../handlers/gestureHandlerCommon';
 import { HoverEffect } from '../../../handlers/gestures/hoverGesture';
 import {
@@ -8,6 +7,7 @@ import {
   HandlerData,
   SingleGestureName,
   WithSharedValue,
+  GestureHandlerEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
