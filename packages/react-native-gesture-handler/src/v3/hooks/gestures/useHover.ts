@@ -7,7 +7,8 @@ import {
   HandlerData,
   SingleGestureName,
   WithSharedValue,
-  GestureHandlerEvent,
+  StateChangeEvent,
+  UpdateEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
@@ -67,7 +68,9 @@ export function useHover(config: HoverGestureConfig) {
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
 
-export type HoverGestureEvent = GestureHandlerEvent<HoverHandlerData>;
+export type HoverGestureEvent =
+  | StateChangeEvent<HoverHandlerData>
+  | UpdateEvent<HoverHandlerData>;
 export type HoverGesture = SingleGesture<
   HoverHandlerData,
   HoverGestureProperties
