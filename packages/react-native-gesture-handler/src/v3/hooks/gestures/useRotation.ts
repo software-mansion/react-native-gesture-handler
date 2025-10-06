@@ -4,7 +4,8 @@ import {
   SingleGesture,
   HandlerData,
   SingleGestureName,
-  GestureHandlerEvent,
+  StateChangeEvent,
+  UpdateEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
@@ -51,7 +52,9 @@ export function useRotation(config: RotationGestureConfig) {
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }
 
-export type RotationGestureEvent = GestureHandlerEvent<RotationHandlerData>;
+export type RotationGestureEvent =
+  | StateChangeEvent<RotationHandlerData>
+  | UpdateEvent<RotationHandlerData>;
 export type RotationGesture = SingleGesture<
   RotationHandlerData,
   RotationGestureProperties
