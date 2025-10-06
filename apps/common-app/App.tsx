@@ -60,7 +60,6 @@ import Calculator from './src/new_api/calculator';
 import BottomSheetNewApi from './src/new_api/bottom_sheet';
 import ChatHeadsNewApi from './src/new_api/chat_heads';
 import DragNDrop from './src/new_api/drag_n_drop';
-import BetterHorizontalDrawer from './src/new_api/betterHorizontalDrawer';
 import ManualGestures from './src/new_api/manualGestures/index';
 import Hover from './src/new_api/hover';
 import HoverableIcons from './src/new_api/hoverable_icons';
@@ -111,10 +110,6 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Pressable', component: Pressable },
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
-      {
-        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
-        component: BetterHorizontalDrawer,
-      },
       {
         name: 'Manual gestures',
         component: ManualGestures,
