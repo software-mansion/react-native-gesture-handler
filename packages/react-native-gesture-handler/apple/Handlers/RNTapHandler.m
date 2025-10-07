@@ -200,12 +200,20 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
+
+  if (@available(iOS 26.0, *) && self.state == UIGestureRecognizerStateFailed) {
+    [self triggerAction];
+  }
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
+
+  if (@available(iOS 26.0, *) && self.state == UIGestureRecognizerStateFailed) {
+    [self triggerAction];
+  }
 }
 
 #endif
@@ -243,9 +251,10 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)reset
 {
-  if (self.state == UIGestureRecognizerStateFailed) {
+  if (!(@available(iOS 26.0, *)) && self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
+
   [_gestureHandler.pointerTracker reset];
 
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
