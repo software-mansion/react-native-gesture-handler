@@ -243,19 +243,30 @@
 {
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
+
+  if (@available(iOS 26.0, *)) {
+    [self triggerAction];
+  }
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
+
+  if (@available(iOS 26.0, *)) {
+    [self triggerAction];
+  }
 }
 
 #endif
 
 - (void)reset
 {
-  [self triggerAction];
+  if (!(@available(iOS 26.0, *))) {
+    [self triggerAction];
+  }
+
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
