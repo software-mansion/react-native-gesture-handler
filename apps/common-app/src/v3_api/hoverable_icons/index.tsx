@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Gesture,
-  GestureDetector,
   HoverEffect,
+  NativeDetector,
+  useHover,
 } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -13,15 +13,15 @@ import Animated, {
 import { Platform, StyleSheet } from 'react-native';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const SVG = require('./svg.png');
+const SVG = require('../../new_api/hoverable_icons/svg.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const FREEZE = require('./freeze.png');
+const FREEZE = require('../../new_api/hoverable_icons/freeze.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const REA = require('./rea.png');
+const REA = require('../../new_api/hoverable_icons/rea.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const GH = require('./gh.png');
+const GH = require('../../new_api/hoverable_icons/gh.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const SCREENS = require('./screens.png');
+const SCREENS = require('../../new_api/hoverable_icons/screens.png');
 
 const images = [GH, REA, SCREENS, SVG, FREEZE];
 const SIZE = 100;
@@ -34,7 +34,6 @@ function BoxReanimated(props: { source: any }) {
   const targetOffsetY = useSharedValue(0);
 
   useFrameCallback((frame) => {
-    'worklet';
     offsetX.value +=
       ((targetOffsetX.value - offsetX.value) *
         0.15 *
@@ -55,39 +54,45 @@ function BoxReanimated(props: { source: any }) {
     ],
   }));
 
-  const hover = Gesture.Hover()
-    .onBegin(() => {
+  const hover = useHover({
+    onBegin: () => {
+      'worklet';
       scale.value = withTiming(1.15, { duration: 100 });
-    })
-    .onChange((e) => {
-      const oX = e.x - SIZE / 2;
-      const oY = e.y - SIZE / 2;
+    },
+    onUpdate: (e) => {
+      'worklet';
+      const oX = e.handlerData.x - SIZE / 2;
+      const oY = e.handlerData.y - SIZE / 2;
 
       targetOffsetX.value = Math.pow(Math.abs(oX), 0.3) * Math.sign(oX);
       targetOffsetY.value = Math.pow(Math.abs(oY), 0.3) * Math.sign(oY);
-    })
-    .onFinalize(() => {
+    },
+    onFinalize: () => {
+      'worklet';
       scale.value = withTiming(1, { duration: 100 });
       targetOffsetX.value = 0;
       targetOffsetY.value = 0;
-    });
+    },
+  });
 
   return (
-    <GestureDetector gesture={hover}>
+    <NativeDetector gesture={hover}>
       <Animated.View style={{ overflow: 'visible' }}>
         <Animated.Image source={props.source} style={[style, styles.image]} />
       </Animated.View>
-    </GestureDetector>
+    </NativeDetector>
   );
 }
 
 function BoxNative(props: { source: any }) {
-  const hover = Gesture.Hover().effect(HoverEffect.LIFT);
+  const hover = useHover({
+    hoverEffect: HoverEffect.LIFT,
+  });
 
   return (
-    <GestureDetector gesture={hover}>
+    <NativeDetector gesture={hover}>
       <Animated.Image source={props.source} style={styles.image} />
-    </GestureDetector>
+    </NativeDetector>
   );
 }
 
