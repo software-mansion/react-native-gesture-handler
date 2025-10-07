@@ -4,8 +4,8 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  StateChangeEvent,
-  UpdateEvent,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, remapProps } from '../utils';
@@ -113,6 +113,7 @@ export function useTap(config: TapGestureConfig) {
 }
 
 export type TapGestureEvent =
-  | StateChangeEvent<TapHandlerData>
-  | UpdateEvent<TapHandlerData>;
+  | GestureStateChangeEvent<TapHandlerData>
+  | GestureUpdateEvent<TapHandlerData>;
+
 export type TapGesture = SingleGesture<TapHandlerData, TapGestureProperties>;

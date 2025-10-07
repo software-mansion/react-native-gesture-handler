@@ -4,8 +4,8 @@ import {
   SingleGesture,
   HandlerData,
   SingleGestureName,
-  UpdateEvent,
-  StateChangeEvent,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../utils';
@@ -49,8 +49,9 @@ export function usePinch(config: PinchGestureConfig) {
 }
 
 export type PinchGestureEvent =
-  | StateChangeEvent<PinchHandlerData>
-  | UpdateEvent<PinchHandlerData>;
+  | GestureStateChangeEvent<PinchHandlerData>
+  | GestureUpdateEvent<PinchHandlerData>;
+
 export type PinchGesture = SingleGesture<
   PinchHandlerData,
   PinchGestureProperties

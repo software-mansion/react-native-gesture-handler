@@ -4,8 +4,8 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  StateChangeEvent,
-  UpdateEvent,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
@@ -57,8 +57,9 @@ export function useFling(config: FlingGestureConfig) {
 }
 
 export type FlingGestureEvent =
-  | StateChangeEvent<FlingHandlerData>
-  | UpdateEvent<FlingHandlerData>;
+  | GestureStateChangeEvent<FlingHandlerData>
+  | GestureUpdateEvent<FlingHandlerData>;
+
 export type FlingGesture = SingleGesture<
   FlingHandlerData,
   FlingGestureProperties
