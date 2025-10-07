@@ -88,7 +88,7 @@ import V3Hover from './src/v3_api/hover/index';
 import V3Overlap from './src/v3_api/overlap/index';
 import V3Calculator from './src/v3_api/calculator/index';
 import V3Velocity from './src/v3_api/velocity_test/index';
-
+import V3BottomSheet from './src/v3_api/bottom_sheet/index';
 import { Icon } from '@swmansion/icons';
 
 interface Example {
@@ -116,6 +116,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'V3 Overlap', component: V3Overlap },
       { name: 'V3 Calculator', component: V3Calculator },
       { name: 'V3 Velocity Test', component: V3Velocity },
+      { name: 'V3 Bottom Sheet', component: V3BottomSheet },
     ],
   },
   {
