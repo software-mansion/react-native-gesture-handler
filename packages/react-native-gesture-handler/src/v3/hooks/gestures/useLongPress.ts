@@ -4,8 +4,8 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  StateChangeEvent,
-  UpdateEvent,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig, remapProps } from '../utils';
@@ -84,8 +84,9 @@ export function useLongPress(config: LongPressGestureConfig) {
 }
 
 export type LongPressGestureEvent =
-  | StateChangeEvent<LongPressHandlerData>
-  | UpdateEvent<LongPressHandlerData>;
+  | GestureStateChangeEvent<LongPressHandlerData>
+  | GestureUpdateEvent<LongPressHandlerData>;
+
 export type LongPressGesture = SingleGesture<
   LongPressHandlerData,
   LongPressGestureProperties

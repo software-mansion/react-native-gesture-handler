@@ -4,8 +4,8 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  StateChangeEvent,
-  UpdateEvent,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../types';
 import { useGesture } from '../useGesture';
 import { cloneConfig } from '../utils';
@@ -48,8 +48,9 @@ export function useNative(config: NativeViewGestureConfig) {
 }
 
 export type NativeGestureEvent =
-  | StateChangeEvent<NativeViewHandlerData>
-  | UpdateEvent<NativeViewHandlerData>;
+  | GestureStateChangeEvent<NativeViewHandlerData>
+  | GestureUpdateEvent<NativeViewHandlerData>;
+
 export type NativeGesture = SingleGesture<
   NativeViewHandlerData,
   NativeViewGestureProperties
