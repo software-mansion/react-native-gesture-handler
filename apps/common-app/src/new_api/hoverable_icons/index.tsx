@@ -34,7 +34,6 @@ function BoxReanimated(props: { source: any }) {
   const targetOffsetY = useSharedValue(0);
 
   useFrameCallback((frame) => {
-    'worklet';
     offsetX.value +=
       ((targetOffsetX.value - offsetX.value) *
         0.15 *
