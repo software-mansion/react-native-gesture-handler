@@ -54,7 +54,7 @@
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 
-  if (@available(iOS 26.0, *)) {
+  if (iOS_VERSION >= 26.0) {
     [self triggerAction];
   }
 }
@@ -65,7 +65,7 @@
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 
-  if (@available(iOS 26.0, *)) {
+  if (iOS_VERSION >= 26.0) {
     [self triggerAction];
   }
 }
@@ -77,9 +77,13 @@
 
 - (void)reset
 {
-  if (!(@available(iOS 26.0, *))) {
+#if TARGET_OS_IOS
+  if (iOS_VERSION < 26.0) {
     [self triggerAction];
   }
+#else
+  [self triggerAction];
+#endif
 
   [_gestureHandler.pointerTracker reset];
   _hasBegan = NO;

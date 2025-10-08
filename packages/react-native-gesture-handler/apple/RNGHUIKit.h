@@ -12,6 +12,8 @@ typedef UIScrollView RNGHUIScrollView;
 #define RNGHGestureRecognizerStateBegan UIGestureRecognizerStateBegan;
 #define RNGHGestureRecognizerStateEnded UIGestureRecognizerStateEnded;
 
+#define iOS_VERSION [[[UIDevice currentDevice] systemVersion] floatValue]
+
 #else // TARGET_OS_OSX [
 
 #import <React/RCTUIKit.h>

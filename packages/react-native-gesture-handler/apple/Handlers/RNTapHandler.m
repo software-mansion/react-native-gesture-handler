@@ -201,7 +201,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
 
-  if (@available(iOS 26.0, *) && self.state == UIGestureRecognizerStateFailed) {
+  if (iOS_VERSION >= 26.0 && self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
 }
@@ -211,7 +211,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
 
-  if (@available(iOS 26.0, *) && self.state == UIGestureRecognizerStateFailed) {
+  if (iOS_VERSION >= 26.0 && self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
 }
@@ -251,9 +251,13 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)reset
 {
-  if (!(@available(iOS 26.0, *)) && self.state == UIGestureRecognizerStateFailed) {
+#if TARGET_OS_IOS
+  if (iOS_VERSION < 26.0 && self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
+#else
+  [self triggerAction];
+#endif
 
   [_gestureHandler.pointerTracker reset];
 

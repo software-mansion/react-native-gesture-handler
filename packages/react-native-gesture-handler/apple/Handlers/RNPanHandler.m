@@ -244,7 +244,7 @@
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
 
-  if (@available(iOS 26.0, *)) {
+  if (iOS_VERSION >= 26.0) {
     [self triggerAction];
   }
 }
@@ -254,7 +254,7 @@
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
 
-  if (@available(iOS 26.0, *)) {
+  if (iOS_VERSION >= 26.0) {
     [self triggerAction];
   }
 }
@@ -263,9 +263,13 @@
 
 - (void)reset
 {
-  if (!(@available(iOS 26.0, *))) {
+#if TARGET_OS_IOS
+  if (iOS_VERSION < 26.0) {
     [self triggerAction];
   }
+#else
+  [self triggerAction];
+#endif
 
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
