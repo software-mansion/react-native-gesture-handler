@@ -207,7 +207,7 @@ class GestureHandlerOrchestrator(
     }
 
     // Clear all awaiting handlers waiting for the current handler to fail
-    for (otherHandler in awaitingHandlers.reversed()) {
+    for (otherHandler in awaitingHandlers.asReversed()) {
       if (shouldHandlerBeCancelledBy(otherHandler, handler)) {
         otherHandler.isAwaiting = false
       }
@@ -249,21 +249,25 @@ class GestureHandlerOrchestrator(
     // on Arrays.sort providing a stable sort (as children are registered in order in which they
     // should be tested)
     preparedHandlers.sortWith(handlersComparator)
+
     for (handler in preparedHandlers) {
       deliverEventToGestureHandler(handler, event)
     }
   }
 
   private fun cancelAll() {
-    for (handler in awaitingHandlers.reversed()) {
+    // We need `toList` as `awaitingHandlers` can be modified by `cancel`:
+    // `onHandlerStateChange` -> `tryActivate` -> `addAwaitingHandler`
+    for (handler in awaitingHandlers.asReversed().toList()) {
       handler.cancel()
     }
+
     // Copy handlers to "prepared handlers" array, because the list of active handlers can change
     // as a result of state updates
     preparedHandlers.clear()
     preparedHandlers.addAll(gestureHandlers)
 
-    for (handler in gestureHandlers.reversed()) {
+    for (handler in gestureHandlers.asReversed()) {
       handler.cancel()
     }
   }
@@ -273,7 +277,8 @@ class GestureHandlerOrchestrator(
       handler.cancel()
       return
     }
-    if (!handler.wantEvents()) {
+
+    if (!handler.wantsEvent(sourceEvent)) {
       return
     }
 
@@ -281,7 +286,7 @@ class GestureHandlerOrchestrator(
     val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
 
     // Touch events are sent before the handler itself has a chance to process them,
-    // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
+    // mainly because `onTouchesUp` should be send before gesture finishes. This means that
     // the first `onTouchesDown` event is sent before a gesture begins, activation in
     // callback for this event causes problems because the handler doesn't have a chance
     // to initialize itself with starting values of pointer (in pan this causes translation

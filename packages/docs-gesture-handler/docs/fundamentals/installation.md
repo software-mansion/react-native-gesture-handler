@@ -13,6 +13,7 @@ import TabItem from '@theme/TabItem';
 
 | version | `react-native` version |
 | ------- | ---------------------- |
+| 2.28.0+ | 0.79.0+                |
 | 2.26.0+ | 0.78.0+                |
 | 2.25.0+ | 0.76.0+                |
 | 2.24.0+ | 0.75.0+                |
@@ -90,14 +91,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export function CustomModal({ children, ...rest }) {
   return (
     <Modal {...rest}>
-      <GestureHandlerRootView>
-        {children}
-      </GestureHandlerRootView>
+      <GestureHandlerRootView>{children}</GestureHandlerRootView>
     </Modal>
   );
 }
 ```
-
 
 ##### Kotlin
 
@@ -133,10 +131,9 @@ Nonetheless, it's recommended to adapt to the new implementation, as the legacy 
 
 #### With [wix/react-native-navigation](https://github.com/wix/react-native-navigation)
 
-If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function). This can be done for example at the stage when you register your screens. Here's an example:
+If you are using a native navigation library like [wix/react-native-navigation](https://github.com/wix/react-native-navigation) you need to make sure that every screen is wrapped with `GestureHandlerRootView`. This can be done for example at the stage when you register your screens. Here's an example:
 
 ```js
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { Navigation } from 'react-native-navigation';
 import FirstTabScreen from './FirstTabScreen';
 import SecondTabScreen from './SecondTabScreen';
@@ -145,17 +142,35 @@ import PushedScreen from './PushedScreen';
 export function registerScreens() {
   Navigation.registerComponent(
     'example.FirstTabScreen',
-    () => gestureHandlerRootHOC(FirstTabScreen),
+    () => {
+      return (
+        <GestureHandlerRootView>
+          <FirstTabScreen />
+        </GestureHandlerRootView>
+      );
+    },
     () => FirstTabScreen
   );
   Navigation.registerComponent(
     'example.SecondTabScreen',
-    () => gestureHandlerRootHOC(SecondTabScreen),
+    () => {
+      return (
+        <GestureHandlerRootView>
+          <SecondTabScreen />
+        </GestureHandlerRootView>
+      );
+    },
     () => SecondTabScreen
   );
   Navigation.registerComponent(
     'example.PushedScreen',
-    () => gestureHandlerRootHOC(PushedScreen),
+    () => {
+      return (
+        <GestureHandlerRootView>
+          <PushedScreen />
+        </GestureHandlerRootView>
+      );
+    },
     () => PushedScreen
   );
 }
@@ -163,4 +178,4 @@ export function registerScreens() {
 
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
 
-Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` (you can do this using `gestureHandlerRootHOC` function) as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
+Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.

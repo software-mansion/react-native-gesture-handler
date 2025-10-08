@@ -28,8 +28,6 @@ import { PressBox } from '../../basic/multitap';
 
 import { LoremIpsum } from '../../common';
 
-const CHILD_REF = 'CHILD_REF';
-
 const WrappedSlider = createNativeWrapper(Slider, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
@@ -85,9 +83,7 @@ class TouchableHighlight extends Component<
                   : 1,
             }}>
             {/* @ts-ignore not typed properly? */}
-            {React.cloneElement(React.Children.only(this.props.children), {
-              ref: CHILD_REF,
-            })}
+            {React.cloneElement(React.Children.only(this.props.children))}
           </View>
         </View>
       </TapGestureHandler>

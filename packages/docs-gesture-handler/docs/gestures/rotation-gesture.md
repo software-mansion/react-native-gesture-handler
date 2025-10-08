@@ -90,6 +90,10 @@ const styles = StyleSheet.create({
 });
 ```
 
+## Remarks
+
+- When implementing rotation based on `anchor` point, make sure to use it after gesture has activated, i.e. in `onStart`, `onUpdate` or `onChange` callbacks. Using it in `onBegan` may lead to unexpected behavior.
+
 ## Config
 
 <BaseEventConfig />
