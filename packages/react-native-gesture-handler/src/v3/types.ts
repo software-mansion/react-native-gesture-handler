@@ -63,6 +63,11 @@ export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
 
+export interface LogicChildren {
+  viewTag: number;
+  handlerTags: number[];
+}
+
 export enum SingleGestureName {
   Tap = 'TapGestureHandler',
   LongPress = 'LongPressGestureHandler',
