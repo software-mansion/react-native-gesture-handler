@@ -39,6 +39,11 @@ export type GestureHandlerEvent<THandlerData> =
   | StateChangeEvent<THandlerData>
   | TouchEvent;
 
+export type UnpackedGestureHandlerEvent<THandlerData> =
+  | GestureUpdateEvent<THandlerData>
+  | GestureStateChangeEvent<THandlerData>
+  | GestureTouchEvent;
+
 export type UpdateEvent<THandlerData> =
   | GestureUpdateEvent<THandlerData>
   | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>;
@@ -57,6 +62,11 @@ export type TouchEvent =
 export type AnimatedEvent = ((...args: any[]) => void) & {
   _argMapping: (Animated.Mapping | null)[];
 };
+
+export interface LogicChildren {
+  viewTag: number;
+  handlerTags: number[];
+}
 
 export enum SingleGestureName {
   Tap = 'TapGestureHandler',
@@ -119,9 +129,14 @@ export type ComposedGesture = {
 };
 
 export type ChangeCalculatorType<THandlerData> = (
-  current: UpdateEvent<THandlerData>,
-  previous?: UpdateEvent<THandlerData>
-) => UpdateEvent<THandlerData>;
+  current: GestureUpdateEvent<THandlerData>,
+  previous?: GestureUpdateEvent<THandlerData>
+) => GestureUpdateEvent<THandlerData>;
+
+export type DiffCalculatorType<THandlerData> = (
+  current: HandlerData<THandlerData>,
+  previous: HandlerData<THandlerData> | null
+) => Partial<HandlerData<THandlerData>>;
 
 export type Gesture<THandlerData = unknown, TConfig = unknown> =
   | SingleGesture<THandlerData, TConfig>
@@ -158,10 +173,8 @@ export type InternalConfigProps<THandlerData> = {
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
-  GestureCallbacks<THandlerData> &
-  FilterNeverProperties<TConfig> &
-  InternalConfigProps<THandlerData> & {
+type CommonGestureConfig = WithSharedValue<
+  {
     disableReanimated?: boolean;
     enabled?: boolean;
     shouldCancelWhenOutside?: boolean;
@@ -171,7 +184,15 @@ export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
     mouseButton?: MouseButton;
     enableContextMenu?: boolean;
     touchAction?: TouchAction;
-  };
+  },
+  HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
+>;
+
+export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
+  GestureCallbacks<THandlerData> &
+  FilterNeverProperties<TConfig> &
+  InternalConfigProps<THandlerData> &
+  CommonGestureConfig;
 
 export type ExcludeInternalConfigProps<T> = Omit<
   T,
@@ -189,3 +210,51 @@ export type ExcludeInternalConfigProps<T> = Omit<
 type FilterNeverProperties<T> = {
   [K in keyof T as T[K] extends never ? never : K]: T[K];
 };
+
+export interface SharedValue<Value = unknown> {
+  value: Value;
+  get(): Value;
+  set(value: Value | ((value: Value) => Value)): void;
+  addListener: (listenerID: number, listener: (value: Value) => void) => void;
+  removeListener: (listenerID: number) => void;
+  modify: (
+    modifier?: <T extends Value>(value: T) => T,
+    forceUpdate?: boolean
+  ) => void;
+}
+
+// Apply SharedValue recursively. P is used to make sure that composed types won't be expanded.
+// For example, if we pass `HoverEffect` as P, then resulting type will have HoverEffect | SharedValue<HoverEffect>,
+// not HoverEffect, SharedValue<HoverEffect.NONE>, ...
+type WithSharedValueRecursive<T extends object, P> = {
+  [K in keyof T]: Exclude<T[K], undefined> extends P
+    ? Simplify<SharedValueOrT<T[K]>>
+    : // Special case for boolean as passing `boolean` as P doesn't look ok.
+      boolean extends T[K]
+      ? boolean | SharedValue<boolean>
+      : // Special handling for tuples [number, number].
+        T[K] extends [number, number]
+        ? [WithSharedValue<number, P>, WithSharedValue<number, P>]
+        : // Default case: apply the MaybeWithSharedValue logic recursively or as a direct SharedValue wrap.
+          WithSharedValue<T[K], P>;
+};
+
+export type SharedValueOrT<T> = T | SharedValue<Exclude<T, undefined>>;
+
+// Utility type that decides whether to recurse for objects or apply SharedValue directly.
+export type WithSharedValue<T, P = never> = T extends object
+  ? WithSharedValueRecursive<T, P>
+  : Simplify<SharedValueOrT<T>>;
+
+// Simplifies types for end users.
+// For example, changes TOrSharedValue<number> into number | SharedValue<number>.
+type Simplify<T> =
+  T extends SharedValue<never>
+    ? never
+    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      T extends SharedValue<any>
+      ? T
+      : {
+          // For a generic object, retain the original structure while forcing an object type
+          [K in keyof T]: T[K];
+        } & NonNullable<unknown>;

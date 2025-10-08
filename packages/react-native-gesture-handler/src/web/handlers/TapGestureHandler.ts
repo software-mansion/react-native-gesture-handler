@@ -1,7 +1,10 @@
 import { State } from '../../State';
+import { SingleGestureName } from '../../v3/types';
 import { AdaptedEvent, Config, EventTypes } from '../interfaces';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 import GestureHandler from './GestureHandler';
+import IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_MAX_DELAY_MS = 500;
@@ -30,6 +33,13 @@ export default class TapGestureHandler extends GestureHandler {
   private delayTimeout: number | undefined;
 
   private tapsSoFar = 0;
+
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = SingleGestureName.Tap;
+  }
 
   public override updateGestureConfig(config: Config): void {
     super.updateGestureConfig(config);

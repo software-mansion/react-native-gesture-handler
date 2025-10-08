@@ -4,9 +4,10 @@ import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper'
 import {
   ChangeCalculatorType,
   GestureCallbacks,
+  GestureUpdateEvent,
   UpdateEvent,
 } from '../../types';
-import { isEventForHandlerWithTag } from '../utils';
+import { isEventForHandlerWithTag, maybeExtractNativeEvent } from '../utils';
 import { runCallback } from '../utils/eventHandlersUtils';
 
 export function getUpdateHandler<THandlerData>(
@@ -15,8 +16,12 @@ export function getUpdateHandler<THandlerData>(
   context: ReanimatedContext<THandlerData> | undefined,
   changeEventCalculator?: ChangeCalculatorType<THandlerData>
 ) {
-  return (event: UpdateEvent<THandlerData>) => {
+  return (sourceEvent: UpdateEvent<THandlerData>) => {
     'worklet';
+
+    const event = maybeExtractNativeEvent(
+      sourceEvent
+    ) as GestureUpdateEvent<THandlerData>;
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
@@ -36,7 +41,6 @@ export function getUpdateHandler<THandlerData>(
         : event
     );
 
-    // TODO: Investigate why this is always undefined
     context.lastUpdateEvent = event;
   };
 }

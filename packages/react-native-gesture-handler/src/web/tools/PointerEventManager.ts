@@ -1,5 +1,4 @@
 import EventManager from './EventManager';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { AdaptedEvent, EventTypes, Point } from '../interfaces';
 import {
   PointerTypeMapping,
@@ -13,18 +12,11 @@ const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
 
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
-  private readonly mouseButtonsMapper = new Map<number, MouseButton>();
   private lastPosition: Point;
   private shouldSendHoverEvents: boolean;
 
   constructor(view: HTMLElement, shouldSendHoverEvents: boolean) {
     super(view);
-
-    this.mouseButtonsMapper.set(0, MouseButton.LEFT);
-    this.mouseButtonsMapper.set(1, MouseButton.MIDDLE);
-    this.mouseButtonsMapper.set(2, MouseButton.RIGHT);
-    this.mouseButtonsMapper.set(3, MouseButton.BUTTON_4);
-    this.mouseButtonsMapper.set(4, MouseButton.BUTTON_5);
 
     this.lastPosition = {
       x: -Infinity,
@@ -220,7 +212,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
       eventType: eventType,
       pointerType:
         PointerTypeMapping.get(event.pointerType) ?? PointerType.OTHER,
-      button: this.mouseButtonsMapper.get(event.button),
+      button: event.buttons,
       time: event.timeStamp,
       stylusData: tryExtractStylusData(event),
     };
