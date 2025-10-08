@@ -7,6 +7,7 @@ export interface GestureStateManagerType {
   activate: () => void;
   fail: () => void;
   end: () => void;
+  /** @internal */
   handlerTag: number;
 }
 
