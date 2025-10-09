@@ -131,6 +131,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
+
+    [self triggerAction];
     [self reset];
   } else {
     [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDelay];
@@ -141,6 +143,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
+
+  [self triggerAction];
   [self reset];
 }
 
@@ -201,9 +205,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
 
-  if (iOS_VERSION >= 26.0 && self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
+  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -211,9 +213,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
 
-  if (iOS_VERSION >= 26.0 && self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
+  [self triggerAction];
 }
 
 #endif
@@ -251,14 +251,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)reset
 {
-#if TARGET_OS_IOS
-  if (iOS_VERSION < 26.0 && self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
-#else
-  [self triggerAction];
-#endif
-
   [_gestureHandler.pointerTracker reset];
 
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];

@@ -165,6 +165,8 @@
       // UIGestureRecognizerStateFailed here. Making the behavior explicit.
       self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
                                                                     : UIGestureRecognizerStateCancelled;
+
+      [self triggerAction];
       [self reset];
       return;
     }
@@ -244,9 +246,7 @@
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
 
-  if (iOS_VERSION >= 26.0) {
-    [self triggerAction];
-  }
+  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -254,23 +254,13 @@
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
 
-  if (iOS_VERSION >= 26.0) {
-    [self triggerAction];
-  }
+  [self triggerAction];
 }
 
 #endif
 
 - (void)reset
 {
-#if TARGET_OS_IOS
-  if (iOS_VERSION < 26.0) {
-    [self triggerAction];
-  }
-#else
-  [self triggerAction];
-#endif
-
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;

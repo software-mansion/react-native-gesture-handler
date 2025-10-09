@@ -103,9 +103,7 @@
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 
-  if (iOS_VERSION >= 26.0 && self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
+  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -113,9 +111,7 @@
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 
-  if (iOS_VERSION >= 26.0 && self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
+  [self triggerAction];
 }
 
 #else
@@ -189,14 +185,6 @@
 
 - (void)reset
 {
-#if TARGET_OS_IOS
-  if (iOS_VERSION < 26.0 && self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
-#else
-  [self triggerAction];
-#endif
-
   [_gestureHandler.pointerTracker reset];
 
   [super reset];
