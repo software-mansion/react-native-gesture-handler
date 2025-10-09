@@ -1,7 +1,7 @@
 import { tagMessage } from '../utils';
 import { useExclusive, useRace, useSimultaneous } from '../v3/hooks/relations';
 import { useGesture } from '../v3/hooks/useGesture';
-import { configureRelations } from '../v3/Detectors/utils';
+import { configureRelations } from '../v3/detectors/utils';
 import { SingleGesture, SingleGestureName } from '../v3/types';
 import { renderHook } from '@testing-library/react-native';
 
