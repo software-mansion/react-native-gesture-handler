@@ -9,6 +9,11 @@ export interface NativeDetectorProps<THandlerData, TConfig> {
   gesture: Gesture<THandlerData, TConfig>;
 }
 
+export interface DelegateDetectorProps<THandlerData, TConfig> {
+  children?: React.ReactNode;
+  gesture?: Gesture<THandlerData, TConfig>;
+}
+
 export const AnimatedNativeDetector =
   Animated.createAnimatedComponent(HostGestureDetector);
 

@@ -7,7 +7,7 @@ import { configureRelations, ensureNativeDetectorComponent } from '../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import {
   AnimatedNativeDetector,
-  NativeDetectorProps,
+  DelegateDetectorProps,
   nativeDetectorStyles,
   ReanimatedNativeDetector,
 } from '../common';
@@ -15,20 +15,34 @@ import {
 export function DelegateDetector<THandlerData, TConfig>({
   gesture,
   children,
-}: NativeDetectorProps<THandlerData, TConfig>) {
+}: DelegateDetectorProps<THandlerData, TConfig>) {
   const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
   const logicMethods = useRef<Map<number, RefObject<GestureEvents<unknown>>>>(
     new Map()
   );
+  const [shouldUseReanimated, setShouldUseReanimated] = useState(
+    gesture ? gesture.config.shouldUseReanimated : false
+  );
+  const [dispatchesAnimatedEvents, setDispatchesAnimatedEvents] = useState(
+    gesture ? gesture.config.shouldUseReanimated : false
+  );
 
-  const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
+  const NativeDetectorComponent = dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimated
+    : shouldUseReanimated
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
   const register = useCallback(
-    (child: LogicChildren, methods: RefObject<GestureEvents<unknown>>) => {
+    (
+      child: LogicChildren,
+      methods: RefObject<GestureEvents<unknown>>,
+      forReanimated: boolean | undefined,
+      forAnimated: boolean | undefined
+    ) => {
+      setShouldUseReanimated(!!forReanimated);
+      setDispatchesAnimatedEvents(!!forAnimated);
+
       setLogicChildren((prev) => {
         const index = prev.findIndex((c) => c.viewTag === child.viewTag);
         if (index !== -1) {
@@ -53,7 +67,7 @@ export function DelegateDetector<THandlerData, TConfig>({
 
   const handleGestureEvent = (key: keyof GestureEvents<THandlerData>) => {
     return (e: GestureHandlerEvent<THandlerData>) => {
-      if (gesture.gestureEvents[key]) {
+      if (gesture?.gestureEvents[key]) {
         gesture.gestureEvents[key](e);
       }
 
@@ -70,7 +84,7 @@ export function DelegateDetector<THandlerData, TConfig>({
     (key: keyof GestureEvents<unknown>) => {
       const handlers: ((e: GestureHandlerEvent<THandlerData>) => void)[] = [];
 
-      if (gesture.gestureEvents[key]) {
+      if (gesture?.gestureEvents[key]) {
         handlers.push(
           gesture.gestureEvents[key] as (
             e: GestureHandlerEvent<unknown>
@@ -89,7 +103,7 @@ export function DelegateDetector<THandlerData, TConfig>({
 
       return handlers;
     },
-    [logicChildren, gesture.gestureEvents]
+    [logicChildren, gesture?.gestureEvents]
   );
 
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
@@ -103,7 +117,10 @@ export function DelegateDetector<THandlerData, TConfig>({
   );
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
-  configureRelations(gesture);
+
+  if (gesture) {
+    configureRelations(gesture);
+  }
 
   return (
     <DetectorContext.Provider value={{ register, unregister }}>
@@ -129,7 +146,13 @@ export function DelegateDetector<THandlerData, TConfig>({
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedTouchEvent={reanimatedTouchEventHandler}
         moduleId={globalThis._RNGH_MODULE_ID}
-        handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
+        handlerTags={
+          gesture
+            ? isComposedGesture(gesture)
+              ? gesture.tags
+              : [gesture.tag]
+            : []
+        }
         style={nativeDetectorStyles.detector}
         logicChildren={logicChildren}>
         {children}

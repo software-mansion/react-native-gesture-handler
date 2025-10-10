@@ -60,7 +60,12 @@ export function LogicDetector<THandlerData, TConfig>(
       Object.assign(logicProps, { viewRef });
     }
 
-    register(logicProps, logicMethods as RefObject<GestureEvents<unknown>>);
+    register(
+      logicProps,
+      logicMethods as RefObject<GestureEvents<unknown>>,
+      props.gesture.config.shouldUseReanimated,
+      props.gesture.config.dispatchesAnimatedEvents
+    );
 
     return () => {
       unregister(viewTag);
