@@ -109,7 +109,7 @@ export function DelegateDetector<THandlerData, TConfig>({
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedUpdateEvent')
   );
-  const reanimedStateChangeHandler = Reanimated?.useComposedEventHandler(
+  const reanimatedStateChangeHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedStateChange')
   );
   const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
@@ -142,7 +142,7 @@ export function DelegateDetector<THandlerData, TConfig>({
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedStateChange={reanimatedEventHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedEvent={reanimedStateChangeHandler}
+        onGestureHandlerReanimatedEvent={reanimatedStateChangeHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedTouchEvent={reanimatedTouchEventHandler}
         moduleId={globalThis._RNGH_MODULE_ID}
