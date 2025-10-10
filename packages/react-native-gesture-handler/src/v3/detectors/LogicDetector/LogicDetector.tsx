@@ -5,6 +5,7 @@ import { useDetectorContext } from './useDetectorContext';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import { GestureEvents } from '../../types';
 import { NativeDetectorProps } from '../common';
+import { configureRelations } from '../utils';
 
 export function LogicDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
@@ -71,6 +72,8 @@ export function LogicDetector<THandlerData, TConfig>(
       unregister(viewTag);
     };
   }, [viewTag, props.gesture, register, unregister]);
+
+  configureRelations(props.gesture);
 
   return <Wrap ref={handleRef}>{props.children}</Wrap>;
 }
