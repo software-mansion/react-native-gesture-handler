@@ -4,7 +4,7 @@ import {
   TouchEvent,
   ComposedGesture,
   ComposedGestureName,
-  Gesture,
+  AnyGesture,
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
@@ -13,7 +13,7 @@ import { containsDuplicates, isComposedGesture } from '../utils/relationUtils';
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
   type: ComposedGestureName,
-  ...gestures: Gesture[]
+  ...gestures: AnyGesture[]
 ): ComposedGesture {
   const tags = gestures.flatMap((gesture) =>
     isComposedGesture(gesture) ? gesture.tags : gesture.tag
