@@ -440,7 +440,11 @@ class RNGestureHandlerButtonViewManager :
       val isResponder = tryGrabbingResponder()
       if (isResponder) {
         isTouched = true
+        // when setPressed(true) is called before canBegin it will not call super.setPressed
+        // in this case we call it here
+        setPressed(true)
       }
+
       return isResponder
     }
 
@@ -525,6 +529,7 @@ class RNGestureHandlerButtonViewManager :
         isTouched = pressed
         super.setPressed(pressed)
       }
+
       if (!pressed && touchResponder === this) {
         // if the responder is no longer pressed we release button responder
         isTouched = false
