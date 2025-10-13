@@ -14,6 +14,7 @@ import {
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import { hasWorkletEventHandlers } from './utils/reanimatedUtils';
 
 export function isNativeEvent<THandlerData>(
   event: GestureHandlerEvent<THandlerData>
@@ -80,6 +81,21 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
 }
 
 export function prepareConfig<THandlerData, TConfig>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
+  const runOnJS = maybeUnpackValue(config.runOnJS);
+
+  config.shouldUseReanimatedDetector =
+    !config.disableReanimated &&
+    Reanimated !== undefined &&
+    hasWorkletEventHandlers(config);
+  config.needsPointerData = shouldHandleTouchEvents(config);
+  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
+  config.dispatchesReanimatedEvents =
+    config.shouldUseReanimatedDetector && runOnJS !== true;
+}
+
+export function prepareConfigForNativeSide<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   const copy = { ...config };

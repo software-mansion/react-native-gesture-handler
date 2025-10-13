@@ -116,13 +116,15 @@ export type SingleGesture<THandlerData, TConfig> = {
   gestureRelations: GestureRelations;
 };
 
+export type ComposedGestureConfig = {
+  shouldUseReanimatedDetector: boolean;
+  dispatchesAnimatedEvents: boolean;
+};
+
 export type ComposedGesture = {
   tags: number[];
   type: ComposedGestureName;
-  config: {
-    shouldUseReanimated: boolean;
-    dispatchesAnimatedEvents: boolean;
-  };
+  config: ComposedGestureConfig;
   gestureEvents: GestureEvents<unknown>;
   externalSimultaneousHandlers: number[];
   gestures: Gesture[];
@@ -167,15 +169,16 @@ export interface GestureCallbacks<THandlerData> {
 }
 
 export type InternalConfigProps<THandlerData> = {
-  shouldUseReanimated?: boolean;
+  shouldUseReanimatedDetector?: boolean;
+  dispatchesReanimatedEvents?: boolean;
   dispatchesAnimatedEvents?: boolean;
   needsPointerData?: boolean;
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-type CommonGestureConfig = WithSharedValue<
+type CommonGestureConfig = { disableReanimated?: boolean } & WithSharedValue<
   {
-    disableReanimated?: boolean;
+    runOnJS?: boolean;
     enabled?: boolean;
     shouldCancelWhenOutside?: boolean;
     hitSlop?: HitSlop;

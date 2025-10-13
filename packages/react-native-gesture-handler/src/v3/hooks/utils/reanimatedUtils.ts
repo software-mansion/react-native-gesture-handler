@@ -36,7 +36,16 @@ export function bindSharedValues<THandlerData, TConfig>(
     const listenerId = baseListenerId + keyHash;
 
     sharedValue.addListener(listenerId, (value) => {
-      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
+      if (configKey === 'runOnJS') {
+        config.dispatchesReanimatedEvents =
+          config.shouldUseReanimatedDetector && !value;
+
+        updateGestureHandlerConfig(handlerTag, {
+          dispatchesReanimatedEvents: config.dispatchesReanimatedEvents,
+        });
+      } else {
+        updateGestureHandlerConfig(handlerTag, { [configKey]: value });
+      }
       flushOperations();
     });
   };
