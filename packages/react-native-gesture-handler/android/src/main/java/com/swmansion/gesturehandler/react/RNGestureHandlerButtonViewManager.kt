@@ -515,16 +515,6 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun setPressed(pressed: Boolean) {
-      // there is a possibility of this method being called before NativeViewGestureHandler has
-      // opportunity to call canStart, in that case we need to grab responder in case the gesture
-      // will activate
-      // when canStart is called eventually, tryGrabbingResponder will return true if the button
-      // already is a responder
-      if (pressed) {
-        if (tryGrabbingResponder()) {
-          soundResponder = this
-        }
-      }
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
       val canBePressedAlongsideOther = !exclusive && touchResponder?.exclusive != true && !isChildTouched()
