@@ -169,7 +169,6 @@ export { LogicDetector } from './v3/LogicDetector';
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
 
-export { SingleGestureName } from './v3/types';
 export type { ComposedGesture } from './v3/types';
 
 export * from './v3/hooks/gestures';
