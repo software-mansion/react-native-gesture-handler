@@ -151,7 +151,6 @@ android {
         buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
 
         if (isNewArchitectureEnabled()) {
-            var appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
             externalNativeBuild {
                 cmake {
                     cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++20", "-DANDROID"
@@ -215,7 +214,7 @@ android {
     }
 
     if (isGHExampleApp()) {
-        tasks.withType(ExternalNativeBuildJsonTask) {
+        tasks.withType(ExternalNativeBuildJsonTask).configureEach {
             compileTask ->
                 compileTask.doLast {
                     def rootDir = new File("${project.projectDir}/..")
