@@ -1,7 +1,7 @@
-import { ComposedGestureName, Gesture } from '../../types';
+import { AnyGesture, ComposedGestureName } from '../../types';
 import { useComposedGesture } from './useComposedGesture';
 
-export function useSimultaneous(...gestures: Gesture[]) {
+export function useSimultaneous(...gestures: AnyGesture[]) {
   const composedGesture = useComposedGesture(
     ComposedGestureName.Simultaneous,
     ...gestures

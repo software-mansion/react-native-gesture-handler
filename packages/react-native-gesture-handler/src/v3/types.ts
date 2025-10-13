@@ -144,6 +144,9 @@ export type Gesture<THandlerData = unknown, TConfig = unknown> =
   | SingleGesture<THandlerData, TConfig>
   | ComposedGesture;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyGesture = Gesture<any, unknown>;
+
 interface ExternalRelations {
   simultaneousWithExternalGesture?: Gesture | Gesture[];
   requireExternalGestureToFail?: Gesture | Gesture[];
