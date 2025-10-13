@@ -56,9 +56,9 @@ export function useFling(config: FlingGestureConfig) {
   return useGesture(SingleGestureName.Fling, flingConfig);
 }
 
-export type FlingGestureEvent =
-  | GestureStateChangeEvent<FlingHandlerData>
-  | GestureUpdateEvent<FlingHandlerData>;
+export type FlingGestureStateChangeEvent =
+  GestureStateChangeEvent<FlingHandlerData>;
+export type FlingGestureUpdateEvent = GestureUpdateEvent<FlingHandlerData>;
 
 export type FlingGesture = SingleGesture<
   FlingHandlerData,

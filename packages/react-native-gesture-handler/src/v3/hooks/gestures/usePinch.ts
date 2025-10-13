@@ -48,9 +48,9 @@ export function usePinch(config: PinchGestureConfig) {
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }
 
-export type PinchGestureEvent =
-  | GestureStateChangeEvent<PinchHandlerData>
-  | GestureUpdateEvent<PinchHandlerData>;
+export type PinchGestureStateChangeEvent =
+  GestureStateChangeEvent<PinchHandlerData>;
+export type PinchGestureUpdateEvent = GestureUpdateEvent<PinchHandlerData>;
 
 export type PinchGesture = SingleGesture<
   PinchHandlerData,

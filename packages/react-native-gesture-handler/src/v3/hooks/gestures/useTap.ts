@@ -112,8 +112,8 @@ export function useTap(config: TapGestureConfig) {
   );
 }
 
-export type TapGestureEvent =
-  | GestureStateChangeEvent<TapHandlerData>
-  | GestureUpdateEvent<TapHandlerData>;
+export type TapGestureStateChangeEvent =
+  GestureStateChangeEvent<TapHandlerData>;
+export type TapGestureUpdateEvent = GestureUpdateEvent<TapHandlerData>;
 
 export type TapGesture = SingleGesture<TapHandlerData, TapGestureProperties>;

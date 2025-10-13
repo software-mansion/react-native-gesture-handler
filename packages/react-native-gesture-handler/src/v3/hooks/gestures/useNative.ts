@@ -47,9 +47,10 @@ export function useNative(config: NativeViewGestureConfig) {
   return useGesture(SingleGestureName.Native, nativeConfig);
 }
 
-export type NativeGestureEvent =
-  | GestureStateChangeEvent<NativeViewHandlerData>
-  | GestureUpdateEvent<NativeViewHandlerData>;
+export type NativeGestureStateChangeEvent =
+  GestureStateChangeEvent<NativeViewHandlerData>;
+export type NativeGestureUpdateEvent =
+  GestureUpdateEvent<NativeViewHandlerData>;
 
 export type NativeGesture = SingleGesture<
   NativeViewHandlerData,

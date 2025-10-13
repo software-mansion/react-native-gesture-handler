@@ -68,9 +68,9 @@ export function useHover(config: HoverGestureConfig) {
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
 
-export type HoverGestureEvent =
-  | GestureStateChangeEvent<HoverHandlerData>
-  | GestureUpdateEvent<HoverHandlerData>;
+export type HoverGestureStateChangeEvent =
+  GestureStateChangeEvent<HoverHandlerData>;
+export type HoverGestureUpdateEvent = GestureUpdateEvent<HoverHandlerData>;
 
 export type HoverGesture = SingleGesture<
   HoverHandlerData,

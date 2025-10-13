@@ -52,9 +52,10 @@ export function useRotation(config: RotationGestureConfig) {
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }
 
-export type RotationGestureEvent =
-  | GestureStateChangeEvent<RotationHandlerData>
-  | GestureUpdateEvent<RotationHandlerData>;
+export type RotationGestureStateChangeEvent =
+  GestureStateChangeEvent<RotationHandlerData>;
+export type RotationGestureUpdateEvent =
+  GestureUpdateEvent<RotationHandlerData>;
 
 export type RotationGesture = SingleGesture<
   RotationHandlerData,
