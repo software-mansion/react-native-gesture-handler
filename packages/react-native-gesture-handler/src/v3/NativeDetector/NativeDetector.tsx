@@ -135,9 +135,9 @@ export function NativeDetector<THandlerData, TConfig>({
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerAnimatedEvent={
-          gesture.gestureEvents.onGestureHandlerAnimatedEvent
-        }
+        onGestureHandlerAnimatedEvent={handleGestureEvent(
+          'onGestureHandlerAnimatedEvent'
+        )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerTouchEvent={handleGestureEvent(
           'onGestureHandlerTouchEvent'
