@@ -1,30 +1,15 @@
-import { StylusData } from '../../../handlers/gestureHandlerCommon';
-import { HoverEffect } from '../../../handlers/gestures/hoverGesture';
+import { StylusData } from '../../../../handlers/gestureHandlerCommon';
+import { HoverEffect } from '../../../../handlers/gestures/hoverGesture';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   HandlerData,
   SingleGestureName,
   WithSharedValue,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../utils';
-
-type HoverGestureProperties = WithSharedValue<
-  {
-    /**
-     * Visual effect applied to the view while the view is hovered. The possible values are:
-     *
-     * - `HoverEffect.None`
-     * - `HoverEffect.Lift`
-     * - `HoverEffect.Highlight`
-     *
-     * Defaults to `HoverEffect.None`
-     */
-    hoverEffect?: HoverEffect;
-  },
-  HoverEffect
->;
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import { HoverGestureNativeProperties } from './HoverProperties';
 
 type HoverHandlerData = {
   x: number;
@@ -35,6 +20,11 @@ type HoverHandlerData = {
   changeX: number;
   changeY: number;
 };
+
+type HoverGestureProperties = WithSharedValue<
+  HoverGestureNativeProperties,
+  HoverEffect
+>;
 
 type HoverGestureInternalConfig = BaseGestureConfig<
   HoverHandlerData,

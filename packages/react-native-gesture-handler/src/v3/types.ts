@@ -10,6 +10,12 @@ import {
 import { PointerType } from '../PointerType';
 
 import { State } from '../State';
+import { PanGestureNativeProperties } from './hooks/gestures/pan/PanProperties';
+import { FlingGestureNativeProperties } from './hooks/gestures/fling/FlingProperties';
+import { HoverGestureNativeProperties } from './hooks/gestures/hover/HoverProperties';
+import { LongPressGestureNativeProperties } from './hooks/gestures/longPress/LongPressProperties';
+import { NativeGestureNativeProperties } from './hooks/gestures/native/NativeProperties';
+import { TapGestureNativeConfig } from './hooks/gestures/tap/TapProperties';
 
 interface EventPayload {
   handlerTag: number;
@@ -176,7 +182,7 @@ export type InternalConfigProps<THandlerData> = {
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-type CommonGestureConfig = WithSharedValue<
+export type CommonGestureConfig = WithSharedValue<
   {
     disableReanimated?: boolean;
     enabled?: boolean;
@@ -261,3 +267,11 @@ type Simplify<T> =
           // For a generic object, retain the original structure while forcing an object type
           [K in keyof T]: T[K];
         } & NonNullable<unknown>;
+
+export type HandlersPropsWhiteList =
+  | Set<keyof PanGestureNativeProperties>
+  | Set<keyof FlingGestureNativeProperties>
+  | Set<keyof HoverGestureNativeProperties>
+  | Set<keyof LongPressGestureNativeProperties>
+  | Set<keyof NativeGestureNativeProperties>
+  | Set<keyof TapGestureNativeConfig>;
