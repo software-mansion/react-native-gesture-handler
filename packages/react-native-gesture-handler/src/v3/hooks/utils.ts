@@ -144,7 +144,7 @@ export const PropsWhiteLists = new Map<
   [SingleGestureName.LongPress, LongPressNativeProperties],
 ]);
 
-const EMPTY_WHILE_LIST = new Set<string>();
+const EMPTY_WHITE_LIST = new Set<string>();
 
 export function prepareConfig<THandlerData, TConfig extends object>(
   handlerType: SingleGestureName,
@@ -153,7 +153,7 @@ export function prepareConfig<THandlerData, TConfig extends object>(
   // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
   const filteredConfig: BaseGestureConfig<THandlerData, TConfig> = {};
   const handlerPropsWhiteList =
-    PropsWhiteLists.get(handlerType) ?? EMPTY_WHILE_LIST;
+    PropsWhiteLists.get(handlerType) ?? EMPTY_WHITE_LIST;
 
   for (const [key, value] of Object.entries(config)) {
     // @ts-ignore That's the point, we want to see if key exists in the whitelists
