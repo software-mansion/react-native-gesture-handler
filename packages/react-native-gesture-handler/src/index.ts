@@ -54,20 +54,20 @@ export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
-export type { TapGestureType } from './handlers/gestures/tapGesture';
-export type { PanGestureType } from './handlers/gestures/panGesture';
-export type { FlingGestureType } from './handlers/gestures/flingGesture';
-export type { LongPressGestureType } from './handlers/gestures/longPressGesture';
-export type { PinchGestureType } from './handlers/gestures/pinchGesture';
-export type { RotationGestureType } from './handlers/gestures/rotationGesture';
-export type { ForceTouchGestureType } from './handlers/gestures/forceTouchGesture';
-export type { ManualGestureType } from './handlers/gestures/manualGesture';
-export type { HoverGestureType } from './handlers/gestures/hoverGesture';
+export type { TapGestureType as LegacyTapGesture } from './handlers/gestures/tapGesture';
+export type { PanGestureType as LegacyPanGesture } from './handlers/gestures/panGesture';
+export type { FlingGestureType as LegacyFlingGesture } from './handlers/gestures/flingGesture';
+export type { LongPressGestureType as LegacyLongPressGesture } from './handlers/gestures/longPressGesture';
+export type { PinchGestureType as LegacyPinchGesture } from './handlers/gestures/pinchGesture';
+export type { RotationGestureType as LegacyRotationGesture } from './handlers/gestures/rotationGesture';
+export type { ForceTouchGestureType as LegacyForceTouchGesture } from './handlers/gestures/forceTouchGesture';
+export type { ManualGestureType as LegacyManualGesture } from './handlers/gestures/manualGesture';
+export type { HoverGestureType as LegacyHoverGesture } from './handlers/gestures/hoverGesture';
 export type {
-  ComposedGestureType,
-  RaceGestureType,
-  SimultaneousGestureType,
-  ExclusiveGestureType,
+  ComposedGestureType as LegacyComposedGesture,
+  RaceGestureType as LegacyRaceGesture,
+  SimultaneousGestureType as LegacySimultaneousGesture,
+  ExclusiveGestureType as LegacyExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
