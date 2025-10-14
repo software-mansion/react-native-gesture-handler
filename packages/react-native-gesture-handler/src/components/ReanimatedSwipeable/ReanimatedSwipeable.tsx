@@ -472,6 +472,7 @@ const Swipeable = (props: SwipeableProps) => {
   const tapGesture = useMemo(() => {
     const tap = Gesture.Tap()
       .shouldCancelWhenOutside(true)
+      .enabled(rowState.value !== 0)
       .onStart(() => {
         if (rowState.value !== 0) {
           close();
