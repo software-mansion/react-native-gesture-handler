@@ -81,7 +81,7 @@ export function useGesture<THandlerData, TConfig>(
   }, [type, tag]);
 
   useEffect(() => {
-    const preparedConfig = prepareConfigForNativeSide(config);
+    const preparedConfig = prepareConfigForNativeSide(type, config);
     RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
     RNGestureHandlerModule.flushOperations();
 

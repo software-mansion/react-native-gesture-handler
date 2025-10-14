@@ -3,11 +3,10 @@ import {
   ExcludeInternalConfigProps,
   HandlerData,
   SingleGestureName,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../utils';
-
-type RotationGestureProperties = Record<string, never>;
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import { RotationGestureNativeProperties } from './RotationProperties';
 
 type RotationHandlerData = {
   rotation: number;
@@ -16,6 +15,8 @@ type RotationHandlerData = {
   velocity: number;
   rotationChange: number;
 };
+
+type RotationGestureProperties = RotationGestureNativeProperties;
 
 type RotationGestureInternalConfig = BaseGestureConfig<
   RotationHandlerData,
