@@ -24,7 +24,7 @@ export function useGesture<THandlerData, TConfig>(
     );
   }
 
-  // This has to be done ASAP as other hooks depend `shouldUseReanimated`.
+  // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
   prepareConfig(config);
 
   if (config.dispatchesAnimatedEvents && config.shouldUseReanimatedDetector) {
