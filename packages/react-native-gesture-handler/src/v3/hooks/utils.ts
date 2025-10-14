@@ -92,7 +92,7 @@ export function prepareConfig<THandlerData, TConfig>(
   config.needsPointerData = shouldHandleTouchEvents(config);
   config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
   config.dispatchesReanimatedEvents =
-    config.shouldUseReanimatedDetector && runOnJS !== true;
+    config.shouldUseReanimatedDetector && !runOnJS;
 }
 
 export function prepareConfigForNativeSide<THandlerData, TConfig>(
