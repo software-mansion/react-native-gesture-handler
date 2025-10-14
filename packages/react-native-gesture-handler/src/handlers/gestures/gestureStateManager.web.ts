@@ -5,7 +5,7 @@ export const GestureStateManager = {
   create(handlerTag: number): GestureStateManagerType {
     return {
       handlerTag,
-      
+
       begin: () => {
         NodeManager.getHandler(handlerTag).begin();
       },

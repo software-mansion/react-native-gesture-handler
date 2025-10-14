@@ -24,7 +24,7 @@ function create(handlerTag: number): GestureStateManagerType {
   'worklet';
   return {
     handlerTag,
-    
+
     begin: () => {
       'worklet';
       if (REANIMATED_AVAILABLE) {
