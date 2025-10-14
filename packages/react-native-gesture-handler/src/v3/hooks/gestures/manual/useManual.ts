@@ -5,19 +5,19 @@ import {
   SingleGestureName,
   GestureStateChangeEvent,
   GestureUpdateEvent,
-} from '../../types';
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig } from '../../utils';
+import { ManualGestureNativeProperties } from './ManualProperties';
 
-import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
-
-type ManualGestureProperties = Record<string, never>;
 type ManualHandlerData = Record<string, never>;
+
+type ManualGestureProperties = ManualGestureNativeProperties;
 
 type ManualGestureInternalConfig = BaseGestureConfig<
   ManualHandlerData,
   ManualGestureProperties
 >;
-
 export type ManualGestureConfig =
   ExcludeInternalConfigProps<ManualGestureInternalConfig>;
 

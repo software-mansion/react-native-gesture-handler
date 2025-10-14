@@ -3,6 +3,7 @@ import {
   AnimatedEvent,
   BaseGestureConfig,
   ChangeCalculatorType,
+  CommonGestureConfig,
   DiffCalculatorType,
   ExcludeInternalConfigProps,
   UnpackedGestureHandlerEvent,
@@ -10,10 +11,19 @@ import {
   GestureStateChangeEvent,
   GestureUpdateEvent,
   SharedValueOrT,
+  SingleGestureName,
+  InternalConfigProps,
+  HandlersPropsWhiteList,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import { PanNativeProperties } from './gestures/pan/PanProperties';
+import { FlingNativeProperties } from './gestures/fling/FlingProperties';
+import { HoverNativeProperties } from './gestures/hover/HoverProperties';
+import { LongPressNativeProperties } from './gestures/longPress/LongPressProperties';
+import { NativeHandlerNativeProperties } from './gestures/native/NativeProperties';
+import { TapNativeProperties } from './gestures/tap/TapProperties';
 
 export function isNativeEvent<THandlerData>(
   event: GestureHandlerEvent<THandlerData>
@@ -79,27 +89,90 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function prepareConfig<THandlerData, TConfig>(
+const allowedNativeProps = new Set<
+  keyof CommonGestureConfig | keyof InternalConfigProps<unknown>
+>([
+  // CommonGestureConfig
+  'disableReanimated',
+  'enabled',
+  'shouldCancelWhenOutside',
+  'hitSlop',
+  'userSelect',
+  'activeCursor',
+  'mouseButton',
+  'enableContextMenu',
+  'touchAction',
+
+  // InternalConfigProps
+  'shouldUseReanimated',
+  'dispatchesAnimatedEvents',
+  'needsPointerData',
+  'changeEventCalculator',
+]);
+
+const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
+  // Callbacks
+  'onBegin',
+  'onStart',
+  'onUpdate',
+  'onEnd',
+  'onFinalize',
+  'onTouchesDown',
+  'onTouchesMove',
+  'onTouchesUp',
+  'onTouchesCancelled',
+
+  // Config props
+  'changeEventCalculator',
+  'disableReanimated',
+
+  // Relations
+  'simultaneousWithExternalGesture',
+  'requireExternalGestureToFail',
+  'blocksExternalGesture',
+]);
+
+export const PropsWhiteLists = new Map<
+  SingleGestureName,
+  HandlersPropsWhiteList
+>([
+  [SingleGestureName.Pan, PanNativeProperties],
+  [SingleGestureName.Tap, TapNativeProperties],
+  [SingleGestureName.Native, NativeHandlerNativeProperties],
+  [SingleGestureName.Fling, FlingNativeProperties],
+  [SingleGestureName.Hover, HoverNativeProperties],
+  [SingleGestureName.LongPress, LongPressNativeProperties],
+]);
+
+const EMPTY_WHITE_LIST = new Set<string>();
+
+export function prepareConfig<THandlerData, TConfig extends object>(
+  handlerType: SingleGestureName,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  const copy = { ...config };
+  // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
+  const filteredConfig: BaseGestureConfig<THandlerData, TConfig> = {};
+  const handlerPropsWhiteList =
+    PropsWhiteLists.get(handlerType) ?? EMPTY_WHITE_LIST;
 
-  for (const key in copy) {
-    // @ts-ignore It is fine to use string as index
-    if (Reanimated?.isSharedValue(copy[key])) {
-      // @ts-ignore It is fine to use string as index
-      copy[key] = copy[key].value;
+  for (const [key, value] of Object.entries(config)) {
+    // @ts-ignore That's the point, we want to see if key exists in the whitelists
+    if (allowedNativeProps.has(key) || handlerPropsWhiteList.has(key)) {
+      Object.assign(filteredConfig, {
+        [key]: Reanimated?.isSharedValue(value) ? value.value : value,
+      });
+    } else if (PropsToFilter.has(key)) {
+      continue;
+    } else {
+      console.warn(
+        tagMessage(
+          `${key} is not a valid property for ${handlerType} and will be ignored.`
+        )
+      );
     }
   }
 
-  // TODO: Filter changes - passing functions (and possibly other types)
-  // causes a native crash
-  delete copy.onUpdate;
-  delete copy.simultaneousWithExternalGesture;
-  delete copy.requireExternalGestureToFail;
-  delete copy.blocksExternalGesture;
-
-  return copy;
+  return filteredConfig;
 }
 
 export function shouldHandleTouchEvents<THandlerData, TConfig>(
