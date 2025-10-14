@@ -21,12 +21,14 @@ import {
 } from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
 
-import { Swipeable, InfoButton } from '../rows';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+
 import { DraggableBox } from '../../basic/draggable';
 import { PinchableBox } from '../../recipes/scaleAndRotate';
 import { PressBox } from '../../basic/multitap';
 
 import { LoremIpsum } from '../../common';
+import { InfoButton } from './InfoButton';
 
 const WrappedSlider = createNativeWrapper(Slider, {
   shouldCancelWhenOutside: false,
