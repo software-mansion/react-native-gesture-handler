@@ -3,29 +3,17 @@ import {
   ExcludeInternalConfigProps,
   SingleGestureName,
   WithSharedValue,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
-
-type NativeViewGestureProperties = WithSharedValue<{
-  /**
-   * Android only.
-   *
-   * Determines whether the handler should check for an existing touch event on
-   * instantiation.
-   */
-  shouldActivateOnStart?: boolean;
-
-  /**
-   * When `true`, cancels all other gesture handlers when this
-   * `NativeViewGestureHandler` receives an `ACTIVE` state event.
-   */
-  disallowInterruption?: boolean;
-}>;
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig } from '../../utils';
+import { NativeGestureNativeProperties } from './NativeProperties';
 
 type NativeViewHandlerData = {
   pointerInside: boolean;
 };
+
+type NativeViewGestureProperties =
+  WithSharedValue<NativeGestureNativeProperties>;
 
 type NativeViewGestureInternalConfig = BaseGestureConfig<
   NativeViewHandlerData,

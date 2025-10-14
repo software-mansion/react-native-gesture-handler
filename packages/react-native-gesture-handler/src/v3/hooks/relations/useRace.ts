@@ -1,6 +1,6 @@
-import { ComposedGestureName, Gesture } from '../../types';
+import { AnyGesture, ComposedGestureName } from '../../types';
 import { useComposedGesture } from './useComposedGesture';
 
-export function useRace(...gestures: Gesture[]) {
+export function useRace(...gestures: AnyGesture[]) {
   return useComposedGesture(ComposedGestureName.Race, ...gestures);
 }
