@@ -1,26 +1,26 @@
-export type { TapGestureConfig } from './useTap';
-export { useTap } from './useTap';
+export type { TapGestureConfig } from './tap/useTap';
+export { useTap } from './tap/useTap';
 
-export type { FlingGestureConfig } from './useFling';
-export { useFling } from './useFling';
+export type { FlingGestureConfig } from './fling/useFling';
+export { useFling } from './fling/useFling';
 
-export type { LongPressGestureConfig } from './useLongPress';
-export { useLongPress } from './useLongPress';
+export type { LongPressGestureConfig } from './longPress/useLongPress';
+export { useLongPress } from './longPress/useLongPress';
 
-export type { PinchGestureConfig } from './usePinch';
-export { usePinch } from './usePinch';
+export type { PinchGestureConfig } from './pinch/usePinch';
+export { usePinch } from './pinch/usePinch';
 
-export type { RotationGestureConfig } from './useRotation';
-export { useRotation } from './useRotation';
+export type { RotationGestureConfig } from './rotation/useRotation';
+export { useRotation } from './rotation/useRotation';
 
-export type { HoverGestureConfig } from './useHover';
-export { useHover } from './useHover';
+export type { HoverGestureConfig } from './hover/useHover';
+export { useHover } from './hover/useHover';
 
-export type { ManualGestureConfig } from './useManual';
-export { useManual } from './useManual';
+export type { ManualGestureConfig } from './manual/useManual';
+export { useManual } from './manual/useManual';
 
-export type { NativeViewGestureConfig } from './useNative';
-export { useNative } from './useNative';
+export type { NativeViewGestureConfig } from './native/useNative';
+export { useNative } from './native/useNative';
 
-export type { PanGestureConfig } from './usePan';
-export { usePan } from './usePan';
+export type { PanGestureConfig } from './pan/usePan';
+export { usePan } from './pan/usePan';

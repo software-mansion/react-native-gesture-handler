@@ -8,13 +8,17 @@ import {
   InternalConfigProps,
   SingleGestureName,
 } from '../../types';
-import { panGestureHandlerProps } from '../../../handlers/PanGestureHandler';
-import { tapGestureHandlerProps } from '../../../handlers/TapGestureHandler';
-import { nativeViewGestureHandlerProps } from '../../../handlers/NativeViewGestureHandler';
-import { longPressGestureHandlerProps } from '../../../handlers/LongPressGestureHandler';
-import { flingGestureHandlerProps } from '../../../handlers/FlingGestureHandler';
+import { PanNativeProperties } from '../gestures/pan/PanProperties';
+import { FlingNativeProperties } from '../gestures/fling/FlingProperties';
+import { HoverNativeProperties } from '../gestures/hover/HoverProperties';
+import { LongPressNativeProperties } from '../gestures/longPress/LongPressProperties';
+import { NativeHandlerNativeProperties } from '../gestures/native/NativeProperties';
+import { TapNativeProperties } from '../gestures/tap/TapProperties';
 
-export const commonGestureConfig = new Set<keyof CommonGestureConfig>([
+const allowedNativeProps = new Set<
+  keyof CommonGestureConfig | keyof InternalConfigProps<unknown>
+>([
+  // CommonGestureConfig
   'disableReanimated',
   'enabled',
   'shouldCancelWhenOutside',
@@ -24,9 +28,8 @@ export const commonGestureConfig = new Set<keyof CommonGestureConfig>([
   'mouseButton',
   'enableContextMenu',
   'touchAction',
-]);
 
-export const internalConfigProps = new Set<keyof InternalConfigProps<unknown>>([
+  // InternalConfigProps
   'shouldUseReanimated',
   'dispatchesAnimatedEvents',
   'needsPointerData',
@@ -55,24 +58,19 @@ const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
   'blocksExternalGesture',
 ]);
 
-const EMPTY_WHITE_LIST = new Set<string>();
-
-function withCommonProps<T extends string>(handlerProps: readonly T[]) {
-  return new Set<
-    T | keyof CommonGestureConfig | keyof InternalConfigProps<unknown>
-  >([...handlerProps, ...commonGestureConfig, ...internalConfigProps]);
-}
-
-export const PropsWhiteList = new Map<
+export const PropsWhiteLists = new Map<
   SingleGestureName,
   HandlersPropsWhiteList
 >([
-  [SingleGestureName.Pan, withCommonProps(panGestureHandlerProps)],
-  [SingleGestureName.Tap, withCommonProps(tapGestureHandlerProps)],
-  [SingleGestureName.Native, withCommonProps(nativeViewGestureHandlerProps)],
-  [SingleGestureName.LongPress, withCommonProps(longPressGestureHandlerProps)],
-  [SingleGestureName.Fling, withCommonProps(flingGestureHandlerProps)],
+  [SingleGestureName.Pan, PanNativeProperties],
+  [SingleGestureName.Tap, TapNativeProperties],
+  [SingleGestureName.Native, NativeHandlerNativeProperties],
+  [SingleGestureName.Fling, FlingNativeProperties],
+  [SingleGestureName.Hover, HoverNativeProperties],
+  [SingleGestureName.LongPress, LongPressNativeProperties],
 ]);
+
+const EMPTY_WHITE_LIST = new Set<string>();
 
 export function prepareConfig<THandlerData, TConfig extends object>(
   handlerType: SingleGestureName,
@@ -80,10 +78,12 @@ export function prepareConfig<THandlerData, TConfig extends object>(
 ) {
   // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
   const filteredConfig: BaseGestureConfig<THandlerData, TConfig> = {};
-  const propsWhiteList = PropsWhiteList.get(handlerType) ?? EMPTY_WHITE_LIST;
+  const handlerPropsWhiteList =
+    PropsWhiteLists.get(handlerType) ?? EMPTY_WHITE_LIST;
 
   for (const [key, value] of Object.entries(config)) {
-    if (propsWhiteList.has(key)) {
+    // @ts-ignore That's the point, we want to see if key exists in the whitelists
+    if (allowedNativeProps.has(key) || handlerPropsWhiteList.has(key)) {
       Object.assign(filteredConfig, {
         [key]: Reanimated?.isSharedValue(value) ? value.value : value,
       });

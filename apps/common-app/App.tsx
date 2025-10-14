@@ -22,7 +22,6 @@ import {
   TouchablesIndex,
   TouchableExample,
 } from './src/release_tests/touchables';
-import Rows from './src/release_tests/rows';
 import NestedFling from './src/release_tests/nestedFling';
 import MouseButtons from './src/release_tests/mouseButtons';
 import ContextMenu from './src/release_tests/contextMenu';
@@ -30,7 +29,6 @@ import NestedTouchables from './src/release_tests/nestedTouchables';
 import NestedPressables from './src/release_tests/nestedPressables';
 import NestedButtons from './src/release_tests/nestedButtons';
 import PointerType from './src/release_tests/pointerType';
-import SwipeableReanimation from './src/release_tests/swipeableReanimation';
 import NestedGestureHandlerRootViewWithModal from './src/release_tests/nestedGHRootViewWithModal';
 import TwoFingerPan from './src/release_tests/twoFingerPan';
 import SvgCompatibility from './src/release_tests/svg';
@@ -40,14 +38,12 @@ import { PinchableBox } from './src/recipes/scaleAndRotate';
 import PanAndScroll from './src/recipes/panAndScroll';
 
 import { BottomSheet } from './src/showcase/bottomSheet';
-import Swipeables from './src/showcase/swipeable';
 import ChatHeads from './src/showcase/chatHeads';
 
 import Draggable from './src/basic/draggable';
 import MultiTap from './src/basic/multitap';
 import BouncingBox from './src/basic/bouncing';
 import PanResponder from './src/basic/panResponder';
-import HorizontalDrawer from './src/basic/horizontalDrawer';
 import PagerAndDrawer from './src/basic/pagerAndDrawer';
 import ForceTouch from './src/basic/forcetouch';
 import Fling from './src/basic/fling';
@@ -62,7 +58,6 @@ import Calculator from './src/new_api/calculator';
 import BottomSheetNewApi from './src/new_api/bottom_sheet';
 import ChatHeadsNewApi from './src/new_api/chat_heads';
 import DragNDrop from './src/new_api/drag_n_drop';
-import BetterHorizontalDrawer from './src/new_api/betterHorizontalDrawer';
 import ManualGestures from './src/new_api/manualGestures/index';
 import Hover from './src/new_api/hover';
 import HoverableIcons from './src/new_api/hoverable_icons';
@@ -114,10 +109,6 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
       {
-        name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
-        component: BetterHorizontalDrawer,
-      },
-      {
         name: 'Manual gestures',
         component: ManualGestures,
       },
@@ -130,7 +121,6 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Multitap', component: MultiTap },
       { name: 'Bouncing box', component: BouncingBox },
       { name: 'Pan responder', component: PanResponder },
-      { name: 'Horizontal drawer', component: HorizontalDrawer },
       {
         name: 'Pager & drawer',
         component: PagerAndDrawer,
@@ -155,7 +145,6 @@ const EXAMPLES: ExamplesSection[] = [
     sectionTitle: 'Showcase',
     data: [
       { name: 'Bottom sheet', component: BottomSheet },
-      { name: 'Swipeables', component: Swipeables },
       { name: 'Chat heads', component: ChatHeads },
     ],
   },
@@ -189,7 +178,6 @@ const EXAMPLES: ExamplesSection[] = [
       },
       { name: 'Double pinch & rotate', component: DoublePinchRotate },
       { name: 'Double draggable', component: DoubleDraggable },
-      { name: 'Rows', component: Rows },
       { name: 'Nested Fling', component: NestedFling },
       {
         name: 'Combo',
@@ -205,7 +193,6 @@ const EXAMPLES: ExamplesSection[] = [
       },
       { name: 'PointerType', component: PointerType },
       { name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout },
-      { name: 'Swipeable Reanimation', component: SwipeableReanimation },
       { name: 'RectButton (borders)', component: RectButtonBorders },
       { name: 'Gesturized pressable', component: GesturizedPressable },
       {

@@ -2,18 +2,19 @@ import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGestureName,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig } from '../../utils';
+import { ManualGestureNativeProperties } from './ManualProperties';
 
-type ManualGestureProperties = Record<string, never>;
 type ManualHandlerData = Record<string, never>;
+
+type ManualGestureProperties = ManualGestureNativeProperties;
 
 type ManualGestureInternalConfig = BaseGestureConfig<
   ManualHandlerData,
   ManualGestureProperties
 >;
-
 export type ManualGestureConfig =
   ExcludeInternalConfigProps<ManualGestureInternalConfig>;
 
