@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, View, I18nManager } from 'react-native';
 
-import { FlatList, RectButton } from 'react-native-gesture-handler';
+import { FlatList, Pressable, RectButton } from 'react-native-gesture-handler';
+
+import Reanimated, {
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
+
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 //  To toggle LTR/RTL change to `true`
 I18nManager.allowRTL(false);
@@ -42,25 +51,111 @@ const SwipeableRow = ({ item, index }: { item: DataRow; index: number }) => {
   }
 };
 
+function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('[R] showLeftProgress:', prog.value);
+    console.log('[R] appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value - 60 }],
+    };
+  });
+
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.leftAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
+
+function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('[R] showRightProgress:', prog.value);
+    console.log('[R] appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value + 60 }],
+    };
+  });
+
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.rightAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
+
 const Separator = () => <View style={styles.separator} />;
 
 export default function App() {
+  const reanimatedRef = useRef<SwipeableMethods>(null);
   return (
-    <FlatList
-      data={DATA}
-      ItemSeparatorComponent={Separator}
-      renderItem={({ item, index }) => (
-        <SwipeableRow item={item} index={index} />
-      )}
-      keyExtractor={(_item, index) => `message ${index}`}
-    />
+    <View>
+      <Separator />
+
+      <View style={styles.controlPanelWrapper}>
+        <Text style={styles.fromText}>Programatical controls</Text>
+        <View style={styles.controlPanel}>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.openLeft();
+            }}>
+            <Text>open left</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.close();
+            }}>
+            <Text>close</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.reset();
+            }}>
+            <Text>reset</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.openRight();
+            }}>
+            <Text>open right</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <Separator />
+
+      <ReanimatedSwipeable
+        ref={reanimatedRef}
+        containerStyle={styles.swipeable}
+        friction={2}
+        leftThreshold={80}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderLeftActions={LeftAction}
+        renderRightActions={RightAction}>
+        <Text>Use the programatic control panel</Text>
+      </ReanimatedSwipeable>
+
+      <Separator />
+      <FlatList
+        data={DATA}
+        ItemSeparatorComponent={Separator}
+        renderItem={({ item, index }) => (
+          <SwipeableRow item={item} index={index} />
+        )}
+        keyExtractor={(_item, index) => `message ${index}`}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   rectButton: {
-    flex: 1,
-    height: 80,
     paddingVertical: 10,
     paddingHorizontal: 20,
     justifyContent: 'space-between',
@@ -86,6 +181,31 @@ const styles = StyleSheet.create({
     top: 10,
     color: '#999',
     fontWeight: 'bold',
+  },
+  leftAction: { width: 60, height: 60, backgroundColor: '#ff5ca3' },
+  rightAction: { width: 60, height: 60, backgroundColor: '#b658b6' },
+  swipeable: {
+    height: 60,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  controlPanelWrapper: {
+    backgroundColor: 'white',
+    alignItems: 'center',
+  },
+  controlPanel: {
+    backgroundColor: 'white',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  control: {
+    flex: 1,
+    height: 40,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgb(200, 199, 204)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
