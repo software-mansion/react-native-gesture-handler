@@ -39,15 +39,18 @@ export type GestureRelations = {
 };
 
 export type InternalConfigProps<THandlerData> = {
-  shouldUseReanimated?: boolean;
+  shouldUseReanimatedDetector?: boolean;
+  dispatchesReanimatedEvents?: boolean;
   dispatchesAnimatedEvents?: boolean;
   needsPointerData?: boolean;
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-export type CommonGestureConfig = WithSharedValue<
+export type CommonGestureConfig = {
+  disableReanimated?: boolean;
+} & WithSharedValue<
   {
-    disableReanimated?: boolean;
+    runOnJS?: boolean;
     enabled?: boolean;
     shouldCancelWhenOutside?: boolean;
     hitSlop?: HitSlop;
@@ -59,3 +62,8 @@ export type CommonGestureConfig = WithSharedValue<
   },
   HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
 >;
+
+export type ComposedGestureConfig = {
+  shouldUseReanimatedDetector: boolean;
+  dispatchesAnimatedEvents: boolean;
+};

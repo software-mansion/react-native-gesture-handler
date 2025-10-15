@@ -2,83 +2,34 @@ import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { tagMessage } from '../../../utils';
 import {
   BaseGestureConfig,
-  CommonGestureConfig,
   ExcludeInternalConfigProps,
-  GestureCallbacks,
-  HandlersPropsWhiteList,
-  InternalConfigProps,
   SingleGestureName,
 } from '../../types';
-import { PanNativeProperties } from '../gestures/pan/PanProperties';
-import { FlingNativeProperties } from '../gestures/fling/FlingProperties';
-import { HoverNativeProperties } from '../gestures/hover/HoverProperties';
-import { LongPressNativeProperties } from '../gestures/longPress/LongPressProperties';
-import { NativeHandlerNativeProperties } from '../gestures/native/NativeProperties';
-import { TapNativeProperties } from '../gestures/tap/TapProperties';
-
-const allowedNativeProps = new Set<
-  keyof CommonGestureConfig | keyof InternalConfigProps<unknown>
->([
-  // CommonGestureConfig
-  'disableReanimated',
-  'enabled',
-  'shouldCancelWhenOutside',
-  'hitSlop',
-  'userSelect',
-  'activeCursor',
-  'mouseButton',
-  'enableContextMenu',
-  'touchAction',
-
-  // InternalConfigProps
-  'shouldUseReanimated',
-  'dispatchesAnimatedEvents',
-  'needsPointerData',
-  'changeEventCalculator',
-]);
-
-export const HandlerCallbacks = new Set<
-  keyof Required<GestureCallbacks<unknown>>
->([
-  'onBegin',
-  'onStart',
-  'onUpdate',
-  'onEnd',
-  'onFinalize',
-  'onTouchesDown',
-  'onTouchesMove',
-  'onTouchesUp',
-  'onTouchesCancelled',
-]);
-
-const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
-  ...HandlerCallbacks,
-
-  // Config props
-  'changeEventCalculator',
-  'disableReanimated',
-
-  // Relations
-  'simultaneousWithExternalGesture',
-  'requireExternalGestureToFail',
-  'blocksExternalGesture',
-]);
-
-export const PropsWhiteLists = new Map<
-  SingleGestureName,
-  HandlersPropsWhiteList
->([
-  [SingleGestureName.Pan, PanNativeProperties],
-  [SingleGestureName.Tap, TapNativeProperties],
-  [SingleGestureName.Native, NativeHandlerNativeProperties],
-  [SingleGestureName.Fling, FlingNativeProperties],
-  [SingleGestureName.Hover, HoverNativeProperties],
-  [SingleGestureName.LongPress, LongPressNativeProperties],
-]);
-
-const EMPTY_WHITE_LIST = new Set<string>();
+import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
+import { isAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
+import {
+  allowedNativeProps,
+  EMPTY_WHITE_LIST,
+  PropsToFilter,
+  PropsWhiteLists,
+} from './propsWhiteList';
 
 export function prepareConfig<THandlerData, TConfig extends object>(
+  config: BaseGestureConfig<THandlerData, TConfig>
+) {
+  const runOnJS = maybeUnpackValue(config.runOnJS);
+
+  config.shouldUseReanimatedDetector =
+    !config.disableReanimated &&
+    Reanimated !== undefined &&
+    hasWorkletEventHandlers(config);
+  config.needsPointerData = shouldHandleTouchEvents(config);
+  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
+  config.dispatchesReanimatedEvents =
+    config.shouldUseReanimatedDetector && !runOnJS;
+}
+
+export function prepareConfigForNativeSide<THandlerData, TConfig>(
   handlerType: SingleGestureName,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {

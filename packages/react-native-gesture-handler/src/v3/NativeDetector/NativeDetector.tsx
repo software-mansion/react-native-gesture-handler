@@ -35,7 +35,7 @@ export function NativeDetector<THandlerData, TConfig>({
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimated
+    : gesture.config.shouldUseReanimatedDetector
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 

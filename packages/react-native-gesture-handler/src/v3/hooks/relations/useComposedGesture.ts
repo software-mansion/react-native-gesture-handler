@@ -5,6 +5,7 @@ import {
   ComposedGesture,
   ComposedGestureName,
   AnyGesture,
+  ComposedGestureConfig,
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
@@ -27,16 +28,16 @@ export function useComposedGesture(
     );
   }
 
-  const config = {
-    shouldUseReanimated: gestures.some(
-      (gesture) => gesture.config.shouldUseReanimated
+  const config: ComposedGestureConfig = {
+    shouldUseReanimatedDetector: gestures.some(
+      (gesture) => gesture.config.shouldUseReanimatedDetector
     ),
     dispatchesAnimatedEvents: gestures.some(
       (gesture) => gesture.config.dispatchesAnimatedEvents
     ),
   };
 
-  if (config.shouldUseReanimated && config.dispatchesAnimatedEvents) {
+  if (config.shouldUseReanimatedDetector && config.dispatchesAnimatedEvents) {
     throw new Error(
       tagMessage(
         'Composed gestures cannot use both Reanimated and Animated events at the same time.'

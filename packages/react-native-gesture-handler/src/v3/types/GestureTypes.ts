@@ -1,6 +1,7 @@
 import { DetectorCallbacks } from './DetectorTypes';
 import {
   CommonGestureConfig,
+  ComposedGestureConfig,
   GestureCallbacks,
   GestureRelations,
   InternalConfigProps,
@@ -32,10 +33,7 @@ export type SingleGesture<THandlerData, TConfig> = {
 export type ComposedGesture = {
   tags: number[];
   type: ComposedGestureName;
-  config: {
-    shouldUseReanimated: boolean;
-    dispatchesAnimatedEvents: boolean;
-  };
+  config: ComposedGestureConfig;
   detectorCallbacks: DetectorCallbacks<unknown>;
   externalSimultaneousHandlers: number[];
   gestures: Gesture[];
