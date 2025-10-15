@@ -14,6 +14,7 @@ import {
   SingleGestureName,
   InternalConfigProps,
   HandlersPropsWhiteList,
+  GestureCallbacks,
 } from '../types';
 import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../utils';
@@ -126,8 +127,9 @@ const allowedNativeProps = new Set<
   'changeEventCalculator',
 ]);
 
-const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
-  // Callbacks
+export const HandlerCallbacks = new Set<
+  keyof Required<GestureCallbacks<unknown>>
+>([
   'onBegin',
   'onStart',
   'onUpdate',
@@ -137,6 +139,10 @@ const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
   'onTouchesMove',
   'onTouchesUp',
   'onTouchesCancelled',
+]);
+
+const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
+  ...HandlerCallbacks,
 
   // Config props
   'changeEventCalculator',
