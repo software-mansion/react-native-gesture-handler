@@ -6,15 +6,22 @@ import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import { GestureEvents } from '../../types';
 import { NativeDetectorProps } from '../common';
 import { configureRelations } from '../utils';
+import { tagMessage } from '../../../utils';
 
 export function LogicDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
 ) {
-  const { register, unregister } = useDetectorContext();
+  const context = useDetectorContext();
+  if (!context) {
+    throw new Error(
+      tagMessage('Logic detector must be a descendant of a delegate detector')
+    );
+  }
+  const { register, unregister } = context;
+
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
   const logicMethods = useRef(props.gesture.gestureEvents);
-
   const handleRef = useCallback((node: any) => {
     viewRef.current = node;
     if (!node) {

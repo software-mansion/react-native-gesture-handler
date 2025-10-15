@@ -16,9 +16,7 @@ export const DetectorContext = createContext<DetectorContextType | null>(null);
 export function useDetectorContext() {
   const ctx = useContext(DetectorContext);
   if (!ctx) {
-    throw new Error(
-      'Logic detector must be a descendant of a delegate detector'
-    );
+    return null;
   }
   return ctx;
 }
