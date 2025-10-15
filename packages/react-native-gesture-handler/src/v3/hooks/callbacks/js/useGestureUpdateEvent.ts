@@ -1,6 +1,5 @@
-import { isAnimatedEvent } from '../../utils';
+import { extractUpdateHandlers, isAnimatedEvent } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
-import { extractUpdateHandlers } from '../../utils/eventHandlersUtils';
 import { getUpdateHandler } from '../updateHandler';
 import { BaseGestureConfig } from '../../../types';
 
