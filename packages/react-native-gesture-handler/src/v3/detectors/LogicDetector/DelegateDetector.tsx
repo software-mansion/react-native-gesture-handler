@@ -24,7 +24,7 @@ export function DelegateDetector<THandlerData, TConfig>({
     gesture ? gesture.config.shouldUseReanimated : false
   );
   const [dispatchesAnimatedEvents, setDispatchesAnimatedEvents] = useState(
-    gesture ? gesture.config.shouldUseReanimated : false
+    gesture ? gesture.config.dispatchesAnimatedEvents : false
   );
 
   const NativeDetectorComponent = dispatchesAnimatedEvents
