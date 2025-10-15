@@ -1,95 +1,22 @@
-import { NativeSyntheticEvent } from 'react-native';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../../utils';
 import {
-  AnimatedEvent,
   BaseGestureConfig,
-  ChangeCalculatorType,
   CommonGestureConfig,
-  DiffCalculatorType,
   ExcludeInternalConfigProps,
-  UnpackedGestureHandlerEvent,
-  GestureHandlerEvent,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
-  SharedValueOrT,
-  SingleGestureName,
-  InternalConfigProps,
-  HandlersPropsWhiteList,
   GestureCallbacks,
-} from '../types';
-import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { tagMessage } from '../../utils';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { hasWorkletEventHandlers } from './utils/reanimatedUtils';
-import { PanNativeProperties } from './gestures/pan/PanProperties';
-import { FlingNativeProperties } from './gestures/fling/FlingProperties';
-import { HoverNativeProperties } from './gestures/hover/HoverProperties';
-import { LongPressNativeProperties } from './gestures/longPress/LongPressProperties';
-import { NativeHandlerNativeProperties } from './gestures/native/NativeProperties';
-import { TapNativeProperties } from './gestures/tap/TapProperties';
-
-export function isNativeEvent<THandlerData>(
-  event: GestureHandlerEvent<THandlerData>
-): event is
-  | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>
-  | NativeSyntheticEvent<GestureStateChangeEvent<THandlerData>>
-  | NativeSyntheticEvent<GestureTouchEvent> {
-  'worklet';
-
-  return 'nativeEvent' in event;
-}
-
-export function maybeExtractNativeEvent<THandlerData>(
-  event: GestureHandlerEvent<THandlerData>
-) {
-  'worklet';
-
-  return isNativeEvent(event) ? event.nativeEvent : event;
-}
-
-export function isEventForHandlerWithTag<THandlerData>(
-  handlerTag: number,
-  event: UnpackedGestureHandlerEvent<THandlerData>
-) {
-  'worklet';
-
-  return event.handlerTag === handlerTag;
-}
-
-export function isAnimatedEvent<THandlerData>(
-  callback:
-    | ((event: GestureUpdateEvent<THandlerData>) => void)
-    | AnimatedEvent
-    | undefined
-): callback is AnimatedEvent {
-  'worklet';
-
-  return !!callback && '_argMapping' in callback;
-}
-
-export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
-  'worklet';
-
-  return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
-}
-
-export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
-  for (const mapping of animatedEvent._argMapping) {
-    if (
-      !mapping ||
-      !('nativeEvent' in mapping && 'handlerData' in mapping.nativeEvent)
-    ) {
-      continue;
-    }
-
-    for (const key in mapping.nativeEvent.handlerData) {
-      if (key.startsWith('change')) {
-        throw new Error(
-          tagMessage(`${key} is not available when using Animated.Event.`)
-        );
-      }
-    }
-  }
-}
+  HandlersPropsWhiteList,
+  InternalConfigProps,
+  SingleGestureName,
+} from '../../types';
+import { PanNativeProperties } from '../gestures/pan/PanProperties';
+import { FlingNativeProperties } from '../gestures/fling/FlingProperties';
+import { HoverNativeProperties } from '../gestures/hover/HoverProperties';
+import { LongPressNativeProperties } from '../gestures/longPress/LongPressProperties';
+import { NativeHandlerNativeProperties } from '../gestures/native/NativeProperties';
+import { TapNativeProperties } from '../gestures/tap/TapProperties';
+import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
+import { isAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 
 export function prepareConfig<THandlerData, TConfig extends object>(
   config: BaseGestureConfig<THandlerData, TConfig>
@@ -197,17 +124,6 @@ export function prepareConfigForNativeSide<THandlerData, TConfig>(
   return filteredConfig;
 }
 
-export function shouldHandleTouchEvents<THandlerData, TConfig>(
-  config: BaseGestureConfig<THandlerData, TConfig>
-) {
-  return (
-    !!config.onTouchesDown ||
-    !!config.onTouchesMove ||
-    !!config.onTouchesUp ||
-    !!config.onTouchesCancelled
-  );
-}
-
 export function cloneConfig<THandlerData, TConfig>(
   config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>
 ): BaseGestureConfig<THandlerData, TConfig> {
@@ -231,24 +147,4 @@ export function remapProps<TConfig extends object, TInternalConfig>(
   });
 
   return config;
-}
-
-export function getChangeEventCalculator<THandlerData>(
-  diffCalculator: DiffCalculatorType<THandlerData>
-): ChangeCalculatorType<THandlerData> {
-  'worklet';
-  return (
-    current: GestureUpdateEvent<THandlerData>,
-    previous?: GestureUpdateEvent<THandlerData>
-  ) => {
-    'worklet';
-    const currentEventData = current.handlerData;
-    const previousEventData = previous ? previous.handlerData : null;
-
-    const changePayload = diffCalculator(currentEventData, previousEventData);
-
-    current.handlerData = { ...currentEventData, ...changePayload };
-
-    return current;
-  };
 }

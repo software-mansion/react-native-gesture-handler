@@ -2,12 +2,15 @@ import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
-
-import { prepareConfigForNativeSide, prepareConfig } from './utils';
+import {
+  prepareConfig,
+  prepareRelations,
+  bindSharedValues,
+  unbindSharedValues,
+  prepareConfigForNativeSide,
+} from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
-import { bindSharedValues, unbindSharedValues } from './utils/reanimatedUtils';
-import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
