@@ -52,7 +52,7 @@ export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
 export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
-export { GestureDetector } from './handlers/gestures/GestureDetector';
+export { GestureDetector as LegacyGestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
 export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
