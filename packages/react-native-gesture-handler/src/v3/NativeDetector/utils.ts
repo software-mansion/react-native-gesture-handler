@@ -149,5 +149,3 @@ export function configureRelations<THandlerData, TConfig>(
 
   RNGestureHandlerModule.flushOperations();
 }
-
-export const EMPTY_SET = new Set<number>();

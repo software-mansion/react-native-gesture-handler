@@ -902,8 +902,8 @@ open class GestureHandler {
       if (config.hasKey(KEY_DISPATCHES_ANIMATED_EVENTS)) {
         handler.dispatchesAnimatedEvents = config.getBoolean(KEY_DISPATCHES_ANIMATED_EVENTS)
       }
-      if (config.hasKey(KEY_SHOULD_USE_REANIMATED)) {
-        handler.dispatchesReanimatedEvents = config.getBoolean(KEY_SHOULD_USE_REANIMATED)
+      if (config.hasKey(KEY_DISPATCHES_REANIMATED_EVENTS)) {
+        handler.dispatchesReanimatedEvents = config.getBoolean(KEY_DISPATCHES_REANIMATED_EVENTS)
       }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.manualActivation = config.getBoolean(KEY_MANUAL_ACTIVATION)
@@ -920,7 +920,7 @@ open class GestureHandler {
       private const val KEY_ENABLED = "enabled"
       private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
       private const val KEY_DISPATCHES_ANIMATED_EVENTS = "dispatchesAnimatedEvents"
-      private const val KEY_SHOULD_USE_REANIMATED = "shouldUseReanimated"
+      private const val KEY_DISPATCHES_REANIMATED_EVENTS = "dispatchesReanimatedEvents"
       private const val KEY_MANUAL_ACTIVATION = "manualActivation"
       private const val KEY_MOUSE_BUTTON = "mouseButton"
       private const val KEY_HIT_SLOP = "hitSlop"

@@ -35,7 +35,7 @@ export function NativeDetector<THandlerData, TConfig>({
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimated
+    : gesture.config.shouldUseReanimatedDetector
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
@@ -135,9 +135,9 @@ export function NativeDetector<THandlerData, TConfig>({
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerAnimatedEvent={handleGestureEvent(
-          'onGestureHandlerAnimatedEvent'
-        )}
+        onGestureHandlerAnimatedEvent={
+          gesture.gestureEvents.onGestureHandlerAnimatedEvent
+        }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerTouchEvent={handleGestureEvent(
           'onGestureHandlerTouchEvent'

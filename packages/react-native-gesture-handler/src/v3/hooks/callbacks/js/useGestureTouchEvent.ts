@@ -1,5 +1,5 @@
 import { BaseGestureConfig } from '../../../types';
-import { extractTouchHandlers } from '../../utils/eventHandlersUtils';
+import { extractTouchHandlers } from '../../utils';
 import { getTouchEventHandler } from '../touchEventHandler';
 
 export function useGestureTouchEvent<THandlerData, TConfig>(
