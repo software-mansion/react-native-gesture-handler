@@ -1,10 +1,12 @@
 import { createContext, RefObject, useContext } from 'react';
-import { GestureEvents, LogicChildren } from '../types';
+import { GestureEvents, LogicChildren } from '../../types';
 
 type DetectorContextType = {
   register: (
     child: LogicChildren,
-    methods: RefObject<GestureEvents<unknown>>
+    methods: RefObject<GestureEvents<unknown>>,
+    forReanimated: boolean | undefined,
+    forAnimated: boolean | undefined
   ) => void;
   unregister: (child: number) => void;
 };
@@ -14,7 +16,7 @@ export const DetectorContext = createContext<DetectorContextType | null>(null);
 export function useDetectorContext() {
   const ctx = useContext(DetectorContext);
   if (!ctx) {
-    throw new Error('Logic detector must be a descendant of a Native Detector');
+    return null;
   }
   return ctx;
 }

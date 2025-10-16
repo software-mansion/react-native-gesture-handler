@@ -48,7 +48,7 @@ function propagateDetectorConfig(
   }
 }
 
-interface GestureDetectorProps {
+export interface GestureDetectorProps {
   children?: React.ReactNode;
   /**
    * A gesture object containing the configuration and callbacks.
