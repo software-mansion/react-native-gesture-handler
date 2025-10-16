@@ -7,15 +7,15 @@ import { configureRelations, ensureNativeDetectorComponent } from '../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import {
   AnimatedNativeDetector,
-  DelegateDetectorProps,
+  GestureDetectorBoundaryProps,
   nativeDetectorStyles,
   ReanimatedNativeDetector,
 } from '../common';
 
-export function DelegateDetector<THandlerData, TConfig>({
+export function GestureDetectorBoundary<THandlerData, TConfig>({
   gesture,
   children,
-}: DelegateDetectorProps<THandlerData, TConfig>) {
+}: GestureDetectorBoundaryProps<THandlerData, TConfig>) {
   const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
   const logicMethods = useRef<Map<number, RefObject<GestureEvents<unknown>>>>(
     new Map()
