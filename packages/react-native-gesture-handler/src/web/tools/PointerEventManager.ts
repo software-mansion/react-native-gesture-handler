@@ -13,14 +13,17 @@ const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);
 export default class PointerEventManager extends EventManager<HTMLElement> {
   private trackedPointers = new Set<number>();
   private lastPosition: Point;
+  private shouldSendHoverEvents: boolean;
 
-  constructor(view: HTMLElement) {
+  constructor(view: HTMLElement, shouldSendHoverEvents: boolean) {
     super(view);
 
     this.lastPosition = {
       x: -Infinity,
       y: -Infinity,
     };
+
+    this.shouldSendHoverEvents = shouldSendHoverEvents;
   }
 
   private pointerDownCallback = (event: PointerEvent) => {
@@ -74,6 +77,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   };
 
   private pointerMoveCallback = (event: PointerEvent) => {
+    if (!this.shouldSendHoverEvents && this.activePointersCounter === 0) {
+      return;
+    }
+
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.MOVE);
     const target = event.target as HTMLElement;
 

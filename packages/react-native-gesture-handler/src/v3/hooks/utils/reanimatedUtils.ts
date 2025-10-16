@@ -1,6 +1,7 @@
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { BaseGestureConfig, SharedValue } from '../../types';
+import { BaseGestureConfig, SharedValue, SharedValueOrT } from '../../types';
+import { HandlerCallbacks } from './propsWhiteList';
 
 // Variant of djb2 hash function.
 // Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765
@@ -36,7 +37,16 @@ export function bindSharedValues<THandlerData, TConfig>(
     const listenerId = baseListenerId + keyHash;
 
     sharedValue.addListener(listenerId, (value) => {
-      updateGestureHandlerConfig(handlerTag, { [configKey]: value });
+      if (configKey === 'runOnJS') {
+        config.dispatchesReanimatedEvents =
+          config.shouldUseReanimatedDetector && !value;
+
+        updateGestureHandlerConfig(handlerTag, {
+          dispatchesReanimatedEvents: config.dispatchesReanimatedEvents,
+        });
+      } else {
+        updateGestureHandlerConfig(handlerTag, { [configKey]: value });
+      }
       flushOperations();
     });
   };
@@ -77,7 +87,17 @@ export function unbindSharedValues<THandlerData, TConfig>(
 export function hasWorkletEventHandlers<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  return Object.values(config).some(
-    (prop) => typeof prop === 'function' && '__workletHash' in prop
+  return Object.entries(config).some(
+    (key, value) =>
+      (key as keyof BaseGestureConfig<THandlerData, TConfig>) in
+        HandlerCallbacks &&
+      typeof value === 'function' &&
+      '__workletHash' in value
   );
+}
+
+export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
+  'worklet';
+
+  return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
 }

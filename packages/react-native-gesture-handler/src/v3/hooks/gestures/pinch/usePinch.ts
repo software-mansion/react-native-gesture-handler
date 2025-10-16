@@ -1,13 +1,15 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  SingleGesture,
   HandlerData,
   SingleGestureName,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../utils';
-
-type PinchGestureProperties = Record<string, never>;
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import { PinchGestureNativeProperties } from './PinchProperties';
 
 type PinchHandlerData = {
   scale: number;
@@ -16,6 +18,8 @@ type PinchHandlerData = {
   velocity: number;
   scaleChange: number;
 };
+
+type PinchGestureProperties = PinchGestureNativeProperties;
 
 type PinchGestureInternalConfig = BaseGestureConfig<
   PinchHandlerData,
@@ -44,3 +48,12 @@ export function usePinch(config: PinchGestureConfig) {
 
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }
+
+export type PinchGestureStateChangeEvent =
+  GestureStateChangeEvent<PinchHandlerData>;
+export type PinchGestureUpdateEvent = GestureUpdateEvent<PinchHandlerData>;
+
+export type PinchGesture = SingleGesture<
+  PinchHandlerData,
+  PinchGestureProperties
+>;

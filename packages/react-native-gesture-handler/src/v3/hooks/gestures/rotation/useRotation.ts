@@ -1,13 +1,15 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  SingleGesture,
   HandlerData,
   SingleGestureName,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../utils';
-
-type RotationGestureProperties = Record<string, never>;
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import { RotationGestureNativeProperties } from './RotationProperties';
 
 type RotationHandlerData = {
   rotation: number;
@@ -16,6 +18,8 @@ type RotationHandlerData = {
   velocity: number;
   rotationChange: number;
 };
+
+type RotationGestureProperties = RotationGestureNativeProperties;
 
 type RotationGestureInternalConfig = BaseGestureConfig<
   RotationHandlerData,
@@ -48,3 +52,13 @@ export function useRotation(config: RotationGestureConfig) {
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }
+
+export type RotationGestureStateChangeEvent =
+  GestureStateChangeEvent<RotationHandlerData>;
+export type RotationGestureUpdateEvent =
+  GestureUpdateEvent<RotationHandlerData>;
+
+export type RotationGesture = SingleGesture<
+  RotationHandlerData,
+  RotationGestureProperties
+>;

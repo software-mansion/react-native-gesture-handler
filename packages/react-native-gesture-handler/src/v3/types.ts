@@ -10,6 +10,12 @@ import {
 import { PointerType } from '../PointerType';
 
 import { State } from '../State';
+import { PanGestureNativeProperties } from './hooks/gestures/pan/PanProperties';
+import { FlingGestureNativeProperties } from './hooks/gestures/fling/FlingProperties';
+import { HoverGestureNativeProperties } from './hooks/gestures/hover/HoverProperties';
+import { LongPressGestureNativeProperties } from './hooks/gestures/longPress/LongPressProperties';
+import { NativeGestureNativeProperties } from './hooks/gestures/native/NativeProperties';
+import { TapGestureNativeConfig } from './hooks/gestures/tap/TapProperties';
 
 interface EventPayload {
   handlerTag: number;
@@ -116,13 +122,15 @@ export type SingleGesture<THandlerData, TConfig> = {
   gestureRelations: GestureRelations;
 };
 
+export type ComposedGestureConfig = {
+  shouldUseReanimatedDetector: boolean;
+  dispatchesAnimatedEvents: boolean;
+};
+
 export type ComposedGesture = {
   tags: number[];
   type: ComposedGestureName;
-  config: {
-    shouldUseReanimated: boolean;
-    dispatchesAnimatedEvents: boolean;
-  };
+  config: ComposedGestureConfig;
   gestureEvents: GestureEvents<unknown>;
   externalSimultaneousHandlers: number[];
   gestures: Gesture[];
@@ -141,6 +149,9 @@ export type DiffCalculatorType<THandlerData> = (
 export type Gesture<THandlerData = unknown, TConfig = unknown> =
   | SingleGesture<THandlerData, TConfig>
   | ComposedGesture;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyGesture = Gesture<any, unknown>;
 
 interface ExternalRelations {
   simultaneousWithExternalGesture?: Gesture | Gesture[];
@@ -167,15 +178,18 @@ export interface GestureCallbacks<THandlerData> {
 }
 
 export type InternalConfigProps<THandlerData> = {
-  shouldUseReanimated?: boolean;
+  shouldUseReanimatedDetector?: boolean;
+  dispatchesReanimatedEvents?: boolean;
   dispatchesAnimatedEvents?: boolean;
   needsPointerData?: boolean;
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-type CommonGestureConfig = WithSharedValue<
+export type CommonGestureConfig = {
+  disableReanimated?: boolean;
+} & WithSharedValue<
   {
-    disableReanimated?: boolean;
+    runOnJS?: boolean;
     enabled?: boolean;
     shouldCancelWhenOutside?: boolean;
     hitSlop?: HitSlop;
@@ -258,3 +272,11 @@ type Simplify<T> =
           // For a generic object, retain the original structure while forcing an object type
           [K in keyof T]: T[K];
         } & NonNullable<unknown>;
+
+export type HandlersPropsWhiteList =
+  | Set<keyof PanGestureNativeProperties>
+  | Set<keyof FlingGestureNativeProperties>
+  | Set<keyof HoverGestureNativeProperties>
+  | Set<keyof LongPressGestureNativeProperties>
+  | Set<keyof NativeGestureNativeProperties>
+  | Set<keyof TapGestureNativeConfig>;

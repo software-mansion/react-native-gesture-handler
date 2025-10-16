@@ -1,34 +1,15 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  SingleGesture,
   SingleGestureName,
   WithSharedValue,
-} from '../../types';
-import { useGesture } from '../useGesture';
-import { cloneConfig } from '../utils';
-
-type FlingGestureProperties = WithSharedValue<{
-  /**
-   * Expressed allowed direction of movement. It's possible to pass one or many
-   * directions in one parameter:
-   *
-   * ```js
-   * direction={Directions.RIGHT | Directions.LEFT}
-   * ```
-   *
-   * or
-   *
-   * ```js
-   * direction={Directions.DOWN}
-   * ```
-   */
-  direction?: number;
-
-  /**
-   * Determine exact number of points required to handle the fling gesture.
-   */
-  numberOfPointers?: number;
-}>;
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+} from '../../../types';
+import { useGesture } from '../../useGesture';
+import { cloneConfig } from '../../utils';
+import type { FlingGestureNativeProperties } from './FlingProperties';
 
 type FlingHandlerData = {
   x: number;
@@ -36,6 +17,8 @@ type FlingHandlerData = {
   absoluteX: number;
   absoluteY: number;
 };
+
+type FlingGestureProperties = WithSharedValue<FlingGestureNativeProperties>;
 
 type FlingGestureInternalConfig = BaseGestureConfig<
   FlingHandlerData,
@@ -52,3 +35,12 @@ export function useFling(config: FlingGestureConfig) {
 
   return useGesture(SingleGestureName.Fling, flingConfig);
 }
+
+export type FlingGestureStateChangeEvent =
+  GestureStateChangeEvent<FlingHandlerData>;
+export type FlingGestureUpdateEvent = GestureUpdateEvent<FlingHandlerData>;
+
+export type FlingGesture = SingleGesture<
+  FlingHandlerData,
+  FlingGestureProperties
+>;

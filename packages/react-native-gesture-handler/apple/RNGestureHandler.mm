@@ -147,7 +147,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _dispatchesAnimatedEvents = [RCTConvert BOOL:prop];
   }
 
-  prop = config[@"shouldUseReanimated"];
+  prop = config[@"dispatchesReanimatedEvents"];
   if (prop != nil) {
     _dispatchesReanimatedEvents = [RCTConvert BOOL:prop];
   }

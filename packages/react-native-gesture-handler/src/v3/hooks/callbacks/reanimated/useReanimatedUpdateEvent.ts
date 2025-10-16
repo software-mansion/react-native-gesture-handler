@@ -1,6 +1,6 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { BaseGestureConfig } from '../../../types';
-import { extractUpdateHandlers } from '../../utils/eventHandlersUtils';
+import { extractUpdateHandlers } from '../../utils';
 import { getUpdateHandler } from '../updateHandler';
 
 export function useReanimatedUpdateEvent<THandlerData, TConfig>(

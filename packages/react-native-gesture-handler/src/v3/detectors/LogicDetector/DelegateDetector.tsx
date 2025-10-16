@@ -21,7 +21,7 @@ export function DelegateDetector<THandlerData, TConfig>({
     new Map()
   );
   const [shouldUseReanimated, setShouldUseReanimated] = useState(
-    gesture ? gesture.config.shouldUseReanimated : false
+    gesture ? gesture.config.shouldUseReanimatedDetector : false
   );
   const [dispatchesAnimatedEvents, setDispatchesAnimatedEvents] = useState(
     gesture ? gesture.config.dispatchesAnimatedEvents : false
@@ -132,9 +132,9 @@ export function DelegateDetector<THandlerData, TConfig>({
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerAnimatedEvent={handleGestureEvent(
-          'onGestureHandlerAnimatedEvent'
-        )}
+        onGestureHandlerAnimatedEvent={
+          gesture?.gestureEvents.onGestureHandlerAnimatedEvent
+        }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerTouchEvent={handleGestureEvent(
           'onGestureHandlerTouchEvent'

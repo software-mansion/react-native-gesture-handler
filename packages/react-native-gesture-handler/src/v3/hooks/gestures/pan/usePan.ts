@@ -1,119 +1,28 @@
-import { StylusData } from '../../../handlers/gestureHandlerCommon';
+import { StylusData } from '../../../../handlers/gestureHandlerCommon';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  SingleGesture,
   HandlerData,
   SingleGestureName,
   WithSharedValue,
-} from '../../types';
-import { useGesture } from '../useGesture';
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
+} from '../../../types';
+import { useGesture } from '../../useGesture';
 import {
   getChangeEventCalculator,
   maybeUnpackValue,
   remapProps,
   cloneConfig,
-} from '../utils';
+} from '../../utils';
+import {
+  OffsetProps,
+  PanGestureExternalProperties,
+  PanGestureNativeProperties,
+} from './PanProperties';
 
-type CommonPanGestureProperties = {
-  /**
-   * Minimum distance the finger (or multiple finger) need to travel before the
-   * handler activates. Expressed in points.
-   */
-  minDistance?: number;
-
-  /**
-   * Android only.
-   */
-  avgTouches?: boolean;
-
-  /**
-   * Enables two-finger gestures on supported devices, for example iPads with
-   * trackpads. If not enabled the gesture will require click + drag, with
-   * enableTrackpadTwoFingerGesture swiping with two fingers will also trigger
-   * the gesture.
-   */
-  enableTrackpadTwoFingerGesture?: boolean;
-
-  /**
-   * A number of fingers that is required to be placed before handler can
-   * activate. Should be a higher or equal to 0 integer.
-   */
-  minPointers?: number;
-
-  /**
-   * When the given number of fingers is placed on the screen and handler hasn't
-   * yet activated it will fail recognizing the gesture. Should be a higher or
-   * equal to 0 integer.
-   */
-  maxPointers?: number;
-
-  minVelocity?: number;
-  minVelocityX?: number;
-  minVelocityY?: number;
-  activateAfterLongPress?: number;
-};
-
-type OffsetProps = {
-  /**
-   * Range along X axis (in points) where fingers travels without activation of
-   * handler. Moving outside of this range implies activation of handler. Range
-   * can be given as an array or a single number. If range is set as an array,
-   * first value must be lower or equal to 0, a the second one higher or equal
-   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-   */
-  activeOffsetY?: number | [number, number];
-
-  /**
-   * Range along X axis (in points) where fingers travels without activation of
-   * handler. Moving outside of this range implies activation of handler. Range
-   * can be given as an array or a single number. If range is set as an array,
-   * first value must be lower or equal to 0, a the second one higher or equal
-   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-   */
-  activeOffsetX?: number | [number, number];
-
-  /**
-   * When the finger moves outside this range (in points) along Y axis and
-   * handler hasn't yet activated it will fail recognizing the gesture. Range
-   * can be given as an array or a single number. If range is set as an array,
-   * first value must be lower or equal to 0, a the second one higher or equal
-   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-   */
-  failOffsetY?: number | [number, number];
-
-  /**
-   * When the finger moves outside this range (in points) along X axis and
-   * handler hasn't yet activated it will fail recognizing the gesture. Range
-   * can be given as an array or a single number. If range is set as an array,
-   * first value must be lower or equal to 0, a the second one higher or equal
-   * to 0. If only one number `p` is given a range of `(-inf, p)` will be used
-   * if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
-   */
-  failOffsetX?: number | [number, number];
-};
-
-export type PanGestureProperties = WithSharedValue<
-  CommonPanGestureProperties & OffsetProps
->;
-
-type PanGestureInternalProperties = WithSharedValue<
-  CommonPanGestureProperties & {
-    minDist?: number;
-    activeOffsetYStart?: number;
-    activeOffsetYEnd?: number;
-    activeOffsetXStart?: number;
-    activeOffsetXEnd?: number;
-    failOffsetYStart?: number;
-    failOffsetYEnd?: number;
-    failOffsetXStart?: number;
-    failOffsetXEnd?: number;
-  }
->;
-
-type PanHandlerData = {
+export type PanHandlerData = {
   x: number;
   y: number;
   absoluteX: number;
@@ -126,6 +35,12 @@ type PanHandlerData = {
   changeX: number;
   changeY: number;
 };
+
+export type PanGestureProperties =
+  WithSharedValue<PanGestureExternalProperties>;
+
+export type PanGestureInternalProperties =
+  WithSharedValue<PanGestureNativeProperties>;
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
   BaseGestureConfig<PanHandlerData, PanGestureProperties>
@@ -262,3 +177,9 @@ export function usePan(config: PanGestureConfig) {
     panConfig
   );
 }
+
+export type PanGestureStateChangeEvent =
+  GestureStateChangeEvent<PanHandlerData>;
+export type PanGestureUpdateEvent = GestureUpdateEvent<PanHandlerData>;
+
+export type PanGesture = SingleGesture<PanHandlerData, PanGestureProperties>;

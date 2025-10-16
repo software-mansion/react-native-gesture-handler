@@ -4,16 +4,13 @@ import {
   BaseGestureConfig,
   ChangeCalculatorType,
   DiffCalculatorType,
-  ExcludeInternalConfigProps,
   UnpackedGestureHandlerEvent,
   GestureHandlerEvent,
   GestureStateChangeEvent,
   GestureUpdateEvent,
-  SharedValueOrT,
-} from '../types';
-import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { tagMessage } from '../../utils';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+} from '../../types';
+import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { tagMessage } from '../../../utils';
 
 export function isNativeEvent<THandlerData>(
   event: GestureHandlerEvent<THandlerData>
@@ -54,12 +51,6 @@ export function isAnimatedEvent<THandlerData>(
   return !!callback && '_argMapping' in callback;
 }
 
-export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
-  'worklet';
-
-  return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
-}
-
 export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   for (const mapping of animatedEvent._argMapping) {
     if (
@@ -79,29 +70,6 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function prepareConfig<THandlerData, TConfig>(
-  config: BaseGestureConfig<THandlerData, TConfig>
-) {
-  const copy = { ...config };
-
-  for (const key in copy) {
-    // @ts-ignore It is fine to use string as index
-    if (Reanimated?.isSharedValue(copy[key])) {
-      // @ts-ignore It is fine to use string as index
-      copy[key] = copy[key].value;
-    }
-  }
-
-  // TODO: Filter changes - passing functions (and possibly other types)
-  // causes a native crash
-  delete copy.onUpdate;
-  delete copy.simultaneousWithExternalGesture;
-  delete copy.requireExternalGestureToFail;
-  delete copy.blocksExternalGesture;
-
-  return copy;
-}
-
 export function shouldHandleTouchEvents<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
@@ -111,31 +79,6 @@ export function shouldHandleTouchEvents<THandlerData, TConfig>(
     !!config.onTouchesUp ||
     !!config.onTouchesCancelled
   );
-}
-
-export function cloneConfig<THandlerData, TConfig>(
-  config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>
-): BaseGestureConfig<THandlerData, TConfig> {
-  return { ...config } as BaseGestureConfig<THandlerData, TConfig>;
-}
-
-export function remapProps<TConfig extends object, TInternalConfig>(
-  config: TConfig & TInternalConfig,
-  propsMapping: Map<string, string>
-): TInternalConfig {
-  type MergedConfig = TConfig & TInternalConfig;
-
-  propsMapping.forEach((internalKey, key) => {
-    if (key in config) {
-      config[internalKey as keyof MergedConfig] =
-        config[key as keyof MergedConfig];
-
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete config[key as keyof MergedConfig];
-    }
-  });
-
-  return config;
 }
 
 export function getChangeEventCalculator<THandlerData>(

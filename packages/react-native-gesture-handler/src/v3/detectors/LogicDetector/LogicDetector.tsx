@@ -71,7 +71,7 @@ export function LogicDetector<THandlerData, TConfig>(
     register(
       logicProps,
       logicMethods as RefObject<GestureEvents<unknown>>,
-      props.gesture.config.shouldUseReanimated,
+      props.gesture.config.shouldUseReanimatedDetector,
       props.gesture.config.dispatchesAnimatedEvents
     );
 

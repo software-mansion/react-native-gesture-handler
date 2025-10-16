@@ -4,16 +4,17 @@ import {
   TouchEvent,
   ComposedGesture,
   ComposedGestureName,
-  Gesture,
+  AnyGesture,
+  ComposedGestureConfig,
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { containsDuplicates, isComposedGesture } from '../utils/relationUtils';
+import { containsDuplicates, isComposedGesture } from '../utils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(
   type: ComposedGestureName,
-  ...gestures: Gesture[]
+  ...gestures: AnyGesture[]
 ): ComposedGesture {
   const tags = gestures.flatMap((gesture) =>
     isComposedGesture(gesture) ? gesture.tags : gesture.tag
@@ -27,16 +28,16 @@ export function useComposedGesture(
     );
   }
 
-  const config = {
-    shouldUseReanimated: gestures.some(
-      (gesture) => gesture.config.shouldUseReanimated
+  const config: ComposedGestureConfig = {
+    shouldUseReanimatedDetector: gestures.some(
+      (gesture) => gesture.config.shouldUseReanimatedDetector
     ),
     dispatchesAnimatedEvents: gestures.some(
       (gesture) => gesture.config.dispatchesAnimatedEvents
     ),
   };
 
-  if (config.shouldUseReanimated && config.dispatchesAnimatedEvents) {
+  if (config.shouldUseReanimatedDetector && config.dispatchesAnimatedEvents) {
     throw new Error(
       tagMessage(
         'Composed gestures cannot use both Reanimated and Animated events at the same time.'
