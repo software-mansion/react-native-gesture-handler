@@ -1,8 +1,11 @@
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  SingleGesture,
   HandlerData,
   SingleGestureName,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../../utils';
@@ -45,3 +48,12 @@ export function usePinch(config: PinchGestureConfig) {
 
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }
+
+export type PinchGestureStateChangeEvent =
+  GestureStateChangeEvent<PinchHandlerData>;
+export type PinchGestureUpdateEvent = GestureUpdateEvent<PinchHandlerData>;
+
+export type PinchGesture = SingleGesture<
+  PinchHandlerData,
+  PinchGestureProperties
+>;

@@ -2,9 +2,12 @@ import { StylusData } from '../../../../handlers/gestureHandlerCommon';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  SingleGesture,
   HandlerData,
   SingleGestureName,
   WithSharedValue,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
@@ -174,3 +177,9 @@ export function usePan(config: PanGestureConfig) {
     panConfig
   );
 }
+
+export type PanGestureStateChangeEvent =
+  GestureStateChangeEvent<PanHandlerData>;
+export type PanGestureUpdateEvent = GestureUpdateEvent<PanHandlerData>;
+
+export type PanGesture = SingleGesture<PanHandlerData, PanGestureProperties>;

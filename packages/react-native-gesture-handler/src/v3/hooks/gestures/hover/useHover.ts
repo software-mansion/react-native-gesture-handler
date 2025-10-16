@@ -3,9 +3,12 @@ import { HoverEffect } from '../../../../handlers/gestures/hoverGesture';
 import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
+  SingleGesture,
   HandlerData,
   SingleGestureName,
   WithSharedValue,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { cloneConfig, getChangeEventCalculator } from '../../utils';
@@ -54,3 +57,12 @@ export function useHover(config: HoverGestureConfig) {
 
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
+
+export type HoverGestureStateChangeEvent =
+  GestureStateChangeEvent<HoverHandlerData>;
+export type HoverGestureUpdateEvent = GestureUpdateEvent<HoverHandlerData>;
+
+export type HoverGesture = SingleGesture<
+  HoverHandlerData,
+  HoverGestureProperties
+>;
