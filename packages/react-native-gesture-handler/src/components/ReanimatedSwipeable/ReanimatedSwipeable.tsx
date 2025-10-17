@@ -1,4 +1,10 @@
-import { useMemo, useCallback, useImperativeHandle, ForwardedRef } from 'react';
+import {
+  useMemo,
+  useCallback,
+  useImperativeHandle,
+  ForwardedRef,
+  useState,
+} from 'react';
 import { LayoutChangeEvent, View, I18nManager, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -82,6 +88,7 @@ const Swipeable = (props: SwipeableProps) => {
     ]
   );
 
+  const [shouldEnableTap, setShouldEnableTap] = useState(false);
   const rowState = useSharedValue<number>(0);
 
   const userDrag = useSharedValue<number>(0);
@@ -255,6 +262,8 @@ const Swipeable = (props: SwipeableProps) => {
       dispatchImmediateEvents(frozenRowState, toValue);
 
       rowState.value = Math.sign(toValue);
+
+      runOnJS(setShouldEnableTap)(rowState.value !== 0);
     },
     [
       rowState,
@@ -472,7 +481,7 @@ const Swipeable = (props: SwipeableProps) => {
   const tapGesture = useMemo(() => {
     const tap = Gesture.Tap()
       .shouldCancelWhenOutside(true)
-      .enabled(rowState.value !== 0)
+      .enabled(shouldEnableTap)
       .onStart(() => {
         if (rowState.value !== 0) {
           close();
@@ -486,9 +495,8 @@ const Swipeable = (props: SwipeableProps) => {
         relation as RelationPropType
       );
     });
-
     return tap;
-  }, [close, relationProps, rowState]);
+  }, [close, relationProps, rowState, shouldEnableTap]);
 
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()
