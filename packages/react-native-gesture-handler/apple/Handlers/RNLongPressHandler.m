@@ -102,12 +102,16 @@
 {
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+
+  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+
+  [self triggerAction];
 }
 
 #else
@@ -181,10 +185,6 @@
 
 - (void)reset
 {
-  if (self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
-
   [_gestureHandler.pointerTracker reset];
 
   [super reset];
