@@ -53,6 +53,8 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+
+  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -60,6 +62,8 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+
+  [self triggerAction];
 }
 
 - (void)triggerAction
@@ -69,7 +73,6 @@
 
 - (void)reset
 {
-  [self triggerAction];
   [_gestureHandler.pointerTracker reset];
   _hasBegan = NO;
   [super reset];
