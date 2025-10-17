@@ -4,7 +4,7 @@ import { findNodeHandle, Platform } from 'react-native';
 import { useDetectorContext } from './NativeDetector/useDetectorContext';
 import { NativeDetectorProps } from './NativeDetector/NativeDetector';
 import { isComposedGesture } from './hooks/utils/relationUtils';
-import { GestureEvents } from './types';
+import { DetectorCallbacks } from './types';
 
 export function LogicDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
@@ -12,7 +12,7 @@ export function LogicDetector<THandlerData, TConfig>(
   const { register, unregister } = useDetectorContext();
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
-  const logicMethods = useRef(props.gesture.gestureEvents);
+  const logicMethods = useRef(props.gesture.detectorCallbacks);
 
   const handleRef = useCallback((node: any) => {
     viewRef.current = node;
@@ -31,8 +31,8 @@ export function LogicDetector<THandlerData, TConfig>(
   }, []);
 
   useEffect(() => {
-    logicMethods.current = props.gesture.gestureEvents;
-  }, [props.gesture.gestureEvents]);
+    logicMethods.current = props.gesture.detectorCallbacks;
+  }, [props.gesture.detectorCallbacks]);
 
   useEffect(() => {
     if (viewTag === -1) {
@@ -60,7 +60,7 @@ export function LogicDetector<THandlerData, TConfig>(
       Object.assign(logicProps, { viewRef });
     }
 
-    register(logicProps, logicMethods as RefObject<GestureEvents<unknown>>);
+    register(logicProps, logicMethods as RefObject<DetectorCallbacks<unknown>>);
 
     return () => {
       unregister(viewTag);
