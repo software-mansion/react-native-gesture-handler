@@ -95,6 +95,8 @@
     self.state = UIGestureRecognizerStateFailed;
     self.enabled = NO;
     self.enabled = YES;
+    
+    [self triggerAction];
   }
 }
 
