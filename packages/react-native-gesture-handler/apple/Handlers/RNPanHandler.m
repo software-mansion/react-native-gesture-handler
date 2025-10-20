@@ -193,6 +193,7 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
+  [self triggerAction];
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
@@ -201,6 +202,7 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
+  [self triggerAction];
 }
 
 #if TARGET_OS_OSX
@@ -245,16 +247,12 @@
 {
   [super touchesEnded:touches withEvent:event];
   [self interactionsEnded:touches withEvent:event];
-
-  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
   [self interactionsCancelled:touches withEvent:event];
-
-  [self triggerAction];
 }
 
 #endif
