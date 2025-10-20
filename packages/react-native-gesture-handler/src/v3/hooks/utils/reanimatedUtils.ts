@@ -1,6 +1,11 @@
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { BaseGestureConfig, SharedValue, SharedValueOrT } from '../../types';
+import {
+  BaseGestureConfig,
+  GestureCallbacks,
+  SharedValue,
+  SharedValueOrT,
+} from '../../types';
 import { HandlerCallbacks } from './propsWhiteList';
 
 // Variant of djb2 hash function.
@@ -87,13 +92,13 @@ export function unbindSharedValues<THandlerData, TConfig>(
 export function hasWorkletEventHandlers<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  return Object.entries(config).some(
-    (key, value) =>
-      (key as keyof BaseGestureConfig<THandlerData, TConfig>) in
-        HandlerCallbacks &&
+  return Object.entries(config).some(([key, value]) => {
+    return (
+      HandlerCallbacks.has(key as keyof GestureCallbacks<unknown>) &&
       typeof value === 'function' &&
       '__workletHash' in value
-  );
+    );
+  });
 }
 
 export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
