@@ -75,7 +75,7 @@
 {
   // TODO: On iOS 26 swiping in "wrong" direction doesn't send `onFinalize` callback. This is because now in `reset`
   // default state is `UIGestureRecognizerStatePossible`
-  [self triggerAction]; // Keeping it will not brake old iOS because we check if we do not send the same state twice.
+  [self triggerAction]; // Keeping it will not break old iOS because we check if we do not send the same state twice.
   [_gestureHandler.pointerTracker reset];
   _hasBegan = NO;
   [super reset];
