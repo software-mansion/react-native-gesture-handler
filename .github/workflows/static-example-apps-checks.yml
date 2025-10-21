@@ -26,10 +26,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
           cache: yarn
 
       - name: Install node dependencies
