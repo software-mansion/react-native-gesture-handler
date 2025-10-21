@@ -36,8 +36,7 @@ jobs:
         run: npm pack
 
       - name: Upload npm package to GitHub
-        working-directory: packages/react-native-gesture-handler
         uses: actions/upload-artifact@v4
         with:
           name: react-native-gesture-handler-2.29.0.tgz
-          path: './react-native-gesture-handler-2.29.0.tgz'
+          path: './packages/react-native-gesture-handler/react-native-gesture-handler-2.29.0.tgz'
