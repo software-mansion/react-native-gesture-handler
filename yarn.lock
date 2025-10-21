@@ -4908,11 +4908,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 24.7.2
-  resolution: "@types/node@npm:24.7.2"
+  version: 24.8.1
+  resolution: "@types/node@npm:24.8.1"
   dependencies:
     undici-types: "npm:~7.14.0"
-  checksum: 10c0/03f662f10e4b89bc97016e067101cbabe55025b54c24afb581fb50992d5eeaaf417bdae34bbc668ae8759d3cdbbbadf35fc8b9b29d26f52ede2525d48e919e49
+  checksum: 10c0/d185f2f14aa26cc2b482aa730bfc452943f9636df37aad6ceed80aa397f1278f894043336bd72f74c47b3dbef23e772ac9b1a256168984aa8aee26836132d290
   languageName: node
   linkType: hard
 
@@ -6062,9 +6062,9 @@ __metadata:
   linkType: hard
 
 "babel-plugin-react-native-web@npm:~0.21.0":
-  version: 0.21.1
-  resolution: "babel-plugin-react-native-web@npm:0.21.1"
-  checksum: 10c0/d7da90a5f7a7816138c29f049dd31ea3d6e40cc59d8ac97d96ad578f3fa26cd0b0aa789300bee955b833fbf0c003ff63270fd259abb5bbca90809e8297d1c232
+  version: 0.21.2
+  resolution: "babel-plugin-react-native-web@npm:0.21.2"
+  checksum: 10c0/45fa9b2fce90cb0d962bbc9c665e944ef6720f5740a573d457adf8e2881bd4112396922d5d5c0ab7cfc706f0c457e3edebddc55289d30924e1f42b4b7d849b8e
   languageName: node
   linkType: hard
 
@@ -6216,11 +6216,11 @@ __metadata:
   linkType: hard
 
 "baseline-browser-mapping@npm:^2.8.9":
-  version: 2.8.16
-  resolution: "baseline-browser-mapping@npm:2.8.16"
+  version: 2.8.18
+  resolution: "baseline-browser-mapping@npm:2.8.18"
   bin:
     baseline-browser-mapping: dist/cli.js
-  checksum: 10c0/e38a861f44236cfc5ba8bf9d4a024d37682e73efc3df3377e170a8a44303f466c0fce7fdc641029df27e47adb270b2f7cf29550b9be7dcdbeec18bc62858c9e9
+  checksum: 10c0/fa319aab5761ccb78ec7f5e5905149ae1916d65b68009aa1c8b6ec7f0bdb878bfa57a553235024179ed5ba8b36d668a22f599861990ce6ceb1aeeafb1e5704ae
   languageName: node
   linkType: hard
 
@@ -6522,9 +6522,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001746":
-  version: 1.0.30001750
-  resolution: "caniuse-lite@npm:1.0.30001750"
-  checksum: 10c0/aa77ebf264ca8dcfe913fadaa19f06bf839d65dec24498fdb9c45739ab0828b8275ca30c698f4ee86829d38264eaa461edf4577e407753da8205ab1d285e105d
+  version: 1.0.30001751
+  resolution: "caniuse-lite@npm:1.0.30001751"
+  checksum: 10c0/c3f2d448f3569004ace160fd9379ea0def8e7a7bc6e65611baadb57d24e1f418258647a6210e46732419f5663e2356c22aa841f92449dd3849eb6471bb7ad592
   languageName: node
   linkType: hard
 
@@ -6727,9 +6727,9 @@ __metadata:
   linkType: hard
 
 "collect-v8-coverage@npm:^1.0.0":
-  version: 1.0.2
-  resolution: "collect-v8-coverage@npm:1.0.2"
-  checksum: 10c0/ed7008e2e8b6852c5483b444a3ae6e976e088d4335a85aa0a9db2861c5f1d31bd2d7ff97a60469b3388deeba661a619753afbe201279fb159b4b9548ab8269a1
+  version: 1.0.3
+  resolution: "collect-v8-coverage@npm:1.0.3"
+  checksum: 10c0/bc62ba251bcce5e3354a8f88fa6442bee56e3e612fec08d4dfcf66179b41ea0bf544b0f78c4ebc0f8050871220af95bb5c5578a6aef346feea155640582f09dc
   languageName: node
   linkType: hard
 
@@ -7734,11 +7734,11 @@ __metadata:
   linkType: hard
 
 "envinfo@npm:^7.13.0":
-  version: 7.18.0
-  resolution: "envinfo@npm:7.18.0"
+  version: 7.19.0
+  resolution: "envinfo@npm:7.19.0"
   bin:
     envinfo: dist/cli.js
-  checksum: 10c0/9d8002558932be577e0d5113917cee065846dbf4ba35521d60f18b6e71866bfd6b22d9037d7cf0e32c3a1a7b32faded7f32c812730a045947b162ea46e0cdc4d
+  checksum: 10c0/4b18fa2832e7b33f3550ae88b0dc5e09ab7edd08f9ba51dd618720e896cbefccda3963a0d144137985b94e701907ac173e358e5b138cb92806b89040e7029f95
   languageName: node
   linkType: hard
 
@@ -13476,9 +13476,9 @@ __metadata:
   linkType: hard
 
 "node-releases@npm:^2.0.21":
-  version: 2.0.23
-  resolution: "node-releases@npm:2.0.23"
-  checksum: 10c0/3fdcddb574a9d56c050469b027f3fd2b8830fd321edd12f34b862969b67d0a3d6713eb2af8916f91618d555354f6c7bd33ae39e3b37117b1e7ddf2e42bc3f4be
+  version: 2.0.25
+  resolution: "node-releases@npm:2.0.25"
+  checksum: 10c0/d4aeb1e04578d96e54d6c40540122e6240671b971887f04aca07b6805752a78de1f1c1522f3fa3843706bf8acf6de2cb35f104914957f269e328b41a9fa9fd2f
   languageName: node
   linkType: hard
 
@@ -14745,15 +14745,15 @@ __metadata:
   linkType: hard
 
 "react-native-screens@npm:^4.10.0":
-  version: 4.17.0
-  resolution: "react-native-screens@npm:4.17.0"
+  version: 4.17.1
+  resolution: "react-native-screens@npm:4.17.1"
   dependencies:
     react-freeze: "npm:^1.0.0"
     warn-once: "npm:^0.1.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/a57ff39e2d2c7b38f8b1a1a5d52f4450bb1aa7d72eef9749901db1f1df07a112c1187d9559607bae6d6680bd7b6e45e94de241948b71c8b92fd7b2fc46404a0f
+  checksum: 10c0/1058febb240dceb343a24620f62b4a85f4262dba736495ee02a805a122044beac3d0daab707be2bd38fffc0ef1b99d2ba992ac95a7adfd8c0ebd3325e984ac44
   languageName: node
   linkType: hard
 
@@ -14800,8 +14800,8 @@ __metadata:
   linkType: hard
 
 "react-native-web@npm:^0.21.0":
-  version: 0.21.1
-  resolution: "react-native-web@npm:0.21.1"
+  version: 0.21.2
+  resolution: "react-native-web@npm:0.21.2"
   dependencies:
     "@babel/runtime": "npm:^7.18.6"
     "@react-native/normalize-colors": "npm:^0.74.1"
@@ -14814,7 +14814,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0 || ^19.0.0
     react-dom: ^18.0.0 || ^19.0.0
-  checksum: 10c0/6a72f32c30909d2e76f721f8257f6bf32d83ec8dec480aebefc549a479b9c87e4ef019d5dadc9d0d21703a9b1801803d51a25227f54cd4ad330ca14676dd5956
+  checksum: 10c0/8c184fef0045c25deff765c8e80963454a5dffd8e389a9e11cf2fec9e769ff0f82c3d56d082b1897a7ded8374d9ae8a49dac7f09377a104f1995a5ddea645095
   languageName: node
   linkType: hard
 
