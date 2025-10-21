@@ -61,7 +61,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
           actionType,
           propsRef
         );
-        attachedNativeHandlers.current.add(tag);
+        if (actionType !== ActionType.LOGIC_DETECTOR) {
+          attachedNativeHandlers.current.add(tag);
+        }
       } else {
         RNGestureHandlerModule.attachGestureHandler(
           tag,

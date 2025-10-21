@@ -5,6 +5,7 @@ import android.view.View
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
@@ -104,9 +105,17 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       handlersToDetach.remove(tag)
       if (!attachedHandlers.contains(tag)) {
         if (shouldAttachGestureToChildView(tag)) {
-          // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
-          // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
-          nativeHandlers.add(tag)
+          if (actionType == GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
+            val child = (getViewByReactTag(viewTag) as? ReactViewGroup)?.getChildAt(0)
+            if (child != null) {
+              registry.attachHandlerToView(tag, child.id, GestureHandler.ACTION_TYPE_LOGIC_DETECTOR)
+              registry.getHandler(tag)?.hostDetectorView = this
+            }
+          } else {
+            // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
+            // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
+            nativeHandlers.add(tag)
+          }
         } else {
           registry.attachHandlerToView(tag, viewTag, actionType)
           if (actionType == GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
@@ -183,4 +192,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }.filterNotNull()
 
   private fun ReadableArray.toIntList(): List<Int> = List(size()) { getInt(it) }
+  fun getViewByReactTag(reactTag: Int): View? {
+    val uiManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
+    return uiManager?.resolveView(reactTag)
+  }
 }
