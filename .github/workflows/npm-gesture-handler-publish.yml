@@ -1,0 +1,45 @@
+name: Build package and publish on npm
+env:
+  YARN_ENABLE_HARDENED_MODE: 0
+on:
+  pull_request:
+    paths:
+      - .github/workflows/npm-gesture-handler-publish.yml
+  workflow_dispatch:
+
+jobs:
+  npm-build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # for OIDC
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'yarn'
+          registry-url: https://registry.npmjs.org/
+
+      # Ensure npm 11.5.1 or later is installed for OIDC
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Install node dependencies
+        run: yarn install --immutable
+
+      - name: Build package
+        id: build
+        working-directory: packages/react-native-gesture-handler
+        run: npm pack
+
+      - name: Upload npm package to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-native-gesture-handler-2.29.0.tgz
+          path: './react-native-gesture-handler-2.29.0.tgz
