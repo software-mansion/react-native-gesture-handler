@@ -3,11 +3,11 @@ import { PropsWithChildren } from 'react';
 import { StyleSheet } from 'react-native';
 import { maybeInitializeFabric } from '../init';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
-import type { NativeProps } from '../specs/RNGestureHandlerRootViewNativeComponent';
+import type { RootViewNativeProps } from '../specs/RNGestureHandlerRootViewNativeComponent';
 import GestureHandlerRootViewNativeComponent from '../specs/RNGestureHandlerRootViewNativeComponent';
 
 export interface GestureHandlerRootViewProps
-  extends PropsWithChildren<NativeProps> {}
+  extends PropsWithChildren<RootViewNativeProps> {}
 
 export default function GestureHandlerRootView({
   style,
