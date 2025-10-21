@@ -19,7 +19,7 @@ export interface SwipeableProps
   /**
    *
    */
-  ref?: React.RefObject<SwipeableMethods | null>;
+  ref?: React.Ref<SwipeableMethods | null>;
 
   /**
    * Enables two-finger gestures on supported devices, for example iPads with
