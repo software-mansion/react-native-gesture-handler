@@ -569,13 +569,16 @@ class GestureHandlerOrchestrator(
     extractGestureHandlers(wrapperView, tempCoords, pointerId, event)
   }
 
+  private fun shouldIgnoreSubtreeIfGestureHandlerRootView(view: View) =
+    view is RNGestureHandlerRootView && view != wrapperView && view.isRootViewEnabled()
+
   private fun extractGestureHandlers(
     viewGroup: ViewGroup,
     coords: FloatArray,
     pointerId: Int,
     event: MotionEvent,
   ): Boolean {
-    if (viewGroup is RNGestureHandlerRootView && viewGroup != wrapperView && viewGroup.isRootViewEnabled()) {
+    if (shouldIgnoreSubtreeIfGestureHandlerRootView(viewGroup)) {
       // When we encounter another active root view while traversing the view hierarchy, we want
       // to stop there so that it can handle the gesture attached under it itself.
       // This helps in cases where a view may call `requestDisallowInterceptTouchEvent` (which would
@@ -613,7 +616,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean =
-    if (view is RNGestureHandlerRootView && view != wrapperView && view.isRootViewEnabled()) {
+    if (shouldIgnoreSubtreeIfGestureHandlerRootView(view)) {
       // When we encounter another active root view while traversing the view hierarchy, we want
       // to stop there so that it can handle the gesture attached under it itself.
       // This helps in cases where a view may call `requestDisallowInterceptTouchEvent` (which would
