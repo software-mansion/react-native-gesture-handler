@@ -39,4 +39,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: react-native-gesture-handler-2.29.0.tgz
-          path: './react-native-gesture-handler-2.29.0.tgz
+          path: './react-native-gesture-handler-2.29.0.tgz'
