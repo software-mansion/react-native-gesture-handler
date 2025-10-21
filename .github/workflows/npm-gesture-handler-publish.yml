@@ -38,7 +38,7 @@ jobs:
 
       - name: Add package name to env
         working-directory: packages/react-native-gesture-handler
-        run: echo "PACKAGE_NAME=$(ls -l | egrep -o "react-native-screens-(.*)(=?\.tgz)")" >> $GITHUB_ENV
+        run: echo "PACKAGE_NAME=$(ls -l | egrep -o "react-native-gesture-handler-(.*)(=?\.tgz)")" >> $GITHUB_ENV
 
       - name: Assert PACKAGE_NAME
         if: ${{ env.PACKAGE_NAME == 'PLACEHOLDER' }}
