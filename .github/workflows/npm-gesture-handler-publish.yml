@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
+    env:
+      PACKAGE_NAME: PLACEHOLDER # Will be reassigned later on.
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -35,8 +36,16 @@ jobs:
         working-directory: packages/react-native-gesture-handler
         run: npm pack
 
+      - name: Add package name to env
+        working-directory: packages/react-native-gesture-handler
+        run: echo "PACKAGE_NAME=$(ls -l | egrep -o "react-native-screens-(.*)(=?\.tgz)")" >> $GITHUB_ENV
+
+      - name: Assert PACKAGE_NAME
+        if: ${{ env.PACKAGE_NAME == 'PLACEHOLDER' }}
+        run: exit 1 # This should never happen.
+
       - name: Upload npm package to GitHub
         uses: actions/upload-artifact@v4
         with:
-          name: react-native-gesture-handler-2.29.0.tgz
-          path: './packages/react-native-gesture-handler/react-native-gesture-handler-2.29.0.tgz'
+          name: ${{ env.PACKAGE_NAME }}
+          path: './packages/react-native-gesture-handler/${{ env.PACKAGE_NAME }}'
