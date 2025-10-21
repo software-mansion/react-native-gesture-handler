@@ -2,20 +2,15 @@ import { useEffect, useMemo } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import {
   prepareConfig,
-  isAnimatedEvent,
-  shouldHandleTouchEvents,
+  prepareRelations,
+  bindSharedValues,
+  unbindSharedValues,
+  prepareConfigForNativeSide,
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
-import {
-  bindSharedValues,
-  hasWorkletEventHandlers,
-  unbindSharedValues,
-} from './utils/reanimatedUtils';
-import { prepareRelations } from './utils/relationUtils';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -32,15 +27,10 @@ export function useGesture<THandlerData, TConfig>(
     );
   }
 
-  // This has to be done ASAP as other hooks depend `shouldUseReanimated`.
-  config.shouldUseReanimated =
-    !config.disableReanimated &&
-    Reanimated !== undefined &&
-    hasWorkletEventHandlers(config);
-  config.needsPointerData = shouldHandleTouchEvents(config);
-  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
+  // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
+  prepareConfig(config);
 
-  if (config.dispatchesAnimatedEvents && config.shouldUseReanimated) {
+  if (config.dispatchesAnimatedEvents && config.shouldUseReanimatedDetector) {
     throw new Error(
       tagMessage(
         `${type}: You cannot use Animated.Event together with callbacks running on the UI thread. Either remove Animated.Event from onUpdate, or set runOnJS property to true on the gesture.`
@@ -71,7 +61,7 @@ export function useGesture<THandlerData, TConfig>(
   }
 
   if (
-    config.shouldUseReanimated &&
+    config.shouldUseReanimatedDetector &&
     (!onReanimatedStateChange ||
       !onReanimatedUpdateEvent ||
       !onReanimatedTouchEvent)
@@ -94,7 +84,7 @@ export function useGesture<THandlerData, TConfig>(
   }, [type, tag]);
 
   useEffect(() => {
-    const preparedConfig = prepareConfig(config);
+    const preparedConfig = prepareConfigForNativeSide(type, config);
     RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
     RNGestureHandlerModule.flushOperations();
 
@@ -109,7 +99,7 @@ export function useGesture<THandlerData, TConfig>(
     tag,
     type,
     config,
-    gestureEvents: {
+    detectorCallbacks: {
       onGestureHandlerStateChange,
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,

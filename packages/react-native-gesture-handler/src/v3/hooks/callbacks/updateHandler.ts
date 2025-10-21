@@ -7,8 +7,11 @@ import {
   GestureUpdateEvent,
   UpdateEvent,
 } from '../../types';
-import { isEventForHandlerWithTag, maybeExtractNativeEvent } from '../utils';
-import { runCallback } from '../utils/eventHandlersUtils';
+import {
+  isEventForHandlerWithTag,
+  maybeExtractNativeEvent,
+  runCallback,
+} from '../utils';
 
 export function getUpdateHandler<THandlerData>(
   handlerTag: number,

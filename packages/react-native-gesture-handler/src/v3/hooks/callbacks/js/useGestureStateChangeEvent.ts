@@ -1,5 +1,5 @@
 import { BaseGestureConfig } from '../../../types';
-import { extractStateChangeHandlers } from '../../utils/eventHandlersUtils';
+import { extractStateChangeHandlers } from '../../utils';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
 export function useGestureStateChangeEvent<THandlerData, TConfig>(

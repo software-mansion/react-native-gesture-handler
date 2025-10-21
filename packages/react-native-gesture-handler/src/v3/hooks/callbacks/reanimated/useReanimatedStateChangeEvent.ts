@@ -1,6 +1,6 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { BaseGestureConfig } from '../../../types';
-import { extractStateChangeHandlers } from '../../utils/eventHandlersUtils';
+import { extractStateChangeHandlers } from '../../utils';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
 export function useReanimatedStateChangeEvent<THandlerData, TConfig>(

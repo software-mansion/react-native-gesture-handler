@@ -5,7 +5,7 @@ import { tagMessage } from '../../utils';
 import {
   LogicChildren,
   Gesture,
-  GestureEvents,
+  DetectorCallbacks,
   GestureHandlerEvent,
 } from '../types';
 import { DetectorContext } from './useDetectorContext';
@@ -29,18 +29,18 @@ export function NativeDetector<THandlerData, TConfig>({
   children,
 }: NativeDetectorProps<THandlerData, TConfig>) {
   const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
-  const logicMethods = useRef<Map<number, RefObject<GestureEvents<unknown>>>>(
-    new Map()
-  );
+  const logicMethods = useRef<
+    Map<number, RefObject<DetectorCallbacks<unknown>>>
+  >(new Map());
 
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimated
+    : gesture.config.shouldUseReanimatedDetector
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
   const register = useCallback(
-    (child: LogicChildren, methods: RefObject<GestureEvents<unknown>>) => {
+    (child: LogicChildren, methods: RefObject<DetectorCallbacks<unknown>>) => {
       setLogicChildren((prev) => {
         const index = prev.findIndex((c) => c.viewTag === child.viewTag);
         if (index !== -1) {
@@ -74,10 +74,10 @@ export function NativeDetector<THandlerData, TConfig>({
 
   configureRelations(gesture);
 
-  const handleGestureEvent = (key: keyof GestureEvents<THandlerData>) => {
+  const handleGestureEvent = (key: keyof DetectorCallbacks<THandlerData>) => {
     return (e: GestureHandlerEvent<THandlerData>) => {
-      if (gesture.gestureEvents[key]) {
-        gesture.gestureEvents[key](e);
+      if (gesture.detectorCallbacks[key]) {
+        gesture.detectorCallbacks[key](e);
       }
 
       logicMethods.current.forEach((ref) => {
@@ -90,12 +90,12 @@ export function NativeDetector<THandlerData, TConfig>({
   };
 
   const getHandlers = useCallback(
-    (key: keyof GestureEvents<unknown>) => {
+    (key: keyof DetectorCallbacks<unknown>) => {
       const handlers: ((e: GestureHandlerEvent<THandlerData>) => void)[] = [];
 
-      if (gesture.gestureEvents[key]) {
+      if (gesture.detectorCallbacks[key]) {
         handlers.push(
-          gesture.gestureEvents[key] as (
+          gesture.detectorCallbacks[key] as (
             e: GestureHandlerEvent<unknown>
           ) => void
         );
@@ -112,7 +112,7 @@ export function NativeDetector<THandlerData, TConfig>({
 
       return handlers;
     },
-    [logicChildren, gesture.gestureEvents]
+    [logicChildren, gesture.detectorCallbacks]
   );
 
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
@@ -135,9 +135,9 @@ export function NativeDetector<THandlerData, TConfig>({
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerAnimatedEvent={handleGestureEvent(
-          'onGestureHandlerAnimatedEvent'
-        )}
+        onGestureHandlerAnimatedEvent={
+          gesture.detectorCallbacks.onGestureHandlerAnimatedEvent
+        }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerTouchEvent={handleGestureEvent(
           'onGestureHandlerTouchEvent'

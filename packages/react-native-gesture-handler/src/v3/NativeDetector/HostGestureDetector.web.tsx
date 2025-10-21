@@ -4,7 +4,6 @@ import { ActionType } from '../../ActionType';
 import { PropsRef } from '../../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../../utils';
-import { EMPTY_SET } from './utils';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
@@ -18,6 +17,8 @@ export interface LogicChildrenWeb {
   handlerTags: number[];
   viewRef: RefObject<Element | null>;
 }
+
+const EMPTY_HANDLERS = new Set<number>();
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
@@ -96,9 +97,9 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     );
 
     return () => {
-      detachHandlers(EMPTY_SET, attachedHandlers.current);
+      detachHandlers(EMPTY_HANDLERS, attachedHandlers.current);
       attachedLogicHandlers?.current.forEach((childHandlerTags) => {
-        detachHandlers(EMPTY_SET, childHandlerTags);
+        detachHandlers(EMPTY_HANDLERS, childHandlerTags);
       });
     };
   }, [handlerTags, children]);
@@ -130,7 +131,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     });
 
     logicChildrenToDetach.forEach((tag) => {
-      detachHandlers(EMPTY_SET, attachedLogicHandlers.current.get(tag)!);
+      detachHandlers(EMPTY_HANDLERS, attachedLogicHandlers.current.get(tag)!);
     });
   }, [props.logicChildren]);
 

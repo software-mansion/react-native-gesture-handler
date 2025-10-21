@@ -54,20 +54,20 @@ export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
 export { GestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
-export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
-export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
-export type { FlingGestureType as FlingGesture } from './handlers/gestures/flingGesture';
-export type { LongPressGestureType as LongPressGesture } from './handlers/gestures/longPressGesture';
-export type { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGesture';
-export type { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
-export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
-export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
-export type { HoverGestureType as HoverGesture } from './handlers/gestures/hoverGesture';
+export type { TapGestureType as LegacyTapGesture } from './handlers/gestures/tapGesture';
+export type { PanGestureType as LegacyPanGesture } from './handlers/gestures/panGesture';
+export type { FlingGestureType as LegacyFlingGesture } from './handlers/gestures/flingGesture';
+export type { LongPressGestureType as LegacyLongPressGesture } from './handlers/gestures/longPressGesture';
+export type { PinchGestureType as LegacyPinchGesture } from './handlers/gestures/pinchGesture';
+export type { RotationGestureType as LegacyRotationGesture } from './handlers/gestures/rotationGesture';
+export type { ForceTouchGestureType as LegacyForceTouchGesture } from './handlers/gestures/forceTouchGesture';
+export type { ManualGestureType as LegacyManualGesture } from './handlers/gestures/manualGesture';
+export type { HoverGestureType as LegacyHoverGesture } from './handlers/gestures/hoverGesture';
 export type {
-  ComposedGestureType as ComposedGesture,
-  RaceGestureType as RaceGesture,
-  SimultaneousGestureType as SimultaneousGesture,
-  ExclusiveGestureType as ExclusiveGesture,
+  ComposedGestureType as LegacyComposedGesture,
+  RaceGestureType as LegacyRaceGesture,
+  SimultaneousGestureType as LegacySimultaneousGesture,
+  ExclusiveGestureType as LegacyExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
@@ -144,23 +144,11 @@ export type {
   BorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
-export type { SwipeableProps } from './components/Swipeable';
-export { default as Swipeable } from './components/Swipeable';
 export type {
   PressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
-
-export type {
-  DrawerLayoutProps,
-  DrawerPosition,
-  DrawerState,
-  DrawerType,
-  DrawerLockMode,
-  DrawerKeyboardDismissMode,
-} from './components/DrawerLayout';
-export { default as DrawerLayout } from './components/DrawerLayout';
 
 export type { NativeDetectorProps } from './v3/NativeDetector/NativeDetector';
 export { NativeDetector } from './v3/NativeDetector/NativeDetector';
@@ -169,7 +157,8 @@ export { LogicDetector } from './v3/LogicDetector';
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
 
-export { SingleGestureName } from './v3/types';
+export type { ComposedGesture } from './v3/types';
+export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
 
 export * from './v3/hooks/gestures';
 

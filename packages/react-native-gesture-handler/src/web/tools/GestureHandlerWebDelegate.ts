@@ -12,6 +12,7 @@ import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
 import WheelEventManager from './WheelEventManager';
 import { tagMessage } from '../../utils';
+import { SingleGestureName } from '../../v3/types';
 
 interface DefaultViewStyles {
   userSelect: string;
@@ -46,7 +47,11 @@ export class GestureHandlerWebDelegate
       touchAction: this.view.style.touchAction,
     };
 
-    this.eventManagers.push(new PointerEventManager(this.view));
+    const shouldSendHoverEvents = handler.name === SingleGestureName.Hover;
+
+    this.eventManagers.push(
+      new PointerEventManager(this.view, shouldSendHoverEvents)
+    );
     this.eventManagers.push(new KeyboardEventManager(this.view));
     this.eventManagers.push(new WheelEventManager(this.view));
 
