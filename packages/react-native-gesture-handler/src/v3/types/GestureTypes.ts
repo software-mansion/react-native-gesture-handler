@@ -5,6 +5,7 @@ import {
   GestureCallbacks,
   GestureRelations,
   InternalConfigProps,
+  StateManager,
 } from './ConfigTypes';
 import { FilterNeverProperties } from './UtilityTypes';
 
@@ -23,12 +24,13 @@ export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   CommonGestureConfig;
 
 export type SingleGesture<THandlerData, TConfig> = {
+  /** @internal oeuhfowehfewf */
   tag: number;
   type: SingleGestureName;
   config: BaseGestureConfig<THandlerData, TConfig>;
   detectorCallbacks: DetectorCallbacks<THandlerData>;
   gestureRelations: GestureRelations;
-};
+} & StateManager;
 
 export type ComposedGesture = {
   tags: number[];

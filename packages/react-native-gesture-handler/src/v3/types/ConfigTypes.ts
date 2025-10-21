@@ -67,3 +67,11 @@ export type ComposedGestureConfig = {
   shouldUseReanimatedDetector: boolean;
   dispatchesAnimatedEvents: boolean;
 };
+
+export type StateManager = {
+  begin: () => void;
+  activate: () => void;
+  end: () => void;
+  fail: () => void;
+  cancel: () => void;
+};

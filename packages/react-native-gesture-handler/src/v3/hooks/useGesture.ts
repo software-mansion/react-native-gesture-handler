@@ -10,7 +10,13 @@ import {
   prepareConfigForNativeSide,
 } from './utils';
 import { tagMessage } from '../../utils';
-import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
+import {
+  BaseGestureConfig,
+  SingleGesture,
+  SingleGestureName,
+  StateManager,
+} from '../types';
+import { State } from '../../State';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -18,6 +24,31 @@ export function useGesture<THandlerData, TConfig>(
 ): SingleGesture<THandlerData, TConfig> {
   const tag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
+
+  const stateManager: StateManager = {
+    begin: () => {
+      'worklet';
+      globalThis._setGestureStateSync(tag, State.BEGAN);
+    },
+    activate: () => {
+      'worklet';
+      globalThis._setGestureStateSync(tag, State.ACTIVE);
+    },
+    end: () => {
+      'worklet';
+      globalThis._setGestureStateSync(tag, State.END);
+    },
+    fail: () => {
+      'worklet';
+      globalThis._setGestureStateSync(tag, State.FAILED);
+    },
+    cancel: () => {
+      'worklet';
+      globalThis._setGestureStateSync(tag, State.CANCELLED);
+    },
+  };
+
+  config.onUpdate.__closure.pan1 = stateManager;
 
   if (config.disableReanimated !== disableReanimated) {
     throw new Error(
@@ -109,5 +140,6 @@ export function useGesture<THandlerData, TConfig>(
       onGestureHandlerAnimatedEvent,
     },
     gestureRelations,
+    ...stateManager,
   };
 }
