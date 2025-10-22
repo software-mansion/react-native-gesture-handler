@@ -4,6 +4,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
+import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerInterface
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerEvent
@@ -36,6 +37,11 @@ class RNGestureHandlerRootViewManager :
 
   override fun setModuleId(view: RNGestureHandlerRootView, value: Int) {
     view.setModuleId(value)
+  }
+
+  @ReactProp(name = "unstable_forceActive")
+  override fun setUnstable_forceActive(view: RNGestureHandlerRootView, active: Boolean) {
+    view.setUnstableForceActive(active)
   }
 
   /**
