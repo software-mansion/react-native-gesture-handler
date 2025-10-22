@@ -42,7 +42,7 @@ jobs:
 
       - name: Assert PACKAGE_NAME
         if: ${{ env.PACKAGE_NAME == 'PLACEHOLDER' }}
-        run: exit 1 # This should never happen.
+        run: exit 1 # If we end up here, it means that package was not generated.
 
       - name: Upload npm package to GitHub
         uses: actions/upload-artifact@v4
