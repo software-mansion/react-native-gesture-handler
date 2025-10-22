@@ -51,4 +51,5 @@ jobs:
           path: './packages/react-native-gesture-handler/${{ env.PACKAGE_NAME }}'
 
       - name: Publish npm package
+        working-directory: packages/react-native-gesture-handler
         run: npm publish $PACKAGE_NAME --provenance
