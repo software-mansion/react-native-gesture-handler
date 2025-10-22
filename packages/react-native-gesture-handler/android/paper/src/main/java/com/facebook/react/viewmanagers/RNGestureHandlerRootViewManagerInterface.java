@@ -13,5 +13,5 @@ import android.view.View;
 import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
 public interface RNGestureHandlerRootViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
-  // No props
+  void setUnstable_forceActive(T view, boolean value);
 }

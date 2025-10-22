@@ -1,6 +1,6 @@
 {
   "name": "react-native-gesture-handler",
-  "version": "2.28.0",
+  "version": "2.29.0",
   "description": "Declarative API exposing native platform touch and gesture system to React Native",
   "scripts": {
     "test": "jest",
@@ -103,7 +103,7 @@
     "prettier": "3.3.3",
     "react": "19.1.1",
     "react-native": "0.82.0",
-    "react-native-builder-bob": "^0.39.0",
+    "react-native-builder-bob": "^0.40.13",
     "react-native-reanimated": "^3.18.0",
     "react-test-renderer": "19.1.1",
     "typescript": "~5.8.3"

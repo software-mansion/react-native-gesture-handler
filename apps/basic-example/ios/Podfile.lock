@@ -2321,7 +2321,7 @@ PODS:
     - React-perflogger (= 0.82.0)
     - React-utils (= 0.82.0)
     - SocketRocket
-  - RNGestureHandler (2.28.0):
+  - RNGestureHandler (2.29.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2658,7 +2658,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: c5c4f5280e4ae0f9f4a739c64c4260fe0b3edaf1
   ReactCodegen: 096bbbb2498ca55f385e2fbd465bfa0211ee8295
   ReactCommon: 25c7f94aee74ddd93a8287756a8ac0830a309544
-  RNGestureHandler: b3ac5627fa705423fd32c53540e4ce862c62f619
+  RNGestureHandler: 590cc86dca3c7372be2c09df06ea6fb02eebd76b
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: edeb9900b9e5bb5b27b9a6a2d5914e4fe4033c1b
 

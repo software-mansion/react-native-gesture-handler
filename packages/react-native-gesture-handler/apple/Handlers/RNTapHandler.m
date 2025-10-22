@@ -116,7 +116,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
-    [self triggerAction];
     [self reset];
     return;
   }
@@ -141,6 +140,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
+
   [self reset];
 }
 
@@ -246,6 +246,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
+
   [_gestureHandler.pointerTracker reset];
 
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
