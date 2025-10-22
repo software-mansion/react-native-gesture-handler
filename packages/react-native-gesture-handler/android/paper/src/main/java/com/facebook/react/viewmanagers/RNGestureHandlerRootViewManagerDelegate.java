@@ -15,12 +15,19 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
+@SuppressWarnings("deprecation")
 public class RNGestureHandlerRootViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & RNGestureHandlerRootViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public RNGestureHandlerRootViewManagerDelegate(U viewManager) {
     super(viewManager);
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
-    super.setProperty(view, propName, value);
+    switch (propName) {
+      case "unstable_forceActive":
+        mViewManager.setUnstable_forceActive(view, value == null ? false : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
   }
 }
