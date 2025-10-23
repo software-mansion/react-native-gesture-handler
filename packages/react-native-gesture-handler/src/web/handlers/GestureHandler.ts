@@ -923,7 +923,6 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected resetConfig(): void {
-    this._enabled = null;
     this.manualActivation = false;
     this.shouldCancelWhenOutside = false;
     this.mouseButton = undefined;
