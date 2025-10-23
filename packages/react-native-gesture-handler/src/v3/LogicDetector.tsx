@@ -14,35 +14,37 @@ export function LogicDetector<THandlerData, TConfig>(
   const [viewTag, setViewTag] = useState<number>(-1);
   const logicMethods = useRef(props.gesture.detectorCallbacks);
 
-  const handleRef = useCallback((node: any) => {
-    viewRef.current = node;
-    if (!node) {
-      return;
-    }
+  const handleRef = useCallback(
+    (node: any) => {
+      viewRef.current = node;
+      if (!node) {
+        return;
+      }
+      let tag: number | null = null;
+      if (Platform.OS === 'web') {
+        tag = node;
+      } else {
+        tag = findNodeHandle(node);
+      }
 
-    if (Platform.OS === 'web') {
-      setViewTag(node);
-    } else {
-      const tag = findNodeHandle(node);
       if (tag != null) {
+        console.log('register ', tag);
         setViewTag(tag);
       }
-    }
-  }, []);
+
+      return () => {
+        if (tag != null) {
+          console.log('unregister ', tag);
+          unregister(viewTag);
+        }
+      };
+    },
+    [props.children]
+  );
 
   useEffect(() => {
     logicMethods.current = props.gesture.detectorCallbacks;
   }, [props.gesture.detectorCallbacks]);
-
-  useEffect(() => {
-    if (viewTag === -1) {
-      return;
-    }
-
-    // Native Detector differentiates Logic Children through a viewTag,
-    // thus if viewTag changes we have to reregister
-    unregister(viewTag);
-  }, [viewTag]);
 
   useEffect(() => {
     if (viewTag === -1) {

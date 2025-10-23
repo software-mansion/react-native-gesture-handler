@@ -220,22 +220,24 @@
   }
 
   for (const auto &child : logicChildren) {
-    if (_attachedLogicHandlers.find(child.viewTag) == _attachedLogicHandlers.end()) {
-      _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
-    }
-
     [logicChildrenToDetach removeObject:@(child.viewTag)];
-
-    [self attachHandlers:child.handlerTags
-              actionType:RNGestureHandlerActionTypeLogicDetector
-                 viewTag:child.viewTag
-        attachedHandlers:_attachedLogicHandlers[child.viewTag]];
   }
 
   for (const NSNumber *tag : logicChildrenToDetach) {
     for (id handlerTag : _attachedLogicHandlers[tag.intValue]) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
+    _attachedLogicHandlers.erase(tag.intValue);
+  }
+
+  for (const auto &child : logicChildren) {
+    if (_attachedLogicHandlers.find(child.viewTag) == _attachedLogicHandlers.end()) {
+      _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
+    }
+    [self attachHandlers:child.handlerTags
+              actionType:RNGestureHandlerActionTypeLogicDetector
+                 viewTag:child.viewTag
+        attachedHandlers:_attachedLogicHandlers[child.viewTag]];
   }
 }
 
