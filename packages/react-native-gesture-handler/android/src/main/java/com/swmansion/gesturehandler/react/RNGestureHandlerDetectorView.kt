@@ -104,18 +104,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     for (tag in newHandlers) {
       handlersToDetach.remove(tag)
       if (!attachedHandlers.contains(tag)) {
-        if (shouldAttachGestureToChildView(tag)) {
-          if (actionType == GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
-            val child = (getViewByReactTag(viewTag) as? ReactViewGroup)?.getChildAt(0)
-            if (child != null) {
-              registry.attachHandlerToView(tag, child.id, GestureHandler.ACTION_TYPE_LOGIC_DETECTOR)
-              registry.getHandler(tag)?.hostDetectorView = this
-            }
-          } else {
-            // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
-            // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
-            nativeHandlers.add(tag)
-          }
+        if (shouldAttachGestureToChildView(tag) && actionType != GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
+          // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
+          // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
+          nativeHandlers.add(tag)
         } else {
           registry.attachHandlerToView(tag, viewTag, actionType)
           if (actionType == GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {

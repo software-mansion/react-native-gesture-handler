@@ -164,17 +164,10 @@
   for (const int tag : handlerTags) {
     [handlersToDetach removeObject:@(tag)];
     if (![attachedHandlers containsObject:@(tag)]) {
-      if ([self shouldAttachGestureToSubview:@(tag)]) {
-        if (actionType == RNGestureHandlerActionTypeLogicDetector) {
-          [handlerManager attachGestureHandler:@(tag)
-                                 toViewWithTag:@([handlerManager viewForReactTag:@(viewTag)].subviews[0].tag)
-                                withActionType:RNGestureHandlerActionTypeLogicDetector];
-          [attachedHandlers addObject:@(tag)];
-        } else {
-          // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
-          // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
-          [_nativeHandlers addObject:@(tag)];
-        }
+      if ([self shouldAttachGestureToSubview:@(tag)] && actionType != RNGestureHandlerActionTypeLogicDetector) {
+        // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
+        // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
+        [_nativeHandlers addObject:@(tag)];
       } else {
         if (actionType == RNGestureHandlerActionTypeLogicDetector) {
           [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
