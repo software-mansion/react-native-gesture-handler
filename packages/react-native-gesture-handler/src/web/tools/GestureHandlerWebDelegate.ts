@@ -75,6 +75,8 @@ export class GestureHandlerWebDelegate
     this.removeContextMenuListeners();
     this._view = null;
     this.eventManagers = [];
+
+    this.isInitialized = false;
   }
 
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
@@ -237,6 +239,8 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
+
+    this.isInitialized = false;
   }
 
   private ensureView(view: any): asserts view is HTMLElement {
