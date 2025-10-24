@@ -22,6 +22,7 @@ export default function ComplexUI() {
             <SpacingTests />
             <VisualEffects />
             <ComplexCombinations />
+            <Transforms />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -183,6 +184,19 @@ function ComplexCombinations() {
         </MyButton>
         <MyButton style={styles.complexButton4}>
           <Text style={styles.buttonText}>Complex 4</Text>
+        </MyButton>
+      </View>
+    </View>
+  );
+}
+
+function Transforms() {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Transform</Text>
+      <View style={styles.complexGrid}>
+        <MyButton style={styles.transformButton}>
+          <Text style={styles.buttonText}>Transform</Text>
         </MyButton>
       </View>
     </View>
@@ -482,6 +496,17 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
     marginTop: 10,
+  },
+
+  // Transform styles
+  transformButton: {
+    width: '48%',
+    height: 100,
+    backgroundColor: '#38ACDD',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{ translateX: 100 }, { rotate: '15deg' }, { scale: 1.1 }],
   },
 
   // Text styles
