@@ -53,7 +53,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       if (
         RNGestureHandlerModule.getGestureHandlerNode(
           tag
-        ).shouldAttachGestureToChildView()
+        ).shouldAttachGestureToChildView() &&
+        actionType !== ActionType.LOGIC_DETECTOR
       ) {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
