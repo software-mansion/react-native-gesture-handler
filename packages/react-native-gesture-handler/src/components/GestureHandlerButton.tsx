@@ -62,9 +62,6 @@ export default function GestureHandlerButton({
     start,
     end,
     overflow,
-    transform,
-    transformOrigin,
-    zIndex,
 
     // Visual properties
     ...restStyle
@@ -125,18 +122,8 @@ export default function GestureHandlerButton({
     [flattenedStyle]
   );
 
-  const wrapperStyle = useMemo(
-    () => ({
-      zIndex,
-      transform,
-      transformOrigin,
-    }),
-    [zIndex, transform, transformOrigin]
-  );
-
   return (
-    <RNGestureHandlerButtonWrapperNativeComponent
-      style={[styles.contents, wrapperStyle]}>
+    <RNGestureHandlerButtonWrapperNativeComponent style={styles.contents}>
       <View
         collapsable={false}
         style={[

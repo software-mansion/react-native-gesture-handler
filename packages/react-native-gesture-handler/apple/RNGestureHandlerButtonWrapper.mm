@@ -9,8 +9,6 @@
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
 
-#include <unordered_map>
-
 @interface RNGestureHandlerButtonWrapper () <RCTRNGestureHandlerButtonWrapperViewProtocol>
 @end
 

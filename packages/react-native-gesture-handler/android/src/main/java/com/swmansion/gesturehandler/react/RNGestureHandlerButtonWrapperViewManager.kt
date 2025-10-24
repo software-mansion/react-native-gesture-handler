@@ -6,26 +6,23 @@ import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonWrapperManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonWrapperManagerInterface
+import com.facebook.react.views.view.ReactViewGroup
 
 @ReactModule(name = RNGestureHandlerButtonWrapperViewManager.REACT_CLASS)
 class RNGestureHandlerButtonWrapperViewManager :
-  ViewGroupManager<RNGestureHandlerButtonWrapperView>(),
-  RNGestureHandlerButtonWrapperManagerInterface<RNGestureHandlerButtonWrapperView> {
-  private val mDelegate: ViewManagerDelegate<RNGestureHandlerButtonWrapperView>
+  ViewGroupManager<ReactViewGroup>(),
+  RNGestureHandlerButtonWrapperManagerInterface<ReactViewGroup> {
+  private val mDelegate: ViewManagerDelegate<ReactViewGroup> =
+    RNGestureHandlerButtonWrapperManagerDelegate<
+      ReactViewGroup,
+      RNGestureHandlerButtonWrapperViewManager,
+      >(this)
 
-  init {
-    mDelegate =
-      RNGestureHandlerButtonWrapperManagerDelegate<
-        RNGestureHandlerButtonWrapperView,
-        RNGestureHandlerButtonWrapperViewManager,
-        >(this)
-  }
-
-  override fun getDelegate(): ViewManagerDelegate<RNGestureHandlerButtonWrapperView> = mDelegate
+  override fun getDelegate(): ViewManagerDelegate<ReactViewGroup> = mDelegate
 
   override fun getName() = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext) = RNGestureHandlerButtonWrapperView(reactContext)
+  override fun createViewInstance(reactContext: ThemedReactContext) = ReactViewGroup(reactContext)
 
   companion object {
     const val REACT_CLASS = "RNGestureHandlerButtonWrapper"

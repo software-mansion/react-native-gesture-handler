@@ -19,9 +19,6 @@ extern const char RNGestureHandlerButtonWrapperComponentName[] =
     "RNGestureHandlerButtonWrapper";
 
 void RNGestureHandlerButtonWrapperShadowNode::initialize() {
-  // Disable forcing view flattening
-  ShadowNode::traits_.unset(ShadowNodeTraits::ForceFlattenView);
-
   // When the button wrapper is cloned and has a child node, the child node
   // should be cloned as well to ensure it is mutable.
   if (!getChildren().empty()) {
