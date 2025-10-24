@@ -49,22 +49,28 @@ function convertToHandlerTag(ref: GestureRef): number {
 }
 
 function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
-  return (
-    interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
+  return Array.from(
+    new Set(
+      interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
+    )
   );
 }
 
 export function extractGestureRelations(gesture: GestureType) {
-  const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
-  const simultaneousWith = extractValidHandlerTags(
+  gesture.config.requireToFail = extractValidHandlerTags(
+    gesture.config.requireToFail
+  );
+  gesture.config.simultaneousWith = extractValidHandlerTags(
     gesture.config.simultaneousWith
   );
-  const blocksHandlers = extractValidHandlerTags(gesture.config.blocksHandlers);
+  gesture.config.blocksHandlers = extractValidHandlerTags(
+    gesture.config.blocksHandlers
+  );
 
   return {
-    waitFor: requireToFail,
-    simultaneousHandlers: simultaneousWith,
-    blocksHandlers: blocksHandlers,
+    waitFor: gesture.config.requireToFail,
+    simultaneousHandlers: gesture.config.simultaneousWith,
+    blocksHandlers: gesture.config.blocksHandlers,
   };
 }
 
