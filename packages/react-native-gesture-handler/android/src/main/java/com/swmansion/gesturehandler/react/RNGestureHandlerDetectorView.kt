@@ -44,13 +44,24 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val logicChildrenToDetach = attachedLogicHandlers.keys.toMutableSet()
 
     val mappedChildren = newLogicChildren?.mapLogicChildren().orEmpty()
+    for (child in mappedChildren) {
+      logicChildrenToDetach.remove(child.viewTag)
+    }
+
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    for (child in logicChildrenToDetach) {
+      for (tag in attachedLogicHandlers[child]!!) {
+        registry.detachHandler(tag)
+      }
+      attachedLogicHandlers.remove(tag)
+    }
 
     for (child in mappedChildren) {
       if (!attachedLogicHandlers.containsKey(child.viewTag)) {
         attachedLogicHandlers[child.viewTag] = mutableSetOf()
       }
-
-      logicChildrenToDetach.remove(child.viewTag)
 
       attachHandlers(
         child.handlerTags,
@@ -58,14 +69,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         GestureHandler.ACTION_TYPE_LOGIC_DETECTOR,
         attachedLogicHandlers[child.viewTag]!!,
       )
-    }
-
-    val registry = RNGestureHandlerModule.registries[moduleId]
-      ?: throw Exception("Tried to access a non-existent registry")
-
-    for (tag in logicChildrenToDetach) {
-      registry.detachHandler(tag)
-      attachedLogicHandlers.remove(tag)
     }
   }
 
