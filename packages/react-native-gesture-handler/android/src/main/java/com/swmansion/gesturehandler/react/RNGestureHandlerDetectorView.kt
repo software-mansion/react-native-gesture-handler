@@ -103,7 +103,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     for (tag in newHandlers) {
       handlersToDetach.remove(tag)
       if (!attachedHandlers.contains(tag)) {
-        if (shouldAttachGestureToChildView(tag) && actionType != GestureHandler.ACTION_TYPE_LOGIC_DETECTOR) {
+        if (shouldAttachGestureToChildView(tag) && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
           // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
           nativeHandlers.add(tag)
