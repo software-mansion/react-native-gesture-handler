@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import com.facebook.react.uimanager.ReactCompoundView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import java.util.*
@@ -555,6 +556,26 @@ class GestureHandlerOrchestrator(
       extractAncestorHandlers(view, coords, pointerId)
     ) {
       found = true
+    }
+
+    if (view is ReactCompoundView) {
+      val tagForCoords = view.reactTagForTouch(coords[0], coords[1])
+
+      if (tagForCoords != view.id) {
+        handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
+          synchronized(it) {
+            for (handler in it) {
+              if (shouldHandlerSkipHoverEvents(handler, event.action)) {
+                continue
+              }
+
+              recordHandlerIfNotPresent(handler, view)
+              handler.startTrackingPointer(pointerId)
+              found = true
+            }
+          }
+        }
+      }
     }
 
     return found

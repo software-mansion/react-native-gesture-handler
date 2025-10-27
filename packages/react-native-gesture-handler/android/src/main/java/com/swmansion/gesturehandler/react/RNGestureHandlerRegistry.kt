@@ -94,7 +94,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler>? = handlersForView[viewTag]
+  override fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler>? = handlersForView[viewTag]
 
   @Synchronized
   override fun getHandlersForView(view: View): ArrayList<GestureHandler>? = getHandlersForViewWithTag(view.id)
