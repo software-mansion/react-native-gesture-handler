@@ -9,11 +9,12 @@ import { useAnimatedGesture } from './useAnimatedGesture';
 import { attachHandlers } from './attachHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
-import { useIsomorphicLayoutEffect, useWebEventHandlers } from './utils';
+import { useWebEventHandlers } from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
 import { useMountReactions } from './useMountReactions';
+import { useIsomorphicLayoutEffect } from '../../../useIsomorphicLayoutEffect';
 
 function propagateDetectorConfig(
   props: GestureDetectorProps,
