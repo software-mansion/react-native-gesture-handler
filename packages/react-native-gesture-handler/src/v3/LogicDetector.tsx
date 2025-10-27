@@ -28,13 +28,11 @@ export function LogicDetector<THandlerData, TConfig>(
       }
 
       if (tag != null) {
-        console.log('register ', tag);
         setViewTag(tag);
       }
 
       return () => {
         if (tag != null) {
-          console.log('unregister ', tag);
           unregister(viewTag);
         }
       };
