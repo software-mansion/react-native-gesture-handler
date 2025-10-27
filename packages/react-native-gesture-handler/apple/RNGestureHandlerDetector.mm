@@ -62,6 +62,13 @@
       }
     }
     _attachedLogicHandlers.clear();
+    _attachedHandlers = [NSMutableSet set];
+  } else {
+    const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
+    [self attachHandlers:props.handlerTags
+              actionType:RNGestureHandlerActionTypeNativeDetector
+                 viewTag:-1
+        attachedHandlers:_attachedHandlers];
   }
 }
 
