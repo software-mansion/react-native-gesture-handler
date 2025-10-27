@@ -160,19 +160,11 @@
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
       NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
+
   for (const int tag : handlerTags) {
     [handlersToDetach removeObject:@(tag)];
-  }
-
-  for (const id tag : handlersToDetach) {
-    [handlerManager.registry detachHandlerWithTag:tag];
-    [attachedHandlers removeObject:tag];
-    [_nativeHandlers removeObject:tag];
-  }
-
-  for (const int tag : handlerTags) {
     if (![attachedHandlers containsObject:@(tag)]) {
-      if ([self shouldAttachGestureToSubview:@(tag)] && actionType == RNGestureHandlerActionTypeNativeDetector) {
+      if ([self shouldAttachGestureToSubview:@(tag)] && actionType != RNGestureHandlerActionTypeLogicDetector) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
         [_nativeHandlers addObject:@(tag)];
@@ -186,6 +178,12 @@
       }
       [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorTag = @(self.tag);
     }
+  }
+
+  for (const id tag : handlersToDetach) {
+    [handlerManager.registry detachHandlerWithTag:tag];
+    [attachedHandlers removeObject:tag];
+    [_nativeHandlers removeObject:tag];
   }
 
   // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
