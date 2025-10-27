@@ -20,12 +20,8 @@ export function LogicDetector<THandlerData, TConfig>(
       if (!node) {
         return;
       }
-      let tag: number | null = null;
-      if (Platform.OS === 'web') {
-        tag = node;
-      } else {
-        tag = findNodeHandle(node);
-      }
+
+      const tag = Platform.OS === 'web' ? node : findNodeHandle(node);
 
       if (tag != null) {
         setViewTag(tag);
