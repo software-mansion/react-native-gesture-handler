@@ -17,7 +17,6 @@ export const allowedNativeProps = new Set<
   keyof CommonGestureConfig | keyof InternalConfigProps<unknown>
 >([
   // CommonGestureConfig
-  'disableReanimated',
   'enabled',
   'shouldCancelWhenOutside',
   'hitSlop',
@@ -31,7 +30,6 @@ export const allowedNativeProps = new Set<
   'dispatchesReanimatedEvents',
   'dispatchesAnimatedEvents',
   'needsPointerData',
-  'changeEventCalculator',
 ]);
 
 export const HandlerCallbacks = new Set<
@@ -54,6 +52,7 @@ export const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
   // Config props
   'changeEventCalculator',
   'disableReanimated',
+  'shouldUseReanimatedDetector',
 
   // Relations
   'simultaneousWithExternalGesture',
