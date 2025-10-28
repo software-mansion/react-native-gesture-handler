@@ -143,7 +143,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   }
 
   return (
-    <DetectorContext.Provider value={{ register, unregister }}>
+    <DetectorContext value={{ register, unregister }}>
       <NativeDetectorComponent
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerStateChange={handleGestureEvent(
@@ -177,6 +177,6 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         logicChildren={logicChildren}>
         {children}
       </NativeDetectorComponent>
-    </DetectorContext.Provider>
+    </DetectorContext>
   );
 }
