@@ -34,7 +34,9 @@ function NativeDetectorExample() {
 
   return (
     <View style={styles.subcontainer}>
-      <Text>Native Detector example</Text>
+      <Text style={styles.header}>
+        Native Detector example - this one should work
+      </Text>
       <NativeDetector gesture={tapAll}>
         <Text style={{ fontSize: 18, textAlign: 'center' }}>
           Some text example running with RNGH
@@ -75,7 +77,9 @@ function LegacyDetectorExample() {
 
   return (
     <View style={styles.subcontainer}>
-      <Text>Legacy Detector example</Text>
+      <Text style={styles.header}>
+        Legacy Detector example - this one shouldn't work
+      </Text>
       <GestureDetector gesture={tapAll}>
         <Text style={{ fontSize: 18, textAlign: 'center' }}>
           Some text example running with RNGH
@@ -117,5 +121,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: 1,
+  },
+  header: {
+    fontSize: 18,
+    textAlign: 'center',
+    paddingHorizontal: 24,
   },
 });
