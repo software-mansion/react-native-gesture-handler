@@ -6,8 +6,6 @@ import {
   RectButton,
 } from 'react-native-gesture-handler';
 
-const MyButton = RectButton;
-
 export default function ComplexUI() {
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -36,11 +34,11 @@ function Avatars() {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {colors.map((color) => (
-        <MyButton
+        <RectButton
           key={color}
           style={[styles.avatars, { backgroundColor: color }]}>
           <Text style={styles.avatarLabel}>{color.slice(1, 3)}</Text>
-        </MyButton>
+        </RectButton>
       ))}
     </ScrollView>
   );
@@ -51,12 +49,12 @@ function Gallery() {
     <View style={[styles.section]}>
       <Text style={styles.sectionTitle}>Basic Gallery</Text>
       <View style={[styles.gap]}>
-        <MyButton style={styles.fullWidthButton} />
+        <RectButton style={styles.fullWidthButton} />
         <View style={[styles.row, styles.gap]}>
-          <MyButton style={styles.leftButton} />
-          <MyButton style={styles.rightButton} />
+          <RectButton style={styles.leftButton} />
+          <RectButton style={styles.rightButton} />
         </View>
-        <MyButton style={[styles.fullWidthButton, { borderRadius: 20 }]} />
+        <RectButton style={[styles.fullWidthButton, { borderRadius: 20 }]} />
       </View>
     </View>
   );
@@ -67,15 +65,15 @@ function SizeConstraints() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Size Constraints</Text>
       <View style={[styles.row, styles.gap]}>
-        <MyButton style={styles.minMaxButton}>
+        <RectButton style={styles.minMaxButton}>
           <Text style={styles.buttonText}>Min/Max</Text>
-        </MyButton>
-        <MyButton style={styles.aspectRatioButton}>
+        </RectButton>
+        <RectButton style={styles.aspectRatioButton}>
           <Text style={styles.buttonText}>1:1</Text>
-        </MyButton>
-        <MyButton style={styles.flexGrowButton}>
+        </RectButton>
+        <RectButton style={styles.flexGrowButton}>
           <Text style={styles.buttonText}>Flex</Text>
-        </MyButton>
+        </RectButton>
       </View>
     </View>
   );
@@ -86,29 +84,29 @@ function FlexboxTests() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Flexbox Layouts</Text>
       <View style={styles.flexContainer}>
-        <MyButton style={styles.flexStart}>
+        <RectButton style={styles.flexStart}>
           <Text style={styles.buttonText}>Start</Text>
-        </MyButton>
-        <MyButton style={styles.flexCenter}>
+        </RectButton>
+        <RectButton style={styles.flexCenter}>
           <Text style={styles.buttonText}>Center</Text>
-        </MyButton>
-        <MyButton style={styles.flexEnd}>
+        </RectButton>
+        <RectButton style={styles.flexEnd}>
           <Text style={styles.buttonText}>End</Text>
-        </MyButton>
+        </RectButton>
       </View>
       <View style={styles.flexWrapContainer}>
-        <MyButton style={styles.wrapItem}>
+        <RectButton style={styles.wrapItem}>
           <Text style={styles.buttonText}>Wrap 1</Text>
-        </MyButton>
-        <MyButton style={styles.wrapItem}>
+        </RectButton>
+        <RectButton style={styles.wrapItem}>
           <Text style={styles.buttonText}>Wrap 2</Text>
-        </MyButton>
-        <MyButton style={styles.wrapItem}>
+        </RectButton>
+        <RectButton style={styles.wrapItem}>
           <Text style={styles.buttonText}>Wrap 3</Text>
-        </MyButton>
-        <MyButton style={styles.wrapItem}>
+        </RectButton>
+        <RectButton style={styles.wrapItem}>
           <Text style={styles.buttonText}>Wrap 4</Text>
-        </MyButton>
+        </RectButton>
       </View>
     </View>
   );
@@ -119,15 +117,15 @@ function PositioningTests() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Positioning</Text>
       <View style={styles.positionContainer}>
-        <MyButton style={styles.zIndexButton}>
+        <RectButton style={styles.zIndexButton}>
           <Text style={styles.buttonText}>Z-Index</Text>
-        </MyButton>
-        <MyButton style={styles.absoluteButton}>
+        </RectButton>
+        <RectButton style={styles.absoluteButton}>
           <Text style={styles.buttonText}>Absolute</Text>
-        </MyButton>
-        <MyButton style={styles.relativeButton}>
+        </RectButton>
+        <RectButton style={styles.relativeButton}>
           <Text style={styles.buttonText}>Relative</Text>
-        </MyButton>
+        </RectButton>
       </View>
     </View>
   );
@@ -138,15 +136,15 @@ function SpacingTests() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Spacing & Overflow</Text>
       <View style={[styles.row, styles.gap]}>
-        <MyButton style={styles.paddingButton}>
+        <RectButton style={styles.paddingButton}>
           <Text style={styles.buttonText}>Padding</Text>
-        </MyButton>
-        <MyButton style={styles.marginButton}>
+        </RectButton>
+        <RectButton style={styles.marginButton}>
           <Text style={styles.buttonText}>Margin</Text>
-        </MyButton>
-        <MyButton style={styles.overflowButton}>
+        </RectButton>
+        <RectButton style={styles.overflowButton}>
           <Text style={styles.longText}>Overflow Hidden Test</Text>
-        </MyButton>
+        </RectButton>
       </View>
     </View>
   );
@@ -157,12 +155,12 @@ function VisualEffects() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Visual Effects</Text>
       <View style={[styles.row, styles.gap]}>
-        <MyButton style={styles.shadowButton}>
+        <RectButton style={styles.shadowButton}>
           <Text style={styles.buttonText}>Shadow</Text>
-        </MyButton>
-        <MyButton style={styles.opacityButton}>
+        </RectButton>
+        <RectButton style={styles.opacityButton}>
           <Text style={styles.buttonText}>Opacity</Text>
-        </MyButton>
+        </RectButton>
       </View>
     </View>
   );
@@ -173,18 +171,18 @@ function ComplexCombinations() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Complex Combinations</Text>
       <View style={styles.complexGrid}>
-        <MyButton style={styles.complexButton1}>
+        <RectButton style={styles.complexButton1}>
           <Text style={styles.buttonText}>Complex 1</Text>
-        </MyButton>
-        <MyButton style={styles.complexButton2}>
+        </RectButton>
+        <RectButton style={styles.complexButton2}>
           <Text style={styles.buttonText}>Complex 2</Text>
-        </MyButton>
-        <MyButton style={styles.complexButton3}>
+        </RectButton>
+        <RectButton style={styles.complexButton3}>
           <Text style={styles.buttonText}>Complex 3</Text>
-        </MyButton>
-        <MyButton style={styles.complexButton4}>
+        </RectButton>
+        <RectButton style={styles.complexButton4}>
           <Text style={styles.buttonText}>Complex 4</Text>
-        </MyButton>
+        </RectButton>
       </View>
     </View>
   );
@@ -195,9 +193,9 @@ function Transforms() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Transform</Text>
       <View style={styles.complexGrid}>
-        <MyButton style={styles.transformButton}>
+        <RectButton style={styles.transformButton}>
           <Text style={styles.buttonText}>Transform</Text>
-        </MyButton>
+        </RectButton>
       </View>
     </View>
   );
