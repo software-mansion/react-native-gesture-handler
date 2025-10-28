@@ -126,13 +126,13 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     [logicChildren, gesture?.detectorCallbacks]
   );
 
-  const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
+  const reanimatedEventHandler = Reanimated!.useComposedEventHandler(
     getHandlers('onReanimatedUpdateEvent')
   );
-  const reanimatedStateChangeHandler = Reanimated?.useComposedEventHandler(
+  const reanimatedStateChangeHandler = Reanimated!.useComposedEventHandler(
     getHandlers('onReanimatedStateChange')
   );
-  const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
+  const reanimatedTouchEventHandler = Reanimated!.useComposedEventHandler(
     getHandlers('onReanimatedTouchEvent')
   );
 
