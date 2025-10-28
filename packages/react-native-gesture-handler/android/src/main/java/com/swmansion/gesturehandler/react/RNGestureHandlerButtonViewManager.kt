@@ -515,7 +515,6 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-
     override fun setPressed(pressed: Boolean) {
       // button can be pressed alongside other button if both are non-exclusive and it doesn't have
       // any pressed children (to prevent pressing the parent when children is pressed).
