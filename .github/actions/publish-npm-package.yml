@@ -72,14 +72,28 @@ runs:
       with:
         name: ${{ env.PACKAGE_NAME }}
         path: './packages/react-native-gesture-handler/${{ env.PACKAGE_NAME }}'
+    
+    - name: Figure out the corrent npm tag
+      run: |
+        if [ "${{ inputs.is-commitly }}" = "true" ]; then
+          TAG_ARGUMENT="--tag nightly"
+        else
+          if [ $(node ./scripts/release/should-be-latest.js ${{ steps.set-package-version.outputs.version }}) = "true" ]; then
+            TAG_ARGUMENT="--tag latest"
+          else
+            TAG_ARGUMENT=""
+          fi
+        fi
+
+        echo "tag-argument=$TAG_ARGUMENT" >> $GITHUB_OUTPUT
 
     - name: Publish npm package
       if: inputs.dry-run == false
       working-directory: packages/react-native-gesture-handler
       run: |
-        npm publish $PACKAGE_NAME --provenance --tag ${{ inputs.is-nightly ? 'nightly' : 'latest' }}
+        npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }}
 
     - name: Don't publish if dry-run is true
       if: inputs.dry-run == true
       run: |
-        echo "At this point, the following command would have been run: npm publish $PACKAGE_NAME --provenance --tag ${{ inputs.is-nightly ? 'nightly' : 'latest' }}"
+        echo "At this point, the following command would have been run: npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }}"

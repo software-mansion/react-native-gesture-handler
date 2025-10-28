@@ -22,6 +22,11 @@ function getNextStableVersion() {
   try {
     const [, major, minor] = currentBranch.match(BRANCH_REGEX);
 
+    // TODO: We'll worry about 3.x.x later :)
+    if (major !== 2) {
+      throw new Error(`Expected major version to be 2, but got ${major}`);
+    }
+
     let nextPatch = 0;
     while (true) {
       const version = `${major}.${minor}.${nextPatch}`;
