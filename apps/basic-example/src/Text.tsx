@@ -98,7 +98,7 @@ function LegacyDetectorExample() {
   );
 }
 
-export default function RuntimeDecorationExample() {
+export default function NativeTextExample() {
   return (
     <View style={styles.container}>
       <NativeDetectorExample />
