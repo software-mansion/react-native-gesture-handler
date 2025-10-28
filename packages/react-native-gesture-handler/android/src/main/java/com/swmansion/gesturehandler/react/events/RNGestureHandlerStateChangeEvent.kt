@@ -1,9 +1,3 @@
-// 1. RCTEventEmitter was deprecated in favor of RCTModernEventEmitter interface
-// 2. Event#init() with only viewTag was deprecated in favor of two arg c-tor
-// 3. Event#receiveEvent() with 3 args was deprecated in favor of 4 args version
-// ref: https://github.com/facebook/react-native/commit/2fbbdbb2ce897e8da3f471b08b93f167d566db1d
-@file:Suppress("DEPRECATION")
-
 package com.swmansion.gesturehandler.react.events
 
 import androidx.core.util.Pools
