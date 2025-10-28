@@ -3,10 +3,10 @@ import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
 import { useDetectorContext } from './useDetectorContext';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
-import { GestureEvents } from '../../types';
 import { NativeDetectorProps } from '../common';
 import { configureRelations } from '../utils';
 import { tagMessage } from '../../../utils';
+import { DetectorCallbacks } from '../../types';
 
 export function LogicDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
@@ -23,7 +23,7 @@ export function LogicDetector<THandlerData, TConfig>(
 
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
-  const logicMethods = useRef(props.gesture.gestureEvents);
+  const logicMethods = useRef(props.gesture.detectorCallbacks);
   const handleRef = useCallback((node: any) => {
     viewRef.current = node;
     if (!node) {
@@ -41,29 +41,21 @@ export function LogicDetector<THandlerData, TConfig>(
   }, []);
 
   useEffect(() => {
-    logicMethods.current = props.gesture.gestureEvents;
-  }, [props.gesture.gestureEvents]);
+    logicMethods.current = props.gesture.detectorCallbacks;
+  }, [props.gesture.detectorCallbacks]);
 
   useEffect(() => {
     if (viewTag === -1) {
       return;
     }
 
-    // Native Detector differentiates Logic Children through a viewTag,
-    // thus if viewTag changes we have to reregister
-    unregister(viewTag);
-  }, [viewTag]);
-
-  useEffect(() => {
-    if (viewTag === -1) {
-      return;
-    }
+    const handlerTags = isComposedGesture(props.gesture)
+      ? props.gesture.tags
+      : [props.gesture.tag];
 
     const logicProps = {
       viewTag,
-      handlerTags: isComposedGesture(props.gesture)
-        ? props.gesture.tags
-        : [props.gesture.tag],
+      handlerTags,
     };
 
     if (Platform.OS === 'web') {
@@ -72,13 +64,13 @@ export function LogicDetector<THandlerData, TConfig>(
 
     register(
       logicProps,
-      logicMethods as RefObject<GestureEvents<unknown>>,
+      logicMethods as RefObject<DetectorCallbacks<unknown>>,
       props.gesture.config.shouldUseReanimatedDetector,
       props.gesture.config.dispatchesAnimatedEvents
     );
 
     return () => {
-      unregister(viewTag);
+      unregister(viewTag, handlerTags);
     };
   }, [viewTag, props.gesture, register, unregister]);
 

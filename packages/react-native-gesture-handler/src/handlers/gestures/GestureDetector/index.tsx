@@ -1,11 +1,5 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { Platform } from 'react-native';
 import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
@@ -19,7 +13,7 @@ import { useAnimatedGesture } from './useAnimatedGesture';
 import { attachHandlers } from './attachHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
-import { useWebEventHandlers } from './utils';
+import { useIsomorphicLayoutEffect, useWebEventHandlers } from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
@@ -149,7 +143,7 @@ export const GestureDetector = (props: GestureDetectorProps) => {
 
   useAnimatedGesture(preparedGesture, needsToRebuildReanimatedEvent);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const viewTag = findNodeHandle(state.viewRef) as number;
     preparedGesture.isMounted = true;
 

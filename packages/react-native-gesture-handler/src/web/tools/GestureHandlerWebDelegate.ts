@@ -39,8 +39,6 @@ export class GestureHandlerWebDelegate
       );
     }
 
-    this.isInitialized = true;
-
     this.gestureHandler = handler;
     this.view = findNodeHandle(viewRef) as unknown as HTMLElement;
 
@@ -48,10 +46,6 @@ export class GestureHandlerWebDelegate
       userSelect: this.view.style.userSelect,
       touchAction: this.view.style.touchAction,
     };
-
-    this.setUserSelect();
-    this.setTouchAction();
-    this.setContextMenu();
 
     const shouldSendHoverEvents = handler.name === SingleGestureName.Hover;
 
@@ -64,6 +58,8 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)
     );
+
+    this.isInitialized = true;
   }
 
   detach(): void {
@@ -73,11 +69,14 @@ export class GestureHandlerWebDelegate
     };
 
     this.eventManagers.forEach((manager) => {
-      manager.unregisterListeners();
+      manager.setEnabled(false);
     });
+
     this.removeContextMenuListeners();
     this._view = null;
     this.eventManagers = [];
+
+    this.isInitialized = false;
   }
 
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
@@ -203,15 +202,9 @@ export class GestureHandlerWebDelegate
     this.setTouchAction();
     this.setContextMenu();
 
-    if (this.gestureHandler.enabled) {
-      this.eventManagers.forEach((manager) => {
-        manager.registerListeners();
-      });
-    } else {
-      this.eventManagers.forEach((manager) => {
-        manager.unregisterListeners();
-      });
-    }
+    this.eventManagers.forEach((manager) => {
+      manager.setEnabled(this.gestureHandler.enabled);
+    });
   }
 
   onBegin(): void {
@@ -246,6 +239,8 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) => {
       manager.unregisterListeners();
     });
+
+    this.isInitialized = false;
   }
 
   private ensureView(view: any): asserts view is HTMLElement {

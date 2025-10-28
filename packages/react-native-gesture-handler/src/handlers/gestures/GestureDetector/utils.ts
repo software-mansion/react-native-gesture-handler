@@ -15,7 +15,7 @@ import { hoverGestureHandlerProps } from '../hoverGesture';
 import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
 import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
 import { RNRenderer } from '../../../RNRenderer';
-import { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
 import { onGestureHandlerEvent } from '../eventReceiver';
 import {
@@ -49,22 +49,28 @@ function convertToHandlerTag(ref: GestureRef): number {
 }
 
 function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
-  return (
-    interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
+  return Array.from(
+    new Set(
+      interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
+    )
   );
 }
 
 export function extractGestureRelations(gesture: GestureType) {
-  const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
-  const simultaneousWith = extractValidHandlerTags(
+  gesture.config.requireToFail = extractValidHandlerTags(
+    gesture.config.requireToFail
+  );
+  gesture.config.simultaneousWith = extractValidHandlerTags(
     gesture.config.simultaneousWith
   );
-  const blocksHandlers = extractValidHandlerTags(gesture.config.blocksHandlers);
+  gesture.config.blocksHandlers = extractValidHandlerTags(
+    gesture.config.blocksHandlers
+  );
 
   return {
-    waitFor: requireToFail,
-    simultaneousHandlers: simultaneousWith,
-    blocksHandlers: blocksHandlers,
+    waitFor: gesture.config.requireToFail,
+    simultaneousHandlers: gesture.config.simultaneousWith,
+    blocksHandlers: gesture.config.blocksHandlers,
   };
 }
 
@@ -180,3 +186,21 @@ export function useWebEventHandlers() {
     },
   });
 }
+
+// code below is modified version of the code found in:
+// https://github.com/reduxjs/react-redux/blob/7e2fdd4ee2021e4282e12ba9fc722f09124e30cd/src/utils/useIsomorphicLayoutEffect.ts#L36
+// React currently throws a warning when using useLayoutEffect on the server.
+// To get around it, we can conditionally useEffect on the server (no-op) and
+// useLayoutEffect in the browser.
+const isDOM = !!(
+  typeof window !== 'undefined' &&
+  typeof window.document !== 'undefined' &&
+  typeof window.document.createElement !== 'undefined'
+);
+
+// Under React Native, we know that we always want to use useLayoutEffect
+const isReactNative =
+  typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
+
+export const useIsomorphicLayoutEffect =
+  isDOM || isReactNative ? React.useLayoutEffect : React.useEffect;

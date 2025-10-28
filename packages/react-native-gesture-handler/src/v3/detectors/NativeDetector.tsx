@@ -26,28 +26,28 @@ export function NativeDetector<THandlerData, TConfig>({
     <NativeDetectorComponent
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerStateChange={
-        gesture.gestureEvents.onGestureHandlerStateChange
+        gesture.detectorCallbacks.onGestureHandlerStateChange
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerTouchEvent={
-        gesture.gestureEvents.onGestureHandlerTouchEvent
+        gesture.detectorCallbacks.onGestureHandlerTouchEvent
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedStateChange={
-        gesture.gestureEvents.onReanimatedStateChange
+        gesture.detectorCallbacks.onReanimatedStateChange
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedEvent={
-        gesture.gestureEvents.onReanimatedUpdateEvent
+        gesture.detectorCallbacks.onReanimatedUpdateEvent
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedTouchEvent={
-        gesture.gestureEvents.onReanimatedTouchEvent
+        gesture.detectorCallbacks.onReanimatedTouchEvent
       }
       onGestureHandlerAnimatedEvent={
-        gesture.gestureEvents.onGestureHandlerAnimatedEvent
+        gesture.detectorCallbacks.onGestureHandlerAnimatedEvent
       }
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}

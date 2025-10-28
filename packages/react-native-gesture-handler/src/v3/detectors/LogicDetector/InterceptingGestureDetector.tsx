@@ -1,6 +1,10 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
 import HostGestureDetector from '../HostGestureDetector';
-import { LogicChildren, GestureEvents, GestureHandlerEvent } from '../../types';
+import {
+  LogicChildren,
+  GestureHandlerEvent,
+  DetectorCallbacks,
+} from '../../types';
 import { DetectorContext } from './useDetectorContext';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { configureRelations, ensureNativeDetectorComponent } from '../utils';
@@ -11,15 +15,18 @@ import {
   nativeDetectorStyles,
   ReanimatedNativeDetector,
 } from '../common';
+import { tagMessage } from '../../../utils';
 
 export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
   const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
-  const logicMethods = useRef<Map<number, RefObject<GestureEvents<unknown>>>>(
-    new Map()
-  );
+
+  const logicMethods = useRef<
+    Map<number, RefObject<DetectorCallbacks<unknown>>>
+  >(new Map());
+
   const [shouldUseReanimated, setShouldUseReanimated] = useState(
     gesture ? gesture.config.shouldUseReanimatedDetector : false
   );
@@ -36,7 +43,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   const register = useCallback(
     (
       child: LogicChildren,
-      methods: RefObject<GestureEvents<unknown>>,
+      methods: RefObject<DetectorCallbacks<unknown>>,
       forReanimated: boolean | undefined,
       forAnimated: boolean | undefined
     ) => {
@@ -61,14 +68,27 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     []
   );
 
-  const unregister = useCallback((childTag: number) => {
+  const unregister = useCallback((childTag: number, handlerTags: number[]) => {
+    handlerTags.forEach((tag) => {
+      logicMethods.current.delete(tag);
+    });
+
     setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
   }, []);
 
-  const handleGestureEvent = (key: keyof GestureEvents<THandlerData>) => {
+  // It might happen only with ReanimatedNativeDetector
+  if (!NativeDetectorComponent) {
+    throw new Error(
+      tagMessage(
+        'Gesture expects to run on the UI thread, but failed to create the Reanimated NativeDetector.'
+      )
+    );
+  }
+
+  const handleGestureEvent = (key: keyof DetectorCallbacks<THandlerData>) => {
     return (e: GestureHandlerEvent<THandlerData>) => {
-      if (gesture?.gestureEvents[key]) {
-        gesture.gestureEvents[key](e);
+      if (gesture?.detectorCallbacks[key]) {
+        gesture.detectorCallbacks[key](e);
       }
 
       logicMethods.current.forEach((ref) => {
@@ -81,12 +101,12 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   };
 
   const getHandlers = useCallback(
-    (key: keyof GestureEvents<unknown>) => {
+    (key: keyof DetectorCallbacks<unknown>) => {
       const handlers: ((e: GestureHandlerEvent<THandlerData>) => void)[] = [];
 
-      if (gesture?.gestureEvents[key]) {
+      if (gesture?.detectorCallbacks[key]) {
         handlers.push(
-          gesture.gestureEvents[key] as (
+          gesture.detectorCallbacks[key] as (
             e: GestureHandlerEvent<unknown>
           ) => void
         );
@@ -103,7 +123,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
       return handlers;
     },
-    [logicChildren, gesture?.gestureEvents]
+    [logicChildren, gesture?.detectorCallbacks]
   );
 
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
@@ -133,7 +153,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerAnimatedEvent={
-          gesture?.gestureEvents.onGestureHandlerAnimatedEvent
+          gesture?.detectorCallbacks.onGestureHandlerAnimatedEvent
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerTouchEvent={handleGestureEvent(

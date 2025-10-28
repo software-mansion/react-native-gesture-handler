@@ -99,7 +99,7 @@ export function useGesture<THandlerData, TConfig>(
     tag,
     type,
     config,
-    gestureEvents: {
+    detectorCallbacks: {
       onGestureHandlerStateChange,
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,

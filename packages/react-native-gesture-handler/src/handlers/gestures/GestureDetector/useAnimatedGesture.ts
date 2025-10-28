@@ -163,7 +163,10 @@ export function useAnimatedGesture(
           runWorklet(CALLBACK_TYPE.FINALIZE, gesture, event, false);
         }
       } else if (isTouchEvent(event)) {
-        if (!stateControllers[i]) {
+        if (
+          !stateControllers[i] ||
+          stateControllers[i].handlerTag !== event.handlerTag
+        ) {
           stateControllers[i] = GestureStateManager.create(event.handlerTag);
         }
 
