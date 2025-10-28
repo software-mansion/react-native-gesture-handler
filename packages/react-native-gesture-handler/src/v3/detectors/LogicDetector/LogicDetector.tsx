@@ -14,7 +14,9 @@ export function LogicDetector<THandlerData, TConfig>(
   const context = useDetectorContext();
   if (!context) {
     throw new Error(
-      tagMessage('Logic detector must be a descendant of a delegate detector')
+      tagMessage(
+        'Logic detector must be a descendant of an intercepting decector'
+      )
     );
   }
   const { register, unregister } = context;
