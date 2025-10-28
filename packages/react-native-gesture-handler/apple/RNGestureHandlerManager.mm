@@ -208,20 +208,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [_registry dropAllHandlers];
 }
 
-- (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(BOOL)blockNativeResponder
-{
-  if (blockNativeResponder) {
-    for (RNRootViewGestureRecognizer *recognizer in _rootViewGestureRecognizers) {
-      [recognizer blockOtherRecognizers];
-    }
-  }
-}
-
-- (void)handleClearJSResponder
-{
-  // ignore...
-}
-
 - (id)handlerWithTag:(NSNumber *)handlerTag
 {
   return [_registry handlerWithTag:handlerTag];
