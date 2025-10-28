@@ -75,7 +75,6 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
       var parent = viewGroup.parent
       while (parent != null) {
-        @Suppress("DEPRECATION")
         if (parent is RNGestureHandlerRootView) {
           return true
         }
