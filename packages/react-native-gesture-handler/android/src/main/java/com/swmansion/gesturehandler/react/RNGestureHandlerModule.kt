@@ -16,9 +16,6 @@ import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerEventDispatcher
 
-// UIManagerModule.resolveRootTagFromReactTag() was deprecated and will be removed in the next RN release
-// ref: https://github.com/facebook/react-native/commit/acbf9e18ea666b07c1224a324602a41d0a66985e
-@Suppress("DEPRECATION")
 @ReactModule(name = RNGestureHandlerModule.NAME)
 class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   NativeRNGestureHandlerModuleSpec(reactContext),
