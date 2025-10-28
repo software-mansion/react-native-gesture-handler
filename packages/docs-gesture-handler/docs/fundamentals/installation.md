@@ -70,6 +70,10 @@ If you're unsure if one of your dependencies already renders `GestureHandlerRoot
 If you're using gesture handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
 :::
 
+:::tip
+If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView unstable_forceActive>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
+:::
+
 ### 3. Platform specific setup
 
 #### [Expo development build](https://docs.expo.dev/develop/development-builds/introduction/)

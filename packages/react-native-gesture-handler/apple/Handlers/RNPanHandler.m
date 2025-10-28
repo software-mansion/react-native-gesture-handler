@@ -165,6 +165,8 @@
       // UIGestureRecognizerStateFailed here. Making the behavior explicit.
       self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
                                                                     : UIGestureRecognizerStateCancelled;
+
+      [self triggerAction];
       [self reset];
       return;
     }
@@ -191,6 +193,7 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
+  [self triggerAction];
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
@@ -199,6 +202,7 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
+  [self triggerAction];
 }
 
 #if TARGET_OS_OSX
@@ -255,7 +259,6 @@
 
 - (void)reset
 {
-  [self triggerAction];
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
