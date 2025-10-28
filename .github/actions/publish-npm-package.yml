@@ -1,0 +1,85 @@
+name: publish-npm-package
+description: Build and publish react-native-gesture-handler package to npm
+inputs:
+  is-commitly:
+    description: Whether the release should be marked as nightly.
+    default: true
+  dry-run:
+    description: Whether to perform a dry run of the publish.
+    default: true
+
+runs:
+  using: composite
+  env:
+    YARN_ENABLE_HARDENED_MODE: 0
+    PACKAGE_NAME: PLACEHOLDER # Will be reassigned later on.
+  steps:
+    - name: Check out
+      uses: actions/checkout@v4
+
+    - name: Print env
+      run: echo "$YARN_ENABLE_HARDENED_MODE"
+
+    - name: Setup Node
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24
+        cache: 'yarn'
+        registry-url: https://registry.npmjs.org/
+
+    - name: Update package version
+      id: set-package-version
+      run: |
+        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.is-commitly == true ? '--commitly' : '' }})
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create release tag
+      if: inputs.is-commitly == false
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag -a "v${{ steps.set-package-version.outputs.version }}" -m "Release v${{ steps.set-package-version.outputs.version }}"
+        
+        if [ "${{ inputs.dry-run }}" = "false" ]; then
+          echo "Pushing tag to origin..."
+          git push origin "v${{ steps.set-package-version.outputs.version }}"
+        else
+          echo "Dry run mode: skipping git push"
+        fi
+
+    # Ensure npm 11.5.1 or later is installed for OIDC
+    - name: Update npm
+      run: npm install -g npm@latest
+
+    - name: Install node dependencies
+      run: yarn install --immutable
+
+    - name: Build package
+      id: build
+      working-directory: packages/react-native-gesture-handler
+      run: npm pack
+
+    - name: Add package name to env
+      working-directory: packages/react-native-gesture-handler
+      run: echo "PACKAGE_NAME=$(ls -l | egrep -o "react-native-gesture-handler-(.*)(=?\.tgz)")" >> $GITHUB_ENV
+
+    - name: Assert PACKAGE_NAME
+      if: ${{ env.PACKAGE_NAME == 'PLACEHOLDER' }}
+      run: exit 1 # If we end up here, it means that package was not generated.
+
+    - name: Upload npm package to GitHub
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGE_NAME }}
+        path: './packages/react-native-gesture-handler/${{ env.PACKAGE_NAME }}'
+
+    - name: Publish npm package
+      if: inputs.dry-run == false
+      working-directory: packages/react-native-gesture-handler
+      run: |
+        npm publish $PACKAGE_NAME --provenance --tag ${{ inputs.is-nightly ? 'nightly' : 'latest' }}
+
+    - name: Don't publish if dry-run is true
+      if: inputs.dry-run == true
+      run: |
+        echo "At this point, the following command would have been run: npm publish $PACKAGE_NAME --provenance --tag ${{ inputs.is-nightly ? 'nightly' : 'latest' }}"

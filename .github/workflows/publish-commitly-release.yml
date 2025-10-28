@@ -1,0 +1,19 @@
+name: Publish commitly release to npm
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  npm-build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write # for OIDC
+    steps:
+      - name: Publish commitly release
+        uses: ./.github/actions/publish-npm-package
+        with:
+          is-commitly: true
+          dry-run: false
