@@ -15,7 +15,7 @@ export function LogicDetector<THandlerData, TConfig>(
   if (!context) {
     throw new Error(
       tagMessage(
-        'Logic detector must be a descendant of an intercepting decector'
+        'Logic detector must be a descendant of an InterceptingGestureDecector'
       )
     );
   }
