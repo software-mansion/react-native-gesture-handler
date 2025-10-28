@@ -1,4 +1,4 @@
-import { isFabric, tagMessage } from '../../../utils';
+import { tagMessage } from '../../../utils';
 import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
 
 import { GestureDetectorState } from './types';
@@ -35,7 +35,7 @@ export function useViewRefHandler(
         updateAttachedGestures(true);
       }
 
-      if (__DEV__ && isFabric() && global._isViewFlatteningDisabled) {
+      if (__DEV__ && global._isViewFlatteningDisabled) {
         const node = getShadowNodeFromRef(ref);
         if (global._isViewFlatteningDisabled(node) === false) {
           console.error(
