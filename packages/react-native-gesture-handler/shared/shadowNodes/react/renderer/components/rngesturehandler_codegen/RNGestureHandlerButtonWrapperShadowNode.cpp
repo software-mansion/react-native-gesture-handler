@@ -68,12 +68,10 @@ void RNGestureHandlerButtonWrapperShadowNode::layout(
   // TODO: figure out the correct way to setup metrics between button wrapper
   // and the child
   auto metrics = grandChild->getLayoutMetrics();
-  setLayoutMetrics(metrics);
+  mutableChild->setLayoutMetrics(metrics);
 
   auto metricsNoOrigin = grandChild->getLayoutMetrics();
   metricsNoOrigin.frame.origin = Point{};
-
-  mutableChild->setLayoutMetrics(metricsNoOrigin);
   mutableGrandChild->setLayoutMetrics(metricsNoOrigin);
 }
 
