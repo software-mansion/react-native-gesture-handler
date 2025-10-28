@@ -111,6 +111,14 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     );
 
     props.logicChildren?.forEach((child) => {
+      logicChildrenToDetach.delete(child.viewTag);
+    });
+
+    logicChildrenToDetach.forEach((tag) => {
+      detachHandlers(EMPTY_HANDLERS, attachedLogicHandlers.current.get(tag)!);
+    });
+
+    props.logicChildren?.forEach((child) => {
       if (!attachedLogicHandlers.current.has(child.viewTag)) {
         attachedLogicHandlers.current.set(child.viewTag, new Set());
       }
@@ -129,10 +137,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         attachedLogicHandlers.current.get(child.viewTag)!,
         ActionType.LOGIC_DETECTOR
       );
-    });
-
-    logicChildrenToDetach.forEach((tag) => {
-      detachHandlers(EMPTY_HANDLERS, attachedLogicHandlers.current.get(tag)!);
     });
   }, [props.logicChildren]);
 
