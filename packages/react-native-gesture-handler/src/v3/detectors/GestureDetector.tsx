@@ -9,6 +9,7 @@ import {
 import { DetectorContext } from './LogicDetector/useDetectorContext';
 import { LogicDetector } from './LogicDetector/LogicDetector';
 import { use } from 'react';
+
 export function GestureDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig> | LegacyGestureDetectorProps
 ) {
