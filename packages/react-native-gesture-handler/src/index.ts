@@ -150,7 +150,11 @@ export type {
 } from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
 
-export * from './v3/detectors';
+export {
+  GestureDetector,
+  InterceptingGestureDetector,
+  GestureDetectorProps,
+} from './v3/detectors';
 
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';

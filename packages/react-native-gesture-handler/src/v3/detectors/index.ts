@@ -1,5 +1,3 @@
-export type { NativeDetectorProps } from './common';
-export { NativeDetector } from './NativeDetector';
+export type { GestureDetectorProps } from './common';
 export { GestureDetector } from './GestureDetector';
-export { LogicDetector } from './LogicDetector/LogicDetector';
 export { InterceptingGestureDetector } from './LogicDetector/InterceptingGestureDetector';
