@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -43,10 +41,6 @@ export function isTestEnv(): boolean {
 export function tagMessage(msg: string) {
   'worklet';
   return `[react-native-gesture-handler] ${msg}`;
-}
-
-export function isReact19() {
-  return React.version.startsWith('19.');
 }
 
 export function isRemoteDebuggingEnabled(): boolean {
