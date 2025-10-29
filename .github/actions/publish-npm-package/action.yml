@@ -124,8 +124,6 @@ runs:
       if: inputs.is-commitly == 'false'
       shell: bash
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
         git tag -a "v${{ steps.set-package-version.outputs.version }}" -m "Release v${{ steps.set-package-version.outputs.version }}"
         
         if [ "${{ inputs.dry-run }}" = 'false' ]; then
