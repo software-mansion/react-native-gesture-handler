@@ -28,6 +28,7 @@ function getNextStableVersion() {
     const version = `${major}.${minor}.${nextPatch}`;
     
     try {
+      // if the version is already published, increment the patch version and try again
       getPackageVersionByTag('react-native-gesture-handler', version);
       nextPatch++;
     } catch (error) {
@@ -63,6 +64,7 @@ function setPackageVersion() {
   packageJson.version = version;
   fs.writeFileSync(PACKAGE_PATH, JSON.stringify(packageJson, null, 2));
 
+  // Intentional, this is consumed by the action
   console.log(`${version}`);
 }
 
