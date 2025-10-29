@@ -173,20 +173,6 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)handleSetJSResponder:(double)viewTag blockNativeResponder:(BOOL)blockNativeResponder
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager handleSetJSResponder:[NSNumber numberWithDouble:viewTag] blockNativeResponder:blockNativeResponder];
-  }];
-}
-
-- (void)handleClearJSResponder
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager handleClearJSResponder];
-  }];
-}
-
 - (void)flushOperations
 {
   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.

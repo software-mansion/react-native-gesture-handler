@@ -18,7 +18,6 @@ import {
   Platform,
   StyleProp,
   ViewStyle,
-  processColor,
 } from 'react-native';
 import NativeButton from '../GestureHandlerButton';
 import {
@@ -29,7 +28,7 @@ import {
   isTouchWithinInset,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
+import { INT32_MAX, isTestEnv } from '../../utils';
 import {
   applyRelationProp,
   RelationPropName,
@@ -40,8 +39,6 @@ import { PressableStateMachine } from './StateMachine';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
-
-let IS_FABRIC: null | boolean = null;
 
 const Pressable = (props: PressableProps) => {
   const {
@@ -354,15 +351,8 @@ const Pressable = (props: PressableProps) => {
       : children;
 
   const rippleColor = useMemo(() => {
-    if (IS_FABRIC === null) {
-      IS_FABRIC = isFabric();
-    }
-
     const defaultRippleColor = android_ripple ? undefined : 'transparent';
-    const unprocessedRippleColor = android_ripple?.color ?? defaultRippleColor;
-    return IS_FABRIC
-      ? unprocessedRippleColor
-      : processColor(unprocessedRippleColor);
+    return android_ripple?.color ?? defaultRippleColor;
   }, [android_ripple]);
 
   const setDimensions = useCallback(
