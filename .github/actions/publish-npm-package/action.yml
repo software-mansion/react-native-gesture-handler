@@ -3,22 +3,19 @@ description: Build and publish react-native-gesture-handler package to npm
 inputs:
   is-commitly:
     description: Whether the release should be marked as nightly.
-    default: true
+    default: "true"
   dry-run:
     description: Whether to perform a dry run of the publish.
-    default: true
+    default: "true"
 
 runs:
   using: composite
-  env:
-    YARN_ENABLE_HARDENED_MODE: 0
-    PACKAGE_NAME: PLACEHOLDER # Will be reassigned later on.
   steps:
-    - name: Check out
-      uses: actions/checkout@v4
-
-    - name: Print env
-      run: echo "$YARN_ENABLE_HARDENED_MODE"
+    - name: Set up environment
+      shell: bash
+      run: |
+        echo "YARN_ENABLE_HARDENED_MODE=0" >> $GITHUB_ENV
+        echo "PACKAGE_NAME=PLACEHOLDER" >> $GITHUB_ENV
 
     - name: Setup Node
       uses: actions/setup-node@v6
@@ -29,42 +26,35 @@ runs:
 
     - name: Update package version
       id: set-package-version
+      shell: bash
       run: |
-        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.is-commitly == true ? '--commitly' : '' }})
+        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.is-commitly == 'true' && '--commitly' || '' }})
+        echo "Updated package version to $VERSION"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-    - name: Create release tag
-      if: inputs.is-commitly == false
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git tag -a "v${{ steps.set-package-version.outputs.version }}" -m "Release v${{ steps.set-package-version.outputs.version }}"
-        
-        if [ "${{ inputs.dry-run }}" = "false" ]; then
-          echo "Pushing tag to origin..."
-          git push origin "v${{ steps.set-package-version.outputs.version }}"
-        else
-          echo "Dry run mode: skipping git push"
-        fi
 
     # Ensure npm 11.5.1 or later is installed for OIDC
     - name: Update npm
+      shell: bash
       run: npm install -g npm@latest
 
     - name: Install node dependencies
+      shell: bash
       run: yarn install --immutable
 
     - name: Build package
       id: build
       working-directory: packages/react-native-gesture-handler
+      shell: bash
       run: npm pack
 
     - name: Add package name to env
       working-directory: packages/react-native-gesture-handler
+      shell: bash
       run: echo "PACKAGE_NAME=$(ls -l | egrep -o "react-native-gesture-handler-(.*)(=?\.tgz)")" >> $GITHUB_ENV
 
     - name: Assert PACKAGE_NAME
       if: ${{ env.PACKAGE_NAME == 'PLACEHOLDER' }}
+      shell: bash
       run: exit 1 # If we end up here, it means that package was not generated.
 
     - name: Upload npm package to GitHub
@@ -72,8 +62,10 @@ runs:
       with:
         name: ${{ env.PACKAGE_NAME }}
         path: './packages/react-native-gesture-handler/${{ env.PACKAGE_NAME }}'
-    
-    - name: Figure out the corrent npm tag
+
+    - name: Figure out the correct npm tag
+      id: figure-out-npm-tag
+      shell: bash
       run: |
         if [ "${{ inputs.is-commitly }}" = "true" ]; then
           TAG_ARGUMENT="--tag nightly"
@@ -85,15 +77,60 @@ runs:
           fi
         fi
 
+        echo "Determined tag argument: $TAG_ARGUMENT"
         echo "tag-argument=$TAG_ARGUMENT" >> $GITHUB_OUTPUT
 
+    - name: Print outputs
+      shell: bash
+      run: |
+        echo "Version to be published: ${{ steps.set-package-version.outputs.version }}"
+        echo "NPM tag argument: ${{ steps.figure-out-npm-tag.outputs.tag-argument }}"
+
     - name: Publish npm package
-      if: inputs.dry-run == false
+      shell: bash
+      if: inputs.dry-run == 'false'
       working-directory: packages/react-native-gesture-handler
       run: |
         npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }}
 
     - name: Don't publish if dry-run is true
-      if: inputs.dry-run == true
+      shell: bash
+      if: inputs.dry-run == 'true'
       run: |
         echo "At this point, the following command would have been run: npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }}"
+
+    - name: Configure git
+      if: inputs.is-commitly == 'false'
+      shell: bash
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Create release commit
+      if: inputs.is-commitly == 'false'
+      shell: bash
+      run: |
+        git add packages/react-native-gesture-handler/package.json
+        git commit -m "Release v${{ steps.set-package-version.outputs.version }}"
+        
+        if [ "${{ inputs.dry-run }}" = 'false' ]; then
+          echo "Pushing release commit to origin..."
+          git push
+        else
+          echo "Dry run mode: skipping git push"
+        fi
+
+    - name: Create release tag
+      if: inputs.is-commitly == 'false'
+      shell: bash
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag -a "v${{ steps.set-package-version.outputs.version }}" -m "Release v${{ steps.set-package-version.outputs.version }}"
+        
+        if [ "${{ inputs.dry-run }}" = 'false' ]; then
+          echo "Pushing tag to origin..."
+          git push origin "v${{ steps.set-package-version.outputs.version }}"
+        else
+          echo "Dry run mode: skipping git push"
+        fi

@@ -1,5 +1,5 @@
 const { getPackageVersionByTag } = require('./npm-utils');
-const { parseVersion } = require('./parse-version');
+const { parseVersion } = require('./version-utils');
 
 function shouldBeLatest(version) {
   const latestVersion = getPackageVersionByTag('react-native-gesture-handler', 'latest');

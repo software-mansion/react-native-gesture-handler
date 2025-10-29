@@ -1,10 +1,9 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
 const { getPackageVersionByTag } = require('./npm-utils');
-const { parseVersion } = require('./parse-version');
+const { parseVersion, getStableBranchVersion } = require('./version-utils');
 
 const PACKAGE_PATH = './packages/react-native-gesture-handler/package.json';
-const BRANCH_REGEX = /^(\d+)\.(\d+)-stable$/;
 
 function getLatestVersion() {
   const latestVersion = getPackageVersionByTag('react-native-gesture-handler', 'latest');
@@ -17,29 +16,23 @@ function getLatestVersion() {
 }
 
 function getNextStableVersion() {
-  const currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+  const [major, minor] = getStableBranchVersion();
 
-  try {
-    const [, major, minor] = currentBranch.match(BRANCH_REGEX);
+  // TODO: We'll worry about 3.x.x later :)
+  if (major !== 2) {
+    throw new Error(`Expected major version to be 2, but got ${major}`);
+  }
 
-    // TODO: We'll worry about 3.x.x later :)
-    if (major !== 2) {
-      throw new Error(`Expected major version to be 2, but got ${major}`);
+  let nextPatch = 0;
+  while (true) {
+    const version = `${major}.${minor}.${nextPatch}`;
+    
+    try {
+      getPackageVersionByTag('react-native-gesture-handler', version);
+      nextPatch++;
+    } catch (error) {
+      return [Number(major), Number(minor), nextPatch];
     }
-
-    let nextPatch = 0;
-    while (true) {
-      const version = `${major}.${minor}.${nextPatch}`;
-      
-      try {
-        getPackageVersionByTag('react-native-gesture-handler', version);
-        nextPatch++;
-      } catch (error) {
-        return [Number(major), Number(minor), nextPatch];
-      }
-    }
-  } catch (error) {
-    throw new Error(`Failed to parse stable version: ${currentBranch}`);
   }
 }
 
