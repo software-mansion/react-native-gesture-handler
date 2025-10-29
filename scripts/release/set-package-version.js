@@ -65,7 +65,7 @@ function setPackageVersion() {
   fs.writeFileSync(PACKAGE_PATH, JSON.stringify(packageJson, null, 2));
 
   // Intentional, this is consumed by the action
-  console.log(`${version}`);
+  console.log(version);
 }
 
 setPackageVersion();
