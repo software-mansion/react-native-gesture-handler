@@ -63,7 +63,7 @@
   "bugs": {
     "url": "https://github.com/software-mansion/react-native-gesture-handler/issues"
   },
-  "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
+  "homepage": "https://docs.swmansion.com/react-native-gesture-handler/",
   "dependencies": {
     "invariant": "^2.2.4"
   },
