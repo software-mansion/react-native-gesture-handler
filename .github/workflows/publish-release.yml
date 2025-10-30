@@ -1,4 +1,4 @@
-name: Publish stable release to npm
+name: Publish release to npm
 on:
   # For commitlies
   push:
