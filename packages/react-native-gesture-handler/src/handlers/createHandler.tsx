@@ -22,7 +22,7 @@ import {
 import { filterConfig, scheduleFlushOperations } from './utils';
 import findNodeHandle from '../findNodeHandle';
 import { ValueOf } from '../typeUtils';
-import { deepEqual, isReact19, isTestEnv, tagMessage } from '../utils';
+import { deepEqual, isTestEnv, tagMessage } from '../utils';
 import { ActionType } from '../ActionType';
 import { PressabilityDebugView } from './PressabilityDebugView';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
@@ -241,7 +241,7 @@ export default function createHandler<
       const child = React.Children.only(this.props.children);
       // @ts-ignore Since React 19 ref is accessible as standard prop
       // https://react.dev/blog/2024/04/25/react-19-upgrade-guide#deprecated-element-ref
-      const ref = isReact19() ? (child as ReactElement).props?.ref : child?.ref;
+      const ref = (child as ReactElement).props?.ref;
 
       if (!ref) {
         return;
