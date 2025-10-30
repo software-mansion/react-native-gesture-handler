@@ -178,6 +178,7 @@ android {
         exclude "**/libreactnative.so"
         exclude "**/libjsi.so"
         exclude "**/libc++_shared.so"
+        exclude "**/libfbjni.so"
     }
 
     sourceSets.main {
@@ -197,7 +198,7 @@ android {
     }
 
     if (isGHExampleApp()) {
-        tasks.withType(ExternalNativeBuildJsonTask) {
+        tasks.withType(ExternalNativeBuildJsonTask).configureEach {
             compileTask ->
                 compileTask.doLast {
                     def rootDir = new File("${project.projectDir}/..")

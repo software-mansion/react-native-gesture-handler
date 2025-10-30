@@ -34,10 +34,6 @@
 
 - (void)dropAllGestureHandlers;
 
-- (void)handleSetJSResponder:(nonnull NSNumber *)viewTag blockNativeResponder:(BOOL)blockNativeResponder;
-
-- (void)handleClearJSResponder;
-
 - (nullable RNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
 
 - (nullable RNGHUIView *)viewForReactTag:(nonnull NSNumber *)reactTag;

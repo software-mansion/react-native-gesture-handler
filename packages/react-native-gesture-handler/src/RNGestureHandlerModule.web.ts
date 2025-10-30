@@ -16,12 +16,6 @@ import { GestureRelations } from './v3/types';
 let shouldPreventDrop = false;
 
 export default {
-  handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
-    console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
-  },
-  handleClearJSResponder() {
-    console.warn('handleClearJSResponder: ');
-  },
   createGestureHandler<T>(
     handlerName: keyof typeof Gestures,
     handlerTag: number,

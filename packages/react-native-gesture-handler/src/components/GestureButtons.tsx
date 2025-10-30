@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated, Platform, processColor, StyleSheet } from 'react-native';
+import { Animated, Platform, StyleSheet } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
@@ -18,14 +18,11 @@ import type {
   BorderlessButtonWithRefProps,
   BorderlessButtonProps,
 } from './GestureButtonsProps';
-import { isFabric } from '../utils';
 
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
-
-let IS_FABRIC: null | boolean = null;
 
 class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   static defaultProps = {
@@ -123,15 +120,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
   };
 
   override render() {
-    const { rippleColor: unprocessedRippleColor, style, ...rest } = this.props;
-
-    if (IS_FABRIC === null) {
-      IS_FABRIC = isFabric();
-    }
-
-    const rippleColor = IS_FABRIC
-      ? unprocessedRippleColor
-      : processColor(unprocessedRippleColor ?? undefined);
+    const { rippleColor, style, ...rest } = this.props;
 
     return (
       <RawButton

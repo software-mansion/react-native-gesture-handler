@@ -136,15 +136,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  /*package*/
-  // We want to keep order of parameters, so instead of removing viewTag we suppress the warning
-  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
-  fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
-    if (blockNativeResponder) {
-      UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
-    }
-  }
-
   fun activateNativeHandlers(view: View) {
     orchestrator?.activateNativeHandlersForView(view)
   }

@@ -59,7 +59,11 @@ export function NativeDetector<THandlerData, TConfig>({
     []
   );
 
-  const unregister = useCallback((childTag: number) => {
+  const unregister = useCallback((childTag: number, handlerTags: number[]) => {
+    handlerTags.forEach((tag) => {
+      logicMethods.current.delete(tag);
+    });
+
     setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
   }, []);
 

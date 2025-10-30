@@ -6,6 +6,8 @@ export interface GestureStateManagerType {
   activate: () => void;
   fail: () => void;
   end: () => void;
+  /** @internal */
+  handlerTag: number;
 }
 
 // Declare methods to keep the TS happy
@@ -29,6 +31,8 @@ const wrappedSetGestureState = (handlerTag: number, state: State) => {
 function create(handlerTag: number): GestureStateManagerType {
   'worklet';
   return {
+    handlerTag,
+
     begin: () => {
       'worklet';
       wrappedSetGestureState(handlerTag, State.BEGAN);

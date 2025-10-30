@@ -14,10 +14,12 @@ import com.facebook.react.views.view.ReactViewGroup
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var moduleId: Int = -1
   private var rootViewEnabled = false
+  private var unstableForceActive = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
+
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    rootViewEnabled = !hasGestureHandlerEnabledRootView(this)
+    rootViewEnabled = unstableForceActive || !hasGestureHandlerEnabledRootView(this)
     if (!rootViewEnabled) {
       Log.i(
         ReactConstants.TAG,
@@ -61,20 +63,23 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.activateNativeHandlers(view)
   }
 
+  fun isRootViewEnabled() = rootViewEnabled
+
+  fun setUnstableForceActive(active: Boolean) {
+    this.unstableForceActive = active
+  }
+
   companion object {
     private fun hasGestureHandlerEnabledRootView(viewGroup: ViewGroup): Boolean {
       UiThreadUtil.assertOnUiThread()
 
       var parent = viewGroup.parent
       while (parent != null) {
-        // our own deprecated root view
-        @Suppress("DEPRECATION")
-        if (parent is RNGestureHandlerEnabledRootView || parent is RNGestureHandlerRootView) {
+        if (parent is RNGestureHandlerRootView) {
           return true
         }
         // Checks other roots views but it's mainly for ReactModalHostView.DialogRootViewGroup
         // since modals are outside RN hierachy and we have to initialize GH's root view for it
-        // Note that RNGestureHandlerEnabledRootView implements RootView - that's why this check has to be below
         if (parent is RootView) {
           return false
         }

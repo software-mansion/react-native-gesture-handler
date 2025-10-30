@@ -256,6 +256,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
 
+  self.hostDetectorTag = nil;
+  self.virtualViewTag = nil;
+
   [self unbindManualActivation];
 }
 
@@ -290,7 +293,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector) {
+  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
+      _actionType != RNGestureHandlerActionTypeLogicDetector) {
     return;
   }
 
@@ -309,6 +313,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
     tag = @(recognizer.view.tag);
   }
+
+  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeLogicDetector) {
+    tag = _virtualViewTag;
+  }
+
+  react_native_assert(tag != nil && "Tag should be defined when dispatching an event");
 
   [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData];
 }
@@ -658,6 +668,24 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             return NO;
           }
         }
+      }
+    }
+  }
+
+  // Logic detector has a virtual view tag set only if the real hierarchy was folded into a single View
+  if (_actionType == RNGestureHandlerActionTypeLogicDetector && _virtualViewTag != nil) {
+    // In this case, logic detector is attached to the DetectorView, which has a single subview representing
+    // the actual target view in the RN hierarchy
+    RNGHUIView *view = _recognizer.view.subviews[0];
+    if ([view respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      // If the view has touchEventEmitterAtPoint: method, it can be used to determine the viewtag
+      // of the view under the touch point
+      facebook::react::SharedTouchEventEmitter eventEmitter =
+          [(id<RCTTouchableComponentViewProtocol>)view touchEventEmitterAtPoint:[_recognizer locationInView:view]];
+      auto viewUnderTouch = eventEmitter->getEventTarget()->getTag();
+
+      if (viewUnderTouch != [_virtualViewTag intValue]) {
+        return NO;
       }
     }
   }
