@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - packages/react-native-gesture-handler/**
   # For stable releases
   workflow_dispatch:
     inputs:
