@@ -69,7 +69,7 @@
   "bugs": {
     "url": "https://github.com/software-mansion/react-native-gesture-handler/issues"
   },
-  "homepage": "https://github.com/software-mansion/react-native-gesture-handler#readme",
+  "homepage": "https://docs.swmansion.com/react-native-gesture-handler/",
   "dependencies": {
     "@egjs/hammerjs": "^2.0.17",
     "hoist-non-react-statics": "^3.3.0",
