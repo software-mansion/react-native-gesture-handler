@@ -16,9 +16,15 @@ jobs:
   npm-build:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
       id-token: write # for OIDC
+
+    concurrency:
+      group: publish-${{ github.ref }}
+      cancel-in-progress: false
+
     steps:
       - name: Check out
         uses: actions/checkout@v4
