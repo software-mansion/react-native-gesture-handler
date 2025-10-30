@@ -4,7 +4,8 @@ const VERSION_REGEX = /^(\d+)\.(\d+)\.(\d+)$/;
 const BRANCH_REGEX = /^(\d+)\.(\d+)-stable$/;
 
 function parseVersion(version) {
-  return version.match(VERSION_REGEX).slice(1).map(Number)
+  const [, major, minor, patch] = version.match(VERSION_REGEX);
+  return [Number(major), Number(minor), Number(patch)];
 }
 
 function getStableBranchVersion() {
