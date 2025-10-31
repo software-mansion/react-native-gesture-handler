@@ -177,7 +177,16 @@
         [_nativeHandlers addObject:@(tag)];
       } else {
         if (actionType == RNGestureHandlerActionTypeLogicDetector) {
-          [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
+          RNGHUIView *targetView = [handlerManager viewForReactTag:@(viewTag)];
+
+          if (targetView != nil) {
+            [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
+          } else {
+            // Let's assume that if the native view for the logic detector hasn't been found, the hierarchy was folded
+            // into a single UIView.
+            [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
+            [[handlerManager registry] handlerWithTag:@(tag)].virtualViewTag = @(viewTag);
+          }
         } else {
           [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
         }

@@ -25,12 +25,6 @@ export const Gestures = {
 };
 
 export default {
-  handleSetJSResponder(_tag: number, _blockNativeResponder: boolean) {
-    // NO-OP
-  },
-  handleClearJSResponder() {
-    // NO-OP
-  },
   createGestureHandler<T>(
     _handlerName: keyof typeof Gestures,
     _handlerTag: number,
