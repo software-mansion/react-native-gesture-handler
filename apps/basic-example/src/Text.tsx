@@ -3,8 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
-  LogicDetector,
-  NativeDetector,
+  InterceptingGestureDetector,
   useTap,
 } from 'react-native-gesture-handler';
 
@@ -37,24 +36,24 @@ function NativeDetectorExample() {
       <Text style={styles.header}>
         Native Detector example - this one should work
       </Text>
-      <NativeDetector gesture={tapAll}>
+      <InterceptingGestureDetector gesture={tapAll}>
         <Text style={{ fontSize: 18, textAlign: 'center' }}>
           Some text example running with RNGH
-          <LogicDetector gesture={tapFirstPart}>
+          <GestureDetector gesture={tapFirstPart}>
             <Text style={{ fontSize: 24, color: COLORS.NAVY }}>
               {' '}
               try tapping on this part
             </Text>
-          </LogicDetector>
-          <LogicDetector gesture={tapSecondPart}>
+          </GestureDetector>
+          <GestureDetector gesture={tapSecondPart}>
             <Text style={{ fontSize: 28, color: COLORS.KINDA_BLUE }}>
               {' '}
               or on this part
             </Text>
-          </LogicDetector>
+          </GestureDetector>
           this part is not special :(
         </Text>
-      </NativeDetector>
+      </InterceptingGestureDetector>
     </View>
   );
 }
