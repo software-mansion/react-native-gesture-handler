@@ -126,13 +126,13 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     [logicChildren, gesture?.detectorCallbacks]
   );
 
-  const reanimatedEventHandler = Reanimated!.useComposedEventHandler(
+  const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedUpdateEvent')
   );
-  const reanimatedStateChangeHandler = Reanimated!.useComposedEventHandler(
+  const reanimatedStateChangeHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedStateChange')
   );
-  const reanimatedTouchEventHandler = Reanimated!.useComposedEventHandler(
+  const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedTouchEvent')
   );
 
@@ -160,11 +160,17 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
           'onGestureHandlerTouchEvent'
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedStateChange={reanimatedEventHandler}
+        onGestureHandlerReanimatedStateChange={
+          shouldUseReanimated ? reanimatedStateChangeHandler : undefined
+        }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedEvent={reanimatedStateChangeHandler}
+        onGestureHandlerReanimatedEvent={
+          shouldUseReanimated ? reanimatedEventHandler : undefined
+        }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedTouchEvent={reanimatedTouchEventHandler}
+        onGestureHandlerReanimatedTouchEvent={
+          shouldUseReanimated ? reanimatedTouchEventHandler : undefined
+        }
         moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={
           gesture
