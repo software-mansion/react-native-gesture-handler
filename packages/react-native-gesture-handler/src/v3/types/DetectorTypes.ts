@@ -21,7 +21,7 @@ export type DetectorCallbacks<THandlerData> = {
   onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
 
-export type LogicChildren = {
+export type VirtualChildren = {
   viewTag: number;
   handlerTags: number[];
 };

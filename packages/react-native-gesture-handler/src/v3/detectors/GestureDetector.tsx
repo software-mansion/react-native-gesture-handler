@@ -6,8 +6,8 @@ import {
   GestureDetectorProps as LegacyGestureDetectorProps,
   GestureDetector as LegacyGestureDetector,
 } from '../../handlers/gestures/GestureDetector';
-import { DetectorContext } from './LogicDetector/useDetectorContext';
-import { LogicDetector } from './LogicDetector/LogicDetector';
+import { DetectorContext } from './VirtualDetector/useDetectorContext';
+import { LogicDetector } from './VirtualDetector/LogicDetector';
 import { use } from 'react';
 
 export function GestureDetector<THandlerData, TConfig>(
