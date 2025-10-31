@@ -7,7 +7,7 @@ import {
   GestureDetector as LegacyGestureDetector,
 } from '../../handlers/gestures/GestureDetector';
 import { DetectorContext } from './VirtualDetector/useDetectorContext';
-import { LogicDetector } from './VirtualDetector/LogicDetector';
+import { VirtualDetector } from './VirtualDetector/VirtualDetector';
 import { use } from 'react';
 
 export function GestureDetector<THandlerData, TConfig>(
@@ -22,7 +22,9 @@ export function GestureDetector<THandlerData, TConfig>(
 
   const context = use(DetectorContext);
   return context ? (
-    <LogicDetector {...(props as NativeDetectorProps<THandlerData, TConfig>)} />
+    <VirtualDetector
+      {...(props as NativeDetectorProps<THandlerData, TConfig>)}
+    />
   ) : (
     <NativeDetector
       {...(props as NativeDetectorProps<THandlerData, TConfig>)}

@@ -14,7 +14,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
   private lateinit var eventHandlerType: EventHandlerType
 
   private fun <T : GestureHandler> init(handler: T, actionType: Int, eventHandlerType: EventHandlerType) {
-    val view = if (GestureHandler.usesNativeOrLogicDetector(handler.actionType)) {
+    val view = if (GestureHandler.usesNativeOrVirtualDetector(handler.actionType)) {
       handler.viewForEvents
     } else {
       handler.view!!
@@ -33,13 +33,13 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
+  override fun getEventName() = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {
     if (eventHandlerType == EventHandlerType.ForReanimated) REANIMATED_EVENT_NAME else NATIVE_EVENT_NAME
   } else {
     EVENT_NAME
   }
 
-  override fun canCoalesce() = !GestureHandler.usesNativeOrLogicDetector(actionType)
+  override fun canCoalesce() = !GestureHandler.usesNativeOrVirtualDetector(actionType)
 
   override fun getCoalescingKey() = coalescingKey
   override fun getEventData(): WritableMap? = extraData

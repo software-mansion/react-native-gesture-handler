@@ -171,7 +171,6 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         onGestureHandlerReanimatedTouchEvent={
           shouldUseReanimated ? reanimatedTouchEventHandler : undefined
         }
-        moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={
           gesture
             ? isComposedGesture(gesture)
@@ -180,7 +179,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
             : []
         }
         style={nativeDetectorStyles.detector}
-        virtualChildren={virtualChildren}>
+        virtualChildren={virtualChildren}
+        moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>
     </DetectorContext>
