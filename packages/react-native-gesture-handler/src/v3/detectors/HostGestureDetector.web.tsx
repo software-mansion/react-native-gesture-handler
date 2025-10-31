@@ -110,6 +110,11 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     );
 
     props.logicChildren?.forEach((child) => {
+      if (child.viewRef.current == null) {
+        // We must check whether viewRef is  not null as otherwise we get an error when intercepting gesture detector
+        // switches its component based on whether animated/reanimated events should run.
+        return;
+      }
       if (!attachedLogicHandlers.current.has(child.viewTag)) {
         attachedLogicHandlers.current.set(child.viewTag, new Set());
       }
