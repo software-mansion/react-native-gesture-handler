@@ -313,7 +313,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       GestureHandlerOrchestrator.instance.cancelMouseAndPenGestures(this);
     }
 
-    // TODO: Bring back touch events along with introducing `handleDown` method that will handle handler specific stuff
+    this.tryToSendTouchEvent(event);
   }
   // Adding another pointer to existing ones
   protected onPointerAdd(event: AdaptedEvent): void {
@@ -370,11 +370,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
+    this.tryToSendTouchEvent(event);
     if (this.active) {
       this.sendEvent(this.state, this.state);
     }
-
-    this.tryToSendTouchEvent(event);
   }
 
   protected tryToSendTouchEvent(event: AdaptedEvent): void {
