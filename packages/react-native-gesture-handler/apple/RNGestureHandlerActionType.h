@@ -8,5 +8,5 @@ typedef NS_ENUM(NSInteger, RNGestureHandlerActionType) {
   RNGestureHandlerActionTypeJSFunctionNewAPI, // JS function or Animated.event with useNativeDriver: false using new
                                               // RNGH API
   RNGestureHandlerActionTypeNativeDetector,
-  RNGestureHandlerActionTypeLogicDetector,
+  RNGestureHandlerActionTypeVirtualDetector,
 };

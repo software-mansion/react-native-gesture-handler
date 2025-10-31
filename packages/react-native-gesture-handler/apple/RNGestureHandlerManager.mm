@@ -295,20 +295,20 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                                               // but results in a compilation error.
 {
   switch (actionType) {
-    case RNGestureHandlerActionTypeLogicDetector: {
+    case RNGestureHandlerActionTypeVirtualDetector: {
       NSNumber *hostDetectorTag = [_registry handlerWithTag:event.handlerTag].hostDetectorTag;
       detectorView = [self viewForReactTag:hostDetectorTag];
-      [self sendNativeOrLogicEvent:event
-                    withActionType:actionType
-                    forHandlerType:eventHandlerType
-                           forView:detectorView];
+      [self sendNativeOrVirtualEvent:event
+                      withActionType:actionType
+                      forHandlerType:eventHandlerType
+                             forView:detectorView];
       break;
     }
     case RNGestureHandlerActionTypeNativeDetector: {
-      [self sendNativeOrLogicEvent:event
-                    withActionType:actionType
-                    forHandlerType:eventHandlerType
-                           forView:detectorView];
+      [self sendNativeOrVirtualEvent:event
+                      withActionType:actionType
+                      forHandlerType:eventHandlerType
+                             forView:detectorView];
       break;
     }
 
@@ -455,10 +455,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
-- (void)sendNativeOrLogicEvent:(RNGestureHandlerStateChange *)event
-                withActionType:(RNGestureHandlerActionType)actionType
-                forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
-                       forView:(RNGHUIView *)detectorView
+- (void)sendNativeOrVirtualEvent:(RNGestureHandlerStateChange *)event
+                  withActionType:(RNGestureHandlerActionType)actionType
+                  forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
+                         forView:(RNGHUIView *)detectorView
 {
   if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
     switch (eventHandlerType) {
