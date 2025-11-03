@@ -6,7 +6,7 @@ sidebar_position: 10
 ---
 
 :::warning
-ForceTouch gesture is depracted and will be removed in the future version of Gesture Handler.
+ForceTouch gesture is deprecated and will be removed in the future version of Gesture Handler.
 :::
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
@@ -16,7 +16,7 @@ import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
 A continuous gesture that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
-The gesture [activates](/docs/fundamentals/states-events#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
+The gesture [activates](/docs/fundamentals/states-events#active) when pressure of touch is greater than or equal to `minForce`. It fails if pressure is greater than `maxForce`.
 Gesture callback can be used for continuous tracking of the touch pressure. It provides information for one finger (the first one).
 
 At the beginning of the gesture, the pressure factor is 0.0. As the pressure increases, the pressure factor increases proportionally. The maximum pressure is 1.0.
