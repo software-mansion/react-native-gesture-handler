@@ -148,9 +148,23 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     return failOffsetYEnd != MIN_VALUE_IGNORE && dy > failOffsetYEnd
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    resetProgress()
+    offsetX = 0f
+    offsetY = 0f
+    velocityX = 0f
+    velocityY = 0f
+    velocityTracker = VelocityTracker.obtain()
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
+    }
+
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
     }
 
     if (event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS) {
@@ -174,12 +188,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       lastY = getLastPointerY(sourceEvent, averageTouches)
     }
     if (state == STATE_UNDETERMINED && sourceEvent.pointerCount >= minPointers) {
-      resetProgress()
-      offsetX = 0f
-      offsetY = 0f
-      velocityX = 0f
-      velocityY = 0f
-      velocityTracker = VelocityTracker.obtain()
+      initialize(event, sourceEvent)
       addVelocityMovement(velocityTracker, sourceEvent)
       begin()
 
