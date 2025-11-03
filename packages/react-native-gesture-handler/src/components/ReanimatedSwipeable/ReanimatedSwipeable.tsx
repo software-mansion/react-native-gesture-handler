@@ -179,7 +179,7 @@ const Swipeable = (props: SwipeableProps) => {
   );
 
   const animateRow: (toValue: number, velocityX?: number) => void = useCallback(
-    (toValue: number, velocityX?: number) => {
+    (toValue: number, velocityX = 0) => {
       'worklet';
 
       const translationSpringConfig = {
