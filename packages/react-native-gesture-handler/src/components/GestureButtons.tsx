@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Animated } from 'react-native';
 
 import createNativeWrapper from '../v3/createNativeWrapper';
 import GestureHandlerButton from './GestureHandlerButton';
@@ -8,10 +8,7 @@ import type {
   BorderlessButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+
 import type { GestureStateChangeEvent } from '../v3/types';
 import type { NativeViewHandlerData } from '../v3/hooks/gestures/native/useNative';
 
@@ -126,11 +123,11 @@ export const RectButton = (props: RectButtonProps) => {
   const activeOpacity = props.activeOpacity ?? 0.105;
   const underlayColor = props.underlayColor ?? 'black';
 
-  const opacity = useSharedValue<number>(0);
+  const opacity = new Animated.Value(0);
 
   const onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
-      opacity.value = active ? activeOpacity : 0;
+      opacity.setValue(active ? activeOpacity : 0);
     }
 
     props.onActiveStateChange?.(active);
@@ -139,12 +136,6 @@ export const RectButton = (props: RectButtonProps) => {
   const { children, style, ...rest } = props;
 
   const resolvedStyle = StyleSheet.flatten(style ?? {});
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  });
 
   return (
     <BaseButton
@@ -155,6 +146,7 @@ export const RectButton = (props: RectButtonProps) => {
         style={[
           btnStyles.underlay,
           {
+            opacity,
             backgroundColor: underlayColor,
             borderRadius: resolvedStyle.borderRadius,
             borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
@@ -162,7 +154,6 @@ export const RectButton = (props: RectButtonProps) => {
             borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
             borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
           },
-          animatedStyle,
         ]}
       />
       {children}
@@ -172,11 +163,11 @@ export const RectButton = (props: RectButtonProps) => {
 
 export const BorderlessButton = (props: BorderlessButtonProps) => {
   const activeOpacity = props.activeOpacity ?? 0.3;
-  const opacity = useSharedValue<number>(1);
+  const opacity = new Animated.Value(1);
 
   const onActiveStateChange = (active: boolean) => {
     if (Platform.OS !== 'android') {
-      opacity.value = active ? activeOpacity : 0;
+      opacity.setValue(active ? activeOpacity : 0);
     }
 
     props.onActiveStateChange?.(active);
@@ -188,7 +179,7 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
     <BaseButton
       {...rest}
       onActiveStateChange={onActiveStateChange}
-      style={[style, Platform.OS === 'ios' && { opacity: opacity.value }]}>
+      style={[style, Platform.OS === 'ios' && { opacity }]}>
       {children}
     </BaseButton>
   );
