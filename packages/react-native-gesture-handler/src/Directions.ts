@@ -12,10 +12,10 @@ const DOWN_LEFT = 10; // DOWN | LEFT
 
 // Public interface
 export const Directions = {
-  RIGHT: RIGHT,
-  LEFT: LEFT,
-  UP: UP,
-  DOWN: DOWN,
+  RIGHT,
+  LEFT,
+  UP,
+  DOWN,
 } as const;
 
 // Internal interface
