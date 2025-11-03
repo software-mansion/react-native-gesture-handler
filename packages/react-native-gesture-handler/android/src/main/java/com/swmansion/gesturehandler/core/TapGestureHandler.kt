@@ -81,18 +81,27 @@ class TapGestureHandler : GestureHandler() {
     return maxDist != MAX_VALUE_IGNORE && dist > maxDist * maxDist
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    offsetX = 0f
+    offsetY = 0f
+    startX = getLastPointerX(sourceEvent, true)
+    startY = getLastPointerY(sourceEvent, true)
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
     }
 
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
+    }
+
     val state = state
     val action = sourceEvent.actionMasked
     if (state == STATE_UNDETERMINED) {
-      offsetX = 0f
-      offsetY = 0f
-      startX = getLastPointerX(sourceEvent, true)
-      startY = getLastPointerY(sourceEvent, true)
+      initialize(event, sourceEvent)
     }
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       offsetX += lastX - startX
