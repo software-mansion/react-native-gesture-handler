@@ -10,7 +10,7 @@ export default function createNativeWrapper<P>(
   config: Readonly<NativeWrapperProperties> = {}
 ) {
   const ComponentWrapper = (
-    props: P & NativeWrapperProperties & { ref: React.RefObject<unknown> }
+    props: P & NativeWrapperProperties & { ref?: React.RefObject<unknown> }
   ) => {
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(

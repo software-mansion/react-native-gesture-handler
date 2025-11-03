@@ -82,4 +82,5 @@ export const NativeWrapperProps = new Set<keyof NativeWrapperProperties>([
   ...HandlerCallbacks,
   ...NativeHandlerNativeProperties,
   ...ExternalRelationsConfig,
+  'disableReanimated',
 ]);

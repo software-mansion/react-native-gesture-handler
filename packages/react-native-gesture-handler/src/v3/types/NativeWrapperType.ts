@@ -1,7 +1,8 @@
 import { CommonGestureConfig, ExternalRelations, GestureCallbacks } from '.';
 import { NativeGestureNativeProperties } from '../hooks/gestures/native/NativeProperties';
+import { NativeViewHandlerData } from '../hooks/gestures/native/useNative';
 
 export type NativeWrapperProperties = CommonGestureConfig &
-  GestureCallbacks<unknown> &
+  GestureCallbacks<NativeViewHandlerData> &
   NativeGestureNativeProperties &
   ExternalRelations;

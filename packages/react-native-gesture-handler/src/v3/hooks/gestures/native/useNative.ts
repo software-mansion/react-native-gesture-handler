@@ -11,7 +11,7 @@ import { useGesture } from '../../useGesture';
 import { cloneConfig } from '../../utils';
 import { NativeGestureNativeProperties } from './NativeProperties';
 
-type NativeViewHandlerData = {
+export type NativeViewHandlerData = {
   pointerInside: boolean;
 };
 
