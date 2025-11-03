@@ -294,7 +294,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
   if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
-      _actionType != RNGestureHandlerActionTypeLogicDetector) {
+      _actionType != RNGestureHandlerActionTypeVirtualDetector) {
     return;
   }
 
@@ -314,7 +314,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     tag = @(recognizer.view.tag);
   }
 
-  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeLogicDetector) {
+  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeVirtualDetector) {
     tag = _virtualViewTag;
   }
 
@@ -673,7 +673,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 
   // Logic detector has a virtual view tag set only if the real hierarchy was folded into a single View
-  if (_actionType == RNGestureHandlerActionTypeLogicDetector && _virtualViewTag != nil) {
+  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
     // In this case, logic detector is attached to the DetectorView, which has a single subview representing
     // the actual target view in the RN hierarchy
     RNGHUIView *view = _recognizer.view.subviews[0];

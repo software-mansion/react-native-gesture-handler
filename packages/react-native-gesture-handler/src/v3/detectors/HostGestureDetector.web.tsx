@@ -9,10 +9,10 @@ export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
   children?: React.ReactNode;
-  logicChildren?: Set<LogicChildrenWeb>;
+  virtualChildren?: Set<VirtualChildrenWeb>;
 }
 
-export interface LogicChildrenWeb {
+export interface VirtualChildrenWeb {
   viewTag: number;
   handlerTags: number[];
   viewRef: RefObject<Element | null>;
@@ -27,7 +27,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const propsRef = useRef<PropsRef>(props);
   const attachedHandlers = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlers = useRef<Set<number>>(new Set<number>());
-  const attachedLogicHandlers = useRef<Map<number, Set<number>>>(new Map());
+  const attachedVirtualHandlers = useRef<Map<number, Set<number>>>(new Map());
 
   const detachHandlers = (
     currentHandlerTags: Set<number>,
@@ -98,47 +98,47 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
 
     return () => {
       detachHandlers(EMPTY_HANDLERS, attachedHandlers.current);
-      attachedLogicHandlers?.current.forEach((childHandlerTags) => {
+      attachedVirtualHandlers?.current.forEach((childHandlerTags) => {
         detachHandlers(EMPTY_HANDLERS, childHandlerTags);
       });
     };
   }, [handlerTags, children]);
 
   useEffect(() => {
-    const logicChildrenToDetach: Set<number> = new Set(
-      attachedLogicHandlers.current.keys()
+    const virtualChildrenToDetach: Set<number> = new Set(
+      attachedVirtualHandlers.current.keys()
     );
 
-    props.logicChildren?.forEach((child) => {
+    props.virtualChildren?.forEach((child) => {
       if (child.viewRef.current == null) {
         // We must check whether viewRef is  not null as otherwise we get an error when intercepting gesture detector
         // switches its component based on whether animated/reanimated events should run.
         return;
       }
-      if (!attachedLogicHandlers.current.has(child.viewTag)) {
-        attachedLogicHandlers.current.set(child.viewTag, new Set());
+      if (!attachedVirtualHandlers.current.has(child.viewTag)) {
+        attachedVirtualHandlers.current.set(child.viewTag, new Set());
       }
-      logicChildrenToDetach.delete(child.viewTag);
+      virtualChildrenToDetach.delete(child.viewTag);
 
       const currentHandlerTags = new Set(child.handlerTags);
       detachHandlers(
         currentHandlerTags,
-        attachedLogicHandlers.current.get(child.viewTag)!
+        attachedVirtualHandlers.current.get(child.viewTag)!
       );
 
       attachHandlers(
         child.viewRef,
         propsRef,
         currentHandlerTags,
-        attachedLogicHandlers.current.get(child.viewTag)!,
-        ActionType.LOGIC_DETECTOR
+        attachedVirtualHandlers.current.get(child.viewTag)!,
+        ActionType.VIRTUAL_DETECTOR
       );
     });
 
-    logicChildrenToDetach.forEach((tag) => {
-      detachHandlers(EMPTY_HANDLERS, attachedLogicHandlers.current.get(tag)!);
+    virtualChildrenToDetach.forEach((tag) => {
+      detachHandlers(EMPTY_HANDLERS, attachedVirtualHandlers.current.get(tag)!);
     });
-  }, [props.logicChildren]);
+  }, [props.virtualChildren]);
 
   return (
     <View style={{ display: 'contents' }} ref={viewRef as Ref<View>}>

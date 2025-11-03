@@ -8,14 +8,14 @@ import { configureRelations } from '../utils';
 import { tagMessage } from '../../../utils';
 import { DetectorCallbacks } from '../../types';
 
-export function LogicDetector<THandlerData, TConfig>(
+export function VirtualDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
 ) {
   const context = useDetectorContext();
   if (!context) {
     throw new Error(
       tagMessage(
-        'Logic detector must be a descendant of an InterceptingGestureDecector'
+        'Virtual detector must be a descendant of an InterceptingGestureDecector'
       )
     );
   }
@@ -23,7 +23,7 @@ export function LogicDetector<THandlerData, TConfig>(
 
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
-  const logicMethods = useRef(props.gesture.detectorCallbacks);
+  const virtualMethods = useRef(props.gesture.detectorCallbacks);
   const handleRef = useCallback((node: any) => {
     viewRef.current = node;
     if (!node) {
@@ -41,7 +41,7 @@ export function LogicDetector<THandlerData, TConfig>(
   }, []);
 
   useEffect(() => {
-    logicMethods.current = props.gesture.detectorCallbacks;
+    virtualMethods.current = props.gesture.detectorCallbacks;
   }, [props.gesture.detectorCallbacks]);
 
   useEffect(() => {
@@ -53,18 +53,18 @@ export function LogicDetector<THandlerData, TConfig>(
       ? props.gesture.tags
       : [props.gesture.tag];
 
-    const logicProps = {
+    const virtualProps = {
       viewTag,
       handlerTags,
     };
 
     if (Platform.OS === 'web') {
-      Object.assign(logicProps, { viewRef });
+      Object.assign(virtualProps, { viewRef });
     }
 
     register(
-      logicProps,
-      logicMethods as RefObject<DetectorCallbacks<unknown>>,
+      virtualProps,
+      virtualMethods as RefObject<DetectorCallbacks<unknown>>,
       props.gesture.config.shouldUseReanimatedDetector,
       props.gesture.config.dispatchesAnimatedEvents
     );

@@ -1,7 +1,7 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
 import HostGestureDetector from '../HostGestureDetector';
 import {
-  LogicChildren,
+  VirtualChildren,
   GestureHandlerEvent,
   DetectorCallbacks,
 } from '../../types';
@@ -21,9 +21,9 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
-  const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
+  const [virtualChildren, setVirtualChildren] = useState<VirtualChildren[]>([]);
 
-  const logicMethods = useRef<
+  const virtualMethods = useRef<
     Map<number, RefObject<DetectorCallbacks<unknown>>>
   >(new Map());
 
@@ -42,7 +42,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const register = useCallback(
     (
-      child: LogicChildren,
+      child: VirtualChildren,
       methods: RefObject<DetectorCallbacks<unknown>>,
       forReanimated: boolean | undefined,
       forAnimated: boolean | undefined
@@ -50,7 +50,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
       setShouldUseReanimated(!!forReanimated);
       setDispatchesAnimatedEvents(!!forAnimated);
 
-      setLogicChildren((prev) => {
+      setVirtualChildren((prev) => {
         const index = prev.findIndex((c) => c.viewTag === child.viewTag);
         if (index !== -1) {
           const updated = [...prev];
@@ -62,7 +62,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
       });
 
       child.handlerTags.forEach((tag) => {
-        logicMethods.current.set(tag, methods);
+        virtualMethods.current.set(tag, methods);
       });
     },
     []
@@ -70,10 +70,10 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const unregister = useCallback((childTag: number, handlerTags: number[]) => {
     handlerTags.forEach((tag) => {
-      logicMethods.current.delete(tag);
+      virtualMethods.current.delete(tag);
     });
 
-    setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
+    setVirtualChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
   }, []);
 
   // It might happen only with ReanimatedNativeDetector
@@ -91,7 +91,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         gesture.detectorCallbacks[key](e);
       }
 
-      logicMethods.current.forEach((ref) => {
+      virtualMethods.current.forEach((ref) => {
         const method = ref.current?.[key];
         if (method) {
           method(e);
@@ -112,7 +112,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         );
       }
 
-      logicMethods.current.forEach((ref) => {
+      virtualMethods.current.forEach((ref) => {
         const handler = ref.current?.[key];
         if (handler) {
           handlers.push(
@@ -123,7 +123,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
       return handlers;
     },
-    [logicChildren, gesture?.detectorCallbacks]
+    [virtualChildren, gesture?.detectorCallbacks]
   );
 
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
@@ -171,7 +171,6 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         onGestureHandlerReanimatedTouchEvent={
           shouldUseReanimated ? reanimatedTouchEventHandler : undefined
         }
-        moduleId={globalThis._RNGH_MODULE_ID}
         handlerTags={
           gesture
             ? isComposedGesture(gesture)
@@ -180,7 +179,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
             : []
         }
         style={nativeDetectorStyles.detector}
-        logicChildren={logicChildren}>
+        virtualChildren={virtualChildren}
+        moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>
     </DetectorContext>

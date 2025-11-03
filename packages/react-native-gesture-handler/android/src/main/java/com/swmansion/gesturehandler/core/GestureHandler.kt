@@ -33,17 +33,17 @@ open class GestureHandler {
     private set
 
   // Host detector view is a reference to a Native Detector designated to handle events from a
-  // Logic Detector to which the gesture is assigned.
+  // Virtual Detector to which the gesture is assigned.
   var hostDetectorView: RNGestureHandlerDetectorView? = null
 
   val viewForEvents: RNGestureHandlerDetectorView
     get() {
-      assert(usesNativeOrLogicDetector(actionType)) {
+      assert(usesNativeOrVirtualDetector(actionType)) {
         "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
       }
 
       val detector = if (actionType ==
-        ACTION_TYPE_LOGIC_DETECTOR
+        ACTION_TYPE_VIRTUAL_DETECTOR
       ) {
         this.hostDetectorView
       } else if (this is NativeViewGestureHandler) {
@@ -1020,7 +1020,7 @@ open class GestureHandler {
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     const val ACTION_TYPE_NATIVE_DETECTOR = 5
-    const val ACTION_TYPE_LOGIC_DETECTOR = 6
+    const val ACTION_TYPE_VIRTUAL_DETECTOR = 6
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
@@ -1056,8 +1056,8 @@ open class GestureHandler {
       return null
     }
 
-    fun usesNativeOrLogicDetector(actionType: Int): Boolean =
-      actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_LOGIC_DETECTOR
+    fun usesNativeOrVirtualDetector(actionType: Int): Boolean =
+      actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_VIRTUAL_DETECTOR
   }
 
   private data class PointerData(

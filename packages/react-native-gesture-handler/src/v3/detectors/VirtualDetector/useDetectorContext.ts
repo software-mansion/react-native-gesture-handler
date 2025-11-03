@@ -1,9 +1,9 @@
 import { createContext, RefObject, use } from 'react';
-import { DetectorCallbacks, LogicChildren } from '../../types';
+import { DetectorCallbacks, VirtualChildren } from '../../types';
 
 type DetectorContextType = {
   register: (
-    child: LogicChildren,
+    child: VirtualChildren,
     methods: RefObject<DetectorCallbacks<unknown>>,
     forReanimated: boolean | undefined,
     forAnimated: boolean | undefined
