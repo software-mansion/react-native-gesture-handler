@@ -20,10 +20,10 @@ export const Directions = {
 
 // Internal interface
 export const DiagonalDirections = {
-  UP_RIGHT: UP_RIGHT,
-  DOWN_RIGHT: DOWN_RIGHT,
-  UP_LEFT: UP_LEFT,
-  DOWN_LEFT: DOWN_LEFT,
+  UP_RIGHT,
+  DOWN_RIGHT,
+  UP_LEFT,
+  DOWN_LEFT,
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- backward compatibility; it can be used as a type and as a value
