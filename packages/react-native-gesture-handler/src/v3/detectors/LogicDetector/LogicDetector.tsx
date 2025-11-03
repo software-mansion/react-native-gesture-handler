@@ -1,15 +1,26 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { Wrap } from '../handlers/gestures/GestureDetector/Wrap';
+import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
-import { useDetectorContext } from './NativeDetector/useDetectorContext';
-import { NativeDetectorProps } from './NativeDetector/NativeDetector';
-import { isComposedGesture } from './hooks/utils/relationUtils';
-import { DetectorCallbacks } from './types';
+import { useDetectorContext } from './useDetectorContext';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import { NativeDetectorProps } from '../common';
+import { configureRelations } from '../utils';
+import { tagMessage } from '../../../utils';
+import { DetectorCallbacks } from '../../types';
 
 export function LogicDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
 ) {
-  const { register, unregister } = useDetectorContext();
+  const context = useDetectorContext();
+  if (!context) {
+    throw new Error(
+      tagMessage(
+        'Logic detector must be a descendant of an InterceptingGestureDecector'
+      )
+    );
+  }
+  const { register, unregister } = context;
+
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
   const logicMethods = useRef(props.gesture.detectorCallbacks);
@@ -29,7 +40,11 @@ export function LogicDetector<THandlerData, TConfig>(
 
       return () => {
         if (tag != null) {
-          unregister(viewTag);
+          const handlerTags = isComposedGesture(props.gesture)
+            ? props.gesture.tags
+            : [props.gesture.tag];
+
+          unregister(viewTag, handlerTags);
         }
       };
     },
@@ -58,12 +73,19 @@ export function LogicDetector<THandlerData, TConfig>(
       Object.assign(logicProps, { viewRef });
     }
 
-    register(logicProps, logicMethods as RefObject<DetectorCallbacks<unknown>>);
+    register(
+      logicProps,
+      logicMethods as RefObject<DetectorCallbacks<unknown>>,
+      props.gesture.config.shouldUseReanimatedDetector,
+      props.gesture.config.dispatchesAnimatedEvents
+    );
 
     return () => {
       unregister(viewTag, handlerTags);
     };
   }, [viewTag, props.gesture, register, unregister]);
+
+  configureRelations(props.gesture);
 
   return <Wrap ref={handleRef}>{props.children}</Wrap>;
 }
