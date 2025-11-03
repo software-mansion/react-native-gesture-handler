@@ -29,7 +29,7 @@ export function NativeDetector<THandlerData, TConfig>({
         gesture.detectorCallbacks.onGestureHandlerStateChange
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerEvent={gesture.gestureEvents.onGestureHandlerEvent}
+      onGestureHandlerEvent={gesture.detectorCallbacks.onGestureHandlerEvent}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerTouchEvent={
         gesture.detectorCallbacks.onGestureHandlerTouchEvent
