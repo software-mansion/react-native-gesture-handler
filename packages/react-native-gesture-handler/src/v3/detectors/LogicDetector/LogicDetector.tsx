@@ -44,7 +44,7 @@ export function LogicDetector<THandlerData, TConfig>(
             ? props.gesture.tags
             : [props.gesture.tag];
 
-          unregister(viewTag, handlerTags);
+          unregister(tag, handlerTags);
         }
       };
     },
