@@ -82,6 +82,7 @@ open class GestureHandler {
     }
   var actionType = 0
 
+  var forceReinitializeDuringOnHandle = false
   var changedTouchesPayload: WritableArray? = null
     private set
   var allTouchesPayload: WritableArray? = null
@@ -755,6 +756,7 @@ open class GestureHandler {
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
 
+  protected open fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {}
   protected open fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     moveToState(STATE_FAILED)
   }

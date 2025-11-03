@@ -49,18 +49,26 @@ class PinchGestureHandler : GestureHandler() {
     }
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    val context = view!!.context
+    resetProgress()
+    scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
+    val configuration = ViewConfiguration.get(context)
+    spanSlop = configuration.scaledTouchSlop.toFloat()
+
+    // set the focal point to the position of the first pointer as NaN causes the event not to arrive
+    this.focalPointX = event.x
+    this.focalPointY = event.y
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
+    }
+
     if (state == STATE_UNDETERMINED) {
-      val context = view!!.context
-      resetProgress()
-      scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
-      val configuration = ViewConfiguration.get(context)
-      spanSlop = configuration.scaledTouchSlop.toFloat()
-
-      // set the focal point to the position of the first pointer as NaN causes the event not to arrive
-      this.focalPointX = event.x
-      this.focalPointY = event.y
-
+      initialize(event, sourceEvent)
       begin()
     }
     scaleGestureDetector?.onTouchEvent(sourceEvent)
