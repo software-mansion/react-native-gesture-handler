@@ -391,9 +391,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   if ([self isKindOfClass:[RNNativeViewGestureHandler class]] &&
       _actionType == RNGestureHandlerActionTypeNativeDetector) {
-    return [self.recognizer.view.superview isKindOfClass:[RCTViewComponentView class]]
-        ? self.recognizer.view.superview.superview
-        : self.recognizer.view.superview;
+    RNGHUIView *view = self.recognizer.view.superview;
+
+    return [view isKindOfClass:[RCTViewComponentView class]] ? view.superview : view;
   }
 
   return self.recognizer.view;
