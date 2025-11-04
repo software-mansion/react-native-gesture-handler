@@ -71,17 +71,17 @@ export type {
 export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
-  RawButtonProps,
-  BaseButtonProps,
-  RectButtonProps,
-  BorderlessButtonProps,
+  LegacyRawButtonProps,
+  LegacyBaseButtonProps,
+  LegacyRectButtonProps,
+  LegacyBorderlessButtonProps,
 } from './components/GestureButtonsProps';
 export {
-  RawButton,
-  BaseButton,
-  RectButton,
-  BorderlessButton,
-  PureNativeButton,
+  LegacyRawButton,
+  LegacyBaseButton,
+  LegacyRectButton,
+  LegacyBorderlessButton,
+  LegacyPureNativeButton,
 } from './components/GestureButtons';
 export type {
   TouchableHighlightProps,
@@ -137,10 +137,10 @@ export type {
   FlingGestureHandlerProperties,
   ForceTouchGestureHandlerProperties,
   // Buttons props
-  RawButtonProperties,
-  BaseButtonProperties,
-  RectButtonProperties,
-  BorderlessButtonProperties,
+  LegacyRawButtonProperties,
+  LegacyBaseButtonProperties,
+  LegacyRectButtonProperties,
+  LegacyBorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
 export type {
