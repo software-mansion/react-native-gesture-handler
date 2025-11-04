@@ -76,6 +76,12 @@ export type {
   LegacyRectButtonProps,
   LegacyBorderlessButtonProps,
 } from './components/GestureButtonsProps';
+export type {
+  RawButtonProps,
+  BaseButtonProps,
+  RectButtonProps,
+  BorderlessButtonProps,
+} from './v3/components/GestureButtonsProps';
 export {
   LegacyRawButton,
   LegacyBaseButton,
@@ -83,6 +89,13 @@ export {
   LegacyBorderlessButton,
   LegacyPureNativeButton,
 } from './components/GestureButtons';
+export {
+  RawButton,
+  BaseButton,
+  RectButton,
+  BorderlessButton,
+  PureNativeButton,
+} from './v3/components/GestureButtons';
 export type {
   TouchableHighlightProps,
   TouchableOpacityProps,
@@ -102,6 +115,14 @@ export {
   LegacyFlatList,
   LegacyRefreshControl,
 } from './components/GestureComponents';
+export {
+  ScrollView,
+  Switch,
+  TextInput,
+  DrawerLayoutAndroid,
+  FlatList,
+  RefreshControl,
+} from './v3/components/GestureComponents';
 export { Text } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
