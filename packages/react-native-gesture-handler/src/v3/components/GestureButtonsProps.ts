@@ -6,7 +6,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+import type { NativeViewGestureHandlerProps } from '../../handlers/NativeViewGestureHandler';
 
 export interface RawButtonProps
   extends NativeViewGestureHandlerProps,
@@ -91,7 +91,7 @@ export interface RawButtonProps
   testOnly_onLongPress?: Function | null;
 }
 interface ButtonWithRefProps {
-  innerRef?: React.ForwardedRef<React.ComponentType<any>>;
+  ref?: React.RefObject<any>;
 }
 
 export interface BaseButtonProps extends RawButtonProps {

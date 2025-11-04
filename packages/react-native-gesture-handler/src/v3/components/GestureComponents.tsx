@@ -19,19 +19,19 @@ import {
   RefreshControl as RNRefreshControl,
 } from 'react-native';
 
-import createNativeWrapper from '../handlers/createNativeWrapper';
+import createNativeWrapper, {
+  ComponentWrapperRef,
+} from '../createNativeWrapper';
 
-import {
-  NativeViewGestureHandlerProps,
-  nativeViewProps,
-} from '../handlers/NativeViewGestureHandler';
-
-import { toArray } from '../utils';
+import { NativeWrapperProperties } from '../types/NativeWrapperType';
+import { NativeWrapperProps } from '../hooks/utils';
+import { AnyGesture } from '../types';
 
 export const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
   shouldCancelWhenOutside: false,
 });
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
@@ -42,31 +42,43 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
     shouldCancelWhenOutside: false,
   }
 );
-export const ScrollView = React.forwardRef<
-  RNScrollView,
-  RNScrollViewProps & NativeViewGestureHandlerProps
->((props, ref) => {
-  const refreshControlGestureRef = React.useRef<RefreshControl>(null);
-  const { refreshControl, waitFor, ...rest } = props;
+export const ScrollView = (
+  props: RNScrollViewProps & NativeWrapperProperties
+) => {
+  const refreshControlRef =
+    React.useRef<ComponentWrapperRef<RefreshControl>>(null);
+  const { refreshControl, requireExternalGestureToFail, ...rest } = props;
+
+  const waitFor = [];
+
+  if (Array.isArray(requireExternalGestureToFail)) {
+    waitFor.push(...requireExternalGestureToFail);
+  } else if (requireExternalGestureToFail) {
+    waitFor.push(requireExternalGestureToFail);
+  }
+
+  if (refreshControlRef.current) {
+    waitFor.push(refreshControlRef.current.gestureRef);
+  }
 
   return (
     <GHScrollView
       {...rest}
       // @ts-ignore `ref` exists on `GHScrollView`
-      ref={ref}
-      waitFor={[...toArray(waitFor ?? []), refreshControlGestureRef]}
+      ref={props.ref}
+      requireExternalGestureToFail={waitFor}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl
           ? React.cloneElement(refreshControl, {
               // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
-              ref: refreshControlGestureRef,
+              ref: refreshControlRef,
             })
           : undefined
       }
     />
   );
-});
+};
 // Backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
 // include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -91,16 +103,17 @@ export const DrawerLayoutAndroid = createNativeWrapper<
 export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
   RNDrawerLayoutAndroid;
 
-export const FlatList = React.forwardRef((props, ref) => {
-  const refreshControlGestureRef = React.useRef<RefreshControl>(null);
+export const FlatList = ((props) => {
+  const refreshControlRef =
+    React.useRef<ComponentWrapperRef<RefreshControl>>(null);
 
-  const { waitFor, refreshControl, ...rest } = props;
+  const { requireExternalGestureToFail, refreshControl, ...rest } = props;
 
   const flatListProps = {};
   const scrollViewProps = {};
   for (const [propName, value] of Object.entries(rest)) {
-    // https://github.com/microsoft/TypeScript/issues/26255
-    if ((nativeViewProps as readonly string[]).includes(propName)) {
+    // @ts-ignore https://github.com/microsoft/TypeScript/issues/26255
+    if (NativeWrapperProps.has(propName)) {
       // @ts-ignore - this function cannot have generic type so we have to ignore this error
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       scrollViewProps[propName] = value;
@@ -111,17 +124,29 @@ export const FlatList = React.forwardRef((props, ref) => {
     }
   }
 
+  const waitFor: AnyGesture[] = [];
+
+  if (Array.isArray(requireExternalGestureToFail)) {
+    waitFor.push(...requireExternalGestureToFail);
+  } else if (requireExternalGestureToFail) {
+    waitFor.push(requireExternalGestureToFail);
+  }
+
+  if (refreshControlRef.current) {
+    waitFor.push(refreshControlRef.current.gestureRef);
+  }
+
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
     <RNFlatList
-      ref={ref}
+      ref={props.ref}
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
         <ScrollView
           {...{
             ...scrollProps,
             ...scrollViewProps,
-            waitFor: [...toArray(waitFor ?? []), refreshControlGestureRef],
+            requireExternalGestureToFail: waitFor,
           }}
         />
       )}
@@ -130,7 +155,7 @@ export const FlatList = React.forwardRef((props, ref) => {
         refreshControl
           ? React.cloneElement(refreshControl, {
               // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
-              ref: refreshControlGestureRef,
+              ref: refreshControlRef,
             })
           : undefined
       }
@@ -140,7 +165,7 @@ export const FlatList = React.forwardRef((props, ref) => {
   props: PropsWithChildren<
     Omit<RNFlatListProps<ItemT>, 'renderScrollComponent'> &
       RefAttributes<FlatList<ItemT>> &
-      NativeViewGestureHandlerProps
+      NativeWrapperProperties
   >,
   ref?: ForwardedRef<FlatList<ItemT>>
 ) => ReactElement | null;
