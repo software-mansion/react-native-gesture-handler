@@ -51,8 +51,8 @@ export default function createNativeWrapper<P>(
     const gestureRef = React.useRef(native);
 
     React.useImperativeHandle(props.ref, () => ({
-      componentRef,
-      gestureRef,
+      componentRef: componentRef.current,
+      gestureRef: gestureRef.current,
     }));
 
     return (
