@@ -5,6 +5,8 @@
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 
+#import "RNGestureHandlerButtonComponentView.h"
+
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
@@ -259,9 +261,18 @@
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
+  RNGHUIView *view = self.subviews[0];
+
+  if ([view isKindOfClass:[RCTViewComponentView class]]) {
+    RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+    if (componentView.contentView != nil) {
+      view = componentView.contentView;
+    }
+  }
+
   for (NSNumber *handlerTag in _nativeHandlers) {
     [handlerManager.registry attachHandlerWithTag:handlerTag
-                                           toView:self.subviews[0]
+                                           toView:view
                                    withActionType:RNGestureHandlerActionTypeNativeDetector];
 
     [_attachedHandlers addObject:handlerTag];
