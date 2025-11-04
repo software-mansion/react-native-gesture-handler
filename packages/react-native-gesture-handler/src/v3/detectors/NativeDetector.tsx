@@ -1,0 +1,58 @@
+import React from 'react';
+import HostGestureDetector from './HostGestureDetector';
+import { configureRelations, ensureNativeDetectorComponent } from './utils';
+import { isComposedGesture } from '../hooks/utils/relationUtils';
+import {
+  AnimatedNativeDetector,
+  NativeDetectorProps,
+  nativeDetectorStyles,
+  ReanimatedNativeDetector,
+} from './common';
+
+export function NativeDetector<THandlerData, TConfig>({
+  gesture,
+  children,
+}: NativeDetectorProps<THandlerData, TConfig>) {
+  const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
+    ? AnimatedNativeDetector
+    : gesture.config.shouldUseReanimatedDetector
+      ? ReanimatedNativeDetector
+      : HostGestureDetector;
+
+  ensureNativeDetectorComponent(NativeDetectorComponent);
+  configureRelations(gesture);
+
+  return (
+    <NativeDetectorComponent
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+      onGestureHandlerStateChange={
+        gesture.detectorCallbacks.onGestureHandlerStateChange
+      }
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+      onGestureHandlerEvent={gesture.detectorCallbacks.onGestureHandlerEvent}
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+      onGestureHandlerTouchEvent={
+        gesture.detectorCallbacks.onGestureHandlerTouchEvent
+      }
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+      onGestureHandlerReanimatedStateChange={
+        gesture.detectorCallbacks.onReanimatedStateChange
+      }
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+      onGestureHandlerReanimatedEvent={
+        gesture.detectorCallbacks.onReanimatedUpdateEvent
+      }
+      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+      onGestureHandlerReanimatedTouchEvent={
+        gesture.detectorCallbacks.onReanimatedTouchEvent
+      }
+      onGestureHandlerAnimatedEvent={
+        gesture.detectorCallbacks.onGestureHandlerAnimatedEvent
+      }
+      moduleId={globalThis._RNGH_MODULE_ID}
+      handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
+      style={nativeDetectorStyles.detector}>
+      {children}
+    </NativeDetectorComponent>
+  );
+}

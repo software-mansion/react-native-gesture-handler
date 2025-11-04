@@ -65,14 +65,23 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
     return Pair(x, y)
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    previousTime = SystemClock.uptimeMillis()
+    startTime = previousTime
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
     }
 
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
+    }
+
     if (state == STATE_UNDETERMINED) {
-      previousTime = SystemClock.uptimeMillis()
-      startTime = previousTime
+      initialize(event, sourceEvent)
       begin()
 
       val (x, y) = getAverageCoords(sourceEvent)

@@ -1,47 +1,56 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
-import HostGestureDetector from './HostGestureDetector';
-import { tagMessage } from '../../utils';
+import HostGestureDetector from '../HostGestureDetector';
 import {
-  LogicChildren,
-  Gesture,
-  DetectorCallbacks,
+  VirtualChildren,
   GestureHandlerEvent,
-} from '../types';
+  DetectorCallbacks,
+} from '../../types';
 import { DetectorContext } from './useDetectorContext';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { configureRelations } from './utils';
-import { isComposedGesture } from '../hooks/utils/relationUtils';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { configureRelations, ensureNativeDetectorComponent } from '../utils';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import {
+  AnimatedNativeDetector,
+  InterceptingGestureDetectorProps,
+  nativeDetectorStyles,
+  ReanimatedNativeDetector,
+} from '../common';
+import { tagMessage } from '../../../utils';
 
-export interface NativeDetectorProps<THandlerData, TConfig> {
-  children?: React.ReactNode;
-  gesture: Gesture<THandlerData, TConfig>;
-}
-
-const AnimatedNativeDetector =
-  Animated.createAnimatedComponent(HostGestureDetector);
-
-const ReanimatedNativeDetector =
-  Reanimated?.default.createAnimatedComponent(HostGestureDetector);
-
-export function NativeDetector<THandlerData, TConfig>({
+export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
-}: NativeDetectorProps<THandlerData, TConfig>) {
-  const [logicChildren, setLogicChildren] = useState<LogicChildren[]>([]);
-  const logicMethods = useRef<
+}: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
+  const [virtualChildren, setVirtualChildren] = useState<VirtualChildren[]>([]);
+
+  const virtualMethods = useRef<
     Map<number, RefObject<DetectorCallbacks<unknown>>>
   >(new Map());
 
-  const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
+  const [shouldUseReanimated, setShouldUseReanimated] = useState(
+    gesture ? gesture.config.shouldUseReanimatedDetector : false
+  );
+  const [dispatchesAnimatedEvents, setDispatchesAnimatedEvents] = useState(
+    gesture ? gesture.config.dispatchesAnimatedEvents : false
+  );
+
+  const NativeDetectorComponent = dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimatedDetector
+    : shouldUseReanimated
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
   const register = useCallback(
-    (child: LogicChildren, methods: RefObject<DetectorCallbacks<unknown>>) => {
-      setLogicChildren((prev) => {
+    (
+      child: VirtualChildren,
+      methods: RefObject<DetectorCallbacks<unknown>>,
+      forReanimated: boolean | undefined,
+      forAnimated: boolean | undefined
+    ) => {
+      setShouldUseReanimated(!!forReanimated);
+      setDispatchesAnimatedEvents(!!forAnimated);
+
+      setVirtualChildren((prev) => {
         const index = prev.findIndex((c) => c.viewTag === child.viewTag);
         if (index !== -1) {
           const updated = [...prev];
@@ -53,7 +62,7 @@ export function NativeDetector<THandlerData, TConfig>({
       });
 
       child.handlerTags.forEach((tag) => {
-        logicMethods.current.set(tag, methods);
+        virtualMethods.current.set(tag, methods);
       });
     },
     []
@@ -61,10 +70,10 @@ export function NativeDetector<THandlerData, TConfig>({
 
   const unregister = useCallback((childTag: number, handlerTags: number[]) => {
     handlerTags.forEach((tag) => {
-      logicMethods.current.delete(tag);
+      virtualMethods.current.delete(tag);
     });
 
-    setLogicChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
+    setVirtualChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
   }, []);
 
   // It might happen only with ReanimatedNativeDetector
@@ -76,15 +85,13 @@ export function NativeDetector<THandlerData, TConfig>({
     );
   }
 
-  configureRelations(gesture);
-
   const handleGestureEvent = (key: keyof DetectorCallbacks<THandlerData>) => {
     return (e: GestureHandlerEvent<THandlerData>) => {
-      if (gesture.detectorCallbacks[key]) {
+      if (gesture?.detectorCallbacks[key]) {
         gesture.detectorCallbacks[key](e);
       }
 
-      logicMethods.current.forEach((ref) => {
+      virtualMethods.current.forEach((ref) => {
         const method = ref.current?.[key];
         if (method) {
           method(e);
@@ -97,7 +104,7 @@ export function NativeDetector<THandlerData, TConfig>({
     (key: keyof DetectorCallbacks<unknown>) => {
       const handlers: ((e: GestureHandlerEvent<THandlerData>) => void)[] = [];
 
-      if (gesture.detectorCallbacks[key]) {
+      if (gesture?.detectorCallbacks[key]) {
         handlers.push(
           gesture.detectorCallbacks[key] as (
             e: GestureHandlerEvent<unknown>
@@ -105,7 +112,7 @@ export function NativeDetector<THandlerData, TConfig>({
         );
       }
 
-      logicMethods.current.forEach((ref) => {
+      virtualMethods.current.forEach((ref) => {
         const handler = ref.current?.[key];
         if (handler) {
           handlers.push(
@@ -116,21 +123,27 @@ export function NativeDetector<THandlerData, TConfig>({
 
       return handlers;
     },
-    [logicChildren, gesture.detectorCallbacks]
+    [virtualChildren, gesture?.detectorCallbacks]
   );
 
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedUpdateEvent')
   );
-  const reanimedStateChangeHandler = Reanimated?.useComposedEventHandler(
+  const reanimatedStateChangeHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedStateChange')
   );
   const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
     getHandlers('onReanimatedTouchEvent')
   );
 
+  ensureNativeDetectorComponent(NativeDetectorComponent);
+
+  if (gesture) {
+    configureRelations(gesture);
+  }
+
   return (
-    <DetectorContext.Provider value={{ register, unregister }}>
+    <DetectorContext value={{ register, unregister }}>
       <NativeDetectorComponent
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerStateChange={handleGestureEvent(
@@ -140,32 +153,36 @@ export function NativeDetector<THandlerData, TConfig>({
         onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerAnimatedEvent={
-          gesture.detectorCallbacks.onGestureHandlerAnimatedEvent
+          gesture?.detectorCallbacks.onGestureHandlerAnimatedEvent
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerTouchEvent={handleGestureEvent(
           'onGestureHandlerTouchEvent'
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedStateChange={reanimatedEventHandler}
+        onGestureHandlerReanimatedStateChange={
+          shouldUseReanimated ? reanimatedStateChangeHandler : undefined
+        }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedEvent={reanimedStateChangeHandler}
+        onGestureHandlerReanimatedEvent={
+          shouldUseReanimated ? reanimatedEventHandler : undefined
+        }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerReanimatedTouchEvent={reanimatedTouchEventHandler}
-        moduleId={globalThis._RNGH_MODULE_ID}
-        handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
-        style={styles.detector}
-        logicChildren={logicChildren}>
+        onGestureHandlerReanimatedTouchEvent={
+          shouldUseReanimated ? reanimatedTouchEventHandler : undefined
+        }
+        handlerTags={
+          gesture
+            ? isComposedGesture(gesture)
+              ? gesture.tags
+              : [gesture.tag]
+            : []
+        }
+        style={nativeDetectorStyles.detector}
+        virtualChildren={virtualChildren}
+        moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>
-    </DetectorContext.Provider>
+    </DetectorContext>
   );
 }
-
-const styles = StyleSheet.create({
-  detector: {
-    display: 'contents',
-    // TODO: remove, debug info only
-    backgroundColor: 'red',
-  },
-});

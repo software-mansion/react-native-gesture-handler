@@ -24,7 +24,7 @@ import {
 } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType, usesNativeOrLogicDetector } from '../../ActionType';
+import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
 import { tagMessage } from '../../utils';
 import {
   GestureStateChangeEvent,
@@ -401,7 +401,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (usesNativeOrLogicDetector(this.actionType)) {
+    if (usesNativeOrVirtualDetector(this.actionType)) {
       invokeNullableMethod(
         this.forReanimated
           ? onGestureHandlerReanimatedTouchEvent
@@ -426,7 +426,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerReanimatedStateChange,
     }: PropsRef = this.propsRef!.current;
 
-    const resultEvent: ResultEvent = !usesNativeOrLogicDetector(this.actionType)
+    const resultEvent: ResultEvent = !usesNativeOrVirtualDetector(
+      this.actionType
+    )
       ? this.transformEventData(newState, oldState)
       : this.lastSentState !== newState
         ? this.transformStateChangeEvent(newState, oldState)
@@ -446,7 +448,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       );
     }
     if (this.state === State.ACTIVE) {
-      if (!usesNativeOrLogicDetector(this.actionType)) {
+      if (!usesNativeOrVirtualDetector(this.actionType)) {
         (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
           undefined;
       }

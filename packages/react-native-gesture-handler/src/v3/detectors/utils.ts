@@ -5,6 +5,7 @@
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
+import { tagMessage } from '../../utils';
 import {
   isComposedGesture,
   prepareRelations,
@@ -149,3 +150,17 @@ export function configureRelations<THandlerData, TConfig>(
 
   RNGestureHandlerModule.flushOperations();
 }
+
+export function ensureNativeDetectorComponent(
+  NativeDetectorComponent: unknown
+): asserts NativeDetectorComponent {
+  if (!NativeDetectorComponent) {
+    throw new Error(
+      tagMessage(
+        'Gesture expects to run on the UI thread, but failed to create the Reanimated NativeDetector.'
+      )
+    );
+  }
+}
+
+export const EMPTY_SET = new Set<number>();

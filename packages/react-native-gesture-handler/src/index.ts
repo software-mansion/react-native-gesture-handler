@@ -51,7 +51,7 @@ export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
 export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
-export { GestureDetector } from './handlers/gestures/GestureDetector';
+export { GestureDetector as LegacyGestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export type { TapGestureType as LegacyTapGesture } from './handlers/gestures/tapGesture';
 export type { PanGestureType as LegacyPanGesture } from './handlers/gestures/panGesture';
@@ -170,10 +170,12 @@ export type {
 } from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
 
-export type { NativeDetectorProps } from './v3/NativeDetector/NativeDetector';
-export { NativeDetector } from './v3/NativeDetector/NativeDetector';
+export {
+  GestureDetector,
+  InterceptingGestureDetector,
+  GestureDetectorProps,
+} from './v3/detectors';
 
-export { LogicDetector } from './v3/LogicDetector';
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
 

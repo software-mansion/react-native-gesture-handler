@@ -1,10 +1,12 @@
 import { createContext, RefObject, use } from 'react';
-import { DetectorCallbacks, LogicChildren } from '../types';
+import { DetectorCallbacks, VirtualChildren } from '../../types';
 
 type DetectorContextType = {
   register: (
-    child: LogicChildren,
-    methods: RefObject<DetectorCallbacks<unknown>>
+    child: VirtualChildren,
+    methods: RefObject<DetectorCallbacks<unknown>>,
+    forReanimated: boolean | undefined,
+    forAnimated: boolean | undefined
   ) => void;
   unregister: (child: number, handlerTags: number[]) => void;
 };
@@ -14,7 +16,7 @@ export const DetectorContext = createContext<DetectorContextType | null>(null);
 export function useDetectorContext() {
   const ctx = use(DetectorContext);
   if (!ctx) {
-    throw new Error('Logic detector must be a descendant of a Native Detector');
+    return null;
   }
   return ctx;
 }

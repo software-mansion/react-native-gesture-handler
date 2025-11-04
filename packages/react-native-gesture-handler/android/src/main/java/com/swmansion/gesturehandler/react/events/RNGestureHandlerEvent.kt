@@ -20,7 +20,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     eventHandlerType: EventHandlerType,
   ) {
-    val view = if (GestureHandler.usesNativeOrLogicDetector(handler.actionType)) {
+    val view = if (GestureHandler.usesNativeOrVirtualDetector(handler.actionType)) {
       handler.viewForEvents
     } else {
       handler.view!!
@@ -39,7 +39,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
+  override fun getEventName() = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {
     if (eventHandlerType == EventHandlerType.ForAnimated) {
       NATIVE_DETECTOR_ANIMATED_EVENT_NAME
     } else if (eventHandlerType == EventHandlerType.ForReanimated) {
@@ -54,11 +54,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   }
 
   // Unfortunately getCoalescingKey is not considered when sending event to C++, therefore we have to disable coalescing in v3
-  override fun canCoalesce() = !GestureHandler.usesNativeOrLogicDetector(actionType)
+  override fun canCoalesce() = !GestureHandler.usesNativeOrVirtualDetector(actionType)
 
   override fun getCoalescingKey() = coalescingKey
 
-  override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
+  override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {
     createNativeEventData(dataBuilder!!)
   } else {
     createEventData(dataBuilder!!)
