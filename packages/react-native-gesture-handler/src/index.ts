@@ -95,12 +95,12 @@ export {
   TouchableWithoutFeedback,
 } from './components/touchables';
 export {
-  ScrollView,
-  Switch,
-  TextInput,
-  DrawerLayoutAndroid,
-  FlatList,
-  RefreshControl,
+  LegacyScrollView,
+  LegacySwitch,
+  LegacyTextInput,
+  LegacyDrawerLayoutAndroid,
+  LegacyFlatList,
+  LegacyRefreshControl,
 } from './components/GestureComponents';
 export { Text } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
