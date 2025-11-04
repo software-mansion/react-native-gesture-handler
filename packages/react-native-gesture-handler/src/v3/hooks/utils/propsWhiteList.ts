@@ -26,7 +26,11 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'touchAction',
 ]);
 
-const ExternalRelationsConfig = new Set<keyof ExternalRelations>([]);
+const ExternalRelationsConfig = new Set<keyof ExternalRelations>([
+  'simultaneousWithExternalGesture',
+  'requireExternalGestureToFail',
+  'blocksExternalGesture',
+]);
 
 export const allowedNativeProps = new Set<
   keyof CommonGestureConfig | keyof InternalConfigProps<unknown>
