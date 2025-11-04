@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { NativeWrapperProps } from './hooks/utils';
 import { useNative } from './hooks/gestures';
-import { NativeDetector } from './NativeDetector/NativeDetector';
+import { NativeDetector } from './detectors/NativeDetector';
 import type { NativeWrapperProperties } from './types/NativeWrapperType';
 import {
   NativeViewGestureConfig,
