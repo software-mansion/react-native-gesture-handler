@@ -57,7 +57,7 @@ export const ScrollView = (
     waitFor.push(requireExternalGestureToFail);
   }
 
-  if (refreshControlRef.current) {
+  if (refreshControlRef.current?.gestureRef) {
     waitFor.push(refreshControlRef.current.gestureRef);
   }
 
@@ -132,7 +132,7 @@ export const FlatList = ((props) => {
     waitFor.push(requireExternalGestureToFail);
   }
 
-  if (refreshControlRef.current) {
+  if (refreshControlRef.current?.gestureRef) {
     waitFor.push(refreshControlRef.current.gestureRef);
   }
 
