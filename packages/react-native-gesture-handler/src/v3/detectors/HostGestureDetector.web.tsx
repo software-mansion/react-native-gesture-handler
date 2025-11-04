@@ -53,7 +53,8 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       if (
         RNGestureHandlerModule.getGestureHandlerNode(
           tag
-        ).shouldAttachGestureToChildView()
+        ).shouldAttachGestureToChildView() &&
+        actionType === ActionType.NATIVE_DETECTOR
       ) {
         RNGestureHandlerModule.attachGestureHandler(
           tag,
@@ -110,6 +111,14 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     );
 
     props.virtualChildren?.forEach((child) => {
+      virtualChildrenToDetach.delete(child.viewTag);
+    });
+
+    virtualChildrenToDetach.forEach((tag) => {
+      detachHandlers(EMPTY_HANDLERS, attachedVirtualHandlers.current.get(tag)!);
+    });
+
+    props.virtualChildren?.forEach((child) => {
       if (child.viewRef.current == null) {
         // We must check whether viewRef is  not null as otherwise we get an error when intercepting gesture detector
         // switches its component based on whether animated/reanimated events should run.
@@ -118,7 +127,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
       if (!attachedVirtualHandlers.current.has(child.viewTag)) {
         attachedVirtualHandlers.current.set(child.viewTag, new Set());
       }
-      virtualChildrenToDetach.delete(child.viewTag);
 
       const currentHandlerTags = new Set(child.handlerTags);
       detachHandlers(
@@ -133,10 +141,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         attachedVirtualHandlers.current.get(child.viewTag)!,
         ActionType.VIRTUAL_DETECTOR
       );
-    });
-
-    virtualChildrenToDetach.forEach((tag) => {
-      detachHandlers(EMPTY_HANDLERS, attachedVirtualHandlers.current.get(tag)!);
     });
   }, [props.virtualChildren]);
 

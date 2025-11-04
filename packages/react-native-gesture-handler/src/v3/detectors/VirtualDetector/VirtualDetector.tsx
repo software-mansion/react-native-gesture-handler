@@ -23,22 +23,34 @@ export function VirtualDetector<THandlerData, TConfig>(
 
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
-  const virtualMethods = useRef(props.gesture.detectorCallbacks);
-  const handleRef = useCallback((node: any) => {
-    viewRef.current = node;
-    if (!node) {
-      return;
-    }
 
-    if (Platform.OS === 'web') {
-      setViewTag(node);
-    } else {
-      const tag = findNodeHandle(node);
+  const virtualMethods = useRef(props.gesture.detectorCallbacks);
+
+  const handleRef = useCallback(
+    (node: any) => {
+      viewRef.current = node;
+      if (!node) {
+        return;
+      }
+
+      const tag = Platform.OS === 'web' ? node : findNodeHandle(node);
+
       if (tag != null) {
         setViewTag(tag);
       }
-    }
-  }, []);
+
+      return () => {
+        if (tag != null) {
+          const handlerTags = isComposedGesture(props.gesture)
+            ? props.gesture.tags
+            : [props.gesture.tag];
+
+          unregister(tag, handlerTags);
+        }
+      };
+    },
+    [props.children]
+  );
 
   useEffect(() => {
     virtualMethods.current = props.gesture.detectorCallbacks;

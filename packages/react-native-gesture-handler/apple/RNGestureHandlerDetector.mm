@@ -173,7 +173,7 @@
   for (const int tag : handlerTags) {
     [handlersToDetach removeObject:@(tag)];
     if (![attachedHandlers containsObject:@(tag)]) {
-      if ([self shouldAttachGestureToSubview:@(tag)]) {
+      if ([self shouldAttachGestureToSubview:@(tag)] && actionType == RNGestureHandlerActionTypeNativeDetector) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
         [_nativeHandlers addObject:@(tag)];
@@ -238,22 +238,24 @@
   }
 
   for (const auto &child : virtualChildren) {
-    if (_attachedVirtualHandlers.find(child.viewTag) == _attachedVirtualHandlers.end()) {
-      _attachedVirtualHandlers[child.viewTag] = [NSMutableSet set];
-    }
-
     [virtualChildrenToDetach removeObject:@(child.viewTag)];
-
-    [self attachHandlers:child.handlerTags
-              actionType:RNGestureHandlerActionTypeVirtualDetector
-                 viewTag:child.viewTag
-        attachedHandlers:_attachedVirtualHandlers[child.viewTag]];
   }
 
   for (const NSNumber *tag : virtualChildrenToDetach) {
     for (id handlerTag : _attachedVirtualHandlers[tag.intValue]) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
+    _attachedVirtualHandlers.erase(tag.intValue);
+  }
+
+  for (const auto &child : virtualChildren) {
+    if (_attachedVirtualHandlers.find(child.viewTag) == _attachedVirtualHandlers.end()) {
+      _attachedVirtualHandlers[child.viewTag] = [NSMutableSet set];
+    }
+    [self attachHandlers:child.handlerTags
+              actionType:RNGestureHandlerActionTypeVirtualDetector
+                 viewTag:child.viewTag
+        attachedHandlers:_attachedVirtualHandlers[child.viewTag]];
   }
 }
 
