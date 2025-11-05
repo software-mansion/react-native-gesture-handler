@@ -2,10 +2,13 @@ import React from 'react';
 import { SharedValue } from 'react-native-reanimated';
 import { StyleProp, ViewStyle } from 'react-native';
 import { Gesture } from '../../types';
-import { PanGestureHandlerProps } from '../../../handlers/PanGestureHandler';
+import { NativeDetectorProps } from '../../detectors/common';
+import { PanGestureConfig } from '../../hooks/gestures';
+import { PanHandlerData } from '../../hooks/gestures/pan/usePan';
+import { HitSlop } from '../../../handlers/gestureHandlerCommon';
 
 type SwipeableExcludes = Exclude<
-  keyof PanGestureHandlerProps,
+  keyof NativeDetectorProps<PanGestureConfig, PanHandlerData>,
   'onGestureEvent' | 'onHandlerStateChange'
 >;
 
@@ -15,12 +18,14 @@ export enum SwipeDirection {
 }
 
 export interface SwipeableProps
-  extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
+  extends Pick<
+    NativeDetectorProps<PanGestureConfig, PanHandlerData>,
+    SwipeableExcludes
+  > {
   /**
    *
    */
   ref?: React.RefObject<SwipeableMethods | null>;
-
   /**
    * Enables two-finger gestures on supported devices, for example iPads with
    * trackpads. If not enabled the gesture will require click + drag, with
@@ -189,6 +194,12 @@ export interface SwipeableProps
    * used with the swipeable's gesture handler.
    */
   blocksExternalGesture?: Gesture | Gesture[];
+
+  testID?: string;
+
+  enabled?: boolean;
+
+  hitSlop?: HitSlop;
 }
 
 export interface SwipeableMethods {
