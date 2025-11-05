@@ -2,7 +2,7 @@ import React from 'react';
 import type { PanGestureHandlerProps } from '../../handlers/PanGestureHandler';
 import { SharedValue } from 'react-native-reanimated';
 import { StyleProp, ViewStyle } from 'react-native';
-import { RelationPropType } from '../utils';
+import { Gesture } from '../../v3/types';
 
 type SwipeableExcludes = Exclude<
   keyof PanGestureHandlerProps,
@@ -176,19 +176,19 @@ export interface SwipeableProps
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  simultaneousWithExternalGesture?: RelationPropType;
+  simultaneousWithExternalGesture?: Gesture | Gesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  requireExternalGestureToFail?: RelationPropType;
+  requireExternalGestureToFail?: Gesture | Gesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  blocksExternalGesture?: RelationPropType;
+  blocksExternalGesture?: Gesture | Gesture[];
 }
 
 export interface SwipeableMethods {
