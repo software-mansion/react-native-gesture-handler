@@ -157,6 +157,7 @@ export {
 
 export * from './v3/hooks/useGesture';
 export * from './v3/hooks/relations';
+export * from './v3/components';
 
 export type { ComposedGesture } from './v3/types';
 export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
