@@ -90,7 +90,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     for (tag in newHandlers) {
       handlersToDetach.remove(tag)
       if (!attachedHandlers.contains(tag)) {
-        if (shouldAttachGestureToChildView(tag)) {
+        if (shouldAttachGestureToChildView(tag) && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
           // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
           nativeHandlers.add(tag)
@@ -122,25 +122,30 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val virtualChildrenToDetach = attachedVirtualHandlers.keys.toMutableSet()
 
     for (child in virtualChildrenToAttach) {
+      virtualChildrenToDetach.remove(child.viewTag)
+    }
+
+    val registry = RNGestureHandlerModule.registries[moduleId]
+      ?: throw Exception("Tried to access a non-existent registry")
+
+    for (child in virtualChildrenToDetach) {
+      for (tag in attachedVirtualHandlers[child]!!) {
+        registry.detachHandler(tag)
+      }
+      attachedVirtualHandlers.remove(tag)
+    }
+
+    for (child in virtualChildrenToAttach) {
       if (!attachedVirtualHandlers.containsKey(child.viewTag)) {
         attachedVirtualHandlers[child.viewTag] = mutableSetOf()
       }
 
-      virtualChildrenToDetach.remove(child.viewTag)
       attachHandlers(
         child.handlerTags,
         child.viewTag,
         GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR,
         attachedVirtualHandlers[child.viewTag]!!,
       )
-    }
-
-    val registry = RNGestureHandlerModule.registries[moduleId]
-      ?: throw Exception("Tried to access a non-existent registry")
-
-    for (tag in virtualChildrenToDetach) {
-      registry.detachHandler(tag)
-      attachedVirtualHandlers.remove(tag)
     }
   }
 
