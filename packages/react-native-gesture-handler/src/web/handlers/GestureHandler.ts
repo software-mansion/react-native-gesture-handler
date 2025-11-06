@@ -347,9 +347,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected onPointerEnter(event: AdaptedEvent): void {
     this.tryToSendTouchEvent(event);
   }
-  protected onPointerCancel(event: AdaptedEvent): void {
-    this.tryToSendTouchEvent(event);
-
+  protected onPointerCancel(_event: AdaptedEvent): void {
+    // No need to send a cancel touch event explicitly here. `cancel` will
+    // handle cancelling all tracked touches if the handler expects pointer data.
     this.cancel();
     this.reset();
   }
