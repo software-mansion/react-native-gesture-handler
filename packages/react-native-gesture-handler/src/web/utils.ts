@@ -282,7 +282,7 @@ export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
 export function isRNSVGNode(node: any) {
   // If `ref` has `rngh` field, it means that component comes from Gesture Handler. This is a special case for
   // `Text` component, which is present in `RNSVGElements` set, yet we don't want to treat it as SVG.
-  if (node.ref?.rngh) {
+  if (node.props.ref?.rngh) {
     return false;
   }
 
