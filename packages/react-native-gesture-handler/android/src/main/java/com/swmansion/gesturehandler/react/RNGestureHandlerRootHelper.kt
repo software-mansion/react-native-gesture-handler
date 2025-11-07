@@ -36,6 +36,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       wrappedView,
       registry,
       RNViewConfigurationHelper(),
+      rootView,
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
@@ -94,7 +95,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         action = MotionEvent.ACTION_CANCEL
       }
       if (rootView is RootView) {
-        rootView.onChildEndedNativeGesture(rootView, event)
+        rootView.onChildStartedNativeGesture(rootView, event)
       }
       event.recycle()
     }
