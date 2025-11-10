@@ -62,7 +62,7 @@ class GestureHandlerOrchestrator(
       action == MotionEvent.ACTION_CANCEL ||
       action == MotionEvent.ACTION_HOVER_EXIT
     ) {
-      if (awaitingHandlers.isEmpty() && rootView is RootView) {
+      if (gestureHandlers.isEmpty() && rootView is RootView) {
         rootView.onChildEndedNativeGesture(rootView, event)
       }
     }
