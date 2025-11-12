@@ -13,8 +13,6 @@
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 
-#import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
-
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
 @end
@@ -258,7 +256,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
 
-  self.hostDetectorTag = nil;
   self.virtualViewTag = nil;
 
   [self unbindManualActivation];
@@ -391,22 +388,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIView *)findViewForEvents
 {
-  RNGHUIView *view = self.recognizer.view;
-
-  if ([self isKindOfClass:[RNNativeViewGestureHandler class]] &&
-      _actionType == RNGestureHandlerActionTypeNativeDetector) {
-    if ([view.superview conformsToProtocol:@protocol(RCTRNGestureHandlerDetectorViewProtocol)]) {
-      return view.superview;
-    }
-
-    if ([view.superview isKindOfClass:[RCTViewComponentView class]]) {
-      return view.superview.superview;
-    }
-
-    return view.superview;
-  }
-
-  return view;
+  return _actionType == RNGestureHandlerActionTypeNativeDetector ||
+          _actionType == RNGestureHandlerActionTypeVirtualDetector
+      ? self.hostDetectorView
+      : self.recognizer.view;
 }
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event

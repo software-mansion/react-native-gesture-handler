@@ -46,6 +46,7 @@
 - (void)detachHandlerWithTag:(NSNumber *)handlerTag
 {
   RNGestureHandler *handler = _handlers[handlerTag];
+  handler.hostDetectorView = nil;
   [handler unbindFromView];
 }
 

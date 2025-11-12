@@ -148,11 +148,6 @@
     [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
     [control addTarget:self action:@selector(handleDragEnter:forEvent:) forControlEvents:UIControlEventTouchDragEnter];
     [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
-
-    if (self.actionType == RNGestureHandlerActionTypeNativeDetector) {
-      [view addGestureRecognizer:_recognizer];
-    }
-
   } else {
     [super bindToView:view];
   }

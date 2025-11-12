@@ -295,15 +295,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                                               // but results in a compilation error.
 {
   switch (actionType) {
-    case RNGestureHandlerActionTypeVirtualDetector: {
-      NSNumber *hostDetectorTag = [_registry handlerWithTag:event.handlerTag].hostDetectorTag;
-      detectorView = [self viewForReactTag:hostDetectorTag];
-      [self sendNativeOrVirtualEvent:event
-                      withActionType:actionType
-                      forHandlerType:eventHandlerType
-                             forView:detectorView];
-      break;
-    }
+    case RNGestureHandlerActionTypeVirtualDetector:
     case RNGestureHandlerActionTypeNativeDetector: {
       [self sendNativeOrVirtualEvent:event
                       withActionType:actionType
