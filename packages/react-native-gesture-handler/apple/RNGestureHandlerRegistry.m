@@ -43,10 +43,20 @@
   [handler bindToView:view];
 }
 
+- (void)attachHandlerWithTag:(NSNumber *)handlerTag
+                      toView:(RNGHUIView *)view
+              withActionType:(RNGestureHandlerActionType)actionType
+            withHostDetector:(nonnull RNGHUIView *)hostDetector
+{
+  [self attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
+
+  RNGestureHandler *handler = _handlers[handlerTag];
+  handler.hostDetectorView = hostDetector;
+}
+
 - (void)detachHandlerWithTag:(NSNumber *)handlerTag
 {
   RNGestureHandler *handler = _handlers[handlerTag];
-  handler.hostDetectorView = nil;
   [handler unbindFromView];
 }
 

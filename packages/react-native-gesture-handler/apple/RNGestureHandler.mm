@@ -256,6 +256,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
 
+  self.hostDetectorView = nil;
   self.virtualViewTag = nil;
 
   [self unbindManualActivation];
