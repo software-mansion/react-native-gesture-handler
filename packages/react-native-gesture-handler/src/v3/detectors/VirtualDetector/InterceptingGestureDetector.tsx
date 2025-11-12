@@ -114,14 +114,28 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     [virtualChildren, gesture?.detectorCallbacks]
   );
 
+  const reanimatedUpdateEvents = useMemo(
+    () => getHandlers('onReanimatedUpdateEvent'),
+    [getHandlers]
+  );
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
-    getHandlers('onReanimatedUpdateEvent')
+    reanimatedUpdateEvents
+  );
+
+  const reanimatedStateChangeEvents = useMemo(
+    () => getHandlers('onReanimatedStateChange'),
+    [getHandlers]
   );
   const reanimatedStateChangeHandler = Reanimated?.useComposedEventHandler(
-    getHandlers('onReanimatedStateChange')
+    reanimatedStateChangeEvents
+  );
+
+  const reanimatedTouchEvents = useMemo(
+    () => getHandlers('onReanimatedTouchEvent'),
+    [getHandlers]
   );
   const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
-    getHandlers('onReanimatedTouchEvent')
+    reanimatedTouchEvents
   );
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
