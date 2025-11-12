@@ -1,7 +1,7 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import HostGestureDetector from '../HostGestureDetector';
 import {
-  VirtualChildren,
+  VirtualChild,
   GestureHandlerEvent,
   DetectorCallbacks,
 } from '../../types';
@@ -21,17 +21,24 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
-  const [virtualChildren, setVirtualChildren] = useState<VirtualChildren[]>([]);
+  const [virtualChildren, setVirtualChildren] = useState<VirtualChild[]>([]);
 
-  const virtualMethods = useRef<Map<number, DetectorCallbacks<unknown>>>(
-    new Map()
+  const shouldUseReanimated = useMemo(
+    () =>
+      virtualChildren.reduce(
+        (acc, child) => acc || child.forReanimated,
+        gesture?.config.shouldUseReanimatedDetector ?? false
+      ),
+    [virtualChildren, gesture]
   );
 
-  const [shouldUseReanimated, setShouldUseReanimated] = useState(
-    gesture ? gesture.config.shouldUseReanimatedDetector : false
-  );
-  const [dispatchesAnimatedEvents, setDispatchesAnimatedEvents] = useState(
-    gesture ? gesture.config.dispatchesAnimatedEvents : false
+  const dispatchesAnimatedEvents = useMemo(
+    () =>
+      virtualChildren.reduce(
+        (acc, child) => acc || child.forAnimated,
+        gesture?.config.dispatchesAnimatedEvents ?? false
+      ),
+    [virtualChildren, gesture]
   );
 
   const NativeDetectorComponent = dispatchesAnimatedEvents
@@ -40,41 +47,20 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
-  const register = useCallback(
-    (
-      child: VirtualChildren,
-      methods: DetectorCallbacks<unknown>,
-      forReanimated: boolean | undefined,
-      forAnimated: boolean | undefined
-    ) => {
-      // console.log('[IGD] Registering virtual detector', child.viewTag, child.handlerTags);
-      setShouldUseReanimated(!!forReanimated);
-      setDispatchesAnimatedEvents(!!forAnimated);
+  const register = useCallback((child: VirtualChild) => {
+    setVirtualChildren((prev) => {
+      const index = prev.findIndex((c) => c.viewTag === child.viewTag);
+      if (index !== -1) {
+        const updated = [...prev];
+        updated[index] = child;
+        return updated;
+      }
 
-      setVirtualChildren((prev) => {
-        const index = prev.findIndex((c) => c.viewTag === child.viewTag);
-        if (index !== -1) {
-          const updated = [...prev];
-          updated[index] = child;
-          return updated;
-        }
-
-        return [...prev, child];
-      });
-
-      child.handlerTags.forEach((tag) => {
-        virtualMethods.current.set(tag, methods);
-      });
-    },
-    []
-  );
-
-  const unregister = useCallback((childTag: number, handlerTags: number[]) => {
-    // console.log('[IGD] Unregistering virtual detector', childTag, handlerTags);
-    handlerTags.forEach((tag) => {
-      virtualMethods.current.delete(tag);
+      return [...prev, child];
     });
+  }, []);
 
+  const unregister = useCallback((childTag: number) => {
     setVirtualChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
   }, []);
 
@@ -93,8 +79,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         gesture.detectorCallbacks[key](e);
       }
 
-      virtualMethods.current.forEach((callbacks) => {
-        const method = callbacks[key];
+      virtualChildren.forEach((child) => {
+        const method = child.methods[key];
         if (method) {
           method(e);
         }
@@ -114,8 +100,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         );
       }
 
-      virtualMethods.current.forEach((callbacks) => {
-        const handler = callbacks[key];
+      virtualChildren.forEach((child) => {
+        const handler = child.methods[key];
         if (handler) {
           handlers.push(
             handler as (e: GestureHandlerEvent<THandlerData>) => void

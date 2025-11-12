@@ -6,7 +6,7 @@ import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import { NativeDetectorProps } from '../common';
 import { configureRelations } from '../utils';
 import { tagMessage } from '../../../utils';
-import { DetectorCallbacks } from '../../types';
+import { DetectorCallbacks, VirtualChild } from '../../types';
 
 export function VirtualDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
@@ -52,26 +52,20 @@ export function VirtualDetector<THandlerData, TConfig>(
       ? props.gesture.tags
       : [props.gesture.tag];
 
-    const virtualProps = {
+    const virtualChild: VirtualChild = {
       viewTag,
       handlerTags,
+      methods: props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
+      forReanimated: !!props.gesture.config.shouldUseReanimatedDetector,
+      forAnimated: !!props.gesture.config.dispatchesAnimatedEvents,
+      // TODO: why do we need this?
+      viewRef: Platform.OS === 'web' ? viewRef.current : undefined,
     };
 
-    if (Platform.OS === 'web') {
-      Object.assign(virtualProps, { viewRef });
-    }
-
-    console.log('[VD] Registering virtual detector', viewTag, handlerTags);
-    register(
-      virtualProps,
-      props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
-      props.gesture.config.shouldUseReanimatedDetector,
-      props.gesture.config.dispatchesAnimatedEvents
-    );
+    register(virtualChild);
 
     return () => {
-      console.log('[VD] Unregistering virtual detector', viewTag, handlerTags);
-      unregister(viewTag, handlerTags);
+      unregister(viewTag);
     };
   }, [viewTag, props.gesture, register, unregister]);
 

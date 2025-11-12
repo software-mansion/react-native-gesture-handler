@@ -1,14 +1,9 @@
 import { createContext, use } from 'react';
-import { DetectorCallbacks, VirtualChildren } from '../../types';
+import { VirtualChild } from '../../types';
 
 type DetectorContextType = {
-  register: (
-    child: VirtualChildren,
-    methods: DetectorCallbacks<unknown>,
-    forReanimated: boolean | undefined,
-    forAnimated: boolean | undefined
-  ) => void;
-  unregister: (child: number, handlerTags: number[]) => void;
+  register: (child: VirtualChild) => void;
+  unregister: (child: number) => void;
 };
 
 export const DetectorContext = createContext<DetectorContextType | null>(null);
