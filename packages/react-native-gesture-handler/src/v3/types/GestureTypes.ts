@@ -22,12 +22,23 @@ export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
   InternalConfigProps<THandlerData> &
   CommonGestureConfig;
 
+export type BaseDiscreteGestureConfig<THandlerData, TConfig> = Omit<
+  BaseGestureConfig<THandlerData, TConfig>,
+  'onUpdate'
+>;
+
 export type SingleGesture<THandlerData, TConfig> = {
   tag: number;
   type: SingleGestureName;
   config: BaseGestureConfig<THandlerData, TConfig>;
   detectorCallbacks: DetectorCallbacks<THandlerData>;
   gestureRelations: GestureRelations;
+};
+
+export type DiscreteSingleGesture<THandlerData, TConfig> = {
+  [K in keyof SingleGesture<THandlerData, TConfig>]: K extends 'config'
+    ? Omit<SingleGesture<THandlerData, TConfig>[K], 'onUpdate'>
+    : SingleGesture<THandlerData, TConfig>[K];
 };
 
 export type ComposedGesture = {

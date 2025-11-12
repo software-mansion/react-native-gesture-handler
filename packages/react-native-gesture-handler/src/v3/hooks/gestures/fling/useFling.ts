@@ -1,5 +1,5 @@
 import {
-  BaseGestureConfig,
+  BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
   SingleGesture,
   SingleGestureName,
@@ -20,7 +20,7 @@ type FlingHandlerData = {
 
 type FlingGestureProperties = WithSharedValue<FlingGestureNativeProperties>;
 
-type FlingGestureInternalConfig = BaseGestureConfig<
+type FlingGestureInternalConfig = BaseDiscreteGestureConfig<
   FlingHandlerData,
   FlingGestureProperties
 >;
@@ -28,19 +28,20 @@ type FlingGestureInternalConfig = BaseGestureConfig<
 export type FlingGestureConfig =
   ExcludeInternalConfigProps<FlingGestureInternalConfig>;
 
-export function useFling(config: FlingGestureConfig) {
-  const flingConfig = cloneConfig<FlingHandlerData, FlingGestureProperties>(
-    config
-  );
-
-  return useGesture(SingleGestureName.Fling, flingConfig);
-}
-
 export type FlingGestureStateChangeEvent =
   GestureStateChangeEvent<FlingHandlerData>;
+
 export type FlingGestureUpdateEvent = GestureUpdateEvent<FlingHandlerData>;
 
 export type FlingGesture = SingleGesture<
   FlingHandlerData,
   FlingGestureProperties
 >;
+
+export function useFling(config: FlingGestureConfig): FlingGesture {
+  const flingConfig = cloneConfig<FlingHandlerData, FlingGestureProperties>(
+    config
+  );
+
+  return useGesture(SingleGestureName.Fling, flingConfig);
+}

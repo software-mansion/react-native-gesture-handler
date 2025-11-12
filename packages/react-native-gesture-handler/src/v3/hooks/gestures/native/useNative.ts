@@ -1,5 +1,5 @@
 import {
-  BaseGestureConfig,
+  BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
   SingleGesture,
   SingleGestureName,
@@ -18,7 +18,7 @@ type NativeViewHandlerData = {
 type NativeViewGestureProperties =
   WithSharedValue<NativeGestureNativeProperties>;
 
-type NativeViewGestureInternalConfig = BaseGestureConfig<
+type NativeViewGestureInternalConfig = BaseDiscreteGestureConfig<
   NativeViewHandlerData,
   NativeViewGestureProperties
 >;
@@ -26,17 +26,9 @@ type NativeViewGestureInternalConfig = BaseGestureConfig<
 export type NativeViewGestureConfig =
   ExcludeInternalConfigProps<NativeViewGestureInternalConfig>;
 
-export function useNative(config: NativeViewGestureConfig) {
-  const nativeConfig = cloneConfig<
-    NativeViewHandlerData,
-    NativeViewGestureProperties
-  >(config);
-
-  return useGesture(SingleGestureName.Native, nativeConfig);
-}
-
 export type NativeGestureStateChangeEvent =
   GestureStateChangeEvent<NativeViewHandlerData>;
+
 export type NativeGestureUpdateEvent =
   GestureUpdateEvent<NativeViewHandlerData>;
 
@@ -44,3 +36,12 @@ export type NativeGesture = SingleGesture<
   NativeViewHandlerData,
   NativeViewGestureProperties
 >;
+
+export function useNative(config: NativeViewGestureConfig): NativeGesture {
+  const nativeConfig = cloneConfig<
+    NativeViewHandlerData,
+    NativeViewGestureProperties
+  >(config);
+
+  return useGesture(SingleGestureName.Native, nativeConfig);
+}
