@@ -134,8 +134,6 @@ export default class TapGestureHandler extends GestureHandler {
     this.lastY = event.y;
 
     this.updateState(event);
-
-    this.tryToSendTouchEvent(event);
   }
 
   protected override onPointerAdd(event: AdaptedEvent): void {
