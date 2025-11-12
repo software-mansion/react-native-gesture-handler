@@ -29,6 +29,16 @@ type PinchGestureInternalConfig = BaseGestureConfig<
 export type PinchGestureConfig =
   ExcludeInternalConfigProps<PinchGestureInternalConfig>;
 
+export type PinchGestureStateChangeEvent =
+  GestureStateChangeEvent<PinchHandlerData>;
+
+export type PinchGestureUpdateEvent = GestureUpdateEvent<PinchHandlerData>;
+
+export type PinchGesture = SingleGesture<
+  PinchHandlerData,
+  PinchGestureProperties
+>;
+
 function diffCalculator(
   current: HandlerData<PinchHandlerData>,
   previous: HandlerData<PinchHandlerData> | null
@@ -39,7 +49,7 @@ function diffCalculator(
   };
 }
 
-export function usePinch(config: PinchGestureConfig) {
+export function usePinch(config: PinchGestureConfig): PinchGesture {
   const pinchConfig = cloneConfig<PinchHandlerData, PinchGestureProperties>(
     config
   );
@@ -48,12 +58,3 @@ export function usePinch(config: PinchGestureConfig) {
 
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }
-
-export type PinchGestureStateChangeEvent =
-  GestureStateChangeEvent<PinchHandlerData>;
-export type PinchGestureUpdateEvent = GestureUpdateEvent<PinchHandlerData>;
-
-export type PinchGesture = SingleGesture<
-  PinchHandlerData,
-  PinchGestureProperties
->;
