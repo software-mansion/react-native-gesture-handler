@@ -108,6 +108,7 @@
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
 - (nonnull RNGHUIView *)findViewForEvents;
 - (BOOL)wantsToAttachDirectlyToView;
+- (BOOL)usesNativeOrVirtualDetector;
 
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;
