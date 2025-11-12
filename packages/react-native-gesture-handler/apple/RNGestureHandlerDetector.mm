@@ -5,8 +5,6 @@
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 
-#import "RNGestureHandlerButtonComponentView.h"
-
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
