@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
 import { useDetectorContext } from './useDetectorContext';
@@ -28,8 +28,6 @@ export function VirtualDetector<THandlerData, TConfig>(
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
 
-  const virtualMethods = useRef(props.gesture.detectorCallbacks);
-
   const handleRef = useCallback(
     (node: any) => {
       viewRef.current = node;
@@ -44,10 +42,6 @@ export function VirtualDetector<THandlerData, TConfig>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.children]
   );
-
-  useEffect(() => {
-    virtualMethods.current = props.gesture.detectorCallbacks;
-  }, [props.gesture.detectorCallbacks]);
 
   useEffect(() => {
     if (viewTag === -1) {
@@ -67,14 +61,16 @@ export function VirtualDetector<THandlerData, TConfig>(
       Object.assign(virtualProps, { viewRef });
     }
 
+    console.log('[VD] Registering virtual detector', viewTag, handlerTags);
     register(
       virtualProps,
-      virtualMethods as RefObject<DetectorCallbacks<unknown>>,
+      props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
       props.gesture.config.shouldUseReanimatedDetector,
       props.gesture.config.dispatchesAnimatedEvents
     );
 
     return () => {
+      console.log('[VD] Unregistering virtual detector', viewTag, handlerTags);
       unregister(viewTag, handlerTags);
     };
   }, [viewTag, props.gesture, register, unregister]);

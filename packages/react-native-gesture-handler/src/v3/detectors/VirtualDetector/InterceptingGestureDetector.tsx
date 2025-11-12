@@ -1,4 +1,4 @@
-import React, { RefObject, useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import HostGestureDetector from '../HostGestureDetector';
 import {
   VirtualChildren,
@@ -23,9 +23,9 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
   const [virtualChildren, setVirtualChildren] = useState<VirtualChildren[]>([]);
 
-  const virtualMethods = useRef<
-    Map<number, RefObject<DetectorCallbacks<unknown>>>
-  >(new Map());
+  const virtualMethods = useRef<Map<number, DetectorCallbacks<unknown>>>(
+    new Map()
+  );
 
   const [shouldUseReanimated, setShouldUseReanimated] = useState(
     gesture ? gesture.config.shouldUseReanimatedDetector : false
@@ -43,10 +43,11 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   const register = useCallback(
     (
       child: VirtualChildren,
-      methods: RefObject<DetectorCallbacks<unknown>>,
+      methods: DetectorCallbacks<unknown>,
       forReanimated: boolean | undefined,
       forAnimated: boolean | undefined
     ) => {
+      // console.log('[IGD] Registering virtual detector', child.viewTag, child.handlerTags);
       setShouldUseReanimated(!!forReanimated);
       setDispatchesAnimatedEvents(!!forAnimated);
 
@@ -69,6 +70,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   );
 
   const unregister = useCallback((childTag: number, handlerTags: number[]) => {
+    // console.log('[IGD] Unregistering virtual detector', childTag, handlerTags);
     handlerTags.forEach((tag) => {
       virtualMethods.current.delete(tag);
     });
@@ -91,8 +93,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         gesture.detectorCallbacks[key](e);
       }
 
-      virtualMethods.current.forEach((ref) => {
-        const method = ref.current?.[key];
+      virtualMethods.current.forEach((callbacks) => {
+        const method = callbacks[key];
         if (method) {
           method(e);
         }
@@ -112,8 +114,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         );
       }
 
-      virtualMethods.current.forEach((ref) => {
-        const handler = ref.current?.[key];
+      virtualMethods.current.forEach((callbacks) => {
+        const handler = callbacks[key];
         if (handler) {
           handlers.push(
             handler as (e: GestureHandlerEvent<THandlerData>) => void
