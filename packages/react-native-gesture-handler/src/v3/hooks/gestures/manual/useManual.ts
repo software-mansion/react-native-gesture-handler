@@ -18,16 +18,9 @@ type ManualGestureInternalConfig = BaseGestureConfig<
   ManualHandlerData,
   ManualGestureProperties
 >;
+
 export type ManualGestureConfig =
   ExcludeInternalConfigProps<ManualGestureInternalConfig>;
-
-export function useManual(config: ManualGestureConfig) {
-  const manualConfig = cloneConfig<ManualHandlerData, ManualGestureProperties>(
-    config
-  );
-
-  return useGesture(SingleGestureName.Manual, manualConfig);
-}
 
 export type ManualGestureStateChangeEvent =
   GestureStateChangeEvent<ManualHandlerData>;
@@ -37,3 +30,11 @@ export type ManualGesture = SingleGesture<
   ManualHandlerData,
   ManualGestureProperties
 >;
+
+export function useManual(config: ManualGestureConfig): ManualGesture {
+  const manualConfig = cloneConfig<ManualHandlerData, ManualGestureProperties>(
+    config
+  );
+
+  return useGesture(SingleGestureName.Manual, manualConfig);
+}
