@@ -1,10 +1,4 @@
-import {
-  useMemo,
-  useCallback,
-  useImperativeHandle,
-  ForwardedRef,
-  useState,
-} from 'react';
+import { useMemo, useCallback, useImperativeHandle, ForwardedRef } from 'react';
 import { LayoutChangeEvent, View, I18nManager, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -70,7 +64,7 @@ const Swipeable = (props: SwipeableProps) => {
     ...remainingProps
   } = props;
 
-  const [shouldEnableTap, setShouldEnableTap] = useState(false);
+  const shouldEnableTap = useSharedValue<boolean>(false);
   const rowState = useSharedValue<number>(0);
 
   const userDrag = useSharedValue<number>(0);
@@ -245,7 +239,7 @@ const Swipeable = (props: SwipeableProps) => {
 
       rowState.value = Math.sign(toValue);
 
-      runOnJS(setShouldEnableTap)(rowState.value !== 0);
+      shouldEnableTap.value = rowState.value !== 0;
     },
     [
       rowState,
