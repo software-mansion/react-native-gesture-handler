@@ -11,6 +11,10 @@ import { DetectorCallbacks } from '../../types';
 export function VirtualDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig>
 ) {
+  // Don't memoize virtual detectors to be able to listen to changes in children
+  // TODO: replace with MutationObserver when it rolls out in React Native
+  'use no memo';
+
   const context = useDetectorContext();
   if (!context) {
     throw new Error(
@@ -29,26 +33,15 @@ export function VirtualDetector<THandlerData, TConfig>(
   const handleRef = useCallback(
     (node: any) => {
       viewRef.current = node;
-      if (!node) {
-        return;
+      if (node) {
+        const tag: number = Platform.OS === 'web' ? node : findNodeHandle(node);
+        setViewTag(tag ?? -1);
+      } else {
+        setViewTag(-1);
       }
-
-      const tag = Platform.OS === 'web' ? node : findNodeHandle(node);
-
-      if (tag != null) {
-        setViewTag(tag);
-      }
-
-      return () => {
-        if (tag != null) {
-          const handlerTags = isComposedGesture(props.gesture)
-            ? props.gesture.tags
-            : [props.gesture.tag];
-
-          unregister(tag, handlerTags);
-        }
-      };
     },
+    // Invalid dependency array to change the function when children change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.children]
   );
 
