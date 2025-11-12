@@ -37,6 +37,16 @@ type HoverGestureInternalConfig = BaseGestureConfig<
 export type HoverGestureConfig =
   ExcludeInternalConfigProps<HoverGestureInternalConfig>;
 
+export type HoverGestureStateChangeEvent =
+  GestureStateChangeEvent<HoverHandlerData>;
+
+export type HoverGestureUpdateEvent = GestureUpdateEvent<HoverHandlerData>;
+
+export type HoverGesture = SingleGesture<
+  HoverHandlerData,
+  HoverGestureProperties
+>;
+
 function diffCalculator(
   current: HandlerData<HoverHandlerData>,
   previous: HandlerData<HoverHandlerData> | null
@@ -48,7 +58,7 @@ function diffCalculator(
   };
 }
 
-export function useHover(config: HoverGestureConfig) {
+export function useHover(config: HoverGestureConfig): HoverGesture {
   const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureProperties>(
     config
   );
@@ -57,12 +67,3 @@ export function useHover(config: HoverGestureConfig) {
 
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
-
-export type HoverGestureStateChangeEvent =
-  GestureStateChangeEvent<HoverHandlerData>;
-export type HoverGestureUpdateEvent = GestureUpdateEvent<HoverHandlerData>;
-
-export type HoverGesture = SingleGesture<
-  HoverHandlerData,
-  HoverGestureProperties
->;

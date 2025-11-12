@@ -51,6 +51,13 @@ type PanGestureInternalConfig = BaseGestureConfig<
   PanGestureInternalProperties
 >;
 
+export type PanGestureStateChangeEvent =
+  GestureStateChangeEvent<PanHandlerData>;
+
+export type PanGestureUpdateEvent = GestureUpdateEvent<PanHandlerData>;
+
+export type PanGesture = SingleGesture<PanHandlerData, PanGestureProperties>;
+
 const PanPropsMapping = new Map<
   keyof PanGestureProperties,
   keyof PanGestureInternalProperties
@@ -154,7 +161,7 @@ function diffCalculator(
   };
 }
 
-export function usePan(config: PanGestureConfig) {
+export function usePan(config: PanGestureConfig): PanGesture {
   if (__DEV__) {
     validatePanConfig(config);
   }
@@ -177,9 +184,3 @@ export function usePan(config: PanGestureConfig) {
     panConfig
   );
 }
-
-export type PanGestureStateChangeEvent =
-  GestureStateChangeEvent<PanHandlerData>;
-export type PanGestureUpdateEvent = GestureUpdateEvent<PanHandlerData>;
-
-export type PanGesture = SingleGesture<PanHandlerData, PanGestureProperties>;

@@ -29,6 +29,17 @@ type RotationGestureInternalConfig = BaseGestureConfig<
 export type RotationGestureConfig =
   ExcludeInternalConfigProps<RotationGestureInternalConfig>;
 
+export type RotationGestureStateChangeEvent =
+  GestureStateChangeEvent<RotationHandlerData>;
+
+export type RotationGestureUpdateEvent =
+  GestureUpdateEvent<RotationHandlerData>;
+
+export type RotationGesture = SingleGesture<
+  RotationHandlerData,
+  RotationGestureProperties
+>;
+
 function diffCalculator(
   current: HandlerData<RotationHandlerData>,
   previous: HandlerData<RotationHandlerData> | null
@@ -41,7 +52,7 @@ function diffCalculator(
   };
 }
 
-export function useRotation(config: RotationGestureConfig) {
+export function useRotation(config: RotationGestureConfig): RotationGesture {
   const rotationConfig = cloneConfig<
     RotationHandlerData,
     RotationGestureProperties
@@ -52,13 +63,3 @@ export function useRotation(config: RotationGestureConfig) {
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }
-
-export type RotationGestureStateChangeEvent =
-  GestureStateChangeEvent<RotationHandlerData>;
-export type RotationGestureUpdateEvent =
-  GestureUpdateEvent<RotationHandlerData>;
-
-export type RotationGesture = SingleGesture<
-  RotationHandlerData,
-  RotationGestureProperties
->;

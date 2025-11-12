@@ -1,9 +1,9 @@
 import {
-  BaseGestureConfig,
+  BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
   GestureStateChangeEvent,
   GestureUpdateEvent,
-  SingleGesture,
+  DiscreteSingleGesture,
   SingleGestureName,
   WithSharedValue,
 } from '../../../types';
@@ -26,12 +26,22 @@ type TapGestureProperties = WithSharedValue<TapGestureExternalConfig>;
 type TapGestureInternalProperties = WithSharedValue<TapGestureNativeConfig>;
 
 export type TapGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<TapHandlerData, TapGestureProperties>
+  BaseDiscreteGestureConfig<TapHandlerData, TapGestureProperties>
 >;
 
-type TapGestureInternalConfig = BaseGestureConfig<
+type TapGestureInternalConfig = BaseDiscreteGestureConfig<
   TapHandlerData,
   TapGestureInternalProperties
+>;
+
+export type TapGestureStateChangeEvent =
+  GestureStateChangeEvent<TapHandlerData>;
+
+export type TapGestureUpdateEvent = GestureUpdateEvent<TapHandlerData>;
+
+export type TapGesture = DiscreteSingleGesture<
+  TapHandlerData,
+  TapGestureProperties
 >;
 
 const TapPropsMapping = new Map<
@@ -43,7 +53,7 @@ const TapPropsMapping = new Map<
   ['maxDelay', 'maxDelayMs'],
 ]);
 
-export function useTap(config: TapGestureConfig) {
+export function useTap(config: TapGestureConfig): TapGesture {
   const tapConfig = cloneConfig<TapHandlerData, TapGestureInternalProperties>(
     config
   );
@@ -58,9 +68,3 @@ export function useTap(config: TapGestureConfig) {
     tapConfig
   );
 }
-
-export type TapGestureStateChangeEvent =
-  GestureStateChangeEvent<TapHandlerData>;
-export type TapGestureUpdateEvent = GestureUpdateEvent<TapHandlerData>;
-
-export type TapGesture = SingleGesture<TapHandlerData, TapGestureProperties>;
