@@ -201,7 +201,6 @@
         }
         [attachedHandlers addObject:@(tag)];
       }
-      [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorView = self;
     }
   }
 
