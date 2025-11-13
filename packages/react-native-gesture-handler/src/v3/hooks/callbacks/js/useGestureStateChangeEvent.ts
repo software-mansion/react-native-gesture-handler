@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { BaseGestureConfig } from '../../../types';
-import { extractStateChangeHandlers } from '../../utils';
+import { ensureStateChangeHandlers } from '../../utils';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
 export function useGestureStateChangeEvent<THandlerData, TConfig>(
@@ -8,7 +8,18 @@ export function useGestureStateChangeEvent<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   return useMemo(() => {
-    const handlers = extractStateChangeHandlers(config);
+    const handlers = ensureStateChangeHandlers({
+      onBegin: config.onBegin,
+      onStart: config.onStart,
+      onEnd: config.onEnd,
+      onFinalize: config.onFinalize,
+    });
     return getStateChangeHandler(handlerTag, handlers);
-  }, [handlerTag, config]);
+  }, [
+    handlerTag,
+    config.onBegin,
+    config.onStart,
+    config.onEnd,
+    config.onFinalize,
+  ]);
 }

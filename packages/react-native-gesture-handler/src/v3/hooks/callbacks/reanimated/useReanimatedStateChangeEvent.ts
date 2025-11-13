@@ -1,13 +1,18 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { BaseGestureConfig } from '../../../types';
-import { extractStateChangeHandlers } from '../../utils';
+import { ensureStateChangeHandlers } from '../../utils';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
 export function useReanimatedStateChangeEvent<THandlerData, TConfig>(
   handlerTag: number,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  const handlers = extractStateChangeHandlers(config);
+  const handlers = ensureStateChangeHandlers({
+    onBegin: config.onBegin,
+    onStart: config.onStart,
+    onEnd: config.onEnd,
+    onFinalize: config.onFinalize,
+  });
 
   const callback = getStateChangeHandler(handlerTag, handlers);
 

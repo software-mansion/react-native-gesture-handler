@@ -1,4 +1,4 @@
-import { extractUpdateHandlers, isAnimatedEvent } from '../../utils';
+import { ensureUpdateHandlers, isAnimatedEvent } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
 import { getUpdateHandler } from '../updateHandler';
 import { BaseGestureConfig } from '../../../types';
@@ -9,7 +9,12 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   return useMemo(() => {
-    const { handlers, changeEventCalculator } = extractUpdateHandlers(config);
+    const { handlers, changeEventCalculator } = ensureUpdateHandlers(
+      {
+        onUpdate: config.onUpdate,
+      },
+      config.changeEventCalculator
+    );
 
     const jsContext: ReanimatedContext<THandlerData> = {
       lastUpdateEvent: undefined,
@@ -23,5 +28,5 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
           jsContext,
           changeEventCalculator
         );
-  }, [handlerTag, config]);
+  }, [handlerTag, config.onUpdate, config.changeEventCalculator]);
 }
