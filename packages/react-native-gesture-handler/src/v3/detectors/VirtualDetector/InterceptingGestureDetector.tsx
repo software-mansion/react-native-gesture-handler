@@ -81,20 +81,23 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     );
   }
 
-  const handleGestureEvent = (key: keyof DetectorCallbacks<THandlerData>) => {
-    return (e: GestureHandlerEvent<THandlerData>) => {
-      if (gesture?.detectorCallbacks[key]) {
-        gesture.detectorCallbacks[key](e);
-      }
-
-      virtualChildren.forEach((child) => {
-        const method = child.methods[key];
-        if (method) {
-          method(e);
+  const createGestureEventHandler = useCallback(
+    (key: keyof DetectorCallbacks<THandlerData>) => {
+      return (e: GestureHandlerEvent<THandlerData>) => {
+        if (gesture?.detectorCallbacks[key]) {
+          gesture.detectorCallbacks[key](e);
         }
-      });
-    };
-  };
+
+        virtualChildren.forEach((child) => {
+          const method = child.methods[key];
+          if (method) {
+            method(e);
+          }
+        });
+      };
+    },
+    [gesture, virtualChildren]
+  );
 
   const getHandlers = useCallback(
     (key: keyof DetectorCallbacks<unknown>) => {
@@ -152,22 +155,34 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     configureRelations(gesture);
   }
 
+  const handlerTags = useMemo(() => {
+    if (gesture) {
+      return isComposedGesture(gesture) ? gesture.tags : [gesture.tag];
+    }
+    return [];
+  }, [gesture]);
+
   return (
     <DetectorContext value={contextValue}>
       <NativeDetectorComponent
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerStateChange={handleGestureEvent(
-          'onGestureHandlerStateChange'
+        onGestureHandlerStateChange={useMemo(
+          () => createGestureEventHandler('onGestureHandlerStateChange'),
+          [createGestureEventHandler]
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
+        onGestureHandlerEvent={useMemo(
+          () => createGestureEventHandler('onGestureHandlerEvent'),
+          [createGestureEventHandler]
+        )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerAnimatedEvent={
           gesture?.detectorCallbacks.onGestureHandlerAnimatedEvent
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerTouchEvent={handleGestureEvent(
-          'onGestureHandlerTouchEvent'
+        onGestureHandlerTouchEvent={useMemo(
+          () => createGestureEventHandler('onGestureHandlerTouchEvent'),
+          [createGestureEventHandler]
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedStateChange={
@@ -181,13 +196,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         onGestureHandlerReanimatedTouchEvent={
           shouldUseReanimated ? reanimatedTouchEventHandler : undefined
         }
-        handlerTags={
-          gesture
-            ? isComposedGesture(gesture)
-              ? gesture.tags
-              : [gesture.tag]
-            : []
-        }
+        handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
         virtualChildren={virtualChildren}
         moduleId={globalThis._RNGH_MODULE_ID}>
