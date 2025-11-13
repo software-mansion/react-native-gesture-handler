@@ -19,11 +19,11 @@ export type GestureCallbacks<THandlerData> = {
   onStart?: (event: GestureStateChangeEvent<THandlerData>) => void;
   onEnd?: (
     event: GestureStateChangeEvent<THandlerData>,
-    success: boolean
+    didSucceed: boolean
   ) => void;
   onFinalize?: (
     event: GestureStateChangeEvent<THandlerData>,
-    success: boolean
+    didSucceed: boolean
   ) => void;
   onUpdate?: (event: GestureUpdateEvent<THandlerData>) => void | AnimatedEvent;
   onTouchesDown?: (event: GestureTouchEvent) => void;
