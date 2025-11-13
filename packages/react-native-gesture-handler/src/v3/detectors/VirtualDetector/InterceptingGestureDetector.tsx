@@ -5,7 +5,7 @@ import {
   GestureHandlerEvent,
   DetectorCallbacks,
 } from '../../types';
-import { DetectorContext } from './useDetectorContext';
+import { DetectorContext, DetectorContextValue } from './useDetectorContext';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { configureRelations, ensureNativeDetectorComponent } from '../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
@@ -63,6 +63,14 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   const unregister = useCallback((childTag: number) => {
     setVirtualChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
   }, []);
+
+  const contextValue: DetectorContextValue = useMemo(
+    () => ({
+      register,
+      unregister,
+    }),
+    [register, unregister]
+  );
 
   // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
@@ -145,7 +153,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   }
 
   return (
-    <DetectorContext value={{ register, unregister }}>
+    <DetectorContext value={contextValue}>
       <NativeDetectorComponent
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerStateChange={handleGestureEvent(
