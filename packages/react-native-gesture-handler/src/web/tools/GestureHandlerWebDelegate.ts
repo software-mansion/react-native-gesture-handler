@@ -139,6 +139,10 @@ export class GestureHandlerWebDelegate
   }
 
   private removeContextMenuListeners(): void {
+    if (!this.initialized) {
+      return;
+    }
+
     this.ensureView(this.view);
 
     if (this.shouldDisableContextMenu()) {
