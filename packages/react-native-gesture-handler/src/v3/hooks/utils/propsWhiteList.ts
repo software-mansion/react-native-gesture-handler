@@ -43,7 +43,7 @@ export const HandlerCallbacks = new Set<
   'onTouchesDown',
   'onTouchesMove',
   'onTouchesUp',
-  'onTouchesCancelled',
+  'onTouchesCancel',
 ]);
 
 export const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([

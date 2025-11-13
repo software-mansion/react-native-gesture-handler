@@ -29,7 +29,7 @@ export type GestureCallbacks<THandlerData> = {
   onTouchesDown?: (event: GestureTouchEvent) => void;
   onTouchesMove?: (event: GestureTouchEvent) => void;
   onTouchesUp?: (event: GestureTouchEvent) => void;
-  onTouchesCancelled?: (event: GestureTouchEvent) => void;
+  onTouchesCancel?: (event: GestureTouchEvent) => void;
 };
 
 export type GestureRelations = {

@@ -38,7 +38,7 @@ function getHandler(
       return gesture.onTouchesMove;
     case CALLBACK_TYPE.TOUCHES_UP:
       return gesture.onTouchesUp;
-    case CALLBACK_TYPE.TOUCHES_CANCELLED:
+    case CALLBACK_TYPE.TOUCHES_CANCEL:
       return gesture.onTouchesCancelled;
   }
 }
@@ -54,8 +54,8 @@ function touchEventTypeToCallbackType(
       return CALLBACK_TYPE.TOUCHES_MOVE;
     case TouchEventType.TOUCHES_UP:
       return CALLBACK_TYPE.TOUCHES_UP;
-    case TouchEventType.TOUCHES_CANCELLED:
-      return CALLBACK_TYPE.TOUCHES_CANCELLED;
+    case TouchEventType.TOUCHES_CANCEL:
+      return CALLBACK_TYPE.TOUCHES_CANCEL;
   }
   return CALLBACK_TYPE.UNDEFINED;
 }
