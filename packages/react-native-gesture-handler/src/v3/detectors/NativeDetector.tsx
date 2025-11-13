@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import HostGestureDetector from './HostGestureDetector';
 import { configureRelations, ensureNativeDetectorComponent } from './utils';
 import { isComposedGesture } from '../hooks/utils/relationUtils';
@@ -21,6 +21,10 @@ export function NativeDetector<THandlerData, TConfig>({
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
   configureRelations(gesture);
+
+  const handlerTags = useMemo(() => {
+    return isComposedGesture(gesture) ? gesture.tags : [gesture.tag];
+  }, [gesture]);
 
   return (
     <NativeDetectorComponent
@@ -50,7 +54,7 @@ export function NativeDetector<THandlerData, TConfig>({
         gesture.detectorCallbacks.onGestureHandlerAnimatedEvent
       }
       moduleId={globalThis._RNGH_MODULE_ID}
-      handlerTags={isComposedGesture(gesture) ? gesture.tags : [gesture.tag]}
+      handlerTags={handlerTags}
       style={nativeDetectorStyles.detector}>
       {children}
     </NativeDetectorComponent>
