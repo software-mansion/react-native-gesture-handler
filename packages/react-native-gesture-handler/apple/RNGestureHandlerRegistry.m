@@ -35,13 +35,6 @@
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag
                       toView:(RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType
-{
-  [self attachHandlerWithTag:handlerTag toView:view withActionType:actionType withHostDetector:nil];
-}
-
-- (void)attachHandlerWithTag:(NSNumber *)handlerTag
-                      toView:(RNGHUIView *)view
-              withActionType:(RNGestureHandlerActionType)actionType
             withHostDetector:(nullable RNGHUIView *)hostDetector
 {
   RNGestureHandler *handler = _handlers[handlerTag];

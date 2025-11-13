@@ -184,11 +184,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be
                            // returned as event.target
 
-  if (hostDetector != nil) {
-    [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType withHostDetector:hostDetector];
-  } else {
-    [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
-  }
+  [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType withHostDetector:hostDetector];
 
   // register view if not already there
   [self registerViewWithGestureRecognizerAttachedIfNeeded:view];

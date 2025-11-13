@@ -14,9 +14,6 @@
 - (void)registerGestureHandler:(nonnull RNGestureHandler *)gestureHandler;
 - (void)attachHandlerWithTag:(nonnull NSNumber *)handlerTag
                       toView:(nonnull RNGHUIView *)view
-              withActionType:(RNGestureHandlerActionType)actionType;
-- (void)attachHandlerWithTag:(nonnull NSNumber *)handlerTag
-                      toView:(nonnull RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType
             withHostDetector:(nullable RNGHUIView *)hostDetector;
 - (void)detachHandlerWithTag:(nonnull NSNumber *)handlerTag;
