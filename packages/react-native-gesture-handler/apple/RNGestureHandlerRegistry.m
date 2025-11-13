@@ -36,22 +36,23 @@
                       toView:(RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType
 {
-  RNGestureHandler *handler = _handlers[handlerTag];
-  RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
-  [handler unbindFromView];
-  handler.actionType = actionType;
-  [handler bindToView:view];
+  [self attachHandlerWithTag:handlerTag toView:view withActionType:actionType withHostDetector:nil];
 }
 
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag
                       toView:(RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType
-            withHostDetector:(nonnull RNGHUIView *)hostDetector
+            withHostDetector:(nullable RNGHUIView *)hostDetector
 {
-  [self attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
-
   RNGestureHandler *handler = _handlers[handlerTag];
-  handler.hostDetectorView = hostDetector;
+  RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
+  [handler unbindFromView];
+  handler.actionType = actionType;
+  [handler bindToView:view];
+
+  if (hostDetector != nil) {
+    handler.hostDetectorView = hostDetector;
+  }
 }
 
 - (void)detachHandlerWithTag:(NSNumber *)handlerTag
