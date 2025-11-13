@@ -8,13 +8,7 @@ import { configureRelations } from '../utils';
 import { tagMessage } from '../../../utils';
 import { DetectorCallbacks, VirtualChild } from '../../types';
 
-export function VirtualDetector<THandlerData, TConfig>(
-  props: NativeDetectorProps<THandlerData, TConfig>
-) {
-  // Don't memoize virtual detectors to be able to listen to changes in children
-  // TODO: replace with MutationObserver when it rolls out in React Native
-  'use no memo';
-
+function useRequiredDetectorContext() {
   const context = useDetectorContext();
   if (!context) {
     throw new Error(
@@ -23,7 +17,17 @@ export function VirtualDetector<THandlerData, TConfig>(
       )
     );
   }
-  const { register, unregister } = context;
+  return context;
+}
+
+export function VirtualDetector<THandlerData, TConfig>(
+  props: NativeDetectorProps<THandlerData, TConfig>
+) {
+  // Don't memoize virtual detectors to be able to listen to changes in children
+  // TODO: replace with MutationObserver when it rolls out in React Native
+  'use no memo';
+
+  const { register, unregister } = useRequiredDetectorContext();
 
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
