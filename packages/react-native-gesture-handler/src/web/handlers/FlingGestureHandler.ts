@@ -125,8 +125,6 @@ export default class FlingGestureHandler extends GestureHandler {
 
     super.onPointerDown(event);
     this.newPointerAction();
-
-    this.tryToSendTouchEvent(event);
   }
 
   protected override onPointerAdd(event: AdaptedEvent): void {
