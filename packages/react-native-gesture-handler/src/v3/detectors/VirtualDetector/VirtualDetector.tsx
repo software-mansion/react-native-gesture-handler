@@ -58,8 +58,8 @@ export function VirtualDetector<THandlerData, TConfig>(
       methods: props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
       forReanimated: !!props.gesture.config.shouldUseReanimatedDetector,
       forAnimated: !!props.gesture.config.dispatchesAnimatedEvents,
-      // TODO: why do we need this?
-      viewRef: Platform.OS === 'web' ? viewRef.current : undefined,
+      // used by HostGestureDetector on web
+      viewRef: Platform.OS === 'web' ? viewRef : undefined,
     };
 
     register(virtualChild);
