@@ -1,13 +1,13 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { BaseGestureConfig } from '../../../types';
-import { ensureUpdateHandlers } from '../../utils';
+import { prepareUpdateHandlers } from '../../utils';
 import { getUpdateHandler } from '../updateHandler';
 
 export function useReanimatedUpdateEvent<THandlerData, TConfig>(
   handlerTag: number,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  const { handlers, changeEventCalculator } = ensureUpdateHandlers(
+  const { handlers, changeEventCalculator } = prepareUpdateHandlers(
     {
       onUpdate: config.onUpdate,
     },

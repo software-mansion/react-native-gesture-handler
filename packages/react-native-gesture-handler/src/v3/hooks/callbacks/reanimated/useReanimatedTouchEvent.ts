@@ -1,13 +1,13 @@
 import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
 import { BaseGestureConfig } from '../../../types';
-import { ensureTouchHandlers } from '../../utils';
+import { prepareTouchHandlers } from '../../utils';
 import { getTouchEventHandler } from '../touchEventHandler';
 
 export function useReanimatedTouchEvent<THandlerData, TConfig>(
   handlerTag: number,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  const handlers = ensureTouchHandlers({
+  const handlers = prepareTouchHandlers({
     onTouchesDown: config.onTouchesDown,
     onTouchesMove: config.onTouchesMove,
     onTouchesUp: config.onTouchesUp,

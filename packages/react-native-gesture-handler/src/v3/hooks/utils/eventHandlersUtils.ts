@@ -6,7 +6,7 @@ import {
   GestureCallbacks,
 } from '../../types';
 
-export function ensureStateChangeHandlers<THandlerData>(
+export function prepareStateChangeHandlers<THandlerData>(
   callbacks: GestureCallbacks<THandlerData>
 ): GestureCallbacks<THandlerData> {
   'worklet';
@@ -27,7 +27,7 @@ type UpdateHandlersReturnType<THandlerData> = {
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
-export function ensureUpdateHandlers<THandlerData>(
+export function prepareUpdateHandlers<THandlerData>(
   callbacks: GestureCallbacks<THandlerData>,
   changeEventCalculator?: ChangeCalculatorType<THandlerData>
 ): UpdateHandlersReturnType<THandlerData> {
@@ -41,7 +41,7 @@ export function ensureUpdateHandlers<THandlerData>(
   return { handlers, changeEventCalculator };
 }
 
-export function ensureTouchHandlers<THandlerData>(
+export function prepareTouchHandlers<THandlerData>(
   callbacks: GestureCallbacks<THandlerData>
 ): GestureCallbacks<THandlerData> {
   const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =

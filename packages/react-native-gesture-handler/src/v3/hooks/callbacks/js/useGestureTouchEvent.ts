@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { BaseGestureConfig } from '../../../types';
-import { ensureTouchHandlers } from '../../utils';
+import { prepareTouchHandlers } from '../../utils';
 import { getTouchEventHandler } from '../touchEventHandler';
 
 export function useGestureTouchEvent<THandlerData, TConfig>(
@@ -8,7 +8,7 @@ export function useGestureTouchEvent<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   return useMemo(() => {
-    const handlers = ensureTouchHandlers({
+    const handlers = prepareTouchHandlers({
       onTouchesDown: config.onTouchesDown,
       onTouchesMove: config.onTouchesMove,
       onTouchesUp: config.onTouchesUp,

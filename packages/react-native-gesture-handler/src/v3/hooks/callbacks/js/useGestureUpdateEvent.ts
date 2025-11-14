@@ -1,4 +1,4 @@
-import { ensureUpdateHandlers, isAnimatedEvent } from '../../utils';
+import { prepareUpdateHandlers, isAnimatedEvent } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
 import { getUpdateHandler } from '../updateHandler';
 import { BaseGestureConfig } from '../../../types';
@@ -9,7 +9,7 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   return useMemo(() => {
-    const { handlers, changeEventCalculator } = ensureUpdateHandlers(
+    const { handlers, changeEventCalculator } = prepareUpdateHandlers(
       {
         onUpdate: config.onUpdate,
       },
