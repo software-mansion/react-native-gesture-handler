@@ -7,7 +7,7 @@ import {
   GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
-import { cloneConfig } from '../../utils';
+import { useClonedAndRemappedConfig } from '../../utils';
 import { ManualGestureNativeProperties } from './ManualProperties';
 
 type ManualHandlerData = Record<string, never>;
@@ -32,9 +32,11 @@ export type ManualGesture = SingleGesture<
 >;
 
 export function useManual(config: ManualGestureConfig): ManualGesture {
-  const manualConfig = cloneConfig<ManualHandlerData, ManualGestureProperties>(
-    config
-  );
+  const manualConfig = useClonedAndRemappedConfig<
+    ManualHandlerData,
+    ManualGestureProperties,
+    ManualGestureProperties
+  >(config);
 
   return useGesture(SingleGestureName.Manual, manualConfig);
 }

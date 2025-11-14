@@ -44,14 +44,13 @@ export function extractUpdateHandlers<THandlerData, TConfig>(
 export function extractTouchHandlers<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ): GestureCallbacks<THandlerData> {
-  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancelled } =
-    config;
+  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancel } = config;
 
   const handlers: GestureCallbacks<THandlerData> = {
     ...(onTouchesDown ? { onTouchesDown } : {}),
     ...(onTouchesMove ? { onTouchesMove } : {}),
     ...(onTouchesUp ? { onTouchesUp } : {}),
-    ...(onTouchesCancelled ? { onTouchesCancelled } : {}),
+    ...(onTouchesCancel ? { onTouchesCancel } : {}),
   };
 
   return handlers;
@@ -79,8 +78,8 @@ export function getHandler<THandlerData>(
       return callbacks.onTouchesMove;
     case CALLBACK_TYPE.TOUCHES_UP:
       return callbacks.onTouchesUp;
-    case CALLBACK_TYPE.TOUCHES_CANCELLED:
-      return callbacks.onTouchesCancelled;
+    case CALLBACK_TYPE.TOUCHES_CANCEL:
+      return callbacks.onTouchesCancel;
   }
 }
 
@@ -95,8 +94,8 @@ export function touchEventTypeToCallbackType(
       return CALLBACK_TYPE.TOUCHES_MOVE;
     case TouchEventType.TOUCHES_UP:
       return CALLBACK_TYPE.TOUCHES_UP;
-    case TouchEventType.TOUCHES_CANCELLED:
-      return CALLBACK_TYPE.TOUCHES_CANCELLED;
+    case TouchEventType.TOUCHES_CANCEL:
+      return CALLBACK_TYPE.TOUCHES_CANCEL;
   }
   return CALLBACK_TYPE.UNDEFINED;
 }

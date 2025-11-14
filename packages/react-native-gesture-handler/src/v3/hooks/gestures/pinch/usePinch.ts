@@ -8,7 +8,10 @@ import {
   GestureStateChangeEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import {
+  useClonedAndRemappedConfig,
+  getChangeEventCalculator,
+} from '../../utils';
 import { PinchGestureNativeProperties } from './PinchProperties';
 
 type PinchHandlerData = {
@@ -49,10 +52,23 @@ function diffCalculator(
   };
 }
 
+function transformPinchProps(
+  config: PinchGestureConfig & PinchGestureInternalConfig
+) {
+  config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+
+  return config;
+}
+
+const PinchPropsMapping = new Map<string, string>();
+
 export function usePinch(config: PinchGestureConfig): PinchGesture {
-  const pinchConfig = cloneConfig<PinchHandlerData, PinchGestureProperties>(
-    config
-  );
+  const pinchConfig = useClonedAndRemappedConfig<
+    PinchHandlerData,
+    PinchGestureProperties,
+    // no internal props, pass record as PinchGestureProperties maps everything to never
+    Record<string, unknown>
+  >(config, PinchPropsMapping, transformPinchProps);
 
   pinchConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 

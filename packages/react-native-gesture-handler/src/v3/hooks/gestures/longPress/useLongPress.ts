@@ -8,7 +8,7 @@ import {
   GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
-import { cloneConfig, remapProps } from '../../utils';
+import { useClonedAndRemappedConfig } from '../../utils';
 import {
   LongPressGestureExternalProperties,
   LongPressGestureNativeProperties,
@@ -56,20 +56,22 @@ const LongPressPropsMapping = new Map<
   ['maxDistance', 'maxDist'],
 ]);
 
-export function useLongPress(config: LongPressGestureConfig): LongPressGesture {
-  const longPressConfig = cloneConfig<
-    LongPressHandlerData,
-    LongPressGestureInternalProperties
-  >(config);
-
-  remapProps<LongPressGestureConfig, LongPressGestureInternalConfig>(
-    longPressConfig,
-    LongPressPropsMapping
-  );
-
-  if (longPressConfig.shouldCancelWhenOutside === undefined) {
-    longPressConfig.shouldCancelWhenOutside = true;
+function transformLongPressProps(
+  config: LongPressGestureConfig & LongPressGestureInternalConfig
+) {
+  if (config.shouldCancelWhenOutside === undefined) {
+    config.shouldCancelWhenOutside = true;
   }
+
+  return config;
+}
+
+export function useLongPress(config: LongPressGestureConfig): LongPressGesture {
+  const longPressConfig = useClonedAndRemappedConfig<
+    LongPressHandlerData,
+    LongPressGestureProperties,
+    LongPressGestureInternalProperties
+  >(config, LongPressPropsMapping, transformLongPressProps);
 
   return useGesture<LongPressHandlerData, LongPressGestureInternalProperties>(
     SingleGestureName.LongPress,

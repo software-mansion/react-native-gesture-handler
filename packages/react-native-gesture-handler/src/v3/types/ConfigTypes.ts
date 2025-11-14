@@ -19,17 +19,17 @@ export type GestureCallbacks<THandlerData> = {
   onStart?: (event: GestureStateChangeEvent<THandlerData>) => void;
   onEnd?: (
     event: GestureStateChangeEvent<THandlerData>,
-    success: boolean
+    didSucceed: boolean
   ) => void;
   onFinalize?: (
     event: GestureStateChangeEvent<THandlerData>,
-    success: boolean
+    didSucceed: boolean
   ) => void;
   onUpdate?: (event: GestureUpdateEvent<THandlerData>) => void | AnimatedEvent;
   onTouchesDown?: (event: GestureTouchEvent) => void;
   onTouchesMove?: (event: GestureTouchEvent) => void;
   onTouchesUp?: (event: GestureTouchEvent) => void;
-  onTouchesCancelled?: (event: GestureTouchEvent) => void;
+  onTouchesCancel?: (event: GestureTouchEvent) => void;
 };
 
 export type GestureRelations = {
