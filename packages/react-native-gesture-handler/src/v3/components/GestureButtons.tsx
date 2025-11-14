@@ -69,15 +69,11 @@ export const BaseButton = (props: BaseButtonProps) => {
   };
 
   const onEnd = (e: CallbackEventType, success: boolean) => {
-    if (!success) {
-      return;
-    }
-
-    if (!longPressDetected.current && onPress) {
-      onPress(e.handlerData.pointerInside);
-    }
-
     onActiveStateChange?.(false);
+
+    if (success && !longPressDetected.current) {
+      onPress?.(e.handlerData.pointerInside);
+    }
   };
 
   const onFinalize = (_e: CallbackEventType) => {
