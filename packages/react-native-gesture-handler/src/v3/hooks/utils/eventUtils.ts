@@ -77,7 +77,7 @@ export function shouldHandleTouchEvents<THandlerData, TConfig>(
     !!config.onTouchesDown ||
     !!config.onTouchesMove ||
     !!config.onTouchesUp ||
-    !!config.onTouchesCancelled
+    !!config.onTouchesCancel
   );
 }
 

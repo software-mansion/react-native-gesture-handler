@@ -27,9 +27,9 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
 ]);
 
 const ExternalRelationsConfig = new Set<keyof ExternalRelations>([
-  'simultaneousWithExternalGesture',
-  'requireExternalGestureToFail',
-  'blocksExternalGesture',
+  'simultaneousWith',
+  'requireToFail',
+  'block',
 ]);
 
 export const allowedNativeProps = new Set<
@@ -54,7 +54,7 @@ export const HandlerCallbacks = new Set<
   'onTouchesDown',
   'onTouchesMove',
   'onTouchesUp',
-  'onTouchesCancelled',
+  'onTouchesCancel',
 ]);
 
 export const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([

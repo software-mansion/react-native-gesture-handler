@@ -47,14 +47,14 @@ export const ScrollView = (
 ) => {
   const refreshControlRef =
     React.useRef<ComponentWrapperRef<RefreshControl>>(null);
-  const { refreshControl, requireExternalGestureToFail, ...rest } = props;
+  const { refreshControl, requireToFail, ...rest } = props;
 
   const waitFor = [];
 
-  if (Array.isArray(requireExternalGestureToFail)) {
-    waitFor.push(...requireExternalGestureToFail);
-  } else if (requireExternalGestureToFail) {
-    waitFor.push(requireExternalGestureToFail);
+  if (Array.isArray(requireToFail)) {
+    waitFor.push(...requireToFail);
+  } else if (requireToFail) {
+    waitFor.push(requireToFail);
   }
 
   if (refreshControlRef.current?.gestureRef) {
@@ -107,7 +107,7 @@ export const FlatList = ((props) => {
   const refreshControlRef =
     React.useRef<ComponentWrapperRef<RefreshControl>>(null);
 
-  const { requireExternalGestureToFail, refreshControl, ...rest } = props;
+  const { requireToFail, refreshControl, ...rest } = props;
 
   const flatListProps = {};
   const scrollViewProps = {};
@@ -126,10 +126,10 @@ export const FlatList = ((props) => {
 
   const waitFor: AnyGesture[] = [];
 
-  if (Array.isArray(requireExternalGestureToFail)) {
-    waitFor.push(...requireExternalGestureToFail);
-  } else if (requireExternalGestureToFail) {
-    waitFor.push(requireExternalGestureToFail);
+  if (Array.isArray(requireToFail)) {
+    waitFor.push(...requireToFail);
+  } else if (requireToFail) {
+    waitFor.push(requireToFail);
   }
 
   if (refreshControlRef.current?.gestureRef) {

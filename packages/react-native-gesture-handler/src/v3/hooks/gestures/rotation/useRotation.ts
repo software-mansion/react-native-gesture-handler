@@ -8,7 +8,10 @@ import {
   GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import {
+  useClonedAndRemappedConfig,
+  getChangeEventCalculator,
+} from '../../utils';
 import { RotationGestureNativeProperties } from './RotationProperties';
 
 type RotationHandlerData = {
@@ -52,14 +55,23 @@ function diffCalculator(
   };
 }
 
-export function useRotation(config: RotationGestureConfig): RotationGesture {
-  const rotationConfig = cloneConfig<
-    RotationHandlerData,
-    RotationGestureProperties
-  >(config);
+function transformRotationProps(
+  config: RotationGestureConfig & RotationGestureInternalConfig
+) {
+  config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
-  rotationConfig.changeEventCalculator =
-    getChangeEventCalculator(diffCalculator);
+  return config;
+}
+
+const RotationPropsMapping = new Map<string, string>();
+
+export function useRotation(config: RotationGestureConfig): RotationGesture {
+  const rotationConfig = useClonedAndRemappedConfig<
+    RotationHandlerData,
+    RotationGestureProperties,
+    // no internal props, pass record as RotationGestureProperties maps everything to never
+    Record<string, unknown>
+  >(config, RotationPropsMapping, transformRotationProps);
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);
 }

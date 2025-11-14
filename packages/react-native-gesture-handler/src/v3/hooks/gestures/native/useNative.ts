@@ -8,7 +8,7 @@ import {
   GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
-import { cloneConfig } from '../../utils';
+import { useClonedAndRemappedConfig } from '../../utils';
 import { NativeGestureNativeProperties } from './NativeProperties';
 
 export type NativeViewHandlerData = {
@@ -38,8 +38,9 @@ export type NativeGesture = SingleGesture<
 >;
 
 export function useNative(config: NativeViewGestureConfig): NativeGesture {
-  const nativeConfig = cloneConfig<
+  const nativeConfig = useClonedAndRemappedConfig<
     NativeViewHandlerData,
+    NativeViewGestureProperties,
     NativeViewGestureProperties
   >(config);
 
