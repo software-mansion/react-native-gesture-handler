@@ -11,7 +11,7 @@ export function useReanimatedTouchEvent<THandlerData, TConfig>(
     onTouchesDown: config.onTouchesDown,
     onTouchesMove: config.onTouchesMove,
     onTouchesUp: config.onTouchesUp,
-    onTouchesCancelled: config.onTouchesCancelled,
+    onTouchesCancel: config.onTouchesCancel,
   });
 
   const callback = getTouchEventHandler(handlerTag, handlers);

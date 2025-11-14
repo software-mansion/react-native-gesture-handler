@@ -537,7 +537,7 @@ open class GestureHandler {
   }
 
   private fun cancelPointers() {
-    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCELLED
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCEL
     changedTouchesPayload = null
     extractAllPointersData()
 

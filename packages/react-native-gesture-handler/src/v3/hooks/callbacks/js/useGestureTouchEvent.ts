@@ -12,7 +12,7 @@ export function useGestureTouchEvent<THandlerData, TConfig>(
       onTouchesDown: config.onTouchesDown,
       onTouchesMove: config.onTouchesMove,
       onTouchesUp: config.onTouchesUp,
-      onTouchesCancelled: config.onTouchesCancelled,
+      onTouchesCancel: config.onTouchesCancel,
     });
     return getTouchEventHandler(handlerTag, handlers);
   }, [
@@ -20,6 +20,6 @@ export function useGestureTouchEvent<THandlerData, TConfig>(
     config.onTouchesDown,
     config.onTouchesMove,
     config.onTouchesUp,
-    config.onTouchesCancelled,
+    config.onTouchesCancel,
   ]);
 }
