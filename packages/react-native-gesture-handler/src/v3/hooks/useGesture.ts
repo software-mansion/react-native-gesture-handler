@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
@@ -69,12 +69,20 @@ export function useGesture<THandlerData, TConfig>(
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
-  const gestureRelations = prepareRelations(config, tag);
+  const gestureRelations = useMemo(
+    () => prepareRelations(config, tag),
+    [config, tag]
+  );
 
-  useMemo(() => {
+  const currentGestureRef = useRef({ type: '', tag: -1 });
+  if (
+    currentGestureRef.current.tag !== tag ||
+    currentGestureRef.current.type !== (type as string)
+  ) {
+    currentGestureRef.current = { type, tag };
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
     RNGestureHandlerModule.flushOperations();
-  }, [type, tag]);
+  }
 
   useEffect(() => {
     return () => {
@@ -93,13 +101,28 @@ export function useGesture<THandlerData, TConfig>(
     return () => {
       unbindSharedValues(config, tag);
     };
-  }, [tag, config]);
+  }, [tag, config, type]);
 
-  return {
-    tag,
-    type,
-    config,
-    detectorCallbacks: {
+  return useMemo(
+    () => ({
+      tag,
+      type,
+      config,
+      detectorCallbacks: {
+        onGestureHandlerStateChange,
+        onGestureHandlerEvent,
+        onGestureHandlerTouchEvent,
+        onReanimatedStateChange,
+        onReanimatedUpdateEvent,
+        onReanimatedTouchEvent,
+        onGestureHandlerAnimatedEvent,
+      },
+      gestureRelations,
+    }),
+    [
+      tag,
+      type,
+      config,
       onGestureHandlerStateChange,
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,
@@ -107,7 +130,7 @@ export function useGesture<THandlerData, TConfig>(
       onReanimatedUpdateEvent,
       onReanimatedTouchEvent,
       onGestureHandlerAnimatedEvent,
-    },
-    gestureRelations,
-  };
+      gestureRelations,
+    ]
+  );
 }

@@ -180,19 +180,27 @@
           RNGHUIView *targetView = [handlerManager viewForReactTag:@(viewTag)];
 
           if (targetView != nil) {
-            [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
+            [handlerManager attachGestureHandler:@(tag)
+                                   toViewWithTag:@(viewTag)
+                                  withActionType:actionType
+                                withHostDetector:self];
           } else {
             // Let's assume that if the native view for the virtual detector hasn't been found, the hierarchy was folded
             // into a single UIView.
-            [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
+            [handlerManager.registry attachHandlerWithTag:@(tag)
+                                                   toView:self
+                                           withActionType:actionType
+                                         withHostDetector:self];
             [[handlerManager registry] handlerWithTag:@(tag)].virtualViewTag = @(viewTag);
           }
         } else {
-          [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
+          [handlerManager.registry attachHandlerWithTag:@(tag)
+                                                 toView:self
+                                         withActionType:actionType
+                                       withHostDetector:self];
         }
         [attachedHandlers addObject:@(tag)];
       }
-      [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorTag = @(self.tag);
     }
   }
 
@@ -261,10 +269,20 @@
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
+  RNGHUIView *view = self.subviews[0];
+
+  if ([view isKindOfClass:[RCTViewComponentView class]]) {
+    RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+    if (componentView.contentView != nil) {
+      view = componentView.contentView;
+    }
+  }
+
   for (NSNumber *handlerTag in _nativeHandlers) {
     [handlerManager.registry attachHandlerWithTag:handlerTag
-                                           toView:self.subviews[0]
-                                   withActionType:RNGestureHandlerActionTypeNativeDetector];
+                                           toView:view
+                                   withActionType:RNGestureHandlerActionTypeNativeDetector
+                                 withHostDetector:self];
 
     [_attachedHandlers addObject:handlerTag];
   }
