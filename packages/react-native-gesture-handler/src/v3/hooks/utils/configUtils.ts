@@ -91,13 +91,11 @@ export function useClonedAndRemappedConfig<
   THandlerData,
   TConfig extends object,
   TInternalConfig extends Record<string, unknown>,
-  TTransformedConfig extends Record<string, unknown> = TInternalConfig,
 >(
   config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>,
   propsMapping: Map<string, string> = new Map(),
-  propsTransformer: (config: TInternalConfig) => TTransformedConfig = (cfg) =>
-    cfg as unknown as TTransformedConfig
-): BaseGestureConfig<THandlerData, TTransformedConfig> {
+  propsTransformer: (config: TInternalConfig) => TInternalConfig = (cfg) => cfg
+): BaseGestureConfig<THandlerData, TInternalConfig> {
   return useMemo(() => {
     const clonedConfig = cloneConfig<THandlerData, TConfig>(config);
 
