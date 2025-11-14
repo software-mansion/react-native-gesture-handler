@@ -33,7 +33,7 @@ function extractHandlerTags(
   return otherTags;
 }
 
-function makeSimultaneousWithExternalGestureSymmetric(
+function makeSimultaneousWithSymmetric(
   otherHandler: Gesture | Gesture[] | undefined,
   handlerTag: number
 ) {
@@ -62,17 +62,12 @@ export function prepareRelations<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>,
   handlerTag: number
 ): GestureRelations {
-  makeSimultaneousWithExternalGestureSymmetric(
-    config.simultaneousWithExternalGesture,
-    handlerTag
-  );
+  makeSimultaneousWithSymmetric(config.simultaneousWith, handlerTag);
 
   return {
-    simultaneousHandlers: extractHandlerTags(
-      config.simultaneousWithExternalGesture
-    ),
-    waitFor: extractHandlerTags(config.requireExternalGestureToFail),
-    blocksHandlers: extractHandlerTags(config.blocksExternalGesture),
+    simultaneousHandlers: extractHandlerTags(config.simultaneousWith),
+    waitFor: extractHandlerTags(config.requireToFail),
+    blocksHandlers: extractHandlerTags(config.block),
   };
 }
 
