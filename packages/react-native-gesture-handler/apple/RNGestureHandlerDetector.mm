@@ -127,28 +127,17 @@
   return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
 }
 
-- (void)removeDroppedNativeHandlers
+- (void)prepareForRecycle
 {
-  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [super prepareForRecycle];
 
-  NSMutableSet *nativeHandlersToRemove = [NSMutableSet set];
-
-  for (NSNumber *handlerTag in _nativeHandlers) {
-    if ([[handlerManager registry] handlerWithTag:handlerTag] == nil) {
-      [nativeHandlersToRemove addObject:handlerTag];
-    }
-  }
-
-  for (NSNumber *handlerTag in nativeHandlersToRemove) {
-    [_nativeHandlers removeObject:handlerTag];
-  }
+  [_nativeHandlers removeAllObjects];
 }
 
 - (void)didAddSubview:(RNGHUIView *)view
 {
   [super didAddSubview:view];
 
-  [self removeDroppedNativeHandlers];
   [self tryAttachNativeHandlersToChildView];
 }
 
