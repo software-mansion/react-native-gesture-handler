@@ -12,8 +12,6 @@ import {
   SwitchProps as RNSwitchProps,
   TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
-  DrawerLayoutAndroid as RNDrawerLayoutAndroid,
-  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
@@ -95,13 +93,6 @@ export type Switch = typeof Switch & RNSwitch;
 export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
-
-export const DrawerLayoutAndroid = createNativeWrapper<
-  PropsWithChildren<RNDrawerLayoutAndroidProps>
->(RNDrawerLayoutAndroid, { disallowInterruption: true });
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type DrawerLayoutAndroid = typeof DrawerLayoutAndroid &
-  RNDrawerLayoutAndroid;
 
 export const FlatList = ((props) => {
   const refreshControlRef =
