@@ -23,7 +23,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
   const [virtualChildren, setVirtualChildren] = useState<VirtualChild[]>([]);
 
-  const shouldUseReanimated = useMemo(
+  const shouldUseReanimatedDetector = useMemo(
     () =>
       virtualChildren.reduce(
         (acc, child) => acc || child.forReanimated,
@@ -43,7 +43,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const NativeDetectorComponent = dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : shouldUseReanimated
+    : shouldUseReanimatedDetector
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
@@ -186,15 +186,15 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedStateChange={
-          shouldUseReanimated ? reanimatedStateChangeHandler : undefined
+          shouldUseReanimatedDetector ? reanimatedStateChangeHandler : undefined
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedEvent={
-          shouldUseReanimated ? reanimatedEventHandler : undefined
+          shouldUseReanimatedDetector ? reanimatedEventHandler : undefined
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedTouchEvent={
-          shouldUseReanimated ? reanimatedTouchEventHandler : undefined
+          shouldUseReanimatedDetector ? reanimatedTouchEventHandler : undefined
         }
         handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
