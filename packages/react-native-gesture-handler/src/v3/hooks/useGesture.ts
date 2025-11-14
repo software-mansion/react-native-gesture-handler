@@ -73,19 +73,13 @@ export function useGesture<THandlerData, TConfig>(
     () =>
       prepareRelations(
         {
-          simultaneousWithExternalGesture:
-            config.simultaneousWithExternalGesture,
-          requireExternalGestureToFail: config.requireExternalGestureToFail,
-          blocksExternalGesture: config.blocksExternalGesture,
+          simultaneousWith: config.simultaneousWith,
+          requireToFail: config.requireToFail,
+          block: config.block,
         },
         tag
       ),
-    [
-      tag,
-      config.simultaneousWithExternalGesture,
-      config.requireExternalGestureToFail,
-      config.blocksExternalGesture,
-    ]
+    [tag, config.simultaneousWith, config.requireToFail, config.block]
   );
 
   const currentGestureRef = useRef({ type: '', tag: -1 });

@@ -9,7 +9,7 @@ import {
 import { FilterNeverProperties } from './UtilityTypes';
 
 // Unfortunately, this type cannot be moved into ConfigTypes.ts because of circular dependency
-type ExternalRelations = {
+export type ExternalRelations = {
   simultaneousWith?: Gesture | Gesture[];
   requireToFail?: Gesture | Gesture[];
   block?: Gesture | Gesture[];
