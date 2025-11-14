@@ -19,7 +19,10 @@ function ButtonWrapper({ ButtonComponent, color }: ButtonWrapperProps) {
   return (
     <ButtonComponent
       style={[styles.button, { backgroundColor: color }]}
-      onPress={() => console.log(`[${ButtonComponent.name}] Hello World!`)}>
+      onPress={() => console.log(`[${ButtonComponent.name}] onPress`)}
+      onLongPress={() => {
+        console.log(`[${ButtonComponent.name}] onLongPress`);
+      }}>
       <Text style={styles.buttonText}>{ButtonComponent.name}</Text>
     </ButtonComponent>
   );
