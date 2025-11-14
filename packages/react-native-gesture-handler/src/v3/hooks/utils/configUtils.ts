@@ -13,6 +13,7 @@ import {
   PropsToFilter,
   PropsWhiteLists,
 } from './propsWhiteList';
+import { useMemo } from 'react';
 
 export function prepareConfig<THandlerData, TConfig extends object>(
   config: BaseGestureConfig<THandlerData, TConfig>
@@ -64,7 +65,10 @@ export function cloneConfig<THandlerData, TConfig>(
   return { ...config } as BaseGestureConfig<THandlerData, TConfig>;
 }
 
-export function remapProps<TConfig extends object, TInternalConfig>(
+export function remapProps<
+  TConfig extends object,
+  TInternalConfig extends Record<string, unknown>,
+>(
   config: TConfig & TInternalConfig,
   propsMapping: Map<string, string>
 ): TInternalConfig {
@@ -81,4 +85,25 @@ export function remapProps<TConfig extends object, TInternalConfig>(
   });
 
   return config;
+}
+
+export function useClonedAndRemappedConfig<
+  THandlerData,
+  TConfig extends object,
+  TInternalConfig extends Record<string, unknown>,
+>(
+  config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>,
+  propsMapping: Map<string, string> = new Map(),
+  propsTransformer: (config: TInternalConfig) => TInternalConfig = (cfg) => cfg
+): BaseGestureConfig<THandlerData, TInternalConfig> {
+  return useMemo(() => {
+    const clonedConfig = cloneConfig<THandlerData, TConfig>(config);
+
+    return propsTransformer(
+      remapProps<TConfig, TInternalConfig>(
+        clonedConfig as TConfig & TInternalConfig,
+        propsMapping
+      )
+    );
+  }, [config, propsMapping, propsTransformer]);
 }

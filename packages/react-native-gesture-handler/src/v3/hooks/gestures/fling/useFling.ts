@@ -8,7 +8,7 @@ import {
   GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
-import { cloneConfig } from '../../utils';
+import { useClonedAndRemappedConfig } from '../../utils';
 import type { FlingGestureNativeProperties } from './FlingProperties';
 
 type FlingHandlerData = {
@@ -39,9 +39,11 @@ export type FlingGesture = SingleGesture<
 >;
 
 export function useFling(config: FlingGestureConfig): FlingGesture {
-  const flingConfig = cloneConfig<FlingHandlerData, FlingGestureProperties>(
-    config
-  );
+  const flingConfig = useClonedAndRemappedConfig<
+    FlingHandlerData,
+    FlingGestureProperties,
+    FlingGestureProperties
+  >(config);
 
   return useGesture(SingleGestureName.Fling, flingConfig);
 }
