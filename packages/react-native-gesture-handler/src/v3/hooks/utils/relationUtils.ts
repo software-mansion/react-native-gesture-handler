@@ -33,7 +33,7 @@ function extractHandlerTags(
   return otherTags;
 }
 
-function makeSimultaneousWithExternalGestureSymmetric(
+function makeSimultaneousWithSymmetric(
   otherHandler: Gesture | Gesture[] | undefined,
   handlerTag: number
 ) {
@@ -62,17 +62,12 @@ export function prepareRelations(
   relations: ExternalRelations,
   handlerTag: number
 ): GestureRelations {
-  makeSimultaneousWithExternalGestureSymmetric(
-    relations.simultaneousWithExternalGesture,
-    handlerTag
-  );
+  makeSimultaneousWithSymmetric(config.simultaneousWith, handlerTag);
 
   return {
-    simultaneousHandlers: extractHandlerTags(
-      relations.simultaneousWithExternalGesture
-    ),
-    waitFor: extractHandlerTags(relations.requireExternalGestureToFail),
-    blocksHandlers: extractHandlerTags(relations.blocksExternalGesture),
+    simultaneousHandlers: extractHandlerTags(config.simultaneousWith),
+    waitFor: extractHandlerTags(config.requireToFail),
+    blocksHandlers: extractHandlerTags(config.block),
   };
 }
 
