@@ -119,7 +119,6 @@ export {
   ScrollView,
   Switch,
   TextInput,
-  DrawerLayoutAndroid,
   FlatList,
   RefreshControl,
 } from './v3/components/GestureComponents';
