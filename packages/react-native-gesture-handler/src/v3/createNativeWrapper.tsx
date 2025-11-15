@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useImperativeHandle, useRef } from 'react';
 
 import { NativeWrapperProps } from './hooks/utils';
 import { useNative } from './hooks/gestures';
@@ -47,10 +47,10 @@ export default function createNativeWrapper<P>(
 
     const native = useNative(gestureHandlerProps);
 
-    const componentRef = React.useRef<React.ComponentType<P>>(null);
-    const gestureRef = React.useRef(native);
+    const componentRef = useRef<React.ComponentType<P>>(null);
+    const gestureRef = useRef(native);
 
-    React.useImperativeHandle(props.ref, () => ({
+    useImperativeHandle(props.ref, () => ({
       componentRef: componentRef.current,
       gestureRef: gestureRef.current,
     }));
