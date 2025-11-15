@@ -10,7 +10,7 @@ import {
 import {
   GestureDetector,
   Gesture,
-  ScrollView,
+  LegacyScrollView,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -60,7 +60,7 @@ interface OutputProps {
 
 function Output({ offset, expression, history }: OutputProps) {
   const layout = useRef({});
-  const scrollView = useRef<ScrollView>(null);
+  const scrollView = useRef<LegacyScrollView>(null);
   const drag = useSharedValue(0);
   const dragOffset = useSharedValue(0);
   const [opened, setOpened] = useState(false);
@@ -130,8 +130,8 @@ function Output({ offset, expression, history }: OutputProps) {
       <Animated.View
         style={[styles.output, translationStyle]}
         onLayout={measure}>
-        <ScrollView
-          ref={(ref: ScrollView) => {
+        <LegacyScrollView
+          ref={(ref: LegacyScrollView) => {
             if (!opened) {
               ref?.scrollToEnd({ animated: false });
             }
@@ -146,7 +146,7 @@ function Output({ offset, expression, history }: OutputProps) {
           })}
 
           <Expression expression={expression} />
-        </ScrollView>
+        </LegacyScrollView>
         <View style={styles.handleView}>
           <View style={styles.handle} />
         </View>
