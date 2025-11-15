@@ -16,22 +16,22 @@ export interface SwipeableProps {
   ref?: React.RefObject<SwipeableMethods | null>;
 
   /**
-   *
+   * Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.
    */
   testID?: string;
 
-  /**
-   *
-   */
   children?: React.ReactNode;
 
   /**
-   *
+   * Indicates whether `ReanimatedSwipeable` should be analyzing stream of touch events or not.
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#enabledvalue-boolean
    */
   enabled?: boolean;
 
   /**
-   *
+   * This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
+   * When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#hitslopsettings
    */
   hitSlop?: HitSlop;
 

@@ -501,6 +501,7 @@ const Swipeable = (props: SwipeableProps) => {
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()
       .enabled(enabled !== false)
+      .hitSlop(hitSlop)
       .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
       .activeOffsetX([-dragOffsetFromRightEdge, dragOffsetFromLeftEdge])
       .onStart(updateElementWidths)
@@ -547,6 +548,7 @@ const Swipeable = (props: SwipeableProps) => {
     return pan;
   }, [
     enabled,
+    hitSlop,
     enableTrackpadTwoFingerGesture,
     dragOffsetFromRightEdge,
     dragOffsetFromLeftEdge,
@@ -576,7 +578,6 @@ const Swipeable = (props: SwipeableProps) => {
       <Animated.View
         {...remainingProps}
         onLayout={onRowLayout}
-        hitSlop={hitSlop ?? undefined}
         style={[styles.container, containerStyle]}>
         {leftElement()}
         {rightElement()}
