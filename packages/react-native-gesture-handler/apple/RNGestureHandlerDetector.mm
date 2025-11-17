@@ -33,11 +33,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
-    _props = defaultProps;
-    _moduleId = -1;
-    _nativeHandlers = [NSMutableSet set];
-    _attachedHandlers = [NSMutableSet set];
+    [self setDefaultProps];
   }
 
   return self;
@@ -70,6 +66,15 @@
                  viewTag:-1
         attachedHandlers:_attachedHandlers];
   }
+}
+
+- (void)setDefaultProps
+{
+  static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
+  _props = defaultProps;
+  _moduleId = -1;
+  _nativeHandlers = [NSMutableSet set];
+  _attachedHandlers = [NSMutableSet set];
 }
 
 - (void)dispatchStateChangeEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event
@@ -131,12 +136,7 @@
 {
   [super prepareForRecycle];
 
-  static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
-  _props = defaultProps;
-  _moduleId = -1;
-
-  [_nativeHandlers removeAllObjects];
-  [_attachedHandlers removeAllObjects];
+  [self setDefaultProps];
 }
 
 - (void)didAddSubview:(RNGHUIView *)view
