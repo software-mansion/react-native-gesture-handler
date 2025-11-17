@@ -11,7 +11,10 @@ import {
   GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
-import { cloneConfig, getChangeEventCalculator } from '../../utils';
+import {
+  useClonedAndRemappedConfig,
+  getChangeEventCalculator,
+} from '../../utils';
 import { HoverGestureNativeProperties } from './HoverProperties';
 
 type HoverHandlerData = {
@@ -58,12 +61,22 @@ function diffCalculator(
   };
 }
 
-export function useHover(config: HoverGestureConfig): HoverGesture {
-  const hoverConfig = cloneConfig<HoverHandlerData, HoverGestureProperties>(
-    config
-  );
+function transformHoverProps(
+  config: HoverGestureConfig & HoverGestureInternalConfig
+) {
+  config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
-  hoverConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  return config;
+}
+
+const HoverPropsMapping = new Map<string, string>();
+
+export function useHover(config: HoverGestureConfig): HoverGesture {
+  const hoverConfig = useClonedAndRemappedConfig<
+    HoverHandlerData,
+    HoverGestureProperties,
+    HoverGestureProperties
+  >(config, HoverPropsMapping, transformHoverProps);
 
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }

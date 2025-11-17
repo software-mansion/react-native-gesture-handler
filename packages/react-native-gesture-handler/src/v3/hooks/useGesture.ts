@@ -70,8 +70,16 @@ export function useGesture<THandlerData, TConfig>(
   }
 
   const gestureRelations = useMemo(
-    () => prepareRelations(config, tag),
-    [config, tag]
+    () =>
+      prepareRelations(
+        {
+          simultaneousWith: config.simultaneousWith,
+          requireToFail: config.requireToFail,
+          block: config.block,
+        },
+        tag
+      ),
+    [tag, config.simultaneousWith, config.requireToFail, config.block]
   );
 
   const currentGestureRef = useRef({ type: '', tag: -1 });

@@ -588,7 +588,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         eventType = TouchEventType.TOUCHES_MOVE;
         break;
       case EventTypes.CANCEL:
-        eventType = TouchEventType.TOUCHES_CANCELLED;
+        eventType = TouchEventType.TOUCHES_CANCEL;
         break;
     }
 
@@ -655,7 +655,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.state,
-        eventType: TouchEventType.TOUCHES_CANCELLED,
+        eventType: TouchEventType.TOUCHES_CANCEL,
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: all.length,
