@@ -367,7 +367,9 @@ export abstract class BaseGesture<
    */
   requireExternalGestureToFail(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
-      this.addDependency('requireToFail', gesture);
+      if (gesture) {
+        this.addDependency('requireToFail', gesture);
+      }
     }
     return this;
   }
@@ -379,7 +381,9 @@ export abstract class BaseGesture<
    */
   blocksExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
-      this.addDependency('blocksHandlers', gesture);
+      if (gesture) {
+        this.addDependency('blocksHandlers', gesture);
+      }
     }
     return this;
   }
