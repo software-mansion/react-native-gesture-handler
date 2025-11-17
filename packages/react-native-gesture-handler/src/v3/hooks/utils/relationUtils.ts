@@ -1,6 +1,6 @@
 import {
-  BaseGestureConfig,
   ComposedGesture,
+  ExternalRelations,
   Gesture,
   GestureRelations,
 } from '../../types';
@@ -58,16 +58,16 @@ function makeSimultaneousWithSymmetric(
   }
 }
 
-export function prepareRelations<THandlerData, TConfig>(
-  config: BaseGestureConfig<THandlerData, TConfig>,
+export function prepareRelations(
+  relations: ExternalRelations,
   handlerTag: number
 ): GestureRelations {
-  makeSimultaneousWithSymmetric(config.simultaneousWith, handlerTag);
+  makeSimultaneousWithSymmetric(relations.simultaneousWith, handlerTag);
 
   return {
-    simultaneousHandlers: extractHandlerTags(config.simultaneousWith),
-    waitFor: extractHandlerTags(config.requireToFail),
-    blocksHandlers: extractHandlerTags(config.block),
+    simultaneousHandlers: extractHandlerTags(relations.simultaneousWith),
+    waitFor: extractHandlerTags(relations.requireToFail),
+    blocksHandlers: extractHandlerTags(relations.block),
   };
 }
 
