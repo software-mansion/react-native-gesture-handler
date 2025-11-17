@@ -1,25 +1,39 @@
 import React from 'react';
-import type { PanGestureHandlerProps } from '../../handlers/PanGestureHandler';
 import { SharedValue } from 'react-native-reanimated';
 import { StyleProp, ViewStyle } from 'react-native';
 import { RelationPropType } from '../utils';
-
-type SwipeableExcludes = Exclude<
-  keyof PanGestureHandlerProps,
-  'onGestureEvent' | 'onHandlerStateChange'
->;
+import { HitSlop } from '../../handlers/gestureHandlerCommon';
 
 export enum SwipeDirection {
   LEFT = 'left',
   RIGHT = 'right',
 }
 
-export interface SwipeableProps
-  extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
+export interface SwipeableProps {
   /**
    *
    */
   ref?: React.RefObject<SwipeableMethods | null>;
+
+  /**
+   * Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.
+   */
+  testID?: string;
+
+  children?: React.ReactNode;
+
+  /**
+   * Indicates whether `ReanimatedSwipeable` should be analyzing stream of touch events or not.
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#enabledvalue-boolean
+   */
+  enabled?: boolean;
+
+  /**
+   * This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
+   * When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+   * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/pan-gesture#hitslopsettings
+   */
+  hitSlop?: HitSlop;
 
   /**
    * Enables two-finger gestures on supported devices, for example iPads with
