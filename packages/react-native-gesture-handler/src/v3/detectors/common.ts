@@ -29,7 +29,5 @@ export const ReanimatedNativeDetector =
 export const nativeDetectorStyles = StyleSheet.create({
   detector: {
     display: 'contents',
-    // TODO: remove, debug info only
-    backgroundColor: 'red',
   },
 });

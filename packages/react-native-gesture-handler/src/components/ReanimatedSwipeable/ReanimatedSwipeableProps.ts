@@ -1,21 +1,17 @@
 import React from 'react';
-import type { PanGestureHandlerProps } from '../../handlers/PanGestureHandler';
 import { SharedValue } from 'react-native-reanimated';
 import { StyleProp, ViewStyle } from 'react-native';
-import { RelationPropType } from '../utils';
-
-type SwipeableExcludes = Exclude<
-  keyof PanGestureHandlerProps,
-  'onGestureEvent' | 'onHandlerStateChange'
->;
-
+import { PanGestureProperties } from '../../v3/hooks/gestures/pan/usePan';
+import { CommonGestureConfig } from '../../handlers/gestureHandlerCommon';
+import { AnyGesture } from '../../v3/types';
 export enum SwipeDirection {
   LEFT = 'left',
   RIGHT = 'right',
 }
 
 export interface SwipeableProps
-  extends Pick<PanGestureHandlerProps, SwipeableExcludes> {
+  extends PanGestureProperties,
+    CommonGestureConfig {
   /**
    *
    */
@@ -176,19 +172,27 @@ export interface SwipeableProps
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  simultaneousWithExternalGesture?: RelationPropType;
+  simultaneousWithExternalGesture?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  requireExternalGestureToFail?: RelationPropType;
+  requireExternalGestureToFail?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  blocksExternalGesture?: RelationPropType;
+  blocksExternalGesture?: AnyGesture | AnyGesture[];
+
+  children?: React.ReactNode;
+
+  id?: string;
+
+  testID?: string;
+
+  cancelsTouchesInView?: boolean;
 }
 
 export interface SwipeableMethods {
