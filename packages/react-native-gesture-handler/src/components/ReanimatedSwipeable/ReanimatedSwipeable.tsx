@@ -475,6 +475,7 @@ const Swipeable = (props: SwipeableProps) => {
     simultaneousWith: simultaneousWithExternalGesture,
     requireToFail: requireExternalGestureToFail,
     block: blocksExternalGesture,
+    hitSlop: hitSlop,
     onStart: updateElementWidths,
     onUpdate: (event: PanGestureUpdateEvent) => {
       'worklet';
@@ -525,7 +526,6 @@ const Swipeable = (props: SwipeableProps) => {
       <Animated.View
         {...remainingProps}
         onLayout={onRowLayout}
-        hitSlop={hitSlop ?? undefined}
         style={[styles.container, containerStyle]}>
         {leftElement()}
         {rightElement()}
