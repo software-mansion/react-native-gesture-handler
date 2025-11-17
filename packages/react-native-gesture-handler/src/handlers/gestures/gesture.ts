@@ -39,7 +39,7 @@ export type GestureRef =
   | number
   | GestureType
   | React.RefObject<GestureType | undefined>
-  | React.RefObject<React.ComponentType | undefined>; // Allow adding a ref to a gesture handler
+  | React.RefObject<React.ComponentType | undefined | null>; // Allow adding a ref to a gesture handler
 export interface BaseGestureConfig
   extends CommonGestureConfig,
     Record<string, unknown> {
@@ -353,7 +353,9 @@ export abstract class BaseGesture<
    */
   simultaneousWithExternalGesture(...gestures: Exclude<GestureRef, number>[]) {
     for (const gesture of gestures) {
-      this.addDependency('simultaneousWith', gesture);
+      if (gesture) {
+        this.addDependency('simultaneousWith', gesture);
+      }
     }
     return this;
   }
