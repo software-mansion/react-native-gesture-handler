@@ -528,7 +528,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       hitSlop: drawerOpened ? fillHitSlop : edgeHitSlop,
       activeOffsetX: gestureOrientation * minSwipeDistance,
       failOffsetY: [-15, 15],
-      simultaneousWithExternalGesture: overlayDismissGesture,
+      simultaneousWith: overlayDismissGesture,
       enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
       enabled:
         drawerState !== DrawerState.SETTLING &&

@@ -228,7 +228,7 @@
       }
     }
 
-    _eventType = RNGHTouchEventTypeCancelled;
+    _eventType = RNGHTouchEventTypePointerCancel;
     _changedPointersData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
     [self sendEvent];
     _trackedPointersCount = 0;

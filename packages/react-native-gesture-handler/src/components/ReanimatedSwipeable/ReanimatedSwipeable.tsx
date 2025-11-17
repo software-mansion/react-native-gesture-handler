@@ -457,9 +457,9 @@ const Swipeable = (props: SwipeableProps) => {
   const tapGesture = useTap({
     shouldCancelWhenOutside: true,
     enabled: shouldEnableTap,
-    simultaneousWithExternalGesture: simultaneousWithExternalGesture,
-    requireExternalGestureToFail: requireExternalGestureToFail,
-    blocksExternalGesture: blocksExternalGesture,
+    simultaneousWith: simultaneousWithExternalGesture,
+    requireToFail: requireExternalGestureToFail,
+    block: blocksExternalGesture,
     onStart: () => {
       'worklet';
       if (rowState.value !== 0) {
@@ -472,9 +472,9 @@ const Swipeable = (props: SwipeableProps) => {
     enabled: enabled !== false,
     enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
     activeOffsetX: [-dragOffsetFromRightEdge, dragOffsetFromLeftEdge],
-    simultaneousWithExternalGesture: simultaneousWithExternalGesture,
-    requireExternalGestureToFail: requireExternalGestureToFail,
-    blocksExternalGesture: blocksExternalGesture,
+    simultaneousWith: simultaneousWithExternalGesture,
+    requireToFail: requireExternalGestureToFail,
+    block: blocksExternalGesture,
     onStart: updateElementWidths,
     onUpdate: (event: PanGestureUpdateEvent) => {
       'worklet';

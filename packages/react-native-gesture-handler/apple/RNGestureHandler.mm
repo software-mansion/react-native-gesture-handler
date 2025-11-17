@@ -229,6 +229,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return (UITouchType)_pointerType;
 }
 
+- (BOOL)usesNativeOrVirtualDetector
+{
+  return _actionType == RNGestureHandlerActionTypeNativeDetector ||
+      _actionType == RNGestureHandlerActionTypeVirtualDetector;
+}
+
 - (BOOL)isViewParagraphComponent:(RNGHUIView *)view
 {
   return [view isKindOfClass:[RCTParagraphComponentView class]];
@@ -256,7 +262,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
 
-  self.hostDetectorTag = nil;
+  self.hostDetectorView = nil;
   self.virtualViewTag = nil;
 
   [self unbindManualActivation];
@@ -389,10 +395,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIView *)findViewForEvents
 {
-  return
-      [self isKindOfClass:[RNNativeViewGestureHandler class]] && _actionType == RNGestureHandlerActionTypeNativeDetector
-      ? self.recognizer.view.superview
-      : self.recognizer.view;
+  return [self usesNativeOrVirtualDetector] ? self.hostDetectorView : self.recognizer.view;
 }
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event

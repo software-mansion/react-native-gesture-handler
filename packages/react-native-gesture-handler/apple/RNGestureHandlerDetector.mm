@@ -33,11 +33,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
-    _props = defaultProps;
-    _moduleId = -1;
-    _nativeHandlers = [NSMutableSet set];
-    _attachedHandlers = [NSMutableSet set];
+    [self setDefaultProps];
   }
 
   return self;
@@ -70,6 +66,15 @@
                  viewTag:-1
         attachedHandlers:_attachedHandlers];
   }
+}
+
+- (void)setDefaultProps
+{
+  static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
+  _props = defaultProps;
+  _moduleId = -1;
+  _nativeHandlers = [NSMutableSet set];
+  _attachedHandlers = [NSMutableSet set];
 }
 
 - (void)dispatchStateChangeEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event
@@ -127,6 +132,13 @@
   return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
 }
 
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+
+  [self setDefaultProps];
+}
+
 - (void)didAddSubview:(RNGHUIView *)view
 {
   [super didAddSubview:view];
@@ -180,19 +192,27 @@
           RNGHUIView *targetView = [handlerManager viewForReactTag:@(viewTag)];
 
           if (targetView != nil) {
-            [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
+            [handlerManager attachGestureHandler:@(tag)
+                                   toViewWithTag:@(viewTag)
+                                  withActionType:actionType
+                                withHostDetector:self];
           } else {
             // Let's assume that if the native view for the virtual detector hasn't been found, the hierarchy was folded
             // into a single UIView.
-            [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
+            [handlerManager.registry attachHandlerWithTag:@(tag)
+                                                   toView:self
+                                           withActionType:actionType
+                                         withHostDetector:self];
             [[handlerManager registry] handlerWithTag:@(tag)].virtualViewTag = @(viewTag);
           }
         } else {
-          [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
+          [handlerManager.registry attachHandlerWithTag:@(tag)
+                                                 toView:self
+                                         withActionType:actionType
+                                       withHostDetector:self];
         }
         [attachedHandlers addObject:@(tag)];
       }
-      [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorTag = @(self.tag);
     }
   }
 
@@ -261,10 +281,20 @@
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
+  RNGHUIView *view = self.subviews[0];
+
+  if ([view isKindOfClass:[RCTViewComponentView class]]) {
+    RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+    if (componentView.contentView != nil) {
+      view = componentView.contentView;
+    }
+  }
+
   for (NSNumber *handlerTag in _nativeHandlers) {
     [handlerManager.registry attachHandlerWithTag:handlerTag
-                                           toView:self.subviews[0]
-                                   withActionType:RNGestureHandlerActionTypeNativeDetector];
+                                           toView:view
+                                   withActionType:RNGestureHandlerActionTypeNativeDetector
+                                 withHostDetector:self];
 
     [_attachedHandlers addObject:handlerTag];
   }

@@ -49,7 +49,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
     const val EVENT_TOUCH_DOWN = 1
     const val EVENT_TOUCH_MOVE = 2
     const val EVENT_TOUCH_UP = 3
-    const val EVENT_TOUCH_CANCELLED = 4
+    const val EVENT_TOUCH_CANCEL = 4
 
     const val EVENT_NAME = "onGestureHandlerEvent"
     const val REANIMATED_EVENT_NAME = "onGestureHandlerReanimatedTouchEvent"

@@ -9,10 +9,10 @@ import {
 import { FilterNeverProperties } from './UtilityTypes';
 
 // Unfortunately, this type cannot be moved into ConfigTypes.ts because of circular dependency
-type ExternalRelations = {
-  simultaneousWithExternalGesture?: AnyGesture | AnyGesture[];
-  requireExternalGestureToFail?: AnyGesture | AnyGesture[];
-  blocksExternalGesture?: AnyGesture | AnyGesture[];
+export type ExternalRelations = {
+  simultaneousWith?: AnyGesture | AnyGesture[];
+  requireToFail?: AnyGesture | AnyGesture[];
+  block?: AnyGesture | AnyGesture[];
 };
 
 // Similarly, this type cannot be moved into ConfigTypes.ts because it depends on `ExternalRelations`
