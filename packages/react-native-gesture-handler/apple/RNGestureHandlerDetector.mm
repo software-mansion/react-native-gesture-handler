@@ -131,7 +131,12 @@
 {
   [super prepareForRecycle];
 
+  static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
+  _props = defaultProps;
+  _moduleId = -1;
+
   [_nativeHandlers removeAllObjects];
+  [_attachedHandlers removeAllObjects];
 }
 
 - (void)didAddSubview:(RNGHUIView *)view
