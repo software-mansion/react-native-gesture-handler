@@ -457,6 +457,9 @@ const Swipeable = (props: SwipeableProps) => {
   const tapGesture = useTap({
     shouldCancelWhenOutside: true,
     enabled: shouldEnableTap,
+    simultaneousWithExternalGesture: simultaneousWithExternalGesture,
+    requireExternalGestureToFail: requireExternalGestureToFail,
+    blocksExternalGesture: blocksExternalGesture,
     onStart: () => {
       'worklet';
       if (rowState.value !== 0) {
