@@ -81,7 +81,7 @@ export function VirtualDetector<THandlerData, TConfig>(
     register(virtualChild);
 
     return () => {
-      unregister(viewTag);
+      unregister(virtualChild);
     };
   }, [viewTag, props.gesture, register, unregister, setMode]);
 

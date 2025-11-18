@@ -21,7 +21,7 @@ import {
 } from '../common';
 import { tagMessage } from '../../../utils';
 
-interface SafeVirtualChildren {
+interface VirtualChildrenForNative {
   viewTag: number;
   handlerTags: number[];
   viewRef: unknown;
@@ -31,10 +31,12 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
-  const [virtualChildren, setVirtualChildren] = useState<VirtualChild[]>([]);
-  const safeVirtualChildren: SafeVirtualChildren[] = useMemo(
+  const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
+    () => new Set()
+  );
+  const virtualChildrenForNativeComponent: VirtualChildrenForNative[] = useMemo(
     () =>
-      virtualChildren.map((child) => ({
+      Array.from(virtualChildren).map((child) => ({
         viewTag: child.viewTag,
         handlerTags: child.handlerTags,
         viewRef: child.viewRef,
@@ -61,19 +63,18 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const register = useCallback((child: VirtualChild) => {
     setVirtualChildren((prev) => {
-      const index = prev.findIndex((c) => c.viewTag === child.viewTag);
-      if (index !== -1) {
-        const updated = [...prev];
-        updated[index] = child;
-        return updated;
-      }
-
-      return [...prev, child];
+      const newSet = new Set(prev);
+      newSet.add(child);
+      return newSet;
     });
   }, []);
 
-  const unregister = useCallback((childTag: number) => {
-    setVirtualChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
+  const unregister = useCallback((child: VirtualChild) => {
+    setVirtualChildren((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(child);
+      return newSet;
+    });
   }, []);
 
   const contextValue: InterceptingDetectorContextValue = useMemo(
@@ -239,7 +240,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         }
         handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
-        virtualChildren={safeVirtualChildren}
+        virtualChildren={virtualChildrenForNativeComponent}
         moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>
