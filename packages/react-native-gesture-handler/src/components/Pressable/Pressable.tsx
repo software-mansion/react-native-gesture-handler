@@ -270,13 +270,9 @@ const Pressable = (props: PressableProps) => {
           stateMachine.reset();
           handlePressOut(pressableEvent, false);
         })
-        .onFinalize((_event, success) => {
+        .onFinalize((_event) => {
           if (Platform.OS === 'web') {
-            if (success) {
-              stateMachine.handleEvent(StateMachineEvent.FINALIZE);
-            } else {
-              stateMachine.handleEvent(StateMachineEvent.CANCEL);
-            }
+            stateMachine.handleEvent(StateMachineEvent.FINALIZE);
             handleFinalize();
           }
         }),
