@@ -24,11 +24,16 @@ import createNativeWrapper, {
 import { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { NativeWrapperProps } from '../hooks/utils';
 import { AnyGesture } from '../types';
+import { DetectorType } from '../detectors';
 
-export const RefreshControl = createNativeWrapper(RNRefreshControl, {
-  disallowInterruption: true,
-  shouldCancelWhenOutside: false,
-});
+export const RefreshControl = createNativeWrapper(
+  RNRefreshControl,
+  {
+    disallowInterruption: true,
+    shouldCancelWhenOutside: false,
+  },
+  DetectorType.Virtual
+);
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type RefreshControl = typeof RefreshControl & RNRefreshControl;
@@ -38,40 +43,33 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   {
     disallowInterruption: true,
     shouldCancelWhenOutside: false,
-  }
+  },
+  DetectorType.Intercepting
 );
 export const ScrollView = (
-  props: RNScrollViewProps & NativeWrapperProperties
+  props: RNScrollViewProps &
+    NativeWrapperProperties & {
+      ref?: React.RefObject<ScrollView>;
+    }
 ) => {
-  const refreshControlRef =
-    React.useRef<ComponentWrapperRef<RefreshControl>>(null);
-  const { refreshControl, requireToFail, ...rest } = props;
-
-  const waitFor = [];
-
-  if (Array.isArray(requireToFail)) {
-    waitFor.push(...requireToFail);
-  } else if (requireToFail) {
-    waitFor.push(requireToFail);
-  }
-
-  if (refreshControlRef.current?.gestureRef) {
-    waitFor.push(refreshControlRef.current.gestureRef);
-  }
+  const { refreshControl, ...rest } = props;
+  const [scrollGesture, setScrollGesture] = React.useState(null);
 
   return (
     <GHScrollView
       {...rest}
       // @ts-ignore `ref` exists on `GHScrollView`
-      ref={props.ref}
-      requireExternalGestureToFail={waitFor}
+
+      ref={(r) => {
+        setScrollGesture(r?.gestureRef);
+      }}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl
-          ? React.cloneElement(refreshControl, {
-              // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
-              ref: refreshControlRef,
-            })
+          ? React.cloneElement(
+              refreshControl,
+              scrollGesture ? { block: scrollGesture } : {}
+            )
           : undefined
       }
     />
