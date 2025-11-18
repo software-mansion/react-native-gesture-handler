@@ -18,9 +18,5 @@ export const InterceptingDetectorContext =
   createContext<InterceptingDetectorContextValue | null>(null);
 
 export function useInterceptingDetectorContext() {
-  const ctx = use(InterceptingDetectorContext);
-  if (!ctx) {
-    return null;
-  }
-  return ctx;
+  return use(InterceptingDetectorContext);
 }
