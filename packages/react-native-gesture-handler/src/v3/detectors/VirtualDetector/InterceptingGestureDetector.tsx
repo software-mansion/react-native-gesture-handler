@@ -88,7 +88,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         ) {
           throw new Error(
             tagMessage(
-              'InterceptingGestureDetector can only handle either Reanimated or Animated events at the same time.'
+              'InterceptingGestureDetector can only handle either Reanimated or Animated events.'
             )
           );
         }
