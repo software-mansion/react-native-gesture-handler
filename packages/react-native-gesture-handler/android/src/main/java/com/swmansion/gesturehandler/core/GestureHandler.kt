@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
@@ -47,7 +48,13 @@ open class GestureHandler {
       ) {
         this.hostDetectorView
       } else if (this is NativeViewGestureHandler) {
-        this.view?.parent
+        val parent = this.view?.parent
+
+        if (parent is ReactSwipeRefreshLayout) {
+          parent.parent
+        } else {
+          parent
+        }
       } else {
         view
       }
