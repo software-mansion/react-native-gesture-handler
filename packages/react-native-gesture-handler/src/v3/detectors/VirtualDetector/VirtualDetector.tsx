@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
-import { useDetectorContext } from './useDetectorContext';
+import { useInterceptingDetectorContext } from './useInterceptingDetectorContext';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import { NativeDetectorProps } from '../common';
 import { configureRelations } from '../utils';
 import { tagMessage } from '../../../utils';
 import { DetectorCallbacks, VirtualChild } from '../../types';
 
-function useRequiredDetectorContext() {
-  const context = useDetectorContext();
+function useRequiredInterceptingDetectorContext() {
+  const context = useInterceptingDetectorContext();
   if (!context) {
     throw new Error(
       tagMessage(
@@ -27,7 +27,7 @@ export function VirtualDetector<THandlerData, TConfig>(
   // TODO: replace with MutationObserver when it rolls out in React Native
   'use no memo';
 
-  const { register, unregister } = useRequiredDetectorContext();
+  const { register, unregister } = useRequiredInterceptingDetectorContext();
 
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
