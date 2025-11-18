@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
 import { findNodeHandle, Platform } from 'react-native';
-import { useInterceptingDetectorContext } from './useInterceptingDetectorContext';
+import {
+  InterceptingDetectorMode,
+  useInterceptingDetectorContext,
+} from './useInterceptingDetectorContext';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import { NativeDetectorProps } from '../common';
 import { configureRelations } from '../utils';
@@ -27,7 +30,8 @@ export function VirtualDetector<THandlerData, TConfig>(
   // TODO: replace with MutationObserver when it rolls out in React Native
   'use no memo';
 
-  const { register, unregister } = useRequiredInterceptingDetectorContext();
+  const { register, unregister, setMode } =
+    useRequiredInterceptingDetectorContext();
 
   const viewRef = useRef(null);
   const [viewTag, setViewTag] = useState<number>(-1);
@@ -56,12 +60,20 @@ export function VirtualDetector<THandlerData, TConfig>(
       ? props.gesture.tags
       : [props.gesture.tag];
 
+    if (props.gesture.config.dispatchesAnimatedEvents) {
+      throw new Error(
+        tagMessage(
+          'VirtualGestureDetector cannot handle Animated events with native driver when used inside InterceptingGestureDetector. Use Reanimated or Animated events without native driver instead.'
+        )
+      );
+    } else if (props.gesture.config.shouldUseReanimatedDetector) {
+      setMode(InterceptingDetectorMode.REANIMATED);
+    }
+
     const virtualChild: VirtualChild = {
       viewTag,
       handlerTags,
       methods: props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
-      forReanimated: !!props.gesture.config.shouldUseReanimatedDetector,
-      forAnimated: !!props.gesture.config.dispatchesAnimatedEvents,
       // used by HostGestureDetector on web
       viewRef: Platform.OS === 'web' ? viewRef : undefined,
     };
@@ -71,7 +83,7 @@ export function VirtualDetector<THandlerData, TConfig>(
     return () => {
       unregister(viewTag);
     };
-  }, [viewTag, props.gesture, register, unregister]);
+  }, [viewTag, props.gesture, register, unregister, setMode]);
 
   configureRelations(props.gesture);
 

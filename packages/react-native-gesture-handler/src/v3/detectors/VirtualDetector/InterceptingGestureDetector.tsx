@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import HostGestureDetector from '../HostGestureDetector';
 import {
   VirtualChild,
@@ -8,6 +8,7 @@ import {
 import {
   InterceptingDetectorContext,
   InterceptingDetectorContextValue,
+  InterceptingDetectorMode,
 } from './useInterceptingDetectorContext';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { configureRelations, ensureNativeDetectorComponent } from '../utils';
@@ -20,29 +21,37 @@ import {
 } from '../common';
 import { tagMessage } from '../../../utils';
 
+interface SafeVirtualChildren {
+  viewTag: number;
+  handlerTags: number[];
+  viewRef: unknown;
+}
+
 export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
   const [virtualChildren, setVirtualChildren] = useState<VirtualChild[]>([]);
-
-  const shouldUseReanimatedDetector = useMemo(
+  const safeVirtualChildren: SafeVirtualChildren[] = useMemo(
     () =>
-      virtualChildren.reduce(
-        (acc, child) => acc || child.forReanimated,
-        gesture?.config.shouldUseReanimatedDetector ?? false
-      ),
-    [virtualChildren, gesture]
+      virtualChildren.map((child) => ({
+        viewTag: child.viewTag,
+        handlerTags: child.handlerTags,
+        viewRef: child.viewRef,
+      })),
+    [virtualChildren]
+  );
+  const [mode, setMode] = useState<InterceptingDetectorMode>(
+    gesture?.config.shouldUseReanimatedDetector
+      ? InterceptingDetectorMode.REANIMATED
+      : gesture?.config.dispatchesAnimatedEvents
+        ? InterceptingDetectorMode.ANIMATED
+        : InterceptingDetectorMode.DEFAULT
   );
 
-  const dispatchesAnimatedEvents = useMemo(
-    () =>
-      virtualChildren.reduce(
-        (acc, child) => acc || child.forAnimated,
-        gesture?.config.dispatchesAnimatedEvents ?? false
-      ),
-    [virtualChildren, gesture]
-  );
+  const shouldUseReanimatedDetector =
+    mode === InterceptingDetectorMode.REANIMATED;
+  const dispatchesAnimatedEvents = mode === InterceptingDetectorMode.ANIMATED;
 
   const NativeDetectorComponent = dispatchesAnimatedEvents
     ? AnimatedNativeDetector
@@ -69,11 +78,40 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const contextValue: InterceptingDetectorContextValue = useMemo(
     () => ({
+      mode,
+      setMode: (newMode: InterceptingDetectorMode) => {
+        if (
+          (newMode === InterceptingDetectorMode.REANIMATED &&
+            mode === InterceptingDetectorMode.ANIMATED) ||
+          (newMode === InterceptingDetectorMode.ANIMATED &&
+            mode === InterceptingDetectorMode.REANIMATED)
+        ) {
+          throw new Error(
+            tagMessage(
+              'InterceptingGestureDetector can only handle either Reanimated or Animated events at the same time.'
+            )
+          );
+        }
+
+        setMode(newMode);
+      },
       register,
       unregister,
     }),
-    [register, unregister]
+    [mode, register, unregister]
   );
+
+  useEffect(() => {
+    if (gesture?.config?.dispatchesAnimatedEvents) {
+      contextValue.setMode(InterceptingDetectorMode.ANIMATED);
+    } else if (gesture?.config?.shouldUseReanimatedDetector) {
+      contextValue.setMode(InterceptingDetectorMode.REANIMATED);
+    }
+  }, [
+    contextValue,
+    gesture?.config?.dispatchesAnimatedEvents,
+    gesture?.config?.shouldUseReanimatedDetector,
+  ]);
 
   // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
@@ -201,7 +239,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         }
         handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
-        virtualChildren={virtualChildren}
+        virtualChildren={safeVirtualChildren}
         moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>
