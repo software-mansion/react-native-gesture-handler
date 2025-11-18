@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 import { ScrollView, RefreshControl } from 'react-native-gesture-handler';
+
+const DATA = Array.from({ length: 20 }, (_, i) => ({
+  id: i.toString(),
+  title: `Item ${i + 1}`,
+}));
+
+const Item = ({ title }: { title: string }) => (
+  <View style={styles.item}>
+    <Text style={styles.title}>{title}</Text>
+  </View>
+);
 
 export default function ScrollViewExample() {
   const [refreshing, setRefreshing] = useState(false);
@@ -18,19 +29,25 @@ export default function ScrollViewExample() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-      <Text style={styles.text}>Pull down to refresh!</Text>
+      {DATA.map((item) => (
+        <Item key={item.id} title={item.title} />
+      ))}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 24,
   },
-  text: {
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+  },
+  title: {
     fontSize: 18,
   },
 });
