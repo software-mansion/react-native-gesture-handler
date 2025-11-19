@@ -16,7 +16,7 @@ function useRequiredInterceptingDetectorContext() {
   if (!context) {
     throw new Error(
       tagMessage(
-        'Virtual detector must be a descendant of an InterceptingGestureDecector'
+        'VirtualGestureDetector must be a descendant of an InterceptingGestureDetector'
       )
     );
   }
