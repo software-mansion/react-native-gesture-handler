@@ -1,4 +1,4 @@
-import { prepareUpdateHandlers, isAnimatedEvent } from '../../utils';
+import { prepareUpdateHandlers, isNativeAnimatedEvent } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
 import { getUpdateHandler } from '../updateHandler';
 import { BaseGestureConfig } from '../../../types';
@@ -20,7 +20,7 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
       lastUpdateEvent: undefined,
     };
 
-    return isAnimatedEvent(config.onUpdate)
+    return isNativeAnimatedEvent(config.onUpdate)
       ? undefined
       : getUpdateHandler(
           handlerTag,

@@ -6,7 +6,7 @@ import {
   SingleGestureName,
 } from '../../types';
 import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
-import { isAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
+import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
   EMPTY_WHITE_LIST,
@@ -25,7 +25,7 @@ export function prepareConfig<THandlerData, TConfig extends object>(
     Reanimated !== undefined &&
     hasWorkletEventHandlers(config);
   config.needsPointerData = shouldHandleTouchEvents(config);
-  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
+  config.dispatchesAnimatedEvents = isNativeAnimatedEvent(config.onUpdate);
   config.dispatchesReanimatedEvents =
     config.shouldUseReanimatedDetector && !runOnJS;
 }
