@@ -41,7 +41,7 @@ export function prepareConfig<THandlerData, TConfig extends object>(
   if (
     __DEV__ &&
     config.dispatchesAnimatedEvents &&
-    config.disableReanimated === false
+    (config.disableReanimated === false || config.runOnJS === false)
   ) {
     throw new Error(
       tagMessage(
