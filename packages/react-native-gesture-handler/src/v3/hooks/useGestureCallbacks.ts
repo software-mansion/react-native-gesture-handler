@@ -1,7 +1,7 @@
 import { useGestureStateChangeEvent } from './callbacks/js/useGestureStateChangeEvent';
 import { useGestureUpdateEvent } from './callbacks/js/useGestureUpdateEvent';
 import { useGestureTouchEvent } from './callbacks/js/useGestureTouchEvent';
-import { AnimatedEvent, BaseGestureConfig } from '../types';
+import { AnimatedEvent, BaseGestureConfig, GestureUpdateEvent } from '../types';
 import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
@@ -34,9 +34,14 @@ export function useGestureCallbacks<THandlerData, TConfig>(
     onReanimatedTouchEvent = useReanimatedTouchEvent(handlerTag, config);
   }
 
-  let onGestureHandlerAnimatedEvent: AnimatedEvent | undefined;
-  if (isNativeAnimatedEvent(config.onUpdate)) {
-    checkMappingForChangeProperties(config.onUpdate);
+  let onGestureHandlerAnimatedEvent:
+    | ((event: GestureUpdateEvent<THandlerData>) => void)
+    | AnimatedEvent
+    | undefined;
+  if (config.dispatchesAnimatedEvents) {
+    if (__DEV__ && isNativeAnimatedEvent(config.onUpdate)) {
+      checkMappingForChangeProperties(config.onUpdate);
+    }
     onGestureHandlerAnimatedEvent = config.onUpdate;
   }
 

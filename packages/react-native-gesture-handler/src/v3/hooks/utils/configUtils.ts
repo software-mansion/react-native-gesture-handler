@@ -20,12 +20,32 @@ export function prepareConfig<THandlerData, TConfig extends object>(
 ) {
   const runOnJS = maybeUnpackValue(config.runOnJS);
 
+  config.dispatchesAnimatedEvents =
+    config.useAnimated || isNativeAnimatedEvent(config.onUpdate);
+
+  // Validate that the user is not trying to mix Animated and Reanimated before updating the config.
+  if (
+    __DEV__ &&
+    config.dispatchesAnimatedEvents &&
+    config.disableReanimated === false
+  ) {
+    throw new Error(
+      tagMessage(
+        'Animated cannot be used together with Reanimated in the same gesture. Please choose either Animated or Reanimated for handling gesture events.'
+      )
+    );
+  }
+
+  if (config.dispatchesAnimatedEvents) {
+    config.disableReanimated = true;
+  }
+
   config.shouldUseReanimatedDetector =
     !config.disableReanimated &&
     Reanimated !== undefined &&
-    hasWorkletEventHandlers(config);
+    hasWorkletEventHandlers(config) &&
+    !config.dispatchesAnimatedEvents;
   config.needsPointerData = shouldHandleTouchEvents(config);
-  config.dispatchesAnimatedEvents = isNativeAnimatedEvent(config.onUpdate);
   config.dispatchesReanimatedEvents =
     config.shouldUseReanimatedDetector && !runOnJS;
 }

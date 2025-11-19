@@ -3,6 +3,7 @@ import {
   StateChangeEvent,
   UpdateEvent,
   TouchEvent,
+  GestureUpdateEvent,
 } from './EventTypes';
 
 export type DetectorCallbacks<THandlerData> = {
@@ -18,7 +19,10 @@ export type DetectorCallbacks<THandlerData> = {
     | undefined
     | ((event: UpdateEvent<THandlerData>) => void);
   onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
-  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
+  onGestureHandlerAnimatedEvent:
+    | undefined
+    | AnimatedEvent
+    | ((event: GestureUpdateEvent<THandlerData>) => void);
 };
 
 export type VirtualChild = {

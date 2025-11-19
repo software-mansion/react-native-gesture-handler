@@ -1,4 +1,4 @@
-import { prepareUpdateHandlers, isNativeAnimatedEvent } from '../../utils';
+import { prepareUpdateHandlers } from '../../utils';
 import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
 import { getUpdateHandler } from '../updateHandler';
 import { BaseGestureConfig } from '../../../types';
@@ -20,7 +20,7 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
       lastUpdateEvent: undefined,
     };
 
-    return isNativeAnimatedEvent(config.onUpdate)
+    return config.dispatchesAnimatedEvents
       ? undefined
       : getUpdateHandler(
           handlerTag,
@@ -28,5 +28,10 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
           jsContext,
           changeEventCalculator
         );
-  }, [handlerTag, config.onUpdate, config.changeEventCalculator]);
+  }, [
+    handlerTag,
+    config.onUpdate,
+    config.dispatchesAnimatedEvents,
+    config.changeEventCalculator,
+  ]);
 }
