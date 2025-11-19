@@ -23,8 +23,12 @@ import createNativeWrapper, {
 
 import { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { NativeWrapperProps } from '../hooks/utils';
-import { AnyGesture } from '../types';
+import { Gesture } from '../types';
 import { DetectorType } from '../detectors';
+import {
+  NativeViewGestureConfig,
+  NativeViewHandlerData,
+} from '../hooks/gestures/native/useNative';
 
 export const RefreshControl = createNativeWrapper(
   RNRefreshControl,
@@ -46,28 +50,46 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   },
   DetectorType.Intercepting
 );
+
+type ImperativeScrollViewRef = ComponentWrapperRef<RNScrollViewProps> | null;
+
 export const ScrollView = (
   props: RNScrollViewProps &
     NativeWrapperProperties & {
-      ref?: React.RefObject<ScrollView>;
+      ref?: React.RefObject<ImperativeScrollViewRef>;
+      // This prop existst because using `ref` in `renderScrollComponent` doesn't work.
+      innerRef?: (node: ImperativeScrollViewRef) => void;
     }
 ) => {
-  const { refreshControl, ...rest } = props;
-  const [scrollGesture, setScrollGesture] = React.useState(null);
+  const { refreshControl, innerRef, ref, ...rest } = props;
+
+  const [scrollGesture, setScrollGesture] = React.useState<Gesture<
+    NativeViewHandlerData,
+    NativeViewGestureConfig
+  > | null>(null);
+
+  const wrapperRef = React.useRef<ComponentWrapperRef<RNScrollViewProps>>(null);
+
+  React.useImperativeHandle<ImperativeScrollViewRef, ImperativeScrollViewRef>(
+    ref,
+    () => wrapperRef.current
+  );
 
   return (
     <GHScrollView
       {...rest}
       // @ts-ignore `ref` exists on `GHScrollView`
-
-      ref={(r) => {
-        setScrollGesture(r?.gestureRef);
+      ref={(node: ImperativeScrollViewRef) => {
+        setScrollGesture(node?.gestureRef ?? null);
+        wrapperRef.current = node;
+        innerRef?.(node);
       }}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl
           ? React.cloneElement(
               refreshControl,
+              // @ts-ignore block exists (on our RefreshControl)
               scrollGesture ? { block: scrollGesture } : {}
             )
           : undefined
@@ -92,14 +114,26 @@ export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
 
-export const FlatList = ((props) => {
-  const refreshControlRef =
-    React.useRef<ComponentWrapperRef<RefreshControl>>(null);
+type ImperativeFlatListRef =
+  | (ComponentWrapperRef<RNScrollViewProps> & {
+      flatListRef: React.RefObject<FlatList<any>>;
+    })
+  | null;
 
-  const { requireToFail, refreshControl, ...rest } = props;
+export const FlatList = ((props) => {
+  const { refreshControl, ref, ...rest } = props;
+
+  const [scrollGesture, setScrollGesture] = React.useState<Gesture<
+    NativeViewHandlerData,
+    NativeViewGestureConfig
+  > | null>(null);
+
+  const wrapperRef = React.useRef<ImperativeScrollViewRef>(null);
+  const flatListRef = React.useRef<FlatList<any>>(null);
 
   const flatListProps = {};
   const scrollViewProps = {};
+
   for (const [propName, value] of Object.entries(rest)) {
     // @ts-ignore https://github.com/microsoft/TypeScript/issues/26255
     if (NativeWrapperProps.has(propName)) {
@@ -113,39 +147,42 @@ export const FlatList = ((props) => {
     }
   }
 
-  const waitFor: AnyGesture[] = [];
-
-  if (Array.isArray(requireToFail)) {
-    waitFor.push(...requireToFail);
-  } else if (requireToFail) {
-    waitFor.push(requireToFail);
-  }
-
-  if (refreshControlRef.current?.gestureRef) {
-    waitFor.push(refreshControlRef.current.gestureRef);
-  }
+  React.useImperativeHandle<ImperativeFlatListRef, ImperativeFlatListRef>(
+    // @ts-ignore We want to override ref
+    ref,
+    () => {
+      return {
+        ...wrapperRef.current,
+        flatListRef: flatListRef.current,
+      };
+    }
+  );
 
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
     <RNFlatList
-      ref={props.ref}
+      ref={flatListRef}
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
         <ScrollView
+          innerRef={(node: ImperativeScrollViewRef) => {
+            setScrollGesture(node?.gestureRef ?? null);
+            wrapperRef.current = node;
+          }}
           {...{
             ...scrollProps,
             ...scrollViewProps,
-            requireExternalGestureToFail: waitFor,
           }}
         />
       )}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl
-          ? React.cloneElement(refreshControl, {
-              // @ts-ignore for reasons unknown to me, `ref` doesn't exist on the type inferred by TS
-              ref: refreshControlRef,
-            })
+          ? React.cloneElement(
+              refreshControl,
+              // @ts-ignore block exists (on our RefreshControl)
+              scrollGesture ? { block: scrollGesture } : {}
+            )
           : undefined
       }
     />
