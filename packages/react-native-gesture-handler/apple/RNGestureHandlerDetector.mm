@@ -223,7 +223,7 @@
   }
 
   // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
-  if (self.subviews[0]) {
+  if (self.subviews.count != 0) {
     [self tryAttachNativeHandlersToChildView];
   }
 }

@@ -1,11 +1,15 @@
-import React, { RefObject, useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import HostGestureDetector from '../HostGestureDetector';
 import {
-  VirtualChildren,
+  VirtualChild,
   GestureHandlerEvent,
   DetectorCallbacks,
 } from '../../types';
-import { DetectorContext } from './useDetectorContext';
+import {
+  InterceptingDetectorContext,
+  InterceptingDetectorContextValue,
+  InterceptingDetectorMode,
+} from './useInterceptingDetectorContext';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import { configureRelations, ensureNativeDetectorComponent } from '../utils';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
@@ -17,64 +21,98 @@ import {
 } from '../common';
 import { tagMessage } from '../../../utils';
 
+interface VirtualChildrenForNative {
+  viewTag: number;
+  handlerTags: number[];
+  viewRef: unknown;
+}
+
 export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
-  const [virtualChildren, setVirtualChildren] = useState<VirtualChildren[]>([]);
-
-  const virtualMethods = useRef<
-    Map<number, RefObject<DetectorCallbacks<unknown>>>
-  >(new Map());
-
-  const [shouldUseReanimated, setShouldUseReanimated] = useState(
-    gesture ? gesture.config.shouldUseReanimatedDetector : false
+  const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
+    () => new Set()
   );
-  const [dispatchesAnimatedEvents, setDispatchesAnimatedEvents] = useState(
-    gesture ? gesture.config.dispatchesAnimatedEvents : false
+  const virtualChildrenForNativeComponent: VirtualChildrenForNative[] = useMemo(
+    () =>
+      Array.from(virtualChildren).map((child) => ({
+        viewTag: child.viewTag,
+        handlerTags: child.handlerTags,
+        viewRef: child.viewRef,
+      })),
+    [virtualChildren]
   );
+  const [mode, setMode] = useState<InterceptingDetectorMode>(
+    gesture?.config.shouldUseReanimatedDetector
+      ? InterceptingDetectorMode.REANIMATED
+      : gesture?.config.dispatchesAnimatedEvents
+        ? InterceptingDetectorMode.ANIMATED
+        : InterceptingDetectorMode.DEFAULT
+  );
+
+  const shouldUseReanimatedDetector =
+    mode === InterceptingDetectorMode.REANIMATED;
+  const dispatchesAnimatedEvents = mode === InterceptingDetectorMode.ANIMATED;
 
   const NativeDetectorComponent = dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : shouldUseReanimated
+    : shouldUseReanimatedDetector
       ? ReanimatedNativeDetector
       : HostGestureDetector;
 
-  const register = useCallback(
-    (
-      child: VirtualChildren,
-      methods: RefObject<DetectorCallbacks<unknown>>,
-      forReanimated: boolean | undefined,
-      forAnimated: boolean | undefined
-    ) => {
-      setShouldUseReanimated(!!forReanimated);
-      setDispatchesAnimatedEvents(!!forAnimated);
+  const register = useCallback((child: VirtualChild) => {
+    setVirtualChildren((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(child);
+      return newSet;
+    });
+  }, []);
 
-      setVirtualChildren((prev) => {
-        const index = prev.findIndex((c) => c.viewTag === child.viewTag);
-        if (index !== -1) {
-          const updated = [...prev];
-          updated[index] = child;
-          return updated;
+  const unregister = useCallback((child: VirtualChild) => {
+    setVirtualChildren((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(child);
+      return newSet;
+    });
+  }, []);
+
+  const contextValue: InterceptingDetectorContextValue = useMemo(
+    () => ({
+      mode,
+      setMode: (newMode: InterceptingDetectorMode) => {
+        if (
+          (newMode === InterceptingDetectorMode.REANIMATED &&
+            mode === InterceptingDetectorMode.ANIMATED) ||
+          (newMode === InterceptingDetectorMode.ANIMATED &&
+            mode === InterceptingDetectorMode.REANIMATED)
+        ) {
+          throw new Error(
+            tagMessage(
+              'InterceptingGestureDetector can only handle either Reanimated or Animated events.'
+            )
+          );
         }
 
-        return [...prev, child];
-      });
-
-      child.handlerTags.forEach((tag) => {
-        virtualMethods.current.set(tag, methods);
-      });
-    },
-    []
+        setMode(newMode);
+      },
+      register,
+      unregister,
+    }),
+    [mode, register, unregister]
   );
 
-  const unregister = useCallback((childTag: number, handlerTags: number[]) => {
-    handlerTags.forEach((tag) => {
-      virtualMethods.current.delete(tag);
-    });
-
-    setVirtualChildren((prev) => prev.filter((c) => c.viewTag !== childTag));
-  }, []);
+  useEffect(() => {
+    if (gesture?.config?.dispatchesAnimatedEvents) {
+      contextValue.setMode(InterceptingDetectorMode.ANIMATED);
+    } else if (gesture?.config?.shouldUseReanimatedDetector) {
+      contextValue.setMode(InterceptingDetectorMode.REANIMATED);
+    }
+  }, [
+    contextValue,
+    gesture?.config?.dispatchesAnimatedEvents,
+    gesture?.config?.shouldUseReanimatedDetector,
+  ]);
 
   // It might happen only with ReanimatedNativeDetector
   if (!NativeDetectorComponent) {
@@ -85,20 +123,23 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     );
   }
 
-  const handleGestureEvent = (key: keyof DetectorCallbacks<THandlerData>) => {
-    return (e: GestureHandlerEvent<THandlerData>) => {
-      if (gesture?.detectorCallbacks[key]) {
-        gesture.detectorCallbacks[key](e);
-      }
-
-      virtualMethods.current.forEach((ref) => {
-        const method = ref.current?.[key];
-        if (method) {
-          method(e);
+  const createGestureEventHandler = useCallback(
+    (key: keyof DetectorCallbacks<THandlerData>) => {
+      return (e: GestureHandlerEvent<THandlerData>) => {
+        if (gesture?.detectorCallbacks[key]) {
+          gesture.detectorCallbacks[key](e);
         }
-      });
-    };
-  };
+
+        virtualChildren.forEach((child) => {
+          const method = child.methods[key];
+          if (method) {
+            method(e);
+          }
+        });
+      };
+    },
+    [gesture, virtualChildren]
+  );
 
   const getHandlers = useCallback(
     (key: keyof DetectorCallbacks<unknown>) => {
@@ -112,8 +153,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         );
       }
 
-      virtualMethods.current.forEach((ref) => {
-        const handler = ref.current?.[key];
+      virtualChildren.forEach((child) => {
+        const handler = child.methods[key];
         if (handler) {
           handlers.push(
             handler as (e: GestureHandlerEvent<THandlerData>) => void
@@ -126,14 +167,28 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     [virtualChildren, gesture?.detectorCallbacks]
   );
 
+  const reanimatedUpdateEvents = useMemo(
+    () => getHandlers('onReanimatedUpdateEvent'),
+    [getHandlers]
+  );
   const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
-    getHandlers('onReanimatedUpdateEvent')
+    reanimatedUpdateEvents
+  );
+
+  const reanimatedStateChangeEvents = useMemo(
+    () => getHandlers('onReanimatedStateChange'),
+    [getHandlers]
   );
   const reanimatedStateChangeHandler = Reanimated?.useComposedEventHandler(
-    getHandlers('onReanimatedStateChange')
+    reanimatedStateChangeEvents
+  );
+
+  const reanimatedTouchEvents = useMemo(
+    () => getHandlers('onReanimatedTouchEvent'),
+    [getHandlers]
   );
   const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
-    getHandlers('onReanimatedTouchEvent')
+    reanimatedTouchEvents
   );
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
@@ -142,47 +197,53 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     configureRelations(gesture);
   }
 
+  const handlerTags = useMemo(() => {
+    if (gesture) {
+      return isComposedGesture(gesture) ? gesture.tags : [gesture.tag];
+    }
+    return [];
+  }, [gesture]);
+
   return (
-    <DetectorContext value={{ register, unregister }}>
+    <InterceptingDetectorContext value={contextValue}>
       <NativeDetectorComponent
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerStateChange={handleGestureEvent(
-          'onGestureHandlerStateChange'
+        onGestureHandlerStateChange={useMemo(
+          () => createGestureEventHandler('onGestureHandlerStateChange'),
+          [createGestureEventHandler]
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerEvent={handleGestureEvent('onGestureHandlerEvent')}
+        onGestureHandlerEvent={useMemo(
+          () => createGestureEventHandler('onGestureHandlerEvent'),
+          [createGestureEventHandler]
+        )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerAnimatedEvent={
           gesture?.detectorCallbacks.onGestureHandlerAnimatedEvent
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerTouchEvent={handleGestureEvent(
-          'onGestureHandlerTouchEvent'
+        onGestureHandlerTouchEvent={useMemo(
+          () => createGestureEventHandler('onGestureHandlerTouchEvent'),
+          [createGestureEventHandler]
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedStateChange={
-          shouldUseReanimated ? reanimatedStateChangeHandler : undefined
+          shouldUseReanimatedDetector ? reanimatedStateChangeHandler : undefined
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedEvent={
-          shouldUseReanimated ? reanimatedEventHandler : undefined
+          shouldUseReanimatedDetector ? reanimatedEventHandler : undefined
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedTouchEvent={
-          shouldUseReanimated ? reanimatedTouchEventHandler : undefined
+          shouldUseReanimatedDetector ? reanimatedTouchEventHandler : undefined
         }
-        handlerTags={
-          gesture
-            ? isComposedGesture(gesture)
-              ? gesture.tags
-              : [gesture.tag]
-            : []
-        }
+        handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
-        virtualChildren={virtualChildren}
+        virtualChildren={virtualChildrenForNativeComponent}
         moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>
-    </DetectorContext>
+    </InterceptingDetectorContext>
   );
 }

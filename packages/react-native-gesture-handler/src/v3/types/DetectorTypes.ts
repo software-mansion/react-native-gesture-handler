@@ -21,7 +21,11 @@ export type DetectorCallbacks<THandlerData> = {
   onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
 };
 
-export type VirtualChildren = {
+export type VirtualChild = {
   viewTag: number;
   handlerTags: number[];
+  methods: DetectorCallbacks<unknown>;
+
+  // only set on web
+  viewRef: unknown;
 };
