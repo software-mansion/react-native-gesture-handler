@@ -30,14 +30,6 @@ export function useGesture<THandlerData, TConfig>(
   // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
   prepareConfig(config);
 
-  if (config.dispatchesAnimatedEvents && config.shouldUseReanimatedDetector) {
-    throw new Error(
-      tagMessage(
-        `${type}: You cannot use Animated.Event together with callbacks running on the UI thread. Either remove Animated.Event from onUpdate, or set runOnJS property to true on the gesture.`
-      )
-    );
-  }
-
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const {
     onGestureHandlerStateChange,
