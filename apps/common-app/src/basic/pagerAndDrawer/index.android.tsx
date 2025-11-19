@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {
   createNativeWrapper,
-  DrawerLayoutAndroid,
+  LegacyDrawerLayoutAndroid,
 } from 'react-native-gesture-handler';
 
 const WrappedViewPagerAndroid = createNativeWrapper(ViewPagerAndroid, {
@@ -35,22 +35,22 @@ export default class Example extends Component {
     return (
       <WrappedViewPagerAndroid style={styles.container}>
         <View>
-          <DrawerLayoutAndroid
+          <LegacyDrawerLayoutAndroid
             drawerWidth={200}
             drawerPosition="left"
             renderNavigationView={() => navigationView}>
             <Page backgroundColor="gray" text="First 🙈" />
-          </DrawerLayoutAndroid>
+          </LegacyDrawerLayoutAndroid>
         </View>
         <Page backgroundColor="yellow" text="Second 🙉" />
         <Page backgroundColor="blue" text="Third 🙊" />
         <View>
-          <DrawerLayoutAndroid
+          <LegacyDrawerLayoutAndroid
             drawerWidth={200}
             drawerPosition="right"
             renderNavigationView={() => navigationView}>
             <Page backgroundColor="blue" text="Fourth 😎" />
-          </DrawerLayoutAndroid>
+          </LegacyDrawerLayoutAndroid>
         </View>
       </WrappedViewPagerAndroid>
     );
