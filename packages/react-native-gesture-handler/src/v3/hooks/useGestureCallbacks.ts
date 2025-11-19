@@ -9,6 +9,30 @@ import {
 import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanimatedStateChangeEvent';
 import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
 import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
+import { tagMessage } from '../../utils';
+
+function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
+  return (...args: unknown[]) => {
+    try {
+      handler(...args);
+    } catch (e) {
+      if (
+        e instanceof Error &&
+        e.message.includes('Bad event of type undefined for key')
+      ) {
+        throw new Error(
+          tagMessage(
+            'The event mapping inside an Animated.event is invalid. ' +
+              'Please make sure you are using the correct structure for the gesture event:\n\n' +
+              '{ nativeEvent: { handlerData: { /* your mappings here */ } } }'
+          )
+        );
+      }
+
+      throw e;
+    }
+  };
+}
 
 export function useGestureCallbacks<THandlerData, TConfig>(
   handlerTag: number,
@@ -42,7 +66,13 @@ export function useGestureCallbacks<THandlerData, TConfig>(
     if (__DEV__ && isNativeAnimatedEvent(config.onUpdate)) {
       checkMappingForChangeProperties(config.onUpdate);
     }
-    onGestureHandlerAnimatedEvent = config.onUpdate;
+
+    if (__DEV__ && !isNativeAnimatedEvent(config.onUpdate)) {
+      // @ts-expect-error At this point we know it's not a native animated event, so it's callable
+      onGestureHandlerAnimatedEvent = guardJSAnimatedEvent(config.onUpdate);
+    } else {
+      onGestureHandlerAnimatedEvent = config.onUpdate;
+    }
   }
 
   return {
