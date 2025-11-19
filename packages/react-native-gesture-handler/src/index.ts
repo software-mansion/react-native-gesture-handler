@@ -153,6 +153,7 @@ export {
   GestureDetector,
   InterceptingGestureDetector,
   GestureDetectorProps,
+  VirtualGestureDetector,
 } from './v3/detectors';
 
 export * from './v3/hooks/useGesture';
