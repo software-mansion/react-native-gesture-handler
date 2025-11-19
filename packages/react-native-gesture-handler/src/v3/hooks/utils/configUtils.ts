@@ -20,6 +20,20 @@ export function prepareConfig<THandlerData, TConfig extends object>(
 ) {
   const runOnJS = maybeUnpackValue(config.runOnJS);
 
+  if (
+    __DEV__ &&
+    isNativeAnimatedEvent(config.onUpdate) &&
+    !config.useAnimated
+  ) {
+    console.warn(
+      tagMessage(
+        'You are using Animated.event in onUpdate without setting useAnimated to true. ' +
+          'This may lead to unexpected behavior. If you intend to use Animated.event, ' +
+          'please set useAnimated to true in the gesture config.'
+      )
+    );
+  }
+
   config.dispatchesAnimatedEvents =
     config.useAnimated || isNativeAnimatedEvent(config.onUpdate);
 
