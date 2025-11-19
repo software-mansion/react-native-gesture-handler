@@ -6,8 +6,6 @@ import {
   GestureDetectorProps as LegacyGestureDetectorProps,
   GestureDetector as LegacyGestureDetector,
 } from '../../handlers/gestures/GestureDetector';
-import { InterceptingDetectorContext } from './VirtualDetector/useInterceptingDetectorContext';
-import { VirtualDetector } from './VirtualDetector/VirtualDetector';
 import { use } from 'react';
 import { isTestEnv } from '../../utils';
 import { Platform } from 'react-native';
@@ -31,12 +29,7 @@ export function GestureDetector<THandlerData, TConfig>(
     return <LegacyGestureDetector {...(props as LegacyGestureDetectorProps)} />;
   }
 
-  const context = use(InterceptingDetectorContext);
-  return context ? (
-    <VirtualDetector
-      {...(props as NativeDetectorProps<THandlerData, TConfig>)}
-    />
-  ) : (
+  return (
     <NativeDetector
       {...(props as NativeDetectorProps<THandlerData, TConfig>)}
     />
