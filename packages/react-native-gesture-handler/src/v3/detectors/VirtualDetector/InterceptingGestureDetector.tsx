@@ -126,13 +126,15 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   const createGestureEventHandler = useCallback(
     (key: keyof DetectorCallbacks<THandlerData>) => {
       return (e: GestureHandlerEvent<THandlerData>) => {
-        if (gesture?.detectorCallbacks[key]) {
+        if (typeof gesture?.detectorCallbacks[key] === 'function') {
+          // @ts-expect-error passing event to a union of functions where only one is typed as such
           gesture.detectorCallbacks[key](e);
         }
 
         virtualChildren.forEach((child) => {
           const method = child.methods[key];
-          if (method) {
+          if (typeof method === 'function') {
+            // @ts-expect-error passing event to a union of functions where only one is typed as such
             method(e);
           }
         });
