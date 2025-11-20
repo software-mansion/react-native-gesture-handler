@@ -1,22 +1,20 @@
-import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
-import { BaseGestureConfig } from '../../../types';
-import { prepareStateChangeHandlers } from '../../utils';
+import {
+  Reanimated,
+  ReanimatedHandler,
+} from '../../../../handlers/gestures/reanimatedWrapper';
+import { GestureCallbacks } from '../../../types';
 import { getStateChangeHandler } from '../stateChangeHandler';
 
-export function useReanimatedStateChangeEvent<THandlerData, TConfig>(
+export function useReanimatedStateChangeEvent<THandlerData>(
   handlerTag: number,
-  config: BaseGestureConfig<THandlerData, TConfig>
+  handlers: GestureCallbacks<THandlerData>,
+  reanimatedHandler: ReanimatedHandler<THandlerData> | undefined
 ) {
-  const handlers = prepareStateChangeHandlers({
-    onBegin: config.onBegin,
-    onStart: config.onStart,
-    onEnd: config.onEnd,
-    onFinalize: config.onFinalize,
-  });
-
-  const callback = getStateChangeHandler(handlerTag, handlers);
-
-  const reanimatedHandler = Reanimated?.useHandler(handlers);
+  const callback = getStateChangeHandler(
+    handlerTag,
+    handlers,
+    reanimatedHandler?.context
+  );
 
   return Reanimated?.useEvent(
     callback,

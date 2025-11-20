@@ -5,11 +5,14 @@ import { AnimatedEvent, BaseGestureConfig, GestureUpdateEvent } from '../types';
 import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
+  prepareStateChangeHandlers,
+  prepareUpdateHandlers,
 } from './utils';
 import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanimatedStateChangeEvent';
 import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
 import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
 import { tagMessage } from '../../utils';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
@@ -50,10 +53,25 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   let onReanimatedTouchEvent;
 
   if (!config.disableReanimated) {
+    const handlers = {
+      ...prepareStateChangeHandlers(config),
+      ...prepareUpdateHandlers(config).handlers,
+    };
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedStateChange = useReanimatedStateChangeEvent(handlerTag, config);
+    const reanimatedHandler = Reanimated?.useHandler(handlers);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedUpdateEvent = useReanimatedUpdateEvent(handlerTag, config);
+    onReanimatedStateChange = useReanimatedStateChangeEvent(
+      handlerTag,
+      handlers,
+      reanimatedHandler
+    );
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    onReanimatedUpdateEvent = useReanimatedUpdateEvent(
+      handlerTag,
+      handlers,
+      reanimatedHandler,
+      config.changeEventCalculator
+    );
     // eslint-disable-next-line react-hooks/rules-of-hooks
     onReanimatedTouchEvent = useReanimatedTouchEvent(handlerTag, config);
   }

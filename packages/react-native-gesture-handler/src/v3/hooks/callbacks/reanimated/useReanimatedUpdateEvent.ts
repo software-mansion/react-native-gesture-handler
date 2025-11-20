@@ -1,19 +1,16 @@
-import { Reanimated } from '../../../../handlers/gestures/reanimatedWrapper';
-import { BaseGestureConfig } from '../../../types';
-import { prepareUpdateHandlers } from '../../utils';
+import {
+  Reanimated,
+  ReanimatedHandler,
+} from '../../../../handlers/gestures/reanimatedWrapper';
+import { ChangeCalculatorType, GestureCallbacks } from '../../../types';
 import { getUpdateHandler } from '../updateHandler';
 
-export function useReanimatedUpdateEvent<THandlerData, TConfig>(
+export function useReanimatedUpdateEvent<THandlerData>(
   handlerTag: number,
-  config: BaseGestureConfig<THandlerData, TConfig>
+  handlers: GestureCallbacks<THandlerData>,
+  reanimatedHandler: ReanimatedHandler<THandlerData> | undefined,
+  changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined
 ) {
-  const { handlers, changeEventCalculator } = prepareUpdateHandlers(
-    {
-      onUpdate: config.onUpdate,
-    },
-    config.changeEventCalculator
-  );
-
   // We don't want to call hooks conditionally, therefore `useHandler` and `useEvent` will be always called.
   // The only difference is whether we will send events to Reanimated or not.
   // The problem here is that if someone passes `Animated.event` as `onUpdate` prop,
@@ -24,8 +21,6 @@ export function useReanimatedUpdateEvent<THandlerData, TConfig>(
       // no-op
     };
   }
-
-  const reanimatedHandler = Reanimated?.useHandler(handlers);
 
   const callback = getUpdateHandler(
     handlerTag,
