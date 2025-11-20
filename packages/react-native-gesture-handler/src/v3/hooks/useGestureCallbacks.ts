@@ -12,7 +12,11 @@ import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanima
 import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
 import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
 import { tagMessage } from '../../utils';
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import {
+  Reanimated,
+  ReanimatedContext,
+} from '../../handlers/gestures/reanimatedWrapper';
+import { useMemo } from 'react';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
@@ -41,11 +45,22 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   handlerTag: number,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
+  const jsContext: ReanimatedContext<THandlerData> = useMemo(() => {
+    return {
+      lastUpdateEvent: undefined,
+    };
+  }, []);
+
   const onGestureHandlerStateChange = useGestureStateChangeEvent(
     handlerTag,
-    config
+    config,
+    jsContext
   );
-  const onGestureHandlerEvent = useGestureUpdateEvent(handlerTag, config);
+  const onGestureHandlerEvent = useGestureUpdateEvent(
+    handlerTag,
+    config,
+    jsContext
+  );
   const onGestureHandlerTouchEvent = useGestureTouchEvent(handlerTag, config);
 
   let onReanimatedStateChange;
