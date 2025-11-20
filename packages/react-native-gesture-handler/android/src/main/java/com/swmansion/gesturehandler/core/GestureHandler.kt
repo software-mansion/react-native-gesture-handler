@@ -17,7 +17,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
-import com.swmansion.gesturehandler.RNSVGHitTester
+import com.swmansion.gesturehandler.GestureHandlerEnvironment
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 import java.lang.IllegalStateException
@@ -618,8 +618,9 @@ open class GestureHandler {
   }
 
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
-    if (RNSVGHitTester.isSvgElement(view!!)) {
-      return RNSVGHitTester.hitTest(view, posX, posY)
+    val svgHitTester = GestureHandlerEnvironment.hitTester
+    if (svgHitTester.isSvgElement(view!!)) {
+      return svgHitTester.hitTest(view, posX, posY)
     }
 
     var left = 0f

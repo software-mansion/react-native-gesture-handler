@@ -89,7 +89,7 @@ def shouldUseCommonInterfaceFromReanimated() {
     }
 
     def (major, minor, patch) = getExternalLibVersion(reanimated)
-    
+
     return (major == 2 && minor >= 3) || major >= 3
 }
 
@@ -195,12 +195,6 @@ android {
                 srcDirs += 'reanimated/src/main/java'
             } else {
                 srcDirs += 'noreanimated/src/main/java'
-            }
-
-            if (shouldUseCommonInterfaceFromRNSVG()) {
-                srcDirs += 'svg/src/main/java'
-            } else {
-                srcDirs += 'nosvg/src/main/java'
             }
 
             if (isNewArchitectureEnabled()) {
