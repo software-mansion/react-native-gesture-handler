@@ -11,3 +11,4 @@ class RNSVGHitTester {
     fun hitTest(view: View, posX: Float, posY: Float) = false
   }
 }
+
