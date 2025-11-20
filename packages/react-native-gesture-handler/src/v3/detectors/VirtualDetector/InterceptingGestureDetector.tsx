@@ -207,6 +207,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   return (
     <InterceptingDetectorContext value={contextValue}>
       <NativeDetectorComponent
+        pointerEvents={'box-none'}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerStateChange={useMemo(
           () => createGestureEventHandler('onGestureHandlerStateChange'),
