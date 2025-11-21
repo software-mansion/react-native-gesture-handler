@@ -38,7 +38,7 @@ export type FlingGesture = SingleGesture<
   FlingGestureProperties
 >;
 
-export function useFling(config: FlingGestureConfig): FlingGesture {
+export function useFlingGesture(config: FlingGestureConfig): FlingGesture {
   const flingConfig = useClonedAndRemappedConfig<
     FlingHandlerData,
     FlingGestureProperties,

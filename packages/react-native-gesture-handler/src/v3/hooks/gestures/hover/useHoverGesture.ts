@@ -71,7 +71,7 @@ function transformHoverProps(
 
 const HoverPropsMapping = new Map<string, string>();
 
-export function useHover(config: HoverGestureConfig): HoverGesture {
+export function useHoverGesture(config: HoverGestureConfig): HoverGesture {
   const hoverConfig = useClonedAndRemappedConfig<
     HoverHandlerData,
     HoverGestureProperties,

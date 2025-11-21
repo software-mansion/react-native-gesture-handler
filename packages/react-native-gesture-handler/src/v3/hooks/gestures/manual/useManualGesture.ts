@@ -31,7 +31,7 @@ export type ManualGesture = SingleGesture<
   ManualGestureProperties
 >;
 
-export function useManual(config: ManualGestureConfig): ManualGesture {
+export function useManualGesture(config: ManualGestureConfig): ManualGesture {
   const manualConfig = useClonedAndRemappedConfig<
     ManualHandlerData,
     ManualGestureProperties,
