@@ -119,7 +119,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
+- (void)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
   if (!_checkedIfReanimatedIsAvailable) {
     _isReanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
@@ -132,8 +132,6 @@ RCT_EXPORT_MODULE()
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
-
-  return @1;
 }
 
 - (void)attachGestureHandler:(double)handlerTag newView:(double)viewTag actionType:(double)actionType
