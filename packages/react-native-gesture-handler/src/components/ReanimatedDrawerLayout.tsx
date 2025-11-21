@@ -500,6 +500,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const overlayDismissGesture = useMemo(
       () =>
         Gesture.Tap()
+          .enabled(drawerOpened)
           .maxDistance(25)
           .onEnd(() => {
             if (
@@ -509,7 +510,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
               closeDrawer();
             }
           }),
-      [closeDrawer, isDrawerOpen, drawerLockMode]
+      [closeDrawer, isDrawerOpen, drawerLockMode, drawerOpened]
     );
 
     const overlayAnimatedStyle = useAnimatedStyle(() => ({
