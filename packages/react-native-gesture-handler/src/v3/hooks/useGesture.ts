@@ -85,6 +85,8 @@ export function useGesture<THandlerData, TConfig>(
   ) {
     currentGestureRef.current = { type, tag };
     scheduleOperationToBeFlushed(() => {
+      // TODO: consider creating a single native method to create multiple handlers at once
+      // This will reduce the JSI overhead when many handlers are created at once
       RNGestureHandlerModule.createGestureHandler(type, tag, {});
     });
   }
