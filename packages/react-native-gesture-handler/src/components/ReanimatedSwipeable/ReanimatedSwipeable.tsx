@@ -19,8 +19,8 @@ import {
 import {
   PanGestureStateChangeEvent,
   PanGestureUpdateEvent,
-  usePan,
-  useTap,
+  usePanGesture,
+  useTapGesture,
 } from '../../v3/hooks/gestures';
 import { GestureDetector } from '../../v3/detectors';
 
@@ -454,7 +454,7 @@ const Swipeable = (props: SwipeableProps) => {
 
   const dragStarted = useSharedValue<boolean>(false);
 
-  const tapGesture = useTap({
+  const tapGesture = useTapGesture({
     shouldCancelWhenOutside: true,
     enabled: shouldEnableTap,
     simultaneousWith: simultaneousWithExternalGesture,
@@ -468,7 +468,7 @@ const Swipeable = (props: SwipeableProps) => {
     },
   });
 
-  const panGesture = usePan({
+  const panGesture = usePanGesture({
     enabled: enabled !== false,
     enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
     activeOffsetX: [-dragOffsetFromRightEdge, dragOffsetFromLeftEdge],

@@ -44,8 +44,8 @@ import {
 } from '../handlers/gestureHandlerCommon';
 import {
   PanGestureStateChangeEvent,
-  usePan,
-  useTap,
+  usePanGesture,
+  useTapGesture,
 } from '../v3/hooks/gestures';
 import { GestureDetector } from '../v3/detectors';
 
@@ -499,7 +499,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [animateDrawer]
     );
 
-    const overlayDismissGesture = useTap({
+    const overlayDismissGesture = useTapGesture({
       maxDistance: 25,
       onEnd: () => {
         'worklet';
@@ -522,7 +522,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [drawerWidth, isFromLeft]
     );
 
-    const panGesture = usePan({
+    const panGesture = usePanGesture({
       activeCursor: activeCursor,
       mouseButton: mouseButton,
       hitSlop: drawerOpened ? fillHitSlop : edgeHitSlop,

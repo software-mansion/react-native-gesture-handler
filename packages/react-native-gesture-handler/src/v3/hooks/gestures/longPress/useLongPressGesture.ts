@@ -66,7 +66,9 @@ function transformLongPressProps(
   return config;
 }
 
-export function useLongPress(config: LongPressGestureConfig): LongPressGesture {
+export function useLongPressGesture(
+  config: LongPressGestureConfig
+): LongPressGesture {
   const longPressConfig = useClonedAndRemappedConfig<
     LongPressHandlerData,
     LongPressGestureProperties,
