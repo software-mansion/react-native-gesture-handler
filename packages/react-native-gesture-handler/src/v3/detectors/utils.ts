@@ -4,6 +4,7 @@
 // For `waitFor` we need array as order of the gestures matters.
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
+import { scheduleFlushOperations } from '../../handlers/utils';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { tagMessage } from '../../utils';
 import {
@@ -148,7 +149,7 @@ export function configureRelations<THandlerData, TConfig>(
     );
   }
 
-  RNGestureHandlerModule.flushOperations();
+  scheduleFlushOperations();
 }
 
 export function ensureNativeDetectorComponent(
