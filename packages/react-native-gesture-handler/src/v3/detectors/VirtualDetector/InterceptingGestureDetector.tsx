@@ -20,6 +20,7 @@ import {
   ReanimatedNativeDetector,
 } from '../common';
 import { tagMessage } from '../../../utils';
+import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 
 interface VirtualChildrenForNative {
   viewTag: number;
@@ -31,6 +32,8 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
+  useEnsureGestureHandlerRootView();
+
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
     () => new Set()
   );
