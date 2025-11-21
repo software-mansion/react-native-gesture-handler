@@ -62,15 +62,26 @@ export function findNodeHandle(
   }
   return findNodeHandleRN(node) ?? null;
 }
+
+let scheduledOperations: (() => void)[] = [];
 let flushOperationsScheduled = false;
 
 export function scheduleFlushOperations() {
   if (!flushOperationsScheduled) {
     flushOperationsScheduled = true;
     ghQueueMicrotask(() => {
+      for (const operation of scheduledOperations) {
+        operation();
+      }
+      scheduledOperations = [];
       RNGestureHandlerModule.flushOperations();
 
       flushOperationsScheduled = false;
     });
   }
+}
+
+export function scheduleOperationToBeFlushed(operation: () => void) {
+  scheduledOperations.push(operation);
+  scheduleFlushOperations();
 }

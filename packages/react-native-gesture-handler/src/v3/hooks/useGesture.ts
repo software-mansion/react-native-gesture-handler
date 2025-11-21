@@ -11,6 +11,7 @@ import {
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
+import { scheduleOperationToBeFlushed } from '../../handlers/utils';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -80,8 +81,9 @@ export function useGesture<THandlerData, TConfig>(
     currentGestureRef.current.type !== (type as string)
   ) {
     currentGestureRef.current = { type, tag };
-    RNGestureHandlerModule.createGestureHandler(type, tag, {});
-    RNGestureHandlerModule.flushOperations();
+    scheduleOperationToBeFlushed(() => {
+      RNGestureHandlerModule.createGestureHandler(type, tag, {});
+    });
   }
 
   useEffect(() => {
