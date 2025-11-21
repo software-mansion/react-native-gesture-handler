@@ -10,7 +10,15 @@ import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
-import { ComposedGestureName, Gesture } from '../types';
+import { ComposedGestureName, Gesture, SingleGesture } from '../types';
+
+function hasAnyRelations(gesture: SingleGesture<unknown, unknown>): boolean {
+  return (
+    gesture.gestureRelations.simultaneousHandlers.length > 0 ||
+    gesture.gestureRelations.waitFor.length > 0 ||
+    gesture.gestureRelations.blocksHandlers.length > 0
+  );
+}
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseAndConfigureRelations = (
@@ -26,11 +34,15 @@ export const traverseAndConfigureRelations = (
     node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
     node.gestureRelations.waitFor.push(...waitFor);
 
-    RNGestureHandlerModule.configureRelations(node.tag, {
-      waitFor: node.gestureRelations.waitFor,
-      simultaneousHandlers: node.gestureRelations.simultaneousHandlers,
-      blocksHandlers: node.gestureRelations.blocksHandlers,
-    });
+    if (hasAnyRelations(node)) {
+      // We don't want to call configureRelations on the native side
+      // if there are no relations to configure.
+      RNGestureHandlerModule.configureRelations(node.tag, {
+        waitFor: node.gestureRelations.waitFor,
+        simultaneousHandlers: node.gestureRelations.simultaneousHandlers,
+        blocksHandlers: node.gestureRelations.blocksHandlers,
+      });
+    }
 
     return;
   }
@@ -142,10 +154,14 @@ export function configureRelations<THandlerData, TConfig>(
 
     traverseAndConfigureRelations(gesture, simultaneousHandlers);
   } else {
-    RNGestureHandlerModule.configureRelations(
-      gesture.tag,
-      gesture.gestureRelations
-    );
+    if (hasAnyRelations(gesture as SingleGesture<unknown, unknown>)) {
+      // We don't want to call configureRelations on the native side
+      // if there are no relations to configure.
+      RNGestureHandlerModule.configureRelations(
+        gesture.tag,
+        gesture.gestureRelations
+      );
+    }
   }
 
   RNGestureHandlerModule.flushOperations();
