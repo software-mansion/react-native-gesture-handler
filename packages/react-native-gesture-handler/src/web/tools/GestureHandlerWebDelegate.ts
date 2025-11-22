@@ -32,6 +32,8 @@ export class GestureHandlerWebDelegate
     touchAction: '',
   };
 
+  private areContextMenuListenersAdded = false;
+
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
       throw new Error(
@@ -58,6 +60,8 @@ export class GestureHandlerWebDelegate
     this.eventManagers.forEach((manager) =>
       this.gestureHandler.attachEventManager(manager)
     );
+
+    this.addContextMenuListeners();
 
     this.isInitialized = true;
   }
@@ -131,15 +135,21 @@ export class GestureHandlerWebDelegate
   private addContextMenuListeners(): void {
     this.ensureView(this.view);
 
+    if (this.areContextMenuListenersAdded) {
+      return;
+    }
+
     if (this.shouldDisableContextMenu()) {
       this.view.addEventListener('contextmenu', this.disableContextMenu);
+      this.areContextMenuListenersAdded = true;
     } else if (this.gestureHandler.enableContextMenu) {
       this.view.addEventListener('contextmenu', this.enableContextMenu);
+      this.areContextMenuListenersAdded = true;
     }
   }
 
   private removeContextMenuListeners(): void {
-    if (!this.initialized) {
+    if (!this.initialized || !this.areContextMenuListenersAdded) {
       return;
     }
 
@@ -147,8 +157,10 @@ export class GestureHandlerWebDelegate
 
     if (this.shouldDisableContextMenu()) {
       this.view.removeEventListener('contextmenu', this.disableContextMenu);
+      this.areContextMenuListenersAdded = false;
     } else if (this.gestureHandler.enableContextMenu) {
       this.view.removeEventListener('contextmenu', this.enableContextMenu);
+      this.areContextMenuListenersAdded = false;
     }
   }
 
