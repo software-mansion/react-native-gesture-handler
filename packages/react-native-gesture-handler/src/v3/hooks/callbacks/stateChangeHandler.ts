@@ -1,3 +1,4 @@
+import { ReanimatedContext } from 'packages/react-native-gesture-handler/src/handlers/gestures/reanimatedWrapper';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import {
@@ -13,7 +14,8 @@ import {
 
 export function getStateChangeHandler<THandlerData>(
   handlerTag: number,
-  callbacks: GestureCallbacks<THandlerData>
+  callbacks: GestureCallbacks<THandlerData>,
+  context?: ReanimatedContext<THandlerData>
 ) {
   return (sourceEvent: StateChangeEvent<THandlerData>) => {
     'worklet';
@@ -39,6 +41,10 @@ export function getStateChangeHandler<THandlerData>(
         runCallback(CALLBACK_TYPE.END, callbacks, event, true);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
+
+      if (context) {
+        context.lastUpdateEvent = undefined;
+      }
     } else if (
       (event.state === State.FAILED || event.state === State.CANCELLED) &&
       event.state !== event.oldState
@@ -47,6 +53,10 @@ export function getStateChangeHandler<THandlerData>(
         runCallback(CALLBACK_TYPE.END, callbacks, event, false);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
+
+      if (context) {
+        context.lastUpdateEvent = undefined;
+      }
     }
   };
 }

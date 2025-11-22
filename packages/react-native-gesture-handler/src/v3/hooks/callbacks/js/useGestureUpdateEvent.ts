@@ -6,7 +6,8 @@ import { useMemo } from 'react';
 
 export function useGestureUpdateEvent<THandlerData, TConfig>(
   handlerTag: number,
-  config: BaseGestureConfig<THandlerData, TConfig>
+  config: BaseGestureConfig<THandlerData, TConfig>,
+  jsContext: ReanimatedContext<THandlerData>
 ) {
   return useMemo(() => {
     const { handlers, changeEventCalculator } = prepareUpdateHandlers(
@@ -15,10 +16,6 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
       },
       config.changeEventCalculator
     );
-
-    const jsContext: ReanimatedContext<THandlerData> = {
-      lastUpdateEvent: undefined,
-    };
 
     return config.dispatchesAnimatedEvents
       ? undefined
@@ -33,5 +30,6 @@ export function useGestureUpdateEvent<THandlerData, TConfig>(
     config.onUpdate,
     config.dispatchesAnimatedEvents,
     config.changeEventCalculator,
+    jsContext,
   ]);
 }

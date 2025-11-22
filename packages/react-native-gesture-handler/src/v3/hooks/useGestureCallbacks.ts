@@ -5,11 +5,18 @@ import { AnimatedEvent, BaseGestureConfig, GestureUpdateEvent } from '../types';
 import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
+  prepareStateChangeHandlers,
+  prepareUpdateHandlers,
 } from './utils';
 import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanimatedStateChangeEvent';
 import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
 import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
 import { tagMessage } from '../../utils';
+import {
+  Reanimated,
+  ReanimatedContext,
+} from '../../handlers/gestures/reanimatedWrapper';
+import { useMemo } from 'react';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
@@ -38,11 +45,22 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   handlerTag: number,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
+  const jsContext: ReanimatedContext<THandlerData> = useMemo(() => {
+    return {
+      lastUpdateEvent: undefined,
+    };
+  }, []);
+
   const onGestureHandlerStateChange = useGestureStateChangeEvent(
     handlerTag,
-    config
+    config,
+    jsContext
   );
-  const onGestureHandlerEvent = useGestureUpdateEvent(handlerTag, config);
+  const onGestureHandlerEvent = useGestureUpdateEvent(
+    handlerTag,
+    config,
+    jsContext
+  );
   const onGestureHandlerTouchEvent = useGestureTouchEvent(handlerTag, config);
 
   let onReanimatedStateChange;
@@ -50,10 +68,25 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   let onReanimatedTouchEvent;
 
   if (!config.disableReanimated) {
+    const handlers = {
+      ...prepareStateChangeHandlers(config),
+      ...prepareUpdateHandlers(config).handlers,
+    };
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedStateChange = useReanimatedStateChangeEvent(handlerTag, config);
+    const reanimatedHandler = Reanimated?.useHandler(handlers);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedUpdateEvent = useReanimatedUpdateEvent(handlerTag, config);
+    onReanimatedStateChange = useReanimatedStateChangeEvent(
+      handlerTag,
+      handlers,
+      reanimatedHandler
+    );
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    onReanimatedUpdateEvent = useReanimatedUpdateEvent(
+      handlerTag,
+      handlers,
+      reanimatedHandler,
+      config.changeEventCalculator
+    );
     // eslint-disable-next-line react-hooks/rules-of-hooks
     onReanimatedTouchEvent = useReanimatedTouchEvent(handlerTag, config);
   }
