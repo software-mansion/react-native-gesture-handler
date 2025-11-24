@@ -25,7 +25,9 @@ export type GestureCallbacks<THandlerData> = {
     event: GestureStateChangeEvent<THandlerData>,
     didSucceed: boolean
   ) => void;
-  onUpdate?: (event: GestureUpdateEvent<THandlerData>) => void | AnimatedEvent;
+  onUpdate?:
+    | ((event: GestureUpdateEvent<THandlerData>) => void)
+    | AnimatedEvent;
   onTouchesDown?: (event: GestureTouchEvent) => void;
   onTouchesMove?: (event: GestureTouchEvent) => void;
   onTouchesUp?: (event: GestureTouchEvent) => void;
@@ -48,6 +50,7 @@ export type InternalConfigProps<THandlerData> = {
 
 export type CommonGestureConfig = {
   disableReanimated?: boolean;
+  useAnimated?: boolean;
 } & WithSharedValue<
   {
     runOnJS?: boolean;

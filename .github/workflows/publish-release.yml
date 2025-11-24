@@ -1,0 +1,46 @@
+name: Publish release to npm
+on:
+  # For commitlies
+  push:
+    branches:
+      - main
+    paths:
+      - packages/react-native-gesture-handler/**
+  # For stable releases
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Whether to perform a dry run of the publish.
+        type: boolean
+        default: true
+
+jobs:
+  npm-build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write # for OIDC
+
+    concurrency:
+      group: publish-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Publish stable release
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: ./.github/actions/publish-npm-package
+        with:
+          is-commitly: false
+          dry-run: ${{ inputs.dry-run }}
+
+      - name: Publish commitly release
+        if: ${{ github.event_name == 'push' }}
+        uses: ./.github/actions/publish-npm-package
+        with:
+          is-commitly: true
+          dry-run: false

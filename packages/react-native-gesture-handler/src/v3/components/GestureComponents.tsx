@@ -28,7 +28,7 @@ import { DetectorType } from '../detectors';
 import {
   NativeViewGestureConfig,
   NativeViewHandlerData,
-} from '../hooks/gestures/native/useNative';
+} from '../hooks/gestures/native/useNativeGesture';
 
 export const RefreshControl = createNativeWrapper(
   RNRefreshControl,

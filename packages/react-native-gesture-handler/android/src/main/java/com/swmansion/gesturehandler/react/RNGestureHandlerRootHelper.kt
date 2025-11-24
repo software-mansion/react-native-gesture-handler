@@ -38,6 +38,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       wrappedView,
       registry,
       RNViewConfigurationHelper(),
+      rootView,
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }

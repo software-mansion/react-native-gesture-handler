@@ -65,6 +65,8 @@ export const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
   'changeEventCalculator',
   'disableReanimated',
   'shouldUseReanimatedDetector',
+  'useAnimated',
+  'runOnJS',
 ]);
 
 export const PropsWhiteLists = new Map<

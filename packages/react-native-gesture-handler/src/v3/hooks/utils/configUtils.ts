@@ -6,7 +6,7 @@ import {
   SingleGestureName,
 } from '../../types';
 import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
-import { isAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
+import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
   EMPTY_WHITE_LIST,
@@ -20,12 +20,46 @@ export function prepareConfig<THandlerData, TConfig extends object>(
 ) {
   const runOnJS = maybeUnpackValue(config.runOnJS);
 
+  if (
+    __DEV__ &&
+    isNativeAnimatedEvent(config.onUpdate) &&
+    !config.useAnimated
+  ) {
+    console.warn(
+      tagMessage(
+        'You are using Animated.event in onUpdate without setting useAnimated to true. ' +
+          'This may lead to unexpected behavior. If you intend to use Animated.event, ' +
+          'please set useAnimated to true in the gesture config.'
+      )
+    );
+  }
+
+  config.dispatchesAnimatedEvents =
+    config.useAnimated || isNativeAnimatedEvent(config.onUpdate);
+
+  // Validate that the user is not trying to mix Animated and Reanimated before updating the config.
+  if (
+    __DEV__ &&
+    config.dispatchesAnimatedEvents &&
+    (config.disableReanimated === false || config.runOnJS === false)
+  ) {
+    throw new Error(
+      tagMessage(
+        'Animated cannot be used together with Reanimated in the same gesture. Please choose either Animated or Reanimated for handling gesture events.'
+      )
+    );
+  }
+
+  if (config.dispatchesAnimatedEvents) {
+    config.disableReanimated = true;
+  }
+
   config.shouldUseReanimatedDetector =
     !config.disableReanimated &&
     Reanimated !== undefined &&
-    hasWorkletEventHandlers(config);
+    hasWorkletEventHandlers(config) &&
+    !config.dispatchesAnimatedEvents;
   config.needsPointerData = shouldHandleTouchEvents(config);
-  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
   config.dispatchesReanimatedEvents =
     config.shouldUseReanimatedDetector && !runOnJS;
 }

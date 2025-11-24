@@ -9,7 +9,7 @@ import type {
 } from './GestureButtonsProps';
 
 import type { GestureStateChangeEvent } from '../types';
-import type { NativeViewHandlerData } from '../hooks/gestures/native/useNative';
+import type { NativeViewHandlerData } from '../hooks/gestures/native/useNativeGesture';
 
 type CallbackEventType = GestureStateChangeEvent<NativeViewHandlerData>;
 

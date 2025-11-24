@@ -11,6 +11,7 @@ import {
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
+import { scheduleFlushOperations } from '../../handlers/utils';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -29,14 +30,6 @@ export function useGesture<THandlerData, TConfig>(
 
   // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
   prepareConfig(config);
-
-  if (config.dispatchesAnimatedEvents && config.shouldUseReanimatedDetector) {
-    throw new Error(
-      tagMessage(
-        `${type}: You cannot use Animated.Event together with callbacks running on the UI thread. Either remove Animated.Event from onUpdate, or set runOnJS property to true on the gesture.`
-      )
-    );
-  }
 
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const {
@@ -89,20 +82,21 @@ export function useGesture<THandlerData, TConfig>(
   ) {
     currentGestureRef.current = { type, tag };
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
-    RNGestureHandlerModule.flushOperations();
+    // It's possible that this can cause errors about handler not being created when attempting to mount NativeDetector
+    scheduleFlushOperations();
   }
 
   useEffect(() => {
     return () => {
       RNGestureHandlerModule.dropGestureHandler(tag);
-      RNGestureHandlerModule.flushOperations();
+      scheduleFlushOperations();
     };
   }, [type, tag]);
 
   useEffect(() => {
     const preparedConfig = prepareConfigForNativeSide(type, config);
     RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
-    RNGestureHandlerModule.flushOperations();
+    scheduleFlushOperations();
 
     bindSharedValues(config, tag);
 

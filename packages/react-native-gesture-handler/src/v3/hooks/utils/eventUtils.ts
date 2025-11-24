@@ -40,7 +40,7 @@ export function isEventForHandlerWithTag<THandlerData>(
   return event.handlerTag === handlerTag;
 }
 
-export function isAnimatedEvent<THandlerData>(
+export function isNativeAnimatedEvent<THandlerData>(
   callback:
     | ((event: GestureUpdateEvent<THandlerData>) => void)
     | AnimatedEvent

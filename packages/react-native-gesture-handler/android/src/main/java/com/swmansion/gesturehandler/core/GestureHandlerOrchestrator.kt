@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import com.facebook.react.uimanager.ReactCompoundView
+import com.facebook.react.uimanager.RootView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import java.util.*
@@ -15,6 +16,7 @@ class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
+  private val rootView: ViewGroup,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -56,6 +58,14 @@ class GestureHandlerOrchestrator(
     isHandlingTouch = false
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
       cleanupFinishedHandlers()
+    }
+    if (action == MotionEvent.ACTION_UP ||
+      action == MotionEvent.ACTION_CANCEL ||
+      action == MotionEvent.ACTION_HOVER_EXIT
+    ) {
+      if (gestureHandlers.isEmpty() && rootView is RootView) {
+        rootView.onChildEndedNativeGesture(rootView, event)
+      }
     }
     return true
   }

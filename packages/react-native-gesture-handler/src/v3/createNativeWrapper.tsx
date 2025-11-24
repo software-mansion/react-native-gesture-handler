@@ -1,13 +1,13 @@
 import React, { useImperativeHandle, useRef } from 'react';
 
 import { NativeWrapperProps } from './hooks/utils';
-import { useNative } from './hooks/gestures';
+import { useNativeGesture } from './hooks/gestures';
 import { NativeDetector } from './detectors/NativeDetector';
 import type { NativeWrapperProperties } from './types/NativeWrapperType';
 import {
   NativeViewGestureConfig,
   NativeViewHandlerData,
-} from './hooks/gestures/native/useNative';
+} from './hooks/gestures/native/useNativeGesture';
 import { Gesture } from './types';
 import { DetectorType, InterceptingGestureDetector } from './detectors';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
@@ -48,7 +48,7 @@ export default function createNativeWrapper<P>(
       }
     );
 
-    const native = useNative(gestureHandlerProps);
+    const native = useNativeGesture(gestureHandlerProps);
 
     const componentRef = useRef<React.ComponentType<P>>(null);
     const gestureRef = useRef(native);

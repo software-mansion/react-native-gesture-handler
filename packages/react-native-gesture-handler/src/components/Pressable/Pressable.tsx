@@ -311,7 +311,10 @@ const Pressable = (props: PressableProps) => {
             } else {
               stateMachine.handleEvent(StateMachineEvent.CANCEL);
             }
-            handleFinalize();
+
+            if (Platform.OS !== 'ios') {
+              handleFinalize();
+            }
           }
         }),
     [stateMachine, handlePressOut, handleFinalize]

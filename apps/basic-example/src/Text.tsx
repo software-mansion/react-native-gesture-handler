@@ -4,27 +4,28 @@ import {
   Gesture,
   GestureDetector,
   InterceptingGestureDetector,
-  useTap,
+  VirtualGestureDetector,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
 
 function NativeDetectorExample() {
-  const tapAll = useTap({
+  const tapAll = useTapGesture({
     onStart: () => {
       'worklet';
       console.log('Tapped on text!');
     },
   });
 
-  const tapFirstPart = useTap({
+  const tapFirstPart = useTapGesture({
     onStart: () => {
       'worklet';
       console.log('Tapped on first part!');
     },
   });
 
-  const tapSecondPart = useTap({
+  const tapSecondPart = useTapGesture({
     onStart: () => {
       'worklet';
       console.log('Tapped on second part!');
@@ -39,18 +40,18 @@ function NativeDetectorExample() {
       <InterceptingGestureDetector gesture={tapAll}>
         <Text style={{ fontSize: 18, textAlign: 'center' }}>
           Some text example running with RNGH
-          <GestureDetector gesture={tapFirstPart}>
+          <VirtualGestureDetector gesture={tapFirstPart}>
             <Text style={{ fontSize: 24, color: COLORS.NAVY }}>
               {' '}
               try tapping on this part
             </Text>
-          </GestureDetector>
-          <GestureDetector gesture={tapSecondPart}>
+          </VirtualGestureDetector>
+          <VirtualGestureDetector gesture={tapSecondPart}>
             <Text style={{ fontSize: 28, color: COLORS.KINDA_BLUE }}>
               {' '}
               or on this part
             </Text>
-          </GestureDetector>
+          </VirtualGestureDetector>
           this part is not special :(
         </Text>
       </InterceptingGestureDetector>
