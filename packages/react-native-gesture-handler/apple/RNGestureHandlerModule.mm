@@ -129,9 +129,8 @@ RCT_EXPORT_MODULE()
     _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
 
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
-  }];
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
 }
 
 - (void)attachGestureHandler:(double)handlerTag newView:(double)viewTag actionType:(double)actionType
