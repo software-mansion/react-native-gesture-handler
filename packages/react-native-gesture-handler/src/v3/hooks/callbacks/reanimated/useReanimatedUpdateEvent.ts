@@ -11,7 +11,7 @@ export function useReanimatedUpdateEvent<THandlerData>(
   reanimatedHandler: ReanimatedHandler<THandlerData> | undefined,
   changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined
 ) {
-  // We don't want to call hooks conditionally, therefore `useHandler` and `useEvent` will be always called.
+  // We don't want to call hooks conditionally, `useEvent` will be always called.
   // The only difference is whether we will send events to Reanimated or not.
   // The problem here is that if someone passes `Animated.event` as `onUpdate` prop,
   // it won't be workletized and therefore `useHandler` will throw. In that case we override it to empty `worklet`.
