@@ -11,6 +11,7 @@ import {
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
+import { scheduleFlushOperations } from '../../handlers/utils';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -81,20 +82,21 @@ export function useGesture<THandlerData, TConfig>(
   ) {
     currentGestureRef.current = { type, tag };
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
-    RNGestureHandlerModule.flushOperations();
+    // It's possible that this can cause errors about handler not being created when attempting to mount NativeDetector
+    scheduleFlushOperations();
   }
 
   useEffect(() => {
     return () => {
       RNGestureHandlerModule.dropGestureHandler(tag);
-      RNGestureHandlerModule.flushOperations();
+      scheduleFlushOperations();
     };
   }, [type, tag]);
 
   useEffect(() => {
     const preparedConfig = prepareConfigForNativeSide(type, config);
     RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
-    RNGestureHandlerModule.flushOperations();
+    scheduleFlushOperations();
 
     bindSharedValues(config, tag);
 
