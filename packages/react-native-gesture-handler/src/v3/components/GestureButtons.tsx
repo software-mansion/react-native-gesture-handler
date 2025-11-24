@@ -26,14 +26,7 @@ export const BaseButton = (props: BaseButtonProps) => {
 
   const delayLongPress = props.delayLongPress ?? 600;
 
-  const {
-    onLongPress,
-    onPress,
-    onActiveStateChange,
-    rippleColor,
-    style,
-    ...rest
-  } = props;
+  const { onLongPress, onPress, onActiveStateChange, style, ...rest } = props;
 
   const wrappedLongPress = () => {
     longPressDetected.current = true;
@@ -85,10 +78,9 @@ export const BaseButton = (props: BaseButtonProps) => {
 
   return (
     <RawButton
-      disableReanimated={true}
-      rippleColor={rippleColor}
       style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
+      disableReanimated={true}
       onBegin={onBegin}
       onStart={onStart}
       onEnd={onEnd}
