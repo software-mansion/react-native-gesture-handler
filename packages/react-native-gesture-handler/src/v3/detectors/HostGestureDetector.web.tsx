@@ -29,8 +29,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const attachedNativeHandlers = useRef<Set<number>>(new Set<number>());
   const attachedVirtualHandlers = useRef<Map<number, Set<number>>>(new Map());
 
-  console.log('Rendering HostGestureDetector');
-
   const detachHandlers = (
     currentHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>
@@ -49,7 +47,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
     attachedHandlerTags: Set<number>,
     actionType: ActionType
   ) => {
-    console.log('Attaching handlers:', currentHandlerTags);
     const newHandlerTags = currentHandlerTags.difference(attachedHandlerTags);
 
     newHandlerTags.forEach((tag) => {
