@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
-import { ScrollView, RefreshControl } from 'react-native-gesture-handler';
+import {
+  ScrollView,
+  RefreshControl,
+  GHScrollViewRef,
+} from 'react-native-gesture-handler';
 
 const DATA = Array.from({ length: 20 }, (_, i) => ({
   id: i.toString(),
@@ -16,8 +20,11 @@ const Item = ({ title }: { title: string }) => (
 export default function ScrollViewExample() {
   const [refreshing, setRefreshing] = useState(false);
 
+  const ref = useRef<GHScrollViewRef>(null);
+
   const onRefresh = () => {
     setRefreshing(true);
+    console.log(ref.current);
     setTimeout(() => {
       setRefreshing(false);
     }, 1500);
@@ -26,6 +33,7 @@ export default function ScrollViewExample() {
   return (
     <ScrollView
       contentContainerStyle={styles.container}
+      ref={ref}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>

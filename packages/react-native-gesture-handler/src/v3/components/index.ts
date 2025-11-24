@@ -21,4 +21,7 @@ export {
   RefreshControl,
 } from './GestureComponents';
 
-export type { ImperativeFlatListRef as GHFlatListRef } from './GestureComponents';
+export type {
+  ImperativeScrollViewRef as GHScrollViewRef,
+  ImperativeFlatListRef as GHFlatListRef,
+} from './GestureComponents';

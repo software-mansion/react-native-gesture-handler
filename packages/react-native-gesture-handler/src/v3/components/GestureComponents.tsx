@@ -48,7 +48,8 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   DetectorType.Intercepting
 );
 
-type ImperativeScrollViewRef = ComponentWrapperRef<RNScrollViewProps> | null;
+export type ImperativeScrollViewRef =
+  ComponentWrapperRef<RNScrollViewProps> | null;
 
 export const ScrollView = (
   props: RNScrollViewProps &
