@@ -43,6 +43,10 @@ export default function createNativeWrapper<P>(
       }
     );
 
+    if (gestureHandlerProps.disableReanimated === undefined) {
+      gestureHandlerProps.disableReanimated = true;
+    }
+
     const native = useNativeGesture(gestureHandlerProps);
 
     const componentRef = useRef<React.ComponentType<P>>(null);

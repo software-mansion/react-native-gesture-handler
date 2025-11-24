@@ -80,7 +80,6 @@ export const BaseButton = (props: BaseButtonProps) => {
     <RawButton
       style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
-      disableReanimated={true}
       onBegin={onBegin}
       onStart={onStart}
       onEnd={onEnd}
