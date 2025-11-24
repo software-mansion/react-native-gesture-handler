@@ -37,7 +37,9 @@ export type NativeGesture = SingleGesture<
   NativeViewGestureProperties
 >;
 
-export function useNative(config: NativeViewGestureConfig): NativeGesture {
+export function useNativeGesture(
+  config: NativeViewGestureConfig
+): NativeGesture {
   const nativeConfig = useClonedAndRemappedConfig<
     NativeViewHandlerData,
     NativeViewGestureProperties,

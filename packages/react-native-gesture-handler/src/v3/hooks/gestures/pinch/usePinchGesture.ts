@@ -62,7 +62,7 @@ function transformPinchProps(
 
 const PinchPropsMapping = new Map<string, string>();
 
-export function usePinch(config: PinchGestureConfig): PinchGesture {
+export function usePinchGesture(config: PinchGestureConfig): PinchGesture {
   const pinchConfig = useClonedAndRemappedConfig<
     PinchHandlerData,
     PinchGestureProperties,
