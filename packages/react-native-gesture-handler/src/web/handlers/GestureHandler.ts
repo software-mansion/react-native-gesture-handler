@@ -746,8 +746,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.forAnimated = config.dispatchesAnimatedEvents;
     }
 
-    if (config.shouldUseReanimated !== undefined) {
-      this.forReanimated = config.shouldUseReanimated;
+    if (config.dispatchesReanimatedEvents !== undefined) {
+      this.forReanimated = config.dispatchesReanimatedEvents;
     }
 
     if (config.manualActivation !== undefined) {
