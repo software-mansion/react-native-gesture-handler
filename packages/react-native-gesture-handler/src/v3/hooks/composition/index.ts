@@ -1,3 +1,3 @@
-export { useSimultaneousGesture } from './useSimultaneousGesture';
-export { useExclusiveGesture } from './useExclusiveGesture';
-export { useRaceGesture } from './useRaceGesture';
+export { useSimultaneousGestures } from './useSimultaneousGestures';
+export { useExclusiveGestures } from './useExclusiveGestures';
+export { useMultipleGestures } from './useMultipleGestures';

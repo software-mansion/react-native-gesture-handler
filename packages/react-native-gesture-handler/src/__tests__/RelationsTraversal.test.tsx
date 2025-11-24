@@ -1,8 +1,8 @@
 import { tagMessage } from '../utils';
 import {
-  useExclusiveGesture,
-  useRaceGesture,
-  useSimultaneousGesture,
+  useExclusiveGestures,
+  useMultipleGestures,
+  useSimultaneousGestures,
 } from '../v3/hooks/composition';
 import { useGesture } from '../v3/hooks/useGesture';
 import { configureRelations } from '../v3/detectors/utils';
@@ -31,24 +31,24 @@ describe('Ensure only one leaf node', () => {
   );
 
   test('useSimultaneous', () => {
-    expect(() => useSimultaneousGesture(pan1, pan1)).toThrow(errorMessage);
+    expect(() => useSimultaneousGestures(pan1, pan1)).toThrow(errorMessage);
   });
 
   test('useExclusive', () => {
-    expect(() => useExclusiveGesture(pan1, pan1)).toThrow(errorMessage);
+    expect(() => useExclusiveGestures(pan1, pan1)).toThrow(errorMessage);
   });
 
   test('useRace', () => {
-    expect(() => useRaceGesture(pan1, pan1)).toThrow(errorMessage);
+    expect(() => useMultipleGestures(pan1, pan1)).toThrow(errorMessage);
   });
 
   test('Complex composition', () => {
-    const exclusive1 = renderHook(() => useExclusiveGesture(pan1, pan2)).result
+    const exclusive1 = renderHook(() => useExclusiveGestures(pan1, pan2)).result
       .current;
-    const exclusive2 = renderHook(() => useExclusiveGesture(pan1, pan3)).result
+    const exclusive2 = renderHook(() => useExclusiveGestures(pan1, pan3)).result
       .current;
 
-    expect(() => useSimultaneousGesture(exclusive1, exclusive2)).toThrow(
+    expect(() => useSimultaneousGestures(exclusive1, exclusive2)).toThrow(
       errorMessage
     );
   });
@@ -68,8 +68,9 @@ describe('Simple relations', () => {
   });
 
   test('useSimultaneous', () => {
-    const composedGesture = renderHook(() => useSimultaneousGesture(pan1, pan2))
-      .result.current;
+    const composedGesture = renderHook(() =>
+      useSimultaneousGestures(pan1, pan2)
+    ).result.current;
 
     configureRelations(composedGesture);
 
@@ -82,7 +83,7 @@ describe('Simple relations', () => {
   });
 
   test('useExclusive', () => {
-    const composedGesture = renderHook(() => useExclusiveGesture(pan2, pan1))
+    const composedGesture = renderHook(() => useExclusiveGestures(pan2, pan1))
       .result.current;
 
     configureRelations(composedGesture);
@@ -92,8 +93,8 @@ describe('Simple relations', () => {
   });
 
   test('useRace', () => {
-    const composedGesture = renderHook(() => useRaceGesture(pan1, pan2)).result
-      .current;
+    const composedGesture = renderHook(() => useMultipleGestures(pan1, pan2))
+      .result.current;
 
     configureRelations(composedGesture);
 
@@ -228,12 +229,13 @@ describe('Complex relations', () => {
 
   // Test case from description of https://github.com/software-mansion/react-native-gesture-handler/pull/3693
   test('Case 1', () => {
-    const E2 = renderHook(() => useExclusiveGesture(tap1, tap2)).result.current;
-    const S1 = renderHook(() => useSimultaneousGesture(E2, pan1)).result
+    const E2 = renderHook(() => useExclusiveGestures(tap1, tap2)).result
       .current;
-    const S2 = renderHook(() => useSimultaneousGesture(pan2, pan3)).result
+    const S1 = renderHook(() => useSimultaneousGestures(E2, pan1)).result
       .current;
-    const E1 = renderHook(() => useExclusiveGesture(S1, S2)).result.current;
+    const S2 = renderHook(() => useSimultaneousGestures(pan2, pan3)).result
+      .current;
+    const E1 = renderHook(() => useExclusiveGestures(S1, S2)).result.current;
 
     configureRelations(E1);
 
@@ -272,9 +274,9 @@ describe('Complex relations', () => {
   });
 
   test('Case 2', () => {
-    const simultaneous = renderHook(() => useSimultaneousGesture(pan1, pan2))
+    const simultaneous = renderHook(() => useSimultaneousGestures(pan1, pan2))
       .result.current;
-    const exclusive = renderHook(() => useExclusiveGesture(tap1, simultaneous))
+    const exclusive = renderHook(() => useExclusiveGestures(tap1, simultaneous))
       .result.current;
 
     configureRelations(exclusive);
@@ -294,7 +296,7 @@ describe('Complex relations', () => {
   });
 
   test('Case 3', () => {
-    const exclusive = renderHook(() => useExclusiveGesture(tap1, tap2, tap3))
+    const exclusive = renderHook(() => useExclusiveGestures(tap1, tap2, tap3))
       .result.current;
 
     configureRelations(exclusive);
@@ -343,11 +345,11 @@ describe('Complex relations with external gestures', () => {
       })
     ).result.current;
 
-    const S1 = renderHook(() => useSimultaneousGesture(pan1, pan2)).result
+    const S1 = renderHook(() => useSimultaneousGestures(pan1, pan2)).result
       .current;
-    const S2 = renderHook(() => useSimultaneousGesture(pan3, pan4)).result
+    const S2 = renderHook(() => useSimultaneousGestures(pan3, pan4)).result
       .current;
-    const E = renderHook(() => useExclusiveGesture(S1, S2)).result.current;
+    const E = renderHook(() => useExclusiveGestures(S1, S2)).result.current;
 
     configureRelations(pan5);
     configureRelations(E);
@@ -418,8 +420,8 @@ describe('Complex relations with external gestures', () => {
       })
     ).result.current;
 
-    const E = renderHook(() => useExclusiveGesture(pan1, pan2)).result.current;
-    const S = renderHook(() => useSimultaneousGesture(E, pan3)).result.current;
+    const E = renderHook(() => useExclusiveGestures(pan1, pan2)).result.current;
+    const S = renderHook(() => useSimultaneousGestures(E, pan3)).result.current;
 
     configureRelations(pan4);
     configureRelations(pan5);
@@ -470,8 +472,9 @@ describe('External relations with composed gestures', () => {
       })
     ).result.current;
 
-    const composedGesture = renderHook(() => useSimultaneousGesture(pan1, pan2))
-      .result.current;
+    const composedGesture = renderHook(() =>
+      useSimultaneousGestures(pan1, pan2)
+    ).result.current;
 
     const pan3 = renderHook(() =>
       useGesture(SingleGestureName.Pan, {
@@ -507,8 +510,9 @@ describe('External relations with composed gestures', () => {
       })
     ).result.current;
 
-    const composedGesture = renderHook(() => useSimultaneousGesture(pan1, pan2))
-      .result.current;
+    const composedGesture = renderHook(() =>
+      useSimultaneousGestures(pan1, pan2)
+    ).result.current;
 
     const pan3 = renderHook(() =>
       useGesture(SingleGestureName.Pan, {
