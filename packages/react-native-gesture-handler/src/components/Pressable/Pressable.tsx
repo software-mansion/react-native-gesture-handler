@@ -269,16 +269,6 @@ const Pressable = (props: PressableProps) => {
           const pressableEvent = gestureTouchToPressableEvent(event);
           stateMachine.reset();
           handlePressOut(pressableEvent, false);
-        })
-        .onFinalize((_event, success) => {
-          if (Platform.OS === 'web') {
-            if (success) {
-              stateMachine.handleEvent(StateMachineEvent.FINALIZE);
-            } else {
-              stateMachine.handleEvent(StateMachineEvent.CANCEL);
-            }
-            handleFinalize();
-          }
         }),
     [stateMachine, handleFinalize, handlePressOut]
   );
@@ -323,9 +313,33 @@ const Pressable = (props: PressableProps) => {
     [stateMachine, handlePressOut, handleFinalize]
   );
 
+  const webTapFinalizeGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .maxDuration(INT32_MAX)
+        .maxDistance(INT32_MAX)
+        .onFinalize((_event, success) => {
+          if (Platform.OS === 'web') {
+            console.log('finalize');
+            if (success) {
+              stateMachine.handleEvent(StateMachineEvent.FINALIZE);
+            } else {
+              stateMachine.handleEvent(StateMachineEvent.CANCEL);
+            }
+            handleFinalize();
+          }
+        }),
+    [stateMachine, handleFinalize, handlePressOut]
+  );
+
   const isPressableEnabled = disabled !== true;
 
-  const gestures = [buttonGesture, pressAndTouchGesture, hoverGesture];
+  const gestures = [
+    buttonGesture,
+    webTapFinalizeGesture,
+    pressAndTouchGesture,
+    hoverGesture,
+  ];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
