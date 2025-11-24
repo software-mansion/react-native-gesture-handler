@@ -156,8 +156,7 @@ export {
   VirtualGestureDetector,
 } from './v3/detectors';
 
-export * from './v3/hooks/useGesture';
-export * from './v3/hooks/relations';
+export * from './v3/hooks/composition';
 
 export type { ComposedGesture } from './v3/types';
 export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
