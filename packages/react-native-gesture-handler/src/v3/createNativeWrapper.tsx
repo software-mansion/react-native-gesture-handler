@@ -9,8 +9,8 @@ import { DetectorType, InterceptingGestureDetector } from './detectors';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 
 export type ComponentWrapperRef<P> = {
-  componentRef: React.ComponentType<P>;
-  gestureRef: NativeGesture;
+  componentRef?: React.ComponentType<P>;
+  gestureRef?: NativeGesture;
 };
 
 export default function createNativeWrapper<P>(
@@ -47,13 +47,14 @@ export default function createNativeWrapper<P>(
     const native = useNativeGesture(gestureHandlerProps);
 
     const componentRef = useRef<React.ComponentType<P>>(null);
+    const gestureRef = useRef<NativeGesture>(native);
 
     useImperativeHandle(
       props.ref,
       () =>
         ({
           componentRef: componentRef.current,
-          gestureRef: native,
+          gestureRef: gestureRef.current,
         }) as ComponentWrapperRef<P>
     );
 

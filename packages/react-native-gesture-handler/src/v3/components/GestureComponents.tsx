@@ -1,11 +1,10 @@
 import React, {
   PropsWithChildren,
-  ForwardedRef,
-  RefAttributes,
   ReactElement,
   useRef,
   useImperativeHandle,
   useState,
+  RefObject,
 } from 'react';
 import {
   ScrollView as RNScrollView,
@@ -111,9 +110,9 @@ export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
 
-type ImperativeFlatListRef =
+export type ImperativeFlatListRef<T = any> =
   | (ComponentWrapperRef<RNScrollViewProps> & {
-      flatListRef: React.RefObject<FlatList<unknown>>;
+      flatListRef: FlatList<T> | null;
     })
   | null;
 
@@ -125,7 +124,7 @@ export const FlatList = ((props) => {
   );
 
   const wrapperRef = useRef<ImperativeScrollViewRef>(null);
-  const flatListRef = useRef<FlatList<unknown>>(null);
+  const flatListRef = useRef<FlatList<any>>(null);
 
   const flatListProps = {};
   const scrollViewProps = {};
@@ -185,11 +184,11 @@ export const FlatList = ((props) => {
   );
 }) as <ItemT = any>(
   props: PropsWithChildren<
-    Omit<RNFlatListProps<ItemT>, 'renderScrollComponent'> &
-      RefAttributes<FlatList<ItemT>> &
-      NativeWrapperProperties
-  >,
-  ref?: ForwardedRef<FlatList<ItemT>>
+    Omit<RNFlatListProps<ItemT>, 'renderScrollComponent' | 'ref'> &
+      NativeWrapperProperties & {
+        ref?: RefObject<ImperativeFlatListRef<ItemT>>;
+      }
+  >
 ) => ReactElement | null;
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type FlatList<ItemT = any> = typeof FlatList & RNFlatList<ItemT>;
