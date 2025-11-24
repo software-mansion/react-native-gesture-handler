@@ -333,12 +333,10 @@ const Pressable = (props: PressableProps) => {
 
   const isPressableEnabled = disabled !== true;
 
-  const gestures = [
-    buttonGesture,
-    webFinalizeGesture,
-    pressAndTouchGesture,
-    hoverGesture,
-  ];
+  const gestures =
+    Platform.OS === 'web'
+      ? [buttonGesture, webFinalizeGesture, pressAndTouchGesture, hoverGesture]
+      : [buttonGesture, pressAndTouchGesture, hoverGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
