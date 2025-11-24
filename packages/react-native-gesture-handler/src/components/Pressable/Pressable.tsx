@@ -297,8 +297,8 @@ const Pressable = (props: PressableProps) => {
         })
         .onFinalize((_event, success) => {
           if (Platform.OS !== 'web') {
-            // On Web we use LongPress().onFinalize() instead of Native().onFinalize(),
-            // as Native cancels on mouse move, and LongPress does not.
+            // On Web we use Tap().onFinalize() instead of Native().onFinalize(),
+            // as Native cancels on mouse move, and Tap does not.
             if (success) {
               stateMachine.handleEvent(StateMachineEvent.FINALIZE);
             } else {
@@ -313,14 +313,13 @@ const Pressable = (props: PressableProps) => {
     [stateMachine, handlePressOut, handleFinalize]
   );
 
-  const webTapFinalizeGesture = useMemo(
+  const webFinalizeGesture = useMemo(
     () =>
       Gesture.Tap()
         .maxDuration(INT32_MAX)
         .maxDistance(INT32_MAX)
         .onFinalize((_event, success) => {
           if (Platform.OS === 'web') {
-            console.log('finalize');
             if (success) {
               stateMachine.handleEvent(StateMachineEvent.FINALIZE);
             } else {
@@ -336,7 +335,7 @@ const Pressable = (props: PressableProps) => {
 
   const gestures = [
     buttonGesture,
-    webTapFinalizeGesture,
+    webFinalizeGesture,
     pressAndTouchGesture,
     hoverGesture,
   ];
