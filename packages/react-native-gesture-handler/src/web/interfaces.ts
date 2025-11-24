@@ -52,7 +52,7 @@ export interface Config extends Record<string, ConfigArgs> {
   touchAction?: TouchAction;
   manualActivation?: boolean;
   dispatchesAnimatedEvents?: false;
-  shouldUseReanimated?: boolean;
+  dispatchesReanimatedEvents?: boolean;
   needsPointerData?: false;
 
   activateAfterLongPress?: number;
