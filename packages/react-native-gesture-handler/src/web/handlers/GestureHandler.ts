@@ -447,10 +447,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       );
     }
     if (this.state === State.ACTIVE) {
-      if (!usesNativeOrVirtualDetector(this.actionType)) {
-        (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
-          undefined;
-      }
+      (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
+        undefined;
 
       invokeNullableMethod(
         this.forReanimated
@@ -746,8 +744,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.forAnimated = config.dispatchesAnimatedEvents;
     }
 
-    if (config.shouldUseReanimated !== undefined) {
-      this.forReanimated = config.shouldUseReanimated;
+    if (config.dispatchesReanimatedEvents !== undefined) {
+      this.forReanimated = config.dispatchesReanimatedEvents;
     }
 
     if (config.manualActivation !== undefined) {

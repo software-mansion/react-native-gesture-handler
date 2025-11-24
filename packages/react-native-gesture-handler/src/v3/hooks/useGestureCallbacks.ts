@@ -6,11 +6,10 @@ import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
   prepareStateChangeHandlers,
+  prepareTouchHandlers,
   prepareUpdateHandlers,
 } from './utils';
-import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanimatedStateChangeEvent';
-import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
-import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
+import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
 import { tagMessage } from '../../utils';
 import {
   Reanimated,
@@ -63,32 +62,23 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   );
   const onGestureHandlerTouchEvent = useGestureTouchEvent(handlerTag, config);
 
-  let onReanimatedStateChange;
-  let onReanimatedUpdateEvent;
-  let onReanimatedTouchEvent;
+  let onReanimatedEvent;
 
   if (!config.disableReanimated) {
     const handlers = {
       ...prepareStateChangeHandlers(config),
       ...prepareUpdateHandlers(config).handlers,
+      ...prepareTouchHandlers(config),
     };
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const reanimatedHandler = Reanimated?.useHandler(handlers);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedStateChange = useReanimatedStateChangeEvent(
-      handlerTag,
-      handlers,
-      reanimatedHandler
-    );
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedUpdateEvent = useReanimatedUpdateEvent(
+    onReanimatedEvent = useReanimatedEventHandler(
       handlerTag,
       handlers,
       reanimatedHandler,
       config.changeEventCalculator
     );
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedTouchEvent = useReanimatedTouchEvent(handlerTag, config);
   }
 
   let onGestureHandlerAnimatedEvent:
@@ -112,9 +102,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
     onGestureHandlerStateChange,
     onGestureHandlerEvent,
     onGestureHandlerTouchEvent,
-    onReanimatedStateChange,
-    onReanimatedUpdateEvent,
-    onReanimatedTouchEvent,
+    onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   };
 }

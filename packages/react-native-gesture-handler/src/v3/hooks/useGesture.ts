@@ -11,6 +11,7 @@ import {
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
+import { Platform } from 'react-native';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -35,9 +36,7 @@ export function useGesture<THandlerData, TConfig>(
     onGestureHandlerStateChange,
     onGestureHandlerEvent,
     onGestureHandlerTouchEvent,
-    onReanimatedStateChange,
-    onReanimatedUpdateEvent,
-    onReanimatedTouchEvent,
+    onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   } = useGestureCallbacks(tag, config);
 
@@ -52,12 +51,7 @@ export function useGesture<THandlerData, TConfig>(
     throw new Error(tagMessage('Failed to create event handlers.'));
   }
 
-  if (
-    config.shouldUseReanimatedDetector &&
-    (!onReanimatedStateChange ||
-      !onReanimatedUpdateEvent ||
-      !onReanimatedTouchEvent)
-  ) {
+  if (config.shouldUseReanimatedDetector && !onReanimatedEvent) {
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
@@ -112,10 +106,24 @@ export function useGesture<THandlerData, TConfig>(
         onGestureHandlerStateChange,
         onGestureHandlerEvent,
         onGestureHandlerTouchEvent,
-        onReanimatedStateChange,
-        onReanimatedUpdateEvent,
-        onReanimatedTouchEvent,
         onGestureHandlerAnimatedEvent,
+        // On web, we're triggering Reanimated callbacks ourselves, based on the type.
+        // To handle this properly, we need to provide all three callbacks, so we set
+        // all three to the Reanimated event handler.
+        // On native, Reanimated handles routing internally based on the event names
+        // passed to the useEvent hook. We only nee to pass it once, so that Reanimated
+        // can setup its internal listeners.
+        ...(Platform.OS === 'web'
+          ? {
+              onReanimatedUpdateEvent: onReanimatedEvent,
+              onReanimatedStateChange: onReanimatedEvent,
+              onReanimatedTouchEvent: onReanimatedEvent,
+            }
+          : {
+              onReanimatedUpdateEvent: onReanimatedEvent,
+              onReanimatedStateChange: undefined,
+              onReanimatedTouchEvent: undefined,
+            }),
       },
       gestureRelations,
     }),
@@ -126,9 +134,7 @@ export function useGesture<THandlerData, TConfig>(
       onGestureHandlerStateChange,
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,
-      onReanimatedStateChange,
-      onReanimatedUpdateEvent,
-      onReanimatedTouchEvent,
+      onReanimatedEvent,
       onGestureHandlerAnimatedEvent,
       gestureRelations,
     ]
