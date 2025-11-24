@@ -114,7 +114,6 @@ export interface BaseButtonProps extends RawButtonProps {
    */
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
-  testID?: string;
 
   /**
    * Delay, in milliseconds, after which the `onLongPress` callback gets called.
