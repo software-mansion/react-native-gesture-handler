@@ -1,9 +1,11 @@
-import * as React from 'react';
-import {
+import React, {
   PropsWithChildren,
   ForwardedRef,
   RefAttributes,
   ReactElement,
+  useRef,
+  useImperativeHandle,
+  useState,
 } from 'react';
 import {
   ScrollView as RNScrollView,
@@ -23,12 +25,8 @@ import createNativeWrapper, {
 
 import { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { NativeWrapperProps } from '../hooks/utils';
-import { Gesture } from '../types';
 import { DetectorType } from '../detectors';
-import {
-  NativeViewGestureConfig,
-  NativeViewHandlerData,
-} from '../hooks/gestures/native/useNativeGesture';
+import { NativeGesture } from '../hooks/gestures/native/useNativeGesture';
 
 export const RefreshControl = createNativeWrapper(
   RNRefreshControl,
@@ -57,20 +55,19 @@ export const ScrollView = (
   props: RNScrollViewProps &
     NativeWrapperProperties & {
       ref?: React.RefObject<ImperativeScrollViewRef>;
-      // This prop existst because using `ref` in `renderScrollComponent` doesn't work.
+      // This prop existst because using `ref` in `renderScrollComponent` doesn't work (it is overwritten by RN internals).
       innerRef?: (node: ImperativeScrollViewRef) => void;
     }
 ) => {
   const { refreshControl, innerRef, ref, ...rest } = props;
 
-  const [scrollGesture, setScrollGesture] = React.useState<Gesture<
-    NativeViewHandlerData,
-    NativeViewGestureConfig
-  > | null>(null);
+  const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
+    null
+  );
 
-  const wrapperRef = React.useRef<ComponentWrapperRef<RNScrollViewProps>>(null);
+  const wrapperRef = useRef<ComponentWrapperRef<RNScrollViewProps>>(null);
 
-  React.useImperativeHandle<ImperativeScrollViewRef, ImperativeScrollViewRef>(
+  useImperativeHandle<ImperativeScrollViewRef, ImperativeScrollViewRef>(
     ref,
     () => wrapperRef.current
   );
@@ -116,20 +113,19 @@ export type TextInput = typeof TextInput & RNTextInput;
 
 type ImperativeFlatListRef =
   | (ComponentWrapperRef<RNScrollViewProps> & {
-      flatListRef: React.RefObject<FlatList<any>>;
+      flatListRef: React.RefObject<FlatList<unknown>>;
     })
   | null;
 
 export const FlatList = ((props) => {
   const { refreshControl, ref, ...rest } = props;
 
-  const [scrollGesture, setScrollGesture] = React.useState<Gesture<
-    NativeViewHandlerData,
-    NativeViewGestureConfig
-  > | null>(null);
+  const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
+    null
+  );
 
-  const wrapperRef = React.useRef<ImperativeScrollViewRef>(null);
-  const flatListRef = React.useRef<FlatList<any>>(null);
+  const wrapperRef = useRef<ImperativeScrollViewRef>(null);
+  const flatListRef = useRef<FlatList<unknown>>(null);
 
   const flatListProps = {};
   const scrollViewProps = {};
@@ -147,7 +143,7 @@ export const FlatList = ((props) => {
     }
   }
 
-  React.useImperativeHandle<ImperativeFlatListRef, ImperativeFlatListRef>(
+  useImperativeHandle<ImperativeFlatListRef, ImperativeFlatListRef>(
     // @ts-ignore We want to override ref
     ref,
     () => {
