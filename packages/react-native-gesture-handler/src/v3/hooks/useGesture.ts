@@ -82,7 +82,7 @@ export function useGesture<THandlerData, TConfig>(
   ) {
     currentGestureRef.current = { type, tag };
     RNGestureHandlerModule.createGestureHandler(type, tag, {});
-    // It's possible that this can cause errors about handler not being created when attemting to mound NativeDetector
+    // It's possible that this can cause errors about handler not being created when attempting to mount NativeDetector
     scheduleFlushOperations();
   }
 
