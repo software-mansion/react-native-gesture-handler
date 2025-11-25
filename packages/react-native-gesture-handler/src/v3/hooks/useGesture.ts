@@ -12,6 +12,10 @@ import {
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
 import { scheduleFlushOperations } from '../../handlers/utils';
+import {
+  registerGesture,
+  unregisterGesture,
+} from '../../handlers/handlersRegistry';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -86,26 +90,7 @@ export function useGesture<THandlerData, TConfig>(
     scheduleFlushOperations();
   }
 
-  useEffect(() => {
-    return () => {
-      RNGestureHandlerModule.dropGestureHandler(tag);
-      scheduleFlushOperations();
-    };
-  }, [type, tag]);
-
-  useEffect(() => {
-    const preparedConfig = prepareConfigForNativeSide(type, config);
-    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
-    scheduleFlushOperations();
-
-    bindSharedValues(config, tag);
-
-    return () => {
-      unbindSharedValues(config, tag);
-    };
-  }, [tag, config, type]);
-
-  return useMemo(
+  const gesture = useMemo(
     () => ({
       tag,
       type,
@@ -135,4 +120,28 @@ export function useGesture<THandlerData, TConfig>(
       gestureRelations,
     ]
   );
+
+  useEffect(() => {
+    return () => {
+      RNGestureHandlerModule.dropGestureHandler(tag);
+      scheduleFlushOperations();
+    };
+  }, [type, tag]);
+
+  useEffect(() => {
+    const preparedConfig = prepareConfigForNativeSide(type, config);
+    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
+    scheduleFlushOperations();
+
+    bindSharedValues(config, tag);
+
+    registerGesture(tag, gesture);
+
+    return () => {
+      unbindSharedValues(config, tag);
+      unregisterGesture(tag);
+    };
+  }, [tag, config, type, gesture]);
+
+  return gesture;
 }
