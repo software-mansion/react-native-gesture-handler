@@ -1,11 +1,38 @@
 import { isTestEnv } from '../utils';
 import { GestureType } from './gestures/gesture';
 import { GestureEvent, HandlerStateChangeEvent } from './gestureHandlerCommon';
+import { SingleGesture } from '../v3/types';
 
 export const handlerIDToTag: Record<string, number> = {};
+
+// There were attempts to create types that merge possible HandlerData and Config,
+// but ts was not able to infer them properly in many cases, so we use any here.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const hookGestures = new Map<number, SingleGesture<any, any>>();
 const gestures = new Map<number, GestureType>();
 const oldHandlers = new Map<number, GestureHandlerCallbacks>();
 const testIDs = new Map<string, number>();
+
+export function registerGesture<THandlerData, TConfig>(
+  handlerTag: number,
+  gesture: SingleGesture<THandlerData, TConfig>
+) {
+  hookGestures.set(handlerTag, gesture);
+
+  if (isTestEnv() && gesture.config.testId) {
+    testIDs.set(gesture.config.testId, handlerTag);
+  }
+}
+
+export function unregisterGesture(handlerTag: number) {
+  const gesture = hookGestures.get(handlerTag);
+
+  if (gesture && isTestEnv() && gesture.config.testId) {
+    testIDs.delete(gesture.config.testId);
+  }
+
+  hookGestures.delete(handlerTag);
+}
 
 export function registerHandler(
   handlerTag: number,
@@ -49,6 +76,16 @@ export function findHandlerByTestID(testID: string) {
   if (handlerTag !== undefined) {
     return findHandler(handlerTag) ?? null;
   }
+  return null;
+}
+
+export function findGestureByTestID(testID: string) {
+  const handlerTag = testIDs.get(testID);
+
+  if (handlerTag !== undefined) {
+    return hookGestures.get(handlerTag) ?? null;
+  }
+
   return null;
 }
 
