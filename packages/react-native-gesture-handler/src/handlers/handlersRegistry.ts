@@ -67,6 +67,10 @@ export function findHandler(handlerTag: number) {
   return gestures.get(handlerTag);
 }
 
+export function findGesture(handlerTag: number) {
+  return hookGestures.get(handlerTag);
+}
+
 export function findOldGestureHandler(handlerTag: number) {
   return oldHandlers.get(handlerTag);
 }
@@ -74,18 +78,8 @@ export function findOldGestureHandler(handlerTag: number) {
 export function findHandlerByTestID(testID: string) {
   const handlerTag = testIDs.get(testID);
   if (handlerTag !== undefined) {
-    return findHandler(handlerTag) ?? null;
+    return findHandler(handlerTag) ?? findGesture(handlerTag) ?? null;
   }
-  return null;
-}
-
-export function findGestureByTestID(testID: string) {
-  const handlerTag = testIDs.get(testID);
-
-  if (handlerTag !== undefined) {
-    return hookGestures.get(handlerTag) ?? null;
-  }
-
   return null;
 }
 

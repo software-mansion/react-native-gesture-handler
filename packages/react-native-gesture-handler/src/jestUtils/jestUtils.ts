@@ -60,6 +60,8 @@ import {
 } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 import { hasProperty, withPrevAndCurrent } from '../utils';
+import { SingleGesture } from '../v3/types';
+import { maybeUnpackValue } from '../v3/hooks/utils';
 
 // Load fireEvent conditionally, so RNGH may be used in setups without testing-library
 let fireEvent = (
@@ -164,9 +166,15 @@ const handlersDefaultEvents: DefaultEventsMapping = {
 };
 
 function isGesture(
-  componentOrGesture: ReactTestInstance | GestureType
+  componentOrGesture: ReactTestInstance | GestureType | SingleGesture<any, any>
 ): componentOrGesture is GestureType {
   return componentOrGesture instanceof BaseGesture;
+}
+
+function isHookGesture(
+  componentOrGesture: ReactTestInstance | SingleGesture<any, any>
+): componentOrGesture is SingleGesture<any, any> {
+  return 'detectorCallbacks' in componentOrGesture;
 }
 
 interface WrappedGestureHandlerTestEvent {
@@ -408,7 +416,7 @@ interface HandlerData {
   enabled: boolean | undefined;
 }
 function getHandlerData(
-  componentOrGesture: ReactTestInstance | GestureType
+  componentOrGesture: ReactTestInstance | GestureType | SingleGesture<any, any>
 ): HandlerData {
   if (isGesture(componentOrGesture)) {
     const gesture = componentOrGesture;
@@ -421,6 +429,33 @@ function getHandlerData(
       enabled: gesture.config.enabled,
     };
   }
+
+  if (isHookGesture(componentOrGesture)) {
+    return {
+      handlerType: componentOrGesture.type as HandlerNames,
+      handlerTag: componentOrGesture.tag,
+      enabled: maybeUnpackValue(componentOrGesture.config.enabled),
+      emitEvent: (eventName, args) => {
+        const { state, oldState, handlerTag, ...rest } = args.nativeEvent;
+
+        const event = {
+          state,
+          handlerTag,
+          handlerData: { ...rest },
+        };
+
+        if (eventName === 'onGestureHandlerStateChange') {
+          componentOrGesture.detectorCallbacks.onGestureHandlerStateChange({
+            oldState: oldState as State,
+            ...event,
+          });
+        } else if (eventName === 'onGestureHandlerEvent') {
+          componentOrGesture.detectorCallbacks.onGestureHandlerEvent?.(event);
+        }
+      },
+    };
+  }
+
   const gestureHandlerComponent = componentOrGesture;
   return {
     emitEvent: (eventName, args) => {
@@ -465,7 +500,7 @@ type ExtractConfig<T> =
       : Record<string, unknown>;
 
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
-  componentOrGesture: ReactTestInstance | GestureType,
+  componentOrGesture: ReactTestInstance | GestureType | SingleGesture<any, any>,
   eventList: Partial<GestureHandlerTestEvent<ExtractConfig<THandler>>>[] = []
 ): void {
   const { emitEvent, handlerType, handlerTag, enabled } =
