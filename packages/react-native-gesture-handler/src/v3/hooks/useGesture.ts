@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
-import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
 import {
   prepareConfig,
@@ -12,7 +11,7 @@ import {
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
 import { Platform } from 'react-native';
-import { scheduleFlushOperations } from '../../handlers/utils';
+import { NativeProxy } from '../NativeProxy';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -75,22 +74,18 @@ export function useGesture<THandlerData, TConfig>(
     currentGestureRef.current.type !== (type as string)
   ) {
     currentGestureRef.current = { type, tag };
-    RNGestureHandlerModule.createGestureHandler(type, tag, {});
-    // It's possible that this can cause errors about handler not being created when attempting to mount NativeDetector
-    scheduleFlushOperations();
+    NativeProxy.createGestureHandler(type, tag, {});
   }
 
   useEffect(() => {
     return () => {
-      RNGestureHandlerModule.dropGestureHandler(tag);
-      scheduleFlushOperations();
+      NativeProxy.dropGestureHandler(tag);
     };
   }, [type, tag]);
 
   useEffect(() => {
     const preparedConfig = prepareConfigForNativeSide(type, config);
-    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
-    scheduleFlushOperations();
+    NativeProxy.setGestureHandlerConfig(tag, preparedConfig);
 
     bindSharedValues(config, tag);
 

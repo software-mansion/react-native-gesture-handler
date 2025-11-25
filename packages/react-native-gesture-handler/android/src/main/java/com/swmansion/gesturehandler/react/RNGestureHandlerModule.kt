@@ -61,7 +61,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap) {
+  override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap): Boolean {
     if (ReanimatedProxy.REANIMATED_INSTALLED && !uiRuntimeDecorated) {
       uiRuntimeDecorated = decorateUIRuntime()
     }
@@ -69,6 +69,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     val handlerTag = handlerTagDouble.toInt()
 
     createGestureHandlerHelper<GestureHandler>(handlerName, handlerTag, config)
+
+    return true
   }
 
   @ReactMethod
