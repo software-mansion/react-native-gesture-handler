@@ -5,27 +5,27 @@ import {
   GestureDetector,
   InterceptingGestureDetector,
   VirtualGestureDetector,
-  useTap,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 
 import { COLORS } from './colors';
 
 function NativeDetectorExample() {
-  const tapAll = useTap({
+  const tapAll = useTapGesture({
     onStart: () => {
       'worklet';
       console.log('Tapped on text!');
     },
   });
 
-  const tapFirstPart = useTap({
+  const tapFirstPart = useTapGesture({
     onStart: () => {
       'worklet';
       console.log('Tapped on first part!');
     },
   });
 
-  const tapSecondPart = useTap({
+  const tapSecondPart = useTapGesture({
     onStart: () => {
       'worklet';
       console.log('Tapped on second part!');

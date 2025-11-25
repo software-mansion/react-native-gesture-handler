@@ -6,21 +6,12 @@ import {
   GestureDetectorProps as LegacyGestureDetectorProps,
   GestureDetector as LegacyGestureDetector,
 } from '../../handlers/gestures/GestureDetector';
-import { use } from 'react';
-import { isTestEnv } from '../../utils';
-import { Platform } from 'react-native';
-import GestureHandlerRootViewContext from '../../GestureHandlerRootViewContext';
+import { useEnsureGestureHandlerRootView } from './useEnsureGestureHandlerRootView';
 
 export function GestureDetector<THandlerData, TConfig>(
   props: NativeDetectorProps<THandlerData, TConfig> | LegacyGestureDetectorProps
 ) {
-  const rootViewContext = use(GestureHandlerRootViewContext);
-
-  if (__DEV__ && !rootViewContext && !isTestEnv() && Platform.OS !== 'web') {
-    throw new Error(
-      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation for more details.'
-    );
-  }
+  useEnsureGestureHandlerRootView();
 
   if (
     props.gesture instanceof ComposedGesture ||

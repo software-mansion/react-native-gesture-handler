@@ -167,7 +167,7 @@ function transformPanProps(
   return config;
 }
 
-export function usePan(config: PanGestureConfig): PanGesture {
+export function usePanGesture(config: PanGestureConfig): PanGesture {
   if (__DEV__) {
     validatePanConfig(config);
   }
