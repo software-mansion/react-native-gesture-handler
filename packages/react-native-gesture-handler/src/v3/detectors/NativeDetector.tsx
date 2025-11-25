@@ -6,28 +6,31 @@ import {
   AnimatedNativeDetector,
   NativeDetectorProps,
   nativeDetectorStyles,
-  ReanimatedNativeDetector,
 } from './common';
+import { useReanimatedEventsManager } from './useReanimatedEventsManager';
 
 export function NativeDetector<THandlerData, TConfig>({
   gesture,
   children,
 }: NativeDetectorProps<THandlerData, TConfig>) {
+  // TODO: is it possible with useReanimatedEventsManager to handle both Animated and Reanimated at the same time?
+
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
-    : gesture.config.shouldUseReanimatedDetector
-      ? ReanimatedNativeDetector
-      : HostGestureDetector;
+    : HostGestureDetector;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
   configureRelations(gesture);
 
+  // TODO: call useReanimatedEventsManager only when using Reanimated
+  const viewRef = useReanimatedEventsManager(gesture);
   const handlerTags = useMemo(() => {
     return isComposedGesture(gesture) ? gesture.tags : [gesture.tag];
   }, [gesture]);
 
   return (
     <NativeDetectorComponent
+      ref={viewRef}
       pointerEvents={'box-none'}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerStateChange={
@@ -38,18 +41,6 @@ export function NativeDetector<THandlerData, TConfig>({
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerTouchEvent={
         gesture.detectorCallbacks.onGestureHandlerTouchEvent
-      }
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerReanimatedStateChange={
-        gesture.detectorCallbacks.onReanimatedStateChange
-      }
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerReanimatedEvent={
-        gesture.detectorCallbacks.onReanimatedUpdateEvent
-      }
-      // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerReanimatedTouchEvent={
-        gesture.detectorCallbacks.onReanimatedTouchEvent
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerAnimatedEvent={
