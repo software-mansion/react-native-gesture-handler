@@ -4,13 +4,12 @@
 // For `waitFor` we need array as order of the gestures matters.
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
-import { scheduleFlushOperations } from '../../handlers/utils';
-import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { tagMessage } from '../../utils';
 import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
+import { NativeProxy } from '../NativeProxy';
 import { ComposedGestureName, Gesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
@@ -27,7 +26,7 @@ export const traverseAndConfigureRelations = (
     node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
     node.gestureRelations.waitFor.push(...waitFor);
 
-    RNGestureHandlerModule.configureRelations(node.tag, {
+    NativeProxy.configureRelations(node.tag, {
       waitFor: node.gestureRelations.waitFor,
       simultaneousHandlers: node.gestureRelations.simultaneousHandlers,
       blocksHandlers: node.gestureRelations.blocksHandlers,
@@ -143,13 +142,8 @@ export function configureRelations<THandlerData, TConfig>(
 
     traverseAndConfigureRelations(gesture, simultaneousHandlers);
   } else {
-    RNGestureHandlerModule.configureRelations(
-      gesture.tag,
-      gesture.gestureRelations
-    );
+    NativeProxy.configureRelations(gesture.tag, gesture.gestureRelations);
   }
-
-  scheduleFlushOperations();
 }
 
 export function ensureNativeDetectorComponent(
