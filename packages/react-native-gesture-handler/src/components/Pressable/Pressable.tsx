@@ -248,7 +248,7 @@ const Pressable = (props: PressableProps) => {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(INT32_MAX) // Stops long press from blocking Gesture.Native()
+        .minDuration(Platform.OS === 'web' ? 0 : INT32_MAX) // Long press handles finalize on web, thus it must activate right away
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
@@ -269,6 +269,16 @@ const Pressable = (props: PressableProps) => {
           const pressableEvent = gestureTouchToPressableEvent(event);
           stateMachine.reset();
           handlePressOut(pressableEvent, false);
+        })
+        .onFinalize((_event, success) => {
+          if (Platform.OS === 'web') {
+            if (success) {
+              stateMachine.handleEvent(StateMachineEvent.FINALIZE);
+            } else {
+              stateMachine.handleEvent(StateMachineEvent.CANCEL);
+            }
+            handleFinalize();
+          }
         }),
     [stateMachine, handleFinalize, handlePressOut]
   );
@@ -313,36 +323,14 @@ const Pressable = (props: PressableProps) => {
     [stateMachine, handlePressOut, handleFinalize]
   );
 
-  const webFinalizeGesture = useMemo(
-    () =>
-      Gesture.Tap()
-        .maxDuration(INT32_MAX)
-        .maxDistance(INT32_MAX)
-        .onFinalize((_event, success) => {
-          if (Platform.OS === 'web') {
-            if (success) {
-              stateMachine.handleEvent(StateMachineEvent.FINALIZE);
-            } else {
-              stateMachine.handleEvent(StateMachineEvent.CANCEL);
-            }
-            handleFinalize();
-          }
-        }),
-    [stateMachine, handleFinalize, handlePressOut]
-  );
-
   const isPressableEnabled = disabled !== true;
 
-  const gestures =
-    Platform.OS === 'web'
-      ? [buttonGesture, webFinalizeGesture, pressAndTouchGesture, hoverGesture]
-      : [buttonGesture, pressAndTouchGesture, hoverGesture];
+  const gestures = [buttonGesture, pressAndTouchGesture, hoverGesture];
 
   for (const gesture of gestures) {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(Platform.OS !== 'web');
 
     Object.entries(relationProps).forEach(([relationName, relation]) => {
       applyRelationProp(
