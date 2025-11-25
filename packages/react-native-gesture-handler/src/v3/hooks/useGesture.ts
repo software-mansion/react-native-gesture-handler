@@ -111,7 +111,7 @@ export function useGesture<THandlerData, TConfig>(
         // To handle this properly, we need to provide all three callbacks, so we set
         // all three to the Reanimated event handler.
         // On native, Reanimated handles routing internally based on the event names
-        // passed to the useEvent hook. We only nee to pass it once, so that Reanimated
+        // passed to the useEvent hook. We only need to pass it once, so that Reanimated
         // can setup its internal listeners.
         ...(Platform.OS === 'web'
           ? {
