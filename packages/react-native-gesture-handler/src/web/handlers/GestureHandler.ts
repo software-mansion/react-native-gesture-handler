@@ -447,10 +447,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       );
     }
     if (this.state === State.ACTIVE) {
-      if (!usesNativeOrVirtualDetector(this.actionType)) {
-        (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
-          undefined;
-      }
+      (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
+        undefined;
 
       invokeNullableMethod(
         this.forReanimated

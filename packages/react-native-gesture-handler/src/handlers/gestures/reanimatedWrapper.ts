@@ -24,6 +24,11 @@ type WorkletFunction<
   TReturn = unknown,
 > = ((...args: TArgs) => TReturn) & WorkletProps;
 
+export type ReanimatedHandler<THandlerData> = {
+  doDependenciesDiffer: boolean;
+  context: ReanimatedContext<THandlerData>;
+};
+
 let Reanimated:
   | {
       default: {
@@ -33,10 +38,9 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
-      useHandler: <THandlerData>(handlers: GestureCallbacks<THandlerData>) => {
-        doDependenciesDiffer: boolean;
-        context: ReanimatedContext<THandlerData>;
-      };
+      useHandler: <THandlerData>(
+        handlers: GestureCallbacks<THandlerData>
+      ) => ReanimatedHandler<THandlerData>;
       useEvent: <T>(
         callback: (event: T) => void,
         events: string[],
