@@ -307,8 +307,8 @@ const Pressable = (props: PressableProps) => {
         })
         .onFinalize((_event, success) => {
           if (Platform.OS !== 'web') {
-            // On Web we use Tap().onFinalize() instead of Native().onFinalize(),
-            // as Native cancels on mouse move, and Tap does not.
+            // On Web we use LongPress().onFinalize() instead of Native().onFinalize(),
+            // as Native cancels on mouse move, and LongPress does not.
             if (success) {
               stateMachine.handleEvent(StateMachineEvent.FINALIZE);
             } else {
