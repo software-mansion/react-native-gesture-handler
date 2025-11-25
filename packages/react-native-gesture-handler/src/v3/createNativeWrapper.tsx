@@ -19,13 +19,22 @@ export default function createNativeWrapper<P>(
   detectorType: DetectorType = DetectorType.Native
 ) {
   const ComponentWrapper = (
-    props: P & NativeWrapperProperties & { ref?: React.RefObject<unknown> }
+    props: P &
+      NativeWrapperProperties & {
+        ref?: React.RefObject<unknown>;
+        testID?: string;
+      }
   ) => {
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
       (res, key) => {
+        if (key === 'testID') {
+          res.gestureHandlerProps[key] = props[key];
+          // @ts-ignore FIXME(TS)
+          res.childProps[key] = props[key];
+        }
         // @ts-ignore TS being overly protective with it's types, see https://github.com/microsoft/TypeScript/issues/26255#issuecomment-458013731 for more info
-        if (NativeWrapperProps.has(key)) {
+        else if (NativeWrapperProps.has(key)) {
           // @ts-ignore FIXME(TS)
           res.gestureHandlerProps[key] = props[key];
         } else {

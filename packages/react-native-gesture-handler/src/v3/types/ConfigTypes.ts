@@ -51,7 +51,7 @@ export type InternalConfigProps<THandlerData> = {
 export type CommonGestureConfig = {
   disableReanimated?: boolean;
   useAnimated?: boolean;
-  testId?: string;
+  testID?: string;
 } & WithSharedValue<
   {
     runOnJS?: boolean;
