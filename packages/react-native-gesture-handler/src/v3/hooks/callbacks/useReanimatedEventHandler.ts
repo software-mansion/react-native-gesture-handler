@@ -45,7 +45,6 @@ export function useReanimatedEventHandler<THandlerData>(
 
   const callback = (event: UnpackedGestureHandlerEvent<THandlerData>) => {
     'worklet';
-    // console.log('Reanimated update event received:', event);
     if ('oldState' in event && event.oldState !== undefined) {
       stateChangeCallback(event);
     } else if ('allTouches' in event) {
