@@ -465,9 +465,13 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 {
   if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
     switch (eventHandlerType) {
-      case RNGestureHandlerEventHandlerTypeAnimated:
+      case RNGestureHandlerEventHandlerTypeAnimated: {
         [self sendEventForNativeAnimatedEvent:event];
+        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+        auto nativeEvent = [gestureEvent getNativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchAnimatedGestureEvent:nativeEvent];
         break;
+      }
       case RNGestureHandlerEventHandlerTypeReanimated: {
         RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getReanimatedNativeEvent];
