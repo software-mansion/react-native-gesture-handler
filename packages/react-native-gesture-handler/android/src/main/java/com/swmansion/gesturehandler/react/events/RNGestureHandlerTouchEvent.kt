@@ -15,7 +15,7 @@ class RNGestureHandlerTouchEvent private constructor() : Event<RNGestureHandlerT
 
   private fun <T : GestureHandler> init(handler: T, actionType: Int, eventHandlerType: EventHandlerType) {
     val view = if (GestureHandler.usesNativeOrVirtualDetector(handler.actionType)) {
-      handler.viewForEvents
+      handler.hostDetectorView!!
     } else {
       handler.view!!
     }

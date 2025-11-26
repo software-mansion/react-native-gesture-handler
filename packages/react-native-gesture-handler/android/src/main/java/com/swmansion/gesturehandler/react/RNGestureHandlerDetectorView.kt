@@ -96,7 +96,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
           nativeHandlers.add(tag)
         } else {
-          registry.attachHandlerToView(tag, viewTag, actionType)
+          registry.attachHandlerToView(tag, viewTag, actionType, this)
           if (actionType == GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR) {
             registry.getHandler(tag)?.hostDetectorView = this
           }
@@ -161,7 +161,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
 
     for (tag in nativeHandlers) {
-      registry.attachHandlerToView(tag, id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
+      registry.attachHandlerToView(tag, id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, this)
 
       attachedHandlers.add(tag)
     }

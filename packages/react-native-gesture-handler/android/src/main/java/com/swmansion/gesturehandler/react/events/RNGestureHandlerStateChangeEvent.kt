@@ -24,7 +24,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     eventHandlerType: EventHandlerType,
   ) {
     val view = if (GestureHandler.usesNativeOrVirtualDetector(handler.actionType)) {
-      handler.viewForEvents
+      handler.hostDetectorView!!
     } else {
       handler.view!!
     }
