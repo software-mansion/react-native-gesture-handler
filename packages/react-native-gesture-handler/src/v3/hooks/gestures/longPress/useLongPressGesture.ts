@@ -4,8 +4,8 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  GestureStateChangeEventWithHandlerData,
-  GestureUpdateEventWithHandlerData,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
@@ -38,10 +38,10 @@ type LongPressGestureInternalConfig = BaseDiscreteGestureConfig<
 >;
 
 export type LongPressGestureStateChangeEvent =
-  GestureStateChangeEventWithHandlerData<LongPressHandlerData>;
+  GestureStateChangeEvent<LongPressHandlerData>;
 
 export type LongPressGestureUpdateEvent =
-  GestureUpdateEventWithHandlerData<LongPressHandlerData>;
+  GestureUpdateEvent<LongPressHandlerData>;
 
 export type LongPressGesture = SingleGesture<
   LongPressHandlerData,

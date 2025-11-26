@@ -49,6 +49,15 @@ export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
 
+export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload &
+  THandlerData;
+export type GestureUpdateEvent<THandlerData> = EventPayload & THandlerData;
+
+export type UnpackedGestureHandlerEvent<THandlerData> =
+  | GestureStateChangeEvent<THandlerData>
+  | GestureUpdateEvent<THandlerData>
+  | GestureTouchEvent;
+
 // This is not how Animated.event is typed in React Native. We add _argMapping in order to
 // have access to the _argMapping property to check for usage of `change*` callbacks.
 // It's also not typed as a function, which is breaking Gesture Handler type definitions.

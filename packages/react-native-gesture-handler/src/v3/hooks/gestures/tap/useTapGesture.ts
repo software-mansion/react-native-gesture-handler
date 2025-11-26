@@ -1,8 +1,8 @@
 import {
   BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
-  GestureStateChangeEventWithHandlerData,
-  GestureUpdateEventWithHandlerData,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
   DiscreteSingleGesture,
   SingleGestureName,
   WithSharedValue,
@@ -30,10 +30,9 @@ export type TapGestureConfig = ExcludeInternalConfigProps<
 >;
 
 export type TapGestureStateChangeEvent =
-  GestureStateChangeEventWithHandlerData<TapHandlerData>;
+  GestureStateChangeEvent<TapHandlerData>;
 
-export type TapGestureUpdateEvent =
-  GestureUpdateEventWithHandlerData<TapHandlerData>;
+export type TapGestureUpdateEvent = GestureUpdateEvent<TapHandlerData>;
 
 export type TapGesture = DiscreteSingleGesture<
   TapHandlerData,

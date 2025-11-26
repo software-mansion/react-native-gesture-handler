@@ -23,6 +23,7 @@ import { useMemo } from 'react';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
+    console.log('Warning: Animated.event called in JS mode.');
     try {
       handler(...args);
     } catch (e) {
@@ -98,6 +99,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
       // @ts-expect-error At this point we know it's not a native animated event, so it's callable
       onGestureHandlerAnimatedEvent = guardJSAnimatedEvent(config.onUpdate);
     } else {
+      // @ts-expect-error The structure of an AnimatedEvent differs from other event types
       onGestureHandlerAnimatedEvent = config.onUpdate;
     }
   }

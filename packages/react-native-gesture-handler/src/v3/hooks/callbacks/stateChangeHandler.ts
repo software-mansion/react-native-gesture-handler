@@ -7,6 +7,7 @@ import {
   StateChangeEventWithHandlerData,
 } from '../../types';
 import {
+  flattenEvent,
   isEventForHandlerWithTag,
   maybeExtractNativeEvent,
   runCallback,
@@ -20,9 +21,10 @@ export function getStateChangeHandler<THandlerData>(
   return (sourceEvent: StateChangeEventWithHandlerData<THandlerData>) => {
     'worklet';
 
-    const event = maybeExtractNativeEvent(
+    const eventWithData = maybeExtractNativeEvent(
       sourceEvent
     ) as GestureStateChangeEventWithHandlerData<THandlerData>;
+    const event = flattenEvent(eventWithData);
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;

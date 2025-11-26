@@ -436,7 +436,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     const handleRelease = useCallback(
       (event: PanGestureStateChangeEvent) => {
         'worklet';
-        let { translationX: dragX, velocityX, x: touchX } = event.handlerData;
+        let { translationX: dragX, velocityX, x: touchX } = event;
 
         if (drawerPosition !== DrawerPosition.LEFT) {
           // See description in _updateAnimatedEvent about why events are flipped
@@ -550,19 +550,19 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         'worklet';
         const startedOutsideTranslation = isFromLeft
           ? interpolate(
-              event.handlerData.x,
+              event.x,
               [0, drawerWidth, drawerWidth + 1],
               [0, drawerWidth, drawerWidth]
             )
           : interpolate(
-              event.handlerData.x - containerWidth,
+              event.x - containerWidth,
               [-drawerWidth - 1, -drawerWidth, 0],
               [drawerWidth, drawerWidth, 0]
             );
 
         const startedInsideTranslation =
           sideCorrection *
-          (event.handlerData.translationX +
+          (event.translationX +
             (drawerOpened ? drawerWidth * -gestureOrientation : 0));
 
         const adjustedTranslation = Math.max(

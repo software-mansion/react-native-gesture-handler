@@ -4,8 +4,8 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  GestureStateChangeEventWithHandlerData,
-  GestureUpdateEventWithHandlerData,
+  GestureStateChangeEvent,
+  GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
@@ -27,10 +27,10 @@ export type NativeViewGestureConfig =
   ExcludeInternalConfigProps<NativeViewGestureInternalConfig>;
 
 export type NativeGestureStateChangeEvent =
-  GestureStateChangeEventWithHandlerData<NativeViewHandlerData>;
+  GestureStateChangeEvent<NativeViewHandlerData>;
 
 export type NativeGestureUpdateEvent =
-  GestureUpdateEventWithHandlerData<NativeViewHandlerData>;
+  GestureUpdateEvent<NativeViewHandlerData>;
 
 export type NativeGesture = SingleGesture<
   NativeViewHandlerData,

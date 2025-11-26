@@ -4,10 +4,12 @@ import {
   BaseGestureConfig,
   ChangeCalculatorType,
   DiffCalculatorType,
-  UnpackedGestureHandlerEventWithHandlerData,
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
+  GestureUpdateEvent,
+  GestureStateChangeEvent,
+  UnpackedGestureHandlerEvent,
 } from '../../types';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../../utils';
@@ -31,9 +33,26 @@ export function maybeExtractNativeEvent<THandlerData>(
   return isNativeEvent(event) ? event.nativeEvent : event;
 }
 
+export function flattenEvent<THandlerData>(
+  event: GestureStateChangeEventWithHandlerData<THandlerData>
+): GestureStateChangeEvent<THandlerData>;
+export function flattenEvent<THandlerData>(
+  event: GestureUpdateEventWithHandlerData<THandlerData>
+): GestureUpdateEvent<THandlerData>;
+export function flattenEvent<THandlerData>(
+  event:
+    | GestureUpdateEventWithHandlerData<THandlerData>
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+) {
+  'worklet';
+
+  const { handlerData, ...rest } = event;
+  return { ...rest, ...handlerData };
+}
+
 export function isEventForHandlerWithTag<THandlerData>(
   handlerTag: number,
-  event: UnpackedGestureHandlerEventWithHandlerData<THandlerData>
+  event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';
 
@@ -42,7 +61,7 @@ export function isEventForHandlerWithTag<THandlerData>(
 
 export function isNativeAnimatedEvent<THandlerData>(
   callback:
-    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void)
+    | ((event: GestureUpdateEvent<THandlerData>) => void)
     | AnimatedEvent
     | undefined
 ): callback is AnimatedEvent {
