@@ -6,8 +6,8 @@ import {
   HandlerData,
   SingleGestureName,
   WithSharedValue,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
@@ -51,9 +51,10 @@ type PanGestureInternalConfig = BaseGestureConfig<
 >;
 
 export type PanGestureStateChangeEvent =
-  GestureStateChangeEvent<PanHandlerData>;
+  GestureStateChangeEventWithHandlerData<PanHandlerData>;
 
-export type PanGestureUpdateEvent = GestureUpdateEvent<PanHandlerData>;
+export type PanGestureUpdateEvent =
+  GestureUpdateEventWithHandlerData<PanHandlerData>;
 
 export type PanGesture = SingleGesture<
   PanHandlerData,

@@ -2,12 +2,12 @@ import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
 import {
   GestureCallbacks,
-  GestureUpdateEvent,
+  GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
 
 export type ReanimatedContext<THandlerData> = {
-  lastUpdateEvent: GestureUpdateEvent<THandlerData> | undefined;
+  lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
 };
 
 interface WorkletProps {

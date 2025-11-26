@@ -4,8 +4,8 @@ import {
   SingleGesture,
   HandlerData,
   SingleGestureName,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
@@ -33,10 +33,10 @@ export type RotationGestureConfig =
   ExcludeInternalConfigProps<RotationGestureInternalConfig>;
 
 export type RotationGestureStateChangeEvent =
-  GestureStateChangeEvent<RotationHandlerData>;
+  GestureStateChangeEventWithHandlerData<RotationHandlerData>;
 
 export type RotationGestureUpdateEvent =
-  GestureUpdateEvent<RotationHandlerData>;
+  GestureUpdateEventWithHandlerData<RotationHandlerData>;
 
 export type RotationGesture = SingleGesture<
   RotationHandlerData,

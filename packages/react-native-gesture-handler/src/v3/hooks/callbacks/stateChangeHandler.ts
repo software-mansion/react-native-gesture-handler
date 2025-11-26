@@ -3,8 +3,8 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import {
   GestureCallbacks,
-  GestureStateChangeEvent,
-  StateChangeEvent,
+  GestureStateChangeEventWithHandlerData,
+  StateChangeEventWithHandlerData,
 } from '../../types';
 import {
   isEventForHandlerWithTag,
@@ -17,12 +17,12 @@ export function getStateChangeHandler<THandlerData>(
   callbacks: GestureCallbacks<THandlerData>,
   context?: ReanimatedContext<THandlerData>
 ) {
-  return (sourceEvent: StateChangeEvent<THandlerData>) => {
+  return (sourceEvent: StateChangeEventWithHandlerData<THandlerData>) => {
     'worklet';
 
     const event = maybeExtractNativeEvent(
       sourceEvent
-    ) as GestureStateChangeEvent<THandlerData>;
+    ) as GestureStateChangeEventWithHandlerData<THandlerData>;
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;

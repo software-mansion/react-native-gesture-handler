@@ -1,6 +1,6 @@
 import {
-  StateChangeEvent,
-  UpdateEvent,
+  StateChangeEventWithHandlerData,
+  UpdateEventWithHandlerData,
   TouchEvent,
   ComposedGesture,
   ComposedGestureName,
@@ -45,7 +45,9 @@ export function useComposedGesture(
     );
   }
 
-  const onGestureHandlerStateChange = (event: StateChangeEvent<unknown>) => {
+  const onGestureHandlerStateChange = (
+    event: StateChangeEventWithHandlerData<unknown>
+  ) => {
     for (const gesture of gestures) {
       if (gesture.detectorCallbacks.onGestureHandlerStateChange) {
         gesture.detectorCallbacks.onGestureHandlerStateChange(event);
@@ -53,7 +55,9 @@ export function useComposedGesture(
     }
   };
 
-  const onGestureHandlerEvent = (event: UpdateEvent<unknown>) => {
+  const onGestureHandlerEvent = (
+    event: UpdateEventWithHandlerData<unknown>
+  ) => {
     for (const gesture of gestures) {
       if (gesture.detectorCallbacks.onGestureHandlerEvent) {
         gesture.detectorCallbacks.onGestureHandlerEvent(event);

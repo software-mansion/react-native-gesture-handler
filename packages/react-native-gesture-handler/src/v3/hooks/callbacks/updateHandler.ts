@@ -4,8 +4,8 @@ import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper'
 import {
   ChangeCalculatorType,
   GestureCallbacks,
-  GestureUpdateEvent,
-  UpdateEvent,
+  GestureUpdateEventWithHandlerData,
+  UpdateEventWithHandlerData,
 } from '../../types';
 import {
   isEventForHandlerWithTag,
@@ -19,12 +19,12 @@ export function getUpdateHandler<THandlerData>(
   context: ReanimatedContext<THandlerData> | undefined,
   changeEventCalculator?: ChangeCalculatorType<THandlerData>
 ) {
-  return (sourceEvent: UpdateEvent<THandlerData>) => {
+  return (sourceEvent: UpdateEventWithHandlerData<THandlerData>) => {
     'worklet';
 
     const event = maybeExtractNativeEvent(
       sourceEvent
-    ) as GestureUpdateEvent<THandlerData>;
+    ) as GestureUpdateEventWithHandlerData<THandlerData>;
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
