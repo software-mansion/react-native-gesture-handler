@@ -55,7 +55,7 @@ export const ScrollView = (
   props: RNScrollViewProps &
     NativeWrapperProperties & {
       ref?: React.RefObject<ImperativeScrollViewRef>;
-      // This prop existst because using `ref` in `renderScrollComponent` doesn't work (it is overwritten by RN internals).
+      // This prop exists because using `ref` in `renderScrollComponent` doesn't work (it is overwritten by RN internals).
       innerRef?: (node: ImperativeScrollViewRef) => void;
     }
 ) => {
