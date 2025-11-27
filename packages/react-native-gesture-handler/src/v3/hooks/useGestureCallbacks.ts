@@ -23,7 +23,6 @@ import { useMemo } from 'react';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
-    console.log('Warning: Animated.event called in JS mode.');
     try {
       handler(...args);
     } catch (e) {
