@@ -22,6 +22,9 @@ export {
 } from './GestureComponents';
 
 export type {
-  ImperativeScrollViewRef as GHScrollViewRef,
   ImperativeFlatListRef as GHFlatListRef,
+  ImperativeRefreshControlRef as GHRefreshControlRef,
+  ImperativeScrollViewRef as GHScrollViewRef,
+  ImperativeSwitchRef as GHSwitchRef,
+  ImperativeTextInputRef as GHTextInputRef,
 } from './GestureComponents';

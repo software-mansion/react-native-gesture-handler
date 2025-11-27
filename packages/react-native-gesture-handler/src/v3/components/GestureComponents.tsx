@@ -16,6 +16,7 @@ import {
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
+  RefreshControlProps as RNRefreshControlProps,
 } from 'react-native';
 
 import createNativeWrapper, {
@@ -27,6 +28,11 @@ import { NativeWrapperProps } from '../hooks/utils';
 import { DetectorType } from '../detectors';
 import { NativeGesture } from '../hooks/gestures/native/useNativeGesture';
 
+export type ImperativeRefreshControlRef = ComponentWrapperRef<
+  RNRefreshControlProps,
+  RNRefreshControl
+> | null;
+
 export const RefreshControl = createNativeWrapper(
   RNRefreshControl,
   {
@@ -37,7 +43,12 @@ export const RefreshControl = createNativeWrapper(
 );
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type RefreshControl = typeof RefreshControl & RNRefreshControl;
+export type RefreshControl = RNRefreshControlProps;
+
+export type ImperativeScrollViewRef = ComponentWrapperRef<
+  RNScrollViewProps,
+  RNScrollView
+> | null;
 
 const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   RNScrollView,
@@ -47,9 +58,6 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   },
   DetectorType.Intercepting
 );
-
-export type ImperativeScrollViewRef =
-  ComponentWrapperRef<RNScrollViewProps> | null;
 
 export const ScrollView = (
   props: RNScrollViewProps &
@@ -65,7 +73,7 @@ export const ScrollView = (
     null
   );
 
-  const wrapperRef = useRef<ComponentWrapperRef<RNScrollViewProps>>(null);
+  const wrapperRef = useRef<ImperativeScrollViewRef>(null);
 
   useImperativeHandle<ImperativeScrollViewRef, ImperativeScrollViewRef>(
     ref,
@@ -94,28 +102,39 @@ export const ScrollView = (
     />
   );
 };
-// Backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
-// include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ScrollView = typeof GHScrollView & RNScrollView;
+export type ScrollView = typeof ScrollView;
+
+export type ImperativeSwitchRef = ComponentWrapperRef<
+  RNSwitchProps,
+  RNSwitch
+> | null;
 
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
   disallowInterruption: true,
 });
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type Switch = typeof Switch & RNSwitch;
+export type Switch = typeof Switch;
+
+export type ImperativeTextInputRef = ComponentWrapperRef<
+  RNTextInputProps,
+  RNTextInput
+> | null;
 
 export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type TextInput = typeof TextInput & RNTextInput;
 
 export type ImperativeFlatListRef<T = any> =
-  | (ComponentWrapperRef<RNScrollViewProps> & {
-      flatListRef: FlatList<T> | null;
+  | (ComponentWrapperRef<RNScrollViewProps, RNScrollView> & {
+      flatListRef: RNFlatList<T> | null;
     })
   | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type TextInput = typeof TextInput;
 
 export const FlatList = ((props) => {
   const { refreshControl, ref, ...rest } = props;
@@ -125,7 +144,7 @@ export const FlatList = ((props) => {
   );
 
   const wrapperRef = useRef<ImperativeScrollViewRef>(null);
-  const flatListRef = useRef<FlatList<any>>(null);
+  const flatListRef = useRef<RNFlatList<any>>(null);
 
   const flatListProps = {};
   const scrollViewProps = {};
@@ -191,5 +210,6 @@ export const FlatList = ((props) => {
       }
   >
 ) => ReactElement | null;
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type FlatList<ItemT = any> = typeof FlatList & RNFlatList<ItemT>;
+export type FlatList = typeof FlatList;
