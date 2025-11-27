@@ -1,11 +1,13 @@
+import { ReanimatedContext } from 'packages/react-native-gesture-handler/src/handlers/gestures/reanimatedWrapper';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import {
   GestureCallbacks,
-  GestureStateChangeEvent,
-  StateChangeEvent,
+  GestureStateChangeEventWithHandlerData,
+  StateChangeEventWithHandlerData,
 } from '../../types';
 import {
+  flattenEvent,
   isEventForHandlerWithTag,
   maybeExtractNativeEvent,
   runCallback,
@@ -13,14 +15,16 @@ import {
 
 export function getStateChangeHandler<THandlerData>(
   handlerTag: number,
-  callbacks: GestureCallbacks<THandlerData>
+  callbacks: GestureCallbacks<THandlerData>,
+  context?: ReanimatedContext<THandlerData>
 ) {
-  return (sourceEvent: StateChangeEvent<THandlerData>) => {
+  return (sourceEvent: StateChangeEventWithHandlerData<THandlerData>) => {
     'worklet';
 
-    const event = maybeExtractNativeEvent(
+    const eventWithData = maybeExtractNativeEvent(
       sourceEvent
-    ) as GestureStateChangeEvent<THandlerData>;
+    ) as GestureStateChangeEventWithHandlerData<THandlerData>;
+    const event = flattenEvent(eventWithData);
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
@@ -39,6 +43,10 @@ export function getStateChangeHandler<THandlerData>(
         runCallback(CALLBACK_TYPE.END, callbacks, event, true);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
+
+      if (context) {
+        context.lastUpdateEvent = undefined;
+      }
     } else if (
       (event.state === State.FAILED || event.state === State.CANCELLED) &&
       event.state !== event.oldState
@@ -47,6 +55,10 @@ export function getStateChangeHandler<THandlerData>(
         runCallback(CALLBACK_TYPE.END, callbacks, event, false);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
+
+      if (context) {
+        context.lastUpdateEvent = undefined;
+      }
     }
   };
 }

@@ -405,8 +405,8 @@ const Swipeable = (props: SwipeableProps) => {
   const handleRelease = useCallback(
     (event: PanGestureStateChangeEvent) => {
       'worklet';
-      const { velocityX } = event.handlerData;
-      userDrag.value = event.handlerData.translationX;
+      const { velocityX } = event;
+      userDrag.value = event.translationX;
 
       const leftThresholdProp = leftThreshold ?? leftWidth.value / 2;
       const rightThresholdProp = rightThreshold ?? rightWidth.value / 2;
@@ -479,14 +479,14 @@ const Swipeable = (props: SwipeableProps) => {
     onStart: updateElementWidths,
     onUpdate: (event: PanGestureUpdateEvent) => {
       'worklet';
-      userDrag.value = event.handlerData.translationX;
+      userDrag.value = event.translationX;
 
       const direction =
         rowState.value === -1
           ? SwipeDirection.RIGHT
           : rowState.value === 1
             ? SwipeDirection.LEFT
-            : event.handlerData.translationX > 0
+            : event.translationX > 0
               ? SwipeDirection.RIGHT
               : SwipeDirection.LEFT;
 

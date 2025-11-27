@@ -4,19 +4,21 @@ import {
   BaseGestureConfig,
   ChangeCalculatorType,
   DiffCalculatorType,
-  UnpackedGestureHandlerEvent,
-  GestureHandlerEvent,
-  GestureStateChangeEvent,
+  GestureHandlerEventWithHandlerData,
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
   GestureUpdateEvent,
+  GestureStateChangeEvent,
+  UnpackedGestureHandlerEvent,
 } from '../../types';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../../utils';
 
 export function isNativeEvent<THandlerData>(
-  event: GestureHandlerEvent<THandlerData>
+  event: GestureHandlerEventWithHandlerData<THandlerData>
 ): event is
-  | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>
-  | NativeSyntheticEvent<GestureStateChangeEvent<THandlerData>>
+  | NativeSyntheticEvent<GestureUpdateEventWithHandlerData<THandlerData>>
+  | NativeSyntheticEvent<GestureStateChangeEventWithHandlerData<THandlerData>>
   | NativeSyntheticEvent<GestureTouchEvent> {
   'worklet';
 
@@ -24,11 +26,28 @@ export function isNativeEvent<THandlerData>(
 }
 
 export function maybeExtractNativeEvent<THandlerData>(
-  event: GestureHandlerEvent<THandlerData>
+  event: GestureHandlerEventWithHandlerData<THandlerData>
 ) {
   'worklet';
 
   return isNativeEvent(event) ? event.nativeEvent : event;
+}
+
+export function flattenEvent<THandlerData>(
+  event: GestureStateChangeEventWithHandlerData<THandlerData>
+): GestureStateChangeEvent<THandlerData>;
+export function flattenEvent<THandlerData>(
+  event: GestureUpdateEventWithHandlerData<THandlerData>
+): GestureUpdateEvent<THandlerData>;
+export function flattenEvent<THandlerData>(
+  event:
+    | GestureUpdateEventWithHandlerData<THandlerData>
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+) {
+  'worklet';
+
+  const { handlerData, ...rest } = event;
+  return { ...rest, ...handlerData };
 }
 
 export function isEventForHandlerWithTag<THandlerData>(
@@ -86,8 +105,8 @@ export function getChangeEventCalculator<THandlerData>(
 ): ChangeCalculatorType<THandlerData> {
   'worklet';
   return (
-    current: GestureUpdateEvent<THandlerData>,
-    previous?: GestureUpdateEvent<THandlerData>
+    current: GestureUpdateEventWithHandlerData<THandlerData>,
+    previous?: GestureUpdateEventWithHandlerData<THandlerData>
   ) => {
     'worklet';
     const currentEventData = current.handlerData;

@@ -1,28 +1,30 @@
 import {
   AnimatedEvent,
-  StateChangeEvent,
-  UpdateEvent,
+  StateChangeEventWithHandlerData,
+  UpdateEventWithHandlerData,
   TouchEvent,
-  GestureUpdateEvent,
+  GestureUpdateEventWithHandlerData,
 } from './EventTypes';
 
 export type DetectorCallbacks<THandlerData> = {
-  onGestureHandlerStateChange: (event: StateChangeEvent<THandlerData>) => void;
+  onGestureHandlerStateChange: (
+    event: StateChangeEventWithHandlerData<THandlerData>
+  ) => void;
   onGestureHandlerEvent:
     | undefined
-    | ((event: UpdateEvent<THandlerData>) => void);
+    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
   onGestureHandlerTouchEvent: (event: TouchEvent) => void;
   onReanimatedStateChange:
     | undefined
-    | ((event: StateChangeEvent<THandlerData>) => void);
+    | ((event: StateChangeEventWithHandlerData<THandlerData>) => void);
   onReanimatedUpdateEvent:
     | undefined
-    | ((event: UpdateEvent<THandlerData>) => void);
+    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
   onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
   onGestureHandlerAnimatedEvent:
     | undefined
     | AnimatedEvent
-    | ((event: GestureUpdateEvent<THandlerData>) => void);
+    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void);
 };
 
 export type VirtualChild = {

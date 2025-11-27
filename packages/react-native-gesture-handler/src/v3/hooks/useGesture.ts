@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
-import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
 import {
   prepareConfig,
@@ -11,7 +10,8 @@ import {
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
-import { scheduleFlushOperations } from '../../handlers/utils';
+import { Platform } from 'react-native';
+import { NativeProxy } from '../NativeProxy';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -36,9 +36,7 @@ export function useGesture<THandlerData, TConfig>(
     onGestureHandlerStateChange,
     onGestureHandlerEvent,
     onGestureHandlerTouchEvent,
-    onReanimatedStateChange,
-    onReanimatedUpdateEvent,
-    onReanimatedTouchEvent,
+    onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   } = useGestureCallbacks(tag, config);
 
@@ -53,12 +51,7 @@ export function useGesture<THandlerData, TConfig>(
     throw new Error(tagMessage('Failed to create event handlers.'));
   }
 
-  if (
-    config.shouldUseReanimatedDetector &&
-    (!onReanimatedStateChange ||
-      !onReanimatedUpdateEvent ||
-      !onReanimatedTouchEvent)
-  ) {
+  if (config.shouldUseReanimatedDetector && !onReanimatedEvent) {
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
@@ -81,22 +74,18 @@ export function useGesture<THandlerData, TConfig>(
     currentGestureRef.current.type !== (type as string)
   ) {
     currentGestureRef.current = { type, tag };
-    RNGestureHandlerModule.createGestureHandler(type, tag, {});
-    // It's possible that this can cause errors about handler not being created when attempting to mount NativeDetector
-    scheduleFlushOperations();
+    NativeProxy.createGestureHandler(type, tag, {});
   }
 
   useEffect(() => {
     return () => {
-      RNGestureHandlerModule.dropGestureHandler(tag);
-      scheduleFlushOperations();
+      NativeProxy.dropGestureHandler(tag);
     };
   }, [type, tag]);
 
   useEffect(() => {
     const preparedConfig = prepareConfigForNativeSide(type, config);
-    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
-    scheduleFlushOperations();
+    NativeProxy.setGestureHandlerConfig(tag, preparedConfig);
 
     bindSharedValues(config, tag);
 
@@ -114,10 +103,24 @@ export function useGesture<THandlerData, TConfig>(
         onGestureHandlerStateChange,
         onGestureHandlerEvent,
         onGestureHandlerTouchEvent,
-        onReanimatedStateChange,
-        onReanimatedUpdateEvent,
-        onReanimatedTouchEvent,
         onGestureHandlerAnimatedEvent,
+        // On web, we're triggering Reanimated callbacks ourselves, based on the type.
+        // To handle this properly, we need to provide all three callbacks, so we set
+        // all three to the Reanimated event handler.
+        // On native, Reanimated handles routing internally based on the event names
+        // passed to the useEvent hook. We only need to pass it once, so that Reanimated
+        // can setup its internal listeners.
+        ...(Platform.OS === 'web'
+          ? {
+              onReanimatedUpdateEvent: onReanimatedEvent,
+              onReanimatedStateChange: onReanimatedEvent,
+              onReanimatedTouchEvent: onReanimatedEvent,
+            }
+          : {
+              onReanimatedUpdateEvent: onReanimatedEvent,
+              onReanimatedStateChange: undefined,
+              onReanimatedTouchEvent: undefined,
+            }),
       },
       gestureRelations,
     }),
@@ -128,9 +131,7 @@ export function useGesture<THandlerData, TConfig>(
       onGestureHandlerStateChange,
       onGestureHandlerEvent,
       onGestureHandlerTouchEvent,
-      onReanimatedStateChange,
-      onReanimatedUpdateEvent,
-      onReanimatedTouchEvent,
+      onReanimatedEvent,
       onGestureHandlerAnimatedEvent,
       gestureRelations,
     ]

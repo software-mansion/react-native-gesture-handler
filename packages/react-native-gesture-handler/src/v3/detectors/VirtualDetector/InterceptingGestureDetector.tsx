@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import HostGestureDetector from '../HostGestureDetector';
 import {
   VirtualChild,
-  GestureHandlerEvent,
+  GestureHandlerEventWithHandlerData,
   DetectorCallbacks,
 } from '../../types';
 import {
@@ -128,7 +128,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const createGestureEventHandler = useCallback(
     (key: keyof DetectorCallbacks<THandlerData>) => {
-      return (e: GestureHandlerEvent<THandlerData>) => {
+      return (e: GestureHandlerEventWithHandlerData<THandlerData>) => {
         if (typeof gesture?.detectorCallbacks[key] === 'function') {
           // @ts-expect-error passing event to a union of functions where only one is typed as such
           gesture.detectorCallbacks[key](e);
@@ -148,12 +148,14 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const getHandlers = useCallback(
     (key: keyof DetectorCallbacks<unknown>) => {
-      const handlers: ((e: GestureHandlerEvent<THandlerData>) => void)[] = [];
+      const handlers: ((
+        e: GestureHandlerEventWithHandlerData<THandlerData>
+      ) => void)[] = [];
 
       if (gesture?.detectorCallbacks[key]) {
         handlers.push(
           gesture.detectorCallbacks[key] as (
-            e: GestureHandlerEvent<unknown>
+            e: GestureHandlerEventWithHandlerData<unknown>
           ) => void
         );
       }
@@ -162,7 +164,9 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         const handler = child.methods[key];
         if (handler) {
           handlers.push(
-            handler as (e: GestureHandlerEvent<THandlerData>) => void
+            handler as (
+              e: GestureHandlerEventWithHandlerData<THandlerData>
+            ) => void
           );
         }
       });

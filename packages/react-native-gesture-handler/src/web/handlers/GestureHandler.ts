@@ -27,8 +27,8 @@ import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
 import { tagMessage } from '../../utils';
 import {
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
   SingleGestureName,
 } from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
@@ -447,10 +447,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       );
     }
     if (this.state === State.ACTIVE) {
-      if (!usesNativeOrVirtualDetector(this.actionType)) {
-        (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
-          undefined;
-      }
+      (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
+        undefined;
 
       invokeNullableMethod(
         this.forReanimated
@@ -484,7 +482,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformStateChangeEvent(
     newState: State,
     oldState: State
-  ): ResultEvent<GestureStateChangeEvent<unknown>> {
+  ): ResultEvent<GestureStateChangeEventWithHandlerData<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
@@ -503,7 +501,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformUpdateEvent(
     newState: State
-  ): ResultEvent<GestureUpdateEvent<unknown>> {
+  ): ResultEvent<GestureUpdateEventWithHandlerData<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
