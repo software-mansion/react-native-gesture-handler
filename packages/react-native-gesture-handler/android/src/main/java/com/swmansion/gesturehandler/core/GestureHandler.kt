@@ -36,6 +36,15 @@ open class GestureHandler {
   // Virtual Detector to which the gesture is assigned.
   var hostDetectorView: RNGestureHandlerDetectorView? = null
 
+  val viewForEvents: View
+    get() {
+      return if (usesNativeOrVirtualDetector(actionType)) {
+        hostDetectorView!!
+      } else {
+        view!!
+      }
+    }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
