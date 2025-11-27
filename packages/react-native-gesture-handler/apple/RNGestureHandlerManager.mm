@@ -464,22 +464,21 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                          forView:(RNGHUIView *)detectorView
 {
   if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
+    RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+
     switch (eventHandlerType) {
       case RNGestureHandlerEventHandlerTypeAnimated: {
         [self sendEventForNativeAnimatedEvent:event];
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getNativeEvent];
         [(RNGestureHandlerDetector *)detectorView dispatchAnimatedGestureEvent:nativeEvent];
         break;
       }
       case RNGestureHandlerEventHandlerTypeReanimated: {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getReanimatedNativeEvent];
         [(RNGestureHandlerDetector *)detectorView dispatchReanimatedGestureEvent:nativeEvent];
         break;
       }
       case RNGestureHandlerEventHandlerTypeJS: {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getNativeEvent];
         [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
         break;
