@@ -1,7 +1,11 @@
 import { useGestureStateChangeEvent } from './callbacks/js/useGestureStateChangeEvent';
 import { useGestureUpdateEvent } from './callbacks/js/useGestureUpdateEvent';
 import { useGestureTouchEvent } from './callbacks/js/useGestureTouchEvent';
-import { AnimatedEvent, BaseGestureConfig, GestureUpdateEvent } from '../types';
+import {
+  AnimatedEvent,
+  BaseGestureConfig,
+  GestureUpdateEventWithHandlerData,
+} from '../types';
 import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
@@ -82,7 +86,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   }
 
   let onGestureHandlerAnimatedEvent:
-    | ((event: GestureUpdateEvent<THandlerData>) => void)
+    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void)
     | AnimatedEvent
     | undefined;
   if (config.dispatchesAnimatedEvents) {
@@ -94,6 +98,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
       // @ts-expect-error At this point we know it's not a native animated event, so it's callable
       onGestureHandlerAnimatedEvent = guardJSAnimatedEvent(config.onUpdate);
     } else {
+      // @ts-expect-error The structure of an AnimatedEvent differs from other event types
       onGestureHandlerAnimatedEvent = config.onUpdate;
     }
   }

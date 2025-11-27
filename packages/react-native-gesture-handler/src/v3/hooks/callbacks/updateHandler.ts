@@ -4,10 +4,11 @@ import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper'
 import {
   ChangeCalculatorType,
   GestureCallbacks,
-  GestureUpdateEvent,
-  UpdateEvent,
+  GestureUpdateEventWithHandlerData,
+  UpdateEventWithHandlerData,
 } from '../../types';
 import {
+  flattenEvent,
   isEventForHandlerWithTag,
   maybeExtractNativeEvent,
   runCallback,
@@ -19,12 +20,21 @@ export function getUpdateHandler<THandlerData>(
   context: ReanimatedContext<THandlerData> | undefined,
   changeEventCalculator?: ChangeCalculatorType<THandlerData>
 ) {
-  return (sourceEvent: UpdateEvent<THandlerData>) => {
+  return (sourceEvent: UpdateEventWithHandlerData<THandlerData>) => {
     'worklet';
 
-    const event = maybeExtractNativeEvent(
+    const eventWithData = maybeExtractNativeEvent(
       sourceEvent
-    ) as GestureUpdateEvent<THandlerData>;
+    ) as GestureUpdateEventWithHandlerData<THandlerData>;
+
+    const eventWithChanges = changeEventCalculator
+      ? changeEventCalculator(
+          eventWithData,
+          context ? context.lastUpdateEvent : undefined
+        )
+      : eventWithData;
+
+    const event = flattenEvent(eventWithChanges);
 
     if (!isEventForHandlerWithTag(handlerTag, event)) {
       return;
@@ -36,14 +46,8 @@ export function getUpdateHandler<THandlerData>(
       throw new Error(tagMessage('Event handler context is not defined'));
     }
 
-    runCallback(
-      CALLBACK_TYPE.UPDATE,
-      callbacks,
-      changeEventCalculator
-        ? changeEventCalculator(event, context.lastUpdateEvent)
-        : event
-    );
+    runCallback(CALLBACK_TYPE.UPDATE, callbacks, event);
 
-    context.lastUpdateEvent = event;
+    context.lastUpdateEvent = eventWithData;
   };
 }

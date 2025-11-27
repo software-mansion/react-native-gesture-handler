@@ -5,7 +5,7 @@ import {
 import {
   ChangeCalculatorType,
   GestureCallbacks,
-  UnpackedGestureHandlerEvent,
+  UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
 import { getStateChangeHandler } from './stateChangeHandler';
 import { getTouchEventHandler } from './touchEventHandler';
@@ -43,7 +43,9 @@ export function useReanimatedEventHandler<THandlerData>(
 
   const touchCallback = getTouchEventHandler(handlerTag, handlers);
 
-  const callback = (event: UnpackedGestureHandlerEvent<THandlerData>) => {
+  const callback = (
+    event: UnpackedGestureHandlerEventWithHandlerData<THandlerData>
+  ) => {
     'worklet';
     if ('oldState' in event && event.oldState !== undefined) {
       stateChangeCallback(event);

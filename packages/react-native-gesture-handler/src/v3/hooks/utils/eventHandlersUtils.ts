@@ -2,8 +2,8 @@ import { TouchEventType } from '../../../TouchEventType';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import {
   ChangeCalculatorType,
-  UnpackedGestureHandlerEvent,
   GestureCallbacks,
+  UnpackedGestureHandlerEvent,
 } from '../../types';
 
 export function prepareStateChangeHandlers<THandlerData>(
