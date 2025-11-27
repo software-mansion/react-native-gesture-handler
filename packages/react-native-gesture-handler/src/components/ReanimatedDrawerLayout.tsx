@@ -43,7 +43,7 @@ import {
   HitSlop,
 } from '../handlers/gestureHandlerCommon';
 import {
-  PanGestureStateChangeEvent,
+  PanGestureEvent,
   usePanGesture,
   useTapGesture,
 } from '../v3/hooks/gestures';
@@ -434,7 +434,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const handleRelease = useCallback(
-      (event: PanGestureStateChangeEvent) => {
+      (event: PanGestureEvent) => {
         'worklet';
         let { translationX: dragX, velocityX, x: touchX } = event;
 

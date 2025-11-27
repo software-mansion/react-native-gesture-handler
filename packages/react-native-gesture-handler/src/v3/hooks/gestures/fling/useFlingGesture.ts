@@ -4,7 +4,6 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  GestureStateChangeEvent,
   GestureUpdateEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
@@ -28,10 +27,7 @@ type FlingGestureInternalConfig = BaseDiscreteGestureConfig<
 export type FlingGestureConfig =
   ExcludeInternalConfigProps<FlingGestureInternalConfig>;
 
-export type FlingGestureStateChangeEvent =
-  GestureStateChangeEvent<FlingHandlerData>;
-
-export type FlingGestureUpdateEvent = GestureUpdateEvent<FlingHandlerData>;
+export type FlingGestureEvent = GestureUpdateEvent<FlingHandlerData>;
 
 export type FlingGesture = SingleGesture<
   FlingHandlerData,
