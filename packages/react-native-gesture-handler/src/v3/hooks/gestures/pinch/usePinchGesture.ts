@@ -5,7 +5,6 @@ import {
   HandlerData,
   SingleGestureName,
   GestureUpdateEvent,
-  GestureStateChangeEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
@@ -32,10 +31,7 @@ type PinchGestureInternalConfig = BaseGestureConfig<
 export type PinchGestureConfig =
   ExcludeInternalConfigProps<PinchGestureInternalConfig>;
 
-export type PinchGestureStateChangeEvent =
-  GestureStateChangeEvent<PinchHandlerData>;
-
-export type PinchGestureUpdateEvent = GestureUpdateEvent<PinchHandlerData>;
+export type PinchGestureEvent = GestureUpdateEvent<PinchHandlerData>;
 
 export type PinchGesture = SingleGesture<
   PinchHandlerData,

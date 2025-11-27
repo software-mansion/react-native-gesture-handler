@@ -49,12 +49,9 @@ export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
 
-export type GestureStateChangeEvent<THandlerData> = StateChangeEventPayload &
-  THandlerData;
-export type GestureUpdateEvent<THandlerData> = EventPayload & THandlerData;
+export type GestureUpdateEvent<THandlerData> = THandlerData;
 
 export type UnpackedGestureHandlerEvent<THandlerData> =
-  | GestureStateChangeEvent<THandlerData>
   | GestureUpdateEvent<THandlerData>
   | GestureTouchEvent;
 
