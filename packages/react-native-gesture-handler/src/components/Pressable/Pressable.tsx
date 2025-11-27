@@ -248,7 +248,7 @@ const Pressable = (props: PressableProps) => {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(INT32_MAX) // Stops long press from blocking Gesture.Native()
+        .minDuration(Platform.OS === 'web' ? 0 : INT32_MAX) // Long press handles finalize on web, thus it must activate right away
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
@@ -331,7 +331,6 @@ const Pressable = (props: PressableProps) => {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(Platform.OS !== 'web');
 
     Object.entries(relationProps).forEach(([relationName, relation]) => {
       applyRelationProp(
