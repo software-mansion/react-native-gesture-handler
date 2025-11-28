@@ -36,30 +36,15 @@ open class GestureHandler {
   // Virtual Detector to which the gesture is assigned.
   var hostDetectorView: RNGestureHandlerDetectorView? = null
 
-  val viewForEvents: RNGestureHandlerDetectorView
+  val viewForEvents: View
     get() {
-      assert(usesNativeOrVirtualDetector(actionType)) {
-        "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
-      }
-
-      val detector = if (actionType ==
-        ACTION_TYPE_VIRTUAL_DETECTOR
-      ) {
-        this.hostDetectorView
-      } else if (this is NativeViewGestureHandler) {
-        this.view?.parent
+      return if (usesNativeOrVirtualDetector(actionType)) {
+        hostDetectorView!!
       } else {
-        view
+        view!!
       }
-
-      if (detector !is RNGestureHandlerDetectorView) {
-        throw Error(
-          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event.",
-        )
-      }
-
-      return detector
     }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f

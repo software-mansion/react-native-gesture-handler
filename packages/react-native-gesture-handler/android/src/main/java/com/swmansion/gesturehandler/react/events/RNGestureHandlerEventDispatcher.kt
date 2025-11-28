@@ -87,7 +87,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           eventHandlerType,
         )
 
-        handler.viewForEvents.dispatchEvent(event)
+        handler.hostDetectorView?.dispatchEvent(event)
       }
     }
   }
@@ -152,7 +152,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           eventHandlerType,
         )
 
-        handler.viewForEvents.dispatchEvent(event)
+        handler.hostDetectorView?.dispatchEvent(event)
       }
     }
   }
@@ -196,7 +196,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         }
         val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType, eventHandlerType)
 
-        handler.viewForEvents.dispatchEvent(event)
+        handler.hostDetectorView?.dispatchEvent(event)
       }
     }
   }

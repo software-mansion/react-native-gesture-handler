@@ -11,7 +11,7 @@ import {
 
 import {
   NativeViewGestureHandler,
-  ScrollView as GHScroll,
+  LegacyScrollView as GHScroll,
   State,
   TapGestureHandler,
   TextInput,

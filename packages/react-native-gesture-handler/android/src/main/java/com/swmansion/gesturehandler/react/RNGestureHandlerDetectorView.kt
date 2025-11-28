@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
+import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
 
@@ -67,7 +68,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   override fun addView(child: View, index: Int, params: LayoutParams?) {
     super.addView(child, index, params)
 
-    tryAttachNativeHandlersToChildView(child.id)
+    tryAttachNativeHandlersToChildView(child)
   }
 
   override fun removeViewAt(index: Int) {
@@ -95,7 +96,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
           nativeHandlers.add(tag)
         } else {
-          registry.attachHandlerToView(tag, viewTag, actionType)
+          registry.attachHandlerToView(tag, viewTag, actionType, this)
           if (actionType == GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR) {
             registry.getHandler(tag)?.hostDetectorView = this
           }
@@ -114,7 +115,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
     if (child != null) {
-      tryAttachNativeHandlersToChildView(child.id)
+      tryAttachNativeHandlersToChildView(child)
     }
   }
 
@@ -149,12 +150,22 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
   }
 
-  private fun tryAttachNativeHandlersToChildView(childId: Int) {
+  private fun tryAttachNativeHandlersToChildView(child: View) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
+    // In the native view hierarchy, a ScrollView is a child of a RefreshControl.
+    // When attaching Native gestures to a ScrollView, first check if it is wrapped by a RefreshControl.
+    // If so, attach the handler to the child of RefreshControl, not the RefreshControl itself.
+    // Note: RefreshControl is wrapped with a VirtualDetector, and native gestures for it are attached in `attachVirtualChildren`.
+    val id = if (child is ReactSwipeRefreshLayout) {
+      child.getChildAt(0).id
+    } else {
+      child.id
+    }
+
     for (tag in nativeHandlers) {
-      registry.attachHandlerToView(tag, childId, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR)
+      registry.attachHandlerToView(tag, id, GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, this)
 
       attachedHandlers.add(tag)
     }
