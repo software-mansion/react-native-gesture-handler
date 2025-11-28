@@ -12,21 +12,21 @@ import { COLORS } from './colors';
 
 function NativeDetectorExample() {
   const tapAll = useTapGesture({
-    onStart: () => {
+    onActivate: () => {
       'worklet';
       console.log('Tapped on text!');
     },
   });
 
   const tapFirstPart = useTapGesture({
-    onStart: () => {
+    onActivate: () => {
       'worklet';
       console.log('Tapped on first part!');
     },
   });
 
   const tapSecondPart = useTapGesture({
-    onStart: () => {
+    onActivate: () => {
       'worklet';
       console.log('Tapped on second part!');
     },
