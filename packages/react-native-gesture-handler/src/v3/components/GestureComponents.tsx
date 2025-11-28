@@ -43,7 +43,7 @@ export const RefreshControl = createNativeWrapper(
 );
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type RefreshControl = RNRefreshControlProps;
+export type RefreshControl = typeof RefreshControl;
 
 export type ImperativeScrollViewRef = ComponentWrapperRef<
   RNScrollViewProps,
