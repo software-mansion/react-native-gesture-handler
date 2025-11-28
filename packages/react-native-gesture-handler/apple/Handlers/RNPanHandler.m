@@ -259,6 +259,7 @@
 
 - (void)reset
 {
+  [self triggerAction];
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
