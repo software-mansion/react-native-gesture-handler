@@ -154,6 +154,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
+    // In the native view hierarchy, a ScrollView is a child of a RefreshControl.
+    // When attaching Native gestures to a ScrollView, first check if it is wrapped by a RefreshControl.
+    // If so, attach the handler to the child of RefreshControl, not the RefreshControl itself.
+    // Note: RefreshControl is wrapped with a VirtualDetector, and native gestures for it are attached in `attachVirtualChildren`.
     val id = if (child is ReactSwipeRefreshLayout) {
       child.getChildAt(0).id
     } else {
