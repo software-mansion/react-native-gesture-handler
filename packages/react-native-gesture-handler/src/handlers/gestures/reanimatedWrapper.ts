@@ -29,6 +29,16 @@ export type ReanimatedHandler<THandlerData> = {
   context: ReanimatedContext<THandlerData>;
 };
 
+export type NativeEventsManager = new (component: {
+  props: Record<string, unknown>;
+  _componentRef: React.Ref<unknown>;
+  getComponentViewTag: () => number;
+}) => {
+  attachEvents: () => void;
+  detachEvents: () => void;
+  updateEvents: (prevProps: Record<string, unknown>) => void;
+};
+
 let Reanimated:
   | {
       default: {
@@ -38,6 +48,7 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
+      NativeEventsManager: NativeEventsManager;
       useHandler: <THandlerData>(
         handlers: GestureCallbacks<THandlerData>
       ) => ReanimatedHandler<THandlerData>;
