@@ -501,7 +501,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const overlayDismissGesture = useTapGesture({
       maxDistance: 25,
-      onEnd: () => {
+      onDeactivate: () => {
         'worklet';
         if (
           isDrawerOpen.value &&
@@ -535,7 +535,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         (drawerOpened
           ? drawerLockMode !== DrawerLockMode.LOCKED_OPEN
           : drawerLockMode !== DrawerLockMode.LOCKED_CLOSED),
-      onStart: () => {
+      onActivate: () => {
         'worklet';
         emitStateChanged(DrawerState.DRAGGING, false);
         runOnJS(setDrawerState)(DrawerState.DRAGGING);
@@ -577,7 +577,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           Extrapolation.CLAMP
         );
       },
-      onEnd: handleRelease,
+      onDeactivate: handleRelease,
     });
 
     // When using RTL, row and row-reverse flex directions are flipped.
