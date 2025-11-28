@@ -1,7 +1,7 @@
 import { tagMessage } from '../utils';
 import {
   useExclusiveGestures,
-  useMultipleGestures,
+  useCompetingGestures,
   useSimultaneousGestures,
 } from '../v3/hooks/composition';
 import { useGesture } from '../v3/hooks/useGesture';
@@ -39,7 +39,7 @@ describe('Ensure only one leaf node', () => {
   });
 
   test('useRace', () => {
-    expect(() => useMultipleGestures(pan1, pan1)).toThrow(errorMessage);
+    expect(() => useCompetingGestures(pan1, pan1)).toThrow(errorMessage);
   });
 
   test('Complex composition', () => {
@@ -93,7 +93,7 @@ describe('Simple relations', () => {
   });
 
   test('useRace', () => {
-    const composedGesture = renderHook(() => useMultipleGestures(pan1, pan2))
+    const composedGesture = renderHook(() => useCompetingGestures(pan1, pan2))
       .result.current;
 
     configureRelations(composedGesture);
