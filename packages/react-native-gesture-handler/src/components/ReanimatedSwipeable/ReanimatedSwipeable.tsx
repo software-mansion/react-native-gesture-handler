@@ -460,7 +460,7 @@ const Swipeable = (props: SwipeableProps) => {
     simultaneousWith: simultaneousWithExternalGesture,
     requireToFail: requireExternalGestureToFail,
     block: blocksExternalGesture,
-    onStart: () => {
+    onActivate: () => {
       'worklet';
       if (rowState.value !== 0) {
         close();
@@ -476,7 +476,7 @@ const Swipeable = (props: SwipeableProps) => {
     requireToFail: requireExternalGestureToFail,
     block: blocksExternalGesture,
     hitSlop: hitSlop,
-    onStart: updateElementWidths,
+    onActivate: updateElementWidths,
     onUpdate: (event: PanGestureUpdateEvent) => {
       'worklet';
       userDrag.value = event.translationX;
@@ -501,7 +501,7 @@ const Swipeable = (props: SwipeableProps) => {
 
       updateAnimatedEvent();
     },
-    onEnd: (event: PanGestureStateChangeEvent) => {
+    onDeactivate: (event: PanGestureStateChangeEvent) => {
       'worklet';
       handleRelease(event);
     },
