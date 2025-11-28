@@ -32,6 +32,9 @@ export type ReanimatedHandler<THandlerData> = {
 export type NativeEventsManager = new (component: {
   props: Record<string, unknown>;
   _componentRef: React.Ref<unknown>;
+  // Removed in https://github.com/software-mansion/react-native-reanimated/pull/6736
+  // but we likely want to keep it for compatibility with older Reanimated versions
+  _componentViewTag: number;
   getComponentViewTag: () => number;
 }) => {
   attachEvents: () => void;

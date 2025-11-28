@@ -67,6 +67,7 @@ function LeanReanimatedNativeDetector(
     eventManager.current = new NativeEventsManagerImpl({
       props: reaProps,
       _componentRef: viewRef,
+      _componentViewTag: nativeTag,
       getComponentViewTag: () => {
         return nativeTag;
       },
