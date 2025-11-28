@@ -9,6 +9,7 @@ import android.widget.EditText
 import com.facebook.react.uimanager.RootView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
+import com.swmansion.gesturehandler.react.isHoverAction
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -517,18 +518,12 @@ class GestureHandlerOrchestrator(
   // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
   // so we need to pass them into RootViewGestureHandler, otherwise press and hold
   // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
-  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, action: Int): Boolean {
+  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, event: MotionEvent): Boolean {
     val shouldSkipHoverEvents =
       handler !is HoverGestureHandler &&
         handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
 
-    return shouldSkipHoverEvents &&
-      action in
-      listOf(
-        MotionEvent.ACTION_HOVER_EXIT,
-        MotionEvent.ACTION_HOVER_ENTER,
-        MotionEvent.ACTION_HOVER_MOVE,
-      )
+    return shouldSkipHoverEvents && event.isHoverAction()
   }
 
   private fun recordViewHandlersForPointer(
@@ -546,7 +541,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          if (shouldHandlerSkipHoverEvents(handler, event.action)) {
+          if (shouldHandlerSkipHoverEvents(handler, event)) {
             continue
           }
 
