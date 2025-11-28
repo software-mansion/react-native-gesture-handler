@@ -6,8 +6,8 @@ import {
   AnimatedNativeDetector,
   NativeDetectorProps,
   nativeDetectorStyles,
-  ReanimatedNativeDetector,
 } from './common';
+import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 
 export function NativeDetector<THandlerData, TConfig>({
   gesture,

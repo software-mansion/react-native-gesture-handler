@@ -17,10 +17,10 @@ import {
   AnimatedNativeDetector,
   InterceptingGestureDetectorProps,
   nativeDetectorStyles,
-  ReanimatedNativeDetector,
 } from '../common';
 import { tagMessage } from '../../../utils';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
+import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 
 interface VirtualChildrenForNative {
   viewTag: number;
