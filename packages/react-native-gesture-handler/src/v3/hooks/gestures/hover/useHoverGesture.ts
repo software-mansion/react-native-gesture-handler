@@ -7,7 +7,7 @@ import {
   HandlerData,
   SingleGestureName,
   WithSharedValue,
-  GestureUpdateEvent,
+  GestureEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
@@ -39,7 +39,7 @@ type HoverGestureInternalConfig = BaseGestureConfig<
 export type HoverGestureConfig =
   ExcludeInternalConfigProps<HoverGestureInternalConfig>;
 
-export type HoverGestureEvent = GestureUpdateEvent<HoverHandlerData>;
+export type HoverGestureEvent = GestureEvent<HoverHandlerData>;
 
 export type HoverGesture = SingleGesture<
   HoverHandlerData,

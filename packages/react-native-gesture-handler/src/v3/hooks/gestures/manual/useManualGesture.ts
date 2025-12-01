@@ -3,7 +3,7 @@ import {
   ExcludeInternalConfigProps,
   SingleGesture,
   SingleGestureName,
-  GestureUpdateEvent,
+  GestureEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
@@ -21,7 +21,7 @@ type ManualGestureInternalConfig = BaseGestureConfig<
 export type ManualGestureConfig =
   ExcludeInternalConfigProps<ManualGestureInternalConfig>;
 
-export type ManualGestureEvent = GestureUpdateEvent<ManualHandlerData>;
+export type ManualGestureEvent = GestureEvent<ManualHandlerData>;
 
 export type ManualGesture = SingleGesture<
   ManualHandlerData,

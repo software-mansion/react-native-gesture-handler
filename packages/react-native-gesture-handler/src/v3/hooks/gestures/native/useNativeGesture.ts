@@ -4,7 +4,7 @@ import {
   SingleGesture,
   SingleGestureName,
   WithSharedValue,
-  GestureUpdateEvent,
+  GestureEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
@@ -25,7 +25,7 @@ type NativeViewGestureInternalConfig = BaseDiscreteGestureConfig<
 export type NativeViewGestureConfig =
   ExcludeInternalConfigProps<NativeViewGestureInternalConfig>;
 
-export type NativeGestureEvent = GestureUpdateEvent<NativeViewHandlerData>;
+export type NativeGestureEvent = GestureEvent<NativeViewHandlerData>;
 
 export type NativeGesture = SingleGesture<
   NativeViewHandlerData,

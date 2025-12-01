@@ -1,7 +1,7 @@
 import {
   BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
-  GestureUpdateEvent,
+  GestureEvent,
   DiscreteSingleGesture,
   SingleGestureName,
   WithSharedValue,
@@ -28,7 +28,7 @@ export type TapGestureConfig = ExcludeInternalConfigProps<
   BaseDiscreteGestureConfig<TapHandlerData, TapGestureProperties>
 >;
 
-export type TapGestureEvent = GestureUpdateEvent<TapHandlerData>;
+export type TapGestureEvent = GestureEvent<TapHandlerData>;
 
 export type TapGesture = DiscreteSingleGesture<
   TapHandlerData,

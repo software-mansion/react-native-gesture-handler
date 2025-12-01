@@ -9,24 +9,19 @@ import {
 import {
   AnimatedEvent,
   ChangeCalculatorType,
-  GestureUpdateEvent,
+  GestureEvent,
 } from './EventTypes';
 import { WithSharedValue } from './ReanimatedTypes';
 
 export type GestureCallbacks<THandlerData> = {
-  onBegin?: (event: GestureUpdateEvent<THandlerData>) => void;
-  onActivate?: (event: GestureUpdateEvent<THandlerData>) => void;
+  onBegin?: (event: GestureEvent<THandlerData>) => void;
+  onActivate?: (event: GestureEvent<THandlerData>) => void;
   onDeactivate?: (
-    event: GestureUpdateEvent<THandlerData>,
+    event: GestureEvent<THandlerData>,
     didSucceed: boolean
   ) => void;
-  onFinalize?: (
-    event: GestureUpdateEvent<THandlerData>,
-    didSucceed: boolean
-  ) => void;
-  onUpdate?:
-    | ((event: GestureUpdateEvent<THandlerData>) => void)
-    | AnimatedEvent;
+  onFinalize?: (event: GestureEvent<THandlerData>, didSucceed: boolean) => void;
+  onUpdate?: ((event: GestureEvent<THandlerData>) => void) | AnimatedEvent;
   onTouchesDown?: (event: GestureTouchEvent) => void;
   onTouchesMove?: (event: GestureTouchEvent) => void;
   onTouchesUp?: (event: GestureTouchEvent) => void;

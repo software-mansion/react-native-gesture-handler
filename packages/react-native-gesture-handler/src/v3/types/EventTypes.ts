@@ -49,10 +49,10 @@ export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
 
-export type GestureUpdateEvent<THandlerData> = THandlerData;
+export type GestureEvent<THandlerData> = THandlerData;
 
 export type UnpackedGestureHandlerEvent<THandlerData> =
-  | GestureUpdateEvent<THandlerData>
+  | GestureEvent<THandlerData>
   | GestureTouchEvent;
 
 // This is not how Animated.event is typed in React Native. We add _argMapping in order to
