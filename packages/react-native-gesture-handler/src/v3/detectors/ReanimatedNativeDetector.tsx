@@ -11,7 +11,10 @@ import { findNodeHandle } from 'react-native';
 let NativeEventsManagerImpl = Reanimated?.NativeEventsManager;
 
 if (!NativeEventsManagerImpl) {
-  // Fallback to empty object when Reanimated or NativeEventsManager is not available
+  // When Reanimated.NativeEventsManager is undefined, it may be that an older
+  // Reanimated version is used which doesn't export NativeEventsManager, or
+  // Reanimated is not installed at all. For the older versions, try to import
+  // NativeEventsManager by a subpath. Otherwise, it will stay undefined.
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     NativeEventsManagerImpl =
