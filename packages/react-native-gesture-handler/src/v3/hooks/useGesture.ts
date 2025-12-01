@@ -134,7 +134,6 @@ export function useGesture<THandlerData, TConfig>(
     scheduleFlushOperations();
 
     bindSharedValues(config, tag);
-
     registerGesture(tag, gesture);
 
     return () => {
