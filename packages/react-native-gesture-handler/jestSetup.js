@@ -7,7 +7,7 @@ jest.mock('./lib/commonjs/RNGestureHandlerModule', () =>
   require('./lib/commonjs/mocks/mocks')
 );
 jest.mock('./lib/commonjs/components/GestureButtons', () =>
-  require('./lib/commonjs/mocks/mocks')
+  require('./lib/commonjs/mocks/GestureButtons')
 );
 jest.mock('./lib/commonjs/components/Pressable', () =>
   require('./lib/commonjs/mocks/Pressable')
@@ -18,7 +18,7 @@ jest.mock('./lib/module/RNGestureHandlerModule', () =>
   require('./lib/module/mocks/mocks')
 );
 jest.mock('./lib/module/components/GestureButtons', () =>
-  require('./lib/module/mocks/mocks')
+  require('./lib/module/mocks/GestureButtons')
 );
 jest.mock('./lib/module/components/Pressable', () =>
   require('./lib/module/mocks/Pressable')
