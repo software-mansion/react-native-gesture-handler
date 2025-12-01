@@ -20,6 +20,7 @@ import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.isHoverAction
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -385,10 +386,7 @@ open class GestureHandler {
       setPointerType(sourceEvent)
     }
 
-    if (sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_EXIT
-    ) {
+    if (sourceEvent.isHoverAction()) {
       onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
     } else {
       onHandle(adaptedTransformedEvent, adaptedSourceEvent)
