@@ -9,20 +9,27 @@ import {
 } from '../../types';
 import { stateMachine } from './stateMachine';
 
+const workletNOOP = () => {
+  'worklet';
+  // no-op
+};
+
 export function useReanimatedEventHandler<THandlerData>(
   handlerTag: number,
   handlers: GestureCallbacks<THandlerData>,
   reanimatedHandler: ReanimatedHandler<THandlerData> | undefined,
   changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined
 ) {
+  let workletizedHandlers = handlers;
+
   // We don't want to call hooks conditionally, `useEvent` will be always called.
   // The only difference is whether we will send events to Reanimated or not.
   // The problem here is that if someone passes `Animated.event` as `onUpdate` prop,
   // it won't be workletized and therefore `useHandler` will throw. In that case we override it to empty `worklet`.
-  if (!Reanimated?.isWorkletFunction(handlers.onUpdate)) {
-    handlers.onUpdate = () => {
-      'worklet';
-      // no-op
+  if (!Reanimated?.isWorkletFunction(workletizedHandlers.onUpdate)) {
+    workletizedHandlers = {
+      ...workletizedHandlers,
+      onUpdate: workletNOOP,
     };
   }
 
