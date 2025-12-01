@@ -10,12 +10,12 @@ export function prepareStateChangeHandlers<THandlerData>(
   callbacks: GestureCallbacks<THandlerData>
 ): GestureCallbacks<THandlerData> {
   'worklet';
-  const { onBegin, onStart, onEnd, onFinalize } = callbacks;
+  const { onBegin, onActivate, onDeactivate, onFinalize } = callbacks;
 
   const handlers: GestureCallbacks<THandlerData> = {
     ...(onBegin ? { onBegin } : {}),
-    ...(onStart ? { onStart } : {}),
-    ...(onEnd ? { onEnd } : {}),
+    ...(onActivate ? { onActivate } : {}),
+    ...(onDeactivate ? { onDeactivate } : {}),
     ...(onFinalize ? { onFinalize } : {}),
   };
 
@@ -66,11 +66,11 @@ export function getHandler<THandlerData>(
     case CALLBACK_TYPE.BEGAN:
       return callbacks.onBegin;
     case CALLBACK_TYPE.START:
-      return callbacks.onStart;
+      return callbacks.onActivate;
     case CALLBACK_TYPE.UPDATE:
       return callbacks.onUpdate;
     case CALLBACK_TYPE.END:
-      return callbacks.onEnd;
+      return callbacks.onDeactivate;
     case CALLBACK_TYPE.FINALIZE:
       return callbacks.onFinalize;
     case CALLBACK_TYPE.TOUCHES_DOWN:

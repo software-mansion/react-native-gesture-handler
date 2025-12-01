@@ -15,8 +15,8 @@ import { WithSharedValue } from './ReanimatedTypes';
 
 export type GestureCallbacks<THandlerData> = {
   onBegin?: (event: GestureUpdateEvent<THandlerData>) => void;
-  onStart?: (event: GestureUpdateEvent<THandlerData>) => void;
-  onEnd?: (
+  onActivate?: (event: GestureUpdateEvent<THandlerData>) => void;
+  onDeactivate?: (
     event: GestureUpdateEvent<THandlerData>,
     didSucceed: boolean
   ) => void;

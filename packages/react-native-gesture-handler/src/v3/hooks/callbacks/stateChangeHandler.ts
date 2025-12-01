@@ -1,4 +1,4 @@
-import { ReanimatedContext } from 'packages/react-native-gesture-handler/src/handlers/gestures/reanimatedWrapper';
+import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import {

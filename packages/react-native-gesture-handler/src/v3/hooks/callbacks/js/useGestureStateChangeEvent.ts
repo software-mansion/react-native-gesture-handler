@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { BaseGestureConfig } from '../../../types';
 import { prepareStateChangeHandlers } from '../../utils';
 import { getStateChangeHandler } from '../stateChangeHandler';
-import { ReanimatedContext } from 'packages/react-native-gesture-handler/src/handlers/gestures/reanimatedWrapper';
+import { ReanimatedContext } from '../../../../handlers/gestures/reanimatedWrapper';
 
 export function useGestureStateChangeEvent<THandlerData, TConfig>(
   handlerTag: number,
@@ -12,16 +12,16 @@ export function useGestureStateChangeEvent<THandlerData, TConfig>(
   return useMemo(() => {
     const handlers = prepareStateChangeHandlers({
       onBegin: config.onBegin,
-      onStart: config.onStart,
-      onEnd: config.onEnd,
+      onActivate: config.onActivate,
+      onDeactivate: config.onDeactivate,
       onFinalize: config.onFinalize,
     });
     return getStateChangeHandler(handlerTag, handlers, context);
   }, [
     handlerTag,
     config.onBegin,
-    config.onStart,
-    config.onEnd,
+    config.onActivate,
+    config.onDeactivate,
     config.onFinalize,
     context,
   ]);
