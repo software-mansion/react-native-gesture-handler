@@ -7,9 +7,7 @@ import {
   GestureCallbacks,
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
-import { getStateChangeHandler } from './stateChangeHandler';
-import { getTouchEventHandler } from './touchEventHandler';
-import { getUpdateHandler } from './updateHandler';
+import { stateMachine } from './stateMachine';
 
 export function useReanimatedEventHandler<THandlerData>(
   handlerTag: number,
@@ -28,32 +26,19 @@ export function useReanimatedEventHandler<THandlerData>(
     };
   }
 
-  const stateChangeCallback = getStateChangeHandler(
-    handlerTag,
-    handlers,
-    reanimatedHandler?.context
-  );
-
-  const updateCallback = getUpdateHandler(
-    handlerTag,
-    handlers,
-    reanimatedHandler?.context,
-    changeEventCalculator
-  );
-
-  const touchCallback = getTouchEventHandler(handlerTag, handlers);
-
   const callback = (
     event: UnpackedGestureHandlerEventWithHandlerData<THandlerData>
   ) => {
     'worklet';
-    if ('oldState' in event && event.oldState !== undefined) {
-      stateChangeCallback(event);
-    } else if ('allTouches' in event) {
-      touchCallback(event);
-    } else {
-      updateCallback(event);
-    }
+    stateMachine(
+      handlerTag,
+      event,
+      handlers,
+      changeEventCalculator,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+      reanimatedHandler?.context!,
+      false
+    );
   };
 
   const reanimatedEvent = Reanimated?.useEvent(

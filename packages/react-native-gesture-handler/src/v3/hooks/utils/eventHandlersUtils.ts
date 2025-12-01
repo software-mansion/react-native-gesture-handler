@@ -1,60 +1,37 @@
+import { useMemo } from 'react';
 import { TouchEventType } from '../../../TouchEventType';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import {
-  ChangeCalculatorType,
-  GestureCallbacks,
-  UnpackedGestureHandlerEvent,
-} from '../../types';
+import { GestureCallbacks, UnpackedGestureHandlerEvent } from '../../types';
 
-export function prepareStateChangeHandlers<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>
+export function useMemoizedGestureCallbacks<THandlerData>(
+  config: GestureCallbacks<THandlerData>
 ): GestureCallbacks<THandlerData> {
-  'worklet';
-  const { onBegin, onActivate, onDeactivate, onFinalize } = callbacks;
-
-  const handlers: GestureCallbacks<THandlerData> = {
-    ...(onBegin ? { onBegin } : {}),
-    ...(onActivate ? { onActivate } : {}),
-    ...(onDeactivate ? { onDeactivate } : {}),
-    ...(onFinalize ? { onFinalize } : {}),
-  };
-
-  return handlers;
-}
-
-type UpdateHandlersReturnType<THandlerData> = {
-  handlers: GestureCallbacks<THandlerData>;
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
-};
-
-export function prepareUpdateHandlers<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>,
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>
-): UpdateHandlersReturnType<THandlerData> {
-  'worklet';
-  const { onUpdate } = callbacks;
-
-  const handlers: GestureCallbacks<THandlerData> = {
-    ...(onUpdate ? { onUpdate } : {}),
-  };
-
-  return { handlers, changeEventCalculator };
-}
-
-export function prepareTouchHandlers<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>
-): GestureCallbacks<THandlerData> {
-  const { onTouchesDown, onTouchesMove, onTouchesUp, onTouchesCancel } =
-    callbacks;
-
-  const handlers: GestureCallbacks<THandlerData> = {
-    ...(onTouchesDown ? { onTouchesDown } : {}),
-    ...(onTouchesMove ? { onTouchesMove } : {}),
-    ...(onTouchesUp ? { onTouchesUp } : {}),
-    ...(onTouchesCancel ? { onTouchesCancel } : {}),
-  };
-
-  return handlers;
+  return useMemo(
+    () => ({
+      ...(config.onBegin ? { onBegin: config.onBegin } : {}),
+      ...(config.onActivate ? { onActivate: config.onActivate } : {}),
+      ...(config.onDeactivate ? { onDeactivate: config.onDeactivate } : {}),
+      ...(config.onFinalize ? { onFinalize: config.onFinalize } : {}),
+      ...(config.onUpdate ? { onUpdate: config.onUpdate } : {}),
+      ...(config.onTouchesDown ? { onTouchesDown: config.onTouchesDown } : {}),
+      ...(config.onTouchesMove ? { onTouchesMove: config.onTouchesMove } : {}),
+      ...(config.onTouchesUp ? { onTouchesUp: config.onTouchesUp } : {}),
+      ...(config.onTouchesCancel
+        ? { onTouchesCancel: config.onTouchesCancel }
+        : {}),
+    }),
+    [
+      config.onActivate,
+      config.onBegin,
+      config.onDeactivate,
+      config.onFinalize,
+      config.onTouchesCancel,
+      config.onTouchesDown,
+      config.onTouchesMove,
+      config.onTouchesUp,
+      config.onUpdate,
+    ]
+  );
 }
 
 export function getHandler<THandlerData>(

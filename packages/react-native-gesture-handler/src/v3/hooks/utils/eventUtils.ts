@@ -27,7 +27,10 @@ export function isNativeEvent<THandlerData>(
 
 export function maybeExtractNativeEvent<THandlerData>(
   event: GestureHandlerEventWithHandlerData<THandlerData>
-) {
+):
+  | GestureTouchEvent
+  | GestureUpdateEventWithHandlerData<THandlerData>
+  | GestureStateChangeEventWithHandlerData<THandlerData> {
   'worklet';
 
   return isNativeEvent(event) ? event.nativeEvent : event;
