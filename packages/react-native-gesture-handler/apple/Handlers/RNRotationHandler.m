@@ -31,7 +31,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
   }
 #if TARGET_OS_OSX
@@ -46,7 +46,7 @@
   if (self.state == UIGestureRecognizerStateBegan) {
     self.rotation = 0;
   }
-  [_gestureHandler handleGesture:recognizer];
+  [_gestureHandler handleGesture:recognizer fromReset:NO];
 }
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event

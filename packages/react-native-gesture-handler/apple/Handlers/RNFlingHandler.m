@@ -16,7 +16,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
     _lastPoint = CGPointZero;
     _hasBegan = NO;
@@ -53,8 +53,6 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-
-  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -62,20 +60,24 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-
-  [self triggerAction];
 }
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES];
 }
 
 - (void)reset
 {
   // TODO: On iOS 26 swiping in "wrong" direction doesn't send `onFinalize` callback. This is because now in `reset`
   // default state is `UIGestureRecognizerStatePossible`
-  [self triggerAction]; // Keeping it will not break old iOS because we check if we do not send the same state twice.
+  [self triggerActionFromReset]; // Keeping it will not break old iOS because we check if we do not send the same state
+                                 // twice.
   [_gestureHandler.pointerTracker reset];
   _hasBegan = NO;
   [super reset];

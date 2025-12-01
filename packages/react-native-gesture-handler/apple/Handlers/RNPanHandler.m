@@ -50,7 +50,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
     _minDistSq = NAN;
     _minVelocityX = NAN;
@@ -75,7 +75,12 @@
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES];
 }
 
 #if !TARGET_OS_OSX
@@ -166,7 +171,6 @@
       self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
                                                                     : UIGestureRecognizerStateCancelled;
 
-      [self triggerAction];
       [self reset];
       return;
     }
@@ -193,7 +197,6 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
-  [self triggerAction];
 }
 
 - (void)interactionsCancelled:(NSSet *)touches withEvent:(UIEvent *)event
@@ -202,7 +205,6 @@
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self tryUpdateStylusData:event];
 #endif
-  [self triggerAction];
 }
 
 #if TARGET_OS_OSX
@@ -259,6 +261,7 @@
 
 - (void)reset
 {
+  [self triggerActionFromReset];
   [_gestureHandler.pointerTracker reset];
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
