@@ -42,7 +42,7 @@ export const BaseButton = (props: BaseButtonProps) => {
     }
   };
 
-  const onStart = (e: CallbackEventType) => {
+  const onActivate = (e: CallbackEventType) => {
     onActiveStateChange?.(true);
 
     if (Platform.OS !== 'android' && e.pointerInside) {
@@ -58,7 +58,7 @@ export const BaseButton = (props: BaseButtonProps) => {
     }
   };
 
-  const onEnd = (e: CallbackEventType, success: boolean) => {
+  const onDeactivate = (e: CallbackEventType, success: boolean) => {
     onActiveStateChange?.(false);
 
     if (success && !longPressDetected.current) {
@@ -78,8 +78,8 @@ export const BaseButton = (props: BaseButtonProps) => {
       style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
       onBegin={onBegin}
-      onStart={onStart}
-      onEnd={onEnd}
+      onActivate={onActivate}
+      onDeactivate={onDeactivate}
       onFinalize={onFinalize}
     />
   );
