@@ -1,8 +1,6 @@
 import React, {
   PropsWithChildren,
   ReactElement,
-  useRef,
-  useImperativeHandle,
   useState,
   RefObject,
 } from 'react';
@@ -16,22 +14,15 @@ import {
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
-  RefreshControlProps as RNRefreshControlProps,
 } from 'react-native';
 
-import createNativeWrapper, {
-  ComponentWrapperRef,
-} from '../createNativeWrapper';
+import createNativeWrapper from '../createNativeWrapper';
 
 import { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { NativeWrapperProps } from '../hooks/utils';
 import { DetectorType } from '../detectors';
 import { NativeGesture } from '../hooks/gestures/native/useNativeGesture';
-
-export type ImperativeRefreshControlRef = ComponentWrapperRef<
-  RNRefreshControlProps,
-  RNRefreshControl
-> | null;
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 export const RefreshControl = createNativeWrapper(
   RNRefreshControl,
@@ -43,12 +34,7 @@ export const RefreshControl = createNativeWrapper(
 );
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type RefreshControl = typeof RefreshControl;
-
-export type ImperativeScrollViewRef = ComponentWrapperRef<
-  RNScrollViewProps,
-  RNScrollView
-> | null;
+export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
 const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   RNScrollView,
@@ -62,33 +48,33 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
 export const ScrollView = (
   props: RNScrollViewProps &
     NativeWrapperProperties & {
-      ref?: React.RefObject<ImperativeScrollViewRef>;
-      // This prop exists because using `ref` in `renderScrollComponent` doesn't work (it is overwritten by RN internals).
-      innerRef?: (node: ImperativeScrollViewRef) => void;
+      ref?: React.RefObject<RNScrollView | null>;
+      updateGesture_CAN_CAUSE_INFINITE_RERENDER?: (
+        gesture: NativeGesture
+      ) => void;
     }
 ) => {
-  const { refreshControl, innerRef, ref, ...rest } = props;
+  const { refreshControl, updateGesture_CAN_CAUSE_INFINITE_RERENDER, ...rest } =
+    props;
 
   const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
     null
   );
 
-  const wrapperRef = useRef<ImperativeScrollViewRef>(null);
-
-  useImperativeHandle<ImperativeScrollViewRef, ImperativeScrollViewRef>(
-    ref,
-    () => wrapperRef.current
-  );
+  const updateGesture = (gesture: NativeGesture) => {
+    ghQueueMicrotask(() => {
+      if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+        setScrollGesture(gesture);
+        updateGesture_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
+      }
+    });
+  };
 
   return (
     <GHScrollView
       {...rest}
-      // @ts-ignore `ref` exists on `GHScrollView`
-      ref={(node: ImperativeScrollViewRef) => {
-        setScrollGesture(node?.gestureRef ?? null);
-        wrapperRef.current = node;
-        innerRef?.(node);
-      }}
+      ref={props.ref}
+      updateGesture_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl
@@ -104,12 +90,7 @@ export const ScrollView = (
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ScrollView = typeof ScrollView;
-
-export type ImperativeSwitchRef = ComponentWrapperRef<
-  RNSwitchProps,
-  RNSwitch
-> | null;
+export type ScrollView = typeof ScrollView & RNScrollView;
 
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
@@ -118,33 +99,33 @@ export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type Switch = typeof Switch;
-
-export type ImperativeTextInputRef = ComponentWrapperRef<
-  RNTextInputProps,
-  RNTextInput
-> | null;
+export type Switch = typeof Switch & RNSwitch;
 
 export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
 
-export type ImperativeFlatListRef<T = any> =
-  | (ComponentWrapperRef<RNScrollViewProps, RNScrollView> & {
-      flatListRef: RNFlatList<T> | null;
-    })
-  | null;
-
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type TextInput = typeof TextInput;
+export type TextInput = typeof TextInput & RNTextInput;
 
 export const FlatList = ((props) => {
-  const { refreshControl, ref, ...rest } = props;
+  const {
+    refreshControl,
+    ref,
+    updateGesture_CAN_CAUSE_INFINITE_RERENDER,
+    ...rest
+  } = props;
 
   const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
     null
   );
 
-  const wrapperRef = useRef<ImperativeScrollViewRef>(null);
-  const flatListRef = useRef<RNFlatList<any>>(null);
+  const updateGesture = (gesture: NativeGesture) => {
+    ghQueueMicrotask(() => {
+      if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+        setScrollGesture(gesture);
+        updateGesture_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
+      }
+    });
+  };
 
   const flatListProps = {};
   const scrollViewProps = {};
@@ -162,28 +143,14 @@ export const FlatList = ((props) => {
     }
   }
 
-  useImperativeHandle<ImperativeFlatListRef, ImperativeFlatListRef>(
-    // @ts-ignore We want to override ref
-    ref,
-    () => {
-      return {
-        ...wrapperRef.current,
-        flatListRef: flatListRef.current,
-      };
-    }
-  );
-
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
     <RNFlatList
-      ref={flatListRef}
+      ref={ref}
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
         <ScrollView
-          innerRef={(node: ImperativeScrollViewRef) => {
-            setScrollGesture(node?.gestureRef ?? null);
-            wrapperRef.current = node;
-          }}
+          updateGesture_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
           {...{
             ...scrollProps,
             ...scrollViewProps,
@@ -206,10 +173,13 @@ export const FlatList = ((props) => {
   props: PropsWithChildren<
     Omit<RNFlatListProps<ItemT>, 'renderScrollComponent' | 'ref'> &
       NativeWrapperProperties & {
-        ref?: RefObject<ImperativeFlatListRef<ItemT>>;
+        ref?: RefObject<RNFlatList<ItemT> | null>;
+        updateGesture_CAN_CAUSE_INFINITE_RERENDER?: (
+          gesture: NativeGesture
+        ) => void;
       }
   >
 ) => ReactElement | null;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type FlatList = typeof FlatList;
+export type FlatList = typeof FlatList & RNFlatList;

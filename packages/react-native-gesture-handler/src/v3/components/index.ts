@@ -20,11 +20,3 @@ export {
   FlatList,
   RefreshControl,
 } from './GestureComponents';
-
-export type {
-  ImperativeFlatListRef as GHFlatListRef,
-  ImperativeRefreshControlRef as GHRefreshControlRef,
-  ImperativeScrollViewRef as GHScrollViewRef,
-  ImperativeSwitchRef as GHSwitchRef,
-  ImperativeTextInputRef as GHTextInputRef,
-} from './GestureComponents';
