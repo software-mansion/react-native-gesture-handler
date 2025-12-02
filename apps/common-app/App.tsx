@@ -76,6 +76,18 @@ import LongPressExample from './src/simple/longPress';
 import ManualExample from './src/simple/manual';
 import SimpleFling from './src/simple/fling';
 
+import Lock from './src/v3_api/lock/lock';
+import V3Fling from './src/v3_api/fling/fling';
+import LogicDetectorExample from './src/v3_api/svg/svg';
+import V3Hover from './src/v3_api/hover/index';
+import V3Overlap from './src/v3_api/overlap/index';
+import V3Calculator from './src/v3_api/calculator/index';
+import V3Velocity from './src/v3_api/velocity_test/index';
+import V3BottomSheet from './src/v3_api/bottom_sheet/index';
+import V3ChatHeads from './src/v3_api/chat_heads/index';
+import V3HoverableIcons from './src/v3_api/hoverable_icons/index';
+import V3Camera from './src/v3_api/camera/index';
+
 import { Icon } from '@swmansion/icons';
 
 interface Example {
@@ -92,6 +104,22 @@ const EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',
     data: [{ name: 'Empty Example', component: EmptyExample }],
+  },
+  {
+    sectionTitle: 'V3 api',
+    data: [
+      { name: 'V3 Fling', component: V3Fling },
+      { name: 'Svg', component: LogicDetectorExample },
+      { name: 'Lock', component: Lock },
+      { name: 'V3 Hover', component: V3Hover },
+      { name: 'V3 Overlap', component: V3Overlap },
+      { name: 'V3 Calculator', component: V3Calculator },
+      { name: 'V3 Velocity Test', component: V3Velocity },
+      { name: 'V3 Bottom Sheet', component: V3BottomSheet },
+      { name: 'V3 Chat Heads', component: V3ChatHeads },
+      { name: 'V3 Hoverable Icons', component: V3HoverableIcons },
+      { name: 'V3 Camera', component: V3Camera },
+    ],
   },
   {
     sectionTitle: 'New api',
