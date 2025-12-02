@@ -27,6 +27,7 @@ describe('VirtualDetector', () => {
         </GestureHandlerRootView>
       );
     }
+
     expect(() => render(<VirtualDetectorWithNoBoundary />)).toThrow(
       'VirtualGestureDetector must be a descendant of an InterceptingGestureDetector'
     );
@@ -46,14 +47,17 @@ describe('VirtualDetector', () => {
         </GestureHandlerRootView>
       );
     }
+
     expect(() => render(<VirtualDetectorAnimated />)).toThrow(
       'VirtualGestureDetector cannot handle Animated events with native driver when used inside InterceptingGestureDetector. Use Reanimated or Animated events without native driver instead.'
     );
   });
+
   test('intercepting detector cant handle multiple types of events', () => {
     (findNodeHandle as jest.Mock).mockReturnValue(123);
     const mockWorklet = () => undefined;
     mockWorklet.__workletHash = 123;
+
     function InterceptingDetectorMultipleTypes() {
       const tap = useTapGesture({ useAnimated: true });
       const tap2 = useTapGesture({ onActivate: mockWorklet });
@@ -67,6 +71,7 @@ describe('VirtualDetector', () => {
         </GestureHandlerRootView>
       );
     }
+
     expect(() => render(<InterceptingDetectorMultipleTypes />)).toThrow(
       'InterceptingGestureDetector can only handle either Reanimated or Animated events.'
     );
@@ -87,6 +92,7 @@ describe('Check if descendant of root view', () => {
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation for more details.'
     );
   });
+
   test('intercepting detector', () => {
     function GestureDetectorNoRootView() {
       const tap = useTapGesture({});
@@ -96,10 +102,12 @@ describe('Check if descendant of root view', () => {
         </InterceptingGestureDetector>
       );
     }
+
     expect(() => render(<GestureDetectorNoRootView />)).toThrow(
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation for more details.'
     );
   });
+
   test('legacy detector', () => {
     function GestureDetectorNoRootView() {
       const tap = Gesture.Tap();
@@ -109,6 +117,7 @@ describe('Check if descendant of root view', () => {
         </GestureDetector>
       );
     }
+
     expect(() => render(<GestureDetectorNoRootView />)).toThrow(
       'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation for more details.'
     );
