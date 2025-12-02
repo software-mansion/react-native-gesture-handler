@@ -34,8 +34,7 @@ const LongPressGestureHandler = View;
 const PinchGestureHandler = View;
 const RotationGestureHandler = View;
 const FlingGestureHandler = View;
-const NativeDetector = View;
-const InterceptingDetector = View;
+const HostGestureDetector = View;
 
 export default {
   TouchableHighlight,
@@ -63,8 +62,7 @@ export default {
   configureRelations,
   flushOperations,
   install,
-  NativeDetector,
-  InterceptingDetector,
+  HostGestureDetector,
   // Probably can be removed
   Directions,
   State,
