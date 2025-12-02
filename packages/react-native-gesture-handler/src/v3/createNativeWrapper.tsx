@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { NativeWrapperProps } from './hooks/utils';
 import { useNativeGesture } from './hooks/gestures';
@@ -17,12 +17,12 @@ export default function createNativeWrapper<P>(
     props: P &
       NativeWrapperProperties & {
         ref?: React.RefObject<unknown>;
-        updateGesture_CAN_CAUSE_INFINITE_RERENDER?: (
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
           gesture: NativeGesture
         ) => void;
       }
   ) => {
-    const { ref, updateGesture_CAN_CAUSE_INFINITE_RERENDER, ...restProps } =
+    const { ref, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER, ...restProps } =
       props;
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(restProps).reduce(
@@ -51,7 +51,10 @@ export default function createNativeWrapper<P>(
     }
 
     const native = useNativeGesture(gestureHandlerProps);
-    updateGesture_CAN_CAUSE_INFINITE_RERENDER?.(native);
+
+    useEffect(() => {
+      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(native);
+    }, [native, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER]);
 
     const DetectorComponent =
       detectorType === DetectorType.Intercepting

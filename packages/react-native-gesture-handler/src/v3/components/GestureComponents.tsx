@@ -49,13 +49,16 @@ export const ScrollView = (
   props: RNScrollViewProps &
     NativeWrapperProperties & {
       ref?: React.RefObject<RNScrollView | null>;
-      updateGesture_CAN_CAUSE_INFINITE_RERENDER?: (
+      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
         gesture: NativeGesture
       ) => void;
     }
 ) => {
-  const { refreshControl, updateGesture_CAN_CAUSE_INFINITE_RERENDER, ...rest } =
-    props;
+  const {
+    refreshControl,
+    onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER,
+    ...rest
+  } = props;
 
   const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
     null
@@ -65,7 +68,7 @@ export const ScrollView = (
     ghQueueMicrotask(() => {
       if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
         setScrollGesture(gesture);
-        updateGesture_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
       }
     });
   };
@@ -110,7 +113,7 @@ export const FlatList = ((props) => {
   const {
     refreshControl,
     ref,
-    updateGesture_CAN_CAUSE_INFINITE_RERENDER,
+    onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER,
     ...rest
   } = props;
 
@@ -122,7 +125,7 @@ export const FlatList = ((props) => {
     ghQueueMicrotask(() => {
       if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
         setScrollGesture(gesture);
-        updateGesture_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
       }
     });
   };
@@ -150,7 +153,7 @@ export const FlatList = ((props) => {
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
         <ScrollView
-          updateGesture_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
+          onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
           {...{
             ...scrollProps,
             ...scrollViewProps,
@@ -174,7 +177,7 @@ export const FlatList = ((props) => {
     Omit<RNFlatListProps<ItemT>, 'renderScrollComponent' | 'ref'> &
       NativeWrapperProperties & {
         ref?: RefObject<RNFlatList<ItemT> | null>;
-        updateGesture_CAN_CAUSE_INFINITE_RERENDER?: (
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
           gesture: NativeGesture
         ) => void;
       }
