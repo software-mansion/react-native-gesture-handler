@@ -5,7 +5,7 @@ import {
   GestureHandlerEventWithHandlerData,
 } from '../../types';
 import { useMemo } from 'react';
-import { stateMachine } from './stateMachine';
+import { eventHandler } from './eventHandler';
 
 export function useGestureEventHandler<THandlerData, TConfig>(
   handlerTag: number,
@@ -20,7 +20,7 @@ export function useGestureEventHandler<THandlerData, TConfig>(
 
   return useMemo(() => {
     return (event: GestureHandlerEventWithHandlerData<THandlerData>) => {
-      stateMachine(
+      eventHandler(
         handlerTag,
         event,
         handlers,

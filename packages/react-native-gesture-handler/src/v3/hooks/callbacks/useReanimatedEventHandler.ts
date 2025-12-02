@@ -8,7 +8,7 @@ import {
   GestureCallbacks,
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
-import { stateMachine } from './stateMachine';
+import { eventHandler } from './eventHandler';
 
 const workletNOOP = () => {
   'worklet';
@@ -40,7 +40,7 @@ export function useReanimatedEventHandler<THandlerData>(
     event: UnpackedGestureHandlerEventWithHandlerData<THandlerData>
   ) => {
     'worklet';
-    stateMachine(
+    eventHandler(
       handlerTag,
       event,
       workletizedHandlers,

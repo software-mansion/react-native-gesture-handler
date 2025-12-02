@@ -97,7 +97,7 @@ export function handleTouchEvent<THandlerData>(
   }
 }
 
-export function stateMachine<THandlerData>(
+export function eventHandler<THandlerData>(
   handlerTag: number,
   sourceEvent: GestureHandlerEventWithHandlerData<THandlerData>,
   handlers: GestureCallbacks<THandlerData>,
