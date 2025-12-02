@@ -52,11 +52,6 @@ API_AVAILABLE(ios(13.4))
   [_gestureHandler handleGesture:self fromReset:NO];
 }
 
-- (void)triggerActionFromReset
-{
-  [_gestureHandler handleGesture:self fromReset:YES];
-}
-
 - (void)cancel
 {
   self.enabled = NO;
