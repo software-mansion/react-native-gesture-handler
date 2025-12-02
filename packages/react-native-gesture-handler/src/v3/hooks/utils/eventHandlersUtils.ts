@@ -3,6 +3,10 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import {
   ChangeCalculatorType,
   GestureCallbacks,
+  GestureEvent,
+  GestureEventCallback,
+  GestureEventCallbackWithSuccess,
+  GestureTouchEventCallback,
   UnpackedGestureHandlerEvent,
 } from '../../types';
 
@@ -60,7 +64,11 @@ export function prepareTouchHandlers<THandlerData>(
 export function getHandler<THandlerData>(
   type: CALLBACK_TYPE,
   callbacks: GestureCallbacks<THandlerData>
-) {
+):
+  | GestureEventCallback<THandlerData>
+  | GestureEventCallbackWithSuccess<THandlerData>
+  | GestureTouchEventCallback
+  | undefined {
   'worklet';
   switch (type) {
     case CALLBACK_TYPE.BEGAN:
@@ -68,7 +76,7 @@ export function getHandler<THandlerData>(
     case CALLBACK_TYPE.START:
       return callbacks.onActivate;
     case CALLBACK_TYPE.UPDATE:
-      return callbacks.onUpdate;
+      return callbacks.onUpdate as GestureEventCallback<THandlerData>; // Animated event is handled in different place.
     case CALLBACK_TYPE.END:
       return callbacks.onDeactivate;
     case CALLBACK_TYPE.FINALIZE:
@@ -105,12 +113,26 @@ export function runCallback<THandlerData>(
   type: CALLBACK_TYPE,
   callbacks: GestureCallbacks<THandlerData>,
   event: UnpackedGestureHandlerEvent<THandlerData>,
-  ...args: unknown[]
+  success?: boolean
 ) {
   'worklet';
   const handler = getHandler(type, callbacks);
 
-  // TODO: add proper types (likely boolean)
-  // @ts-ignore It works, duh
-  handler?.(event, ...args);
+  if (!handler) {
+    return;
+  }
+
+  if (success !== undefined) {
+    (handler as GestureEventCallbackWithSuccess<THandlerData>)?.(
+      event as GestureEvent<THandlerData>,
+      success
+    );
+  } else {
+    // @ts-ignore event is an object.
+    if ('allTouches' in event) {
+      (handler as GestureTouchEventCallback)?.(event);
+    } else {
+      (handler as GestureEventCallback<THandlerData>)?.(event);
+    }
+  }
 }
