@@ -42,17 +42,18 @@ export function useGesture<THandlerData, TConfig>(
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
-  const gestureRelations = useMemo(() => {
-    const rel = prepareRelations(
-      {
-        simultaneousWith: config.simultaneousWith,
-        requireToFail: config.requireToFail,
-        block: config.block,
-      },
-      tag
-    );
-    return rel;
-  }, [tag, config.simultaneousWith, config.requireToFail, config.block]);
+  const gestureRelations = useMemo(
+    () =>
+      prepareRelations(
+        {
+          simultaneousWith: config.simultaneousWith,
+          requireToFail: config.requireToFail,
+          block: config.block,
+        },
+        tag
+      ),
+    [tag, config.simultaneousWith, config.requireToFail, config.block]
+  );
 
   const currentGestureRef = useRef({ type: '', tag: -1 });
   if (
