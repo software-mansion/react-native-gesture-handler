@@ -1,5 +1,5 @@
 import {
-  flattenEvent,
+  flattenAndFilterEvent,
   isEventForHandlerWithTag,
   maybeExtractNativeEvent,
   runCallback,
@@ -25,17 +25,18 @@ function handleStateChange<THandlerData>(
   context: ReanimatedContext<THandlerData>
 ) {
   'worklet';
-  const event = flattenEvent(eventWithData);
+  const { oldState, state } = eventWithData;
+  const event = flattenAndFilterEvent(eventWithData);
 
-  if (event.oldState === State.UNDETERMINED && event.state === State.BEGAN) {
+  if (oldState === State.UNDETERMINED && state === State.BEGAN) {
     runCallback(CALLBACK_TYPE.BEGAN, callbacks, event);
   } else if (
-    (event.oldState === State.BEGAN || event.oldState === State.UNDETERMINED) &&
-    event.state === State.ACTIVE
+    (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
+    state === State.ACTIVE
   ) {
     runCallback(CALLBACK_TYPE.START, callbacks, event);
-  } else if (event.oldState !== event.state && event.state === State.END) {
-    if (event.oldState === State.ACTIVE) {
+  } else if (oldState !== state && state === State.END) {
+    if (oldState === State.ACTIVE) {
       runCallback(CALLBACK_TYPE.END, callbacks, event, true);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
@@ -44,10 +45,10 @@ function handleStateChange<THandlerData>(
       context.lastUpdateEvent = undefined;
     }
   } else if (
-    (event.state === State.FAILED || event.state === State.CANCELLED) &&
-    event.state !== event.oldState
+    (state === State.FAILED || state === State.CANCELLED) &&
+    state !== oldState
   ) {
-    if (event.oldState === State.ACTIVE) {
+    if (oldState === State.ACTIVE) {
       runCallback(CALLBACK_TYPE.END, callbacks, event, false);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
@@ -72,7 +73,7 @@ export function handleUpdate<THandlerData>(
       )
     : eventWithData;
 
-  const event = flattenEvent(eventWithChanges);
+  const event = flattenAndFilterEvent(eventWithChanges);
 
   // This should never happen, but since we don't want to call hooks conditionally, we have to mark
   // context as possibly undefined to make TypeScript happy.
