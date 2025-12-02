@@ -33,9 +33,9 @@
 - (NSUInteger)getDuration;
 
 #if !TARGET_OS_OSX
-- (void)handleGesture:(UIGestureRecognizer *)recognizer;
+- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset;
 #else
-- (void)handleGesture:(NSGestureRecognizer *)recognizer;
+- (void)handleGesture:(NSGestureRecognizer *)recognizer fromReset:(BOOL)fromReset;
 #endif
 
 @end
