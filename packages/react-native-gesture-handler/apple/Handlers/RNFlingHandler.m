@@ -119,7 +119,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
 
     maxDuration = 1.0;
@@ -132,9 +132,9 @@
   return self;
 }
 
-- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer fromReset:(BOOL)fromReset
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:fromReset];
 }
 
 - (void)mouseDown:(NSEvent *)event
