@@ -95,11 +95,12 @@
 - (void)dispatchAnimatedGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event
 {
   if (_eventEmitter != nullptr) {
-    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)->onGestureHandlerAnimatedEvent({
-      .state = event.state,
-      .handlerTag = event.handlerTag,
-      .handlerData = event.handlerData,
-    });
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerAnimatedEvent({
+            .state = event.state,
+            .handlerTag = event.handlerTag,
+            .handlerData = event.handlerData,
+        });
   }
 }
 

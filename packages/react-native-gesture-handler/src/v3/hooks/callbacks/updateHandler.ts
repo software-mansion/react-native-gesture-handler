@@ -8,7 +8,7 @@ import {
   UpdateEventWithHandlerData,
 } from '../../types';
 import {
-  flattenEvent,
+  flattenAndFilterEvent,
   isEventForHandlerWithTag,
   maybeExtractNativeEvent,
   runCallback,
@@ -34,9 +34,9 @@ export function getUpdateHandler<THandlerData>(
         )
       : eventWithData;
 
-    const event = flattenEvent(eventWithChanges);
+    const event = flattenAndFilterEvent(eventWithChanges);
 
-    if (!isEventForHandlerWithTag(handlerTag, event)) {
+    if (!isEventForHandlerWithTag(handlerTag, eventWithData)) {
       return;
     }
 
