@@ -79,6 +79,7 @@ import SimpleFling from './src/simple/fling';
 import FlatListExample from './src/components/flatlist';
 import ScrollViewExample from './src/components/scrollview';
 import ButtonsExample from './src/components/buttons';
+import SwitchTextInputExample from './src/components/switchAndInput';
 
 import { Icon } from '@swmansion/icons';
 
@@ -124,6 +125,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'FlatList example', component: FlatListExample },
       { name: 'ScrollView example', component: ScrollViewExample },
       { name: 'Buttons example', component: ButtonsExample },
+      { name: 'Switch & TextInput', component: SwitchTextInputExample },
     ],
   },
   {
