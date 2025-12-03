@@ -1,6 +1,4 @@
-import { useGestureStateChangeEvent } from './callbacks/js/useGestureStateChangeEvent';
-import { useGestureUpdateEvent } from './callbacks/js/useGestureUpdateEvent';
-import { useGestureTouchEvent } from './callbacks/js/useGestureTouchEvent';
+import { useGestureEventHandler } from './callbacks/useGestureEventHandler';
 import {
   AnimatedEvent,
   BaseGestureConfig,
@@ -9,17 +7,11 @@ import {
 import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
-  prepareStateChangeHandlers,
-  prepareTouchHandlers,
-  prepareUpdateHandlers,
+  useMemoizedGestureCallbacks,
 } from './utils';
 import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
 import { tagMessage } from '../../utils';
-import {
-  Reanimated,
-  ReanimatedContext,
-} from '../../handlers/gestures/reanimatedWrapper';
-import { useMemo } from 'react';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
@@ -48,38 +40,23 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   handlerTag: number,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  const jsContext: ReanimatedContext<THandlerData> = useMemo(() => {
-    return {
-      lastUpdateEvent: undefined,
-    };
-  }, []);
+  const callbacks = useMemoizedGestureCallbacks(config);
 
-  const onGestureHandlerStateChange = useGestureStateChangeEvent(
+  const onGestureHandlerEvent = useGestureEventHandler(
     handlerTag,
-    config,
-    jsContext
+    callbacks,
+    config
   );
-  const onGestureHandlerEvent = useGestureUpdateEvent(
-    handlerTag,
-    config,
-    jsContext
-  );
-  const onGestureHandlerTouchEvent = useGestureTouchEvent(handlerTag, config);
 
   let onReanimatedEvent;
 
   if (!config.disableReanimated) {
-    const handlers = {
-      ...prepareStateChangeHandlers(config),
-      ...prepareUpdateHandlers(config).handlers,
-      ...prepareTouchHandlers(config),
-    };
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const reanimatedHandler = Reanimated?.useHandler(handlers);
+    const reanimatedHandler = Reanimated?.useHandler(callbacks);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     onReanimatedEvent = useReanimatedEventHandler(
       handlerTag,
-      handlers,
+      callbacks,
       reanimatedHandler,
       config.changeEventCalculator
     );
@@ -104,9 +81,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   }
 
   return {
-    onGestureHandlerStateChange,
     onGestureHandlerEvent,
-    onGestureHandlerTouchEvent,
     onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   };
