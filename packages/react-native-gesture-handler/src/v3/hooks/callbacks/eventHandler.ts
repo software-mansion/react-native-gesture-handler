@@ -19,7 +19,7 @@ import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 
-function handleStateChange<THandlerData>(
+function handleStateChangeEvent<THandlerData>(
   eventWithData: GestureStateChangeEventWithHandlerData<THandlerData>,
   callbacks: GestureCallbacks<THandlerData>,
   context: ReanimatedContext<THandlerData>
@@ -59,7 +59,7 @@ function handleStateChange<THandlerData>(
   }
 }
 
-export function handleUpdate<THandlerData>(
+export function handleUpdateEvent<THandlerData>(
   eventWithData: GestureUpdateEventWithHandlerData<THandlerData>,
   handlers: GestureCallbacks<THandlerData>,
   changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined,
@@ -113,10 +113,15 @@ export function eventHandler<THandlerData>(
   }
 
   if ('oldState' in eventWithData && eventWithData.oldState !== undefined) {
-    handleStateChange(eventWithData, handlers, jsContext);
+    handleStateChangeEvent(eventWithData, handlers, jsContext);
   } else if ('allTouches' in eventWithData) {
     handleTouchEvent(eventWithData, handlers);
   } else if (!dispatchesAnimatedEvents) {
-    handleUpdate(eventWithData, handlers, changeEventCalculator, jsContext);
+    handleUpdateEvent(
+      eventWithData,
+      handlers,
+      changeEventCalculator,
+      jsContext
+    );
   }
 }
