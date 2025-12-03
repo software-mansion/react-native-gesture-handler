@@ -6,12 +6,9 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+import type { NativeViewGestureHandlerProps } from '../../handlers/NativeViewGestureHandler';
 
-/**
- * @deprecated use `RawButtonProps` with `RawButton` instead
- */
-export interface LegacyRawButtonProps
+export interface RawButtonProps
   extends NativeViewGestureHandlerProps,
     AccessibilityProps {
   /**
@@ -94,13 +91,10 @@ export interface LegacyRawButtonProps
   testOnly_onLongPress?: Function | null;
 }
 interface ButtonWithRefProps {
-  innerRef?: React.ForwardedRef<React.ComponentType<any>>;
+  ref?: React.RefObject<any>;
 }
 
-/**
- * @deprecated use `BaseButtonProps` with `BaseButton` instead
- */
-export interface LegacyBaseButtonProps extends LegacyRawButtonProps {
+export interface BaseButtonProps extends RawButtonProps {
   /**
    * Called when the button gets pressed (analogous to `onPress` in
    * `TouchableHighlight` from RN core).
@@ -120,7 +114,6 @@ export interface LegacyBaseButtonProps extends LegacyRawButtonProps {
    */
   onActiveStateChange?: (active: boolean) => void;
   style?: StyleProp<ViewStyle>;
-  testID?: string;
 
   /**
    * Delay, in milliseconds, after which the `onLongPress` callback gets called.
@@ -129,13 +122,10 @@ export interface LegacyBaseButtonProps extends LegacyRawButtonProps {
   delayLongPress?: number;
 }
 export interface BaseButtonWithRefProps
-  extends LegacyBaseButtonProps,
+  extends BaseButtonProps,
     ButtonWithRefProps {}
 
-/**
- * @deprecated use `RectButtonProps` with `RectButton` instead
- */
-export interface LegacyRectButtonProps extends LegacyBaseButtonProps {
+export interface RectButtonProps extends BaseButtonProps {
   /**
    * Background color that will be dimmed when button is in active state.
    */
@@ -149,14 +139,10 @@ export interface LegacyRectButtonProps extends LegacyBaseButtonProps {
   activeOpacity?: number;
 }
 export interface RectButtonWithRefProps
-  extends LegacyRectButtonProps,
+  extends RectButtonProps,
     ButtonWithRefProps {}
 
-/**
- * @deprecated use `BorderlessButtonProps` with `BorderlessButton` instead
- */
-
-export interface LegacyBorderlessButtonProps extends LegacyBaseButtonProps {
+export interface BorderlessButtonProps extends BaseButtonProps {
   /**
    * iOS only.
    *
@@ -165,5 +151,5 @@ export interface LegacyBorderlessButtonProps extends LegacyBaseButtonProps {
   activeOpacity?: number;
 }
 export interface BorderlessButtonWithRefProps
-  extends LegacyBorderlessButtonProps,
+  extends BorderlessButtonProps,
     ButtonWithRefProps {}

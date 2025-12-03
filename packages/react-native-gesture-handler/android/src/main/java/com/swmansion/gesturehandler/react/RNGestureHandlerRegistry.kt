@@ -21,11 +21,17 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   fun getHandler(handlerTag: Int): GestureHandler? = handlers[handlerTag]
 
   @Synchronized
-  fun attachHandlerToView(handlerTag: Int, viewTag: Int, actionType: Int): Boolean {
+  fun attachHandlerToView(
+    handlerTag: Int,
+    viewTag: Int,
+    actionType: Int,
+    hostDetectorView: RNGestureHandlerDetectorView? = null,
+  ): Boolean {
     val handler = handlers[handlerTag]
     return handler?.let {
       detachHandlerInternal(handler)
       handler.actionType = actionType
+      handler.hostDetectorView = hostDetectorView
       registerHandlerForViewWithTag(viewTag, handler)
       true
     } ?: false

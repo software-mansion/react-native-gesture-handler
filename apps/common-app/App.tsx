@@ -81,13 +81,17 @@ import V3Fling from './src/v3_api/fling/fling';
 import LogicDetectorExample from './src/v3_api/svg/svg';
 import V3Hover from './src/v3_api/hover/index';
 import V3Overlap from './src/v3_api/overlap/index';
-import V3Calculator from './src/v3_api/calculator/index';
 import V3Velocity from './src/v3_api/velocity_test/index';
 import V3BottomSheet from './src/v3_api/bottom_sheet/index';
 import V3ChatHeads from './src/v3_api/chat_heads/index';
 import V3HoverableIcons from './src/v3_api/hoverable_icons/index';
 import V3Camera from './src/v3_api/camera/index';
 import V3NestedText from './src/v3_api/nested_text/nested_text';
+import FlatListExample from './src/components/flatlist';
+import ScrollViewExample from './src/components/scrollview';
+import ButtonsExample from './src/components/buttons';
+import SwitchTextInputExample from './src/components/switchAndInput';
+
 import { Icon } from '@swmansion/icons';
 
 interface Example {
@@ -113,7 +117,6 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Lock', component: Lock },
       { name: 'V3 Hover', component: V3Hover },
       { name: 'V3 Overlap', component: V3Overlap },
-      { name: 'V3 Calculator', component: V3Calculator },
       { name: 'V3 Velocity Test', component: V3Velocity },
       { name: 'V3 Bottom Sheet', component: V3BottomSheet },
       { name: 'V3 Chat Heads', component: V3ChatHeads },
@@ -141,6 +144,15 @@ const EXAMPLES: ExamplesSection[] = [
         name: 'Manual gestures',
         component: ManualGestures,
       },
+    ],
+  },
+  {
+    sectionTitle: 'Components',
+    data: [
+      { name: 'FlatList example', component: FlatListExample },
+      { name: 'ScrollView example', component: ScrollViewExample },
+      { name: 'Buttons example', component: ButtonsExample },
+      { name: 'Switch & TextInput', component: SwitchTextInputExample },
     ],
   },
   {

@@ -61,7 +61,7 @@ export class GestureHandlerWebDelegate
       this.gestureHandler.attachEventManager(manager)
     );
 
-    this.addContextMenuListeners();
+    this.configure();
 
     this.isInitialized = true;
   }
@@ -81,6 +81,12 @@ export class GestureHandlerWebDelegate
     this.eventManagers = [];
 
     this.isInitialized = false;
+  }
+
+  configure(): void {
+    this.setUserSelect();
+    this.setTouchAction();
+    this.setContextMenu();
   }
 
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
@@ -214,9 +220,7 @@ export class GestureHandlerWebDelegate
       return;
     }
 
-    this.setUserSelect();
-    this.setTouchAction();
-    this.setContextMenu();
+    this.configure();
 
     this.eventManagers.forEach((manager) => {
       manager.setEnabled(this.gestureHandler.enabled);
