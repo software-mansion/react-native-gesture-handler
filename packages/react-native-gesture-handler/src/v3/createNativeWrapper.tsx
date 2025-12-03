@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 import { NativeWrapperProps } from './hooks/utils';
 import { useNativeGesture } from './hooks/gestures';
@@ -7,11 +7,6 @@ import type { NativeWrapperProperties } from './types/NativeWrapperType';
 import { NativeGesture } from './hooks/gestures/native/useNativeGesture';
 import { DetectorType, InterceptingGestureDetector } from './detectors';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
-
-export type ComponentWrapperRef<P> = {
-  componentRef?: React.ComponentType<P>;
-  gestureRef?: NativeGesture;
-};
 
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
@@ -22,19 +17,18 @@ export default function createNativeWrapper<P>(
     props: P &
       NativeWrapperProperties & {
         ref?: React.RefObject<unknown>;
-        testID?: string;
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
+          gesture: NativeGesture
+        ) => void;
       }
   ) => {
+    const { ref, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER, ...restProps } =
+      props;
     // Filter out props that should be passed to gesture handler wrapper
-    const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
+    const { gestureHandlerProps, childProps } = Object.keys(restProps).reduce(
       (res, key) => {
-        if (key === 'testID') {
-          res.gestureHandlerProps[key] = props[key];
-          // @ts-ignore FIXME(TS)
-          res.childProps[key] = props[key];
-        }
         // @ts-ignore TS being overly protective with it's types, see https://github.com/microsoft/TypeScript/issues/26255#issuecomment-458013731 for more info
-        else if (NativeWrapperProps.has(key)) {
+        if (NativeWrapperProps.has(key)) {
           // @ts-ignore FIXME(TS)
           res.gestureHandlerProps[key] = props[key];
         } else {
@@ -58,17 +52,9 @@ export default function createNativeWrapper<P>(
 
     const native = useNativeGesture(gestureHandlerProps);
 
-    const componentRef = useRef<React.ComponentType<P>>(null);
-    const gestureRef = useRef<NativeGesture>(native);
-
-    useImperativeHandle(
-      props.ref,
-      () =>
-        ({
-          componentRef: componentRef.current,
-          gestureRef: gestureRef.current,
-        }) as ComponentWrapperRef<P>
-    );
+    useEffect(() => {
+      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(native);
+    }, [native, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER]);
 
     const DetectorComponent =
       detectorType === DetectorType.Intercepting
@@ -79,7 +65,7 @@ export default function createNativeWrapper<P>(
 
     return (
       <DetectorComponent gesture={native}>
-        <Component {...childProps} ref={componentRef} />
+        <Component {...childProps} ref={ref} />
       </DetectorComponent>
     );
   };

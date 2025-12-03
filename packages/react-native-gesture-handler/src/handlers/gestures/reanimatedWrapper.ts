@@ -2,12 +2,12 @@ import { ComponentClass } from 'react';
 import { tagMessage } from '../../utils';
 import {
   GestureCallbacks,
-  GestureUpdateEvent,
+  GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
 
 export type ReanimatedContext<THandlerData> = {
-  lastUpdateEvent: GestureUpdateEvent<THandlerData> | undefined;
+  lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
 };
 
 interface WorkletProps {
@@ -24,6 +24,24 @@ type WorkletFunction<
   TReturn = unknown,
 > = ((...args: TArgs) => TReturn) & WorkletProps;
 
+export type ReanimatedHandler<THandlerData> = {
+  doDependenciesDiffer: boolean;
+  context: ReanimatedContext<THandlerData>;
+};
+
+export type NativeEventsManager = new (component: {
+  props: Record<string, unknown>;
+  _componentRef: React.Ref<unknown>;
+  // Removed in https://github.com/software-mansion/react-native-reanimated/pull/6736
+  // but we likely want to keep it for compatibility with older Reanimated versions
+  _componentViewTag: number;
+  getComponentViewTag: () => number;
+}) => {
+  attachEvents: () => void;
+  detachEvents: () => void;
+  updateEvents: (prevProps: Record<string, unknown>) => void;
+};
+
 let Reanimated:
   | {
       default: {
@@ -33,10 +51,10 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
-      useHandler: <THandlerData>(handlers: GestureCallbacks<THandlerData>) => {
-        doDependenciesDiffer: boolean;
-        context: ReanimatedContext<THandlerData>;
-      };
+      NativeEventsManager: NativeEventsManager;
+      useHandler: <THandlerData>(
+        handlers: GestureCallbacks<THandlerData>
+      ) => ReanimatedHandler<THandlerData>;
       useEvent: <T>(
         callback: (event: T) => void,
         events: string[],

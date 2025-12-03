@@ -1,15 +1,17 @@
-import { useGestureStateChangeEvent } from './callbacks/js/useGestureStateChangeEvent';
-import { useGestureUpdateEvent } from './callbacks/js/useGestureUpdateEvent';
-import { useGestureTouchEvent } from './callbacks/js/useGestureTouchEvent';
-import { AnimatedEvent, BaseGestureConfig, GestureUpdateEvent } from '../types';
+import { useGestureEventHandler } from './callbacks/useGestureEventHandler';
+import {
+  AnimatedEvent,
+  BaseGestureConfig,
+  GestureUpdateEventWithHandlerData,
+} from '../types';
 import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
+  useMemoizedGestureCallbacks,
 } from './utils';
-import { useReanimatedStateChangeEvent } from './callbacks/reanimated/useReanimatedStateChangeEvent';
-import { useReanimatedUpdateEvent } from './callbacks/reanimated/useReanimatedUpdateEvent';
-import { useReanimatedTouchEvent } from './callbacks/reanimated/useReanimatedTouchEvent';
+import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
 import { tagMessage } from '../../utils';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {
@@ -38,28 +40,30 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   handlerTag: number,
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
-  const onGestureHandlerStateChange = useGestureStateChangeEvent(
+  const callbacks = useMemoizedGestureCallbacks(config);
+
+  const onGestureHandlerEvent = useGestureEventHandler(
     handlerTag,
+    callbacks,
     config
   );
-  const onGestureHandlerEvent = useGestureUpdateEvent(handlerTag, config);
-  const onGestureHandlerTouchEvent = useGestureTouchEvent(handlerTag, config);
 
-  let onReanimatedStateChange;
-  let onReanimatedUpdateEvent;
-  let onReanimatedTouchEvent;
+  let onReanimatedEvent;
 
   if (!config.disableReanimated) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedStateChange = useReanimatedStateChangeEvent(handlerTag, config);
+    const reanimatedHandler = Reanimated?.useHandler(callbacks);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedUpdateEvent = useReanimatedUpdateEvent(handlerTag, config);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedTouchEvent = useReanimatedTouchEvent(handlerTag, config);
+    onReanimatedEvent = useReanimatedEventHandler(
+      handlerTag,
+      callbacks,
+      reanimatedHandler,
+      config.changeEventCalculator
+    );
   }
 
   let onGestureHandlerAnimatedEvent:
-    | ((event: GestureUpdateEvent<THandlerData>) => void)
+    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void)
     | AnimatedEvent
     | undefined;
   if (config.dispatchesAnimatedEvents) {
@@ -71,17 +75,14 @@ export function useGestureCallbacks<THandlerData, TConfig>(
       // @ts-expect-error At this point we know it's not a native animated event, so it's callable
       onGestureHandlerAnimatedEvent = guardJSAnimatedEvent(config.onUpdate);
     } else {
+      // @ts-expect-error The structure of an AnimatedEvent differs from other event types
       onGestureHandlerAnimatedEvent = config.onUpdate;
     }
   }
 
   return {
-    onGestureHandlerStateChange,
     onGestureHandlerEvent,
-    onGestureHandlerTouchEvent,
-    onReanimatedStateChange,
-    onReanimatedUpdateEvent,
-    onReanimatedTouchEvent,
+    onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   };
 }

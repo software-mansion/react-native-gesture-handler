@@ -15,7 +15,7 @@ describe('[API v3] Hooks', () => {
       usePanGesture({
         disableReanimated: true,
         onBegin: (e) => onBegin(e),
-        onStart: (e) => onStart(e),
+        onActivate: (e) => onStart(e),
       })
     ).result.current;
 

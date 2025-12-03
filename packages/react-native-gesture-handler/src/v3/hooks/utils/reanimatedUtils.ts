@@ -1,4 +1,4 @@
-import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
+import { NativeProxy } from '../../NativeProxy';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 import {
   BaseGestureConfig,
@@ -23,8 +23,8 @@ function hash(str: string) {
 
 const SHARED_VALUE_OFFSET = 1.618;
 
-// This is used to obtain HostFunction that can be executed on the UI thread
-const { updateGestureHandlerConfig, flushOperations } = RNGestureHandlerModule;
+// Don't transfer entire NativeProxy to the UI thread
+const { updateGestureHandlerConfig } = NativeProxy;
 
 export function bindSharedValues<THandlerData, TConfig>(
   config: BaseGestureConfig<THandlerData, TConfig>,
@@ -52,7 +52,6 @@ export function bindSharedValues<THandlerData, TConfig>(
       } else {
         updateGestureHandlerConfig(handlerTag, { [configKey]: value });
       }
-      flushOperations();
     });
   };
 

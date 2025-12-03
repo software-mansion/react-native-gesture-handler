@@ -1,11 +1,13 @@
+import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import {
   GestureCallbacks,
-  GestureStateChangeEvent,
-  StateChangeEvent,
+  GestureStateChangeEventWithHandlerData,
+  StateChangeEventWithHandlerData,
 } from '../../types';
 import {
+  flattenAndFilterEvent,
   isEventForHandlerWithTag,
   maybeExtractNativeEvent,
   runCallback,
@@ -13,40 +15,51 @@ import {
 
 export function getStateChangeHandler<THandlerData>(
   handlerTag: number,
-  callbacks: GestureCallbacks<THandlerData>
+  callbacks: GestureCallbacks<THandlerData>,
+  context?: ReanimatedContext<THandlerData>
 ) {
-  return (sourceEvent: StateChangeEvent<THandlerData>) => {
+  return (sourceEvent: StateChangeEventWithHandlerData<THandlerData>) => {
     'worklet';
 
-    const event = maybeExtractNativeEvent(
+    const eventWithData = maybeExtractNativeEvent(
       sourceEvent
-    ) as GestureStateChangeEvent<THandlerData>;
+    ) as GestureStateChangeEventWithHandlerData<THandlerData>;
+    const event = flattenAndFilterEvent(eventWithData);
 
-    if (!isEventForHandlerWithTag(handlerTag, event)) {
+    if (!isEventForHandlerWithTag(handlerTag, eventWithData)) {
       return;
     }
 
-    if (event.oldState === State.UNDETERMINED && event.state === State.BEGAN) {
+    const { state, oldState } = eventWithData;
+
+    if (oldState === State.UNDETERMINED && state === State.BEGAN) {
       runCallback(CALLBACK_TYPE.BEGAN, callbacks, event);
     } else if (
-      (event.oldState === State.BEGAN ||
-        event.oldState === State.UNDETERMINED) &&
-      event.state === State.ACTIVE
+      (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
+      state === State.ACTIVE
     ) {
       runCallback(CALLBACK_TYPE.START, callbacks, event);
-    } else if (event.oldState !== event.state && event.state === State.END) {
-      if (event.oldState === State.ACTIVE) {
+    } else if (oldState !== state && state === State.END) {
+      if (oldState === State.ACTIVE) {
         runCallback(CALLBACK_TYPE.END, callbacks, event, true);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
+
+      if (context) {
+        context.lastUpdateEvent = undefined;
+      }
     } else if (
-      (event.state === State.FAILED || event.state === State.CANCELLED) &&
-      event.state !== event.oldState
+      (state === State.FAILED || state === State.CANCELLED) &&
+      state !== oldState
     ) {
-      if (event.oldState === State.ACTIVE) {
+      if (oldState === State.ACTIVE) {
         runCallback(CALLBACK_TYPE.END, callbacks, event, false);
       }
       runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
+
+      if (context) {
+        context.lastUpdateEvent = undefined;
+      }
     }
   };
 }

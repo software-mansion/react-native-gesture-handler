@@ -17,8 +17,7 @@ import {
   SwipeDirection,
 } from './ReanimatedSwipeableProps';
 import {
-  PanGestureStateChangeEvent,
-  PanGestureUpdateEvent,
+  PanGestureEvent,
   usePanGesture,
   useTapGesture,
 } from '../../v3/hooks/gestures';
@@ -403,10 +402,10 @@ const Swipeable = (props: SwipeableProps) => {
   );
 
   const handleRelease = useCallback(
-    (event: PanGestureStateChangeEvent) => {
+    (event: PanGestureEvent) => {
       'worklet';
-      const { velocityX } = event.handlerData;
-      userDrag.value = event.handlerData.translationX;
+      const { velocityX } = event;
+      userDrag.value = event.translationX;
 
       const leftThresholdProp = leftThreshold ?? leftWidth.value / 2;
       const rightThresholdProp = rightThreshold ?? rightWidth.value / 2;
@@ -460,7 +459,7 @@ const Swipeable = (props: SwipeableProps) => {
     simultaneousWith: simultaneousWithExternalGesture,
     requireToFail: requireExternalGestureToFail,
     block: blocksExternalGesture,
-    onStart: () => {
+    onActivate: () => {
       'worklet';
       if (rowState.value !== 0) {
         close();
@@ -476,17 +475,17 @@ const Swipeable = (props: SwipeableProps) => {
     requireToFail: requireExternalGestureToFail,
     block: blocksExternalGesture,
     hitSlop: hitSlop,
-    onStart: updateElementWidths,
-    onUpdate: (event: PanGestureUpdateEvent) => {
+    onActivate: updateElementWidths,
+    onUpdate: (event: PanGestureEvent) => {
       'worklet';
-      userDrag.value = event.handlerData.translationX;
+      userDrag.value = event.translationX;
 
       const direction =
         rowState.value === -1
           ? SwipeDirection.RIGHT
           : rowState.value === 1
             ? SwipeDirection.LEFT
-            : event.handlerData.translationX > 0
+            : event.translationX > 0
               ? SwipeDirection.RIGHT
               : SwipeDirection.LEFT;
 
@@ -501,7 +500,7 @@ const Swipeable = (props: SwipeableProps) => {
 
       updateAnimatedEvent();
     },
-    onEnd: (event: PanGestureStateChangeEvent) => {
+    onDeactivate: (event: PanGestureEvent) => {
       'worklet';
       handleRelease(event);
     },

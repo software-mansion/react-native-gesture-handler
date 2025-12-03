@@ -4,7 +4,6 @@ import {
   FlatList,
   RefreshControl,
   GestureHandlerRootView,
-  GHFlatListRef,
 } from 'react-native-gesture-handler';
 
 const DATA = Array.from({ length: 20 }, (_, i) => ({
@@ -21,7 +20,7 @@ const Item = ({ title }: { title: string }) => (
 export default function FlatListExample() {
   const [refreshing, setRefreshing] = useState(false);
 
-  const ref = useRef<GHFlatListRef>(null);
+  const ref = useRef<FlatList>(null);
 
   const onRefresh = () => {
     setRefreshing(true);

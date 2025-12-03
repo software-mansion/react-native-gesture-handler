@@ -43,7 +43,7 @@ import {
   HitSlop,
 } from '../handlers/gestureHandlerCommon';
 import {
-  PanGestureStateChangeEvent,
+  PanGestureEvent,
   usePanGesture,
   useTapGesture,
 } from '../v3/hooks/gestures';
@@ -434,9 +434,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const handleRelease = useCallback(
-      (event: PanGestureStateChangeEvent) => {
+      (event: PanGestureEvent) => {
         'worklet';
-        let { translationX: dragX, velocityX, x: touchX } = event.handlerData;
+        let { translationX: dragX, velocityX, x: touchX } = event;
 
         if (drawerPosition !== DrawerPosition.LEFT) {
           // See description in _updateAnimatedEvent about why events are flipped
@@ -501,7 +501,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
 
     const overlayDismissGesture = useTapGesture({
       maxDistance: 25,
-      onEnd: () => {
+      onDeactivate: () => {
         'worklet';
         if (
           isDrawerOpen.value &&
@@ -535,7 +535,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         (drawerOpened
           ? drawerLockMode !== DrawerLockMode.LOCKED_OPEN
           : drawerLockMode !== DrawerLockMode.LOCKED_CLOSED),
-      onStart: () => {
+      onActivate: () => {
         'worklet';
         emitStateChanged(DrawerState.DRAGGING, false);
         runOnJS(setDrawerState)(DrawerState.DRAGGING);
@@ -550,19 +550,19 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         'worklet';
         const startedOutsideTranslation = isFromLeft
           ? interpolate(
-              event.handlerData.x,
+              event.x,
               [0, drawerWidth, drawerWidth + 1],
               [0, drawerWidth, drawerWidth]
             )
           : interpolate(
-              event.handlerData.x - containerWidth,
+              event.x - containerWidth,
               [-drawerWidth - 1, -drawerWidth, 0],
               [drawerWidth, drawerWidth, 0]
             );
 
         const startedInsideTranslation =
           sideCorrection *
-          (event.handlerData.translationX +
+          (event.translationX +
             (drawerOpened ? drawerWidth * -gestureOrientation : 0));
 
         const adjustedTranslation = Math.max(
@@ -577,7 +577,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
           Extrapolation.CLAMP
         );
       },
-      onEnd: handleRelease,
+      onDeactivate: handleRelease,
     });
 
     // When using RTL, row and row-reverse flex directions are flipped.

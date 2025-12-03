@@ -8,10 +8,10 @@ import type {
   RectButtonProps,
 } from './GestureButtonsProps';
 
-import type { GestureStateChangeEvent } from '../types';
+import type { GestureEvent } from '../types';
 import type { NativeViewHandlerData } from '../hooks/gestures/native/useNativeGesture';
 
-type CallbackEventType = GestureStateChangeEvent<NativeViewHandlerData>;
+type CallbackEventType = GestureEvent<NativeViewHandlerData>;
 
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
@@ -34,7 +34,7 @@ export const BaseButton = (props: BaseButtonProps) => {
   };
 
   const onBegin = (e: CallbackEventType) => {
-    if (Platform.OS === 'android' && e.handlerData.pointerInside) {
+    if (Platform.OS === 'android' && e.pointerInside) {
       longPressDetected.current = false;
       if (onLongPress) {
         longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
@@ -42,30 +42,27 @@ export const BaseButton = (props: BaseButtonProps) => {
     }
   };
 
-  const onStart = (e: CallbackEventType) => {
+  const onActivate = (e: CallbackEventType) => {
     onActiveStateChange?.(true);
 
-    if (Platform.OS !== 'android' && e.handlerData.pointerInside) {
+    if (Platform.OS !== 'android' && e.pointerInside) {
       longPressDetected.current = false;
       if (onLongPress) {
         longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
       }
     }
 
-    if (
-      !e.handlerData.pointerInside &&
-      longPressTimeout.current !== undefined
-    ) {
+    if (!e.pointerInside && longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
   };
 
-  const onEnd = (e: CallbackEventType, success: boolean) => {
+  const onDeactivate = (e: CallbackEventType, success: boolean) => {
     onActiveStateChange?.(false);
 
     if (success && !longPressDetected.current) {
-      onPress?.(e.handlerData.pointerInside);
+      onPress?.(e.pointerInside);
     }
   };
 
@@ -81,8 +78,8 @@ export const BaseButton = (props: BaseButtonProps) => {
       style={[style, Platform.OS === 'ios' && { cursor: undefined }]}
       {...rest}
       onBegin={onBegin}
-      onStart={onStart}
-      onEnd={onEnd}
+      onActivate={onActivate}
+      onDeactivate={onDeactivate}
       onFinalize={onFinalize}
     />
   );

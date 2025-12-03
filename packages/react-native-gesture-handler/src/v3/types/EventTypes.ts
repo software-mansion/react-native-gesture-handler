@@ -18,35 +18,42 @@ export type BaseHandlerData = {
 
 export type HandlerData<T> = BaseHandlerData & T;
 
-export type GestureUpdateEvent<T> = EventPayload & {
+export type GestureUpdateEventWithHandlerData<T> = EventPayload & {
   handlerData: HandlerData<T>;
 };
 
-export type GestureStateChangeEvent<T> = StateChangeEventPayload & {
-  handlerData: HandlerData<T>;
-};
+export type GestureStateChangeEventWithHandlerData<T> =
+  StateChangeEventPayload & {
+    handlerData: HandlerData<T>;
+  };
 
-export type GestureHandlerEvent<THandlerData> =
-  | UpdateEvent<THandlerData>
-  | StateChangeEvent<THandlerData>
+export type GestureHandlerEventWithHandlerData<THandlerData> =
+  | UpdateEventWithHandlerData<THandlerData>
+  | StateChangeEventWithHandlerData<THandlerData>
   | TouchEvent;
 
-export type UnpackedGestureHandlerEvent<THandlerData> =
-  | GestureUpdateEvent<THandlerData>
-  | GestureStateChangeEvent<THandlerData>
+export type UnpackedGestureHandlerEventWithHandlerData<THandlerData> =
+  | GestureUpdateEventWithHandlerData<THandlerData>
+  | GestureStateChangeEventWithHandlerData<THandlerData>
   | GestureTouchEvent;
 
-export type UpdateEvent<THandlerData> =
-  | GestureUpdateEvent<THandlerData>
-  | NativeSyntheticEvent<GestureUpdateEvent<THandlerData>>;
+export type UpdateEventWithHandlerData<THandlerData> =
+  | GestureUpdateEventWithHandlerData<THandlerData>
+  | NativeSyntheticEvent<GestureUpdateEventWithHandlerData<THandlerData>>;
 
-export type StateChangeEvent<THandlerData> =
-  | GestureStateChangeEvent<THandlerData>
-  | NativeSyntheticEvent<GestureStateChangeEvent<THandlerData>>;
+export type StateChangeEventWithHandlerData<THandlerData> =
+  | GestureStateChangeEventWithHandlerData<THandlerData>
+  | NativeSyntheticEvent<GestureStateChangeEventWithHandlerData<THandlerData>>;
 
 export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
+
+export type GestureEvent<THandlerData> = THandlerData;
+
+export type UnpackedGestureHandlerEvent<THandlerData> =
+  | GestureEvent<THandlerData>
+  | GestureTouchEvent;
 
 // This is not how Animated.event is typed in React Native. We add _argMapping in order to
 // have access to the _argMapping property to check for usage of `change*` callbacks.
@@ -56,9 +63,9 @@ export type AnimatedEvent = {
 };
 
 export type ChangeCalculatorType<THandlerData> = (
-  current: GestureUpdateEvent<THandlerData>,
-  previous?: GestureUpdateEvent<THandlerData>
-) => GestureUpdateEvent<THandlerData>;
+  current: GestureUpdateEventWithHandlerData<THandlerData>,
+  previous?: GestureUpdateEventWithHandlerData<THandlerData>
+) => GestureUpdateEventWithHandlerData<THandlerData>;
 
 export type DiffCalculatorType<THandlerData> = (
   current: HandlerData<THandlerData>,

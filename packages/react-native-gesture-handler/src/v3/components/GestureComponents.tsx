@@ -1,8 +1,6 @@
 import React, {
   PropsWithChildren,
   ReactElement,
-  useRef,
-  useImperativeHandle,
   useState,
   RefObject,
 } from 'react';
@@ -18,14 +16,13 @@ import {
   RefreshControl as RNRefreshControl,
 } from 'react-native';
 
-import createNativeWrapper, {
-  ComponentWrapperRef,
-} from '../createNativeWrapper';
+import createNativeWrapper from '../createNativeWrapper';
 
 import { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { NativeWrapperProps } from '../hooks/utils';
 import { DetectorType } from '../detectors';
 import { NativeGesture } from '../hooks/gestures/native/useNativeGesture';
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 export const RefreshControl = createNativeWrapper(
   RNRefreshControl,
@@ -48,39 +45,39 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
   DetectorType.Intercepting
 );
 
-export type ImperativeScrollViewRef =
-  ComponentWrapperRef<RNScrollViewProps> | null;
-
 export const ScrollView = (
   props: RNScrollViewProps &
     NativeWrapperProperties & {
-      ref?: React.RefObject<ImperativeScrollViewRef>;
-      // This prop existst because using `ref` in `renderScrollComponent` doesn't work (it is overwritten by RN internals).
-      innerRef?: (node: ImperativeScrollViewRef) => void;
+      ref?: React.RefObject<RNScrollView | null>;
+      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
+        gesture: NativeGesture
+      ) => void;
     }
 ) => {
-  const { refreshControl, innerRef, ref, ...rest } = props;
+  const {
+    refreshControl,
+    onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER,
+    ...rest
+  } = props;
 
   const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
     null
   );
 
-  const wrapperRef = useRef<ComponentWrapperRef<RNScrollViewProps>>(null);
-
-  useImperativeHandle<ImperativeScrollViewRef, ImperativeScrollViewRef>(
-    ref,
-    () => wrapperRef.current
-  );
+  const updateGesture = (gesture: NativeGesture) => {
+    ghQueueMicrotask(() => {
+      if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+        setScrollGesture(gesture);
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
+      }
+    });
+  };
 
   return (
     <GHScrollView
       {...rest}
-      // @ts-ignore `ref` exists on `GHScrollView`
-      ref={(node: ImperativeScrollViewRef) => {
-        setScrollGesture(node?.gestureRef ?? null);
-        wrapperRef.current = node;
-        innerRef?.(node);
-      }}
+      ref={props.ref}
+      updateGesture_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl
@@ -94,10 +91,9 @@ export const ScrollView = (
     />
   );
 };
-// Backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
-// include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ScrollView = typeof GHScrollView & RNScrollView;
+export type ScrollView = typeof ScrollView & RNScrollView;
 
 export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
@@ -108,24 +104,30 @@ export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
 export type Switch = typeof Switch & RNSwitch;
 
 export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
 
-export type ImperativeFlatListRef<T = any> =
-  | (ComponentWrapperRef<RNScrollViewProps> & {
-      flatListRef: FlatList<T> | null;
-    })
-  | null;
-
 export const FlatList = ((props) => {
-  const { refreshControl, ref, ...rest } = props;
+  const {
+    refreshControl,
+    ref,
+    onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER,
+    ...rest
+  } = props;
 
   const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
     null
   );
 
-  const wrapperRef = useRef<ImperativeScrollViewRef>(null);
-  const flatListRef = useRef<FlatList<any>>(null);
+  const updateGesture = (gesture: NativeGesture) => {
+    ghQueueMicrotask(() => {
+      if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+        setScrollGesture(gesture);
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
+      }
+    });
+  };
 
   const flatListProps = {};
   const scrollViewProps = {};
@@ -143,28 +145,14 @@ export const FlatList = ((props) => {
     }
   }
 
-  useImperativeHandle<ImperativeFlatListRef, ImperativeFlatListRef>(
-    // @ts-ignore We want to override ref
-    ref,
-    () => {
-      return {
-        ...wrapperRef.current,
-        flatListRef: flatListRef.current,
-      };
-    }
-  );
-
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
     <RNFlatList
-      ref={flatListRef}
+      ref={ref}
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
         <ScrollView
-          innerRef={(node: ImperativeScrollViewRef) => {
-            setScrollGesture(node?.gestureRef ?? null);
-            wrapperRef.current = node;
-          }}
+          onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
           {...{
             ...scrollProps,
             ...scrollViewProps,
@@ -187,9 +175,13 @@ export const FlatList = ((props) => {
   props: PropsWithChildren<
     Omit<RNFlatListProps<ItemT>, 'renderScrollComponent' | 'ref'> &
       NativeWrapperProperties & {
-        ref?: RefObject<ImperativeFlatListRef<ItemT>>;
+        ref?: RefObject<RNFlatList<ItemT> | null>;
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
+          gesture: NativeGesture
+        ) => void;
       }
   >
 ) => ReactElement | null;
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type FlatList<ItemT = any> = typeof FlatList & RNFlatList<ItemT>;
+export type FlatList = typeof FlatList & RNFlatList;

@@ -48,9 +48,9 @@ export const HandlerCallbacks = new Set<
   keyof Required<GestureCallbacks<unknown>>
 >([
   'onBegin',
-  'onStart',
+  'onActivate',
   'onUpdate',
-  'onEnd',
+  'onDeactivate',
   'onFinalize',
   'onTouchesDown',
   'onTouchesMove',
