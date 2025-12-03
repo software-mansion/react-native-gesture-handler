@@ -35,6 +35,7 @@ export {
 
 export {
   allowedNativeProps,
+  NativeWrapperProps,
   HandlerCallbacks,
   PropsToFilter,
   PropsWhiteLists,
