@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const styles = StyleSheet.create({
   lipsum: {
     padding: 10,
+  },
+  feedback: {
+    marginTop: 20,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
@@ -25,9 +36,84 @@ export class LoremIpsum extends React.Component<Props> {
   }
 }
 
+type FeedbackProps = {
+  text: string;
+  highlight: string;
+  color?: string;
+  resetState?: () => void;
+  duration?: number;
+};
+
+// this piece of code is certainly not beutiful, but functional. It enables simple testing without the console
+export function Feedback({
+  text,
+  highlight,
+  color = 'black',
+  resetState,
+  duration = 1000,
+}: FeedbackProps) {
+  const opacity = useSharedValue(0);
+  const [activeHighlight, setActiveHighlight] = useState<string>(highlight);
+  const [activeText, setActiveText] = useState<string>(text);
+  const [activeColor, setActiveColor] = useState<string>(color);
+  const timerRef = useRef<number>(null);
+  useEffect(() => {
+    if (highlight === '') {
+      return;
+    }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    setActiveHighlight(highlight);
+    setActiveText(text);
+    setActiveColor(color);
+    opacity.value = 1;
+    if (resetState) {
+      resetState();
+    }
+    timerRef.current = setTimeout(() => {
+      opacity.value = withTiming(0, {
+        duration: 500,
+        easing: Easing.out(Easing.ease),
+      });
+    }, duration);
+  }, [text, highlight, opacity, duration]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+  if (!activeHighlight || !activeText.includes(activeHighlight)) {
+    return (
+      <Animated.Text style={[styles.feedback, animatedStyle]}>
+        {text}
+      </Animated.Text>
+    );
+  }
+
+  const parts = activeText.split(activeHighlight);
+
+  return (
+    <Animated.Text style={[styles.feedback, animatedStyle]}>
+      {parts.map((part, index) => (
+        <React.Fragment key={index}>
+          <Text>{part}</Text>
+          {index < parts.length - 1 && (
+            <Text style={{ color: activeColor }}>{activeHighlight}</Text>
+          )}
+        </React.Fragment>
+      ))}
+    </Animated.Text>
+  );
+}
+
 export const COLORS = {
   offWhite: '#f8f9ff',
   headerSeparator: '#eef0ff',
+  NAVY: '#001A72',
+  KINDA_RED: '#FFB2AD',
+  YELLOW: '#FFF096',
+  KINDA_GREEN: '#C4E7DB',
+  KINDA_BLUE: '#A0D5EF',
 };
 
 const LOREM_IPSUM = `

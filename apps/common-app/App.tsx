@@ -87,7 +87,7 @@ import V3BottomSheet from './src/v3_api/bottom_sheet/index';
 import V3ChatHeads from './src/v3_api/chat_heads/index';
 import V3HoverableIcons from './src/v3_api/hoverable_icons/index';
 import V3Camera from './src/v3_api/camera/index';
-
+import V3NestedText from './src/v3_api/nested_text/nested_text';
 import { Icon } from '@swmansion/icons';
 
 interface Example {
@@ -119,6 +119,7 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'V3 Chat Heads', component: V3ChatHeads },
       { name: 'V3 Hoverable Icons', component: V3HoverableIcons },
       { name: 'V3 Camera', component: V3Camera },
+      { name: 'V3 Nested Text', component: V3NestedText },
     ],
   },
   {

@@ -1,3 +1,4 @@
+import { Feedback } from '../../common';
 import React, { useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import {
@@ -9,27 +10,34 @@ import { runOnJS } from 'react-native-reanimated';
 
 import Svg, { Circle, Rect } from 'react-native-svg';
 
+type Element = 'circle!' | 'parallelogram!' | 'container!' | '';
 export default function LogicDetectorExample() {
-  const [tappedElement, setTappedElement] = useState('None');
+  const [tappedElement, setTappedElement] = useState<Element>('');
+  const resetState = () => {
+    setTappedElement('');
+  };
 
   const circleElementTap = useTapGesture({
     onActivate: () => {
       'worklet';
-      runOnJS(setTappedElement)('Circle');
+      console.log('clicked on Circle');
+      runOnJS(setTappedElement)('circle!');
     },
   });
 
   const rectElementTap = useTapGesture({
     onActivate: () => {
       'worklet';
-      runOnJS(setTappedElement)('Parallelogram');
+      console.log('clicked on Parallelogram');
+      runOnJS(setTappedElement)('parallelogram!');
     },
   });
 
   const containerTap = useTapGesture({
     onActivate: () => {
       'worklet';
-      runOnJS(setTappedElement)('Container');
+      console.log('clicked on container');
+      runOnJS(setTappedElement)('container!');
     },
   });
 
@@ -50,14 +58,22 @@ export default function LogicDetectorExample() {
         </InterceptingGestureDetector>
       </View>
 
-      <Text style={styles.feedback}>Tapped element: {tappedElement}</Text>
-      <Text style={styles.info}>
-        Tapping each color updates the above text to reflect which element was
-        tapped
-      </Text>
+      <Feedback
+        text={`Tapped: ${tappedElement}`}
+        highlight={tappedElement}
+        color={partColors[tappedElement]}
+        resetState={resetState}
+      />
     </View>
   );
 }
+
+const partColors = {
+  'circle!': 'green',
+  'parallelogram!': 'yellow',
+  'container!': 'tomato',
+  '': 'BLACK',
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -69,14 +85,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     margin: 10,
-  },
-  feedback: {
-    marginTop: 20,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  info: {
-    fontSize: 14,
-    textAlign: 'center',
   },
 });
