@@ -20,11 +20,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     eventHandlerType: EventHandlerType,
   ) {
-    val view = if (GestureHandler.usesNativeOrVirtualDetector(handler.actionType)) {
-      handler.viewForEvents
-    } else {
-      handler.view!!
-    }
+    val view = handler.viewForEvents
 
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
 
