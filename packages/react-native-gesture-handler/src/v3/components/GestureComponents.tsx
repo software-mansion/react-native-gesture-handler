@@ -100,6 +100,7 @@ export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
   shouldActivateOnStart: true,
   disallowInterruption: true,
 });
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Switch = typeof Switch & RNSwitch;
 
