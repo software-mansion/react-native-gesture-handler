@@ -33,23 +33,10 @@ export function useGesture<THandlerData, TConfig>(
 
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const {
-    onGestureHandlerStateChange,
     onGestureHandlerEvent,
-    onGestureHandlerTouchEvent,
     onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   } = useGestureCallbacks(tag, config);
-
-  // This should never happen, but since we don't want to call hooks conditionally,
-  // we have to mark these as possibly undefined to make TypeScript happy.
-  if (
-    !onGestureHandlerStateChange ||
-    // If onUpdate is an AnimatedEvent, `onGestureHandlerEvent` will be undefined and vice versa.
-    (!onGestureHandlerEvent && !onGestureHandlerAnimatedEvent) ||
-    !onGestureHandlerTouchEvent
-  ) {
-    throw new Error(tagMessage('Failed to create event handlers.'));
-  }
 
   if (config.shouldUseReanimatedDetector && !onReanimatedEvent) {
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
@@ -95,14 +82,14 @@ export function useGesture<THandlerData, TConfig>(
   }, [tag, config, type]);
 
   return useMemo(
-    () => ({
+    (): SingleGesture<THandlerData, TConfig> => ({
       tag,
       type,
       config,
       detectorCallbacks: {
-        onGestureHandlerStateChange,
-        onGestureHandlerEvent,
-        onGestureHandlerTouchEvent,
+        onGestureHandlerStateChange: onGestureHandlerEvent,
+        onGestureHandlerEvent: onGestureHandlerEvent,
+        onGestureHandlerTouchEvent: onGestureHandlerEvent,
         onGestureHandlerAnimatedEvent,
         // On web, we're triggering Reanimated callbacks ourselves, based on the type.
         // To handle this properly, we need to provide all three callbacks, so we set
@@ -128,9 +115,7 @@ export function useGesture<THandlerData, TConfig>(
       tag,
       type,
       config,
-      onGestureHandlerStateChange,
       onGestureHandlerEvent,
-      onGestureHandlerTouchEvent,
       onReanimatedEvent,
       onGestureHandlerAnimatedEvent,
       gestureRelations,
