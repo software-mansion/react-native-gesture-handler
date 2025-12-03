@@ -156,6 +156,4 @@ export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/ge
 
 export * from './v3';
 
-export * from './v3/components';
-
 initialize();
