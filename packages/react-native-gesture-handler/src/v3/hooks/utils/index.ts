@@ -5,9 +5,7 @@ export {
 } from './configUtils';
 
 export {
-  prepareStateChangeHandlers,
-  prepareUpdateHandlers,
-  prepareTouchHandlers,
+  useMemoizedGestureCallbacks,
   touchEventTypeToCallbackType,
   runCallback,
 } from './eventHandlersUtils';
