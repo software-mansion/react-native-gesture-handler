@@ -38,12 +38,12 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
   // TODO: consider allowing more than one child and doing bounding box
   react_native_assert(getChildren().size() == 1);
 
-  auto child = std::static_pointer_cast<const YogaLayoutableShadowNode>(
-      getChildren()[0]);
-
   if (!this->yogaNode_.getHasNewLayout()) {
     return;
   }
+
+  auto child = std::static_pointer_cast<const YogaLayoutableShadowNode>(
+      getChildren()[0]);
 
   child->ensureUnsealed();
   auto mutableChild = std::const_pointer_cast<YogaLayoutableShadowNode>(child);
