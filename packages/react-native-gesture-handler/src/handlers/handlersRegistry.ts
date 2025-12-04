@@ -17,9 +17,8 @@ export function registerGesture<THandlerData, TConfig>(
   handlerTag: number,
   gesture: SingleGesture<THandlerData, TConfig>
 ) {
-  hookGestures.set(handlerTag, gesture);
-
   if (isTestEnv() && gesture.config.testID) {
+    hookGestures.set(handlerTag, gesture);
     testIDs.set(gesture.config.testID, handlerTag);
   }
 }
@@ -29,9 +28,8 @@ export function unregisterGesture(handlerTag: number) {
 
   if (gesture && isTestEnv() && gesture.config.testID) {
     testIDs.delete(gesture.config.testID);
+    hookGestures.delete(handlerTag);
   }
-
-  hookGestures.delete(handlerTag);
 }
 
 export function registerHandler(

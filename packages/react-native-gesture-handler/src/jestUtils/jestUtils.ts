@@ -60,7 +60,7 @@ import {
 } from '../handlers/TapGestureHandler';
 import { State } from '../State';
 import { hasProperty, withPrevAndCurrent } from '../utils';
-import { SingleGesture } from '../v3/types';
+import type { SingleGesture } from '../v3/types';
 import { maybeUnpackValue } from '../v3/hooks/utils';
 
 // Load fireEvent conditionally, so RNGH may be used in setups without testing-library
