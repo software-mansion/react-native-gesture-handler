@@ -16,7 +16,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
     _shouldSendBeginEvent = YES;
   }
@@ -29,7 +29,7 @@
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   if (_shouldSendBeginEvent) {
-    [_gestureHandler handleGesture:self];
+    [_gestureHandler handleGesture:self fromReset:NO];
 #if TARGET_OS_OSX
     self.state = NSGestureRecognizerStateBegan;
 #endif
@@ -40,7 +40,7 @@
 - (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
 
   if ([self shouldFail]) {
     self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
@@ -53,7 +53,7 @@
 - (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
 }
 
 #if !TARGET_OS_OSX
