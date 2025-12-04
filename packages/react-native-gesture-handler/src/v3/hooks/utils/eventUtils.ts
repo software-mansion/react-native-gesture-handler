@@ -12,7 +12,7 @@ import {
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../../utils';
 
-export function isNativeEvent<THandlerData>(
+function isNativeEvent<THandlerData>(
   event: GestureHandlerEventWithHandlerData<THandlerData>
 ): event is
   | NativeSyntheticEvent<GestureUpdateEventWithHandlerData<THandlerData>>

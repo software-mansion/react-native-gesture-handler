@@ -11,7 +11,7 @@ type StateChangeEventPayload = EventPayload & {
   oldState: State;
 };
 
-export type BaseHandlerData = {
+type BaseHandlerData = {
   numberOfPointers: number;
   pointerType: PointerType;
 };
