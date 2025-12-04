@@ -48,7 +48,7 @@ function getVersion(isCommitly) {
     const day = String(now.getDate()).padStart(2, '0');
     const currentDate = `${year}${month}${day}`;
 
-    const commitlyVersion = `${major}.${minor + 1}.${0}-${currentDate}-${currentSHA.slice(0, 9)}`;
+    const commitlyVersion = `${major}.${minor + 1}.${0}-nightly-${currentDate}-${currentSHA.slice(0, 9)}`;
     return commitlyVersion;
   }
 
