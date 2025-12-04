@@ -24,6 +24,7 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'mouseButton',
   'enableContextMenu',
   'touchAction',
+  'testID',
 ]);
 
 const ExternalRelationsConfig = new Set<keyof ExternalRelations>([
