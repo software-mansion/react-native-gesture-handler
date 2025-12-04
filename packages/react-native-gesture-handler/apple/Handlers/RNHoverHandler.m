@@ -40,7 +40,7 @@ API_AVAILABLE(ios(13.4))
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
     _hoverEffect = RNGestureHandlerHoverEffectNone;
   }
@@ -49,7 +49,7 @@ API_AVAILABLE(ios(13.4))
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
 }
 
 - (void)cancel
