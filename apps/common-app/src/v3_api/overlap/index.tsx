@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
   },
   subcontainer: {
     flex: 1,
+    alignItems: 'center',
     borderBottomWidth: 1,
   },
   row: {
