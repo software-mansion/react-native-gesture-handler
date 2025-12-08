@@ -152,20 +152,8 @@ export type {
 } from './components/Pressable';
 export { default as Pressable } from './components/Pressable';
 
-export {
-  GestureDetector,
-  InterceptingGestureDetector,
-  GestureDetectorProps,
-  VirtualGestureDetector,
-} from './v3/detectors';
-
-export * from './v3/hooks/composition';
-
-export type { ComposedGesture } from './v3/types';
 export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
 
-export * from './v3/hooks/gestures';
-
-export * from './v3/components';
+export * from './v3';
 
 initialize();
