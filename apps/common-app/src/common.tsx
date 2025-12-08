@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -8,6 +9,7 @@ import React, {
 import { Text, StyleSheet, ViewStyle, StyleProp, View } from 'react-native';
 import Animated, {
   Easing,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -86,9 +88,8 @@ export const Feedback = forwardRef<FeedbackHandle, FeedbackProps>(
       opacity: opacity.value,
     }));
 
-    useImperativeHandle(ref, () => ({
-      showMessage(message: string) {
-        console.log(message);
+    const displayMessage = useCallback(
+      (message: string) => {
         if (timerRef.current) {
           clearTimeout(timerRef.current);
         }
@@ -105,7 +106,15 @@ export const Feedback = forwardRef<FeedbackHandle, FeedbackProps>(
             easing: Easing.out(Easing.ease),
           });
           timerRef.current = null;
-        }, duration);
+        }, duration) as unknown as number;
+      },
+      [duration, opacity]
+    );
+
+    useImperativeHandle(ref, () => ({
+      showMessage: (message: string) => {
+        'worklet';
+        runOnJS(displayMessage)(message);
       },
     }));
 
