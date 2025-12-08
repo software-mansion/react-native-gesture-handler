@@ -1,5 +1,5 @@
-import { COLORS } from '../../common';
-import React from 'react';
+import { COLORS, Feedback } from '../../common';
+import React, { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import {
   GestureDetector,
@@ -28,12 +28,14 @@ function Box(props: {
 }
 
 function OverlapSiblings() {
+  const feedbackRef = useRef<{ showMessage: (msg: string) => void }>(null);
   const [elevated, setElevated] = React.useState('');
 
   const tapRed = useTapGesture({
     onDeactivate: (_e, success) => {
       'worklet';
       if (success) {
+        feedbackRef.current?.showMessage('Tapped purple');
         setElevated('purple');
       }
     },
@@ -44,6 +46,7 @@ function OverlapSiblings() {
     onDeactivate: (_e, success) => {
       'worklet';
       if (success) {
+        feedbackRef.current?.showMessage('Tapped blue');
         setElevated('blue');
       }
     },
@@ -51,28 +54,32 @@ function OverlapSiblings() {
   });
 
   return (
-    <View style={styles.row}>
-      <Text style={styles.text}>Overlap Siblings</Text>
-      <View style={{ width: 225 }}>
-        <GestureDetector gesture={tapRed}>
-          <Box color={COLORS.PURPLE} elevated={elevated === 'purple'} />
-        </GestureDetector>
-        <GestureDetector gesture={tapGreen}>
-          <Box color={COLORS.NAVY} overlap elevated={elevated === 'blue'} />
-        </GestureDetector>
+    <View style={styles.subcontainer}>
+      <View style={styles.row}>
+        <Text style={styles.text}>Overlap Siblings</Text>
+        <View style={{ width: 225 }}>
+          <GestureDetector gesture={tapRed}>
+            <Box color={COLORS.PURPLE} elevated={elevated === 'purple'} />
+          </GestureDetector>
+          <GestureDetector gesture={tapGreen}>
+            <Box color={COLORS.NAVY} overlap elevated={elevated === 'blue'} />
+          </GestureDetector>
+        </View>
       </View>
+      <Feedback ref={feedbackRef} />
     </View>
   );
 }
 
 function OverlapParents() {
+  const feedbackRef = useRef<{ showMessage: (msg: string) => void }>(null);
   const [elevated, setElevated] = React.useState('');
 
   const tapRed = useTapGesture({
     onDeactivate: (_e, success) => {
       'worklet';
-      console.log('tap purple');
       if (success) {
+        feedbackRef.current?.showMessage('Tapped purple');
         setElevated('purple');
       }
     },
@@ -81,8 +88,9 @@ function OverlapParents() {
 
   const tapGreen = useTapGesture({
     onDeactivate: (_e, success) => {
-      console.log('tap blue');
+      'worklet';
       if (success) {
+        feedbackRef.current?.showMessage('Tapped blue');
         setElevated('blue');
       }
     },
@@ -90,17 +98,24 @@ function OverlapParents() {
   });
 
   return (
-    <View style={styles.row}>
-      <Text style={styles.text}>Overlap Child</Text>
-      <View style={{ width: 225 }}>
-        <InterceptingGestureDetector gesture={tapRed}>
-          <Box color={COLORS.PURPLE} elevated={elevated === 'purple'}>
-            <VirtualGestureDetector gesture={tapGreen}>
-              <Box color={COLORS.NAVY} overlap elevated={elevated === 'blue'} />
-            </VirtualGestureDetector>
-          </Box>
-        </InterceptingGestureDetector>
+    <View style={styles.subcontainer}>
+      <View style={styles.row}>
+        <Text style={styles.text}>Overlap Child</Text>
+        <View style={{ width: 225 }}>
+          <InterceptingGestureDetector gesture={tapRed}>
+            <Box color={COLORS.PURPLE} elevated={elevated === 'purple'}>
+              <VirtualGestureDetector gesture={tapGreen}>
+                <Box
+                  color={COLORS.NAVY}
+                  overlap
+                  elevated={elevated === 'blue'}
+                />
+              </VirtualGestureDetector>
+            </Box>
+          </InterceptingGestureDetector>
+        </View>
       </View>
+      <Feedback ref={feedbackRef} />
     </View>
   );
 }
@@ -118,11 +133,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  subcontainer: {
+    flex: 1,
+    borderBottomWidth: 1,
+  },
   row: {
     padding: 30,
     alignItems: 'center',
     height: 225,
-    marginTop: 48,
+    marginBottom: 60,
   },
   box: {
     width: 150,

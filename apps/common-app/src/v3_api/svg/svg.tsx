@@ -1,6 +1,6 @@
 import { COLORS, Feedback } from '../../common'; // ✅ imported
 import React, { useRef } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
   InterceptingGestureDetector,
   useTapGesture,
@@ -34,8 +34,6 @@ export default function LogicDetectorExample() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Overlapping SVGs with gesture detectors</Text>
-
       <View style={{ backgroundColor: COLORS.PURPLE }}>
         <InterceptingGestureDetector gesture={containerTap}>
           <Svg height="250" width="250">
@@ -62,13 +60,9 @@ export default function LogicDetectorExample() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 48,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    margin: 10,
   },
 });
