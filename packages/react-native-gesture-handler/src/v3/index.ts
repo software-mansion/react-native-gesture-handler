@@ -3,7 +3,7 @@ export {
   GestureDetector,
   VirtualGestureDetector,
   InterceptingGestureDetector,
-  DetectorType,
+  GestureDetectorType,
 } from './detectors';
 
 export type {
