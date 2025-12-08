@@ -20,7 +20,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { LoremIpsum } from '../../common';
+import { COLORS, LoremIpsum } from '../../common';
 
 const HEADER_HEIGTH = 50;
 const windowHeight = Dimensions.get('window').height;
@@ -152,11 +152,11 @@ const styles = StyleSheet.create({
   },
   header: {
     height: HEADER_HEIGTH,
-    backgroundColor: 'coral',
+    backgroundColor: COLORS.NAVY,
   },
   bottomSheet: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#ff9f7A',
+    backgroundColor: COLORS.KINDA_BLUE,
   },
 });
 

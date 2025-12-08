@@ -1,3 +1,4 @@
+import { COLORS } from '../../common';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
   box: {
     height: 120,
     width: 120,
-    backgroundColor: '#b58df1',
+    backgroundColor: COLORS.NAVY,
     marginBottom: 30,
   },
 });

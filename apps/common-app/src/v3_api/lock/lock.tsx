@@ -15,6 +15,7 @@ import {
   useSimultaneousGestures,
   useTapGesture,
 } from 'react-native-gesture-handler';
+import { COLORS } from '../../common';
 
 export default function Lock() {
   const rotation = useSharedValue(-Math.PI / 2);
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   instructions: {
-    color: '#9CA3AF',
+    color: COLORS.GRAY,
     marginTop: 8,
     textAlign: 'center',
     paddingHorizontal: 16,
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
   outerBox: {
     height: 200,
     width: 200,
-    backgroundColor: 'gray',
+    backgroundColor: COLORS.GRAY,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
   box: {
     height: 200,
     width: 200,
-    backgroundColor: '#b58df1',
+    backgroundColor: COLORS.PURPLE,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',

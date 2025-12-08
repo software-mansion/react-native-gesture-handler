@@ -11,6 +11,7 @@ import Animated, {
 
 import React from 'react';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import { COLORS } from '../../common';
 
 const BOX_SIZE = 120;
 
@@ -67,7 +68,7 @@ export default function App() {
     const backgroundColor = interpolateColor(
       colorProgress.value,
       [0, 1],
-      ['#0a2688', '#6fcef5']
+      [COLORS.NAVY, COLORS.KINDA_BLUE]
     );
 
     return {

@@ -137,6 +137,7 @@ export const COLORS = {
   RED: '#A41623',
   YELLOW: '#F2AF29',
   GREEN: '#0F956F',
+  GRAY: '#ADB1C2',
   KINDA_RED: '#FFB2AD',
   KINDA_YELLOW: '#FFF096',
   KINDA_GREEN: '#C4E7DB',

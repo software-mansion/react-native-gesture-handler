@@ -20,8 +20,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Circle, Svg } from 'react-native-svg';
 import AnimatedCameraView from '../../new_api/camera/AnimatedCameraView';
+import { COLORS } from '../../common';
 
-const FILTERS = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
+const FILTERS = [
+  COLORS.RED,
+  COLORS.GREEN,
+  COLORS.NAVY,
+  COLORS.YELLOW,
+  COLORS.KINDA_BLUE,
+];
 const CAROUSEL_SIZE = 100;
 const FILTER_SIZE = 60;
 const VIDEO_DURATION = 20000;

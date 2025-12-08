@@ -1,4 +1,4 @@
-import { Feedback } from '../../common'; // ✅ imported
+import { COLORS, Feedback } from '../../common'; // ✅ imported
 import React, { useRef } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import {
@@ -36,14 +36,19 @@ export default function LogicDetectorExample() {
     <View style={styles.container}>
       <Text style={styles.header}>Overlapping SVGs with gesture detectors</Text>
 
-      <View style={{ backgroundColor: 'tomato' }}>
+      <View style={{ backgroundColor: COLORS.PURPLE }}>
         <InterceptingGestureDetector gesture={containerTap}>
           <Svg height="250" width="250">
             <VirtualGestureDetector gesture={circleElementTap}>
-              <Circle cx="125" cy="125" r="125" fill="green" />
+              <Circle cx="125" cy="125" r="125" fill={COLORS.NAVY} />
             </VirtualGestureDetector>
             <VirtualGestureDetector gesture={rectElementTap}>
-              <Rect skewX="45" width="125" height="250" fill="yellow" />
+              <Rect
+                skewX="45"
+                width="125"
+                height="250"
+                fill={COLORS.KINDA_BLUE}
+              />
             </VirtualGestureDetector>
           </Svg>
         </InterceptingGestureDetector>
