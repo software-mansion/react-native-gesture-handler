@@ -1,4 +1,5 @@
-import React from 'react';
+import { COLORS, Feedback } from '../../common';
+import React, { RefObject, useRef } from 'react';
 import { View, Text } from 'react-native';
 import {
   GestureDetector,
@@ -10,7 +11,10 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-function useColoredHover(color: string) {
+function useColoredHover(
+  color: string,
+  feedbackRef: RefObject<{ showMessage: (msg: string) => void } | null>
+) {
   const hovered = useSharedValue(false);
 
   const style = useAnimatedStyle(() => ({
@@ -21,7 +25,8 @@ function useColoredHover(color: string) {
     onBegin: () => {
       'worklet';
       hovered.value = true;
-      console.log('hover begin', color);
+
+      feedbackRef.current?.showMessage('Hover begin ' + color);
     },
     onActivate: () => {
       'worklet';
@@ -43,15 +48,18 @@ function useColoredHover(color: string) {
 }
 
 export default function Example() {
-  const [hover1, style1] = useColoredHover('red');
+  const feedbackRefUpper = useRef<{ showMessage: (msg: string) => void }>(null);
+  const feedbackRefLower = useRef<{ showMessage: (msg: string) => void }>(null);
 
-  const [hover2, style2] = useColoredHover('green');
+  const [hover1, style1] = useColoredHover('red', feedbackRefUpper);
 
-  const [hover3, style3] = useColoredHover('red');
+  const [hover2, style2] = useColoredHover('green', feedbackRefUpper);
 
-  const [hover4, style4] = useColoredHover('green');
+  const [hover3, style3] = useColoredHover('red', feedbackRefLower);
 
-  const [hover5, style5] = useColoredHover('blue');
+  const [hover4, style4] = useColoredHover('green', feedbackRefLower);
+
+  const [hover5, style5] = useColoredHover('blue', feedbackRefLower);
 
   return (
     <View style={{ flex: 1 }}>
@@ -62,7 +70,7 @@ export default function Example() {
             {
               width: 200,
               height: 200,
-              backgroundColor: 'red',
+              backgroundColor: COLORS.RED,
               elevation: 8,
             },
             style1,
@@ -73,7 +81,7 @@ export default function Example() {
                 {
                   width: 100,
                   height: 100,
-                  backgroundColor: 'green',
+                  backgroundColor: COLORS.GREEN,
                   elevation: 8,
                 },
                 style2,
@@ -83,6 +91,7 @@ export default function Example() {
         </Animated.View>
       </GestureDetector>
 
+      <Feedback ref={feedbackRefUpper} />
       <View style={{ height: 50 }} />
 
       <Text>Absolute positioning</Text>
@@ -93,7 +102,7 @@ export default function Example() {
               {
                 width: 200,
                 height: 200,
-                backgroundColor: 'red',
+                backgroundColor: COLORS.RED,
                 // zIndex: 10,
               },
               style3,
@@ -106,7 +115,7 @@ export default function Example() {
               {
                 width: 200,
                 height: 200,
-                backgroundColor: 'blue',
+                backgroundColor: COLORS.NAVY,
                 position: 'absolute',
               },
               style5,
@@ -120,7 +129,7 @@ export default function Example() {
               {
                 width: 100,
                 height: 100,
-                backgroundColor: 'green',
+                backgroundColor: COLORS.GREEN,
                 position: 'absolute',
                 // zIndex: 80,
               },
@@ -129,6 +138,7 @@ export default function Example() {
           />
         </GestureDetector>
       </View>
+      <Feedback ref={feedbackRefLower} />
     </View>
   );
 }
