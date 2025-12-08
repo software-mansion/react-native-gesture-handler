@@ -9,27 +9,23 @@ import {
 } from 'react-native-gesture-handler';
 
 import { COLORS, Feedback } from '../../common';
-import { runOnJS } from 'react-native-reanimated';
-type Part = 'All Text' | 'try tapping on this part' | 'or on this part' | '';
+
 function NativeDetectorExample() {
-  const [tappedPart, setTappedPart] = React.useState<Part>('');
-  const resetState = () => {
-    setTappedPart('');
-  };
+  const feedbackRef = React.useRef<{ showMessage: (msg: string) => void }>(
+    null
+  );
 
   const tapAll = useTapGesture({
     onActivate: () => {
       'worklet';
-      console.log('Tapped on text!');
-      runOnJS(setTappedPart)('All Text');
+      feedbackRef.current?.showMessage('Tapped on all text');
     },
   });
 
   const tapFirstPart = useTapGesture({
     onActivate: () => {
       'worklet';
-      console.log('Tapped on first part!');
-      runOnJS(setTappedPart)('try tapping on this part');
+      feedbackRef.current?.showMessage('Tapped on "try tapping on this part"');
     },
   });
 
@@ -37,7 +33,7 @@ function NativeDetectorExample() {
     onActivate: () => {
       'worklet';
       console.log('Tapped on second part!');
-      runOnJS(setTappedPart)('or on this part');
+      feedbackRef.current?.showMessage('Tapped on "or on this part"');
     },
   });
 
@@ -64,38 +60,29 @@ function NativeDetectorExample() {
           this part is not special :(
         </Text>
       </InterceptingGestureDetector>
-      <Feedback
-        text={`Tapped part: ${tappedPart}`}
-        highlight={tappedPart}
-        color={partColors[tappedPart]}
-        resetState={resetState}
-      />
+      <Feedback ref={feedbackRef} />
     </View>
   );
 }
 
 function LegacyDetectorExample() {
-  const [tappedPart, setTappedPart] = React.useState<Part>('');
-  const resetState = () => {
-    setTappedPart('');
-  };
+  const feedbackRef = React.useRef<{ showMessage: (msg: string) => void }>(
+    null
+  );
 
   const tapAll = Gesture.Tap().onStart(() => {
     'worklet';
-    console.log('Tapped on text!');
-    runOnJS(setTappedPart)('All Text');
+    feedbackRef.current?.showMessage('Tapped on all text');
   });
 
   const tapFirstPart = Gesture.Tap().onStart(() => {
     'worklet';
-    console.log('Tapped on first part!');
-    runOnJS(setTappedPart)('try tapping on this part');
+    feedbackRef.current?.showMessage('Tapped on "try tapping on this part"');
   });
 
   const tapSecondPart = Gesture.Tap().onStart(() => {
     'worklet';
-    console.log('Tapped on second part!');
-    runOnJS(setTappedPart)('or on this part');
+    feedbackRef.current?.showMessage('Tapped on "or this part"');
   });
 
   return (
@@ -121,12 +108,7 @@ function LegacyDetectorExample() {
           this part is not special :(
         </Text>
       </GestureDetector>
-      <Feedback
-        text={`Tapped part: ${tappedPart}`}
-        highlight={tappedPart}
-        color={partColors[tappedPart]}
-        resetState={resetState}
-      />
+      <Feedback ref={feedbackRef} />
     </View>
   );
 }
@@ -139,13 +121,6 @@ export default function NativeTextExample() {
     </View>
   );
 }
-
-const partColors = {
-  'All Text': 'BLACK',
-  'try tapping on this part': COLORS.NAVY,
-  'or on this part': COLORS.KINDA_BLUE,
-  '': 'BLACK',
-};
 
 const styles = StyleSheet.create({
   container: {

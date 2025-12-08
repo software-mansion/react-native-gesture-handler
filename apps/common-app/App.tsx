@@ -87,11 +87,11 @@ import V3ChatHeads from './src/v3_api/chat_heads/index';
 import V3HoverableIcons from './src/v3_api/hoverable_icons/index';
 import V3Camera from './src/v3_api/camera/index';
 import V3NestedText from './src/v3_api/nested_text/nested_text';
+
 import FlatListExample from './src/components/flatlist';
 import ScrollViewExample from './src/components/scrollview';
 import ButtonsExample from './src/components/buttons';
 import SwitchTextInputExample from './src/components/switchAndInput';
-
 import { Icon } from '@swmansion/icons';
 
 interface Example {

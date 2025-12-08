@@ -1,5 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { Text, StyleSheet, ViewStyle, StyleProp, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -10,6 +16,19 @@ import Animated, {
 const styles = StyleSheet.create({
   lipsum: {
     padding: 10,
+  },
+  info_container: {
+    padding: 16,
+    backgroundColor: '#F5F7FA',
+    borderRadius: 12,
+    marginVertical: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  info_body: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#4A5568',
   },
   feedback: {
     marginTop: 20,
@@ -36,82 +55,90 @@ export class LoremIpsum extends React.Component<Props> {
   }
 }
 
+interface InfoSectionProps {
+  description: string;
+}
+
+export function InfoSection({ description }: InfoSectionProps) {
+  return (
+    <View style={styles.info_container}>
+      <Text style={styles.info_body}>{description}</Text>
+    </View>
+  );
+}
+
 type FeedbackProps = {
-  text: string;
-  highlight: string;
-  color?: string;
-  resetState?: () => void;
   duration?: number;
 };
 
-// this piece of code is certainly not beutiful, but functional. It enables simple testing without the console
-export function Feedback({
-  text,
-  highlight,
-  color = 'black',
-  resetState,
-  duration = 1000,
-}: FeedbackProps) {
-  const opacity = useSharedValue(0);
-  const [activeHighlight, setActiveHighlight] = useState<string>(highlight);
-  const [activeText, setActiveText] = useState<string>(text);
-  const [activeColor, setActiveColor] = useState<string>(color);
-  const timerRef = useRef<number>(null);
-  useEffect(() => {
-    if (highlight === '') {
-      return;
-    }
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    setActiveHighlight(highlight);
-    setActiveText(text);
-    setActiveColor(color);
-    opacity.value = 1;
-    if (resetState) {
-      resetState();
-    }
-    timerRef.current = setTimeout(() => {
-      opacity.value = withTiming(0, {
-        duration: 500,
-        easing: Easing.out(Easing.ease),
-      });
-    }, duration);
-  }, [text, highlight, opacity, duration]);
+export type FeedbackHandle = {
+  showMessage: (message: string) => void;
+};
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-  if (!activeHighlight || !activeText.includes(activeHighlight)) {
+export const Feedback = forwardRef<FeedbackHandle, FeedbackProps>(
+  ({ duration = 1000 }, ref) => {
+    const [text, setText] = useState('Feedback');
+    const timerRef = useRef<number | null>(null);
+
+    const opacity = useSharedValue(0);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+      opacity: opacity.value,
+    }));
+
+    useImperativeHandle(ref, () => ({
+      showMessage(message: string) {
+        console.log(message);
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+
+        setText(message);
+        opacity.value = withTiming(1, {
+          duration: 100,
+          easing: Easing.out(Easing.ease),
+        });
+
+        timerRef.current = setTimeout(() => {
+          opacity.value = withTiming(0, {
+            duration: 500,
+            easing: Easing.out(Easing.ease),
+          });
+          timerRef.current = null;
+        }, duration);
+      },
+    }));
+
+    useEffect(() => {
+      return () => {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+      };
+    }, []);
+
+    if (!text) {
+      return null;
+    }
+
     return (
       <Animated.Text style={[styles.feedback, animatedStyle]}>
         {text}
       </Animated.Text>
     );
   }
-
-  const parts = activeText.split(activeHighlight);
-
-  return (
-    <Animated.Text style={[styles.feedback, animatedStyle]}>
-      {parts.map((part, index) => (
-        <React.Fragment key={index}>
-          <Text>{part}</Text>
-          {index < parts.length - 1 && (
-            <Text style={{ color: activeColor }}>{activeHighlight}</Text>
-          )}
-        </React.Fragment>
-      ))}
-    </Animated.Text>
-  );
-}
+);
 
 export const COLORS = {
   offWhite: '#f8f9ff',
   headerSeparator: '#eef0ff',
+  PURPLE: '#b58df1',
   NAVY: '#001A72',
+  RED: '#A41623',
+  YELLOW: '#F2AF29',
+  GREEN: '#0F956F',
   KINDA_RED: '#FFB2AD',
-  YELLOW: '#FFF096',
+  KINDA_YELLOW: '#FFF096',
   KINDA_GREEN: '#C4E7DB',
   KINDA_BLUE: '#A0D5EF',
 };
