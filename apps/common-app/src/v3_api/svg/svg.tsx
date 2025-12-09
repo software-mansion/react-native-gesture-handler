@@ -32,13 +32,23 @@ export default function LogicDetectorExample() {
     },
   });
 
+  // onPress must be set to enable gesture recognition on svg
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const noop = () => {};
+
   return (
     <View style={styles.container}>
       <View style={{ backgroundColor: COLORS.PURPLE }}>
         <InterceptingGestureDetector gesture={containerTap}>
           <Svg height="250" width="250">
             <VirtualGestureDetector gesture={circleElementTap}>
-              <Circle cx="125" cy="125" r="125" fill={COLORS.NAVY} />
+              <Circle
+                cx="125"
+                cy="125"
+                r="125"
+                fill={COLORS.NAVY}
+                onPress={noop}
+              />
             </VirtualGestureDetector>
             <VirtualGestureDetector gesture={rectElementTap}>
               <Rect
@@ -46,6 +56,7 @@ export default function LogicDetectorExample() {
                 width="125"
                 height="250"
                 fill={COLORS.KINDA_BLUE}
+                onPress={noop}
               />
             </VirtualGestureDetector>
           </Svg>
