@@ -59,7 +59,6 @@ export default function Example() {
   return (
     <View style={styles.container}>
       <View style={styles.subcontainer}>
-        {/* Parent & child hover */}
         <Text style={styles.title}>Parent & child</Text>
         <GestureDetector gesture={hover1}>
           <Animated.View style={[styles.parentBox, style1]}>
@@ -71,7 +70,6 @@ export default function Example() {
         <Feedback ref={feedbackRefUpper} />
         <View style={styles.spacer} />
       </View>
-      {/* Absolute positioning hover */}
 
       <View style={styles.subcontainer}>
         <Text style={styles.title}>Absolute positioning</Text>

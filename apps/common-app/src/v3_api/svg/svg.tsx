@@ -1,4 +1,4 @@
-import { COLORS, Feedback } from '../../common'; // ✅ imported
+import { COLORS, Feedback } from '../../common';
 import React, { useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
@@ -62,8 +62,6 @@ export default function LogicDetectorExample() {
           </Svg>
         </InterceptingGestureDetector>
       </View>
-
-      {/* Feedback used here */}
       <Feedback ref={feedbackRef} />
     </View>
   );
