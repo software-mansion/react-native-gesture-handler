@@ -1,0 +1,27 @@
+### Event attributes common to all gestures:
+
+### numberOfPointers
+
+```ts
+numberOfPointers: number;
+```
+
+Represents the number of pointers (fingers) currently placed on the screen.
+
+### pointerType
+
+```ts
+pointerType: PointerType;
+```
+
+```ts
+enum PointerType {
+  TOUCH,
+  STYLUS,
+  MOUSE,
+  KEY, // e.g. keyboard
+  OTHER,
+}
+```
+
+Indicates the type of pointer device in use.
