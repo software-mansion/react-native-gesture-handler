@@ -5,13 +5,13 @@ import { useNativeGesture } from './hooks/gestures';
 import { NativeDetector } from './detectors/NativeDetector';
 import type { NativeWrapperProperties } from './types/NativeWrapperType';
 import { NativeGesture } from './hooks/gestures/native/useNativeGesture';
-import { DetectorType, InterceptingGestureDetector } from './detectors';
+import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
   config: Readonly<NativeWrapperProperties> = {},
-  detectorType: DetectorType = DetectorType.Native
+  detectorType: GestureDetectorType = GestureDetectorType.Native
 ) {
   const ComponentWrapper = (
     props: P &
@@ -57,9 +57,9 @@ export default function createNativeWrapper<P>(
     }, [native, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER]);
 
     const DetectorComponent =
-      detectorType === DetectorType.Intercepting
+      detectorType === GestureDetectorType.Intercepting
         ? InterceptingGestureDetector
-        : detectorType === DetectorType.Virtual
+        : detectorType === GestureDetectorType.Virtual
           ? VirtualDetector
           : NativeDetector;
 

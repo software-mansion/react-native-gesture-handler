@@ -10,6 +10,11 @@ import {
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
+import { scheduleFlushOperations } from '../../handlers/utils';
+import {
+  registerGesture,
+  unregisterGesture,
+} from '../../handlers/handlersRegistry';
 import { Platform } from 'react-native';
 import { NativeProxy } from '../NativeProxy';
 
@@ -64,25 +69,8 @@ export function useGesture<THandlerData, TConfig>(
     NativeProxy.createGestureHandler(type, tag, {});
   }
 
-  useEffect(() => {
-    return () => {
-      NativeProxy.dropGestureHandler(tag);
-    };
-  }, [type, tag]);
-
-  useEffect(() => {
-    const preparedConfig = prepareConfigForNativeSide(type, config);
-    NativeProxy.setGestureHandlerConfig(tag, preparedConfig);
-
-    bindSharedValues(config, tag);
-
-    return () => {
-      unbindSharedValues(config, tag);
-    };
-  }, [tag, config, type]);
-
-  return useMemo(
-    (): SingleGesture<THandlerData, TConfig> => ({
+  const gesture = useMemo(
+    () => ({
       tag,
       type,
       config,
@@ -121,4 +109,27 @@ export function useGesture<THandlerData, TConfig>(
       gestureRelations,
     ]
   );
+
+  useEffect(() => {
+    return () => {
+      NativeProxy.dropGestureHandler(tag);
+      scheduleFlushOperations();
+    };
+  }, [type, tag]);
+
+  useEffect(() => {
+    const preparedConfig = prepareConfigForNativeSide(type, config);
+    NativeProxy.setGestureHandlerConfig(tag, preparedConfig);
+    scheduleFlushOperations();
+
+    bindSharedValues(config, tag);
+    registerGesture(tag, gesture);
+
+    return () => {
+      unbindSharedValues(config, tag);
+      unregisterGesture(tag);
+    };
+  }, [tag, config, type, gesture]);
+
+  return gesture;
 }
