@@ -40,7 +40,7 @@ export function useMemoizedGestureCallbacks<THandlerData>(
   );
 }
 
-export function getHandler<THandlerData>(
+function getHandler<THandlerData>(
   type: CALLBACK_TYPE,
   callbacks: GestureCallbacks<THandlerData>
 ) {

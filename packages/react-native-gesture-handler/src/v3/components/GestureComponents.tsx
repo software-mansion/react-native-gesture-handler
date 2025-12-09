@@ -20,7 +20,7 @@ import createNativeWrapper from '../createNativeWrapper';
 
 import { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { NativeWrapperProps } from '../hooks/utils';
-import { DetectorType } from '../detectors';
+import { GestureDetectorType } from '../detectors';
 import { NativeGesture } from '../hooks/gestures/native/useNativeGesture';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
@@ -30,7 +30,7 @@ export const RefreshControl = createNativeWrapper(
     disallowInterruption: true,
     shouldCancelWhenOutside: false,
   },
-  DetectorType.Virtual
+  GestureDetectorType.Virtual
 );
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -42,7 +42,7 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
     disallowInterruption: true,
     shouldCancelWhenOutside: false,
   },
-  DetectorType.Intercepting
+  GestureDetectorType.Intercepting
 );
 
 export const ScrollView = (

@@ -93,13 +93,13 @@ export function prepareConfigForNativeSide<THandlerData, TConfig>(
   return filteredConfig;
 }
 
-export function cloneConfig<THandlerData, TConfig>(
+function cloneConfig<THandlerData, TConfig>(
   config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>
 ): BaseGestureConfig<THandlerData, TConfig> {
   return { ...config } as BaseGestureConfig<THandlerData, TConfig>;
 }
 
-export function remapProps<
+function remapProps<
   TConfig extends object,
   TInternalConfig extends Record<string, unknown>,
 >(
