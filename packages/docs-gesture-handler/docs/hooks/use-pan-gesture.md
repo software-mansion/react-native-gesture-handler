@@ -34,9 +34,15 @@ A continuous gesture that can recognize a panning (dragging) gesture and track i
 
 The gesture [activates](/docs/fundamentals/states-events#active) when a finger is placed on the screen and moved some initial distance.
 
-Configurations such as a [minimum initial distance](#mindistance), specific vertical or horizontal pan detection and [number of fingers](#minpointers) required for activation (allowing for multifinger swipes) may be specified.
+Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and number of fingers required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
+
+  <div className={appearOnMobile} style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+    </video>
+  </div>
 
 ## Example
 
