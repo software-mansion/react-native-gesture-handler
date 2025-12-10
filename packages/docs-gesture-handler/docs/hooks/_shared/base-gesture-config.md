@@ -64,7 +64,11 @@ testID: string;
 
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
-### `cancelsTouchesInView(value)` (**iOS only**)
+### cancelsTouchesInView (**iOS only**)
+
+```ts
+cancelsTouchesInView: boolean | SharedValue<boolean>;
+```
 
 Accepts a boolean value.
 When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](/docs/fundamentals/states-events#active).

@@ -34,7 +34,7 @@ A continuous gesture that can recognize a panning (dragging) gesture and track i
 
 The gesture [activates](/docs/fundamentals/states-events#active) when a finger is placed on the screen and moved some initial distance.
 
-Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](/docs/gestures/pan-gesture#minpointersvalue-number) required for activation (allowing for multifinger swipes) may be specified.
+Configurations such as a [minimum initial distance](#mindistance), specific vertical or horizontal pan detection and [number of fingers](#minpointers) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
 
@@ -104,7 +104,7 @@ This applies also to many platform native components that handle touch even if n
 
 On Android, the default behavior for native components like scroll view, pager views or drawers is different and hence gesture defaults to that when it comes to pan handling.
 The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
-This behavior can be changed on Android using [`averageTouches`](#averagetouchesvalue-boolean-android-only) flag.
+This behavior can be changed on Android using [`averageTouches`](#averagetouches-android-only) flag.
 
 Note that on both Android and iOS when the additional finger is placed on the screen that translation prop is not affected even though the position of the pointer being tracked might have changed.
 Therefore it is safe to rely on translation most of the time as it only reflects the movement that happens regardless of how many fingers are placed on the screen and if that number changes over time.

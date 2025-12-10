@@ -1,15 +1,3 @@
-```ts
-type GestureTouchEvent = {
-  handlerTag: number;
-  numberOfTouches: number;
-  state: ValueOf<typeof State>;
-  eventType: TouchEventType;
-  allTouches: TouchData[];
-  changedTouches: TouchData[];
-  pointerType: PointerType;
-};
-```
-
 ### Callbacks common to all gestures:
 
 ### onBegin
