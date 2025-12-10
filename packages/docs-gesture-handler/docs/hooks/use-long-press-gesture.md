@@ -26,8 +26,8 @@ import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPre
 </div>
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
-import BaseEventConfig from './\_shared/base-gesture-config.md';
-import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
+import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.md';
 
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
@@ -122,11 +122,11 @@ enum MouseButton {
 
 Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
-<BaseEventConfig />
+<BaseGestureConfig />
 
 ## Callbacks
 
-<BaseEventCallbacks />
+<BaseGestureCallbacks />
 
 ## Event data
 

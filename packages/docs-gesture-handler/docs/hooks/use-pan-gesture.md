@@ -14,6 +14,7 @@ import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBas
 
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
@@ -236,6 +237,7 @@ enum MouseButton {
 Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
 <BaseGestureConfig />
+<BaseContinuousGestureConfig />
 
 ## Callbacks
 
