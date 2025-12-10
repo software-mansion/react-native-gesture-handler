@@ -57,6 +57,7 @@ export type CommonGestureConfig = {
     mouseButton?: MouseButton;
     enableContextMenu?: boolean;
     touchAction?: TouchAction;
+    cancelsTouchesInView?: boolean;
   },
   HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
 >;

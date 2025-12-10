@@ -59,7 +59,10 @@ export type PanGesture = SingleGesture<
 const PanPropsMapping = new Map<
   keyof PanGestureProperties,
   keyof PanGestureInternalProperties
->([['minDistance', 'minDist']]);
+>([
+  ['minDistance', 'minDist'],
+  ['averageTouches', 'avgTouches'],
+]);
 
 function validateOffsetsArray(
   offsets: WithSharedValue<number | [number, number] | undefined>,

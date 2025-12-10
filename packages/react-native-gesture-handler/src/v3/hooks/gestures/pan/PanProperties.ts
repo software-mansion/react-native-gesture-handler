@@ -8,7 +8,7 @@ type CommonPanGestureProperties = {
   /**
    * Android only.
    */
-  avgTouches?: boolean;
+  averageTouches?: boolean;
 
   /**
    * Enables two-finger gestures on supported devices, for example iPads with
@@ -84,9 +84,10 @@ export type PanGestureExternalProperties = CommonPanGestureProperties &
 
 export type PanGestureNativeProperties = Omit<
   CommonPanGestureProperties,
-  'minDistance'
+  'minDistance' | 'averageTouches'
 > & {
   minDist?: number;
+  avgTouches?: boolean;
   activeOffsetYStart?: number;
   activeOffsetYEnd?: number;
   activeOffsetXStart?: number;
