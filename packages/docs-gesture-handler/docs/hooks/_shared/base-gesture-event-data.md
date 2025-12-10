@@ -19,7 +19,7 @@ enum PointerType {
   TOUCH,
   STYLUS,
   MOUSE,
-  KEY, // e.g. keyboard
+  KEY,
   OTHER,
 }
 ```
