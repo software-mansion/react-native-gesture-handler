@@ -1,0 +1,172 @@
+---
+id: use-hover-gesture
+title: Hover gesture
+sidebar_label: Hover gesture
+sidebar_position: 7
+---
+
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
+import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<HoverGestureBasic/>}
+    src={HoverGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</div>
+
+import BaseEventData from './\_shared/base-gesture-event-data.md';
+import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.md';
+import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
+
+A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
+
+On iOS additional visual effects may be configured.
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+## Reference
+
+```jsx
+import { View, StyleSheet } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useHoverGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const hoverGesture = useHoverGesture({});
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={hoverGesture}>
+        <View style={styles.box} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
+```
+
+## Remarks
+
+- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/pan-gesture).
+
+## Config
+
+### Properties specific to `HoverGesture`:
+
+### effect (iOS only)
+
+```ts
+effect: HoverEffect | SharedValue<HoverEffect>;
+```
+
+```ts
+enum HoverEffect {
+  NONE = 0,
+  LIFT = 1,
+  HIGHLIGHT = 2,
+}
+```
+
+Visual effect applied to the view while the view is hovered. Defaults to `HoverEffect.None`
+
+<BaseGestureConfig />
+
+## Callbacks
+
+<BaseGestureCallbacks />
+<BaseContinuousGestureCallbacks />
+
+## Event data
+
+### Event attributes specific to `HoverGesture`:
+
+### x
+
+```ts
+x: number;
+```
+
+X coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate of the current position of the pointer relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate of the current position of the pointer relative to the window. The value is expressed in point units. It is recommended to use it instead of [`x`](#x) in cases when the original view can be transformed as an effect of the gesture.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate of the current position of the pointer relative to the window. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
+
+### stylusData
+
+```ts
+stylusData: StylusData;
+```
+
+```ts
+interface StylusData {
+  tiltX: number;
+  tiltY: number;
+  azimuthAngle: number;
+  altitudeAngle: number;
+  pressure: number;
+}
+```
+
+Object that contains additional information about `stylus`. It consists of the following fields:
+
+- [`tiltX`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltX) - angle in degrees between the Y-Z plane of the stylus and the screen.
+- [`tiltY`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltY) - angle in degrees between the X-Z plane of the stylus and the screen.
+- [`altitudeAngle`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/altitudeAngle) - angle between stylus axis and the X-Y plane of a device screen.
+- [`azimuthAngle`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/azimuthAngle) - angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis.
+- [`pressure`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pressure) - indicates the normalized pressure of the stylus.
+
+<BaseEventData />
