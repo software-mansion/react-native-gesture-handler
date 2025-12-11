@@ -227,3 +227,57 @@ export type HoverGestureHandlerEventPayload = {
    */
   stylusData?: StylusData;
 };
+
+export type ScrollGestureHandlerEventPayload = {
+  /**
+   * X coordinate of the current position of the pointer relative to the view
+   * attached to the handler. Expressed in point units.
+   */
+  x: number;
+
+  /**
+   * Y coordinate of the current position of the pointer relative to the view
+   * attached to the handler. Expressed in point units.
+   */
+  y: number;
+
+  /**
+   * X coordinate of the current position of the pointer relative to the window.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `x` in cases when the original view can be transformed as an
+   * effect of the gesture.
+   */
+  absoluteX: number;
+
+  /**
+   * Y coordinate of the current position of the pointer relative to the window.
+   * The value is expressed in point units. It is recommended to use it instead
+   * of `y` in cases when the original view can be transformed as an
+   * effect of the gesture.
+   */
+  absoluteY: number;
+
+  /**
+   * Accumulated horizontal scroll delta since the gesture started.
+   * Positive values indicate scrolling right.
+   */
+  scrollX: number;
+
+  /**
+   * Accumulated vertical scroll delta since the gesture started.
+   * Positive values indicate scrolling up/away from user.
+   */
+  scrollY: number;
+
+  /**
+   * Horizontal scroll delta from the current scroll event.
+   * Positive values indicate scrolling right.
+   */
+  deltaX: number;
+
+  /**
+   * Vertical scroll delta from the current scroll event.
+   * Positive values indicate scrolling up/away from user.
+   */
+  deltaY: number;
+};
