@@ -1,9 +1,8 @@
 import EmptyExample from '../empty';
 
 import Lock from './v3_api/lock/lock';
-import V3Fling from './v3_api/fling/fling';
 import LogicDetectorExample from './v3_api/svg/svg';
-import V3Hover from './v3_api/hover/index';
+import V3HoverIcons from './v3_api/hover/index';
 import V3Overlap from './v3_api/overlap/index';
 import V3Velocity from './v3_api/velocity_test/index';
 import V3BottomSheet from './v3_api/bottom_sheet/index';
@@ -19,19 +18,38 @@ import ScrollViewExample from './components/scrollview';
 import ButtonsExample from './components/buttons';
 import SwitchTextInputExample from './components/switchAndInput';
 
+import LongPressExample from './simple/longPress';
+import TapExample from './simple/tap';
+import HoverExample from './simple/hover';
+import FlingExample from './simple/fling';
+import PinchExample from './simple/pinch';
+import RotationExample from './simple/rotation';
+import PanExample from './simple/pan';
 import { ExamplesSection } from '../common';
+
 export const NEW_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',
     data: [{ name: 'Empty Example', component: EmptyExample }],
   },
   {
+    sectionTitle: 'Simple Gestures',
+    data: [
+      { name: 'Fling', component: FlingExample },
+      { name: 'Tap', component: TapExample },
+      { name: 'LongPress', component: LongPressExample },
+      { name: 'Hover', component: HoverExample },
+      { name: 'Pinch', component: PinchExample },
+      { name: 'Rotation', component: RotationExample },
+      { name: 'Pan', component: PanExample },
+    ],
+  },
+  {
     sectionTitle: 'General',
     data: [
-      { name: 'Fling', component: V3Fling },
       { name: 'Svg', component: LogicDetectorExample },
       { name: 'Lock', component: Lock },
-      { name: 'Hover', component: V3Hover },
+      { name: 'HoverIcons', component: V3HoverIcons },
       { name: 'Overlap', component: V3Overlap },
       { name: 'Velocity Test', component: V3Velocity },
       { name: 'Bottom Sheet', component: V3BottomSheet },
