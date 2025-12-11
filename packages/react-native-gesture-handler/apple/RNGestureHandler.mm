@@ -280,7 +280,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #endif
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer
+- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
@@ -292,6 +292,20 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 
   _state = [self recognizerState];
+
+  // From iOS 26.0 when recognizers are reset, their state is also changed to UIGestureRecognizerStatePossible.
+  // This means that our logic that relies on sending events in `reset` methods doesn't work properly. The bug that
+  // `onFinalize` was not send after `onBegin` happened because both recognizer states, `Began` and `Possible`, are
+  // mapped to our internal `Began` state. Because of that, _lastState had the same value as `_state` and callbacks were
+  // not triggered.
+  //
+  // While this solution is not great, we decided to check whether sending events was triggered from `reset` method.
+  // This way we can detect double Began mapping by checking previous sent state and current state of recognizer.
+  if (fromReset && _lastState == RNGestureHandlerStateBegan &&
+      self.recognizer.state == UIGestureRecognizerStatePossible) {
+    _state = RNGestureHandlerStateFailed;
+  }
+
   [self handleGesture:recognizer inState:_state];
 }
 
