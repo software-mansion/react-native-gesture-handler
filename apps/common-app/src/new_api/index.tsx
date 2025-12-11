@@ -10,6 +10,7 @@ import V3ChatHeads from './v3_api/chat_heads/index';
 import V3HoverableIcons from './v3_api/hoverable_icons/index';
 import V3Camera from './v3_api/camera/index';
 import V3NestedText from './v3_api/nested_text/nested_text';
+import SharedValue from './v3_api/shared_value';
 
 import Swipeable from './components/swipeable/index';
 import ReanimatedDrawerLayout from './components/drawer';
@@ -45,9 +46,16 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     ],
   },
   {
-    sectionTitle: 'General',
+    sectionTitle: 'Showcase',
     data: [
       { name: 'Svg', component: LogicDetectorExample },
+      { name: 'Nested Text', component: V3NestedText },
+      { name: 'Shared Value', component: SharedValue },
+    ],
+  },
+  {
+    sectionTitle: 'General',
+    data: [
       { name: 'Lock', component: Lock },
       { name: 'HoverIcons', component: V3HoverIcons },
       { name: 'Overlap', component: V3Overlap },
@@ -56,7 +64,6 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Chat Heads', component: V3ChatHeads },
       { name: 'Hoverable Icons', component: V3HoverableIcons },
       { name: 'Camera', component: V3Camera },
-      { name: 'Nested Text', component: V3NestedText },
     ],
   },
   {

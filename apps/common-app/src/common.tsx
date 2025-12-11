@@ -108,6 +108,7 @@ export const Feedback = forwardRef<FeedbackHandle, FeedbackProps>(
 
     const displayMessage = useCallback(
       (message: string) => {
+        console.log(message);
         if (timerRef.current) {
           clearTimeout(timerRef.current);
         }
