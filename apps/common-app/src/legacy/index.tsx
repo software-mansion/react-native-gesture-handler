@@ -45,7 +45,7 @@ import HoverableIcons from './v2_api/hoverable_icons';
 import VelocityTest from './v2_api/velocityTest';
 import Pressable from './v2_api/pressable';
 
-import EmptyExample from './empty/EmptyExample';
+import EmptyExample from '../common/empty';
 import RectButtonBorders from './release_tests/rectButton';
 
 import MacosDraggable from './simple/draggable';

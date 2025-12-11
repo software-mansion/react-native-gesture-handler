@@ -1,5 +1,3 @@
-import EmptyExample from '../empty';
-
 import Lock from './v3_api/lock/lock';
 import LogicDetectorExample from './v3_api/svg/svg';
 import V3HoverIcons from './v3_api/hover/index';
@@ -11,6 +9,7 @@ import V3HoverableIcons from './v3_api/hoverable_icons/index';
 import V3Camera from './v3_api/camera/index';
 import V3NestedText from './v3_api/nested_text/nested_text';
 import SharedValue from './v3_api/shared_value';
+import MouseButtonsExample from './v3_api/mouse_buttons';
 
 import Swipeable from './components/swipeable/index';
 import ReanimatedDrawerLayout from './components/drawer';
@@ -27,6 +26,7 @@ import PinchExample from './simple/pinch';
 import RotationExample from './simple/rotation';
 import PanExample from './simple/pan';
 import { ExamplesSection } from '../common';
+import EmptyExample from '../common/empty';
 
 export const NEW_EXAMPLES: ExamplesSection[] = [
   {
@@ -64,8 +64,10 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Chat Heads', component: V3ChatHeads },
       { name: 'Hoverable Icons', component: V3HoverableIcons },
       { name: 'Camera', component: V3Camera },
+      { name: 'Mouse Buttons', component: MouseButtonsExample },
     ],
   },
+
   {
     sectionTitle: 'Components',
     data: [
