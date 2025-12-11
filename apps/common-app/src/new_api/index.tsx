@@ -27,7 +27,7 @@ import RotationExample from './simple/rotation';
 import PanExample from './simple/pan';
 import { ExamplesSection } from '../common';
 import EmptyExample from '../common/empty';
-
+import AnimatedExample from './v3_api/animated';
 import StylusDataExample from './platform_specific/stylus_data';
 import ContextMenuExample from './platform_specific/context_menu';
 
@@ -56,6 +56,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Shared Value', component: SharedValue },
       { name: 'Bottom Sheet', component: V3BottomSheet },
       { name: 'Overlap', component: V3Overlap },
+      { name: 'Animated', component: AnimatedExample },
     ],
   },
   {
