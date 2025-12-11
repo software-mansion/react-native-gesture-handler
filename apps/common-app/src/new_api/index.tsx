@@ -27,6 +27,7 @@ import RotationExample from './simple/rotation';
 import PanExample from './simple/pan';
 import { ExamplesSection } from '../common';
 import EmptyExample from '../common/empty';
+import StylusDataExample from './v3_api/stylus_data';
 
 export const NEW_EXAMPLES: ExamplesSection[] = [
   {
@@ -52,6 +53,10 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Nested Text', component: V3NestedText },
       { name: 'Shared Value', component: SharedValue },
     ],
+  },
+  {
+    sectionTitle: 'Platform Specific Features',
+    data: [{ name: 'Stylus Data', component: StylusDataExample }],
   },
   {
     sectionTitle: 'General',
