@@ -1,3 +1,5 @@
+import { Directions } from '../../../../Directions';
+
 export type FlingGestureNativeProperties = {
   /**
    * Expressed allowed direction of movement. It's possible to pass one or many
@@ -13,7 +15,7 @@ export type FlingGestureNativeProperties = {
    * direction={Directions.DOWN}
    * ```
    */
-  direction?: number;
+  direction?: Directions;
 
   /**
    * Determine exact number of points required to handle the fling gesture.

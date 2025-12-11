@@ -1,3 +1,4 @@
+import { Directions } from '../../../../Directions';
 import {
   BaseDiscreteGestureConfig,
   ExcludeInternalConfigProps,
@@ -17,7 +18,10 @@ type FlingHandlerData = {
   absoluteY: number;
 };
 
-type FlingGestureProperties = WithSharedValue<FlingGestureNativeProperties>;
+type FlingGestureProperties = WithSharedValue<
+  FlingGestureNativeProperties,
+  Directions
+>;
 
 type FlingGestureInternalConfig = BaseDiscreteGestureConfig<
   FlingHandlerData,
