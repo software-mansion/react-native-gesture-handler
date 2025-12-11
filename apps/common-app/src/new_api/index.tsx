@@ -27,7 +27,9 @@ import RotationExample from './simple/rotation';
 import PanExample from './simple/pan';
 import { ExamplesSection } from '../common';
 import EmptyExample from '../common/empty';
-import StylusDataExample from './v3_api/stylus_data';
+
+import StylusDataExample from './platform_specific/stylus_data';
+import ContextMenuExample from './platform_specific/context_menu';
 
 export const NEW_EXAMPLES: ExamplesSection[] = [
   {
@@ -52,24 +54,27 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Svg', component: LogicDetectorExample },
       { name: 'Nested Text', component: V3NestedText },
       { name: 'Shared Value', component: SharedValue },
+      { name: 'Bottom Sheet', component: V3BottomSheet },
+      { name: 'Overlap', component: V3Overlap },
     ],
   },
   {
     sectionTitle: 'Platform Specific Features',
-    data: [{ name: 'Stylus Data', component: StylusDataExample }],
+    data: [
+      { name: 'Stylus Data', component: StylusDataExample },
+      { name: 'Context Menu', component: ContextMenuExample },
+      { name: 'HoverIcons', component: V3HoverIcons },
+      { name: 'Hoverable Icons', component: V3HoverableIcons },
+      { name: 'Mouse Buttons', component: MouseButtonsExample },
+    ],
   },
   {
-    sectionTitle: 'General',
+    sectionTitle: 'Complicated',
     data: [
       { name: 'Lock', component: Lock },
-      { name: 'HoverIcons', component: V3HoverIcons },
-      { name: 'Overlap', component: V3Overlap },
       { name: 'Velocity Test', component: V3Velocity },
-      { name: 'Bottom Sheet', component: V3BottomSheet },
       { name: 'Chat Heads', component: V3ChatHeads },
-      { name: 'Hoverable Icons', component: V3HoverableIcons },
       { name: 'Camera', component: V3Camera },
-      { name: 'Mouse Buttons', component: MouseButtonsExample },
     ],
   },
 

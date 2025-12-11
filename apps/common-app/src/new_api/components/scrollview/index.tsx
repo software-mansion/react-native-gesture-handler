@@ -1,3 +1,4 @@
+import { COLORS } from '../../../common';
 import React, { useRef, useState } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import { ScrollView, RefreshControl } from 'react-native-gesture-handler';
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   item: {
-    backgroundColor: '#f9c2ff',
+    backgroundColor: COLORS.PURPLE,
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
