@@ -1,0 +1,62 @@
+import { COLORS } from '../../../common';
+import { StyleSheet, Text } from 'react-native';
+import {
+  BaseButton,
+  BorderlessButton,
+  GestureHandlerRootView,
+  RectButton,
+} from 'react-native-gesture-handler';
+
+type ButtonWrapperProps = {
+  ButtonComponent:
+    | typeof BaseButton
+    | typeof RectButton
+    | typeof BorderlessButton;
+
+  color: string;
+};
+
+function ButtonWrapper({ ButtonComponent, color }: ButtonWrapperProps) {
+  return (
+    <ButtonComponent
+      style={[styles.button, { backgroundColor: color }]}
+      onPress={() => console.log(`[${ButtonComponent.name}] onPress`)}
+      onLongPress={() => {
+        console.log(`[${ButtonComponent.name}] onLongPress`);
+      }}>
+      <Text style={styles.buttonText}>{ButtonComponent.name}</Text>
+    </ButtonComponent>
+  );
+}
+
+export default function ButtonsExample() {
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <ButtonWrapper ButtonComponent={BaseButton} color={COLORS.KINDA_BLUE} />
+      <ButtonWrapper ButtonComponent={RectButton} color={COLORS.NAVY} />
+      <ButtonWrapper ButtonComponent={BorderlessButton} color={COLORS.PURPLE} />
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  button: {
+    width: 200,
+    height: 50,
+    borderRadius: 15,
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+});

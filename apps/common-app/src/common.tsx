@@ -6,7 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Text, StyleSheet, ViewStyle, StyleProp, View } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  ViewStyle,
+  StyleProp,
+  View,
+  Platform,
+} from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
@@ -14,6 +21,17 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+
+export interface Example {
+  name: string;
+  component: React.ComponentType;
+  unsupportedPlatforms?: Set<typeof Platform.OS>;
+}
+
+export interface ExamplesSection {
+  sectionTitle: string;
+  data: Example[];
+}
 
 const styles = StyleSheet.create({
   lipsum: {
