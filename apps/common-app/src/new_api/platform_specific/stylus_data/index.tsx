@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const GH = require('../../../legacy/v2_api/hoverable_icons/gh.png');
+const GH = require('../../../common_assets/hoverable_icons/gh.png');
 
 export default function StylusData() {
   const scaleFactor = useSharedValue(0);

@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Circle, Svg } from 'react-native-svg';
-import AnimatedCameraView from './AnimatedCameraView';
+import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
 
 const FILTERS = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
 const CAROUSEL_SIZE = 100;

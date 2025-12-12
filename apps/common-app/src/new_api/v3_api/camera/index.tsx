@@ -19,7 +19,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Circle, Svg } from 'react-native-svg';
-import AnimatedCameraView from '../../../legacy/v2_api/camera/AnimatedCameraView';
+import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
 import { COLORS } from '../../../common';
 
 const FILTERS = [

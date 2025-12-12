@@ -13,15 +13,15 @@ import Animated, {
 import { Platform, StyleSheet } from 'react-native';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const SVG = require('./svg.png');
+const SVG = require('../../../common_assets/hoverable_icons/svg.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const FREEZE = require('./freeze.png');
+const FREEZE = require('../../../common_assets/hoverable_icons/freeze.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const REA = require('./rea.png');
+const REA = require('../../../common_assets/hoverable_icons/rea.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const GH = require('./gh.png');
+const GH = require('../../../common_assets/hoverable_icons/gh.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const SCREENS = require('./screens.png');
+const SCREENS = require('../../../common_assets/hoverable_icons/screens.png');
 
 const images = [GH, REA, SCREENS, SVG, FREEZE];
 const SIZE = 100;

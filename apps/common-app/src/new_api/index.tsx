@@ -26,10 +26,10 @@ import PinchExample from './simple/pinch';
 import RotationExample from './simple/rotation';
 import PanExample from './simple/pan';
 import { ExamplesSection } from '../common';
-import EmptyExample from '../common/empty';
 import AnimatedExample from './v3_api/animated';
 import StylusDataExample from './platform_specific/stylus_data';
 import ContextMenuExample from './platform_specific/context_menu';
+import EmptyExample from '../empty';
 
 export const NEW_EXAMPLES: ExamplesSection[] = [
   {

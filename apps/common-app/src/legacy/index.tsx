@@ -45,7 +45,6 @@ import HoverableIcons from './v2_api/hoverable_icons';
 import VelocityTest from './v2_api/velocityTest';
 import Pressable from './v2_api/pressable';
 
-import EmptyExample from '../common/empty';
 import RectButtonBorders from './release_tests/rectButton';
 
 import MacosDraggable from './simple/draggable';
@@ -55,6 +54,7 @@ import ManualExample from './simple/manual';
 import SimpleFling from './simple/fling';
 
 import { ExamplesSection } from '../common';
+import EmptyExample from '../empty';
 export const OLD_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',

@@ -13,15 +13,15 @@ import Animated, {
 import { Platform, StyleSheet } from 'react-native';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const SVG = require('../../../legacy/v2_api/hoverable_icons/svg.png');
+const SVG = require('../../../common_assets/hoverable_icons/svg.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const FREEZE = require('../../../legacy/v2_api/hoverable_icons/freeze.png');
+const FREEZE = require('../../../common_assets/hoverable_icons/freeze.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const REA = require('../../../legacy/v2_api/hoverable_icons/rea.png');
+const REA = require('../../../common_assets/hoverable_icons/rea.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const GH = require('../../../legacy/v2_api/hoverable_icons/gh.png');
+const GH = require('../../../common_assets/hoverable_icons/gh.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
-const SCREENS = require('../../../legacy/v2_api/hoverable_icons/screens.png');
+const SCREENS = require('../../../common_assets/hoverable_icons/screens.png');
 
 const images = [GH, REA, SCREENS, SVG, FREEZE];
 const SIZE = 100;
