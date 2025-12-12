@@ -67,7 +67,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     data: [
       { name: 'Stylus Data', component: StylusDataExample },
       { name: 'Context Menu', component: ContextMenuExample },
-      { name: 'HoverIcons', component: HoverIconsExample },
+      { name: 'Hover Icons', component: HoverIconsExample },
       { name: 'Hoverable Icons', component: HoverableIconsExample },
       { name: 'Mouse Buttons', component: MouseButtonsExample },
     ],

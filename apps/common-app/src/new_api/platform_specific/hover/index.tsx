@@ -118,12 +118,14 @@ const styles = StyleSheet.create({
     elevation: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 20,
   },
   childBox: {
     width: 100,
     height: 100,
     backgroundColor: COLORS.GREEN,
     elevation: 8,
+    borderRadius: 20,
   },
   absoluteContainer: {
     width: 200,
@@ -135,17 +137,20 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     backgroundColor: COLORS.RED,
+    borderRadius: 20,
   },
   absoluteNavy: {
     width: 200,
     height: 200,
     backgroundColor: COLORS.NAVY,
     position: 'absolute',
+    borderRadius: 20,
   },
   absoluteGreen: {
     width: 100,
     height: 100,
     backgroundColor: COLORS.GREEN,
     position: 'absolute',
+    borderRadius: 20,
   },
 });

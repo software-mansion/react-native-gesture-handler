@@ -58,5 +58,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
+    borderRadius: 20,
   },
 });
