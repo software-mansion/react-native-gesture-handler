@@ -77,7 +77,7 @@ export const ScrollView = (
     <GHScrollView
       {...rest}
       ref={props.ref}
-      updateGesture_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
+      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={updateGesture}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
         refreshControl
