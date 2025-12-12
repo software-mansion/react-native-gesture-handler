@@ -1,34 +1,37 @@
-import Lock from './v3_api/lock/lock';
-import LogicDetectorExample from './v3_api/svg/svg';
-import V3HoverIcons from './v3_api/hover/index';
-import V3Overlap from './v3_api/overlap/index';
-import V3Velocity from './v3_api/velocity_test/index';
-import V3BottomSheet from './v3_api/bottom_sheet/index';
-import V3ChatHeads from './v3_api/chat_heads/index';
-import V3HoverableIcons from './v3_api/hoverable_icons/index';
-import V3Camera from './v3_api/camera/index';
-import V3NestedText from './v3_api/nested_text/nested_text';
-import SharedValue from './v3_api/shared_value';
-import MouseButtonsExample from './v3_api/mouse_buttons';
+import AnimatedExample from './showcase/animated';
+import BottomSheetExample from './showcase/bottom_sheet';
+import NestedTextExample from './showcase/nested_text/nested_text';
+import OverlapExample from './showcase/overlap';
+import SharedValueExample from './showcase/shared_value';
+import SvgExample from './showcase/svg';
 
-import Swipeable from './components/swipeable/index';
+import CameraExample from './complicated/camera';
+import ChatHeadsExample from './complicated/chat_heads';
+import LockExample from './complicated/lock';
+import VelocityExample from './complicated/velocity_test';
+
+import ContextMenuExample from './platform_specific/context_menu';
+import HoverIconsExample from './platform_specific/hover';
+import HoverableIconsExample from './platform_specific/hoverable_icons';
+import MouseButtonsExample from './platform_specific/mouse_buttons';
+import StylusDataExample from './platform_specific/stylus_data';
+
+import FlingExample from './simple/fling';
+import HoverExample from './simple/hover';
+import LongPressExample from './simple/longPress';
+import PanExample from './simple/pan';
+import PinchExample from './simple/pinch';
+import RotationExample from './simple/rotation';
+import TapExample from './simple/tap';
+
+import ButtonsExample from './components/buttons';
 import ReanimatedDrawerLayout from './components/drawer';
 import FlatListExample from './components/flatlist';
 import ScrollViewExample from './components/scrollview';
-import ButtonsExample from './components/buttons';
+import Swipeable from './components/swipeable/index';
 import SwitchTextInputExample from './components/switchAndInput';
 
-import LongPressExample from './simple/longPress';
-import TapExample from './simple/tap';
-import HoverExample from './simple/hover';
-import FlingExample from './simple/fling';
-import PinchExample from './simple/pinch';
-import RotationExample from './simple/rotation';
-import PanExample from './simple/pan';
 import { ExamplesSection } from '../common';
-import AnimatedExample from './v3_api/animated';
-import StylusDataExample from './platform_specific/stylus_data';
-import ContextMenuExample from './platform_specific/context_menu';
 import EmptyExample from '../empty';
 
 export const NEW_EXAMPLES: ExamplesSection[] = [
@@ -51,11 +54,11 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Showcase',
     data: [
-      { name: 'Svg', component: LogicDetectorExample },
-      { name: 'Nested Text', component: V3NestedText },
-      { name: 'Shared Value', component: SharedValue },
-      { name: 'Bottom Sheet', component: V3BottomSheet },
-      { name: 'Overlap', component: V3Overlap },
+      { name: 'Svg', component: SvgExample },
+      { name: 'Nested Text', component: NestedTextExample },
+      { name: 'Shared Value', component: SharedValueExample },
+      { name: 'Bottom Sheet', component: BottomSheetExample },
+      { name: 'Overlap', component: OverlapExample },
       { name: 'Animated', component: AnimatedExample },
     ],
   },
@@ -64,18 +67,18 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     data: [
       { name: 'Stylus Data', component: StylusDataExample },
       { name: 'Context Menu', component: ContextMenuExample },
-      { name: 'HoverIcons', component: V3HoverIcons },
-      { name: 'Hoverable Icons', component: V3HoverableIcons },
+      { name: 'HoverIcons', component: HoverIconsExample },
+      { name: 'Hoverable Icons', component: HoverableIconsExample },
       { name: 'Mouse Buttons', component: MouseButtonsExample },
     ],
   },
   {
     sectionTitle: 'Complicated',
     data: [
-      { name: 'Lock', component: Lock },
-      { name: 'Velocity Test', component: V3Velocity },
-      { name: 'Chat Heads', component: V3ChatHeads },
-      { name: 'Camera', component: V3Camera },
+      { name: 'Lock', component: LockExample },
+      { name: 'Velocity Test', component: VelocityExample },
+      { name: 'Chat Heads', component: ChatHeadsExample },
+      { name: 'Camera', component: CameraExample },
     ],
   },
 
