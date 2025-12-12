@@ -2,7 +2,6 @@ import { COLORS, Feedback } from '../../../common';
 import React, { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import {
-  GestureDetector,
   InterceptingGestureDetector,
   useTapGesture,
   VirtualGestureDetector,
@@ -31,23 +30,23 @@ function OverlapSiblings() {
   const feedbackRef = useRef<{ showMessage: (msg: string) => void }>(null);
   const [elevated, setElevated] = React.useState('');
 
-  const tapRed = useTapGesture({
+  const tapPurple = useTapGesture({
     onDeactivate: (_e, success) => {
       'worklet';
       if (success) {
-        feedbackRef.current?.showMessage('Tapped purple');
         setElevated('purple');
+        feedbackRef.current?.showMessage('Tapped purple');
       }
     },
     disableReanimated: true,
   });
 
-  const tapGreen = useTapGesture({
+  const tapBlue = useTapGesture({
     onDeactivate: (_e, success) => {
       'worklet';
       if (success) {
-        feedbackRef.current?.showMessage('Tapped blue');
         setElevated('blue');
+        feedbackRef.current?.showMessage('Tapped blue');
       }
     },
     disableReanimated: true,
@@ -57,14 +56,16 @@ function OverlapSiblings() {
     <View style={styles.subcontainer}>
       <View style={styles.row}>
         <Text style={styles.text}>Overlap Siblings</Text>
-        <View style={{ width: 225 }}>
-          <GestureDetector gesture={tapRed}>
-            <Box color={COLORS.PURPLE} elevated={elevated === 'purple'} />
-          </GestureDetector>
-          <GestureDetector gesture={tapGreen}>
-            <Box color={COLORS.NAVY} overlap elevated={elevated === 'blue'} />
-          </GestureDetector>
-        </View>
+        <InterceptingGestureDetector>
+          <View style={{ width: 225 }}>
+            <VirtualGestureDetector gesture={tapPurple}>
+              <Box color={COLORS.PURPLE} elevated={elevated === 'purple'} />
+            </VirtualGestureDetector>
+            <VirtualGestureDetector gesture={tapBlue}>
+              <Box color={COLORS.NAVY} overlap elevated={elevated === 'blue'} />
+            </VirtualGestureDetector>
+          </View>
+        </InterceptingGestureDetector>
       </View>
       <Feedback ref={feedbackRef} />
     </View>
@@ -101,19 +102,22 @@ function OverlapParents() {
     <View style={styles.subcontainer}>
       <View style={styles.row}>
         <Text style={styles.text}>Overlap Child</Text>
-        <View style={{ width: 225 }}>
-          <InterceptingGestureDetector gesture={tapRed}>
-            <Box color={COLORS.PURPLE} elevated={elevated === 'purple'}>
-              <VirtualGestureDetector gesture={tapGreen}>
-                <Box
-                  color={COLORS.NAVY}
-                  overlap
-                  elevated={elevated === 'blue'}
-                />
-              </VirtualGestureDetector>
-            </Box>
-          </InterceptingGestureDetector>
-        </View>
+
+        <InterceptingGestureDetector>
+          <View style={{ width: 225 }}>
+            <VirtualGestureDetector gesture={tapRed}>
+              <Box color={COLORS.PURPLE} elevated={elevated === 'purple'}>
+                <VirtualGestureDetector gesture={tapGreen}>
+                  <Box
+                    color={COLORS.NAVY}
+                    overlap
+                    elevated={elevated === 'blue'}
+                  />
+                </VirtualGestureDetector>
+              </Box>
+            </VirtualGestureDetector>
+          </View>
+        </InterceptingGestureDetector>
       </View>
       <Feedback ref={feedbackRef} />
     </View>
@@ -145,6 +149,7 @@ const styles = StyleSheet.create({
     marginBottom: 60,
   },
   box: {
+    borderRadius: 20,
     width: 150,
     height: 150,
   },
