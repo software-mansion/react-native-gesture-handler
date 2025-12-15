@@ -241,22 +241,6 @@ Allows users to choose which mouse button should handler respond to. Arguments c
 
 ## Callbacks
 
-```ts
-type PanHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-  translationX: number;
-  translationY: number;
-  velocityX: number;
-  velocityY: number;
-  stylusData: StylusData;
-  changeX: number;
-  changeY: number;
-};
-```
-
 <BaseGestureCallbacks />
 <BaseContinuousGestureCallbacks />
 
