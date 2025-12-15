@@ -53,6 +53,7 @@ export type InternalConfigProps<THandlerData> = {
 export type CommonGestureConfig = {
   disableReanimated?: boolean;
   useAnimated?: boolean;
+  testID?: string;
 } & WithSharedValue<
   {
     runOnJS?: boolean;
@@ -64,6 +65,7 @@ export type CommonGestureConfig = {
     mouseButton?: MouseButton;
     enableContextMenu?: boolean;
     touchAction?: TouchAction;
+    cancelsTouchesInView?: boolean;
   },
   HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
 >;

@@ -1,8 +1,8 @@
 import type {
-  BaseButtonProps,
-  BorderlessButtonProps,
-  RawButtonProps,
-  RectButtonProps,
+  LegacyBaseButtonProps,
+  LegacyBorderlessButtonProps,
+  LegacyRawButtonProps,
+  LegacyRectButtonProps,
 } from '../components/GestureButtonsProps';
 import {
   GestureEvent,
@@ -94,8 +94,22 @@ export type FlingGestureHandlerProperties = FlingGestureHandlerProps;
  * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
  */
 export type ForceTouchGestureHandlerProperties = ForceTouchGestureHandlerProps;
+
 // Button props
-export type RawButtonProperties = RawButtonProps;
-export type BaseButtonProperties = BaseButtonProps;
-export type RectButtonProperties = RectButtonProps;
-export type BorderlessButtonProperties = BorderlessButtonProps;
+
+/**
+ * @deprecated Use RawButtonProperties instead
+ */
+export type LegacyRawButtonProperties = LegacyRawButtonProps;
+/**
+ * @deprecated Use BaseButtonProperties instead
+ */
+export type LegacyBaseButtonProperties = LegacyBaseButtonProps;
+/**
+ * @deprecated Use RectButtonProperties instead
+ */
+export type LegacyRectButtonProperties = LegacyRectButtonProps;
+/**
+ * @deprecated Use BorderlessButtonProperties instead
+ */
+export type LegacyBorderlessButtonProperties = LegacyBorderlessButtonProps;

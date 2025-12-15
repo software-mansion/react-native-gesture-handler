@@ -4,6 +4,12 @@ import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
 
+export enum GestureDetectorType {
+  Native,
+  Virtual,
+  Intercepting,
+}
+
 export interface NativeDetectorProps<THandlerData, TConfig> {
   children?: React.ReactNode;
   gesture: Gesture<THandlerData, TConfig>;
