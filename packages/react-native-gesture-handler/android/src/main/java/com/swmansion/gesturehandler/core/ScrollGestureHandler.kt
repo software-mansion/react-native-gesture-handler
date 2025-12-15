@@ -79,6 +79,16 @@ class ScrollGestureHandler(context: Context?) : GestureHandler() {
     lastScrollAbsoluteX = sourceEvent.rawX
     lastScrollAbsoluteY = sourceEvent.rawY
 
+    // Cancel the gesture if the pointer is outside the view bounds
+    if (!isWithinBounds(view, event.x, event.y)) {
+      if (state == STATE_ACTIVE) {
+        cancel()
+      } else if (state == STATE_BEGAN) {
+        fail()
+      }
+      return
+    }
+
     // AXIS_HSCROLL and AXIS_VSCROLL give the scroll delta
     // Positive AXIS_VSCROLL means scrolling up/away from user
     // Positive AXIS_HSCROLL means scrolling right
