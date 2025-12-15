@@ -4,12 +4,16 @@ import { ActionType } from '../../ActionType';
 import { PropsRef } from '../../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../../utils';
+import { TouchAction, UserSelect } from '../../handlers/gestureHandlerCommon';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
   children?: React.ReactNode;
   virtualChildren?: Set<VirtualChildrenWeb>;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
 }
 
 export interface VirtualChildrenWeb {
@@ -24,7 +28,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
   const viewRef = useRef<Element>(null);
-  const propsRef = useRef<PropsRef>(props);
+  const propsRef = useRef<GestureHandlerDetectorProps>(props);
   const attachedHandlers = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlers = useRef<Set<number>>(new Set<number>());
   const attachedVirtualHandlers = useRef<Map<number, Set<number>>>(new Map());
@@ -42,7 +46,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
 
   const attachHandlers = (
     viewRef: RefObject<Element | null>,
-    propsRef: RefObject<PropsRef>,
+    propsRef: RefObject<GestureHandlerDetectorProps>,
     currentHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>,
     actionType: ActionType
@@ -72,6 +76,12 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         );
       }
       attachedHandlerTags.add(tag);
+
+      RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+        userSelect: propsRef.current.userSelect,
+        touchAction: propsRef.current.touchAction,
+        enableContextMenu: propsRef.current.enableContextMenu,
+      });
     });
   };
 

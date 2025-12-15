@@ -715,6 +715,8 @@ export default abstract class GestureHandler implements IGestureHandler {
   private updateEnabled(enabled: boolean | undefined) {
     if (enabled === undefined) {
       if (this._enabled) {
+        this.delegate.updateDOM();
+
         return;
       }
 
@@ -731,7 +733,19 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.updateGestureConfig(config);
   }
 
-  public updateGestureConfig(config: Config): void {
+  public updateGestureConfig(config: Partial<Config>): void {
+    if (config.enableContextMenu !== undefined) {
+      this.enableContextMenu = config.enableContextMenu;
+    }
+
+    if (config.touchAction !== undefined) {
+      this._touchAction = config.touchAction;
+    }
+
+    if (config.userSelect !== undefined) {
+      this._userSelect = config.userSelect;
+    }
+
     this.updateEnabled(config.enabled);
 
     if (config.hitSlop !== undefined) {
@@ -764,20 +778,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
     }
 
-    if (config.enableContextMenu !== undefined) {
-      this.enableContextMenu = config.enableContextMenu;
-    }
-
     if (config.activeCursor !== undefined) {
       this._activeCursor = config.activeCursor;
-    }
-
-    if (config.touchAction !== undefined) {
-      this._touchAction = config.touchAction;
-    }
-
-    if (config.userSelect !== undefined) {
-      this._userSelect = config.userSelect;
     }
 
     if (this.enabled) {
