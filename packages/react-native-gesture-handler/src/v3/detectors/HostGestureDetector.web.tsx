@@ -76,17 +76,26 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         );
       }
       attachedHandlerTags.add(tag);
-
-      RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
-        userSelect: propsRef.current.userSelect,
-        touchAction: propsRef.current.touchAction,
-        enableContextMenu: propsRef.current.enableContextMenu,
-      });
     });
   };
 
   useEffect(() => {
+    const shouldUpdateDOMProps =
+      propsRef.current.userSelect !== props.userSelect ||
+      propsRef.current.touchAction !== props.touchAction ||
+      propsRef.current.enableContextMenu !== props.enableContextMenu;
+
     propsRef.current = props;
+
+    if (shouldUpdateDOMProps) {
+      for (const tag of attachedHandlers.current) {
+        RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+          userSelect: props.userSelect,
+          touchAction: props.touchAction,
+          enableContextMenu: props.enableContextMenu,
+        });
+      }
+    }
   }, [props]);
 
   useEffect(() => {
