@@ -130,8 +130,8 @@ function ScrollBottomSheet() {
   }));
 
   return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.bottomSheet, sheetStyle]}>
+    <Animated.View style={[styles.bottomSheet, sheetStyle]}>
+      <GestureDetector gesture={gesture}>
         <View style={styles.handleContainer}>
           <Animated.View style={[styles.handleArrow, handleStyle]}>
             <Text style={styles.arrowText}>▲</Text>
@@ -140,22 +140,23 @@ function ScrollBottomSheet() {
             Scroll or drag to expand/collapse
           </Text>
         </View>
-        <Animated.View style={[styles.sheetContent, contentOpacity]}>
-          <Text style={styles.sheetTitle}>Bottom Sheet Content</Text>
-          <Text style={styles.sheetDescription}>
-            This bottom sheet responds to both scroll and pan gestures. Use
-            mouse wheel/trackpad or drag to expand/collapse.
-          </Text>
-          <View style={styles.sheetItems}>
-            {['Item 1', 'Item 2', 'Item 3', 'Item 4'].map((item) => (
-              <View key={item} style={styles.sheetItem}>
-                <Text style={styles.sheetItemText}>{item}</Text>
-              </View>
-            ))}
-          </View>
-        </Animated.View>
-      </Animated.View>
-    </GestureDetector>
+      </GestureDetector>
+      <Animated.ScrollView style={[styles.sheetContent, contentOpacity]}>
+        <Text style={styles.sheetTitle}>Bottom Sheet Content</Text>
+        <Text style={styles.sheetDescription}>
+          This bottom sheet responds to both scroll and pan gestures. Use mouse
+          wheel/trackpad or drag to expand/collapse.
+        </Text>
+        <View style={styles.sheetItems}>
+          {Array.from({ length: 100 }).map((_, index) => (
+            // eslint-disable-next-line @eslint-react/no-array-index-key
+            <View key={`item-${index}`} style={styles.sheetItem}>
+              <Text style={styles.sheetItemText}>{index}</Text>
+            </View>
+          ))}
+        </View>
+      </Animated.ScrollView>
+    </Animated.View>
   );
 }
 
