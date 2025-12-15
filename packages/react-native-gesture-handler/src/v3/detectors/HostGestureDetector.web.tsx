@@ -76,6 +76,12 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         );
       }
       attachedHandlerTags.add(tag);
+
+      RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+        userSelect: props.userSelect,
+        touchAction: props.touchAction,
+        enableContextMenu: props.enableContextMenu,
+      });
     });
   };
 
