@@ -3,9 +3,8 @@ import { TouchEventType } from '../../../TouchEventType';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import {
   GestureCallbacks,
-  GestureEvent,
   GestureEventCallback,
-  GestureEventCallbackWithSuccess,
+  GestureEventCallbackWithDidSucceed,
   GestureTouchEventCallback,
   UnpackedGestureHandlerEvent,
 } from '../../types';
@@ -52,7 +51,7 @@ function getHandler<THandlerData>(
   callbacks: GestureCallbacks<THandlerData>
 ):
   | GestureEventCallback<THandlerData>
-  | GestureEventCallbackWithSuccess<THandlerData>
+  | GestureEventCallbackWithDidSucceed<THandlerData>
   | GestureTouchEventCallback
   | undefined {
   'worklet';
@@ -95,6 +94,9 @@ export function touchEventTypeToCallbackType(
   return CALLBACK_TYPE.UNDEFINED;
 }
 
+type SingleParameterCallback<T> = (event: T) => void;
+type DoubleParameterCallback<T> = (event: T, didSucceed: boolean) => void;
+
 export function runCallback<THandlerData>(
   type: CALLBACK_TYPE,
   callbacks: GestureCallbacks<THandlerData>,
@@ -108,17 +110,9 @@ export function runCallback<THandlerData>(
     return;
   }
 
-  if (didSucceed !== undefined) {
-    (handler as GestureEventCallbackWithSuccess<THandlerData>)?.(
-      event as GestureEvent<THandlerData>,
-      didSucceed
-    );
+  if (didSucceed === undefined) {
+    (handler as SingleParameterCallback<typeof event>)(event);
   } else {
-    // @ts-ignore event is an object.
-    if ('allTouches' in event) {
-      (handler as GestureTouchEventCallback)?.(event);
-    } else {
-      (handler as GestureEventCallback<THandlerData>)?.(event);
-    }
+    (handler as DoubleParameterCallback<typeof event>)(event, didSucceed);
   }
 }

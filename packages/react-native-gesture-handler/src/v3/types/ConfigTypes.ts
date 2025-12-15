@@ -17,7 +17,7 @@ export type GestureEventCallback<THandlerData> = (
   event: GestureEvent<THandlerData>
 ) => void;
 
-export type GestureEventCallbackWithSuccess<THandlerData> = (
+export type GestureEventCallbackWithDidSucceed<THandlerData> = (
   event: GestureEvent<THandlerData>,
   didSucceed: boolean
 ) => void;
@@ -27,8 +27,8 @@ export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
 export type GestureCallbacks<THandlerData> = {
   onBegin?: GestureEventCallback<THandlerData>;
   onActivate?: GestureEventCallback<THandlerData>;
-  onDeactivate?: GestureEventCallbackWithSuccess<THandlerData>;
-  onFinalize?: GestureEventCallbackWithSuccess<THandlerData>;
+  onDeactivate?: GestureEventCallbackWithDidSucceed<THandlerData>;
+  onFinalize?: GestureEventCallbackWithDidSucceed<THandlerData>;
   onUpdate?: GestureEventCallback<THandlerData> | AnimatedEvent;
   onTouchesDown?: GestureTouchEventCallback;
   onTouchesMove?: GestureTouchEventCallback;

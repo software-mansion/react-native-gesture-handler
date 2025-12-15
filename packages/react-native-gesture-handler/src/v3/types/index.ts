@@ -22,6 +22,9 @@ export type {
 
 export type {
   GestureCallbacks,
+  GestureEventCallback,
+  GestureEventCallbackWithDidSucceed,
+  GestureTouchEventCallback,
   GestureRelations,
   InternalConfigProps,
   CommonGestureConfig,
