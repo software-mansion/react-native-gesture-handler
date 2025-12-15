@@ -1,9 +1,13 @@
+import CodeBlock from '@theme/CodeBlock';
+
 ### Callbacks common to all continuous gestures:
 
 ### onUpdate
 
-```ts
-onUpdate: (event: HandlerData) => void
-```
+{
+<CodeBlock className="language-ts">
+    {`onUpdate: (event: ${props.gesture}HandlerData) => void`}
+</CodeBlock>
+}
 
 Set the callback that is being called every time the gesture receives an update while it's active.

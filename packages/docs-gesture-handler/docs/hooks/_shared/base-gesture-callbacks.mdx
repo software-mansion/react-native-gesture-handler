@@ -1,34 +1,44 @@
+import CodeBlock from '@theme/CodeBlock';
+
 ### Callbacks common to all gestures:
 
 ### onBegin
 
-```ts
-onBegin: (event: HandlerData) => void
-```
+{
+<CodeBlock className="language-ts">
+    {`onBegin: (event: ${props.gesture}HandlerData) => void`}
+</CodeBlock>
+}
 
 Set the callback that is being called when given gesture handler starts receiving touches. At the moment of this callback the handler is not yet in an active state and we don't know yet if it will recognize the gesture at all.
 
 ### onActivate
 
-```ts
-onActivate: (event: HandlerData) => void
-```
+{
+<CodeBlock className="language-ts">
+    {`onActivate: (event: ${props.gesture}HandlerData) => void`}
+</CodeBlock>
+}
 
 Set the callback that is being called when the gesture is recognized by the handler and it transitions to the active state.
 
 ### onDeactivate
 
-```ts
-onDeactivate: (event: HandlerData) => void
-```
+{
+<CodeBlock className="language-ts">
+    {`onDeactivate: (event: ${props.gesture}HandlerData, didSucceed: boolean) => void`}
+</CodeBlock>
+}
 
 Set the callback that is being called when the gesture that was recognized by the handler finishes. It will be called only if the handler was previously in the active state.
 
 ### onFinalize
 
-```ts
-onFinalize: (event: HandlerData) => void
-```
+{
+<CodeBlock className="language-ts">
+    {`onFinalize: (event: ${props.gesture}HandlerData, didSucceed: boolean) => void`}
+</CodeBlock>
+}
 
 Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
 
