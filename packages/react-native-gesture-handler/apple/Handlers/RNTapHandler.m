@@ -47,7 +47,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
     _tapsSoFar = 0;
     _numberOfTaps = defaultNumberOfTaps;
@@ -63,7 +63,12 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES];
 }
 
 - (void)cancel
@@ -116,7 +121,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
-    [self reset];
     return;
   }
 
@@ -130,7 +134,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
-    [self reset];
   } else {
     [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDelay];
   }
@@ -140,8 +143,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
-
-  [self reset];
 }
 
 #if TARGET_OS_OSX
@@ -243,9 +244,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)reset
 {
-  if (self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
+  [self triggerActionFromReset];
 
   [_gestureHandler.pointerTracker reset];
 

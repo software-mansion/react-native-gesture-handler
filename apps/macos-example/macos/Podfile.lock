@@ -1553,6 +1553,20 @@ PODS:
     - RCTRequired
     - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNGestureHandler (2.29.0):
     - DoubleConversion
     - glog
@@ -1574,7 +1588,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.19.3):
+  - RNReanimated (3.19.4):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1594,10 +1608,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.19.3)
-    - RNReanimated/worklets (= 3.19.3)
+    - RNReanimated/reanimated (= 3.19.4)
+    - RNReanimated/worklets (= 3.19.4)
     - Yoga
-  - RNReanimated/reanimated (3.19.3):
+  - RNReanimated/reanimated (3.19.4):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1617,9 +1631,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.19.3)
+    - RNReanimated/reanimated/apple (= 3.19.4)
     - Yoga
-  - RNReanimated/reanimated/apple (3.19.3):
+  - RNReanimated/reanimated/apple (3.19.4):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1640,7 +1654,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.19.3):
+  - RNReanimated/worklets (3.19.4):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1660,9 +1674,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 3.19.3)
+    - RNReanimated/worklets/apple (= 3.19.4)
     - Yoga
-  - RNReanimated/worklets/apple (3.19.3):
+  - RNReanimated/worklets/apple (3.19.4):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -2011,10 +2025,10 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 93ba70597920a832aaa2c0dad33ddcafb70254f1
   ReactCodegen: a69b3fe94242a2d03ceebfc2a2b9eb634ddbb0ec
   ReactCommon: d8a297276a8a494803194d834d5ee331c6be176c
-  RNCAsyncStorage: b9f5f78da5d16a853fe3dc22e8268d932fc45a83
-  RNGestureHandler: ad19b514902de0d788e868c45ae63ea69b300433
-  RNReanimated: 733472f5a721122923300dadedaf2845f8739408
-  RNSVG: 4c63b12b7b5761063bca4f20dd228f6a8370f614
+  RNCAsyncStorage: f87e7905ae8a3ee95a69f4bd7046fcaaf8e46f13
+  RNGestureHandler: 53b193301ab8233d270dbd13205a3bde088a5afa
+  RNReanimated: 3ff8cc2ee703e06f73039e89214392435aaf5fd2
+  RNSVG: c46446a6250639d369ec1e39bc4d8284984bb330
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 68988998b6d10a0802dd7d5c6d40bf018e09ffd9
 
