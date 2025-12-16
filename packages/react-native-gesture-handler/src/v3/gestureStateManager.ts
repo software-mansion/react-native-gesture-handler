@@ -24,7 +24,6 @@ export const begin = (handlerTag: number): void => {
 
 export const activate = (handlerTag: number): void => {
   'worklet';
-  console.log('xd');
   setGestureState(handlerTag, State.ACTIVE);
 };
 
