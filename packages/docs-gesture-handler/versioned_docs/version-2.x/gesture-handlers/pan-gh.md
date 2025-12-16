@@ -6,12 +6,12 @@ sidebar_position: 5
 ---
 
 :::warning
-The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out our [upgrading guide](/docs/guides/upgrading-to-2) for more information.
+The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/2.x/gestures/gesture) instead. Check out our [upgrading guide](/docs/2.x/guides/upgrading-to-2) for more information.
 :::
 
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
 
-The handler [activates](/docs/under-the-hood/state#active) when a finger is placed on the screen and moved some initial distance.
+The handler [activates](/docs/2.x/under-the-hood/state#active) when a finger is placed on the screen and moved some initial distance.
 
 Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified.
 
@@ -21,7 +21,7 @@ The handler is implemented using [UIPanGestureRecognizer](https://developer.appl
 
 ## Custom activation criteria
 
-The `PanGestureHandler` component exposes a number of properties that can be used to customize the criteria under which a handler will [activate](/docs/under-the-hood/state#active) or [fail](/docs/under-the-hood/state#fail) when recognizing a gesture.
+The `PanGestureHandler` component exposes a number of properties that can be used to customize the criteria under which a handler will [activate](/docs/2.x/under-the-hood/state#active) or [fail](/docs/2.x/under-the-hood/state#fail) when recognizing a gesture.
 
 When more than one of such a property is set, `PanGestureHandler` expects all criteria to be met for successful recognition and at most one of the criteria to be overstepped to fail recognition.
 For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both the X and Y axis before the handler activates.
@@ -46,19 +46,19 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ## Properties
 
-See [set of properties inherited from base handler class](/docs/gesture-handlers/common-gh#properties). Below is a list of properties specific to `PanGestureHandler` component:
+See [set of properties inherited from base handler class](/docs/2.x/gesture-handlers/common-gh#properties). Below is a list of properties specific to `PanGestureHandler` component:
 
 ### `minDist`
 
-Minimum distance the finger (or multiple finger) need to travel before the handler [activates](/docs/under-the-hood/state#active). Expressed in points.
+Minimum distance the finger (or multiple finger) need to travel before the handler [activates](/docs/2.x/under-the-hood/state#active). Expressed in points.
 
 ### `minPointers`
 
-A number of fingers that is required to be placed before handler can [activate](/docs/under-the-hood/state#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before handler can [activate](/docs/2.x/under-the-hood/state#active). Should be a higher or equal to 0 integer.
 
 ### `maxPointers`
 
-When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/under-the-hood/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/2.x/under-the-hood/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
 
 ### `activeOffsetX`
 
@@ -88,37 +88,37 @@ If only one number `p` is given a range of `(-inf, p)` will be used if `p` is hi
 
 > This method is deprecated but supported for backward compatibility. Instead of using `maxDeltaX={N}` you can do `failOffsetX={[-N, N]}`.
 
-When the finger travels the given distance expressed in points along X axis and handler hasn't yet [activated](/docs/under-the-hood/state#active) it will fail recognizing the gesture.
+When the finger travels the given distance expressed in points along X axis and handler hasn't yet [activated](/docs/2.x/under-the-hood/state#active) it will fail recognizing the gesture.
 
 ### `maxDeltaY`
 
 > This method is deprecated but supported for backward compatibility. Instead of using `maxDeltaY={N}` you can do `failOffsetY={[-N, N]}`.
 
-When the finger travels the given distance expressed in points along Y axis and handler hasn't yet [activated](/docs/under-the-hood/state#active) it will fail recognizing the gesture.
+When the finger travels the given distance expressed in points along Y axis and handler hasn't yet [activated](/docs/2.x/under-the-hood/state#active) it will fail recognizing the gesture.
 
 ### `minOffsetX`
 
 > This method is deprecated but supported for backward compatibility. Instead of using `minOffsetX={N}` you can do `activeOffsetX={N}`.
 
-Minimum distance along X (in points) axis the finger (or multiple finger) need to travel before the handler [activates](/docs/under-the-hood/state#active). If set to a lower or equal to 0 value we expect the finger to travel "left" by the given distance. When set to a higher or equal to 0 number the handler will activate on a movement to the "right". If you wish for the movement direction to be ignored use [`minDeltaX`](#mindeltax) instead.
+Minimum distance along X (in points) axis the finger (or multiple finger) need to travel before the handler [activates](/docs/2.x/under-the-hood/state#active). If set to a lower or equal to 0 value we expect the finger to travel "left" by the given distance. When set to a higher or equal to 0 number the handler will activate on a movement to the "right". If you wish for the movement direction to be ignored use [`minDeltaX`](#mindeltax) instead.
 
 ### `minOffsetY`
 
 > This method is deprecated but supported for backward compatibility. Instead of using `minOffsetY={N}` you can do `activeOffsetY={N}`.
 
-Minimum distance along Y (in points) axis the finger (or multiple finger) need to travel before the handler [activates](/docs/under-the-hood/state#active). If set to a lower or equal to 0 value we expect the finger to travel "up" by the given distance. When set to a higher or equal to 0 number the handler will activate on a movement to the "bottom". If you wish for the movement direction to be ignored use [`minDeltaY`](#mindeltay) instead.
+Minimum distance along Y (in points) axis the finger (or multiple finger) need to travel before the handler [activates](/docs/2.x/under-the-hood/state#active). If set to a lower or equal to 0 value we expect the finger to travel "up" by the given distance. When set to a higher or equal to 0 number the handler will activate on a movement to the "bottom". If you wish for the movement direction to be ignored use [`minDeltaY`](#mindeltay) instead.
 
 ### `minDeltaX`
 
 > This method is deprecated but supported for backward compatibility. Instead of using `minDeltaX={N}` you can do `activeOffsetX={[-N, N]}`.
 
-Minimum distance along X (in points) axis the finger (or multiple finger) need to travel (left or right) before the handler [activates](/docs/under-the-hood/state#active). Unlike [`minoffsetx`](#minoffsetx) this parameter accepts only non-lower or equal to 0 numbers that represents the distance in point units. If you want for the handler to [activate](/docs/under-the-hood/state#active) for the movement in one particular direction use [`minOffsetX`](#minoffsetx) instead.
+Minimum distance along X (in points) axis the finger (or multiple finger) need to travel (left or right) before the handler [activates](/docs/2.x/under-the-hood/state#active). Unlike [`minoffsetx`](#minoffsetx) this parameter accepts only non-lower or equal to 0 numbers that represents the distance in point units. If you want for the handler to [activate](/docs/2.x/under-the-hood/state#active) for the movement in one particular direction use [`minOffsetX`](#minoffsetx) instead.
 
 ### `minDeltaY`
 
 > This method is deprecated but supported for backward compatibility. Instead of using `minDeltaY={N}` you can do `activeOffsetY={[-N, N]}`.
 
-Minimum distance along Y (in points) axis the finger (or multiple finger) need to travel (top or bottom) before the handler [activates](/docs/under-the-hood/state#active). Unlike [`minOffsetY`](#minoffsety) this parameter accepts only non-lower or equal to 0 numbers that represents the distance in point units. If you want for the handler to [activate](/docs/under-the-hood/state#active) for the movement in one particular direction use [`minOffsetY`](#minoffsety) instead.
+Minimum distance along Y (in points) axis the finger (or multiple finger) need to travel (top or bottom) before the handler [activates](/docs/2.x/under-the-hood/state#active). Unlike [`minOffsetY`](#minoffsety) this parameter accepts only non-lower or equal to 0 numbers that represents the distance in point units. If you want for the handler to [activate](/docs/2.x/under-the-hood/state#active) for the movement in one particular direction use [`minOffsetY`](#minoffsety) instead.
 
 ### `avgTouches` (Android only)
 
@@ -130,7 +130,7 @@ Enables two-finger gestures on supported devices, for example iPads with trackpa
 
 ## Event data
 
-See [set of event attributes from base handler class](/docs/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to `PanGestureHandler`:
+See [set of event attributes from base handler class](/docs/2.x/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to `PanGestureHandler`:
 
 ### `translationX`
 

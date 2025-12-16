@@ -25,8 +25,8 @@ Example:
 
 RNGH provides an API for triggering selected handlers:
 
-- [`fireGestureHandler(gestureOrHandler, eventList)`](/docs/guides/testing#firegesturehandlergestureorhandler-eventlist)
-- [`getByGestureTestId(testID)`](/docs/guides/testing#getbygesturetestidtestid)
+- [`fireGestureHandler(gestureOrHandler, eventList)`](/docs/2.x/guides/testing#firegesturehandlergestureorhandler-eventlist)
+- [`getByGestureTestId(testID)`](/docs/2.x/guides/testing#getbygesturetestidtestid)
 
 ## fireGestureHandler(gestureOrHandler, eventList)
 
@@ -40,7 +40,7 @@ with one of `END`/`FAIL`/`CANCEL` states), calling appropriate callbacks associa
 Represents either:
 
 1. Gesture handler component found by Jest queries (e.g. `getByTestId`)
-2. Gesture found by [`getByGestureTestId()`](/docs/guides/testing#getbygesturetestidtestid)
+2. Gesture found by [`getByGestureTestId()`](/docs/2.x/guides/testing#getbygesturetestidtestid)
 
 #### `eventList`
 
@@ -112,7 +112,7 @@ it('sends events with additional data to handlers', () => {
 ## getByGestureTestId(testID)
 
 Returns opaque data type associated with gesture. Gesture is found via `testID` attribute in rendered
-components (see [`withTestID` method](/docs/gestures/pan-gesture#withrefref)).
+components (see [`withTestID` method](/docs/2.x/gestures/pan-gesture#withrefref)).
 
 ### Arguments
 

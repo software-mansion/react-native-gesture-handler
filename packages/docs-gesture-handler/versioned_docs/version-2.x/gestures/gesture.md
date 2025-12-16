@@ -26,43 +26,43 @@ function App() {
 
 ### Gesture.Tap()
 
-Creates a new instance of [`TapGesture`](/docs/gestures/tap-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`TapGesture`](/docs/2.x/gestures/tap-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Pan()
 
-Creates a new instance of [`PanGesture`](/docs/gestures/pan-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`PanGesture`](/docs/2.x/gestures/pan-gesture.md) with its default config and no callbacks.
 
 ### Gesture.LongPress()
 
-Creates a new instance of [`LongPressGesture`](/docs/gestures/long-press-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`LongPressGesture`](/docs/2.x/gestures/long-press-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Fling()
 
-Creates a new instance of [`FlingGesture`](/docs/gestures/fling-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`FlingGesture`](/docs/2.x/gestures/fling-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Pinch()
 
-Creates a new instance of [`PinchGesture`](/docs/gestures/pinch-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`PinchGesture`](/docs/2.x/gestures/pinch-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Rotation()
 
-Creates a new instance of [`RotationGesture`](/docs/gestures/rotation-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`RotationGesture`](/docs/2.x/gestures/rotation-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Hover()
 
-Creates a new instance of [`HoverGesture`](/docs/gestures/hover-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`HoverGesture`](/docs/2.x/gestures/hover-gesture.md) with its default config and no callbacks.
 
 ### Gesture.ForceTouch()
 
-Creates a new instance of [`ForceTouchGesture`](/docs/gestures/force-touch-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`ForceTouchGesture`](/docs/2.x/gestures/force-touch-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Manual()
 
-Creates a new instance of [`ManualGesture`](/docs/gestures/manual-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`ManualGesture`](/docs/2.x/gestures/manual-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Native()
 
-Creates a new instance of [`NativeGesture`](/docs/gestures/native-gesture.md) with its default config and no callbacks.
+Creates a new instance of [`NativeGesture`](/docs/2.x/gestures/native-gesture.md) with its default config and no callbacks.
 
 ### Gesture.Race(gesture1, gesture2, gesture3, ...): ComposedGesture
 

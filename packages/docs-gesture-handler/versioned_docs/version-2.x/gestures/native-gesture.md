@@ -10,7 +10,7 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
-A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
+A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/2.x/fundamentals/gesture-composition) with other gestures.
 
 When used, the native component should be the direct child of a `GestureDetector`.
 
@@ -64,7 +64,7 @@ function Rectangle({ color, scrollGesture }) {
 
 ## Remarks
 
-- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
+- `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/2.x/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
 :::danger
 Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
@@ -76,11 +76,11 @@ Do not use `Native` gesture with components exported by React Native Gesture Han
 
 ### `shouldActivateOnStart(value: boolean)` (**Android only**)
 
-When `true`, underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/fundamentals/states-events#undetermined) state.
+When `true`, underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/2.x/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/2.x/fundamentals/states-events#undetermined) state.
 
 ### `disallowInterruption(value: boolean)`
 
-When `true`, cancels all other gesture handlers when this `NativeViewGestureHandler` changes its state to [`ACTIVE`](/docs/fundamentals/states-events#active).
+When `true`, cancels all other gesture handlers when this `NativeViewGestureHandler` changes its state to [`ACTIVE`](/docs/2.x/fundamentals/states-events#active).
 
 <BaseEventConfig />
 

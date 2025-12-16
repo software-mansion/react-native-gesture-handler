@@ -5,7 +5,7 @@ sidebar_label: Force touch
 ---
 
 A continuous gesture handler that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
-The handler [activates](/docs/under-the-hood/state#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
+The handler [activates](/docs/1.x/state#active) when pressure of touch if greater or equal than `minForce`. It fails if pressure is greater than `maxForce`
 Gesture callback can be used for continuous tracking of the touch pressure. It provides information for one finger (the first one).
 
 At the beginning of the gesture, the pressure factor is 0.0. As the pressure increases, the pressure factor increases proportionally. The maximum pressure is 1.0.
@@ -19,11 +19,11 @@ See [set of properties inherited from base handler class](common-gh#properties).
 
 ### `minForce`
 
-A minimal pressure that is required before handler can [activate](/docs/under-the-hood/state#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
+A minimal pressure that is required before handler can [activate](/docs/1.x/state#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
 
 ### `maxForce`
 
-A maximal pressure that could be applied for handler. If the pressure is greater, handler [fails](/docs/under-the-hood/state#failed). Should be a value from range `[0.0, 1.0]`.
+A maximal pressure that could be applied for handler. If the pressure is greater, handler [fails](/docs/1.x/state#failed). Should be a value from range `[0.0, 1.0]`.
 
 ### `feedbackOnActivation`
 

@@ -15,11 +15,11 @@ Gesture handler library provides native components that can act as buttons. Thes
 
 Currently Gesture handler library exposes three components that render native touchable elements under the hood:
 
-- [`BaseButton`](/docs/components/buttons/#basebutton)
-- [`RectButton`](/docs/components/buttons/#rectbutton)
-- [`BorderlessButton`](/docs/components/buttons/#borderlessbutton)
+- [`BaseButton`](/docs/2.x/components/buttons/#basebutton)
+- [`RectButton`](/docs/2.x/components/buttons/#rectbutton)
+- [`BorderlessButton`](/docs/2.x/components/buttons/#borderlessbutton)
 
-On top of that all the buttons are wrapped with `NativeViewGestureHandler` and therefore allow for all the [common gesture handler properties](/docs/gesture-handlers/common-gh/) and `NativeViewGestureHandler`'s [extra properties](/docs/gesture-handlers/nativeview-gh#properties) to be applied to them.
+On top of that all the buttons are wrapped with `NativeViewGestureHandler` and therefore allow for all the [common gesture handler properties](/docs/2.x/gesture-handlers/common-gh/) and `NativeViewGestureHandler`'s [extra properties](/docs/2.x/gesture-handlers/nativeview-gh#properties) to be applied to them.
 
 **IMPORTANT**: In order to make buttons accessible, you have to wrap your children in a `View` with `accessible` and `accessibilityRole="button"` props.
 Example:
@@ -75,7 +75,7 @@ defines the delay, in milliseconds, after which the `onLongPress` callback gets 
 
 ## `RectButton`
 
-This type of button component should be used when you deal with rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](/docs/components/buttons#basebutton), it accepts the following:
+This type of button component should be used when you deal with rectangular elements or blocks of content that can be pressed, for example table rows or buttons with text and icons. This component provides a platform specific interaction, rendering a rectangular ripple on Android or highlighting the background on iOS and on older versions of Android. In addition to the props of [`BaseButton`](/docs/2.x/components/buttons#basebutton), it accepts the following:
 
 Below is a list of properties specific to `RectButton` component:
 
@@ -89,7 +89,7 @@ opacity applied to the underlay when button is in active state.
 
 ## `BorderlessButton`
 
-This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](/docs/components/buttons#basebutton), it accepts the following:
+This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](/docs/2.x/components/buttons#basebutton), it accepts the following:
 
 Below is a list of properties specific to `BorderlessButton` component:
 

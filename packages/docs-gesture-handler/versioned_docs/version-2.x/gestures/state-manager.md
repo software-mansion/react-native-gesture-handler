@@ -11,17 +11,17 @@ sidebar_position: 15
 
 ### `begin()`
 
-Transition the gesture to the [`BEGAN`](/docs/fundamentals/states-events#began) state. This method will have no effect if the gesture has already activated or finished.
+Transition the gesture to the [`BEGAN`](/docs/2.x/fundamentals/states-events#began) state. This method will have no effect if the gesture has already activated or finished.
 
 ### `activate()`
 
-Transition the gesture to the [`ACTIVE`](/docs/fundamentals/states-events#active) state. This method will have no effect if the handler is already active, or has finished.
-If the gesture is [`exclusive`](/docs/fundamentals/gesture-composition) with another one, the activation will be delayed until the gesture with higher priority fails.
+Transition the gesture to the [`ACTIVE`](/docs/2.x/fundamentals/states-events#active) state. This method will have no effect if the handler is already active, or has finished.
+If the gesture is [`exclusive`](/docs/2.x/fundamentals/gesture-composition) with another one, the activation will be delayed until the gesture with higher priority fails.
 
 ### `end()`
 
-Transition the gesture to the [`END`](/docs/fundamentals/states-events#end) state. This method will have no effect if the handler has already finished.
+Transition the gesture to the [`END`](/docs/2.x/fundamentals/states-events#end) state. This method will have no effect if the handler has already finished.
 
 ### `fail()`
 
-Transition the gesture to the [`FAILED`](/docs/fundamentals/states-events#failed) state. This method will have no effect if the handler has already finished.
+Transition the gesture to the [`FAILED`](/docs/2.x/fundamentals/states-events#failed) state. This method will have no effect if the handler has already finished.

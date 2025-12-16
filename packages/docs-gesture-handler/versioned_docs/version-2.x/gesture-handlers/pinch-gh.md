@@ -6,11 +6,11 @@ sidebar_position: 10
 ---
 
 :::warning
-The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out our [upgrading guide](/docs/guides/upgrading-to-2) for more information.
+The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/2.x/gestures/gesture) instead. Check out our [upgrading guide](/docs/2.x/guides/upgrading-to-2) for more information.
 :::
 
 A continuous gesture handler that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
-The handler [activates](/docs/under-the-hood/state#active) when fingers are placed on the screen and change their position.
+The handler [activates](/docs/2.x/under-the-hood/state#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
 
 The distance between the fingers is reported as a scale factor. At the beginning of the gesture, the scale factor is 1.0. As the distance between the two fingers increases, the scale factor increases proportionally.
@@ -22,11 +22,11 @@ The handler is implemented using [UIPinchGestureRecognizer](https://developer.ap
 
 ## Properties
 
-Properties provided to `PinchGestureHandler` do not extend [common set of properties from base handler class](/docs/gesture-handlers/common-gh#properties).
+Properties provided to `PinchGestureHandler` do not extend [common set of properties from base handler class](/docs/2.x/gesture-handlers/common-gh#properties).
 
 ## Event data
 
-See [set of event attributes from base handler class](/docs/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
+See [set of event attributes from base handler class](/docs/2.x/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to `PinchGestureHandler`:
 
 ### `scale`
 

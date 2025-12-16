@@ -33,9 +33,9 @@ import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-cal
 
 A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
 
-The gesture [activates](/docs/fundamentals/states-events#active) when a finger is placed on the screen and moved some initial distance.
+The gesture [activates](/docs/2.x/fundamentals/states-events#active) when a finger is placed on the screen and moved some initial distance.
 
-Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](/docs/gestures/pan-gesture#minpointersvalue-number) required for activation (allowing for multifinger swipes) may be specified.
+Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](/docs/2.x/gestures/pan-gesture#minpointersvalue-number) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
 
@@ -128,19 +128,19 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ### `minDistance(value: number)`
 
-Minimum distance the finger (or multiple finger) need to travel before the gesture [activates](/docs/fundamentals/states-events#active). Expressed in points.
+Minimum distance the finger (or multiple finger) need to travel before the gesture [activates](/docs/2.x/fundamentals/states-events#active). Expressed in points.
 
 ### `minPointers(value: number)`
 
-A number of fingers that is required to be placed before gesture can [activate](/docs/fundamentals/states-events#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a higher or equal to 0 integer.
 
 ### `maxPointers(value: number)`
 
-When the given number of fingers is placed on the screen and gesture hasn't yet [activated](/docs/fundamentals/states-events#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
 
 ### `activateAfterLongPress(duration: number)`
 
-Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](/docs/fundamentals/states-events#active). If the finger is moved during that period, the gesture will [fail](/docs/fundamentals/states-events#failed). Should be a higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to [activate](/docs/fundamentals/states-events#active) the `Pan`.
+Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](/docs/2.x/fundamentals/states-events#active). If the finger is moved during that period, the gesture will [fail](/docs/2.x/fundamentals/states-events#failed). Should be a higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to [activate](/docs/2.x/fundamentals/states-events#active) the `Pan`.
 
 ### `activeOffsetX(value: number | number[])`
 
@@ -217,11 +217,11 @@ Velocity of the pan gesture along the Y axis in the current moment. The value is
 
 ### `x`
 
-X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector). Expressed in point units.
 
 ### `y`
 
-Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector). Expressed in point units.
 
 ### `absoluteX`
 

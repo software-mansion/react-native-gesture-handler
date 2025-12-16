@@ -24,7 +24,7 @@ import TabItem from '@theme/TabItem';
 | 2.10.0+ | 0.64.0+                |
 | 2.0.0+  | 0.63.0+                |
 
-In order to fully utilize the [touch events](/docs/gestures/touch-events/) you also need to use `react-native-reanimated` 2.3.0 or newer.
+In order to fully utilize the [touch events](/docs/2.x/gestures/touch-events/) you also need to use `react-native-reanimated` 2.3.0 or newer.
 
 Setting up `react-native-gesture-handler` is pretty straightforward:
 

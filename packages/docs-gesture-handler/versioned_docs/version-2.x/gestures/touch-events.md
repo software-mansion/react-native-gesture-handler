@@ -35,11 +35,11 @@ A number representing id of the touch. It may be used to track the touch between
 
 ### `x`
 
-X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector). Expressed in point units.
 
 ### `y`
 
-Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+Y coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector). Expressed in point units.
 
 ### `absoluteX`
 

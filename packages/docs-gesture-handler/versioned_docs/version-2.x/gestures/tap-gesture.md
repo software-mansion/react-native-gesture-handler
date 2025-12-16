@@ -36,7 +36,7 @@ The fingers involved in these gestures must not move significantly from their in
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
+In order for a gesture to [activate](/docs/2.x/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/2.x/fundamentals/states-events#active), it will [end](/docs/2.x/fundamentals/states-events#end).
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
 
 ### `minPointers(value: number)`
 
-Minimum number of pointers (fingers) required to be placed before the gesture [activates](/docs/fundamentals/states-events#active). Should be a positive integer. The default value is 1.
+Minimum number of pointers (fingers) required to be placed before the gesture [activates](/docs/2.x/fundamentals/states-events#active). Should be a positive integer. The default value is 1.
 
 ### `maxDuration(value: number)`
 
@@ -104,19 +104,19 @@ Maximum time, expressed in milliseconds, that can pass before the next tap — i
 
 ### `numberOfTaps(value: number)`
 
-Number of tap gestures required to [activate](/docs/fundamentals/states-events#active) the gesture. The default value is 1.
+Number of tap gestures required to [activate](/docs/2.x/fundamentals/states-events#active) the gesture. The default value is 1.
 
 ### `maxDeltaX(value: number)`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active), it will fail to recognize the gesture.
 
 ### `maxDeltaY(value: number)`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active), it will fail to recognize the gesture.
 
 ### `maxDistance(value: number)`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active), it will fail to recognize the gesture.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
@@ -143,18 +143,18 @@ Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT
 
 ### `x`
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector).
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector).
 
 ### `y`
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector).
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector).
 
 ### `absoluteX`
 
-X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector) can be transformed as an effect of the gesture.
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector) can be transformed as an effect of the gesture.
 
 ### `absoluteY`
 
-Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector) can be transformed as an effect of the gesture.
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/2.x/gestures/gesture-detector) can be transformed as an effect of the gesture.
 
 <BaseEventData />

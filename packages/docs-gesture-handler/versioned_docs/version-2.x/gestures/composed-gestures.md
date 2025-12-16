@@ -5,7 +5,7 @@ sidebar_label: Composed gestures
 sidebar_position: 13
 ---
 
-Composed gestures (`Race`, `Simultaneous`, `Exclusive`) provide a simple way of building relations between gestures. See [Gesture Composition](/docs/fundamentals/gesture-composition) for more details.
+Composed gestures (`Race`, `Simultaneous`, `Exclusive`) provide a simple way of building relations between gestures. See [Gesture Composition](/docs/2.x/fundamentals/gesture-composition) for more details.
 
 ## Reference
 

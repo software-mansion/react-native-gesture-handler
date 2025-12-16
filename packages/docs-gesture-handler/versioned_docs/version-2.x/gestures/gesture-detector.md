@@ -35,7 +35,7 @@ A gesture object containing the configuration and callbacks. Can be any of the b
 :::info
 GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.
 
-Starting with Reanimated 2.3.0 Gesture Handler will provide a [StateManager](/docs/gestures/state-manager) in the [touch events](/docs/gestures/touch-events) that allows for managing the state of the gesture.
+Starting with Reanimated 2.3.0 Gesture Handler will provide a [StateManager](/docs/2.x/gestures/state-manager) in the [touch events](/docs/2.x/gestures/touch-events) that allows for managing the state of the gesture.
 :::
 
 ### `userSelect` (Web only)
@@ -66,7 +66,9 @@ Specifies whether context menu should be enabled after clicking on underlying vi
       <View>
         <GestureDetector gesture={pan}>
           <View>
-            <GestureDetector gesture={pan}> {/* Don't do this! */}
+            <GestureDetector gesture={pan}>
+              {' '}
+              {/* Don't do this! */}
               <View />
             </GestureDetector>
           </View>

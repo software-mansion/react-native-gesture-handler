@@ -2,7 +2,7 @@
 
 ### `state`
 
-Current [state](/docs/fundamentals/states-events) of the handler. Expressed as one of the constants exported under `State` object by the library.
+Current [state](/docs/2.x/fundamentals/states-events) of the handler. Expressed as one of the constants exported under `State` object by the library.
 
 ### `numberOfPointers`
 

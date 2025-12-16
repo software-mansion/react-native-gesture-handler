@@ -30,8 +30,8 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 
 A discrete gesture that activates when the movement is sufficiently long and fast.
-Gesture gets [ACTIVE](/docs/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
-When gesture gets activated it will turn into [END](/docs/fundamentals/states-events#end) state when finger is released.
+Gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
+When gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>

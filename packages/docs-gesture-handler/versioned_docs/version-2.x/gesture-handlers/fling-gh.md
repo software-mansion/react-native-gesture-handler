@@ -6,18 +6,18 @@ sidebar_position: 9
 ---
 
 :::warning
-The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/gestures/gesture) instead. Check out our [upgrading guide](/docs/guides/upgrading-to-2) for more information.
+The old API will be removed in the future version of Gesture Handler. Please migrate to [gestures API](/docs/2.x/gestures/gesture) instead. Check out our [upgrading guide](/docs/2.x/guides/upgrading-to-2) for more information.
 :::
 
 A discrete gesture handler that activates when the movement is sufficiently long and fast.
-Handler gets [ACTIVE](/docs/under-the-hood/state#active) when movement is sufficiently long and it does not take too much time.
-When handler gets activated it will turn into [END](/docs/under-the-hood/state#end) state when finger is released.
+Handler gets [ACTIVE](/docs/2.x/under-the-hood/state#active) when movement is sufficiently long and it does not take too much time.
+When handler gets activated it will turn into [END](/docs/2.x/under-the-hood/state#end) state when finger is released.
 The handler will fail to recognize if the finger is lifted before being activated.
 The handler is implemented using [UISwipeGestureRecognizer](https://developer.apple.com/documentation/uikit/uiswipegesturerecognizer) on iOS and from scratch on Android.
 
 ## Properties
 
-See [set of properties inherited from base handler class](/docs/gesture-handlers/common-gh#properties). Below is a list of properties specific to `FlingGestureHandler` component:
+See [set of properties inherited from base handler class](/docs/2.x/gesture-handlers/common-gh#properties). Below is a list of properties specific to `FlingGestureHandler` component:
 
 ### `direction`
 
@@ -39,7 +39,7 @@ Determine exact number of points required to handle the fling gesture.
 
 ## Event data
 
-See [set of event attributes from base handler class](/docs/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to `FlingGestureHandler`:
+See [set of event attributes from base handler class](/docs/2.x/gesture-handlers/common-gh#event-data). Below is a list of gesture event attributes specific to `FlingGestureHandler`:
 
 ### `x`
 
