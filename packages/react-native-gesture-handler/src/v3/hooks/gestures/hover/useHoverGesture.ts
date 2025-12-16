@@ -83,7 +83,5 @@ export function useHoverGesture(config: HoverGestureConfig): HoverGesture {
     HoverGestureInternalProperties
   >(config, HoverPropsMapping, transformHoverProps);
 
-  console.log('hoverConfig', hoverConfig);
-
   return useGesture(SingleGestureName.Hover, hoverConfig);
 }
