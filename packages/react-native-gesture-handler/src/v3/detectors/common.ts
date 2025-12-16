@@ -3,6 +3,7 @@ import { Gesture } from '../types';
 import { Animated, StyleSheet } from 'react-native';
 import HostGestureDetector from './HostGestureDetector';
 import { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
+import { TouchAction, UserSelect } from '../../handlers/gestureHandlerCommon';
 
 export enum GestureDetectorType {
   Native,
@@ -13,6 +14,9 @@ export enum GestureDetectorType {
 export interface NativeDetectorProps<THandlerData, TConfig> {
   children?: React.ReactNode;
   gesture: Gesture<THandlerData, TConfig>;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
 }
 
 export interface InterceptingGestureDetectorProps<THandlerData, TConfig> {

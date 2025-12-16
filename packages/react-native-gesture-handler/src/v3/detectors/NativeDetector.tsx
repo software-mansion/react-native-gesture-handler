@@ -12,6 +12,9 @@ import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 export function NativeDetector<THandlerData, TConfig>({
   gesture,
   children,
+  touchAction,
+  userSelect,
+  enableContextMenu,
 }: NativeDetectorProps<THandlerData, TConfig>) {
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
@@ -28,6 +31,9 @@ export function NativeDetector<THandlerData, TConfig>({
 
   return (
     <NativeDetectorComponent
+      touchAction={touchAction}
+      userSelect={userSelect}
+      enableContextMenu={enableContextMenu}
       pointerEvents={'box-none'}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerStateChange={

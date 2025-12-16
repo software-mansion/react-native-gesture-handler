@@ -19,11 +19,8 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'enabled',
   'shouldCancelWhenOutside',
   'hitSlop',
-  'userSelect',
   'activeCursor',
   'mouseButton',
-  'enableContextMenu',
-  'touchAction',
   'testID',
 ]);
 
@@ -39,6 +36,9 @@ export const allowedNativeProps = new Set<
   ...CommonConfig,
 
   // InternalConfigProps
+  'userSelect',
+  'enableContextMenu',
+  'touchAction',
   'dispatchesReanimatedEvents',
   'dispatchesAnimatedEvents',
   'needsPointerData',
