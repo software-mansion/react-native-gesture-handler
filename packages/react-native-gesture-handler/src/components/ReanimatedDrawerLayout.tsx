@@ -500,6 +500,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const overlayDismissGesture = useTapGesture({
+      enabled: drawerOpened,
       maxDistance: 25,
       onDeactivate: () => {
         'worklet';
