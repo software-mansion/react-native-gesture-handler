@@ -19,7 +19,7 @@ shouldCancelWhenOutside: boolean | SharedValue<boolean>;
 
 When `true` the handler will [cancel](/docs/fundamentals/states-events#cancelled) or [fail](/docs/fundamentals/states-events#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
-Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/hooks/use-long-press-gesture) and [`TapGesture`](/docs/hooks/use-tap-gesture) which default to `true`.
+Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/gestures/use-long-press-gesture) and [`TapGesture`](/docs/gestures/use-tap-gesture) which default to `true`.
 
 ### hitSlop
 
