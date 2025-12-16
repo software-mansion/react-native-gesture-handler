@@ -41,7 +41,7 @@ export function flattenAndFilterEvent<THandlerData>(
 ): GestureEvent<THandlerData> {
   'worklet';
 
-  return { ...event.handlerData };
+  return { handlerTag: event.handlerTag, ...event.handlerData };
 }
 
 export function isEventForHandlerWithTag<THandlerData>(
