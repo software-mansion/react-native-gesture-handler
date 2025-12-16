@@ -723,13 +723,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       return true;
     }
 
-    if (this._enabled !== enabled) {
-      this._enabled = enabled;
+    const prevEnabled = this._enabled;
+    this._enabled = enabled;
 
-      return true;
-    }
-
-    return false;
+    return enabled !== prevEnabled;
   }
 
   public setGestureConfig(config: Config) {
