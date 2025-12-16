@@ -712,20 +712,24 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   // Helper function to correctly set enabled property
-  private updateEnabled(enabled: boolean | undefined) {
+  private maybeUpdateEnabled(enabled: boolean | undefined): boolean {
     if (enabled === undefined) {
-      if (this._enabled) {
-        this.delegate.updateDOM();
-
-        return;
+      if (this._enabled !== undefined) {
+        return false;
       }
 
       this._enabled = true;
-      this.delegate.onEnabledChange();
-    } else if (this._enabled !== enabled) {
-      this._enabled = enabled;
-      this.delegate.onEnabledChange();
+
+      return true;
     }
+
+    if (this._enabled !== enabled) {
+      this._enabled = enabled;
+
+      return true;
+    }
+
+    return false;
   }
 
   public setGestureConfig(config: Config) {
@@ -734,19 +738,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   public updateGestureConfig(config: Partial<Config>): void {
-    if (config.enableContextMenu !== undefined) {
-      this.enableContextMenu = config.enableContextMenu;
-    }
-
-    if (config.touchAction !== undefined) {
-      this._touchAction = config.touchAction;
-    }
-
-    if (config.userSelect !== undefined) {
-      this._userSelect = config.userSelect;
-    }
-
-    this.updateEnabled(config.enabled);
+    const enabledChanged = this.maybeUpdateEnabled(config.enabled);
 
     if (config.hitSlop !== undefined) {
       this.hitSlop = config.hitSlop;
@@ -780,6 +772,29 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (config.activeCursor !== undefined) {
       this._activeCursor = config.activeCursor;
+    }
+
+    let shouldUpdateDOM = false;
+
+    if (config.enableContextMenu !== undefined) {
+      this.enableContextMenu = config.enableContextMenu;
+      shouldUpdateDOM = true;
+    }
+
+    if (config.touchAction !== undefined) {
+      this._touchAction = config.touchAction;
+      shouldUpdateDOM = true;
+    }
+
+    if (config.userSelect !== undefined) {
+      this._userSelect = config.userSelect;
+      shouldUpdateDOM = true;
+    }
+
+    if (enabledChanged) {
+      this.delegate.onEnabledChange();
+    } else if (shouldUpdateDOM) {
+      this.delegate.updateDOM();
     }
 
     if (this.enabled) {
