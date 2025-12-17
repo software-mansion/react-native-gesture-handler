@@ -168,21 +168,28 @@
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
 {
-  CGPoint accumulatedPoint = CGPointZero;
+  CGPoint focalPoint;
+  NSUInteger numberOfTouches = recognizer.numberOfTouches;
 
-  for (int i = 0; i < recognizer.numberOfTouches; i++) {
-    CGPoint location = [recognizer locationOfTouch:i inView:recognizer.view];
-    accumulatedPoint.x += location.x;
-    accumulatedPoint.y += location.y;
+  if (numberOfTouches > 0) {
+    CGPoint accumulatedPoint = CGPointZero;
+
+    for (int i = 0; i < numberOfTouches; i++) {
+      CGPoint location = [recognizer locationOfTouch:i inView:recognizer.view];
+      accumulatedPoint.x += location.x;
+      accumulatedPoint.y += location.y;
+    }
+
+    focalPoint = CGPointMake(accumulatedPoint.x / numberOfTouches, accumulatedPoint.y / numberOfTouches);
+  } else {
+    // Trackpad pinch gestures may report 0 touches - use the recognizer's location instead
+    focalPoint = [recognizer locationInView:recognizer.view];
   }
-
-  CGPoint focalPoint =
-      CGPointMake(accumulatedPoint.x / recognizer.numberOfTouches, accumulatedPoint.y / recognizer.numberOfTouches);
 
   return [RNGestureHandlerEventExtraData forPinch:recognizer.scale
                                    withFocalPoint:focalPoint
                                      withVelocity:recognizer.velocity
-                              withNumberOfTouches:recognizer.numberOfTouches
+                              withNumberOfTouches:numberOfTouches
                                   withPointerType:_pointerType];
 }
 #endif
