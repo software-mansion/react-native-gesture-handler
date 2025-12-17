@@ -102,6 +102,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)resetConfig
 {
   self.enabled = YES;
+  self.testID = nil;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _hitSlop = RNGHHitSlopEmpty;
@@ -124,6 +125,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   id prop = config[@"enabled"];
   if (prop != nil) {
     self.enabled = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"testID"];
+  if (prop != nil) {
+    self.testID = [RCTConvert NSString:prop];
   }
 
   prop = config[@"shouldCancelWhenOutside"];
