@@ -17,6 +17,7 @@ export default interface IGestureHandler {
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
+  readonly testID?: string;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;

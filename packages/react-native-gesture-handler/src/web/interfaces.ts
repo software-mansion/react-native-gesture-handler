@@ -32,6 +32,7 @@ export interface Handler {
 type ConfigArgs =
   | number
   | boolean
+  | string
   | HitSlop
   | UserSelect
   | TouchAction
@@ -57,6 +58,7 @@ export interface Config extends Record<string, ConfigArgs> {
   dispatchesAnimatedEvents?: false;
   dispatchesReanimatedEvents?: boolean;
   needsPointerData?: false;
+  testID?: string;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
