@@ -48,6 +48,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
+  private _testID?: string = undefined;
 
   private hitSlop?: HitSlop = undefined;
   private manualActivation: boolean = false;
@@ -743,6 +744,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.validateHitSlops();
     }
 
+    if (config.testID !== undefined) {
+      this._testID = config.testID;
+    }
+
     if (config.dispatchesAnimatedEvents !== undefined) {
       this.forAnimated = config.dispatchesAnimatedEvents;
     }
@@ -936,6 +941,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected resetConfig(): void {
+    this._testID = undefined;
     this.manualActivation = false;
     this.shouldCancelWhenOutside = false;
     this.mouseButton = undefined;
@@ -963,6 +969,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   public set handlerTag(value: number) {
     this._handlerTag = value;
+  }
+
+  public get testID() {
+    return this._testID;
   }
 
   public get delegate() {
