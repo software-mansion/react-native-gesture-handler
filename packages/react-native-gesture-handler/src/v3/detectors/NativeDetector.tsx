@@ -40,15 +40,15 @@ export function NativeDetector<THandlerData, TConfig>({
     Platform.OS === 'web'
       ? {
           onGestureHandlerReanimatedEvent:
-            gesture.detectorCallbacks.onGestureHandlerReanimatedEvent,
+            gesture.detectorCallbacks.reanimatedEventHandler,
           onGestureHandlerReanimatedStateChange:
-            gesture.detectorCallbacks.onGestureHandlerReanimatedEvent,
+            gesture.detectorCallbacks.reanimatedEventHandler,
           onGestureHandlerReanimatedTouchEvent:
-            gesture.detectorCallbacks.onGestureHandlerReanimatedEvent,
+            gesture.detectorCallbacks.reanimatedEventHandler,
         }
       : {
           onGestureHandlerReanimatedEvent:
-            gesture.detectorCallbacks.onGestureHandlerReanimatedEvent,
+            gesture.detectorCallbacks.reanimatedEventHandler,
         };
 
   return (
@@ -59,14 +59,12 @@ export function NativeDetector<THandlerData, TConfig>({
       pointerEvents={'box-none'}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerStateChange={
-        gesture.detectorCallbacks.onGestureHandlerEvent
+        gesture.detectorCallbacks.defaultEventHandler
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerEvent={gesture.detectorCallbacks.onGestureHandlerEvent}
+      onGestureHandlerEvent={gesture.detectorCallbacks.defaultEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerTouchEvent={
-        gesture.detectorCallbacks.onGestureHandlerEvent
-      }
+      onGestureHandlerTouchEvent={gesture.detectorCallbacks.defaultEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedStateChange={
         reanimatedHandlers.onGestureHandlerReanimatedStateChange
@@ -81,7 +79,7 @@ export function NativeDetector<THandlerData, TConfig>({
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerAnimatedEvent={
-        gesture.detectorCallbacks.onGestureHandlerAnimatedEvent
+        gesture.detectorCallbacks.animatedEventHandler
       }
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={handlerTags}

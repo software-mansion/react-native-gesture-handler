@@ -43,34 +43,31 @@ export function useComposedGesture(
     );
   }
 
-  const onGestureHandlerEvent = (
+  const defaultEventHandler = (
     event: GestureHandlerEventWithHandlerData<unknown>
   ) => {
     for (const gesture of gestures) {
-      if (gesture.detectorCallbacks.onGestureHandlerEvent) {
-        gesture.detectorCallbacks.onGestureHandlerEvent(event);
+      if (gesture.detectorCallbacks.defaultEventHandler) {
+        gesture.detectorCallbacks.defaultEventHandler(event);
       }
     }
   };
 
-  const onGestureHandlerReanimatedEvent = Reanimated?.useComposedEventHandler(
+  const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
     gestures.map(
-      (gesture) =>
-        gesture.detectorCallbacks.onGestureHandlerReanimatedEvent || null
+      (gesture) => gesture.detectorCallbacks.reanimatedEventHandler || null
     )
   );
 
-  let onGestureHandlerAnimatedEvent;
+  let animatedEventHandler;
 
   const gesturesWithAnimatedEvent = gestures.filter(
-    (gesture) =>
-      gesture.detectorCallbacks.onGestureHandlerAnimatedEvent !== undefined
+    (gesture) => gesture.detectorCallbacks.animatedEventHandler !== undefined
   );
 
   if (gesturesWithAnimatedEvent.length > 0) {
-    onGestureHandlerAnimatedEvent =
-      gesturesWithAnimatedEvent[0].detectorCallbacks
-        .onGestureHandlerAnimatedEvent;
+    animatedEventHandler =
+      gesturesWithAnimatedEvent[0].detectorCallbacks.animatedEventHandler;
 
     if (__DEV__ && gesturesWithAnimatedEvent.length > 1) {
       console.warn(
@@ -86,9 +83,9 @@ export function useComposedGesture(
     type,
     config,
     detectorCallbacks: {
-      onGestureHandlerEvent,
-      onGestureHandlerReanimatedEvent,
-      onGestureHandlerAnimatedEvent,
+      defaultEventHandler,
+      reanimatedEventHandler,
+      animatedEventHandler,
     },
     externalSimultaneousHandlers: [],
     gestures,

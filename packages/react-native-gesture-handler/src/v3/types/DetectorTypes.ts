@@ -5,13 +5,13 @@ import {
 } from './EventTypes';
 
 export type DetectorCallbacks<THandlerData> = {
-  onGestureHandlerEvent:
+  defaultEventHandler:
     | undefined
     | ((event: GestureHandlerEventWithHandlerData<THandlerData>) => void);
-  onGestureHandlerReanimatedEvent:
+  reanimatedEventHandler:
     | undefined
     | ((event: GestureHandlerEventWithHandlerData<THandlerData>) => void);
-  onGestureHandlerAnimatedEvent:
+  animatedEventHandler:
     | undefined
     | AnimatedEvent
     | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void);

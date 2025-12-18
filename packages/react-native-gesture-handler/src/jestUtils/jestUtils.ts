@@ -445,12 +445,12 @@ function getHandlerData(
         };
 
         if (eventName === 'onGestureHandlerStateChange') {
-          componentOrGesture.detectorCallbacks.onGestureHandlerEvent?.({
+          componentOrGesture.detectorCallbacks.defaultEventHandler?.({
             oldState: oldState as State,
             ...event,
           });
         } else if (eventName === 'onGestureHandlerEvent') {
-          componentOrGesture.detectorCallbacks.onGestureHandlerEvent?.(event);
+          componentOrGesture.detectorCallbacks.defaultEventHandler?.(event);
         }
       },
     };
