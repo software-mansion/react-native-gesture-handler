@@ -215,7 +215,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         };
 
   const jsEventHandler = useMemo(
-    () => createGestureEventHandler('defaultEventHandler'),
+    () => createGestureEventHandler('jsEventHandler'),
     [createGestureEventHandler]
   );
 

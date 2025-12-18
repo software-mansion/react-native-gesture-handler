@@ -5,7 +5,7 @@ import {
 } from './EventTypes';
 
 export type DetectorCallbacks<THandlerData> = {
-  defaultEventHandler:
+  jsEventHandler:
     | undefined
     | ((event: GestureHandlerEventWithHandlerData<THandlerData>) => void);
   reanimatedEventHandler:

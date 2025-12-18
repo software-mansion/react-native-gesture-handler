@@ -43,12 +43,12 @@ export function useComposedGesture(
     );
   }
 
-  const defaultEventHandler = (
+  const jsEventHandler = (
     event: GestureHandlerEventWithHandlerData<unknown>
   ) => {
     for (const gesture of gestures) {
-      if (gesture.detectorCallbacks.defaultEventHandler) {
-        gesture.detectorCallbacks.defaultEventHandler(event);
+      if (gesture.detectorCallbacks.jsEventHandler) {
+        gesture.detectorCallbacks.jsEventHandler(event);
       }
     }
   };
@@ -83,7 +83,7 @@ export function useComposedGesture(
     type,
     config,
     detectorCallbacks: {
-      defaultEventHandler,
+      jsEventHandler,
       reanimatedEventHandler,
       animatedEventHandler,
     },
