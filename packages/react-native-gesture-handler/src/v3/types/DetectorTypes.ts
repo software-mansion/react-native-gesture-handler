@@ -1,27 +1,17 @@
 import {
   AnimatedEvent,
-  StateChangeEventWithHandlerData,
-  UpdateEventWithHandlerData,
-  TouchEvent,
   GestureUpdateEventWithHandlerData,
+  GestureHandlerEventWithHandlerData,
 } from './EventTypes';
 
 export type DetectorCallbacks<THandlerData> = {
-  onGestureHandlerStateChange: (
-    event: StateChangeEventWithHandlerData<THandlerData>
-  ) => void;
-  onGestureHandlerEvent:
+  jsEventHandler:
     | undefined
-    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
-  onGestureHandlerTouchEvent: (event: TouchEvent) => void;
-  onReanimatedStateChange:
+    | ((event: GestureHandlerEventWithHandlerData<THandlerData>) => void);
+  reanimatedEventHandler:
     | undefined
-    | ((event: StateChangeEventWithHandlerData<THandlerData>) => void);
-  onReanimatedUpdateEvent:
-    | undefined
-    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
-  onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
-  onGestureHandlerAnimatedEvent:
+    | ((event: GestureHandlerEventWithHandlerData<THandlerData>) => void);
+  animatedEventHandler:
     | undefined
     | AnimatedEvent
     | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void);
