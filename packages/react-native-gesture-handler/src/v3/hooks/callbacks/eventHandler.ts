@@ -10,6 +10,7 @@ import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper'
 import {
   ChangeCalculatorType,
   GestureCallbacks,
+  GestureEndEvent,
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
@@ -35,23 +36,20 @@ function handleStateChangeEvent<THandlerData>(
     state === State.ACTIVE
   ) {
     runCallback(CALLBACK_TYPE.START, callbacks, event);
-  } else if (oldState !== state && state === State.END) {
-    if (oldState === State.ACTIVE) {
-      runCallback(CALLBACK_TYPE.END, callbacks, event, true);
-    }
-    runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
-
-    if (context) {
-      context.lastUpdateEvent = undefined;
-    }
   } else if (
-    (state === State.FAILED || state === State.CANCELLED) &&
-    state !== oldState
+    oldState !== state &&
+    (state === State.END || state === State.FAILED || state === State.CANCELLED)
   ) {
+    const canceled = state === State.FAILED || state === State.CANCELLED;
+    const endEvent: GestureEndEvent<THandlerData> = {
+      ...event,
+      canceled,
+    };
+
     if (oldState === State.ACTIVE) {
-      runCallback(CALLBACK_TYPE.END, callbacks, event, false);
+      runCallback(CALLBACK_TYPE.END, callbacks, endEvent);
     }
-    runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
+    runCallback(CALLBACK_TYPE.FINALIZE, callbacks, endEvent);
 
     if (context) {
       context.lastUpdateEvent = undefined;
