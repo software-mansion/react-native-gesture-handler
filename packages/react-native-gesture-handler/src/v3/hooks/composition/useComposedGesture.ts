@@ -1,11 +1,9 @@
 import {
-  StateChangeEventWithHandlerData,
-  UpdateEventWithHandlerData,
-  TouchEvent,
   ComposedGesture,
   ComposedGestureName,
   AnyGesture,
   ComposedGestureConfig,
+  GestureHandlerEventWithHandlerData,
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
@@ -45,18 +43,8 @@ export function useComposedGesture(
     );
   }
 
-  const onGestureHandlerStateChange = (
-    event: StateChangeEventWithHandlerData<unknown>
-  ) => {
-    for (const gesture of gestures) {
-      if (gesture.detectorCallbacks.onGestureHandlerStateChange) {
-        gesture.detectorCallbacks.onGestureHandlerStateChange(event);
-      }
-    }
-  };
-
   const onGestureHandlerEvent = (
-    event: UpdateEventWithHandlerData<unknown>
+    event: GestureHandlerEventWithHandlerData<unknown>
   ) => {
     for (const gesture of gestures) {
       if (gesture.detectorCallbacks.onGestureHandlerEvent) {
@@ -65,29 +53,10 @@ export function useComposedGesture(
     }
   };
 
-  const onGestureHandlerTouchEvent = (event: TouchEvent) => {
-    for (const gesture of gestures) {
-      if (gesture.detectorCallbacks.onGestureHandlerTouchEvent) {
-        gesture.detectorCallbacks.onGestureHandlerTouchEvent(event);
-      }
-    }
-  };
-
-  const onReanimatedStateChange = Reanimated?.useComposedEventHandler(
+  const onGestureHandlerReanimatedEvent = Reanimated?.useComposedEventHandler(
     gestures.map(
-      (gesture) => gesture.detectorCallbacks.onReanimatedStateChange || null
-    )
-  );
-
-  const onReanimatedUpdateEvent = Reanimated?.useComposedEventHandler(
-    gestures.map(
-      (gesture) => gesture.detectorCallbacks.onReanimatedUpdateEvent || null
-    )
-  );
-
-  const onReanimatedTouchEvent = Reanimated?.useComposedEventHandler(
-    gestures.map(
-      (gesture) => gesture.detectorCallbacks.onReanimatedTouchEvent || null
+      (gesture) =>
+        gesture.detectorCallbacks.onGestureHandlerReanimatedEvent || null
     )
   );
 
@@ -117,12 +86,8 @@ export function useComposedGesture(
     type,
     config,
     detectorCallbacks: {
-      onGestureHandlerStateChange,
       onGestureHandlerEvent,
-      onGestureHandlerTouchEvent,
-      onReanimatedStateChange,
-      onReanimatedUpdateEvent,
-      onReanimatedTouchEvent,
+      onGestureHandlerReanimatedEvent,
       onGestureHandlerAnimatedEvent,
     },
     externalSimultaneousHandlers: [],

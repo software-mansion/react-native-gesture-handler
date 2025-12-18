@@ -48,13 +48,13 @@ export function useGestureCallbacks<THandlerData, TConfig>(
     config
   );
 
-  let onReanimatedEvent;
+  let onGestureHandlerReanimatedEvent;
 
   if (!config.disableReanimated) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const reanimatedHandler = Reanimated?.useHandler(callbacks);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedEvent = useReanimatedEventHandler(
+    onGestureHandlerReanimatedEvent = useReanimatedEventHandler(
       handlerTag,
       callbacks,
       reanimatedHandler,
@@ -82,7 +82,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
 
   return {
     onGestureHandlerEvent,
-    onReanimatedEvent,
+    onGestureHandlerReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   };
 }
