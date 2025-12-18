@@ -36,7 +36,7 @@ export function useGesture<THandlerData, TConfig>(
   prepareConfig(config);
 
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
-  const { defaultEventHandler, reanimatedEventHandler, animatedEventHandler } =
+  const { jsEventHandler, reanimatedEventHandler, animatedEventHandler } =
     useGestureCallbacks(handlerTag, config);
 
   if (config.shouldUseReanimatedDetector && !reanimatedEventHandler) {
@@ -71,7 +71,7 @@ export function useGesture<THandlerData, TConfig>(
       type,
       config,
       detectorCallbacks: {
-        defaultEventHandler,
+        jsEventHandler,
         animatedEventHandler,
         reanimatedEventHandler,
       },
@@ -81,7 +81,7 @@ export function useGesture<THandlerData, TConfig>(
       handlerTag,
       type,
       config,
-      defaultEventHandler,
+      jsEventHandler,
       reanimatedEventHandler,
       animatedEventHandler,
       gestureRelations,

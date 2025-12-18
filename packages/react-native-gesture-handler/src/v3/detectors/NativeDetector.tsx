@@ -60,13 +60,11 @@ export function NativeDetector<THandlerData, TConfig>({
       enableContextMenu={enableContextMenu}
       pointerEvents={'box-none'}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerStateChange={
-        gesture.detectorCallbacks.defaultEventHandler
-      }
+      onGestureHandlerStateChange={gesture.detectorCallbacks.jsEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerEvent={gesture.detectorCallbacks.defaultEventHandler}
+      onGestureHandlerEvent={gesture.detectorCallbacks.jsEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerTouchEvent={gesture.detectorCallbacks.defaultEventHandler}
+      onGestureHandlerTouchEvent={gesture.detectorCallbacks.jsEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedStateChange={
         reanimatedHandlers.onGestureHandlerReanimatedStateChange

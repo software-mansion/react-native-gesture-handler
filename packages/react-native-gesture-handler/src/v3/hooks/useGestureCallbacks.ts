@@ -42,11 +42,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
 ) {
   const callbacks = useMemoizedGestureCallbacks(config);
 
-  const defaultEventHandler = useGestureEventHandler(
-    handlerTag,
-    callbacks,
-    config
-  );
+  const jsEventHandler = useGestureEventHandler(handlerTag, callbacks, config);
 
   let reanimatedEventHandler;
 
@@ -81,7 +77,7 @@ export function useGestureCallbacks<THandlerData, TConfig>(
   }
 
   return {
-    defaultEventHandler,
+    jsEventHandler,
     reanimatedEventHandler,
     animatedEventHandler,
   };
