@@ -445,7 +445,7 @@ function getHandlerData(
         };
 
         if (eventName === 'onGestureHandlerStateChange') {
-          componentOrGesture.detectorCallbacks.onGestureHandlerStateChange({
+          componentOrGesture.detectorCallbacks.onGestureHandlerEvent?.({
             oldState: oldState as State,
             ...event,
           });
