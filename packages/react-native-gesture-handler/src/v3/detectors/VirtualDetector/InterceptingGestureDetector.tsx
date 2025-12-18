@@ -178,7 +178,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   );
 
   const reanimatedEvents = useMemo(
-    () => getHandlers('onGestureHandlerReanimatedEvent'),
+    () => getHandlers('reanimatedEventHandler'),
     [getHandlers]
   );
   const reanimatedEventHandler =
@@ -222,21 +222,21 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         pointerEvents={'box-none'}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerStateChange={useMemo(
-          () => createGestureEventHandler('onGestureHandlerEvent'),
+          () => createGestureEventHandler('defaultEventHandler'),
           [createGestureEventHandler]
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerEvent={useMemo(
-          () => createGestureEventHandler('onGestureHandlerEvent'),
+          () => createGestureEventHandler('defaultEventHandler'),
           [createGestureEventHandler]
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerAnimatedEvent={
-          gesture?.detectorCallbacks.onGestureHandlerAnimatedEvent
+          gesture?.detectorCallbacks.animatedEventHandler
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerTouchEvent={useMemo(
-          () => createGestureEventHandler('onGestureHandlerEvent'),
+          () => createGestureEventHandler('defaultEventHandler'),
           [createGestureEventHandler]
         )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
