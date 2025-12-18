@@ -297,7 +297,7 @@
   RNGHUIView *view = self.subviews[0];
 
   // TODO: figure out how to do it correctly
-  if ([view isKindOfClass:[RCTViewComponentView class]] && ![view isKindOfClass:[RCTScrollViewComponentView class]]) {
+  if ([view isKindOfClass:[RCTViewComponentView class]]) {
     RCTViewComponentView *componentView = (RCTViewComponentView *)view;
     if (componentView.contentView != nil) {
       view = componentView.contentView;
