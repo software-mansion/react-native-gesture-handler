@@ -216,29 +216,25 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
           onGestureHandlerReanimatedEvent: reanimatedEventHandler,
         };
 
+  const jsEventHandler = useMemo(
+    () => createGestureEventHandler('defaultEventHandler'),
+    [createGestureEventHandler]
+  );
+
   return (
     <InterceptingDetectorContext value={contextValue}>
       <NativeDetectorComponent
         pointerEvents={'box-none'}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerStateChange={useMemo(
-          () => createGestureEventHandler('defaultEventHandler'),
-          [createGestureEventHandler]
-        )}
+        onGestureHandlerStateChange={jsEventHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerEvent={useMemo(
-          () => createGestureEventHandler('defaultEventHandler'),
-          [createGestureEventHandler]
-        )}
+        onGestureHandlerEvent={jsEventHandler}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerTouchEvent={jsEventHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerAnimatedEvent={
           gesture?.detectorCallbacks.animatedEventHandler
         }
-        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerTouchEvent={useMemo(
-          () => createGestureEventHandler('defaultEventHandler'),
-          [createGestureEventHandler]
-        )}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedStateChange={
           shouldUseReanimatedDetector
