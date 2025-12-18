@@ -9,6 +9,7 @@
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
 
+#import <React/RCTScrollViewComponentView.h>
 #include <unordered_map>
 
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
@@ -295,10 +296,19 @@
 
   RNGHUIView *view = self.subviews[0];
 
-  if ([view isKindOfClass:[RCTViewComponentView class]]) {
+  // TODO: figure out how to do it correctly
+  if ([view isKindOfClass:[RCTViewComponentView class]] && ![view isKindOfClass:[RCTScrollViewComponentView class]]) {
     RCTViewComponentView *componentView = (RCTViewComponentView *)view;
     if (componentView.contentView != nil) {
       view = componentView.contentView;
+    } else if (componentView.subviews.count > 0) {
+      view = componentView.subviews[0];
+      if ([view isKindOfClass:[RCTViewComponentView class]]) {
+        RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+        if (componentView.contentView != nil) {
+          view = componentView.contentView;
+        }
+      }
     }
   }
 
