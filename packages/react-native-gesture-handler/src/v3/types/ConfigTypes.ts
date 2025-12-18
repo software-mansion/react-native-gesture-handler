@@ -47,6 +47,9 @@ export type InternalConfigProps<THandlerData> = {
   dispatchesReanimatedEvents?: boolean;
   dispatchesAnimatedEvents?: boolean;
   needsPointerData?: boolean;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
@@ -60,14 +63,11 @@ export type CommonGestureConfig = {
     enabled?: boolean;
     shouldCancelWhenOutside?: boolean;
     hitSlop?: HitSlop;
-    userSelect?: UserSelect;
     activeCursor?: ActiveCursor;
     mouseButton?: MouseButton;
-    enableContextMenu?: boolean;
-    touchAction?: TouchAction;
     cancelsTouchesInView?: boolean;
   },
-  HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
+  HitSlop | ActiveCursor | MouseButton
 >;
 
 export type ComposedGestureConfig = {

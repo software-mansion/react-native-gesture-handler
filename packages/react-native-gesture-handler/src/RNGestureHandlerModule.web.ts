@@ -67,7 +67,7 @@ export default {
   setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).setGestureConfig(newConfig);
   },
-  updateGestureHandlerConfig(handlerTag: number, newConfig: Config) {
+  updateGestureHandlerConfig(handlerTag: number, newConfig: Partial<Config>) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {

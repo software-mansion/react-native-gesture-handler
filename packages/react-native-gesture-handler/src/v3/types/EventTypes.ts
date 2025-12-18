@@ -49,7 +49,9 @@ export type TouchEvent =
   | GestureTouchEvent
   | NativeSyntheticEvent<GestureTouchEvent>;
 
-export type GestureEvent<THandlerData> = HandlerData<THandlerData>;
+export type GestureEvent<THandlerData> = {
+  handlerTag: number;
+} & HandlerData<THandlerData>;
 
 export type UnpackedGestureHandlerEvent<THandlerData> =
   | GestureEvent<THandlerData>

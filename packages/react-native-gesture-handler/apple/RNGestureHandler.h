@@ -92,7 +92,7 @@
 - (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateRelations:(nonnull NSDictionary *)relations;
-- (void)handleGesture:(nonnull id)recognizer;
+- (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
 - (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;

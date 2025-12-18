@@ -46,7 +46,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   }
 
   override fun dispatchGenericMotionEvent(ev: MotionEvent) =
-    if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(ev)) {
+    if (rootViewEnabled && ev.isHoverAction() && rootHelper!!.dispatchTouchEvent(ev)) {
       true
     } else {
       super.dispatchGenericMotionEvent(ev)
