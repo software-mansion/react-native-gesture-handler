@@ -40,7 +40,7 @@ function useColoredHover(
       hovered.value = false;
       console.log('hover finalize', color);
     },
-    hoverEffect: HoverEffect.LIFT,
+    effect: HoverEffect.LIFT,
   });
 
   return [gesture, style] as const;

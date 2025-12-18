@@ -86,7 +86,7 @@ function BoxReanimated(props: { source: any }) {
 
 function BoxNative(props: { source: any }) {
   const hover = useHoverGesture({
-    hoverEffect: HoverEffect.LIFT,
+    effect: HoverEffect.LIFT,
   });
 
   return (
