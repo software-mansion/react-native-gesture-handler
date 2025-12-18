@@ -1,6 +1,5 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
-import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 import { useGestureCallbacks } from './useGestureCallbacks';
 import {
   prepareConfig,
@@ -11,6 +10,13 @@ import {
 } from './utils';
 import { tagMessage } from '../../utils';
 import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
+import { scheduleFlushOperations } from '../../handlers/utils';
+import {
+  registerGesture,
+  unregisterGesture,
+} from '../../handlers/handlersRegistry';
+import { Platform } from 'react-native';
+import { NativeProxy } from '../NativeProxy';
 
 export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
@@ -30,84 +36,100 @@ export function useGesture<THandlerData, TConfig>(
   // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
   prepareConfig(config);
 
-  if (config.dispatchesAnimatedEvents && config.shouldUseReanimatedDetector) {
-    throw new Error(
-      tagMessage(
-        `${type}: You cannot use Animated.Event together with callbacks running on the UI thread. Either remove Animated.Event from onUpdate, or set runOnJS property to true on the gesture.`
-      )
-    );
-  }
-
   // TODO: Call only necessary hooks depending on which callbacks are defined (?)
   const {
-    onGestureHandlerStateChange,
     onGestureHandlerEvent,
-    onGestureHandlerTouchEvent,
-    onReanimatedStateChange,
-    onReanimatedUpdateEvent,
-    onReanimatedTouchEvent,
+    onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
   } = useGestureCallbacks(tag, config);
 
-  // This should never happen, but since we don't want to call hooks conditionally,
-  // we have to mark these as possibly undefined to make TypeScript happy.
-  if (
-    !onGestureHandlerStateChange ||
-    // If onUpdate is an AnimatedEvent, `onGestureHandlerEvent` will be undefined and vice versa.
-    (!onGestureHandlerEvent && !onGestureHandlerAnimatedEvent) ||
-    !onGestureHandlerTouchEvent
-  ) {
-    throw new Error(tagMessage('Failed to create event handlers.'));
-  }
-
-  if (
-    config.shouldUseReanimatedDetector &&
-    (!onReanimatedStateChange ||
-      !onReanimatedUpdateEvent ||
-      !onReanimatedTouchEvent)
-  ) {
+  if (config.shouldUseReanimatedDetector && !onReanimatedEvent) {
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
   }
 
-  const gestureRelations = prepareRelations(config, tag);
+  const gestureRelations = useMemo(
+    () =>
+      prepareRelations(
+        {
+          simultaneousWith: config.simultaneousWith,
+          requireToFail: config.requireToFail,
+          block: config.block,
+        },
+        tag
+      ),
+    [tag, config.simultaneousWith, config.requireToFail, config.block]
+  );
 
-  useMemo(() => {
-    RNGestureHandlerModule.createGestureHandler(type, tag, {});
-    RNGestureHandlerModule.flushOperations();
-  }, [type, tag]);
+  const currentGestureRef = useRef({ type: '', tag: -1 });
+  if (
+    currentGestureRef.current.tag !== tag ||
+    currentGestureRef.current.type !== (type as string)
+  ) {
+    currentGestureRef.current = { type, tag };
+    NativeProxy.createGestureHandler(type, tag, {});
+  }
+
+  const gesture = useMemo(
+    () => ({
+      tag,
+      type,
+      config,
+      detectorCallbacks: {
+        onGestureHandlerStateChange: onGestureHandlerEvent,
+        onGestureHandlerEvent: onGestureHandlerEvent,
+        onGestureHandlerTouchEvent: onGestureHandlerEvent,
+        onGestureHandlerAnimatedEvent,
+        // On web, we're triggering Reanimated callbacks ourselves, based on the type.
+        // To handle this properly, we need to provide all three callbacks, so we set
+        // all three to the Reanimated event handler.
+        // On native, Reanimated handles routing internally based on the event names
+        // passed to the useEvent hook. We only need to pass it once, so that Reanimated
+        // can setup its internal listeners.
+        ...(Platform.OS === 'web'
+          ? {
+              onReanimatedUpdateEvent: onReanimatedEvent,
+              onReanimatedStateChange: onReanimatedEvent,
+              onReanimatedTouchEvent: onReanimatedEvent,
+            }
+          : {
+              onReanimatedUpdateEvent: onReanimatedEvent,
+              onReanimatedStateChange: undefined,
+              onReanimatedTouchEvent: undefined,
+            }),
+      },
+      gestureRelations,
+    }),
+    [
+      tag,
+      type,
+      config,
+      onGestureHandlerEvent,
+      onReanimatedEvent,
+      onGestureHandlerAnimatedEvent,
+      gestureRelations,
+    ]
+  );
 
   useEffect(() => {
     return () => {
-      RNGestureHandlerModule.dropGestureHandler(tag);
-      RNGestureHandlerModule.flushOperations();
+      NativeProxy.dropGestureHandler(tag);
+      scheduleFlushOperations();
     };
   }, [type, tag]);
 
   useEffect(() => {
     const preparedConfig = prepareConfigForNativeSide(type, config);
-    RNGestureHandlerModule.setGestureHandlerConfig(tag, preparedConfig);
-    RNGestureHandlerModule.flushOperations();
+    NativeProxy.setGestureHandlerConfig(tag, preparedConfig);
+    scheduleFlushOperations();
 
     bindSharedValues(config, tag);
+    registerGesture(tag, gesture);
 
     return () => {
       unbindSharedValues(config, tag);
+      unregisterGesture(tag);
     };
-  }, [tag, config]);
+  }, [tag, config, type, gesture]);
 
-  return {
-    tag,
-    type,
-    config,
-    detectorCallbacks: {
-      onGestureHandlerStateChange,
-      onGestureHandlerEvent,
-      onGestureHandlerTouchEvent,
-      onReanimatedStateChange,
-      onReanimatedUpdateEvent,
-      onReanimatedTouchEvent,
-      onGestureHandlerAnimatedEvent,
-    },
-    gestureRelations,
-  };
+  return gesture;
 }

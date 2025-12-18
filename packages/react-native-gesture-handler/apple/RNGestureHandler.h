@@ -81,7 +81,8 @@
 @property (nonatomic) BOOL manualActivation;
 @property (nonatomic) BOOL dispatchesAnimatedEvents;
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
-@property (nonatomic, nonnull, assign) NSNumber *hostDetectorTag;
+@property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
+@property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
@@ -91,7 +92,7 @@
 - (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateRelations:(nonnull NSDictionary *)relations;
-- (void)handleGesture:(nonnull id)recognizer;
+- (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
 - (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;
@@ -107,6 +108,7 @@
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
 - (nonnull RNGHUIView *)findViewForEvents;
 - (BOOL)wantsToAttachDirectlyToView;
+- (BOOL)usesNativeOrVirtualDetector;
 
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;

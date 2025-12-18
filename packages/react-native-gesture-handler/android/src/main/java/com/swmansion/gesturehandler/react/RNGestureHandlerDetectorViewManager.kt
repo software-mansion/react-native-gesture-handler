@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.react
 
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.PointerEvents.Companion.parsePointerEvents
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
@@ -37,12 +38,16 @@ class RNGestureHandlerDetectorViewManager :
     view.setModuleId(value)
   }
 
-  override fun setLogicChildren(view: RNGestureHandlerDetectorView, value: ReadableArray?) {
-    view.setLogicChildren(value)
+  override fun setVirtualChildren(view: RNGestureHandlerDetectorView, value: ReadableArray?) {
+    view.setVirtualChildren(value)
   }
 
   override fun onDropViewInstance(view: RNGestureHandlerDetectorView) {
     view.onViewDrop()
     super.onDropViewInstance(view)
+  }
+
+  override fun setPointerEvents(view: RNGestureHandlerDetectorView, pointerEventsStr: String?) {
+    view.pointerEvents = parsePointerEvents(pointerEventsStr)
   }
 }

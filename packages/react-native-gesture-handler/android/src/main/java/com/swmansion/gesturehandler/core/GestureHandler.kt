@@ -21,6 +21,7 @@ import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.isHoverAction
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -33,33 +34,18 @@ open class GestureHandler {
     private set
 
   // Host detector view is a reference to a Native Detector designated to handle events from a
-  // Logic Detector to which the gesture is assigned.
+  // Virtual Detector to which the gesture is assigned.
   var hostDetectorView: RNGestureHandlerDetectorView? = null
 
-  val viewForEvents: RNGestureHandlerDetectorView
+  val viewForEvents: View
     get() {
-      assert(usesNativeOrLogicDetector(actionType)) {
-        "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
-      }
-
-      val detector = if (actionType ==
-        ACTION_TYPE_LOGIC_DETECTOR
-      ) {
-        this.hostDetectorView
-      } else if (this is NativeViewGestureHandler) {
-        this.view?.parent
+      return if (usesNativeOrVirtualDetector(actionType)) {
+        hostDetectorView!!
       } else {
-        view
+        view!!
       }
-
-      if (detector !is RNGestureHandlerDetectorView) {
-        throw Error(
-          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event.",
-        )
-      }
-
-      return detector
     }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -82,6 +68,7 @@ open class GestureHandler {
     }
   var actionType = 0
 
+  var forceReinitializeDuringOnHandle = false
   var changedTouchesPayload: WritableArray? = null
     private set
   var allTouchesPayload: WritableArray? = null
@@ -419,10 +406,7 @@ open class GestureHandler {
       setPointerType(sourceEvent)
     }
 
-    if (sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_EXIT
-    ) {
+    if (sourceEvent.isHoverAction()) {
       onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
     } else {
       onHandle(adaptedTransformedEvent, adaptedSourceEvent)
@@ -536,7 +520,7 @@ open class GestureHandler {
   }
 
   private fun cancelPointers() {
-    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCELLED
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCEL
     changedTouchesPayload = null
     extractAllPointersData()
 
@@ -755,6 +739,7 @@ open class GestureHandler {
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
 
+  protected open fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {}
   protected open fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     moveToState(STATE_FAILED)
   }
@@ -1018,7 +1003,7 @@ open class GestureHandler {
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     const val ACTION_TYPE_NATIVE_DETECTOR = 5
-    const val ACTION_TYPE_LOGIC_DETECTOR = 6
+    const val ACTION_TYPE_VIRTUAL_DETECTOR = 6
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
@@ -1054,8 +1039,8 @@ open class GestureHandler {
       return null
     }
 
-    fun usesNativeOrLogicDetector(actionType: Int): Boolean =
-      actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_LOGIC_DETECTOR
+    fun usesNativeOrVirtualDetector(actionType: Int): Boolean =
+      actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_VIRTUAL_DETECTOR
   }
 
   private data class PointerData(

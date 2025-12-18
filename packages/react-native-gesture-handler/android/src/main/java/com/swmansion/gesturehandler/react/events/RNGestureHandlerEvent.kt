@@ -1,9 +1,3 @@
-// 1. RCTEventEmitter was deprecated in favor of RCTModernEventEmitter interface
-// 2. Event#init() with only viewTag was deprecated in favor of two arg c-tor
-// 3. Event#receiveEvent() with 3 args was deprecated in favor of 4 args version
-// ref: https://github.com/facebook/react-native/commit/2fbbdbb2ce897e8da3f471b08b93f167d566db1d
-@file:Suppress("DEPRECATION")
-
 package com.swmansion.gesturehandler.react.events
 
 import androidx.core.util.Pools
@@ -26,11 +20,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     eventHandlerType: EventHandlerType,
   ) {
-    val view = if (GestureHandler.usesNativeOrLogicDetector(handler.actionType)) {
-      handler.viewForEvents
-    } else {
-      handler.view!!
-    }
+    val view = handler.viewForEvents
 
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
 
@@ -45,7 +35,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
+  override fun getEventName() = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {
     if (eventHandlerType == EventHandlerType.ForAnimated) {
       NATIVE_DETECTOR_ANIMATED_EVENT_NAME
     } else if (eventHandlerType == EventHandlerType.ForReanimated) {
@@ -60,11 +50,11 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
   }
 
   // Unfortunately getCoalescingKey is not considered when sending event to C++, therefore we have to disable coalescing in v3
-  override fun canCoalesce() = !GestureHandler.usesNativeOrLogicDetector(actionType)
+  override fun canCoalesce() = !GestureHandler.usesNativeOrVirtualDetector(actionType)
 
   override fun getCoalescingKey() = coalescingKey
 
-  override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
+  override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {
     createNativeEventData(dataBuilder!!)
   } else {
     createEventData(dataBuilder!!)

@@ -6,14 +6,18 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import com.facebook.react.uimanager.ReactCompoundView
+import com.facebook.react.uimanager.RootView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
+import com.swmansion.gesturehandler.react.isHoverAction
 import java.util.*
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
+  private val rootView: ViewGroup,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -55,6 +59,14 @@ class GestureHandlerOrchestrator(
     isHandlingTouch = false
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
       cleanupFinishedHandlers()
+    }
+    if (action == MotionEvent.ACTION_UP ||
+      action == MotionEvent.ACTION_CANCEL ||
+      action == MotionEvent.ACTION_HOVER_EXIT
+    ) {
+      if (gestureHandlers.isEmpty() && rootView is RootView) {
+        rootView.onChildEndedNativeGesture(rootView, event)
+      }
     }
     return true
   }
@@ -286,15 +298,7 @@ class GestureHandlerOrchestrator(
     val action = sourceEvent.actionMasked
     val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
 
-    // Touch events are sent before the handler itself has a chance to process them,
-    // mainly because `onTouchesUp` should be send before gesture finishes. This means that
-    // the first `onTouchesDown` event is sent before a gesture begins, activation in
-    // callback for this event causes problems because the handler doesn't have a chance
-    // to initialize itself with starting values of pointer (in pan this causes translation
-    // to be equal to the coordinates of the pointer). The simplest solution is to send
-    // the first `onTouchesDown` event after the handler processes it and changes state
-    // to `BEGAN`.
-    if (handler.needsPointerData && handler.state != 0) {
+    if (handler.needsPointerData) {
       handler.updatePointerData(event, sourceEvent)
     }
 
@@ -314,10 +318,6 @@ class GestureHandlerOrchestrator(
           handler.resetProgress()
         }
         handler.dispatchHandlerUpdate(event)
-      }
-
-      if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event, sourceEvent)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
@@ -507,18 +507,12 @@ class GestureHandlerOrchestrator(
   // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
   // so we need to pass them into RootViewGestureHandler, otherwise press and hold
   // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
-  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, action: Int): Boolean {
+  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, event: MotionEvent): Boolean {
     val shouldSkipHoverEvents =
       handler !is HoverGestureHandler &&
         handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
 
-    return shouldSkipHoverEvents &&
-      action in
-      listOf(
-        MotionEvent.ACTION_HOVER_EXIT,
-        MotionEvent.ACTION_HOVER_ENTER,
-        MotionEvent.ACTION_HOVER_MOVE,
-      )
+    return shouldSkipHoverEvents && event.isHoverAction()
   }
 
   private fun recordViewHandlersForPointer(
@@ -536,7 +530,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          if (shouldHandlerSkipHoverEvents(handler, event.action)) {
+          if (shouldHandlerSkipHoverEvents(handler, event)) {
             continue
           }
 
@@ -555,6 +549,26 @@ class GestureHandlerOrchestrator(
       extractAncestorHandlers(view, coords, pointerId)
     ) {
       found = true
+    }
+
+    if (view is ReactCompoundView) {
+      val tagForCoords = view.reactTagForTouch(coords[0], coords[1])
+
+      if (tagForCoords != view.id) {
+        handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
+          synchronized(it) {
+            for (handler in it) {
+              if (shouldHandlerSkipHoverEvents(handler, event)) {
+                continue
+              }
+
+              recordHandlerIfNotPresent(handler, view)
+              handler.startTrackingPointer(pointerId)
+              found = true
+            }
+          }
+        }
+      }
     }
 
     return found

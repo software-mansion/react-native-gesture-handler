@@ -1,5 +1,5 @@
 import { HostComponent, StyleSheet, View } from 'react-native';
-import type { RawButtonProps } from './GestureButtonsProps';
+import type { RawButtonProps } from '../v3/components/GestureButtonsProps';
 import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
 import RNGestureHandlerButtonWrapperNativeComponent from '../specs/RNGestureHandlerButtonWrapperNativeComponent';
 import { useMemo } from 'react';

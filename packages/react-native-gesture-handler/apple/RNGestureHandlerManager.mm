@@ -124,6 +124,14 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                toViewWithTag:(nonnull NSNumber *)viewTag
               withActionType:(RNGestureHandlerActionType)actionType
 {
+  [self attachGestureHandler:handlerTag toViewWithTag:viewTag withActionType:actionType withHostDetector:nil];
+}
+
+- (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
+               toViewWithTag:(nonnull NSNumber *)viewTag
+              withActionType:(RNGestureHandlerActionType)actionType
+            withHostDetector:(nullable RNGHUIView *)hostDetector
+{
   RNGHUIView *view = [_viewRegistry viewForReactTag:viewTag];
 
   if (view == nil || view.superview == nil) {
@@ -151,7 +159,10 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (![_droppedHandlers containsObject:handlerTag]) {
-          [self attachGestureHandler:handlerTag toViewWithTag:viewTag withActionType:actionType];
+          [self attachGestureHandler:handlerTag
+                       toViewWithTag:viewTag
+                      withActionType:actionType
+                    withHostDetector:hostDetector];
         }
       });
     }
@@ -173,7 +184,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be
                            // returned as event.target
 
-  [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
+  [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType withHostDetector:hostDetector];
 
   // register view if not already there
   [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
@@ -206,20 +217,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 - (void)dropAllGestureHandlers
 {
   [_registry dropAllHandlers];
-}
-
-- (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(BOOL)blockNativeResponder
-{
-  if (blockNativeResponder) {
-    for (RNRootViewGestureRecognizer *recognizer in _rootViewGestureRecognizers) {
-      [recognizer blockOtherRecognizers];
-    }
-  }
-}
-
-- (void)handleClearJSResponder
-{
-  // ignore...
 }
 
 - (id)handlerWithTag:(NSNumber *)handlerTag
@@ -309,20 +306,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
                                               // but results in a compilation error.
 {
   switch (actionType) {
-    case RNGestureHandlerActionTypeLogicDetector: {
-      NSNumber *hostDetectorTag = [_registry handlerWithTag:event.handlerTag].hostDetectorTag;
-      detectorView = [self viewForReactTag:hostDetectorTag];
-      [self sendNativeOrLogicEvent:event
-                    withActionType:actionType
-                    forHandlerType:eventHandlerType
-                           forView:detectorView];
-      break;
-    }
+    case RNGestureHandlerActionTypeVirtualDetector:
     case RNGestureHandlerActionTypeNativeDetector: {
-      [self sendNativeOrLogicEvent:event
-                    withActionType:actionType
-                    forHandlerType:eventHandlerType
-                           forView:detectorView];
+      [self sendNativeOrVirtualEvent:event
+                      withActionType:actionType
+                      forHandlerType:eventHandlerType
+                             forView:detectorView];
       break;
     }
 
@@ -469,24 +458,27 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
-- (void)sendNativeOrLogicEvent:(RNGestureHandlerStateChange *)event
-                withActionType:(RNGestureHandlerActionType)actionType
-                forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
-                       forView:(RNGHUIView *)detectorView
+- (void)sendNativeOrVirtualEvent:(RNGestureHandlerStateChange *)event
+                  withActionType:(RNGestureHandlerActionType)actionType
+                  forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
+                         forView:(RNGHUIView *)detectorView
 {
   if ([event isKindOfClass:[RNGestureHandlerEvent class]]) {
+    RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
+
     switch (eventHandlerType) {
-      case RNGestureHandlerEventHandlerTypeAnimated:
+      case RNGestureHandlerEventHandlerTypeAnimated: {
         [self sendEventForNativeAnimatedEvent:event];
+        auto nativeEvent = [gestureEvent getNativeEvent];
+        [(RNGestureHandlerDetector *)detectorView dispatchAnimatedGestureEvent:nativeEvent];
         break;
+      }
       case RNGestureHandlerEventHandlerTypeReanimated: {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getReanimatedNativeEvent];
         [(RNGestureHandlerDetector *)detectorView dispatchReanimatedGestureEvent:nativeEvent];
         break;
       }
       case RNGestureHandlerEventHandlerTypeJS: {
-        RNGestureHandlerEvent *gestureEvent = (RNGestureHandlerEvent *)event;
         auto nativeEvent = [gestureEvent getNativeEvent];
         [(RNGestureHandlerDetector *)detectorView dispatchGestureEvent:nativeEvent];
         break;

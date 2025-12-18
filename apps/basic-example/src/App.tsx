@@ -4,11 +4,16 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Navigator from './Navigator';
 
+import Text from './Text';
 import NativeDetector from './NativeDetector';
 import RuntimeDecoration from './RuntimeDecoration';
 import ContentsButton from './ContentsButton';
 
 const EXAMPLES = [
+  {
+    name: 'Text',
+    component: Text,
+  },
   {
     name: 'Runtime Decoration',
     component: RuntimeDecoration,

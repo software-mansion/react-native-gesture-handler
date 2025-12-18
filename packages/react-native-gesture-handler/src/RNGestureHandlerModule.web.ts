@@ -16,12 +16,6 @@ import { GestureRelations } from './v3/types';
 let shouldPreventDrop = false;
 
 export default {
-  handleSetJSResponder(tag: number, blockNativeResponder: boolean) {
-    console.warn('handleSetJSResponder: ', tag, blockNativeResponder);
-  },
-  handleClearJSResponder() {
-    console.warn('handleClearJSResponder: ');
-  },
   createGestureHandler<T>(
     handlerName: keyof typeof Gestures,
     handlerTag: number,
@@ -73,7 +67,7 @@ export default {
   setGestureHandlerConfig(handlerTag: number, newConfig: Config) {
     NodeManager.getHandler(handlerTag).setGestureConfig(newConfig);
   },
-  updateGestureHandlerConfig(handlerTag: number, newConfig: Config) {
+  updateGestureHandlerConfig(handlerTag: number, newConfig: Partial<Config>) {
     NodeManager.getHandler(handlerTag).updateGestureConfig(newConfig);
   },
   getGestureHandlerNode(handlerTag: number) {

@@ -3,10 +3,10 @@ import { Animated, Dimensions, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   TapGestureHandler,
-  ScrollView,
   State,
   PanGestureHandlerGestureEvent,
   TapGestureHandlerStateChangeEvent,
+  LegacyScrollView,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../config';
@@ -92,11 +92,11 @@ export default class Example extends Component {
     const tapRef = React.createRef<TapGestureHandler>();
     const panRef = React.createRef<PanGestureHandler>();
     return (
-      <ScrollView waitFor={[tapRef, panRef]}>
+      <LegacyScrollView waitFor={[tapRef, panRef]}>
         <LoremIpsum words={150} />
         <TapOrPan tapRef={tapRef} panRef={panRef} />
         <LoremIpsum words={150} />
-      </ScrollView>
+      </LegacyScrollView>
     );
   }
 }

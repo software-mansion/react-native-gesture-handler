@@ -1,9 +1,3 @@
-// 1. RCTEventEmitter was deprecated in favor of RCTModernEventEmitter interface
-// 2. Event#init() with only viewTag was deprecated in favor of two arg c-tor
-// 3. Event#receiveEvent() with 3 args was deprecated in favor of 4 args version
-// ref: https://github.com/facebook/react-native/commit/2fbbdbb2ce897e8da3f471b08b93f167d566db1d
-@file:Suppress("DEPRECATION")
-
 package com.swmansion.gesturehandler.react.events
 
 import androidx.core.util.Pools
@@ -29,11 +23,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     dataBuilder: GestureHandlerEventDataBuilder<T>,
     eventHandlerType: EventHandlerType,
   ) {
-    val view = if (GestureHandler.usesNativeOrLogicDetector(handler.actionType)) {
-      handler.viewForEvents
-    } else {
-      handler.view!!
-    }
+    val view = handler.viewForEvents
 
     super.init(UIManagerHelper.getSurfaceId(view), view.id)
 
@@ -51,7 +41,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
+  override fun getEventName() = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {
     if (eventHandlerType == EventHandlerType.ForReanimated) REANIMATED_EVENT_NAME else EVENT_NAME
   } else {
     EVENT_NAME
@@ -63,7 +53,7 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
   // TODO: coalescing
   override fun getCoalescingKey(): Short = 0
 
-  override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrLogicDetector(actionType)) {
+  override fun getEventData(): WritableMap = if (GestureHandler.usesNativeOrVirtualDetector(actionType)) {
     createNativeEventData(dataBuilder!!, newState, oldState)
   } else {
     createEventData(dataBuilder!!, newState, oldState)

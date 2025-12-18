@@ -71,7 +71,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           RNGestureHandlerEvent.createEventData(handlerFactory.createEventBuilder(handler))
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR -> {
         val eventHandlerType = if (handler.dispatchesAnimatedEvents) {
           EventHandlerType.ForAnimated
         } else if (handler.dispatchesReanimatedEvents) {
@@ -87,7 +87,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           eventHandlerType,
         )
 
-        handler.viewForEvents.dispatchEvent(event)
+        handler.hostDetectorView?.dispatchEvent(event)
       }
     }
   }
@@ -136,7 +136,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         sendEventForDeviceEvent(RNGestureHandlerStateChangeEvent.EVENT_NAME, data)
       }
 
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR -> {
         val eventHandlerType = if (handler.dispatchesReanimatedEvents) {
           EventHandlerType.ForReanimated
         } else {
@@ -152,7 +152,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
           eventHandlerType,
         )
 
-        handler.viewForEvents.dispatchEvent(event)
+        handler.hostDetectorView?.dispatchEvent(event)
       }
     }
   }
@@ -188,7 +188,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         val data = RNGestureHandlerTouchEvent.createEventData(handler)
         sendEventForDeviceEvent(RNGestureHandlerEvent.EVENT_NAME, data)
       }
-      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_LOGIC_DETECTOR -> {
+      GestureHandler.ACTION_TYPE_NATIVE_DETECTOR, GestureHandler.ACTION_TYPE_VIRTUAL_DETECTOR -> {
         val eventHandlerType = if (handler.dispatchesReanimatedEvents) {
           EventHandlerType.ForReanimated
         } else {
@@ -196,7 +196,7 @@ class RNGestureHandlerEventDispatcher(private val reactApplicationContext: React
         }
         val event = RNGestureHandlerTouchEvent.obtain(handler, handler.actionType, eventHandlerType)
 
-        handler.viewForEvents.dispatchEvent(event)
+        handler.hostDetectorView?.dispatchEvent(event)
       }
     }
   }

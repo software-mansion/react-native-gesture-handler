@@ -230,8 +230,6 @@ export default class PanGestureHandler extends GestureHandler {
 
     this.tryBegin(event);
     this.checkBegan();
-
-    this.tryToSendTouchEvent(event);
   }
 
   protected override onPointerAdd(event: AdaptedEvent): void {

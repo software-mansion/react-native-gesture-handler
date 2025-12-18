@@ -1,112 +1,60 @@
+import type { FlingGestureEvent, FlingGesture } from './fling/useFlingGesture';
+import type { HoverGestureEvent, HoverGesture } from './hover/useHoverGesture';
 import type {
-  FlingGestureStateChangeEvent,
-  FlingGestureUpdateEvent,
-  FlingGesture,
-} from './fling/useFling';
-import type {
-  HoverGestureStateChangeEvent,
-  HoverGestureUpdateEvent,
-  HoverGesture,
-} from './hover/useHover';
-import type {
-  LongPressGestureStateChangeEvent,
-  LongPressGestureUpdateEvent,
+  LongPressGestureEvent,
   LongPressGesture,
-} from './longPress/useLongPress';
+} from './longPress/useLongPressGesture';
 import type {
-  ManualGestureStateChangeEvent,
-  ManualGestureUpdateEvent,
+  ManualGestureEvent,
   ManualGesture,
-} from './manual/useManual';
+} from './manual/useManualGesture';
 import type {
-  NativeGestureStateChangeEvent,
-  NativeGestureUpdateEvent,
+  NativeGestureEvent,
   NativeGesture,
-} from './native/useNative';
+} from './native/useNativeGesture';
+import type { PanGestureEvent, PanGesture } from './pan/usePanGesture';
+import type { PinchGestureEvent, PinchGesture } from './pinch/usePinchGesture';
 import type {
-  PanGestureStateChangeEvent,
-  PanGestureUpdateEvent,
-  PanGesture,
-} from './pan/usePan';
-import type {
-  PinchGestureStateChangeEvent,
-  PinchGestureUpdateEvent,
-  PinchGesture,
-} from './pinch/usePinch';
-import type {
-  RotationGestureStateChangeEvent,
-  RotationGestureUpdateEvent,
+  RotationGestureEvent,
   RotationGesture,
-} from './rotation/useRotation';
-import type {
-  TapGestureStateChangeEvent,
-  TapGestureUpdateEvent,
-  TapGesture,
-} from './tap/useTap';
+} from './rotation/useRotationGesture';
+import type { TapGestureEvent, TapGesture } from './tap/useTapGesture';
 
-export type { TapGestureConfig } from './tap/useTap';
-export type { TapGesture, TapGestureStateChangeEvent, TapGestureUpdateEvent };
-export { useTap } from './tap/useTap';
+export type { TapGestureConfig } from './tap/useTapGesture';
+export type { TapGesture, TapGestureEvent };
+export { useTapGesture } from './tap/useTapGesture';
 
-export type { FlingGestureConfig } from './fling/useFling';
-export type {
-  FlingGesture,
-  FlingGestureStateChangeEvent,
-  FlingGestureUpdateEvent,
-};
-export { useFling } from './fling/useFling';
+export type { FlingGestureConfig } from './fling/useFlingGesture';
+export type { FlingGesture, FlingGestureEvent };
+export { useFlingGesture } from './fling/useFlingGesture';
 
-export type { LongPressGestureConfig } from './longPress/useLongPress';
-export type {
-  LongPressGesture,
-  LongPressGestureStateChangeEvent,
-  LongPressGestureUpdateEvent,
-};
-export { useLongPress } from './longPress/useLongPress';
+export type { LongPressGestureConfig } from './longPress/useLongPressGesture';
+export type { LongPressGesture, LongPressGestureEvent };
+export { useLongPressGesture } from './longPress/useLongPressGesture';
 
-export type { PinchGestureConfig } from './pinch/usePinch';
-export type {
-  PinchGesture,
-  PinchGestureStateChangeEvent,
-  PinchGestureUpdateEvent,
-};
-export { usePinch } from './pinch/usePinch';
+export type { PinchGestureConfig } from './pinch/usePinchGesture';
+export type { PinchGesture, PinchGestureEvent };
+export { usePinchGesture } from './pinch/usePinchGesture';
 
-export type { RotationGestureConfig } from './rotation/useRotation';
-export type {
-  RotationGesture,
-  RotationGestureStateChangeEvent,
-  RotationGestureUpdateEvent,
-};
-export { useRotation } from './rotation/useRotation';
+export type { RotationGestureConfig } from './rotation/useRotationGesture';
+export type { RotationGesture, RotationGestureEvent };
+export { useRotationGesture } from './rotation/useRotationGesture';
 
-export type { HoverGestureConfig } from './hover/useHover';
-export type {
-  HoverGesture,
-  HoverGestureStateChangeEvent,
-  HoverGestureUpdateEvent,
-};
-export { useHover } from './hover/useHover';
+export type { HoverGestureConfig } from './hover/useHoverGesture';
+export type { HoverGesture, HoverGestureEvent };
+export { useHoverGesture } from './hover/useHoverGesture';
 
-export type { ManualGestureConfig } from './manual/useManual';
-export type {
-  ManualGesture,
-  ManualGestureStateChangeEvent,
-  ManualGestureUpdateEvent,
-};
-export { useManual } from './manual/useManual';
+export type { ManualGestureConfig } from './manual/useManualGesture';
+export type { ManualGesture, ManualGestureEvent };
+export { useManualGesture } from './manual/useManualGesture';
 
-export type { NativeViewGestureConfig } from './native/useNative';
-export type {
-  NativeGesture,
-  NativeGestureStateChangeEvent,
-  NativeGestureUpdateEvent,
-};
-export { useNative } from './native/useNative';
+export type { NativeViewGestureConfig } from './native/useNativeGesture';
+export type { NativeGesture, NativeGestureEvent };
+export { useNativeGesture } from './native/useNativeGesture';
 
-export type { PanGestureConfig } from './pan/usePan';
-export type { PanGesture, PanGestureStateChangeEvent, PanGestureUpdateEvent };
-export { usePan } from './pan/usePan';
+export type { PanGestureConfig } from './pan/usePanGesture';
+export type { PanGesture, PanGestureEvent };
+export { usePanGesture } from './pan/usePanGesture';
 
 export type SingleGesture =
   | TapGesture
@@ -119,22 +67,12 @@ export type SingleGesture =
   | NativeGesture
   | PanGesture;
 
-export type SingleGestureStateChangeEvent =
-  | TapGestureStateChangeEvent
-  | FlingGestureStateChangeEvent
-  | LongPressGestureStateChangeEvent
-  | RotationGestureStateChangeEvent
-  | HoverGestureStateChangeEvent
-  | ManualGestureStateChangeEvent
-  | NativeGestureStateChangeEvent
-  | PanGestureStateChangeEvent;
-
-export type SingleGestureUpdateEvent =
-  | TapGestureUpdateEvent
-  | FlingGestureUpdateEvent
-  | LongPressGestureUpdateEvent
-  | RotationGestureUpdateEvent
-  | HoverGestureUpdateEvent
-  | ManualGestureUpdateEvent
-  | NativeGestureUpdateEvent
-  | PanGestureUpdateEvent;
+export type SingleGestureEvent =
+  | TapGestureEvent
+  | FlingGestureEvent
+  | LongPressGestureEvent
+  | RotationGestureEvent
+  | HoverGestureEvent
+  | ManualGestureEvent
+  | NativeGestureEvent
+  | PanGestureEvent;

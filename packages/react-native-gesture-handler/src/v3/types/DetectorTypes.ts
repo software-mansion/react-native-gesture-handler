@@ -1,27 +1,37 @@
 import {
   AnimatedEvent,
-  StateChangeEvent,
-  UpdateEvent,
+  StateChangeEventWithHandlerData,
+  UpdateEventWithHandlerData,
   TouchEvent,
+  GestureUpdateEventWithHandlerData,
 } from './EventTypes';
 
 export type DetectorCallbacks<THandlerData> = {
-  onGestureHandlerStateChange: (event: StateChangeEvent<THandlerData>) => void;
+  onGestureHandlerStateChange: (
+    event: StateChangeEventWithHandlerData<THandlerData>
+  ) => void;
   onGestureHandlerEvent:
     | undefined
-    | ((event: UpdateEvent<THandlerData>) => void);
+    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
   onGestureHandlerTouchEvent: (event: TouchEvent) => void;
   onReanimatedStateChange:
     | undefined
-    | ((event: StateChangeEvent<THandlerData>) => void);
+    | ((event: StateChangeEventWithHandlerData<THandlerData>) => void);
   onReanimatedUpdateEvent:
     | undefined
-    | ((event: UpdateEvent<THandlerData>) => void);
+    | ((event: UpdateEventWithHandlerData<THandlerData>) => void);
   onReanimatedTouchEvent: undefined | ((event: TouchEvent) => void);
-  onGestureHandlerAnimatedEvent: undefined | AnimatedEvent;
+  onGestureHandlerAnimatedEvent:
+    | undefined
+    | AnimatedEvent
+    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void);
 };
 
-export type LogicChildren = {
+export type VirtualChild = {
   viewTag: number;
   handlerTags: number[];
+  methods: DetectorCallbacks<unknown>;
+
+  // only set on web
+  viewRef: unknown;
 };

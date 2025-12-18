@@ -24,11 +24,11 @@ import {
 } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
 import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType, usesNativeOrLogicDetector } from '../../ActionType';
+import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
 import { tagMessage } from '../../utils';
 import {
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
   SingleGestureName,
 } from '../../v3/types';
 import { TouchEventType } from '../../TouchEventType';
@@ -313,7 +313,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       GestureHandlerOrchestrator.instance.cancelMouseAndPenGestures(this);
     }
 
-    // TODO: Bring back touch events along with introducing `handleDown` method that will handle handler specific stuff
+    this.tryToSendTouchEvent(event);
   }
   // Adding another pointer to existing ones
   protected onPointerAdd(event: AdaptedEvent): void {
@@ -347,9 +347,9 @@ export default abstract class GestureHandler implements IGestureHandler {
   protected onPointerEnter(event: AdaptedEvent): void {
     this.tryToSendTouchEvent(event);
   }
-  protected onPointerCancel(event: AdaptedEvent): void {
-    this.tryToSendTouchEvent(event);
-
+  protected onPointerCancel(_event: AdaptedEvent): void {
+    // No need to send a cancel touch event explicitly here. `cancel` will
+    // handle cancelling all tracked touches if the handler expects pointer data.
     this.cancel();
     this.reset();
   }
@@ -370,11 +370,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
+    this.tryToSendTouchEvent(event);
     if (this.active) {
       this.sendEvent(this.state, this.state);
     }
-
-    this.tryToSendTouchEvent(event);
   }
 
   protected tryToSendTouchEvent(event: AdaptedEvent): void {
@@ -401,7 +400,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (usesNativeOrLogicDetector(this.actionType)) {
+    if (usesNativeOrVirtualDetector(this.actionType)) {
       invokeNullableMethod(
         this.forReanimated
           ? onGestureHandlerReanimatedTouchEvent
@@ -426,7 +425,9 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerReanimatedStateChange,
     }: PropsRef = this.propsRef!.current;
 
-    const resultEvent: ResultEvent = !usesNativeOrLogicDetector(this.actionType)
+    const resultEvent: ResultEvent = !usesNativeOrVirtualDetector(
+      this.actionType
+    )
       ? this.transformEventData(newState, oldState)
       : this.lastSentState !== newState
         ? this.transformStateChangeEvent(newState, oldState)
@@ -446,10 +447,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       );
     }
     if (this.state === State.ACTIVE) {
-      if (!usesNativeOrLogicDetector(this.actionType)) {
-        (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
-          undefined;
-      }
+      (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
+        undefined;
 
       invokeNullableMethod(
         this.forReanimated
@@ -483,7 +482,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private transformStateChangeEvent(
     newState: State,
     oldState: State
-  ): ResultEvent<GestureStateChangeEvent<unknown>> {
+  ): ResultEvent<GestureStateChangeEventWithHandlerData<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
@@ -502,7 +501,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private transformUpdateEvent(
     newState: State
-  ): ResultEvent<GestureUpdateEvent<unknown>> {
+  ): ResultEvent<GestureUpdateEventWithHandlerData<unknown>> {
     this.ensureViewRef(this.viewRef);
     return {
       nativeEvent: {
@@ -587,7 +586,7 @@ export default abstract class GestureHandler implements IGestureHandler {
         eventType = TouchEventType.TOUCHES_MOVE;
         break;
       case EventTypes.CANCEL:
-        eventType = TouchEventType.TOUCHES_CANCELLED;
+        eventType = TouchEventType.TOUCHES_CANCEL;
         break;
     }
 
@@ -654,7 +653,7 @@ export default abstract class GestureHandler implements IGestureHandler {
       nativeEvent: {
         handlerTag: this.handlerTag,
         state: this.state,
-        eventType: TouchEventType.TOUCHES_CANCELLED,
+        eventType: TouchEventType.TOUCHES_CANCEL,
         changedTouches: changed,
         allTouches: all,
         numberOfTouches: all.length,
@@ -713,18 +712,21 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   // Helper function to correctly set enabled property
-  private updateEnabled(enabled: boolean | undefined) {
+  private maybeUpdateEnabled(enabled: boolean | undefined): boolean {
     if (enabled === undefined) {
-      if (this._enabled) {
-        return;
+      if (this._enabled !== undefined) {
+        return false;
       }
 
       this._enabled = true;
-      this.delegate.onEnabledChange();
-    } else if (this._enabled !== enabled) {
-      this._enabled = enabled;
-      this.delegate.onEnabledChange();
+
+      return true;
     }
+
+    const prevEnabled = this._enabled;
+    this._enabled = enabled;
+
+    return enabled !== prevEnabled;
   }
 
   public setGestureConfig(config: Config) {
@@ -732,8 +734,8 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.updateGestureConfig(config);
   }
 
-  public updateGestureConfig(config: Config): void {
-    this.updateEnabled(config.enabled);
+  public updateGestureConfig(config: Partial<Config>): void {
+    const enabledChanged = this.maybeUpdateEnabled(config.enabled);
 
     if (config.hitSlop !== undefined) {
       this.hitSlop = config.hitSlop;
@@ -745,8 +747,8 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.forAnimated = config.dispatchesAnimatedEvents;
     }
 
-    if (config.shouldUseReanimated !== undefined) {
-      this.forReanimated = config.shouldUseReanimated;
+    if (config.dispatchesReanimatedEvents !== undefined) {
+      this.forReanimated = config.dispatchesReanimatedEvents;
     }
 
     if (config.manualActivation !== undefined) {
@@ -765,20 +767,31 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
     }
 
-    if (config.enableContextMenu !== undefined) {
-      this.enableContextMenu = config.enableContextMenu;
-    }
-
     if (config.activeCursor !== undefined) {
       this._activeCursor = config.activeCursor;
     }
 
+    let shouldUpdateDOM = false;
+
+    if (config.enableContextMenu !== undefined) {
+      this.enableContextMenu = config.enableContextMenu;
+      shouldUpdateDOM = true;
+    }
+
     if (config.touchAction !== undefined) {
       this._touchAction = config.touchAction;
+      shouldUpdateDOM = true;
     }
 
     if (config.userSelect !== undefined) {
       this._userSelect = config.userSelect;
+      shouldUpdateDOM = true;
+    }
+
+    if (enabledChanged) {
+      this.delegate.onEnabledChange();
+    } else if (shouldUpdateDOM) {
+      this.delegate.updateDOM();
     }
 
     if (this.enabled) {

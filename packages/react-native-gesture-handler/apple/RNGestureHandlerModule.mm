@@ -129,9 +129,8 @@ RCT_EXPORT_MODULE()
     _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
 
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
-  }];
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
 
   return @1;
 }
@@ -170,20 +169,6 @@ RCT_EXPORT_MODULE()
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager dropGestureHandler:[NSNumber numberWithDouble:handlerTag]];
-  }];
-}
-
-- (void)handleSetJSResponder:(double)viewTag blockNativeResponder:(BOOL)blockNativeResponder
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager handleSetJSResponder:[NSNumber numberWithDouble:viewTag] blockNativeResponder:blockNativeResponder];
-  }];
-}
-
-- (void)handleClearJSResponder
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager handleClearJSResponder];
   }];
 }
 
@@ -246,7 +231,7 @@ RCT_EXPORT_MODULE()
   // do not send state change event when activating because it bypasses
   // shouldRequireFailureOfGestureRecognizer
   if (state != 4) {
-    [handler handleGesture:handler.recognizer];
+    [handler handleGesture:handler.recognizer fromReset:NO];
   }
 }
 

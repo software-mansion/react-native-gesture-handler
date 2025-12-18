@@ -15,7 +15,7 @@
 
 @property (nonatomic, nonnull) NSMutableSet *nativeHandlers;
 @property (nonatomic, nonnull) NSMutableSet *attachedHandlers;
-@property (nonatomic) std::unordered_map<int, NSMutableSet *> attachedLogicHandlers;
+@property (nonatomic) std::unordered_map<int, NSMutableSet *> attachedVirtualHandlers;
 
 @end
 
@@ -33,11 +33,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
-    _props = defaultProps;
-    _moduleId = -1;
-    _nativeHandlers = [NSMutableSet set];
-    _attachedHandlers = [NSMutableSet set];
+    [self setDefaultProps];
   }
 
   return self;
@@ -56,12 +52,12 @@
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
-    for (const auto &child : _attachedLogicHandlers) {
+    for (const auto &child : _attachedVirtualHandlers) {
       for (id handlerTag : child.second) {
         [handlerManager.registry detachHandlerWithTag:handlerTag];
       }
     }
-    _attachedLogicHandlers.clear();
+    _attachedVirtualHandlers.clear();
     _attachedHandlers = [NSMutableSet set];
   } else {
     const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
@@ -70,6 +66,15 @@
                  viewTag:-1
         attachedHandlers:_attachedHandlers];
   }
+}
+
+- (void)setDefaultProps
+{
+  static const auto defaultProps = std::make_shared<const RNGestureHandlerDetectorProps>();
+  _props = defaultProps;
+  _moduleId = -1;
+  _nativeHandlers = [NSMutableSet set];
+  _attachedHandlers = [NSMutableSet set];
 }
 
 - (void)dispatchStateChangeEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerStateChange)event
@@ -84,6 +89,18 @@
 {
   if (_eventEmitter != nullptr) {
     std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)->onGestureHandlerEvent(event);
+  }
+}
+
+- (void)dispatchAnimatedGestureEvent:(RNGestureHandlerDetectorEventEmitter::OnGestureHandlerEvent)event
+{
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(_eventEmitter)
+        ->onGestureHandlerAnimatedEvent({
+            .state = event.state,
+            .handlerTag = event.handlerTag,
+            .handlerData = event.handlerData,
+        });
   }
 }
 
@@ -125,6 +142,13 @@
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   return [[[handlerManager registry] handlerWithTag:handlerTag] wantsToAttachDirectlyToView];
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+
+  [self setDefaultProps];
 }
 
 - (void)didAddSubview:(RNGHUIView *)view
@@ -171,19 +195,36 @@
   for (const int tag : handlerTags) {
     [handlersToDetach removeObject:@(tag)];
     if (![attachedHandlers containsObject:@(tag)]) {
-      if ([self shouldAttachGestureToSubview:@(tag)]) {
+      if ([self shouldAttachGestureToSubview:@(tag)] && actionType == RNGestureHandlerActionTypeNativeDetector) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
         [_nativeHandlers addObject:@(tag)];
       } else {
-        if (actionType == RNGestureHandlerActionTypeLogicDetector) {
-          [handlerManager attachGestureHandler:@(tag) toViewWithTag:@(viewTag) withActionType:actionType];
+        if (actionType == RNGestureHandlerActionTypeVirtualDetector) {
+          RNGHUIView *targetView = [handlerManager viewForReactTag:@(viewTag)];
+
+          if (targetView != nil) {
+            [handlerManager attachGestureHandler:@(tag)
+                                   toViewWithTag:@(viewTag)
+                                  withActionType:actionType
+                                withHostDetector:self];
+          } else {
+            // Let's assume that if the native view for the virtual detector hasn't been found, the hierarchy was folded
+            // into a single UIView.
+            [handlerManager.registry attachHandlerWithTag:@(tag)
+                                                   toView:self
+                                           withActionType:actionType
+                                         withHostDetector:self];
+            [[handlerManager registry] handlerWithTag:@(tag)].virtualViewTag = @(viewTag);
+          }
         } else {
-          [handlerManager.registry attachHandlerWithTag:@(tag) toView:self withActionType:actionType];
+          [handlerManager.registry attachHandlerWithTag:@(tag)
+                                                 toView:self
+                                         withActionType:actionType
+                                       withHostDetector:self];
         }
         [attachedHandlers addObject:@(tag)];
       }
-      [[handlerManager registry] handlerWithTag:@(tag)].hostDetectorTag = @(self.tag);
     }
   }
 
@@ -194,7 +235,7 @@
   }
 
   // This covers the case where `NativeViewGestureHandlers` are attached after child views were created.
-  if (self.subviews[0]) {
+  if (self.subviews.count != 0) {
     [self tryAttachNativeHandlersToChildView];
   }
 }
@@ -210,39 +251,41 @@
       attachedHandlers:_attachedHandlers];
 
   [super updateProps:propsBase oldProps:oldPropsBase];
-  [self updateLogicChildren:newProps.logicChildren];
+  [self updateVirtualChildren:newProps.virtualChildren];
 
   // Override to force hittesting to work outside bounds
   self.clipsToBounds = NO;
 }
 
-- (void)updateLogicChildren:(const std::vector<RNGestureHandlerDetectorLogicChildrenStruct> &)logicChildren
+- (void)updateVirtualChildren:(const std::vector<RNGestureHandlerDetectorVirtualChildrenStruct> &)virtualChildren
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
 
-      NSMutableSet *logicChildrenToDetach = [NSMutableSet set];
-  for (const auto &child : _attachedLogicHandlers) {
-    [logicChildrenToDetach addObject:@(child.first)];
+      NSMutableSet *virtualChildrenToDetach = [NSMutableSet set];
+  for (const auto &child : _attachedVirtualHandlers) {
+    [virtualChildrenToDetach addObject:@(child.first)];
   }
 
-  for (const auto &child : logicChildren) {
-    if (_attachedLogicHandlers.find(child.viewTag) == _attachedLogicHandlers.end()) {
-      _attachedLogicHandlers[child.viewTag] = [NSMutableSet set];
-    }
-
-    [logicChildrenToDetach removeObject:@(child.viewTag)];
-
-    [self attachHandlers:child.handlerTags
-              actionType:RNGestureHandlerActionTypeLogicDetector
-                 viewTag:child.viewTag
-        attachedHandlers:_attachedLogicHandlers[child.viewTag]];
+  for (const auto &child : virtualChildren) {
+    [virtualChildrenToDetach removeObject:@(child.viewTag)];
   }
 
-  for (const NSNumber *tag : logicChildrenToDetach) {
-    for (id handlerTag : _attachedLogicHandlers[tag.intValue]) {
+  for (const NSNumber *tag : virtualChildrenToDetach) {
+    for (id handlerTag : _attachedVirtualHandlers[tag.intValue]) {
       [handlerManager.registry detachHandlerWithTag:handlerTag];
     }
+    _attachedVirtualHandlers.erase(tag.intValue);
+  }
+
+  for (const auto &child : virtualChildren) {
+    if (_attachedVirtualHandlers.find(child.viewTag) == _attachedVirtualHandlers.end()) {
+      _attachedVirtualHandlers[child.viewTag] = [NSMutableSet set];
+    }
+    [self attachHandlers:child.handlerTags
+              actionType:RNGestureHandlerActionTypeVirtualDetector
+                 viewTag:child.viewTag
+        attachedHandlers:_attachedVirtualHandlers[child.viewTag]];
   }
 }
 
@@ -250,10 +293,20 @@
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
+  RNGHUIView *view = self.subviews[0];
+
+  if ([view isKindOfClass:[RCTViewComponentView class]]) {
+    RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+    if (componentView.contentView != nil) {
+      view = componentView.contentView;
+    }
+  }
+
   for (NSNumber *handlerTag in _nativeHandlers) {
     [handlerManager.registry attachHandlerWithTag:handlerTag
-                                           toView:self.subviews[0]
-                                   withActionType:RNGestureHandlerActionTypeNativeDetector];
+                                           toView:view
+                                   withActionType:RNGestureHandlerActionTypeNativeDetector
+                                 withHostDetector:self];
 
     [_attachedHandlers addObject:handlerTag];
   }

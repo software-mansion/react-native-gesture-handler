@@ -38,6 +38,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       wrappedView,
       registry,
       RNViewConfigurationHelper(),
+      rootView,
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
@@ -133,15 +134,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         activate()
         end()
       }
-    }
-  }
-
-  /*package*/
-  // We want to keep order of parameters, so instead of removing viewTag we suppress the warning
-  @Suppress("UNUSED_PARAMETER", "COMMENT_IN_SUPPRESSION")
-  fun handleSetJSResponder(viewTag: Int, blockNativeResponder: Boolean) {
-    if (blockNativeResponder) {
-      UiThreadUtil.runOnUiThread { tryCancelAllHandlers() }
     }
   }
 

@@ -229,6 +229,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return (UITouchType)_pointerType;
 }
 
+- (BOOL)usesNativeOrVirtualDetector
+{
+  return _actionType == RNGestureHandlerActionTypeNativeDetector ||
+      _actionType == RNGestureHandlerActionTypeVirtualDetector;
+}
+
 - (BOOL)isViewParagraphComponent:(RNGHUIView *)view
 {
   return [view isKindOfClass:[RCTParagraphComponentView class]];
@@ -255,6 +261,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
+
+  self.hostDetectorView = nil;
+  self.virtualViewTag = nil;
 
   [self unbindManualActivation];
 }
@@ -283,18 +292,33 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer
+- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector) {
+  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
+      _actionType != RNGestureHandlerActionTypeVirtualDetector) {
     return;
   }
 
   _state = [self recognizerState];
+
+  // From iOS 26.0 when recognizers are reset, their state is also changed to UIGestureRecognizerStatePossible.
+  // This means that our logic that relies on sending events in `reset` methods doesn't work properly. The bug that
+  // `onFinalize` was not send after `onBegin` happened because both recognizer states, `Began` and `Possible`, are
+  // mapped to our internal `Began` state. Because of that, _lastState had the same value as `_state` and callbacks were
+  // not triggered.
+  //
+  // While this solution is not great, we decided to check whether sending events was triggered from `reset` method.
+  // This way we can detect double Began mapping by checking previous sent state and current state of recognizer.
+  if (fromReset && _lastState == RNGestureHandlerStateBegan &&
+      self.recognizer.state == UIGestureRecognizerStatePossible) {
+    _state = RNGestureHandlerStateFailed;
+  }
+
   [self handleGesture:recognizer inState:_state];
 }
 
@@ -309,6 +333,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
     tag = @(recognizer.view.tag);
   }
+
+  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeVirtualDetector) {
+    tag = _virtualViewTag;
+  }
+
+  react_native_assert(tag != nil && "Tag should be defined when dispatching an event");
 
   [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData];
 }
@@ -379,10 +409,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIView *)findViewForEvents
 {
-  return
-      [self isKindOfClass:[RNNativeViewGestureHandler class]] && _actionType == RNGestureHandlerActionTypeNativeDetector
-      ? self.recognizer.view.superview
-      : self.recognizer.view;
+  return [self usesNativeOrVirtualDetector] ? self.hostDetectorView : self.recognizer.view;
 }
 
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
@@ -658,6 +685,24 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             return NO;
           }
         }
+      }
+    }
+  }
+
+  // Logic detector has a virtual view tag set only if the real hierarchy was folded into a single View
+  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+    // In this case, logic detector is attached to the DetectorView, which has a single subview representing
+    // the actual target view in the RN hierarchy
+    RNGHUIView *view = _recognizer.view.subviews[0];
+    if ([view respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      // If the view has touchEventEmitterAtPoint: method, it can be used to determine the viewtag
+      // of the view under the touch point
+      facebook::react::SharedTouchEventEmitter eventEmitter =
+          [(id<RCTTouchableComponentViewProtocol>)view touchEventEmitterAtPoint:[_recognizer locationInView:view]];
+      auto viewUnderTouch = eventEmitter->getEventTarget()->getTag();
+
+      if (viewUnderTouch != [_virtualViewTag intValue]) {
+        return NO;
       }
     }
   }

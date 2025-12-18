@@ -24,6 +24,11 @@
                toViewWithTag:(nonnull NSNumber *)viewTag
               withActionType:(RNGestureHandlerActionType)actionType;
 
+- (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
+               toViewWithTag:(nonnull NSNumber *)viewTag
+              withActionType:(RNGestureHandlerActionType)actionType
+            withHostDetector:(nullable RNGHUIView *)hostDetector;
+
 - (void)setGestureHandlerConfig:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 
 - (void)updateGestureHandlerConfig:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
@@ -33,10 +38,6 @@
 - (void)dropGestureHandler:(nonnull NSNumber *)handlerTag;
 
 - (void)dropAllGestureHandlers;
-
-- (void)handleSetJSResponder:(nonnull NSNumber *)viewTag blockNativeResponder:(BOOL)blockNativeResponder;
-
-- (void)handleClearJSResponder;
 
 - (nullable RNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
 

@@ -6,25 +6,60 @@ import {
   SingleGestureName,
 } from '../../types';
 import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
-import { isAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
+import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
   allowedNativeProps,
   EMPTY_WHITE_LIST,
   PropsToFilter,
   PropsWhiteLists,
 } from './propsWhiteList';
+import { useMemo } from 'react';
 
 export function prepareConfig<THandlerData, TConfig extends object>(
   config: BaseGestureConfig<THandlerData, TConfig>
 ) {
   const runOnJS = maybeUnpackValue(config.runOnJS);
 
+  if (
+    __DEV__ &&
+    isNativeAnimatedEvent(config.onUpdate) &&
+    !config.useAnimated
+  ) {
+    console.warn(
+      tagMessage(
+        'You are using Animated.event in onUpdate without setting useAnimated to true. ' +
+          'This may lead to unexpected behavior. If you intend to use Animated.event, ' +
+          'please set useAnimated to true in the gesture config.'
+      )
+    );
+  }
+
+  config.dispatchesAnimatedEvents =
+    config.useAnimated || isNativeAnimatedEvent(config.onUpdate);
+
+  // Validate that the user is not trying to mix Animated and Reanimated before updating the config.
+  if (
+    __DEV__ &&
+    config.dispatchesAnimatedEvents &&
+    (config.disableReanimated === false || config.runOnJS === false)
+  ) {
+    throw new Error(
+      tagMessage(
+        'Animated cannot be used together with Reanimated in the same gesture. Please choose either Animated or Reanimated for handling gesture events.'
+      )
+    );
+  }
+
+  if (config.dispatchesAnimatedEvents) {
+    config.disableReanimated = true;
+  }
+
   config.shouldUseReanimatedDetector =
     !config.disableReanimated &&
     Reanimated !== undefined &&
-    hasWorkletEventHandlers(config);
+    hasWorkletEventHandlers(config) &&
+    !config.dispatchesAnimatedEvents;
   config.needsPointerData = shouldHandleTouchEvents(config);
-  config.dispatchesAnimatedEvents = isAnimatedEvent(config.onUpdate);
   config.dispatchesReanimatedEvents =
     config.shouldUseReanimatedDetector && !runOnJS;
 }
@@ -58,13 +93,16 @@ export function prepareConfigForNativeSide<THandlerData, TConfig>(
   return filteredConfig;
 }
 
-export function cloneConfig<THandlerData, TConfig>(
+function cloneConfig<THandlerData, TConfig>(
   config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>
 ): BaseGestureConfig<THandlerData, TConfig> {
   return { ...config } as BaseGestureConfig<THandlerData, TConfig>;
 }
 
-export function remapProps<TConfig extends object, TInternalConfig>(
+function remapProps<
+  TConfig extends object,
+  TInternalConfig extends Record<string, unknown>,
+>(
   config: TConfig & TInternalConfig,
   propsMapping: Map<string, string>
 ): TInternalConfig {
@@ -81,4 +119,25 @@ export function remapProps<TConfig extends object, TInternalConfig>(
   });
 
   return config;
+}
+
+export function useClonedAndRemappedConfig<
+  THandlerData,
+  TConfig extends object,
+  TInternalConfig extends Record<string, unknown>,
+>(
+  config: ExcludeInternalConfigProps<BaseGestureConfig<THandlerData, TConfig>>,
+  propsMapping: Map<string, string> = new Map(),
+  propsTransformer: (config: TInternalConfig) => TInternalConfig = (cfg) => cfg
+): BaseGestureConfig<THandlerData, TInternalConfig> {
+  return useMemo(() => {
+    const clonedConfig = cloneConfig<THandlerData, TConfig>(config);
+
+    return propsTransformer(
+      remapProps<TConfig, TInternalConfig>(
+        clonedConfig as TConfig & TInternalConfig,
+        propsMapping
+      )
+    );
+  }, [config, propsMapping, propsTransformer]);
 }

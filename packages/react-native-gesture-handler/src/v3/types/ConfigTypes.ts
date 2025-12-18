@@ -9,27 +9,31 @@ import {
 import {
   AnimatedEvent,
   ChangeCalculatorType,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+  GestureEvent,
 } from './EventTypes';
 import { WithSharedValue } from './ReanimatedTypes';
 
+export type GestureEventCallback<THandlerData> = (
+  event: GestureEvent<THandlerData>
+) => void;
+
+export type GestureEventCallbackWithDidSucceed<THandlerData> = (
+  event: GestureEvent<THandlerData>,
+  didSucceed: boolean
+) => void;
+
+export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
+
 export type GestureCallbacks<THandlerData> = {
-  onBegin?: (event: GestureStateChangeEvent<THandlerData>) => void;
-  onStart?: (event: GestureStateChangeEvent<THandlerData>) => void;
-  onEnd?: (
-    event: GestureStateChangeEvent<THandlerData>,
-    success: boolean
-  ) => void;
-  onFinalize?: (
-    event: GestureStateChangeEvent<THandlerData>,
-    success: boolean
-  ) => void;
-  onUpdate?: (event: GestureUpdateEvent<THandlerData>) => void | AnimatedEvent;
-  onTouchesDown?: (event: GestureTouchEvent) => void;
-  onTouchesMove?: (event: GestureTouchEvent) => void;
-  onTouchesUp?: (event: GestureTouchEvent) => void;
-  onTouchesCancelled?: (event: GestureTouchEvent) => void;
+  onBegin?: GestureEventCallback<THandlerData>;
+  onActivate?: GestureEventCallback<THandlerData>;
+  onDeactivate?: GestureEventCallbackWithDidSucceed<THandlerData>;
+  onFinalize?: GestureEventCallbackWithDidSucceed<THandlerData>;
+  onUpdate?: GestureEventCallback<THandlerData> | AnimatedEvent;
+  onTouchesDown?: GestureTouchEventCallback;
+  onTouchesMove?: GestureTouchEventCallback;
+  onTouchesUp?: GestureTouchEventCallback;
+  onTouchesCancel?: GestureTouchEventCallback;
 };
 
 export type GestureRelations = {
@@ -43,24 +47,27 @@ export type InternalConfigProps<THandlerData> = {
   dispatchesReanimatedEvents?: boolean;
   dispatchesAnimatedEvents?: boolean;
   needsPointerData?: boolean;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
   changeEventCalculator?: ChangeCalculatorType<THandlerData>;
 };
 
 export type CommonGestureConfig = {
   disableReanimated?: boolean;
+  useAnimated?: boolean;
+  testID?: string;
 } & WithSharedValue<
   {
     runOnJS?: boolean;
     enabled?: boolean;
     shouldCancelWhenOutside?: boolean;
     hitSlop?: HitSlop;
-    userSelect?: UserSelect;
     activeCursor?: ActiveCursor;
     mouseButton?: MouseButton;
-    enableContextMenu?: boolean;
-    touchAction?: TouchAction;
+    cancelsTouchesInView?: boolean;
   },
-  HitSlop | UserSelect | ActiveCursor | MouseButton | TouchAction
+  HitSlop | ActiveCursor | MouseButton
 >;
 
 export type ComposedGestureConfig = {

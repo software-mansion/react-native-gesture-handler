@@ -74,8 +74,6 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.newPointerAction();
-
-    this.tryToSendTouchEvent(event);
   }
 
   protected override onPointerAdd(event: AdaptedEvent): void {

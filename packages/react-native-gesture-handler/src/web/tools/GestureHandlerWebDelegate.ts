@@ -32,6 +32,8 @@ export class GestureHandlerWebDelegate
     touchAction: '',
   };
 
+  private areContextMenuListenersAdded = false;
+
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
       throw new Error(
@@ -59,10 +61,14 @@ export class GestureHandlerWebDelegate
       this.gestureHandler.attachEventManager(manager)
     );
 
+    this.updateDOM();
+
     this.isInitialized = true;
   }
 
   detach(): void {
+    this.restoreDefaultViewStyles();
+
     this.defaultViewStyles = {
       userSelect: '',
       touchAction: '',
@@ -77,6 +83,22 @@ export class GestureHandlerWebDelegate
     this.eventManagers = [];
 
     this.isInitialized = false;
+  }
+
+  restoreDefaultViewStyles(): void {
+    this.ensureView(this.view);
+
+    this.view.style['userSelect'] = this.defaultViewStyles.userSelect;
+    this.view.style['webkitUserSelect'] = this.defaultViewStyles.userSelect;
+    this.view.style['touchAction'] = this.defaultViewStyles.touchAction;
+    // @ts-ignore This one disables default events on Safari
+    this.view.style['WebkitTouchCallout'] = this.defaultViewStyles.touchAction;
+  }
+
+  updateDOM(): void {
+    this.setUserSelect();
+    this.setTouchAction();
+    this.setContextMenu();
   }
 
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
@@ -131,20 +153,32 @@ export class GestureHandlerWebDelegate
   private addContextMenuListeners(): void {
     this.ensureView(this.view);
 
+    if (this.areContextMenuListenersAdded) {
+      return;
+    }
+
     if (this.shouldDisableContextMenu()) {
       this.view.addEventListener('contextmenu', this.disableContextMenu);
+      this.areContextMenuListenersAdded = true;
     } else if (this.gestureHandler.enableContextMenu) {
       this.view.addEventListener('contextmenu', this.enableContextMenu);
+      this.areContextMenuListenersAdded = true;
     }
   }
 
   private removeContextMenuListeners(): void {
+    if (!this.initialized || !this.areContextMenuListenersAdded) {
+      return;
+    }
+
     this.ensureView(this.view);
 
     if (this.shouldDisableContextMenu()) {
       this.view.removeEventListener('contextmenu', this.disableContextMenu);
+      this.areContextMenuListenersAdded = false;
     } else if (this.gestureHandler.enableContextMenu) {
       this.view.removeEventListener('contextmenu', this.enableContextMenu);
+      this.areContextMenuListenersAdded = false;
     }
   }
 
@@ -198,9 +232,7 @@ export class GestureHandlerWebDelegate
       return;
     }
 
-    this.setUserSelect();
-    this.setTouchAction();
-    this.setContextMenu();
+    this.updateDOM();
 
     this.eventManagers.forEach((manager) => {
       manager.setEnabled(this.gestureHandler.enabled);

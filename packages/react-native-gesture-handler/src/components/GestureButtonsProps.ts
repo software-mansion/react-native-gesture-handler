@@ -8,7 +8,10 @@ import {
 } from 'react-native';
 import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 
-export interface RawButtonProps
+/**
+ * @deprecated use `RawButtonProps` with `RawButton` instead
+ */
+export interface LegacyRawButtonProps
   extends NativeViewGestureHandlerProps,
     AccessibilityProps {
   /**
@@ -94,7 +97,10 @@ interface ButtonWithRefProps {
   innerRef?: React.ForwardedRef<React.ComponentType<any>>;
 }
 
-export interface BaseButtonProps extends RawButtonProps {
+/**
+ * @deprecated use `BaseButtonProps` with `BaseButton` instead
+ */
+export interface LegacyBaseButtonProps extends LegacyRawButtonProps {
   /**
    * Called when the button gets pressed (analogous to `onPress` in
    * `TouchableHighlight` from RN core).
@@ -123,10 +129,13 @@ export interface BaseButtonProps extends RawButtonProps {
   delayLongPress?: number;
 }
 export interface BaseButtonWithRefProps
-  extends BaseButtonProps,
+  extends LegacyBaseButtonProps,
     ButtonWithRefProps {}
 
-export interface RectButtonProps extends BaseButtonProps {
+/**
+ * @deprecated use `RectButtonProps` with `RectButton` instead
+ */
+export interface LegacyRectButtonProps extends LegacyBaseButtonProps {
   /**
    * Background color that will be dimmed when button is in active state.
    */
@@ -140,10 +149,14 @@ export interface RectButtonProps extends BaseButtonProps {
   activeOpacity?: number;
 }
 export interface RectButtonWithRefProps
-  extends RectButtonProps,
+  extends LegacyRectButtonProps,
     ButtonWithRefProps {}
 
-export interface BorderlessButtonProps extends BaseButtonProps {
+/**
+ * @deprecated use `BorderlessButtonProps` with `BorderlessButton` instead
+ */
+
+export interface LegacyBorderlessButtonProps extends LegacyBaseButtonProps {
   /**
    * iOS only.
    *
@@ -152,5 +165,5 @@ export interface BorderlessButtonProps extends BaseButtonProps {
   activeOpacity?: number;
 }
 export interface BorderlessButtonWithRefProps
-  extends BorderlessButtonProps,
+  extends LegacyBorderlessButtonProps,
     ButtonWithRefProps {}

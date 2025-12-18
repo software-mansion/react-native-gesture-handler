@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Animated, Button, useAnimatedValue } from 'react-native';
 import {
   GestureHandlerRootView,
-  NativeDetector,
-  usePan,
+  GestureDetector,
+  usePanGesture,
 } from 'react-native-gesture-handler';
 
 export default function App() {
@@ -17,7 +17,7 @@ export default function App() {
     }
   );
 
-  const gesture = usePan({
+  const gesture = usePanGesture({
     onUpdate: event,
   });
 
@@ -32,7 +32,7 @@ export default function App() {
       />
 
       {visible && (
-        <NativeDetector gesture={gesture}>
+        <GestureDetector gesture={gesture}>
           <Animated.View
             style={[
               {
@@ -48,7 +48,7 @@ export default function App() {
               { transform: [{ translateX: value }] },
             ]}
           />
-        </NativeDetector>
+        </GestureDetector>
       )}
     </GestureHandlerRootView>
   );

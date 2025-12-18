@@ -1,23 +1,20 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
-import { Platform } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
 import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
 import { ComposedGesture } from '../gestureComposition';
-import { isTestEnv } from '../../../utils';
-
-import GestureHandlerRootViewContext from '../../../GestureHandlerRootViewContext';
 import { AttachedGestureState, GestureDetectorState } from './types';
 import { useAnimatedGesture } from './useAnimatedGesture';
 import { attachHandlers } from './attachHandlers';
 import { needsToReattach } from './needsToReattach';
 import { dropHandlers } from './dropHandlers';
-import { useIsomorphicLayoutEffect, useWebEventHandlers } from './utils';
+import { useWebEventHandlers } from './utils';
 import { Wrap, AnimatedWrap } from './Wrap';
 import { useDetectorUpdater } from './useDetectorUpdater';
 import { useViewRefHandler } from './useViewRefHandler';
 import { useMountReactions } from './useMountReactions';
+import { useIsomorphicLayoutEffect } from '../../../useIsomorphicLayoutEffect';
 
 function propagateDetectorConfig(
   props: GestureDetectorProps,
@@ -42,7 +39,7 @@ function propagateDetectorConfig(
   }
 }
 
-interface GestureDetectorProps {
+export interface GestureDetectorProps {
   children?: React.ReactNode;
   /**
    * A gesture object containing the configuration and callbacks.
@@ -87,13 +84,6 @@ interface GestureDetectorProps {
  * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/gesture-detector
  */
 export const GestureDetector = (props: GestureDetectorProps) => {
-  const rootViewContext = useContext(GestureHandlerRootViewContext);
-  if (__DEV__ && !rootViewContext && !isTestEnv() && Platform.OS !== 'web') {
-    throw new Error(
-      'GestureDetector must be used as a descendant of GestureHandlerRootView. Otherwise the gestures will not be recognized. See https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation for more details.'
-    );
-  }
-
   // Gesture config should be wrapped with useMemo to prevent unnecessary re-renders
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
