@@ -87,7 +87,7 @@ export default function PanExample() {
       </View>
       <Text style={styles.instructions}>
         The ball has simultanous pan and longPress gestures. Upon update pan
-        changes minDistanceof longPress, such that longPress will fail if is
+        changes minDistance of longPress, such that longPress will fail if is
         moved horizontally.
       </Text>
     </View>
