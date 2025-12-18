@@ -2,6 +2,8 @@ package com.swmansion.gesturehandler.react
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -160,6 +162,14 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     // Note: RefreshControl is wrapped with a VirtualDetector, and native gestures for it are attached in `attachVirtualChildren`.
     val id = if (child is ReactSwipeRefreshLayout) {
       child.getChildAt(0).id
+      // TODO: figure out how to do it correctly
+    } else if (child is ViewGroup && child.isNotEmpty()) {
+      val grandChild = child.getChildAt(0)
+      if (grandChild is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+        grandChild.id
+      } else {
+        child.id
+      }
     } else {
       child.id
     }
