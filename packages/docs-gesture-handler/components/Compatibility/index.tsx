@@ -1,7 +1,9 @@
 import { useDocsVersion } from '@docusaurus/plugin-content-docs/client';
 import React from 'react';
 
-import untypedCompatibilityData from 'react-native-gesture-handler/compatibility.json';
+// It would be great to import from package, but unfortunately it does not work on CI :c
+// eslint-disable-next-line import-x/no-relative-packages
+import untypedCompatibilityData from '../../../react-native-gesture-handler/compatibility.json';
 import styles from './styles.module.css';
 
 interface CompatibilityEntry {
