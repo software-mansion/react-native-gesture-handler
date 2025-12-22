@@ -59,14 +59,10 @@ import Animated, {
 
 export default function App() {
   const rotation = useSharedValue(1);
-  const savedRotation = useSharedValue(1);
 
   const rotationGesture = useRotationGesture({
     onUpdate: (e) => {
       rotation.value = savedRotation.value + e.rotation;
-    },
-    onDeactivate: () => {
-      savedRotation.value = rotation.value;
     },
   });
 
@@ -124,6 +120,14 @@ rotation: number;
 ```
 
 Amount rotated, expressed in radians, from the gesture's focal point (anchor).
+
+### rotationChange
+
+```ts
+rotationChange: number;
+```
+
+The incremental change in rotation since the last event frame. This value represents the difference in radians between the current and previous rotation, rather than the total accumulated rotation of the gesture.
 
 ### velocity
 
