@@ -1,5 +1,3 @@
-### Properties common to all continuous gestures:
-
 ### manualActivation
 
 ```ts

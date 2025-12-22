@@ -1,5 +1,3 @@
-### Properties common to all gestures:
-
 ### enabled
 
 ```ts
