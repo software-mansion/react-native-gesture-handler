@@ -1,13 +1,9 @@
 import { State } from '../State';
 import { tagMessage } from '../utils';
 
-declare const globalThis: {
-  _setGestureStateSync?: (handlerTag: number, state: State) => void;
-  _setGestureStateAsync?: (handlerTag: number, state: State) => void;
-};
-
 const setGestureState = (handlerTag: number, state: State) => {
   'worklet';
+
   if (globalThis._setGestureStateSync) {
     globalThis._setGestureStateSync(handlerTag, state);
   } else if (globalThis._setGestureStateAsync) {
