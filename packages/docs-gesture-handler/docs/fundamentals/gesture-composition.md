@@ -5,7 +5,11 @@ sidebar_label: Gesture composition & interactions
 sidebar_position: 10
 ---
 
-RNGH3 provides simple way to set up interactions between gestures by using dedicated hooks and config properties.
+RNGH3 simplifies gesture interaction through dedicated composition hooks and configuration properties. To choose the right approach, simply ask: Are all the gestures attached to the same component?
+
+- If yes: Use composition hooks. These allow you to bundle multiple gestures—including previously composed ones—into a single object for a GestureDetector.
+
+- If no: Use relation properties to manually define how gestures interact. Since these properties also support composed gestures, you can mix both methods for more complex layouts.
 
 ## Composition hooks
 
@@ -69,7 +73,6 @@ const styles = StyleSheet.create({
 ### useSimultaneousGestures
 
 All of the provided gestures can activate at the same time. Activation of one will not cancel the other.
-It is the equivalent to having some gesture handlers, each with `simultaneousWith` prop set to the other handlers.
 
 For example, if you want to make a gallery app, you might want user to be able to zoom, rotate and pan around photos. You can do it with `useSimultaneousGestures`:
 
@@ -176,7 +179,6 @@ const styles = StyleSheet.create({
 ### useExclusiveGestures
 
 Only one of the provided gestures can become active. Priority is determined by the order of the aguments, where the first gesture has the highest priority, and the last has the lowest. A gesture can activate only after all higher-priority gestures before it have failed.
-It is equivalent to having some gesture handlers where the second one has the `requireToFail` prop set to the first handler, third one has the `requireToFail` prop set to the first and the second one, and so on.
 
 For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:
 
@@ -233,8 +235,6 @@ const styles = StyleSheet.create({
 ```
 
 ## Cross-component interactions
-
-You may have noticed that gesture composition described above requires you to mount all of the composed gestures under a single `GestureDetector`, effectively attaching them to the same underlying component. You can customize how gestures interact with each other across multiple components in a couple of ways:
 
 ### requireToFail
 
