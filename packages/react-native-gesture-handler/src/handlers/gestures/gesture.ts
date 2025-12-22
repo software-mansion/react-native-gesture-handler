@@ -19,6 +19,7 @@ import type {
   TapGestureHandlerEventPayload,
   NativeViewGestureHandlerPayload,
   HoverGestureHandlerEventPayload,
+  ScrollGestureHandlerEventPayload,
 } from '../GestureHandlerEventPayload';
 import { isRemoteDebuggingEnabled } from '../../utils';
 
@@ -33,7 +34,8 @@ export type GestureType =
   | BaseGesture<FlingGestureHandlerEventPayload>
   | BaseGesture<ForceTouchGestureHandlerEventPayload>
   | BaseGesture<NativeViewGestureHandlerPayload>
-  | BaseGesture<HoverGestureHandlerEventPayload>;
+  | BaseGesture<HoverGestureHandlerEventPayload>
+  | BaseGesture<ScrollGestureHandlerEventPayload>;
 
 export type GestureRef =
   | number
