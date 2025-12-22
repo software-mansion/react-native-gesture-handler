@@ -62,14 +62,10 @@ import Animated, {
 
 export default function App() {
   const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
 
   const pinchGesture = usePinchGesture({
     onUpdate: (e) => {
       scale.value = savedScale.value * e.scale;
-    },
-    onDeactivate: () => {
-      savedScale.value = scale.value;
     },
   });
 
