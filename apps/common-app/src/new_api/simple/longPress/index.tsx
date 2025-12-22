@@ -29,19 +29,16 @@ export default function LongPressExample() {
 
   const longPressGesture = useLongPressGesture({
     onBegin: () => {
-      'worklet';
       colorProgress.value = withTiming(1, {
         duration: 100,
       });
     },
     onActivate: () => {
-      'worklet';
       colorProgress.value = withTiming(2, {
         duration: 100,
       });
     },
     onFinalize: () => {
-      'worklet';
       colorProgress.value = withTiming(0, {
         duration: 100,
       });

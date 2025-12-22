@@ -13,7 +13,6 @@ export default function LogicDetectorExample() {
 
   const circleElementTap = useTapGesture({
     onActivate: () => {
-      'worklet';
       feedbackRef.current?.showMessage('Tapped circle!');
     },
     disableReanimated: true,
@@ -21,7 +20,6 @@ export default function LogicDetectorExample() {
 
   const rectElementTap = useTapGesture({
     onActivate: () => {
-      'worklet';
       feedbackRef.current?.showMessage('Tapped parallelogram!');
     },
     disableReanimated: true,
@@ -29,7 +27,6 @@ export default function LogicDetectorExample() {
 
   const containerTap = useTapGesture({
     onActivate: () => {
-      'worklet';
       feedbackRef.current?.showMessage('Tapped container!');
     },
     disableReanimated: true,

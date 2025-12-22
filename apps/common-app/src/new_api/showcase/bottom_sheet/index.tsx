@@ -39,7 +39,6 @@ function Example() {
     setSnapPoint(point);
   };
   const onHandlerDeactivate = (e: PanGestureEvent) => {
-    'worklet';
     const dragToss = 0.01;
     const endOffsetY =
       bottomSheetTranslateY.value + translationY.value + e.velocityY * dragToss;
@@ -72,7 +71,6 @@ function Example() {
   };
   const panGesture = usePanGesture({
     onUpdate: (e) => {
-      'worklet';
       // when bottom sheet is not fully opened scroll offset should not influence
       // its position (prevents random snapping when opening bottom sheet when
       // the content is already scrolled)
@@ -93,7 +91,6 @@ function Example() {
 
   const headerGesture = usePanGesture({
     onUpdate: (e) => {
-      'worklet';
       translationY.value = e.translationY;
     },
     onDeactivate: onHandlerDeactivate,

@@ -25,13 +25,11 @@ export default function TapExample() {
 
   const tapGesture = useTapGesture({
     onBegin: () => {
-      'worklet';
       colorProgress.value = withTiming(1, {
         duration: 100,
       });
     },
     onFinalize: () => {
-      'worklet';
       colorProgress.value = withTiming(0, {
         duration: 100,
       });

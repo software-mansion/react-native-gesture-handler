@@ -23,17 +23,14 @@ export default function PanExample() {
   const maxLongPressDistance = useSharedValue(20);
   const panGesture = usePanGesture({
     onBegin: () => {
-      'worklet';
       colorProgress.value = withTiming(1, { duration: 150 });
     },
     onUpdate: (event) => {
-      'worklet';
       translateX.value = offsetX.value + event.translationX;
       translateY.value = offsetY.value + event.translationY;
       maxLongPressDistance.value = Math.abs(event.translationY) * 2 + 20;
     },
     onFinalize: () => {
-      'worklet';
       offsetX.value = translateX.value;
       offsetY.value = translateY.value;
     },
@@ -41,19 +38,16 @@ export default function PanExample() {
 
   const longPressGesture = useLongPressGesture({
     onBegin: () => {
-      'worklet';
       colorProgress.value = withTiming(1, {
         duration: 100,
       });
     },
     onActivate: () => {
-      'worklet';
       colorProgress.value = withTiming(2, {
         duration: 100,
       });
     },
     onFinalize: () => {
-      'worklet';
       colorProgress.value = withTiming(0, {
         duration: 100,
       });

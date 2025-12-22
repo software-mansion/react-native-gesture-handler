@@ -52,7 +52,6 @@ export default function Buttons() {
     const leftTap = useTapGesture({
       mouseButton: MouseButton.LEFT,
       onDeactivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Tap with left');
       },
       disableReanimated: true,
@@ -61,7 +60,6 @@ export default function Buttons() {
     const middleTap = useTapGesture({
       mouseButton: MouseButton.MIDDLE,
       onDeactivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Tap with middle');
       },
       disableReanimated: true,
@@ -70,7 +68,6 @@ export default function Buttons() {
     const rightTap = useTapGesture({
       mouseButton: MouseButton.RIGHT,
       onDeactivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Tap with right');
       },
       disableReanimated: true,
@@ -79,7 +76,6 @@ export default function Buttons() {
     const leftRightTap = useTapGesture({
       mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
       onDeactivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Tap with left | right');
       },
       disableReanimated: true,
@@ -88,7 +84,6 @@ export default function Buttons() {
     const allTap = useTapGesture({
       mouseButton: MouseButton.ALL,
       onDeactivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Tap with any button');
       },
       disableReanimated: true,
@@ -103,7 +98,6 @@ export default function Buttons() {
     const leftPan = usePanGesture({
       mouseButton: MouseButton.LEFT,
       onUpdate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Panning with left');
       },
     });
@@ -111,7 +105,6 @@ export default function Buttons() {
     const middlePan = usePanGesture({
       mouseButton: MouseButton.MIDDLE,
       onUpdate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Panning with middle');
       },
     });
@@ -119,7 +112,6 @@ export default function Buttons() {
     const rightPan = usePanGesture({
       mouseButton: MouseButton.RIGHT,
       onUpdate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Panning with right');
       },
     });
@@ -127,7 +119,6 @@ export default function Buttons() {
     const leftRightPan = usePanGesture({
       mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
       onUpdate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Panning with left | right');
       },
     });
@@ -135,7 +126,6 @@ export default function Buttons() {
     const allPan = usePanGesture({
       mouseButton: MouseButton.ALL,
       onUpdate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Panning with any button');
       },
     });
@@ -149,7 +139,6 @@ export default function Buttons() {
     const leftLongPress = useLongPressGesture({
       mouseButton: MouseButton.LEFT,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('LongPress with left');
       },
     });
@@ -157,7 +146,6 @@ export default function Buttons() {
     const middleLongPress = useLongPressGesture({
       mouseButton: MouseButton.MIDDLE,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('LongPress with middle');
       },
     });
@@ -165,7 +153,6 @@ export default function Buttons() {
     const rightLongPress = useLongPressGesture({
       mouseButton: MouseButton.RIGHT,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('LongPress with right');
       },
     });
@@ -173,7 +160,6 @@ export default function Buttons() {
     const leftRightLongPress = useLongPressGesture({
       mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('LongPress with left | right');
       },
     });
@@ -181,7 +167,6 @@ export default function Buttons() {
     const allLongPress = useLongPressGesture({
       mouseButton: MouseButton.ALL,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('LongPress with any button');
       },
     });
@@ -202,7 +187,6 @@ export default function Buttons() {
       direction: Directions.LEFT | Directions.RIGHT,
       mouseButton: MouseButton.LEFT,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Fling with left');
       },
     });
@@ -211,7 +195,6 @@ export default function Buttons() {
       direction: Directions.LEFT | Directions.RIGHT,
       mouseButton: MouseButton.MIDDLE,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Fling with middle');
       },
     });
@@ -220,7 +203,6 @@ export default function Buttons() {
       direction: Directions.LEFT | Directions.RIGHT,
       mouseButton: MouseButton.RIGHT,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Fling with right');
       },
     });
@@ -229,7 +211,6 @@ export default function Buttons() {
       direction: Directions.LEFT | Directions.RIGHT,
       mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Fling with left | right');
       },
     });
@@ -238,7 +219,6 @@ export default function Buttons() {
       direction: Directions.LEFT | Directions.RIGHT,
       mouseButton: MouseButton.ALL,
       onActivate: () => {
-        'worklet';
         feedbackRef.current?.showMessage('Fling with any button');
       },
     });

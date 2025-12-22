@@ -23,20 +23,16 @@ function useColoredHover(
 
   const gesture = useHoverGesture({
     onBegin: () => {
-      'worklet';
       hovered.value = true;
       feedbackRef.current?.showMessage('Hover begin ' + color);
     },
     onActivate: () => {
-      'worklet';
       console.log('hover start', color);
     },
     onDeactivate: (_, success) => {
-      'worklet';
       console.log('hover end', color, 'failed', !success);
     },
     onFinalize: () => {
-      'worklet';
       hovered.value = false;
       console.log('hover finalize', color);
     },

@@ -32,7 +32,6 @@ function OverlapSiblings() {
 
   const tapPurple = useTapGesture({
     onDeactivate: (_e, success) => {
-      'worklet';
       if (success) {
         setElevated('purple');
         feedbackRef.current?.showMessage('Tapped purple');
@@ -43,7 +42,6 @@ function OverlapSiblings() {
 
   const tapBlue = useTapGesture({
     onDeactivate: (_e, success) => {
-      'worklet';
       if (success) {
         setElevated('blue');
         feedbackRef.current?.showMessage('Tapped blue');
@@ -78,7 +76,6 @@ function OverlapParents() {
 
   const tapRed = useTapGesture({
     onDeactivate: (_e, success) => {
-      'worklet';
       if (success) {
         feedbackRef.current?.showMessage('Tapped purple');
         setElevated('purple');
@@ -89,7 +86,6 @@ function OverlapParents() {
 
   const tapGreen = useTapGesture({
     onDeactivate: (_e, success) => {
-      'worklet';
       if (success) {
         feedbackRef.current?.showMessage('Tapped blue');
         setElevated('blue');

@@ -93,12 +93,10 @@ const Example = () => {
 
   const panHandler = usePanGesture({
     onUpdate: (e) => {
-      'worklet';
       panOffset.x.value = mainChatHeadPosition.x.value + e.translationX;
       panOffset.y.value = mainChatHeadPosition.y.value + e.translationY;
     },
     onDeactivate: (e) => {
-      'worklet';
       const { height, width } = dimensions;
 
       const velocityDragX = clampToValues({

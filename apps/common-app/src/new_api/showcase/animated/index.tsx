@@ -25,16 +25,12 @@ export default function MinimalCard() {
       }).start();
     },
     onActivate: () => {
-      'worklet';
-
       Animated.spring(scale, {
         toValue: 1.05,
         useNativeDriver: true,
       }).start();
     },
     onUpdate: (e) => {
-      'worklet';
-
       translateX.setValue(e.translationX + offsetX);
       translateY.setValue(e.translationY + offsetY);
 
@@ -46,8 +42,6 @@ export default function MinimalCard() {
       );
     },
     onDeactivate: (e) => {
-      'worklet';
-
       Animated.spring(scale, {
         toValue: 1,
         useNativeDriver: true,

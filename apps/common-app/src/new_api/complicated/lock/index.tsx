@@ -34,7 +34,6 @@ export default function Lock() {
   // Tap to lock
   const tap = useTapGesture({
     onDeactivate: () => {
-      'worklet';
       if (savedRotation.value === 0 && scale.value === maxScale) {
         runOnJS(setLocked)(false);
       }
@@ -48,7 +47,6 @@ export default function Lock() {
 
   const rotationGesture = useRotationGesture({
     onUpdate: (e) => {
-      'worklet';
       rotation.value = savedRotation.value + e.rotation;
 
       if (!locked) {
@@ -56,8 +54,6 @@ export default function Lock() {
       }
     },
     onDeactivate: () => {
-      'worklet';
-
       const nearestMultiple = Math.round(rotation.value / TWO_PI) * TWO_PI;
 
       if (Math.abs(rotation.value - nearestMultiple) < snapThreshold) {
@@ -73,7 +69,6 @@ export default function Lock() {
 
   const pinchGesture = usePinchGesture({
     onUpdate: (e) => {
-      'worklet';
       const value = savedScale.value * e.scale;
       if (value < minScale || value > maxScale) {
         return;
@@ -85,8 +80,6 @@ export default function Lock() {
       }
     },
     onDeactivate: () => {
-      'worklet';
-
       if (Math.abs(scale.value - maxScale) < scaleThreshold) {
         scale.value = withTiming(maxScale, { duration: 300 });
       } else {

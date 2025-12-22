@@ -18,16 +18,13 @@ export default function PanExample() {
 
   const panGesture = usePanGesture({
     onBegin: () => {
-      'worklet';
       colorProgress.value = withTiming(1, { duration: 150 });
     },
     onUpdate: (event) => {
-      'worklet';
       translateX.value = offsetX.value + event.translationX;
       translateY.value = offsetY.value + event.translationY;
     },
     onFinalize: () => {
-      'worklet';
       offsetX.value = translateX.value;
       offsetY.value = translateY.value;
       colorProgress.value = withTiming(0, { duration: 150 });

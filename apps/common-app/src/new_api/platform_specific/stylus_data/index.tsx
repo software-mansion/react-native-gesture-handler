@@ -17,7 +17,6 @@ export default function StylusData() {
 
   const pan = usePanGesture({
     onBegin: (e) => {
-      'worklet';
       if (!e.stylusData) {
         return;
       }
@@ -27,7 +26,6 @@ export default function StylusData() {
       rotationXFactor.value = e.stylusData.tiltY;
     },
     onUpdate: (e) => {
-      'worklet';
       if (!e.stylusData) {
         return;
       }
@@ -37,7 +35,6 @@ export default function StylusData() {
       rotationXFactor.value = e.stylusData.tiltY;
     },
     onFinalize: (e) => {
-      'worklet';
       if (!e.stylusData) {
         return;
       }

@@ -18,13 +18,11 @@ export default function RotationExample() {
 
   const rotationGesture = useRotationGesture({
     onUpdate: (event) => {
-      'worklet';
       rotation.value = event.rotation;
       const p = Math.min(Math.max(Math.abs(event.rotation) / Math.PI, 0), 1);
       colorProgress.value = p;
     },
     onDeactivate: () => {
-      'worklet';
       rotation.value = withTiming(0, { duration: 150 });
       colorProgress.value = withTiming(0, { duration: 150 });
     },

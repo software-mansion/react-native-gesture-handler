@@ -44,11 +44,9 @@ export default function Camera() {
 
   const filterChangeGesture = usePanGesture({
     onUpdate: (e) => {
-      'worklet';
       selectedFilter.value -= e.changeX / FILTER_SIZE;
     },
     onDeactivate: () => {
-      'worklet';
       const nextFilter = Math.min(
         FILTERS.length - 1,
         Math.max(0, Math.round(selectedFilter.value))
@@ -81,7 +79,6 @@ export default function Camera() {
     shouldCancelWhenOutside: false,
     maxDistance: 10000,
     onActivate: () => {
-      'worklet';
       runOnJS(startRecording)();
       captureProgress.value = withTiming(1, {
         duration: VIDEO_DURATION,
@@ -89,7 +86,6 @@ export default function Camera() {
       });
     },
     onDeactivate: () => {
-      'worklet';
       runOnJS(stopRecording)();
       captureProgress.value = 0;
     },
@@ -99,14 +95,12 @@ export default function Camera() {
     shouldCancelWhenOutside: false,
     requireToFail: filterChangeGesture,
     onUpdate: (e) => {
-      'worklet';
       zoom.value = Math.max(1, Math.min(2, zoom.value - e.changeY / 500));
     },
   });
 
   const pinchZoomGesture = usePinchGesture({
     onUpdate: (e) => {
-      'worklet';
       zoom.value = Math.max(
         1,
         Math.min(2, zoom.value * ((e.scaleChange - 1) * 0.2 + 1))
@@ -118,7 +112,6 @@ export default function Camera() {
   const changeCameraGesture = useTapGesture({
     numberOfTaps: 2,
     onDeactivate: () => {
-      'worklet';
       setFacing((f) => (f === 'back' ? 'front' : 'back'));
     },
     disableReanimated: true,

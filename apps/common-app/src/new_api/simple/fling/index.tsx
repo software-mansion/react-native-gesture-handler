@@ -22,14 +22,12 @@ export default function FlingExample() {
   const flingGesture = useFlingGesture({
     direction: Directions.LEFT | Directions.RIGHT,
     onBegin: (e) => {
-      'worklet';
       beginPosition.value = e.x;
       colorProgress.value = withTiming(1, {
         duration: 100,
       });
     },
     onActivate: (e) => {
-      'worklet';
       const direction = Math.sign(e.x - beginPosition.value);
       position.value = withTiming(position.value + direction * 50, {
         duration: 300,
@@ -37,7 +35,6 @@ export default function FlingExample() {
       });
     },
     onFinalize: () => {
-      'worklet';
       colorProgress.value = withTiming(0, {
         duration: 400,
       });

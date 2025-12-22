@@ -56,11 +56,9 @@ function BoxReanimated(props: { source: any }) {
 
   const hover = useHoverGesture({
     onBegin: () => {
-      'worklet';
       scale.value = withTiming(1.15, { duration: 100 });
     },
     onUpdate: (e) => {
-      'worklet';
       const oX = e.x - SIZE / 2;
       const oY = e.y - SIZE / 2;
 
@@ -68,7 +66,6 @@ function BoxReanimated(props: { source: any }) {
       targetOffsetY.value = Math.pow(Math.abs(oY), 0.3) * Math.sign(oY);
     },
     onFinalize: () => {
-      'worklet';
       scale.value = withTiming(1, { duration: 100 });
       targetOffsetX.value = 0;
       targetOffsetY.value = 0;

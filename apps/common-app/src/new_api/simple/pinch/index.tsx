@@ -14,14 +14,12 @@ export default function PinchExample() {
   const colorProgress = useSharedValue(0);
   const pinchGesture = usePinchGesture({
     onUpdate: (event) => {
-      'worklet';
       scale.value = event.scale;
 
       const p = Math.min(Math.max((event.scale - 1) / 0.5, 0), 1);
       colorProgress.value = p;
     },
     onDeactivate: () => {
-      'worklet';
       scale.value = withTiming(1, { duration: 150 });
       colorProgress.value = withTiming(0, { duration: 150 });
     },
