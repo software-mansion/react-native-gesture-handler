@@ -13,22 +13,24 @@ const setGestureState = (handlerTag: number, state: State) => {
   }
 };
 
-export const begin = (handlerTag: number): void => {
-  'worklet';
-  setGestureState(handlerTag, State.BEGAN);
-};
+export const GestureStateManager = {
+  begin(handlerTag: number): void {
+    'worklet';
+    setGestureState(handlerTag, State.BEGAN);
+  },
 
-export const activate = (handlerTag: number): void => {
-  'worklet';
-  setGestureState(handlerTag, State.ACTIVE);
-};
+  activate(handlerTag: number): void {
+    'worklet';
+    setGestureState(handlerTag, State.ACTIVE);
+  },
 
-export const fail = (handlerTag: number): void => {
-  'worklet';
-  setGestureState(handlerTag, State.FAILED);
-};
+  fail(handlerTag: number): void {
+    'worklet';
+    setGestureState(handlerTag, State.FAILED);
+  },
 
-export const end = (handlerTag: number): void => {
-  'worklet';
-  setGestureState(handlerTag, State.END);
+  end(handlerTag: number): void {
+    'worklet';
+    setGestureState(handlerTag, State.END);
+  },
 };
