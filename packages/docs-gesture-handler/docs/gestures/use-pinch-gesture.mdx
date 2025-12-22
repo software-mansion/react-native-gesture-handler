@@ -124,6 +124,14 @@ scale: number;
 
 The scale factor relative to the points of the two touches in screen coordinates.
 
+### scaleChange
+
+```ts
+scaleChange: number;
+```
+
+The incremental change in scale since the last event frame. This value represents the ratio of the current scale to the previous scale, rather than the total accumulated scale of the gesture.
+
 ### velocity
 
 ```ts
