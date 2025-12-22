@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import Animated, {
   Easing,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -132,8 +131,7 @@ export const Feedback = ({ duration = 1000, ref }: FeedbackProps) => {
 
   useImperativeHandle(ref, () => ({
     showMessage: (message: string) => {
-      'worklet';
-      runOnJS(displayMessage)(message);
+      displayMessage(message);
     },
   }));
 

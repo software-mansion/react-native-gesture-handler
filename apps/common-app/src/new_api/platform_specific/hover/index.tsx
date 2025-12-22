@@ -41,6 +41,7 @@ function useColoredHover(
       console.log('hover finalize', color);
     },
     effect: HoverEffect.LIFT,
+    disableReanimated: true,
   });
 
   return [gesture, style] as const;

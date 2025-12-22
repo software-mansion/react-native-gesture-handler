@@ -16,6 +16,7 @@ export default function LogicDetectorExample() {
       'worklet';
       feedbackRef.current?.showMessage('Tapped circle!');
     },
+    disableReanimated: true,
   });
 
   const rectElementTap = useTapGesture({
@@ -23,6 +24,7 @@ export default function LogicDetectorExample() {
       'worklet';
       feedbackRef.current?.showMessage('Tapped parallelogram!');
     },
+    disableReanimated: true,
   });
 
   const containerTap = useTapGesture({
@@ -30,6 +32,7 @@ export default function LogicDetectorExample() {
       'worklet';
       feedbackRef.current?.showMessage('Tapped container!');
     },
+    disableReanimated: true,
   });
 
   // onPress must be set to enable gesture recognition on svg

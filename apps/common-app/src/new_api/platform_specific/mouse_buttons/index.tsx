@@ -55,6 +55,7 @@ export default function Buttons() {
         'worklet';
         feedbackRef.current?.showMessage('Tap with left');
       },
+      disableReanimated: true,
     });
 
     const middleTap = useTapGesture({
@@ -63,6 +64,7 @@ export default function Buttons() {
         'worklet';
         feedbackRef.current?.showMessage('Tap with middle');
       },
+      disableReanimated: true,
     });
 
     const rightTap = useTapGesture({
@@ -71,6 +73,7 @@ export default function Buttons() {
         'worklet';
         feedbackRef.current?.showMessage('Tap with right');
       },
+      disableReanimated: true,
     });
 
     const leftRightTap = useTapGesture({
@@ -79,6 +82,7 @@ export default function Buttons() {
         'worklet';
         feedbackRef.current?.showMessage('Tap with left | right');
       },
+      disableReanimated: true,
     });
 
     const allTap = useTapGesture({
@@ -87,6 +91,7 @@ export default function Buttons() {
         'worklet';
         feedbackRef.current?.showMessage('Tap with any button');
       },
+      disableReanimated: true,
     });
 
     const gestures = [leftTap, middleTap, rightTap, leftRightTap, allTap];

@@ -20,6 +20,7 @@ function NativeDetectorExample() {
       'worklet';
       feedbackRef.current?.showMessage('Tapped on all text');
     },
+    disableReanimated: true,
   });
 
   const tapFirstPart = useTapGesture({
@@ -27,6 +28,7 @@ function NativeDetectorExample() {
       'worklet';
       feedbackRef.current?.showMessage('Tapped on "try tapping on this part"');
     },
+    disableReanimated: true,
   });
 
   const tapSecondPart = useTapGesture({
@@ -35,6 +37,7 @@ function NativeDetectorExample() {
       console.log('Tapped on second part!');
       feedbackRef.current?.showMessage('Tapped on "or on this part"');
     },
+    disableReanimated: true,
   });
 
   return (
