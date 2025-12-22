@@ -83,7 +83,10 @@ export default function Camera() {
     onActivate: () => {
       'worklet';
       runOnJS(startRecording)();
-      captureProgress.value = withTiming(1, { duration: VIDEO_DURATION });
+      captureProgress.value = withTiming(1, {
+        duration: VIDEO_DURATION,
+        easing: (x) => x,
+      });
     },
     onDeactivate: () => {
       'worklet';
