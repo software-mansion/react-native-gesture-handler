@@ -15,8 +15,6 @@ Only one of the provided gestures can become active at the same time. The first 
 
 For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `useCompetingGestures`:
 
-> Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
-
 ```js
 import { View, StyleSheet } from 'react-native';
 import {
@@ -181,8 +179,6 @@ Only one of the provided gestures can become active, with the first one having a
 It is equivalent to having some gesture handlers where the second one has the `requireToFail` prop set to the first handler, third one has the `requireToFail` prop set to the first and the second one, and so on.
 
 For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:
-
-> Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
 ```js
 import { StyleSheet, View } from 'react-native';
