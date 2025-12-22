@@ -91,7 +91,7 @@ export default function App() {
         SHOW_LEGACY_EXAMPLES_KEY,
       ]).then(([openLastExample, lastExample, showLegacyExamples]) => {
         const showLegacy = showLegacyExamples[1] === 'true';
-        if (showLegacyExamples[1]) {
+        if (showLegacyExamples[1] != null) {
           setShowLegacyVersion(showLegacy);
         }
         if (
