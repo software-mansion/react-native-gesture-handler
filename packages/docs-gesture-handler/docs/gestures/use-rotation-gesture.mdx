@@ -30,6 +30,7 @@ import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A continuous gesture that can recognize a rotation gesture and track its movement.
 
@@ -59,14 +60,10 @@ import Animated, {
 
 export default function App() {
   const rotation = useSharedValue(1);
-  const savedRotation = useSharedValue(1);
 
   const rotationGesture = useRotationGesture({
     onUpdate: (e) => {
       rotation.value = savedRotation.value + e.rotation;
-    },
-    onDeactivate: () => {
-      savedRotation.value = rotation.value;
     },
   });
 
@@ -105,6 +102,8 @@ const styles = StyleSheet.create({
 
 ## Config
 
+<SharedValueInfo />
+
 <BaseGestureConfig />
 <BaseContinuousGestureConfig />
 
@@ -115,8 +114,6 @@ const styles = StyleSheet.create({
 
 ## Event data
 
-### Event attributes specific to `RotationGesture`:
-
 ### rotation
 
 ```ts
@@ -124,6 +121,14 @@ rotation: number;
 ```
 
 Amount rotated, expressed in radians, from the gesture's focal point (anchor).
+
+### rotationChange
+
+```ts
+rotationChange: number;
+```
+
+The incremental change in rotation since the last event frame. This value represents the difference in radians between the current and previous rotation, rather than the total accumulated rotation of the gesture.
 
 ### velocity
 

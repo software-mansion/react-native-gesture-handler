@@ -9,6 +9,7 @@ import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
 
@@ -80,13 +81,15 @@ function Rectangle({ color, scrollGesture }: RectangleProps) {
 
 - `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
+- Due to platform API limitations, the `Native` gesture has restricted functionality on `web`. For instance, it cannot be used to block scrolling on a `ScrollView`.
+
 :::danger
 Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
 :::
 
 ## Config
 
-### Properties specific to `NativeGesture`:
+<SharedValueInfo />
 
 ### shouldActivateOnStart (**Android only**)
 
@@ -111,8 +114,6 @@ When `true`, cancels all other gesture handlers when changes its state to [`ACTI
 <BaseGestureCallbacks gesture={"NativeView"}/>
 
 ## Event data
-
-### Event attributes specific to `NativeGesture`:
 
 ### pointerInside
 

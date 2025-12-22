@@ -29,6 +29,7 @@ import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
@@ -40,7 +41,7 @@ On iOS additional visual effects may be configured.
     </video>
   </div>
 
-## Reference
+## Example
 
 ```jsx
 import { View, StyleSheet } from 'react-native';
@@ -80,11 +81,11 @@ const styles = StyleSheet.create({
 
 ## Remarks
 
-- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/gestures/gesture-composition) it with [`Pan` gesture](/docs/gestures/use-pan-gesture).
+- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/use-pan-gesture).
 
 ## Config
 
-### Properties specific to `HoverGesture`:
+<SharedValueInfo />
 
 ### effect (iOS only)
 
@@ -110,8 +111,6 @@ Visual effect applied to the view while the view is hovered. Defaults to `HoverE
 <BaseContinuousGestureCallbacks gesture={"Hover"}/>
 
 ## Event data
-
-### Event attributes specific to `HoverGesture`:
 
 ### x
 

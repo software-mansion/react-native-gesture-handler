@@ -28,15 +28,16 @@ import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBas
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A discrete gesture that recognizes one or many taps.
 
 Tap gestures detect one or more fingers briefly touching the screen.
-The fingers involved in these gestures must not move significantly from their initial touch positions.
+The pointers involved in these gestures must not move significantly from their initial touch positions. This can be changed via configuration.
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
+In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDistance, maxDuration, and maxDelay (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -56,7 +57,6 @@ import {
 
 export default function App() {
   const singleTap = useTapGesture({
-    maxDuration: 250,
     onActivate: () => {
       console.log('Single tap!');
     },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
 
 ## Config
 
-### Properties specific to `TapGesture`:
+<SharedValueInfo />
 
 ### minPointers
 
@@ -173,8 +173,6 @@ Allows users to choose which mouse button should handler respond to. Arguments c
 <BaseGestureCallbacks gesture={"Tap"}/>
 
 ## Event data
-
-### Event attributes specific to `TapGesture`:
 
 ### x
 

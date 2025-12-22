@@ -30,7 +30,7 @@ function App() {
 
 ### `gesture`
 
-A gesture object containing the configuration and callbacks. Can be any of the base gestures (`Tap`, `Pan`, `LongPress`, `Fling`, `Pinch`, `Rotation`, `ForceTouch`) or any [`ComposedGesture`](./gesture-composition.md) (`Race`, `Simultaneous`, `Exclusive`).
+A gesture object containing the configuration and callbacks. Can be any of the base gestures (`Tap`, `Pan`, `LongPress`, `Fling`, `Pinch`, `Rotation`, `ForceTouch`) or any [`ComposedGesture`](/docs/fundamentals/gesture-composition) (`Race`, `Simultaneous`, `Exclusive`).
 
 :::info
 GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.

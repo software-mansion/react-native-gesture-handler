@@ -30,6 +30,7 @@ import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A continuous gesture that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
 The gesture [activates](/docs/fundamentals/states-events#active) when fingers are placed on the screen and change their position.
@@ -62,14 +63,10 @@ import Animated, {
 
 export default function App() {
   const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
 
   const pinchGesture = usePinchGesture({
     onUpdate: (e) => {
       scale.value = savedScale.value * e.scale;
-    },
-    onDeactivate: () => {
-      savedScale.value = scale.value;
     },
   });
 
@@ -108,6 +105,8 @@ const styles = StyleSheet.create({
 
 ## Config
 
+<SharedValueInfo />
+
 <BaseGestureConfig />
 <BaseContinuousGestureConfig />
 
@@ -118,8 +117,6 @@ const styles = StyleSheet.create({
 
 ## Event data
 
-### Event attributes specific to `PinchGesture`:
-
 ### scale
 
 ```ts
@@ -127,6 +124,14 @@ scale: number;
 ```
 
 The scale factor relative to the points of the two touches in screen coordinates.
+
+### scaleChange
+
+```ts
+scaleChange: number;
+```
+
+The incremental change in scale since the last event frame. This value represents the ratio of the current scale to the previous scale, rather than the total accumulated scale of the gesture.
 
 ### velocity
 

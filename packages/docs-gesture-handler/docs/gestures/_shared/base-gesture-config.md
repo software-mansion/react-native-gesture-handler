@@ -1,5 +1,3 @@
-### Properties common to all gestures:
-
 ### enabled
 
 ```ts
@@ -100,6 +98,8 @@ requireToFail: Gesture | Gesture[]
 ```
 
 Adds a relation requiring another gesture to fail, before this one can activate.
+
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/gestures/gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
 ### block
 

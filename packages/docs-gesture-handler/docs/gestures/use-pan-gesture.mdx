@@ -17,6 +17,7 @@ import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
@@ -119,7 +120,7 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ## Config
 
-### Properties specific to `PanGesture`:
+<SharedValueInfo />
 
 ### minDistance
 
@@ -246,8 +247,6 @@ Allows users to choose which mouse button should handler respond to. Arguments c
 
 ## Event data
 
-### Event attributes specific to `PanGesture`:
-
 ### translationX
 
 ```ts
@@ -263,6 +262,22 @@ translationY: number;
 ```
 
 Translation of the pan gesture along Y axis accumulated over the time of the gesture. The value is expressed in the point units.
+
+### changeX
+
+```ts
+changeX: number;
+```
+
+The horizontal distance moved since the last event frame. This value represents the immediate incremental change in the X axis, rather than the total accumulated distance.
+
+### changeY
+
+```ts
+changeY: number;
+```
+
+The vertical distance moved since the last event frame. This value represents the immediate incremental change in the Y axis, rather than the total accumulated distance.
 
 ### velocityX
 

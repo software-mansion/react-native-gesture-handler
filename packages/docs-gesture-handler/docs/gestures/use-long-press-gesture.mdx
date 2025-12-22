@@ -28,6 +28,7 @@ import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPre
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
 
 ## Config
 
-### Properties specific to `LongPressGesture`:
+<SharedValueInfo />
 
 ### minDuration
 
@@ -129,8 +130,6 @@ Allows users to choose which mouse button should handler respond to. Arguments c
 <BaseGestureCallbacks gesture={"LongPress"}/>
 
 ## Event data
-
-### Event attributes specific to `LongPressGesture`:
 
 ### x
 

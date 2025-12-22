@@ -1,5 +1,3 @@
-### Event attributes common to all gestures:
-
 ### numberOfPointers
 
 ```ts
