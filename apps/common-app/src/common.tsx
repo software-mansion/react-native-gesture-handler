@@ -1,5 +1,5 @@
 import React, {
-  forwardRef,
+  RefObject,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -89,73 +89,72 @@ export function InfoSection({ description }: InfoSectionProps) {
 
 type FeedbackProps = {
   duration?: number;
+  ref?: RefObject<FeedbackHandle | null>;
 };
 
 export type FeedbackHandle = {
   showMessage: (message: string) => void;
 };
 
-export const Feedback = forwardRef<FeedbackHandle, FeedbackProps>(
-  ({ duration = 1000 }, ref) => {
-    const [text, setText] = useState('Feedback');
-    const timerRef = useRef<number | null>(null);
+export const Feedback = ({ duration = 1000, ref }: FeedbackProps) => {
+  const [text, setText] = useState('Feedback');
+  const timerRef = useRef<number | null>(null);
 
-    const opacity = useSharedValue(0);
+  const opacity = useSharedValue(0);
 
-    const animatedStyle = useAnimatedStyle(() => ({
-      opacity: opacity.value,
-    }));
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
-    const displayMessage = useCallback(
-      (message: string) => {
-        console.log(message);
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
+  const displayMessage = useCallback(
+    (message: string) => {
+      console.log(message);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
 
-        setText(message);
-        opacity.value = withTiming(1, {
-          duration: 100,
+      setText(message);
+      opacity.value = withTiming(1, {
+        duration: 100,
+        easing: Easing.out(Easing.ease),
+      });
+
+      timerRef.current = setTimeout(() => {
+        opacity.value = withTiming(0, {
+          duration: 500,
           easing: Easing.out(Easing.ease),
         });
+        timerRef.current = null;
+      }, duration) as unknown as number;
+    },
+    [duration, opacity]
+  );
 
-        timerRef.current = setTimeout(() => {
-          opacity.value = withTiming(0, {
-            duration: 500,
-            easing: Easing.out(Easing.ease),
-          });
-          timerRef.current = null;
-        }, duration) as unknown as number;
-      },
-      [duration, opacity]
-    );
+  useImperativeHandle(ref, () => ({
+    showMessage: (message: string) => {
+      'worklet';
+      runOnJS(displayMessage)(message);
+    },
+  }));
 
-    useImperativeHandle(ref, () => ({
-      showMessage: (message: string) => {
-        'worklet';
-        runOnJS(displayMessage)(message);
-      },
-    }));
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
-    useEffect(() => {
-      return () => {
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
-      };
-    }, []);
-
-    if (!text) {
-      return null;
-    }
-
-    return (
-      <Animated.Text style={[styles.feedback, animatedStyle]}>
-        {text}
-      </Animated.Text>
-    );
+  if (!text) {
+    return null;
   }
-);
+
+  return (
+    <Animated.Text style={[styles.feedback, animatedStyle]}>
+      {text}
+    </Animated.Text>
+  );
+};
 
 export const COLORS = {
   offWhite: '#f8f9ff',
