@@ -254,8 +254,8 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    height: 50,
-    paddingVertical: 10,
+    height: 48,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -266,10 +266,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     flexDirection: 'row',
-    margin: 12,
     borderRadius: 10,
     backgroundColor: '#eef0ff',
-    padding: 10,
+    padding: 8,
     justifyContent: 'center',
     elevation: 8,
     ...(Platform.OS !== 'macos'
@@ -294,6 +293,7 @@ const styles = StyleSheet.create({
   },
   settings: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 24,
+    margin: 24,
   },
 });
