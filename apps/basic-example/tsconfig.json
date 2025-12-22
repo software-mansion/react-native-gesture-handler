@@ -16,7 +16,9 @@
       "react-native-gesture-handler/jest-utils": [
         "../../packages/react-native-gesture-handler/src/jestUtils/index.ts"
       ]
-    }
+    },
+    "types": ["../../packages/react-native-gesture-handler/src/global.d.ts"]
+
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
