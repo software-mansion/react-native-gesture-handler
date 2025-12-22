@@ -30,6 +30,7 @@ import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A continuous gesture that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
 The gesture [activates](/docs/fundamentals/states-events#active) when fingers are placed on the screen and change their position.
@@ -103,6 +104,8 @@ const styles = StyleSheet.create({
 - When implementing pinch based on `focal` point, make sure to use it after gesture has activated, i.e. in `onActivate` or `onUpdate` callbacks. Using it in `onBegin` may lead to unexpected behavior.
 
 ## Config
+
+<SharedValueInfo />
 
 <BaseGestureConfig />
 <BaseContinuousGestureConfig />

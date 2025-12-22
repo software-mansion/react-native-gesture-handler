@@ -17,6 +17,7 @@ import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
@@ -118,6 +119,8 @@ Therefore it is safe to rely on translation most of the time as it only reflects
 If you wish to track the "center of mass" virtual pointer and account for its changes when the number of finger changes you can use relative or absolute position provided in the event ([`x`](#x) and [`y`](#y) or [`absoluteX`](#absolutex) and [`absoluteY`](#absolutey)).
 
 ## Config
+
+<SharedValueInfo />
 
 ### Properties specific to `PanGesture`:
 

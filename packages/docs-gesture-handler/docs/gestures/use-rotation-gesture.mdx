@@ -30,6 +30,7 @@ import BaseGestureConfig from './\_shared/base-gesture-config.md';
 import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A continuous gesture that can recognize a rotation gesture and track its movement.
 
@@ -100,6 +101,8 @@ const styles = StyleSheet.create({
 - When implementing rotation based on `anchor` point, make sure to use it after gesture has activated, i.e. in `onActivate` or `onUpdate` callbacks. Using it in `onBegin` may lead to unexpected behavior.
 
 ## Config
+
+<SharedValueInfo />
 
 <BaseGestureConfig />
 <BaseContinuousGestureConfig />
