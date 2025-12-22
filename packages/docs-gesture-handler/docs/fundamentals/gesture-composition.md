@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
 
 ### useExclusiveGestures
 
-Only one of the provided gestures can become active, with the first one having a higher priority than the second one (if both gestures are still possible, the second one will wait for the first one to fail before it activates), second one having a higher priority than the third one, and so on.
+Only one of the provided gestures can become active. Priority is determined by the order of the aguments, where the first gesture has the highest priority, and the last has the lowest. A gesture can activate only after all higher-priority gestures before it have failed.
 It is equivalent to having some gesture handlers where the second one has the `requireToFail` prop set to the first handler, third one has the `requireToFail` prop set to the first and the second one, and so on.
 
 For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:
