@@ -5,7 +5,7 @@ title: Upgrading to the new API introduced in Gesture Handler 2
 
 ## Make sure to migrate off the `RNGestureHandlerEnabledRootView` (Android only)
 
-Gesture Handler 1 required you to override `createRootView` to return an instance of `RNGestureHandlerEnabledRootView`. This class has been the cause of many hard to debug and fix crashed and was deprecated in version 2.0, and subsequently removed in version 2.4. If you are still using it, check out [migrating off RNGHEnabledRootView guide](/docs/guides/migrating-off-rnghenabledroot).
+Gesture Handler 1 required you to override `createRootView` to return an instance of `RNGestureHandlerEnabledRootView`. This class has been the cause of many hard to debug and fix crashed and was deprecated in version 2.0, and subsequently removed in version 2.4.
 
 ## Upgrading to the new API
 
