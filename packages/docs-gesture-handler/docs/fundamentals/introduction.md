@@ -64,8 +64,8 @@ If you've build something with this library you'd like to share, please contact 
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U02700KC6J1-0c9e18c89e71-512" />
     </div>
     <div>Jakub Piasecki</div>
-    <div><a href="https://twitter.com/breskin67">@breskin67</a></div>
-    <div><a href="https://bsky.app/profile/jpiasecki.com">@jpiasecki.com</a></div>
+    <div><a href="https://twitter.com/breskin67" target="_blank">@breskin67</a></div>
+    <div><a href="https://bsky.app/profile/jpiasecki.com" target="_blank">@jpiasecki.com</a></div>
   </div>
 
   <div className="community-holder-container-item">
@@ -73,7 +73,7 @@ If you've build something with this library you'd like to share, please contact 
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U03N3HU2C0M-60a31c54a7d5-512" />
     </div>
     <div>Michał Bert</div>
-    <div><a href="https://x.com/Michal3870">@Michal3870</a></div>
+    <div><a href="https://x.com/Michal3870" target="_blank">@Michal3870</a></div>
   </div>
 
   <div className="community-holder-container-item">
@@ -81,7 +81,7 @@ If you've build something with this library you'd like to share, please contact 
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U094G9HEP32-9234cf3d495e-192" />
     </div>
     <div>Andrzej Kwaśniewski</div>
-    <div><a href="https://x.com/aakwasniewski">@aakwasniewski</a></div>
+    <div><a href="https://x.com/aakwasniewski" target="_blank">@aakwasniewski</a></div>
   </div>
 
   <div className="community-holder-container-item">
@@ -89,7 +89,7 @@ If you've build something with this library you'd like to share, please contact 
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U06MQFHEY3V-6535cb89fc75-192" />
     </div>
     <div>Ignacy Łątka</div>
-    <div><a href="https://x.com/latekvo">@latekvo</a></div>
+    <div><a href="https://x.com/latekvo" target="_blank">@latekvo</a></div>
   </div>
 
   <div className="community-holder-container-item">
@@ -97,8 +97,8 @@ If you've build something with this library you'd like to share, please contact 
       <img src="https://ca.slack-edge.com/T03Q9AMJJ-U0F40CATS-d0a2e7559a1b-512" />
     </div>
     <div>Krzysztof Magiera</div>
-    <div><a href="https://twitter.com/kzzzf">@kzzzf</a></div>
-    <div><a href="https://bsky.app/profile/kzzzf.bsky.social">@kzzzf.bsky.social</a></div>
+    <div><a href="https://twitter.com/kzzzf" target="_blank">@kzzzf</a></div>
+    <div><a href="https://bsky.app/profile/kzzzf.bsky.social" target="_blank">@kzzzf.bsky.social</a></div>
   </div>
 
 </div>
