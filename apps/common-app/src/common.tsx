@@ -1,9 +1,58 @@
-import React from 'react';
-import { Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import React, {
+  RefObject,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Text,
+  StyleSheet,
+  ViewStyle,
+  StyleProp,
+  View,
+  Platform,
+} from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+export interface Example {
+  name: string;
+  component: React.ComponentType;
+  unsupportedPlatforms?: Set<typeof Platform.OS>;
+}
+
+export interface ExamplesSection {
+  sectionTitle: string;
+  data: Example[];
+}
 
 const styles = StyleSheet.create({
   lipsum: {
     padding: 10,
+  },
+  info_container: {
+    padding: 16,
+    backgroundColor: '#F5F7FA',
+    borderRadius: 12,
+    marginVertical: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  info_body: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#4A5568',
+  },
+  feedback: {
+    marginTop: 20,
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
@@ -25,9 +74,99 @@ export class LoremIpsum extends React.Component<Props> {
   }
 }
 
+interface InfoSectionProps {
+  description: string;
+}
+
+export function InfoSection({ description }: InfoSectionProps) {
+  return (
+    <View style={styles.info_container}>
+      <Text style={styles.info_body}>{description}</Text>
+    </View>
+  );
+}
+
+type FeedbackProps = {
+  duration?: number;
+  ref?: RefObject<FeedbackHandle | null>;
+};
+
+export type FeedbackHandle = {
+  showMessage: (message: string) => void;
+};
+
+export const Feedback = ({ duration = 1000, ref }: FeedbackProps) => {
+  const [text, setText] = useState('Feedback');
+  const timerRef = useRef<number | null>(null);
+
+  const opacity = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  const displayMessage = useCallback(
+    (message: string) => {
+      console.log(message);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      setText(message);
+      opacity.value = withTiming(1, {
+        duration: 100,
+        easing: Easing.out(Easing.ease),
+      });
+
+      timerRef.current = setTimeout(() => {
+        opacity.value = withTiming(0, {
+          duration: 500,
+          easing: Easing.out(Easing.ease),
+        });
+        timerRef.current = null;
+      }, duration) as unknown as number;
+    },
+    [duration, opacity]
+  );
+
+  useImperativeHandle(ref, () => ({
+    showMessage: (message: string) => {
+      displayMessage(message);
+    },
+  }));
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
+  if (!text) {
+    return null;
+  }
+
+  return (
+    <Animated.Text style={[styles.feedback, animatedStyle]}>
+      {text}
+    </Animated.Text>
+  );
+};
+
 export const COLORS = {
   offWhite: '#f8f9ff',
   headerSeparator: '#eef0ff',
+  PURPLE: '#b58df1',
+  NAVY: '#001A72',
+  RED: '#A41623',
+  YELLOW: '#F2AF29',
+  GREEN: '#0F956F',
+  GRAY: '#ADB1C2',
+  KINDA_RED: '#FFB2AD',
+  KINDA_YELLOW: '#FFF096',
+  KINDA_GREEN: '#C4E7DB',
+  KINDA_BLUE: '#A0D5EF',
 };
 
 const LOREM_IPSUM = `
