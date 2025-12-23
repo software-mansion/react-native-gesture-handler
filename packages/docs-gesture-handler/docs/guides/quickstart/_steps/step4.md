@@ -1,9 +1,9 @@
 ```jsx {4}
 // ...
 return (
-  <GestureDetector>
+  <GestureHandlerRootView>
     <Animated.View style={[styles.ball, animatedStyles]} />
-  </GestureDetector>
+  </GestureHandlerRootView>
 );
 // ...
 ```
