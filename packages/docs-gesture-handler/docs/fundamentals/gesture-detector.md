@@ -2,7 +2,7 @@
 id: gesture-detectors
 title: Gesture Detectors
 sidebar_label: Gesture detectors
-sidebar_position: 11
+sidebar_position: 3
 ---
 
 ## Gesture Detector
