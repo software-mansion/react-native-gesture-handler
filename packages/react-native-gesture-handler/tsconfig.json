@@ -4,7 +4,7 @@
     "outDir": "lib/typescript",
     "paths": {
       "react-native-gesture-handler": ["./src"]
-    }
+    }, "types": ["./src/global.d.ts", "jest"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "jestSetup.js"]
 }

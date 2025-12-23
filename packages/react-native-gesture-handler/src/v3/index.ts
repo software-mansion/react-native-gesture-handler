@@ -72,3 +72,5 @@ export {
 } from './components';
 
 export type { ComposedGesture } from './types';
+
+export { GestureStateManager } from './gestureStateManager';
