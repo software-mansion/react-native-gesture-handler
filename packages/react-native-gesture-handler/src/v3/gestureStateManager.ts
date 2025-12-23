@@ -14,22 +14,22 @@ const setGestureState = (handlerTag: number, state: State) => {
 };
 
 export const GestureStateManager = {
-  begin(handlerTag: number): void {
+  begin(handlerTag: number) {
     'worklet';
     setGestureState(handlerTag, State.BEGAN);
   },
 
-  activate(handlerTag: number): void {
+  activate(handlerTag: number) {
     'worklet';
     setGestureState(handlerTag, State.ACTIVE);
   },
 
-  fail(handlerTag: number): void {
+  fail(handlerTag: number) {
     'worklet';
     setGestureState(handlerTag, State.FAILED);
   },
 
-  end(handlerTag: number): void {
+  end(handlerTag: number) {
     'worklet';
     setGestureState(handlerTag, State.END);
   },
