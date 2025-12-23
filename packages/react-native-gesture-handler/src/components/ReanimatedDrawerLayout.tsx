@@ -198,6 +198,11 @@ export interface DrawerLayoutProps {
   drawerContainerStyle?: StyleProp<ViewStyle>;
 
   /**
+  * Style wrapping the main component.
+  */
+  mainContainerStyle?: StyleProp<ViewStyle>;
+
+  /**
    * Enables two-finger gestures on supported devices, for example iPads with
    * trackpads. If not enabled the gesture will require click + drag, with
    * `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger
@@ -282,6 +287,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       drawerType = defaultProps.drawerType,
       drawerBackgroundColor,
       drawerContainerStyle,
+      mainContainerStyle,
       contentContainerStyle,
       minSwipeDistance = defaultProps.minSwipeDistance,
       edgeWidth = defaultProps.edgeWidth,
@@ -669,7 +675,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         gesture={panGesture}
         userSelect={userSelect}
         enableContextMenu={enableContextMenu}>
-        <Animated.View style={styles.main} onLayout={handleContainerLayout}>
+        <Animated.View style={[styles.main, mainContainerStyle]} onLayout={handleContainerLayout}>
           <GestureDetector gesture={overlayDismissGesture}>
             <Animated.View
               style={[
