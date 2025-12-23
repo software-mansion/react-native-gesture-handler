@@ -15,6 +15,7 @@ export type {
   StateChangeEventWithHandlerData,
   TouchEvent,
   GestureEvent,
+  GestureEndEvent,
   AnimatedEvent,
   ChangeCalculatorType,
   DiffCalculatorType,
@@ -23,7 +24,6 @@ export type {
 export type {
   GestureCallbacks,
   GestureEventCallback,
-  GestureEventCallbackWithDidSucceed,
   GestureTouchEventCallback,
   GestureRelations,
   InternalConfigProps,

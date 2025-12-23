@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import type { NativeGestureEvent } from 'react-native-gesture-handler';
 import {
   TextInput,
   LegacyTextInput,
@@ -22,8 +21,8 @@ export default function SwitchTextInputExample() {
           <TextInput
             onBegin={() => console.log('[TextInput] onBegin')}
             onActivate={() => console.log('[TextInput] onActivate')}
-            onFinalize={(_: NativeGestureEvent, s: boolean) =>
-              console.log('[TextInput] onFinalize', s)
+            onFinalize={(e) =>
+              console.log('[TextInput] onFinalize', e.canceled)
             }
             style={styles.input}
             placeholder="Type here..."
@@ -50,9 +49,7 @@ export default function SwitchTextInputExample() {
           <View style={styles.switchRow}>
             <Switch
               onBegin={() => console.log('[Switch] onBegin')}
-              onFinalize={(_: NativeGestureEvent, s: boolean) =>
-                console.log('[Switch] onFinalize', s)
-              }
+              onFinalize={(e) => console.log('[Switch] onFinalize', e.canceled)}
               value={switchOn}
               onValueChange={(v: boolean) => {
                 console.log('[Switch] onValueChange', v);
