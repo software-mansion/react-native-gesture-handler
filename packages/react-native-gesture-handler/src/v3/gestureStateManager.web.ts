@@ -1,7 +1,8 @@
 import { State } from '../State';
 import NodeManager from '../web/tools/NodeManager';
+import { GestureStateManagerType } from './gestureStateManager';
 
-export const GestureStateManager = {
+export const GestureStateManager: GestureStateManagerType = {
   begin(handlerTag: number): void {
     'worklet';
     NodeManager.getHandler(handlerTag).begin();
