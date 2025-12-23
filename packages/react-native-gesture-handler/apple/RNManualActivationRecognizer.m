@@ -8,7 +8,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
     _handler = gestureHandler;
     _activePointers = 0;
     self.delegate = self;

@@ -6,7 +6,7 @@ sidebar_label: Pan
 
 A continuous gesture handler that can recognize a panning (dragging) gesture and track its movement.
 
-The handler [activates](/docs/under-the-hood/state#active) when a finger is placed on the screen and moved some initial distance.
+The handler [activates](/docs/1.x/state#active) when a finger is placed on the screen and moved some initial distance.
 
 Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](#minPointers) required for activation (allowing for multifinger swipes) may be specified.
 
@@ -16,7 +16,7 @@ The handler is implemented using [UIPanGestureRecognizer](https://developer.appl
 
 ## Custom activation criteria
 
-The `PanGestureHandler` component exposes a number of properties that can be used to customize the criteria under which a handler will [activate](/docs/under-the-hood/state#active) or [fail](/docs/under-the-hood/state#fail) when recognizing a gesture.
+The `PanGestureHandler` component exposes a number of properties that can be used to customize the criteria under which a handler will [activate](/docs/1.x/state#active) or [fail](/docs/1.x/state#fail) when recognizing a gesture.
 
 When more than one of such a property is set, `PanGestureHandler` expects all criteria to be met for successful recognition and at most one of the criteria to be overstepped to fail recognition.
 For example when both [`minDeltaX`](#mindeltax) and [`minDeltaY`](#mindeltay) are set to 20 we expect the finger to travel by 20 points in both the X and Y axis before the handler activates.
@@ -45,15 +45,15 @@ See [set of properties inherited from base handler class](common-gh#properties).
 
 ### `minDist`
 
-Minimum distance the finger (or multiple finger) need to travel before the handler [activates](/docs/under-the-hood/state#active). Expressed in points.
+Minimum distance the finger (or multiple finger) need to travel before the handler [activates](/docs/1.x/state#active). Expressed in points.
 
 ### `minPointers`
 
-A number of fingers that is required to be placed before handler can [activate](/docs/under-the-hood/state#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before handler can [activate](/docs/1.x/state#active). Should be a higher or equal to 0 integer.
 
 ### `maxPointers`
 
-When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/under-the-hood/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/1.x/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
 
 ### `activeOffsetX`
 

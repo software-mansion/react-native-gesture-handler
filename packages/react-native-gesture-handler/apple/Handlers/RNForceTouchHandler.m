@@ -28,7 +28,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
     _force = defaultForce;
     _minForce = defaultMinForce;
