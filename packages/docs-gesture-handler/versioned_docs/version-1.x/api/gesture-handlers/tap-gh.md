@@ -11,7 +11,7 @@ The fingers involved in these gestures must not move significantly from their in
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a handler to [activate](/docs/under-the-hood/state#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDurationMs, and maxDelayMs (explained below) must be met. Immediately after the handler [activates](/docs/under-the-hood/state#active), it will [END](/docs/under-the-hood/state#end).
+In order for a handler to [activate](/docs/1.x/state#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDurationMs, and maxDelayMs (explained below) must be met. Immediately after the handler [activates](/docs/1.x/state#active), it will [END](/docs/1.x/state#end).
 
 ## Properties
 
@@ -19,7 +19,7 @@ See [set of properties inherited from base handler class](common-gh#properties).
 
 ### `minPointers`
 
-Minimum number of pointers (fingers) required to be placed before the handler [activates](/docs/under-the-hood/state#active). Should be a positive integer. The default value is 1.
+Minimum number of pointers (fingers) required to be placed before the handler [activates](/docs/1.x/state#active). Should be a positive integer. The default value is 1.
 
 ### `maxDurationMs`
 
@@ -31,19 +31,19 @@ Maximum time, expressed in milliseconds, that can pass before the next tap — i
 
 ### `numberOfTaps`
 
-Number of tap gestures required to [activate](/docs/under-the-hood/state#active) the handler. The default value is 1.
+Number of tap gestures required to [activate](/docs/1.x/state#active) the handler. The default value is 1.
 
 ### `maxDeltaX`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the handler hasn't yet [activated](/docs/under-the-hood/state#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the handler hasn't yet [activated](/docs/1.x/state#active), it will fail to recognize the gesture.
 
 ### `maxDeltaY`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the handler hasn't yet [activated](/docs/under-the-hood/state#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the handler hasn't yet [activated](/docs/1.x/state#active), it will fail to recognize the gesture.
 
 ### `maxDist`
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the handler hasn't yet [activated](/docs/under-the-hood/state#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the handler hasn't yet [activated](/docs/1.x/state#active), it will fail to recognize the gesture.
 
 ## Event data
 

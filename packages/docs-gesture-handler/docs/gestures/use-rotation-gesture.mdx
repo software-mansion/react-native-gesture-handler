@@ -1,0 +1,157 @@
+---
+id: use-rotation-gesture
+title: Rotation gesture
+sidebar_label: Rotation gesture
+sidebar_position: 4
+---
+
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import RotationGestureBasic from '@site/static/examples/RotationGestureBasic';
+import RotationGestureBasicSrc from '!!raw-loader!@site/static/examples/RotationGestureBasicSrc';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/rotation.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<RotationGestureBasic/>}
+    src={RotationGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</div>
+
+import BaseEventData from './\_shared/base-gesture-event-data.md';
+import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
+import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
+import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
+
+A continuous gesture that can recognize a rotation gesture and track its movement.
+
+The gesture [activates](/docs/fundamentals/states-events#active) when fingers are placed on the screen and change position in a proper way.
+
+Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/rotation.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+## Example
+
+```jsx
+import { StyleSheet } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useRotationGesture,
+} from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+
+export default function App() {
+  const rotation = useSharedValue(1);
+
+  const rotationGesture = useRotationGesture({
+    onUpdate: (e) => {
+      rotation.value = savedRotation.value + e.rotation;
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotateZ: `${(rotation.value / Math.PI) * 180}deg` }],
+  }));
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={rotationGesture}>
+        <Animated.View style={[styles.box, animatedStyle]} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
+```
+
+## Remarks
+
+- When implementing rotation based on `anchor` point, make sure to use it after gesture has activated, i.e. in `onActivate` or `onUpdate` callbacks. Using it in `onBegin` may lead to unexpected behavior.
+
+## Config
+
+<SharedValueInfo />
+
+<BaseContinuousGestureConfig />
+<BaseGestureConfig />
+
+## Callbacks
+
+<BaseGestureCallbacks gesture={"Rotation"}/>
+<BaseContinuousGestureCallbacks gesture={"Rotation"}/>
+
+## Event data
+
+### rotation
+
+```ts
+rotation: number;
+```
+
+Amount rotated, expressed in radians, from the gesture's focal point (anchor).
+
+### rotationChange
+
+```ts
+rotationChange: number;
+```
+
+The incremental change in rotation since the last event frame. This value represents the difference in radians between the current and previous rotation, rather than the total accumulated rotation of the gesture.
+
+### velocity
+
+```ts
+velocity: number;
+```
+
+Instantaneous velocity, expressed in point units per second, of the gesture.
+
+### anchorX
+
+```ts
+anchorX: number;
+```
+
+X coordinate, expressed in points, of the gesture's central focal point (anchor).
+
+### anchorY
+
+```ts
+anchorY: number;
+```
+
+Y coordinate, expressed in points, of the gesture's central focal point (anchor).
+
+<BaseEventData />
