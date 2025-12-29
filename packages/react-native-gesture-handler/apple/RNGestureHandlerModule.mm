@@ -256,7 +256,7 @@ RCT_EXPORT_METHOD(flushOperations)
   // do not send state change event when activating because it bypasses
   // shouldRequireFailureOfGestureRecognizer
   if (state != 4) {
-    [handler handleGesture:handler.recognizer];
+    [handler handleGesture:handler.recognizer fromReset:NO];
   }
 }
 
