@@ -459,7 +459,7 @@ const Swipeable = (props: SwipeableProps) => {
       }
 
       if(onSwipeableDragEnd){
-        runOnJS(onSwipeableDragEnd)(toValue < 0 || Object.is(toValue, -0) ? SwipeDirection.RIGHT : SwipeDirection.LEFT);
+        runOnJS(onSwipeableDragEnd)(translationX < 0 ? SwipeDirection.RIGHT : SwipeDirection.LEFT);
       }
 
       animateRow(toValue, velocityX / friction);
