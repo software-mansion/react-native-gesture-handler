@@ -8,12 +8,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import {
   GestureDetector,
-  useCompetingGestures,
   useLongPressGesture,
   usePinchGesture,
   useRotationGesture,
   useSimultaneousGestures,
-  useTapGesture,
 } from 'react-native-gesture-handler';
 import { COLORS } from '../../../common';
 
@@ -31,19 +29,14 @@ export default function Lock() {
   const maxScale = 1;
   const TWO_PI = 2 * Math.PI;
 
-  // Tap to lock
-  const tap = useTapGesture({
-    onDeactivate: () => {
+  // longPress to unlock
+  const confirm = useLongPressGesture({
+    onActivate: () => {
       if (savedRotation.value === 0 && scale.value === maxScale) {
         runOnJS(setLocked)(false);
       }
     },
   });
-
-  // Long press to cancel tap
-  const longPress = useLongPressGesture({});
-
-  const confirm = useCompetingGestures(longPress, tap);
 
   const rotationGesture = useRotationGesture({
     onUpdate: (e) => {
@@ -116,7 +109,7 @@ export default function Lock() {
       <Text>{locked ? 'Locked' : 'Unlocked!'}</Text>
       <Text style={styles.instructions}>
         Tou unlock rotate 90 degrees clockwise, and scale to fill the square.
-        Then tap to confirm, longpress to cancel the tap
+        Then longPress to confirm unlocking.
       </Text>
     </View>
   );
