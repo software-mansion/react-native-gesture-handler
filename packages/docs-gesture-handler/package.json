@@ -32,6 +32,7 @@
     "@mui/material": "^7.1.0",
     "@swmansion/t-rex-ui": "1.0.0",
     "@vercel/og": "^0.6.2",
+    "prism-react-renderer": "^2.1.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-expo": "^9.2.2",
     "babel-preset-react-native": "^4.0.1",
