@@ -115,7 +115,7 @@ export default function Camera() {
     disableReanimated: true,
   });
 
-  const raceGesture = useCompetingGestures(
+  const competingGesture = useCompetingGestures(
     pinchZoomGesture,
     changeCameraGesture
   );
@@ -128,7 +128,7 @@ export default function Camera() {
     takePhotoGesture
   );
   return (
-    <GestureDetector gesture={raceGesture}>
+    <GestureDetector gesture={competingGesture}>
       <View style={styles.container}>
         <AnimatedCameraView facing={facing} zoom={zoom} />
         <FilterOverlay filters={FILTERS} selected={selectedFilter} />
