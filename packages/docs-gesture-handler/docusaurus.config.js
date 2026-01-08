@@ -22,12 +22,6 @@ const config = {
     shortTitle: 'Gesture Handler',
   },
 
-  markdown: {
-    mermaid: true,
-  },
-
-  themes: ['@docusaurus/theme-mermaid'],
-
   scripts: [
     {
       src: '/react-native-gesture-handler/js/snack-helpers.js',

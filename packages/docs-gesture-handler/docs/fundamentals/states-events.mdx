@@ -5,7 +5,7 @@ sidebar_label: Gesture events
 sidebar_position: 5
 ---
 
-import CodeBlock from '@theme/CodeBlock';
+import {GestureEventFlowChart, TouchEventFlowChart} from '@site/src/examples/CallbacksFlowCharts'
 
 Every gesture can be treated as ["state machine"](https://en.wikipedia.org/wiki/Finite-state_machine).
 At any given time, each handler instance has an assigned state that can change when new touch events occur or can be forced to change by the touch system in certain circumstances.
@@ -16,6 +16,16 @@ There are two types of events in RNGH3: `GestureEvent` and `TouchEvent`.
 
 - `GestureEvent` carries a gesture-specific data along with `handlerTag`.
 - `TouchEvent` carries information about raw touch events, like touching the screen or moving the finger. 
+
+## Callbacks flow
+
+### GestureEvent callbacks
+
+<GestureEventFlowChart />
+
+### TouchEvent callbacks
+
+<TouchEventFlowChart />
 
 ## Callbacks
 
@@ -91,48 +101,3 @@ onTouchesCancelled: (event: GestureTouchEvent) => void
 
 Called when there will be no more information about this pointer. It may be called because the gesture has ended or was interrupted. It may carry information about more than one pointer because the events are batched.
 
-## Callbacks flow
-
-### GestureEvent callbacks
-
-```mermaid
----
-config:
-  layout: elk
----
-
-graph LR
-    A[onBegin]
-    A --> B[onActivate]
-    B --> C[onUpdate]
-    C --> C
-    C --> D[onDeactivate]
-    B --> D
-    D --> E[onFinalize]
-    A --> E
-```
-
-### TouchEvent callbacks
-
-
-```mermaid
----
-config:
-  layout: elk
----
-
-graph LR;
-
-%% Node Definitions
-Down(onTouchesDown)
-Move(onTouchesMove)
-Up(onTouchesUp)
-Cancel(onTouchesCancelled)
-
-%% Flow
-Down --> Move
-Move --> Move
-Move --> Up
-Down --> Cancel
-Move --> Cancel
-```
