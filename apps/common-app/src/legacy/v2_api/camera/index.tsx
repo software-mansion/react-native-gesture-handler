@@ -79,7 +79,6 @@ export default function Camera() {
       1,
       Math.min(2, zoom.value * ((e.scaleChange - 1) * 0.2 + 1))
     );
-    console.log(zoom.value);
   });
 
   const changeCameraGesture = Gesture.Tap()
