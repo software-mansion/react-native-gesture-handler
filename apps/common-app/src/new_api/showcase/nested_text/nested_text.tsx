@@ -46,13 +46,11 @@ function NativeDetectorExample() {
           Some text example running with RNGH
           <VirtualGestureDetector gesture={tapFirstPart}>
             <Text style={{ fontSize: 24, color: COLORS.NAVY }}>
-              {' '}
               try tapping on this part
             </Text>
           </VirtualGestureDetector>
           <VirtualGestureDetector gesture={tapSecondPart}>
             <Text style={{ fontSize: 28, color: COLORS.KINDA_BLUE }}>
-              {' '}
               or on this part
             </Text>
           </VirtualGestureDetector>
@@ -91,13 +89,11 @@ function LegacyDetectorExample() {
           Some text example running with RNGH
           <GestureDetector gesture={tapFirstPart}>
             <Text style={{ fontSize: 24, color: COLORS.NAVY }}>
-              {' '}
               try tapping on this part
             </Text>
           </GestureDetector>
           <GestureDetector gesture={tapSecondPart}>
             <Text style={{ fontSize: 28, color: COLORS.KINDA_BLUE }}>
-              {' '}
               or on this part
             </Text>
           </GestureDetector>
