@@ -10,6 +10,20 @@ import {GestureEventFlowChart, TouchEventFlowChart} from '@site/src/examples/Cal
 Every gesture can be treated as ["state machine"](https://en.wikipedia.org/wiki/Finite-state_machine).
 At any given time, each handler instance has an assigned state that can change when new touch events occur or can be forced to change by the touch system in certain circumstances.
 
+## States
+
+States manage the internal recognition process. You can hook into these transitions using specific gesture callbacks.
+
+| State | Description | Callback |
+| :--- | :--- | :--- |
+| **`UNDETERMINED`** | The default initial state of every handler. | — |
+| **`BEGAN`** | The handler has started receiving touch data but hasn't yet met the activation criteria. | [`onBegin`](#onbegin) |
+| **`ACTIVE`** | The gesture is recognized and activation criteria are met. | [`onActivate`](#onactivate) / [`onUpdate`](#onupdate) |
+| **`END`** | The user successfully completed the gesture. | [`onDeactivate`](#ondeactivate) |
+| **`FAILED`** | The handler failed to recognize the gesture. | [`onFinalize`](#onfinalize) |
+| **`CANCELLED`** | The system interrupted the gesture. | [`onFinalize`](#onfinalize) |
+
+
 ## Events
 
 There are two types of events in RNGH3: `GestureEvent` and `TouchEvent`.
@@ -28,6 +42,10 @@ There are two types of events in RNGH3: `GestureEvent` and `TouchEvent`.
 <TouchEventFlowChart />
 
 ## Callbacks
+
+:::info
+`HandlerData` in the following callbacks refers to gesture-specific event data documented in each gesture's page.
+:::
 
 ### onBegin
 
