@@ -35,9 +35,6 @@ function Example() {
   const scrollOffset = useSharedValue(0);
   const bottomSheetTranslateY = useSharedValue(CLOSED_SNAP_POINT);
 
-  const onHandlerEndOnJS = (point: number) => {
-    setSnapPoint(point);
-  };
   const onHandlerDeactivate = (e: PanGestureEvent) => {
     const dragToss = 0.01;
     const endOffsetY =
@@ -67,7 +64,7 @@ function Example() {
     bottomSheetTranslateY.value = withSpring(destSnapPoint, {
       mass: 0.5,
     });
-    runOnJS(onHandlerEndOnJS)(destSnapPoint);
+    runOnJS(setSnapPoint)(destSnapPoint);
   };
   const panGesture = usePanGesture({
     onUpdate: (e) => {
