@@ -10,11 +10,11 @@ import ChatHeadsExample from './complicated/chat_heads';
 import LockExample from './complicated/lock';
 import VelocityExample from './complicated/velocity_test';
 
-import ContextMenuExample from './platform_specific/context_menu';
-import HoverIconsExample from './platform_specific/hover';
-import HoverableIconsExample from './platform_specific/hoverable_icons';
-import MouseButtonsExample from './platform_specific/mouse_buttons';
-import StylusDataExample from './platform_specific/stylus_data';
+import ContextMenuExample from './hover_mouse/context_menu';
+import HoverIconsExample from './hover_mouse/hover';
+import HoverableIconsExample from './hover_mouse/hoverable_icons';
+import MouseButtonsExample from './hover_mouse/mouse_buttons';
+import StylusDataExample from './hover_mouse/stylus_data';
 
 import FlingExample from './simple/fling';
 import HoverExample from './simple/hover';
@@ -63,7 +63,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     ],
   },
   {
-    sectionTitle: 'Platform Specific Features',
+    sectionTitle: 'Hover and mouse',
     data: [
       { name: 'Stylus Data', component: StylusDataExample },
       { name: 'Context Menu', component: ContextMenuExample },
