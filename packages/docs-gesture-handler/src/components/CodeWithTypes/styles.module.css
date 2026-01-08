@@ -1,0 +1,112 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  contain: content;
+
+  background-color: var(--swm-off-background);
+  border: 1px solid var(--swm-border);
+
+  width: 100%;
+  align-self: stretch;
+}
+
+.marginBottom {
+  margin-bottom: var(--ifm-leading);
+}
+
+/* Classes used to omit default docusaurus styling. */
+[class*='codeBlockContainer'] {
+  box-shadow: none;
+}
+
+.codeBlock {
+  overflow-y: auto;
+}
+
+.codeBlock [class*='codeBlockContent'] pre {
+  border: none;
+  padding: 16px 20px;
+}
+
+.codeBlock [class*='codeBlockContent'] code {
+  background-color: var(--swm-off-background);
+  width: 100%;
+  padding: 0;
+  border: none;
+  text-wrap: wrap;
+}
+
+
+/* Hide default action buttons, displayed by Docusaurus */
+.codeBlock [class*='buttonGroup'] {
+  display: none;
+}
+
+.code {
+  flex: 1;
+}
+
+.buttonsContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  margin: 1em 1em 1em 1em;
+}
+
+.container .buttonsContainer {
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  z-index: 1;
+}
+
+@media (max-width: 996px) {
+  .container .buttonsContainer {
+    position: relative;
+    width: fit-content;
+    margin: 1.5em auto;
+  }
+}
+
+/* .previewContainer {
+  flex: 1 1 auto;
+} */
+
+/* Style preview only when user is in the 'code' section. */
+.container .previewContainer {
+  flex: 1 1 auto;
+  overflow-y: auto;
+
+  padding: 0 24px;
+  margin: 16px 8px 8px 0;
+}
+
+@media (max-width: 996px) {
+  .container .previewContainer {
+    margin-top: 0;
+  }
+}
+
+.actionButton {
+  margin-right: 0.5em;
+  padding: 0 0 2px 0;
+
+  border: none;
+  background-color: inherit;
+  color: var(--swm-interactive-button-color);
+  cursor: pointer;
+
+  font-family: var(--swm-body-font);
+  font-weight: 500;
+  font-size: 16px;
+
+  text-align: center;
+}
+
+.actionButtonActive {
+  color: var(--swm-interactive-button-active);
+  border-bottom: 1px solid var(--swm-interactive-button-active);
+}
