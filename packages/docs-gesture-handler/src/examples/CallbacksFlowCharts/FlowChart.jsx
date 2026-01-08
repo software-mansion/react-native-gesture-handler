@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Network } from 'vis-network/standalone';
 import { useColorMode } from '@docusaurus/theme-common';
 
@@ -9,11 +9,25 @@ const COLORS = {
   SWM_NAVY_DARK_100: '#001a72',
 };
 
+const mobileThreshold = 996;
+
 export default function FlowChart({ nodes, edges }) {
   const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= mobileThreshold : false
+  );
 
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= mobileThreshold);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const nodesOptions = {
@@ -21,7 +35,7 @@ export default function FlowChart({ nodes, edges }) {
       margin: { top: 15, bottom: 15, left: 15, right: 15 },
       font: {
         face: 'Aeonik',
-        size: 18,
+        size: isMobile ? 14 : 18,
         color: isDark ? COLORS.SWM_OFF_WHITE : COLORS.SWM_PURPLE_LIGHT_100,
       },
       color: {
@@ -43,22 +57,28 @@ export default function FlowChart({ nodes, edges }) {
     };
 
     const edgesOptions = {
-      smooth: { enabled: true, type: 'continuous', roundness: 0.1 },
+      smooth: {
+        enabled: true,
+        type: 'continuous',
+        forceDirection: isMobile ? 'vertical' : 'horizontal',
+        roundness: 0.1,
+      },
       color: {
         color: isDark ? COLORS.SWM_OFF_WHITE : COLORS.SWM_NAVY_DARK_100,
         hover: COLORS.SWM_PURPLE_LIGHT_100,
         highlight: COLORS.SWM_PURPLE_LIGHT_100,
       },
-      selfReference: { size: 25, angle: Math.PI / 2 },
+      selfReference: { size: 25, angle: isMobile ? 0 : Math.PI / 2 },
       arrows: { to: { scaleFactor: 0.8 } },
       arrowStrikethrough: false,
     };
 
     const layoutOptions = {
       hierarchical: {
-        direction: 'LR',
+        direction: isMobile ? 'UD' : 'LR',
         sortMethod: 'directed',
-        levelSeparation: 300,
+        levelSeparation: isMobile ? 150 : 300,
+        nodeSpacing: isMobile ? 300 : 100,
       },
     };
 
@@ -83,14 +103,18 @@ export default function FlowChart({ nodes, edges }) {
       options
     );
 
+    network.once('afterDrawing', () => {
+      network.fit();
+    });
+
     return () => network.destroy();
-  }, [isDark, edges, nodes]);
+  }, [isDark, edges, nodes, isMobile]);
 
   return (
     <div
       ref={containerRef}
       style={{
-        height: '300px',
+        height: isMobile ? '500px' : '300px',
         border: '1px solid var(--swm-border)',
         background: 'var(--swm-off-background)',
       }}
