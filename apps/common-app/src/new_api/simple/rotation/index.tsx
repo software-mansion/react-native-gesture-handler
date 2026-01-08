@@ -29,15 +29,13 @@ export default function RotationExample() {
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [COLORS.NAVY, COLORS.KINDA_BLUE]
-    );
-
     return {
       transform: [{ rotateZ: `${rotation.value}rad` }],
-      backgroundColor,
+      backgroundColor: interpolateColor(
+        colorProgress.value,
+        [0, 1],
+        [COLORS.NAVY, COLORS.KINDA_BLUE]
+      ),
     };
   });
 

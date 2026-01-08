@@ -26,15 +26,13 @@ export default function PinchExample() {
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [COLORS.NAVY, COLORS.KINDA_BLUE]
-    );
-
     return {
       transform: [{ scale: scale.value }],
-      backgroundColor,
+      backgroundColor: interpolateColor(
+        colorProgress.value,
+        [0, 1],
+        [COLORS.NAVY, COLORS.KINDA_BLUE]
+      ),
     };
   });
 

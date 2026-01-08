@@ -42,14 +42,13 @@ export default function FlingExample() {
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [COLORS.NAVY, COLORS.PURPLE]
-    );
     return {
       transform: [{ translateX: position.value }],
-      backgroundColor,
+      backgroundColor: interpolateColor(
+        colorProgress.value,
+        [0, 1],
+        [COLORS.NAVY, COLORS.PURPLE]
+      ),
     };
   });
 

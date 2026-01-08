@@ -62,19 +62,17 @@ export default function App() {
   });
 
   const animatedStyles = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [COLORS.NAVY, COLORS.KINDA_BLUE]
-    );
-
     return {
       transform: [
         { translateX: offsetX.value },
         { translateY: offsetY.value },
         { scale: withTiming(isPressed.value ? 1.2 : 1, { duration: 100 }) },
       ],
-      backgroundColor,
+      backgroundColor: interpolateColor(
+        colorProgress.value,
+        [0, 1],
+        [COLORS.NAVY, COLORS.KINDA_BLUE]
+      ),
     };
   });
 

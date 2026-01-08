@@ -32,17 +32,16 @@ export default function PanExample() {
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [COLORS.NAVY, COLORS.KINDA_BLUE]
-    );
     return {
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
       ],
-      backgroundColor,
+      backgroundColor: interpolateColor(
+        colorProgress.value,
+        [0, 1],
+        [COLORS.NAVY, COLORS.KINDA_BLUE]
+      ),
     };
   });
 

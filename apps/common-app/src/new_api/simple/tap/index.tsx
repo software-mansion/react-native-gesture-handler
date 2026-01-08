@@ -13,13 +13,12 @@ export default function TapExample() {
   const colorProgress = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [COLORS.NAVY, COLORS.KINDA_BLUE]
-    );
     return {
-      backgroundColor,
+      backgroundColor: interpolateColor(
+        colorProgress.value,
+        [0, 1],
+        [COLORS.NAVY, COLORS.KINDA_BLUE]
+      ),
     };
   });
 
