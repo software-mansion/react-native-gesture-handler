@@ -69,7 +69,6 @@ export default function Camera() {
 
   const takePhotoGesture = useTapGesture({
     onDeactivate: () => {
-      'worklet';
       runOnJS(takePhoto)();
       captureProgress.value = withTiming(0, { duration: 1000 });
     },

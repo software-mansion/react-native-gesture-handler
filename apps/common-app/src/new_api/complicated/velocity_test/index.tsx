@@ -24,19 +24,16 @@ export default function App() {
 
   const pan = usePanGesture({
     onBegin: () => {
-      'worklet';
       isPressed.value = true;
       colorProgress.value = withTiming(1, {
         duration: 100,
       });
     },
     onUpdate: (event) => {
-      'worklet';
       offsetX.value += event.changeX;
       offsetY.value += event.changeY;
     },
     onFinalize: (event) => {
-      'worklet';
       isPressed.value = false;
       colorProgress.value = withTiming(0, {
         duration: 100,

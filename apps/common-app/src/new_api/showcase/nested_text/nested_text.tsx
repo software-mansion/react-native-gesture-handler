@@ -70,17 +70,14 @@ function LegacyDetectorExample() {
   );
 
   const tapAll = Gesture.Tap().onStart(() => {
-    'worklet';
     feedbackRef.current?.showMessage('Tapped on all text');
   });
 
   const tapFirstPart = Gesture.Tap().onStart(() => {
-    'worklet';
     feedbackRef.current?.showMessage('Tapped on "try tapping on this part"');
   });
 
   const tapSecondPart = Gesture.Tap().onStart(() => {
-    'worklet';
     feedbackRef.current?.showMessage('Tapped on "or this part"');
   });
 
