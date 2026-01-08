@@ -9,6 +9,7 @@ import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.core.PanGestureHandler
 import com.swmansion.gesturehandler.core.PinchGestureHandler
 import com.swmansion.gesturehandler.core.RotationGestureHandler
+import com.swmansion.gesturehandler.core.ScrollGestureHandler
 import com.swmansion.gesturehandler.core.TapGestureHandler
 
 object RNGestureHandlerFactoryUtil {
@@ -22,6 +23,7 @@ object RNGestureHandlerFactoryUtil {
     FlingGestureHandler.Factory(),
     ManualGestureHandler.Factory(),
     HoverGestureHandler.Factory(),
+    ScrollGestureHandler.Factory(),
   )
 
   @Suppress("UNCHECKED_CAST")

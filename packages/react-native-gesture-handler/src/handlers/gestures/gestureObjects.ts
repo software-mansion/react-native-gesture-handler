@@ -14,6 +14,7 @@ import { TapGesture } from './tapGesture';
 import { NativeGesture } from './nativeGesture';
 import { ManualGesture } from './manualGesture';
 import { HoverGesture } from './hoverGesture';
+import { ScrollGesture } from './scrollGesture';
 
 /**
  * `Gesture` is the object that allows you to create and compose gestures.
@@ -110,6 +111,15 @@ export const GestureObjects = {
    */
   Hover: () => {
     return new HoverGesture();
+  },
+
+  /**
+   * #### Android only
+   * A continuous gesture that can recognize scroll events from a mouse wheel or trackpad.
+   * This gesture responds to ACTION_SCROLL events from Android.
+   */
+  Scroll: () => {
+    return new ScrollGesture();
   },
 
   /**
