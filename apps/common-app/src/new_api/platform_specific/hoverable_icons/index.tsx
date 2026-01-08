@@ -98,7 +98,7 @@ export default function Example() {
 
   return (
     <Animated.View style={styles.container}>
-      <Animated.View style={{ flexDirection: 'row', overflow: 'visible' }}>
+      <Animated.View style={styles.wrapper}>
         {images.map((source, index) => (
           <BoxComponent key={index} source={source} />
         ))}
@@ -118,5 +118,11 @@ const styles = StyleSheet.create({
     width: SIZE,
     height: SIZE,
     marginHorizontal: 8,
+  },
+  wrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });
