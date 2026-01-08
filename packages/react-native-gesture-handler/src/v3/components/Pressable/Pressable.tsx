@@ -15,6 +15,7 @@ import {
   LayoutChangeEvent,
   Platform,
   StyleProp,
+  View,
   ViewStyle,
 } from 'react-native';
 import {
@@ -322,22 +323,6 @@ const Pressable = (props: PressableProps) => {
     requireToFail: requireToFail,
   });
 
-  const isPressableEnabled = disabled !== true;
-
-  // for (const gesture of gestures) {
-  //   gesture.enabled(isPressableEnabled);
-  //   gesture.runOnJS(true);
-  //   gesture.hitSlop(appliedHitSlop);
-  //
-  //   Object.entries(relationProps).forEach(([relationName, relation]) => {
-  //     applyRelationProp(
-  //       gesture,
-  //       relationName as RelationPropName,
-  //       relation as RelationPropType
-  //     );
-  //   });
-  // }
-
   const gesture = useSimultaneousGestures(
     buttonGesture,
     pressAndTouchGesture,
@@ -370,23 +355,25 @@ const Pressable = (props: PressableProps) => {
   );
 
   return (
-    <GestureDetector gesture={gesture}>
-      <PureNativeButton
-        {...remainingProps}
-        onLayout={setDimensions}
-        accessible={accessible !== false}
-        hitSlop={appliedHitSlop}
-        enabled={isPressableEnabled}
-        touchSoundDisabled={android_disableSound ?? undefined}
-        rippleColor={rippleColor}
-        rippleRadius={android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp]}>
-        {childrenProp}
-        {__DEV__ ? (
-          <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
-        ) : null}
-      </PureNativeButton>
-    </GestureDetector>
+    <View>
+      <GestureDetector gesture={gesture}>
+        <PureNativeButton
+          {...remainingProps}
+          onLayout={setDimensions}
+          accessible={accessible !== false}
+          hitSlop={appliedHitSlop}
+          enabled={disabled !== true}
+          touchSoundDisabled={android_disableSound ?? undefined}
+          rippleColor={rippleColor}
+          rippleRadius={android_ripple?.radius ?? undefined}
+          style={[pointerStyle, styleProp, { minWidth: 44, minHeight: 44 }]}>
+          {childrenProp}
+          {__DEV__ ? (
+            <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
+          ) : null}
+        </PureNativeButton>
+      </GestureDetector>
+    </View>
   );
 };
 
