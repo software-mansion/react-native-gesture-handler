@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Platform, ScrollView } from 'react-native';
 
 import { ScrollBox } from './ScrollBox';
-import { HorizontalScrollView } from './HorizontalScrollView';
 import { BottomSheet } from './BottomSheet';
 
 export default function ScrollExample() {
@@ -25,46 +24,43 @@ export default function ScrollExample() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Scroll Gesture</Text>
-      <Text style={styles.description}>
-        Use your mouse wheel or trackpad to scroll over the elements below.
-      </Text>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}>
+        <Text style={styles.title}>Scroll Gesture</Text>
+        <Text style={styles.description}>
+          Use your mouse wheel or trackpad to scroll over the elements below.
+        </Text>
 
-      <Text style={styles.sectionTitle}>Box Demo</Text>
-      <Text style={styles.sectionDescription}>
-        Compare total scroll (scrollX/scrollY) vs delta values (deltaX/deltaY)
-      </Text>
+        <Text style={styles.sectionTitle}>Box Demo</Text>
+        <Text style={styles.sectionDescription}>
+          Compare total scroll (scrollX/scrollY) vs delta values (deltaX/deltaY)
+        </Text>
 
-      <View style={styles.boxesRow}>
-        <ScrollBox
-          color="#6C63FF"
-          title="Total Scroll"
-          useDeltas={false}
-          useSpring={totalScrollSpring}
-          onSpringChange={setTotalScrollSpring}
-        />
-        <ScrollBox
-          color="#FF6B6B"
-          title="Delta Scroll"
-          useDeltas={true}
-          useSpring={deltaScrollSpring}
-          onSpringChange={setDeltaScrollSpring}
-        />
-      </View>
+        <View style={styles.boxesRow}>
+          <ScrollBox
+            color="#6C63FF"
+            title="Total Scroll"
+            useDeltas={false}
+            useSpring={totalScrollSpring}
+            onSpringChange={setTotalScrollSpring}
+          />
+          <ScrollBox
+            color="#FF6B6B"
+            title="Delta Scroll"
+            useDeltas={true}
+            useSpring={deltaScrollSpring}
+            onSpringChange={setDeltaScrollSpring}
+          />
+        </View>
 
-      <Text style={styles.hint}>
-        💡 Tip: Check the console for scroll event logs
-      </Text>
-
-      <HorizontalScrollView />
-
-      <Text style={styles.hint}>
-        💡 Scroll or drag on the bottom sheet to expand/collapse it
-      </Text>
-
+        <Text style={styles.hint}>
+          💡 Scroll or drag on the bottom sheet to expand/collapse it
+        </Text>
+      </ScrollView>
       <BottomSheet />
-    </ScrollView>
+    </View>
   );
 }
 
