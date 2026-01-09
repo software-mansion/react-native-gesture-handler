@@ -5,7 +5,7 @@ export type GestureStateManagerType = {
   begin(handlerTag: number): void;
   activate(handlerTag: number): void;
   fail(handlerTag: number): void;
-  end(handlerTag: number): void;
+  deactivate(handlerTag: number): void;
 };
 
 const setGestureState = (handlerTag: number, state: State) => {
@@ -36,7 +36,7 @@ export const GestureStateManager: GestureStateManagerType = {
     setGestureState(handlerTag, State.FAILED);
   },
 
-  end(handlerTag: number) {
+  deactivate(handlerTag: number) {
     'worklet';
     setGestureState(handlerTag, State.END);
   },
