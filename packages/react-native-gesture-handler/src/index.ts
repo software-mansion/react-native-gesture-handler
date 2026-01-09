@@ -68,7 +68,7 @@ export type {
   SimultaneousGestureType as LegacySimultaneousGesture,
   ExclusiveGestureType as LegacyExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
-export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
+export type { GestureStateManagerType as LegacyGestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
   LegacyRawButtonProps,
