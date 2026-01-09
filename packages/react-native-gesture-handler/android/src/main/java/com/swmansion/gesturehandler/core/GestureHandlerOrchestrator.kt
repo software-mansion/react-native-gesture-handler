@@ -441,7 +441,17 @@ class GestureHandlerOrchestrator(
       activationIndex = this@GestureHandlerOrchestrator.activationIndex++
     }
   }
+  fun recordHandlerIfNotPresentForManual(handler: GestureHandler) {
+    if (gestureHandlers.contains(handler)) {
+      return
+    }
 
+    gestureHandlers.add(handler)
+    handler.isActive = false
+    handler.isAwaiting = false
+    handler.activationIndex = Int.MAX_VALUE
+    handler.prepareForManual(this)
+  }
   private fun recordHandlerIfNotPresent(handler: GestureHandler, view: View) {
     if (gestureHandlers.contains(handler)) {
       return

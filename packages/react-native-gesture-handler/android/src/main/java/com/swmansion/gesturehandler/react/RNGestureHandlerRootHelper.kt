@@ -141,6 +141,10 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     orchestrator?.activateNativeHandlersForView(view)
   }
 
+  fun recordHandlerIfNotPresentForManual(handler: GestureHandler) {
+    orchestrator?.recordHandlerIfNotPresentForManual(handler)
+  }
+
   companion object {
     private const val MIN_ALPHA_FOR_TOUCH = 0.1f
     private fun findRootViewTag(viewGroup: ViewGroup): ViewGroup {

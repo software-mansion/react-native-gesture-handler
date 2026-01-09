@@ -10,6 +10,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
+import com.swmansion.gesturehandler.core.GestureHandler
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var moduleId: Int = -1
@@ -37,6 +38,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
   fun tearDown() {
     rootHelper?.tearDown()
+  }
+
+  fun recordHandlerIfNotPresentForManual(handler: GestureHandler) {
+    rootHelper?.recordHandlerIfNotPresentForManual(handler)
   }
 
   override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
