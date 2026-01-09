@@ -25,7 +25,7 @@ export const GestureStateManager: GestureStateManagerType = {
     NodeManager.getHandler(handlerTag).fail();
   },
 
-  end(handlerTag: number): void {
+  deactivate(handlerTag: number): void {
     'worklet';
     NodeManager.getHandler(handlerTag).end();
   },
