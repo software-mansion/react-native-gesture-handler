@@ -714,7 +714,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Helper function to correctly set enabled property
   private maybeUpdateEnabled(enabled: boolean | undefined): boolean {
     if (enabled === undefined) {
-      if (this._enabled !== undefined) {
+      if (this._enabled !== null) {
         return false;
       }
 
