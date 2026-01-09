@@ -107,6 +107,11 @@ export enum PointerType {
 
 <GestureEventFlowChart />
 
+Note that some of these callbacks are complementary:
+
+- if `onBegin` was called, it is guaranteed that `onFinalize` will be called later.
+- if `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
+
 ### TouchEvent callbacks
 
 <TouchEventFlowChart />
@@ -119,7 +124,7 @@ export enum PointerType {
 onBegin: (event: GestureEvent<HandlerData>) => void
 ```
 
-Called when a handler begins to recognize gestures.
+Called when a handler begins to recognize gestures. If `onBegin` was called, it is guaranteed that `onFinalize` will be called later.
 
 ### onActivate
 
@@ -127,7 +132,7 @@ Called when a handler begins to recognize gestures.
 onActivate: (event: GestureEvent<HandlerData>) => void
 ```
  
-Called when activation criteria for handler are met.
+Called when activation criteria for handler are met. If `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
 
 ### onUpdate
 
