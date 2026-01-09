@@ -2,6 +2,7 @@ package com.swmansion.gesturehandler.react
 
 import android.content.Context
 import android.view.View
+import android.view.ViewParent
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -202,7 +203,23 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       child.value.clear()
     }
   }
+  fun recordHandlerIfNotPresentForManual(handler: GestureHandler) {
+    findGestureHandlerRootView()?.recordHandlerIfNotPresentForManual(handler)
+  }
 
+  private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {
+    var parent: ViewParent? = this.parent
+    var gestureHandlerRootView: RNGestureHandlerRootView? = null
+
+    while (parent != null) {
+      if (parent is RNGestureHandlerRootView) {
+        gestureHandlerRootView = parent
+      }
+      parent = parent.parent
+    }
+
+    return gestureHandlerRootView
+  }
   private fun ReadableArray.mapVirtualChildren(): List<VirtualChildren> = List(size()) { i ->
     val child = getMap(i) ?: return@List null
     val handlerTags = child.getArray("handlerTags")?.toIntList().orEmpty()

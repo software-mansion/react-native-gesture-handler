@@ -175,6 +175,26 @@ open class GestureHandler {
     interactionController = controller
   }
 
+  fun prepareForManual(orchestrator: GestureHandlerOrchestrator?) {
+    check(this.orchestrator == null) {
+      "Already prepared or hasn't been reset"
+    }
+    Arrays.fill(trackedPointerIDs, -1)
+    trackedPointersIDsCount = 0
+    state = STATE_UNDETERMINED
+    this.orchestrator = orchestrator
+
+    val content = getActivity(view?.context)?.findViewById<View>(android.R.id.content)
+    if (content != null) {
+      content.getLocationOnScreen(windowOffset)
+    } else {
+      windowOffset[0] = 0
+      windowOffset[1] = 0
+    }
+
+    onPrepare()
+  }
+
   fun prepare(view: View?, orchestrator: GestureHandlerOrchestrator?) {
     check(!(this.view != null || this.orchestrator != null)) {
       "Already prepared or hasn't been reset"
@@ -593,6 +613,12 @@ open class GestureHandler {
       // generated faster than they can be treated by JS thread
       eventCoalescingKey = nextEventCoalescingKey++
     }
+
+    if (orchestrator == null) {
+      // If the state is set manually, the handler may not have been fully recorded by the orchestrator.
+      hostDetectorView?.recordHandlerIfNotPresentForManual(this)
+    }
+
     orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
   }
