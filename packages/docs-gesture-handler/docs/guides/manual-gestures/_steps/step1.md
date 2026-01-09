@@ -1,7 +1,7 @@
-```jsx
-interface Pointer {
-  visible: boolean;
+```tsx
+type Pointer = {
   x: number;
   y: number;
-}
+  visible: boolean;
+};
 ```

@@ -5,8 +5,8 @@ enabled: boolean | SharedValue<boolean>;
 ```
 
 Indicates whether the given handler should be analyzing stream of touch events or not.
-When set to `false` we can be sure that the handler's state will **never** become [`ACTIVE`](/docs/fundamentals/states-events#active).
-If the value gets updated while the handler already started recognizing a gesture, then the handler's state it will immediately change to [`FAILED`](/docs/fundamentals/states-events#failed) or [`CANCELLED`](/docs/fundamentals/states-events#cancelled) (depending on its current state).
+When set to `false` we can be sure that the handler will **never** activate.
+If the value gets updated while the handler already started recognizing a gesture, then the handler will stop processing gestures immediately.
 Default value is `true`.
 
 ### shouldCancelWhenOutside
@@ -15,7 +15,7 @@ Default value is `true`.
 shouldCancelWhenOutside: boolean | SharedValue<boolean>;
 ```
 
-When `true` the handler will [cancel](/docs/fundamentals/states-events#cancelled) or [fail](/docs/fundamentals/states-events#failed) recognition (depending on its current state) whenever the finger leaves the area of the connected view.
+When `true` the handler will stop recognition whenever the finger leaves the area of the connected view.
 Default value of this property is different depending on the handler type.
 Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for the [`LongPressGesture`](/docs/gestures/use-long-press-gesture) and [`TapGesture`](/docs/gestures/use-tap-gesture) which default to `true`.
 
@@ -42,7 +42,7 @@ type HitSlop =
   | Record<'height' | 'bottom', number>;
 ```
 
-This parameter enables control over what part of the connected view area can be used to [begin](/docs/fundamentals/states-events#began) recognizing the gesture.
+This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
 When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
 
 Instead you can pass an object to specify how each boundary side should be reduced by providing different number of points for `left`, `right`, `top` or `bottom` sides.
@@ -69,7 +69,7 @@ cancelsTouchesInView: boolean | SharedValue<boolean>;
 ```
 
 Accepts a boolean value.
-When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to when it becomes [`ACTIVE`](/docs/fundamentals/states-events#active).
+When `true`, the gesture will cancel touches for native UI components (`UIButton`, `UISwitch`, etc) it's attached to upon activation.
 Default value is `true`.
 
 ### runOnJS

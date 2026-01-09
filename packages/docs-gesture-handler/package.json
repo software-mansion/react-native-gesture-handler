@@ -25,6 +25,7 @@
     "@docusaurus/core": "3.7.0",
     "@docusaurus/plugin-debug": "3.7.0",
     "@docusaurus/preset-classic": "3.7.0",
+    "@docusaurus/theme-common": "3.7.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mdx-js/react": "^3.0.0",
@@ -49,7 +50,8 @@
     "react-native-worklets": "^0.1.0",
     "source-map": "^0.7.4",
     "source-map-loader": "^4.0.1",
-    "usehooks-ts": "^2.9.1"
+    "usehooks-ts": "^2.9.1",
+    "vis-network": "^10.0.2"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.7.0",
