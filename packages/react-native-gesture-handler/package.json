@@ -79,7 +79,7 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/preset-typescript": "^7.12.7",
-    "@react-native/babel-preset": "0.83.0",
+    "@react-native/babel-preset": "0.84.0-rc.0",
     "@testing-library/react-native": "^12.5.1",
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/invariant": "^2.2.37",
@@ -101,11 +101,11 @@
     "lint-staged": "^12.3.2",
     "madge": "^6.1.0",
     "prettier": "3.3.3",
-    "react": "19.2.0",
-    "react-native": "0.83.0",
+    "react": "19.2.3",
+    "react-native": "0.84.0-rc.0",
     "react-native-builder-bob": "^0.40.13",
     "react-native-reanimated": "^3.18.0",
-    "react-test-renderer": "19.2.0",
+    "react-test-renderer": "19.2.3",
     "typescript": "~5.8.3"
   },
   "peerDependencies": {
