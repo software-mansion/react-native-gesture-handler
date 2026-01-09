@@ -12,7 +12,7 @@ import Step3 from './\_steps/step3.md';
 import Step4 from './\_steps/step4.md';
 import Step5 from './\_steps/step5.md';
 
-RNGH2 provides much simpler way to add gestures to your app. All you need to do is wrap the view that you want your gesture to work on with [`GestureDetector`](/docs/gestures/gesture-detector), define the gesture and pass it to detector. That's all!
+RNGH2 provides much simpler way to add gestures to your app. All you need to do is wrap the view that you want your gesture to work on with [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector), define the gesture and pass it to detector. That's all!
 
 To demonstrate how you would use the new API, let's make a simple app where you can drag a ball around. You will need to add `react-native-gesture-handler` (for gestures) and `react-native-reanimated` (for animations) modules.
 

@@ -89,7 +89,7 @@ simultaneousWith: Gesture | Gesture[]
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/gestures/gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
 ### requireToFail
 
@@ -99,7 +99,7 @@ requireToFail: Gesture | Gesture[]
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/gestures/gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
 ### block
 
@@ -109,7 +109,7 @@ block: Gesture | Gesture[]
 
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition).[`GestureDetector`](/docs/gestures/gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition).[`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
 
 ### activeCursor
 
