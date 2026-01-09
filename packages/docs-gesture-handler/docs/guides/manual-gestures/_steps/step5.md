@@ -1,13 +1,14 @@
-```jsx {3-12}
-const gesture = Gesture.Manual()
-    ...
-    .onTouchesMove((e, _manager) => {
-      for (const touch of e.changedTouches) {
-        trackedPointers[touch.id].value = {
-          visible: true,
-          x: touch.x,
-          y: touch.y,
-        };
-      }
-    })
+```tsx
+const gesture = useManualGesture({
+  ...
+  onTouchesMove: (e) => {
+    for (const touch of e.changedTouches) {
+      trackedPointers[touch.id].value = {
+        x: touch.x,
+        y: touch.y,
+        visible: true,
+      };
+    }
+  },
+});
 ```

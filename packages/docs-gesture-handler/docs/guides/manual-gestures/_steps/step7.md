@@ -1,10 +1,10 @@
-```jsx {3-10}
-const gesture = Gesture.Manual()
+```tsx
+const gesture = useManualGesture({
   ...
-  .onStart(() => {
+  onActivate: () => {
     active.value = true;
-  })
-  .onEnd(() => {
+  },
+  onDeactivate: () => {
     active.value = false;
-  });
+  },
 ```

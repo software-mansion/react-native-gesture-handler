@@ -1,17 +1,18 @@
-```jsx {3-16}
-const gesture = Gesture.Manual()
-    ...
-    .onTouchesUp((e, manager) => {
-      for (const touch of e.changedTouches) {
-        trackedPointers[touch.id].value = {
-          visible: false,
-          x: touch.x,
-          y: touch.y,
-        };
-      }
+```tsx
+const gesture = useManualGesture({
+  ...
+  onTouchesUp: (e) => {
+    for (const touch of e.changedTouches) {
+      trackedPointers[touch.id].value = {
+        x: touch.x,
+        y: touch.y,
+        visible: false,
+      };
+    }
 
-      if (e.numberOfTouches === 0) {
-        manager.end();
-      }
-    })
+    if (e.numberOfTouches === 0) {
+      GestureStateManager.deactivate(e.handlerTag);
+    }
+  },
+});
 ```
