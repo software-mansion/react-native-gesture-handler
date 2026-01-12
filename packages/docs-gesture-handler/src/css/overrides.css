@@ -55,6 +55,14 @@ table thead tr {
   border: transparent 2px solid;
 }
 
+details tr {
+  background: var(--ifm-background-color);
+}
+
+details thead {
+  background: var(--ifm-background-color);
+}
+
 @media (min-width: 996px) {
   .header-github {
     margin-left: 1.5em;
