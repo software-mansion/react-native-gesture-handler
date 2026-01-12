@@ -6,7 +6,7 @@ sidebar_position: 5
 ---
 
 import {GestureEventFlowChart, TouchEventFlowChart} from '@site/src/examples/CallbacksFlowCharts'
-import CodeWithTypes from '@site/src/components/CodeWithTypes';
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
 At any given time, each handler instance has an assigned [state](/docs/under-the-hood/state) that can change when new touch events occur or can be forced to change by the touch system in certain circumstances. You can hook into state transitions using specific [gesture callbacks](#callbacks).
 
@@ -103,30 +103,35 @@ Called when there will be no more information about this pointer. It may be call
 
 ### GestureEvent
 
-<CodeWithTypes
-srcCode={`
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 4]}
+src={`
 export type GestureEvent<HandlerData> = {
   handlerTag: number;
   numberOfPointers: number;
   pointerType: PointerType;
 } & HandlerData;
-`} 
-srcDetails={`
+
 export enum PointerType {
   TOUCH,
   STYLUS,
   MOUSE,
   KEY,
   OTHER,
-}`}
-/>
+}
+`}/>
 
 `GestureEvent` contains properties common to all gestures (`handlerTag`, `numberOfPointers`, `pointerType`) along with gesture-specific data defined in each gesture's documentation.
 
 ### TouchEvent
 
-<CodeWithTypes
-srcCode={`
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 8]}
+src={`
 export type GestureTouchEvent = {
   handlerTag: number;
   numberOfTouches: number;
@@ -136,8 +141,7 @@ export type GestureTouchEvent = {
   changedTouches: TouchData[];
   pointerType: PointerType;
 };
-`}
-srcDetails={`
+
 export const State = {
   UNDETERMINED: 0,
   FAILED: 1,
@@ -170,7 +174,6 @@ export enum PointerType {
   KEY,
   OTHER,
 }
-`}
-/>
+`}/>
 
 `TouchEvent` carries information about raw touch events, like touching the screen or moving the finger. 
