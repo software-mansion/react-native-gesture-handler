@@ -177,3 +177,7 @@ export enum PointerType {
 `}/>
 
 `TouchEvent` carries information about raw touch events, like touching the screen or moving the finger. 
+
+## Automatic [**workletization**](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#to-workletize) of gesture callbacks
+
+[Worklets' Babel plugin](https://docs.swmansion.com/react-native-worklets/docs/worklets-babel-plugin/about) is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that you don't need to add a `'worklet';` directive at the beginning of the functions.
