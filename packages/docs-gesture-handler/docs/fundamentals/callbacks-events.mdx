@@ -180,4 +180,38 @@ export enum PointerType {
 
 ## Automatic [**workletization**](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#to-workletize) of gesture callbacks
 
-[Worklets' Babel plugin](https://docs.swmansion.com/react-native-worklets/docs/worklets-babel-plugin/about) is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that you don't need to add a `'worklet';` directive at the beginning of the functions.
+[Worklets' Babel plugin](https://docs.swmansion.com/react-native-worklets/docs/worklets-babel-plugin/about) is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that you don't need to add a `'worklet';` directive at the beginning of the functions. Here is an example that will be automatically workletized:
+
+```jsx
+const gesture = useTapGesture({
+  onBegin: () => {
+    console.log(_WORKLET);
+  },
+})
+```
+
+And here is one that won't:
+
+```jsx
+const callback = () => {
+  console.log(_WORKLET);
+};
+
+const gesture = useTapGesture({
+  onBegin: callback,
+})
+```
+
+In the above case, you should add a [`"worklet";`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) directive at the beginning of the callbacks, like so:
+
+```jsx
+const callback = () => {
+  // highlight-next-line
+  "worklet";
+  console.log(_WORKLET);
+};
+
+const gesture = useTapGesture({
+  onBegin: callback,
+})
+```
