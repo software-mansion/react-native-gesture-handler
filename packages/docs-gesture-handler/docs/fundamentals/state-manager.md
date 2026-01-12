@@ -28,7 +28,7 @@ const longPress = useLongPressGesture({
 
 ### Outside gesture definition
 
-If you want to control gesture lifecycle outside of it, you can use `tag` from created gesture object.
+If you want to control gesture lifecycle outside of it, you can use `handlerTag` from created gesture object.
 
 ```tsx {9}
 const longPress = useLongPressGesture({
@@ -39,7 +39,7 @@ const longPress = useLongPressGesture({
 
 const pan = usePanGesture({
   onBegin: () => {
-    GestureStateManager.activate(longPress.tag);
+    GestureStateManager.activate(longPress.handlerTag);
   },
 });
 ```
