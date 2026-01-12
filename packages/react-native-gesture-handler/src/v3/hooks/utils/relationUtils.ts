@@ -22,12 +22,12 @@ function extractHandlerTags(
 
   if (Array.isArray(otherHandler)) {
     otherTags = otherHandler.flatMap((gesture: Gesture) =>
-      isComposedGesture(gesture) ? gesture.tags : gesture.tag
+      isComposedGesture(gesture) ? gesture.handlerTags : [gesture.handlerTag]
     );
   } else {
     otherTags = isComposedGesture(otherHandler)
-      ? otherHandler.tags
-      : [otherHandler.tag];
+      ? otherHandler.handlerTags
+      : [otherHandler.handlerTag];
   }
 
   return otherTags;

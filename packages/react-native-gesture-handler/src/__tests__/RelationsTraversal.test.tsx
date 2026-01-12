@@ -75,10 +75,10 @@ describe('Simple relations', () => {
     configureRelations(composedGesture);
 
     expect(pan1.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan2.tag,
+      pan2.handlerTag,
     ]);
     expect(pan2.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan1.tag,
+      pan1.handlerTag,
     ]);
   });
 
@@ -88,7 +88,7 @@ describe('Simple relations', () => {
 
     configureRelations(composedGesture);
 
-    expect(pan1.gestureRelations.waitFor).toStrictEqual([pan2.tag]);
+    expect(pan1.gestureRelations.waitFor).toStrictEqual([pan2.handlerTag]);
     expect(pan2.gestureRelations.waitFor).toStrictEqual([]);
   });
 
@@ -131,13 +131,13 @@ describe('External relations', () => {
     configureRelations(pan3);
 
     expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan2.tag, pan3.tag].sort()
+      [pan2.handlerTag, pan3.handlerTag].sort()
     );
     expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan3.tag].sort()
+      [pan1.handlerTag, pan3.handlerTag].sort()
     );
     expect(pan3.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan2.tag].sort()
+      [pan1.handlerTag, pan2.handlerTag].sort()
     );
   });
 
@@ -163,8 +163,11 @@ describe('External relations', () => {
     configureRelations(pan3);
 
     expect(pan1.gestureRelations.waitFor).toStrictEqual([]);
-    expect(pan2.gestureRelations.waitFor).toStrictEqual([pan1.tag]);
-    expect(pan3.gestureRelations.waitFor).toStrictEqual([pan1.tag, pan2.tag]);
+    expect(pan2.gestureRelations.waitFor).toStrictEqual([pan1.handlerTag]);
+    expect(pan3.gestureRelations.waitFor).toStrictEqual([
+      pan1.handlerTag,
+      pan2.handlerTag,
+    ]);
   });
 
   test('blocks', () => {
@@ -189,10 +192,12 @@ describe('External relations', () => {
     configureRelations(pan3);
 
     expect(pan1.gestureRelations.blocksHandlers).toStrictEqual([]);
-    expect(pan2.gestureRelations.blocksHandlers).toStrictEqual([pan1.tag]);
+    expect(pan2.gestureRelations.blocksHandlers).toStrictEqual([
+      pan1.handlerTag,
+    ]);
     expect(pan3.gestureRelations.blocksHandlers).toStrictEqual([
-      pan1.tag,
-      pan2.tag,
+      pan1.handlerTag,
+      pan2.handlerTag,
     ]);
   });
 });
@@ -241,35 +246,35 @@ describe('Complex relations', () => {
 
     expect(tap1.gestureRelations.waitFor).toStrictEqual([]);
     expect(tap1.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan1.tag,
+      pan1.handlerTag,
     ]);
 
-    expect(tap2.gestureRelations.waitFor).toStrictEqual([tap1.tag]);
+    expect(tap2.gestureRelations.waitFor).toStrictEqual([tap1.handlerTag]);
     expect(tap2.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan1.tag,
+      pan1.handlerTag,
     ]);
 
     expect(pan1.gestureRelations.waitFor).toStrictEqual([]);
     expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [tap1.tag, tap2.tag].sort()
+      [tap1.handlerTag, tap2.handlerTag].sort()
     );
 
     expect(pan2.gestureRelations.waitFor).toStrictEqual([
-      tap1.tag,
-      tap2.tag,
-      pan1.tag,
+      tap1.handlerTag,
+      tap2.handlerTag,
+      pan1.handlerTag,
     ]);
     expect(pan2.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan3.tag,
+      pan3.handlerTag,
     ]);
 
     expect(pan3.gestureRelations.waitFor).toStrictEqual([
-      tap1.tag,
-      tap2.tag,
-      pan1.tag,
+      tap1.handlerTag,
+      tap2.handlerTag,
+      pan1.handlerTag,
     ]);
     expect(pan3.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan2.tag,
+      pan2.handlerTag,
     ]);
   });
 
@@ -284,14 +289,14 @@ describe('Complex relations', () => {
     expect(tap1.gestureRelations.waitFor).toStrictEqual([]);
     expect(tap1.gestureRelations.simultaneousHandlers).toStrictEqual([]);
 
-    expect(pan1.gestureRelations.waitFor).toStrictEqual([tap1.tag]);
+    expect(pan1.gestureRelations.waitFor).toStrictEqual([tap1.handlerTag]);
     expect(pan1.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan2.tag,
+      pan2.handlerTag,
     ]);
 
-    expect(pan2.gestureRelations.waitFor).toStrictEqual([tap1.tag]);
+    expect(pan2.gestureRelations.waitFor).toStrictEqual([tap1.handlerTag]);
     expect(pan2.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan1.tag,
+      pan1.handlerTag,
     ]);
   });
 
@@ -304,10 +309,13 @@ describe('Complex relations', () => {
     expect(tap1.gestureRelations.waitFor).toStrictEqual([]);
     expect(tap1.gestureRelations.simultaneousHandlers).toStrictEqual([]);
 
-    expect(tap2.gestureRelations.waitFor).toStrictEqual([tap1.tag]);
+    expect(tap2.gestureRelations.waitFor).toStrictEqual([tap1.handlerTag]);
     expect(tap2.gestureRelations.simultaneousHandlers).toStrictEqual([]);
 
-    expect(tap3.gestureRelations.waitFor).toStrictEqual([tap1.tag, tap2.tag]);
+    expect(tap3.gestureRelations.waitFor).toStrictEqual([
+      tap1.handlerTag,
+      tap2.handlerTag,
+    ]);
     expect(tap3.gestureRelations.simultaneousHandlers).toStrictEqual([]);
   });
 });
@@ -355,35 +363,35 @@ describe('Complex relations with external gestures', () => {
     configureRelations(E);
 
     expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan2.tag, pan5.tag].sort()
+      [pan2.handlerTag, pan5.handlerTag].sort()
     );
     expect(pan1.gestureRelations.waitFor).toStrictEqual([]);
 
     expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan5.tag].sort()
+      [pan1.handlerTag, pan5.handlerTag].sort()
     );
     expect(pan2.gestureRelations.waitFor).toStrictEqual([]);
 
     expect(pan3.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan4.tag,
+      pan4.handlerTag,
     ]);
     expect(pan3.gestureRelations.waitFor).toStrictEqual([
-      pan5.tag,
-      pan1.tag,
-      pan2.tag,
+      pan5.handlerTag,
+      pan1.handlerTag,
+      pan2.handlerTag,
     ]);
 
     expect(pan4.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan3.tag,
+      pan3.handlerTag,
     ]);
     expect(pan4.gestureRelations.waitFor).toStrictEqual([
-      pan5.tag,
-      pan1.tag,
-      pan2.tag,
+      pan5.handlerTag,
+      pan1.handlerTag,
+      pan2.handlerTag,
     ]);
 
     expect(pan5.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan2.tag].sort()
+      [pan1.handlerTag, pan2.handlerTag].sort()
     );
   });
 
@@ -428,31 +436,31 @@ describe('Complex relations with external gestures', () => {
     configureRelations(S);
 
     expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan4.tag, pan5.tag, pan3.tag].sort()
+      [pan4.handlerTag, pan5.handlerTag, pan3.handlerTag].sort()
     );
     expect(pan1.gestureRelations.waitFor).toStrictEqual([]);
 
     expect(pan2.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan3.tag,
+      pan3.handlerTag,
     ]);
     expect(pan2.gestureRelations.waitFor).toStrictEqual([
-      pan4.tag,
-      pan5.tag,
-      pan1.tag,
+      pan4.handlerTag,
+      pan5.handlerTag,
+      pan1.handlerTag,
     ]);
 
     expect(pan3.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan2.tag].sort()
+      [pan1.handlerTag, pan2.handlerTag].sort()
     );
     expect(pan3.gestureRelations.waitFor).toStrictEqual([]);
 
     expect(pan4.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan1.tag,
+      pan1.handlerTag,
     ]);
     expect(pan4.gestureRelations.waitFor).toStrictEqual([]);
 
     expect(pan5.gestureRelations.simultaneousHandlers).toStrictEqual([
-      pan1.tag,
+      pan1.handlerTag,
     ]);
     expect(pan5.gestureRelations.waitFor).toStrictEqual([]);
   });
@@ -487,13 +495,13 @@ describe('External relations with composed gestures', () => {
     configureRelations(pan3);
 
     expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan2.tag, pan3.tag].sort()
+      [pan2.handlerTag, pan3.handlerTag].sort()
     );
     expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan3.tag].sort()
+      [pan1.handlerTag, pan3.handlerTag].sort()
     );
     expect(pan3.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan2.tag].sort()
+      [pan1.handlerTag, pan2.handlerTag].sort()
     );
   });
 
@@ -525,13 +533,13 @@ describe('External relations with composed gestures', () => {
     configureRelations(composedGesture);
 
     expect(pan1.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan2.tag, pan3.tag].sort()
+      [pan2.handlerTag, pan3.handlerTag].sort()
     );
     expect(pan2.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan3.tag].sort()
+      [pan1.handlerTag, pan3.handlerTag].sort()
     );
     expect(pan3.gestureRelations.simultaneousHandlers.sort()).toStrictEqual(
-      [pan1.tag, pan2.tag].sort()
+      [pan1.handlerTag, pan2.handlerTag].sort()
     );
   });
 });
