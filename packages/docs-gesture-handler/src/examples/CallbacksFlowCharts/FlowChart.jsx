@@ -117,6 +117,7 @@ export default function FlowChart({ nodes, edges }) {
         height: isMobile ? '500px' : '300px',
         border: '1px solid var(--swm-border)',
         background: 'var(--swm-off-background)',
+        marginBottom: 'var(--ifm-leading)',
       }}
     />
   );
