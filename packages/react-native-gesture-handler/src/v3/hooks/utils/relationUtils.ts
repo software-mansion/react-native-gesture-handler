@@ -8,7 +8,7 @@ import {
 export function isComposedGesture<THandlerData, TConfig>(
   gesture: Gesture<THandlerData, TConfig> | ComposedGesture
 ): gesture is ComposedGesture {
-  return 'tags' in gesture;
+  return 'handlerTags' in gesture;
 }
 
 function extractHandlerTags(
