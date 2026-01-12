@@ -1008,7 +1008,7 @@ open class GestureHandler {
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
     const val POINTER_TYPE_OTHER = 3
-    private const val MAX_POINTERS_COUNT = 12
+    private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
