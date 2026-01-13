@@ -42,7 +42,7 @@ Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/doc
 
 <Step title="Step 5">
   <div>
-Finally, assign the <code>Pan</code> gesture to the <code>GestureDetector</code>:
+Finally, wrap the component responsible for rendering the ball with a <code>GestureDetector</code>, and attach the <code>Pan</code> gesture to it:
   </div>
   <Step5 />
 </Step>
