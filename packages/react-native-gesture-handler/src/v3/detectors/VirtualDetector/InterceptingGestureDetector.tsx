@@ -208,7 +208,9 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
 
   const handlerTags = useMemo(() => {
     if (gesture) {
-      return isComposedGesture(gesture) ? gesture.tags : [gesture.tag];
+      return isComposedGesture(gesture)
+        ? gesture.handlerTags
+        : [gesture.handlerTag];
     }
     return [];
   }, [gesture]);

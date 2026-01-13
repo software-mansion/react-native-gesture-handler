@@ -16,11 +16,11 @@ export function useComposedGesture(
   type: ComposedGestureName,
   ...gestures: AnyGesture[]
 ): ComposedGesture {
-  const tags = gestures.flatMap((gesture) =>
-    isComposedGesture(gesture) ? gesture.tags : gesture.tag
+  const handlerTags = gestures.flatMap((gesture) =>
+    isComposedGesture(gesture) ? gesture.handlerTags : [gesture.handlerTag]
   );
 
-  if (containsDuplicates(tags)) {
+  if (containsDuplicates(handlerTags)) {
     throw new Error(
       tagMessage(
         'Each gesture can be used only once in the gesture composition.'
@@ -113,7 +113,7 @@ export function useComposedGesture(
   }
 
   return {
-    tags,
+    handlerTags,
     type,
     config,
     detectorCallbacks: {
