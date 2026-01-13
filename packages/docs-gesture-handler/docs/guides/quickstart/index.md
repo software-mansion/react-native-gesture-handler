@@ -11,7 +11,6 @@ import Step2 from './\_steps/step2.md';
 import Step3 from './\_steps/step3.md';
 import Step4 from './\_steps/step4.md';
 import Step5 from './\_steps/step5.md';
-import Step6 from './\_steps/step6.md';
 
 RNGH3 offers a straightforward way to add gestures to your app. Simply wrap your target view with the [GestureDetector](/docs/fundamentals/gesture-detectors#gesture-detector) component, define your gesture, and pass it in. That’s it!
 
@@ -23,34 +22,29 @@ To see the new API in action, let's build a simple app where you can drag a ball
 </Step>
 
 <Step title="Step 2">
-  <div>Next, let's add the necessary styles:</div>
+  <div>
+Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value">shared values</a> to track the ball's position and create the animated styles required to position the ball on the screen:
+  </div>
   <Step2 />
 </Step>
 
 <Step title="Step 3">
-  <div>
-Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value">shared values</a> to track the ball's position and create the animated styles required to position the ball on the screen:
-  </div>
+  <div>Apply the animated styles to the ball component:</div>
   <Step3 />
 </Step>
 
 <Step title="Step 4">
-  <div>Apply the animated styles to the ball component:</div>
+  <div>
+    Now, define the <code>Pan</code> gesture logic:
+  </div>
   <Step4 />
 </Step>
 
 <Step title="Step 5">
   <div>
-    Now, define the <code>Pan</code> gesture logic:
-  </div>
-  <Step5 />
-</Step>
-
-<Step title="Step 6">
-  <div>
 Finally, assign the <code>Pan</code> gesture to the <code>GestureDetector</code>:
   </div>
-  <Step6 />
+  <Step5 />
 </Step>
 
 Note the `start` shared value. We need it to store the position of the ball at the moment we grab it to be able to correctly position it later, because we only have access to translation relative to the starting point of the gesture.
