@@ -5,26 +5,30 @@ title: Upgrading to the new API introduced in Gesture Handler 3
 
 ## Migrating gestures
 
-The most important change brought by the Gesture Handler 3 is the new hook API. Migration is pretty straight-forward. Instead of calling builder methods, everything is passed into configuration object. So, the code like this:
 
-```tsx
-const gesture = Gesture.Pan()
+import CodeComparison from '@site/src/components/CodeComparison'; 
+
+The most important change brought by the Gesture Handler 3 is the new hook API. Migration is pretty straight-forward. Instead of calling builder methods, everything is passed into configuration object.
+
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const gesture = Gesture.Pan()
   .onBegin(() => {
     console.log('Pan!');
   })
   .minDistance(25);
-```
-
-Now looks like this:
-
-```tsx
-const gesture = usePanGesture({
-  onBegin: () => {
-    console.log('Pan!');
-  },
-  minDistance: 25,
-});
-```
+`}
+code2={
+`const gesture = usePanGesture({
+      onBegin: () => {
+        console.log('Pan!');
+      },
+      minDistance: 25,
+    });
+`}
+/>
 
 :::danger Force Touch Gesture
 [`ForceTouch`](/docs/2.x/gestures/force-touch-gesture) gesture is not available in hook API.
@@ -34,27 +38,27 @@ const gesture = usePanGesture({
 
 In Gesture Handler 3 some of the callbacks were renamed, namely:
 
-| RNGH3     | RNGH3          |
+| RNGH2     | RNGH3          |
 | --------- | -------------- |
 | `onStart` | `onActivate`   |
 | `onEnd`   | `onDeactivate` |
 
-So the following code from Gesture Handler 2:
+Here is comparison of the two APIs:
 
-```tsx
-const gesture = Gesture.Pan()
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const gesture = Gesture.Pan()
   .onStart(() => {
-    console.log('Pan start!');
+    console.log('Pan started!');
   })
   .onEnd(() => {
-    console.log('Pan end!');
+    console.log('Pan ended!');
   });
-```
-
-in Gesture Handler 3 looks like this:
-
-```tsx
-const gesture = usePanGesture({
+`}
+code2={
+`const gesture = usePanGesture({
   onActivate: () => {
     console.log('Pan activated!');
   },
@@ -62,7 +66,8 @@ const gesture = usePanGesture({
     console.log('Pan deactivated!');
   },
 });
-```
+`}
+/>
 
 <details>
 <summary>Full changes</summary>
@@ -80,29 +85,32 @@ const gesture = usePanGesture({
 | `Gesture.Manual()`     | `useManualGesture()`    |
 | `Gesture.ForceTouch()` |                         |
 
+{/* <HooksTable /> */}
+
 </details>
 
 ## Migrating relations
 
 ### Composed gestures
 
-Previously, composed gestures were created using `Gesture` object. In Gesture Handler 3, relations are set up using relation hooks. For example, the following code from Gesture Handler 2:
+Previously, composed gestures were created using `Gesture` object. In Gesture Handler 3, relations are set up using relation hooks.
 
-```tsx
-const pan1 = Gesture.Pan();
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const pan1 = Gesture.Pan();
 const pan2 = Gesture.Pan();
 
 const gesture = Gesture.Simultaneous(pan1, pan2);
-```
-
-in Gesture Handler 3 looks like this:
-
-```tsx
-const pan1 = usePanGesture({});
+`}
+code2={
+`const pan1 = usePanGesture({});
 const pan2 = usePanGesture({});
 
 const gesture = useSimultaneousGestures(pan1, pan2);
-```
+`}
+/>
 
 :::danger Race gesture
 In Gesture Handler 3 `Race` gesture was renamed to `Competing` gesture.
@@ -110,21 +118,24 @@ In Gesture Handler 3 `Race` gesture was renamed to `Competing` gesture.
 
 ### Cross components relations properties
 
-Properties used to define cross-components interactions were renamed. For example, the following code from Gesture Handler 2:
+Properties used to define cross-components interactions were renamed.
 
-```tsx
-const pan1 = Gesture.Pan();
-const pan2 = Gesture.Pan().requireExternalGestureToFail(pan1);
-```
-
-in Gesture Handler 3 looks like this:
-
-```tsx
-const pan1 = usePanGesture({});
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const pan1 = Gesture.Pan();
+const pan2 =
+    Gesture.Pan().requireExternalGestureToFail(pan1);
+`}
+code2={
+`const pan1 = usePanGesture({});
 const pan2 = usePanGesture({
   requireToFail: pan1,
 });
-```
+`}
+skipFormatting1={true}
+/>
 
 <details>
 <summary>Full changes</summary>
@@ -143,33 +154,32 @@ const pan2 = usePanGesture({
 
 ## Using SVG
 
-In Gesture Handler 2 it was possible to use `GestureDetector` directly on `SVG`:
+In Gesture Handler 2 it was possible to use `GestureDetector` directly on `SVG`. In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`.
 
-```tsx
-// highlight-next-line
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`
 <GestureDetector gesture={containerTap}>
   <Svg>
-    // highlight-next-line
-    <GestureDetector gesture={circleElementTap}>
+    <GestureDetector gesture={circleTap}>
       <Circle />
     </GestureDetector>
   </Svg>
 </GestureDetector>
-```
-
-In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`:
-
-```tsx
-// highlight-next-line
+`}
+code2={
+`
 <InterceptingGestureDetector gesture={containerTap}>
   <Svg>
-    // highlight-next-line
-    <VirtualGestureDetector gesture={circleElementTap}>
+    <VirtualGestureDetector gesture={circleTap}>
       <Circle />
     </VirtualGestureDetector>
   </Svg>
 </InterceptingGestureDetector>
-```
+`}
+/>
 
 :::danger Detectors order
 `VirtualGestureDetector` has to be a child of `InterceptingGestureDetector`.

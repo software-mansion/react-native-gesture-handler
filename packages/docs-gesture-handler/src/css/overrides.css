@@ -119,6 +119,49 @@ details thead {
   font-family: var(--ifm-font-family-monospace);
 }
 
+table [class*='codeBlockContent'] pre,
+table [class*='codeBlockContent'] code {
+  border:none;
+  background-color: transparent;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.codeCell {
+  vertical-align: top;
+  /* padding:0; */
+}
+
+.codeComparison {
+  display: flex; 
+  flex-direction: row;
+  margin-bottom: 20px;
+  border: 1px solid var(--swm-border);
+}
+
+.codeComparison .codeHolder:first-child {
+  border-right: 1px solid var(--swm-border);
+}
+
+.codeComparison pre,
+.codeComparison code {
+  border:none;
+  background-color: transparent;
+  font-family: var(--ifm-font-family-monospace);
+
+}
+
+.codeComparisonHeader {
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 1px solid var(--swm-border);
+}
+
+.codeHolder {
+  width: 50%;
+  /* border: 1px solid var(--swm-border); */
+}
+
 /* Add small padding, when some of the lines are too long in a code block */
 [class*='codeBlockLines'] span:last-of-type {
   margin-right: 1em;
