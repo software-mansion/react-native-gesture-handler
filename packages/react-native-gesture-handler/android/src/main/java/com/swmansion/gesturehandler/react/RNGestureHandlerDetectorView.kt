@@ -203,8 +203,8 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       child.value.clear()
     }
   }
-  fun recordHandlerIfNotPresentForManual(handler: GestureHandler) {
-    findGestureHandlerRootView()?.recordHandlerIfNotPresentForManual(handler)
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    findGestureHandlerRootView()?.recordHandlerIfNotPresent(handler)
   }
 
   private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {

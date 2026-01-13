@@ -40,8 +40,8 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.tearDown()
   }
 
-  fun recordHandlerIfNotPresentForManual(handler: GestureHandler) {
-    rootHelper?.recordHandlerIfNotPresentForManual(handler)
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    rootHelper?.recordHandlerIfNotPresent(handler)
   }
 
   override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {

@@ -141,8 +141,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     orchestrator?.activateNativeHandlersForView(view)
   }
 
-  fun recordHandlerIfNotPresentForManual(handler: GestureHandler) {
-    orchestrator?.recordHandlerIfNotPresentForManual(handler)
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    orchestrator?.recordHandlerIfNotPresent(handler, null)
   }
 
   companion object {
