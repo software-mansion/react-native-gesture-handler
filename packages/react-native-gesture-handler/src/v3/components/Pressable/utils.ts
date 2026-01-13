@@ -1,8 +1,8 @@
-import { Insets } from 'react-native';
+import { Insets, Platform } from 'react-native';
 import {
-  FullPressableDimensions,
   InnerPressableEvent,
   PressableEvent,
+  FullPressableDimensions,
 } from './PressableProps';
 import {
   GestureTouchEvent,
@@ -62,12 +62,17 @@ const isTouchWithinInset = (
   inset: Insets,
   touch?: InnerPressableEvent
 ) =>
-  (touch?.locationX ?? 0) <
-    (inset.right ?? 0) + dimensions.width + dimensions.x &&
-  (touch?.locationY ?? 0) <
-    (inset.bottom ?? 0) + dimensions.height + dimensions.y &&
-  (touch?.locationX ?? 0) > -(inset.left ?? 0) + dimensions.x &&
-  (touch?.locationY ?? 0) > -(inset.top ?? 0) + dimensions.y;
+  Platform.OS === 'ios'
+    ? (touch?.locationX ?? 0) <
+        (inset.right ?? 0) + dimensions.width + dimensions.x &&
+      (touch?.locationY ?? 0) <
+        (inset.bottom ?? 0) + dimensions.height + dimensions.y &&
+      (touch?.locationX ?? 0) > -(inset.left ?? 0) + dimensions.x &&
+      (touch?.locationY ?? 0) > -(inset.top ?? 0) + dimensions.y
+    : (touch?.locationX ?? 0) < (inset.right ?? 0) + dimensions.width &&
+      (touch?.locationY ?? 0) < (inset.bottom ?? 0) + dimensions.height &&
+      (touch?.locationX ?? 0) > -(inset.left ?? 0) &&
+      (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
 const gestureToPressableEvent = (
   event: HoverGestureEvent | LongPressGestureEvent
