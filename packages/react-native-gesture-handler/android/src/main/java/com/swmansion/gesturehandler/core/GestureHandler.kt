@@ -594,6 +594,10 @@ open class GestureHandler {
       eventCoalescingKey = nextEventCoalescingKey++
     }
 
+    check(hostDetectorView != null || orchestrator != null) {
+      "Manually handled gesture had not been assigned to any detector"
+    }
+
     if (orchestrator == null) {
       // If the state is set manually, the handler may not have been fully recorded by the orchestrator.
       hostDetectorView?.recordHandlerIfNotPresent(this)
