@@ -23,7 +23,7 @@ To see the new API in action, let's build a simple app where you can drag a ball
 
 <Step title="Step 2">
   <div>
-Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value">shared values</a> to track the ball's position and create the animated styles required to position the ball on the screen:
+    Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value">`SharedValues`</a> to track the ball's position and create the animated styles required to position the ball on the screen:
   </div>
   <Step2 />
 </Step>
@@ -35,19 +35,17 @@ Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/doc
 
 <Step title="Step 4">
   <div>
-    Now, define the <code>Pan</code> gesture logic:
+    Now, define the <code>Pan</code> gesture logic. We need `SharedValue` to store the position of the ball at the moment we grab it to be able to correctly position it later, because we only have access to translation relative to the starting point of the gesture.
   </div>
   <Step4 />
 </Step>
 
 <Step title="Step 5">
   <div>
-Finally, wrap the component responsible for rendering the ball with a <code>GestureDetector</code>, and attach the <code>Pan</code> gesture to it:
+    Finally, wrap the component responsible for rendering the ball with a <code>GestureDetector</code>, and attach the <code>Pan</code> gesture to it:
   </div>
   <Step5 />
 </Step>
-
-Note the `start` shared value. We need it to store the position of the ball at the moment we grab it to be able to correctly position it later, because we only have access to translation relative to the starting point of the gesture.
 
 The complete implementation is shown below:
 
