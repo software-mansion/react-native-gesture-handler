@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Platform, Dimensions } from 'react-native';
 import {
   createStackNavigator,
@@ -35,7 +35,7 @@ type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 export default function App() {
-  const [showLegacyVersion, setShowLegacyVersion] = React.useState(false);
+  const [showLegacyVersion, setShowLegacyVersion] = useState(false);
   return (
     <GestureHandlerRootView>
       <NavigationContainer>
@@ -136,7 +136,7 @@ export default function App() {
   }
 
   function Settings() {
-    const [openLastExample, setOpenLastExample] = React.useState(false);
+    const [openLastExample, setOpenLastExample] = useState(false);
 
     useEffect(() => {
       void AsyncStorage.getItem(OPEN_LAST_EXAMPLE_KEY).then((value) => {
