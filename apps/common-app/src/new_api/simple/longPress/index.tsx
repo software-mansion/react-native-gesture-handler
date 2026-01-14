@@ -15,12 +15,14 @@ import Animated, {
 export default function LongPressExample() {
   const colorProgress = useSharedValue(0);
 
+  const finalise_color = useSharedValue(COLORS.PURPLE);
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: interpolateColor(
         colorProgress.value,
         [0, 1, 2],
-        [COLORS.NAVY, COLORS.PURPLE, COLORS.KINDA_BLUE]
+        [COLORS.NAVY, finalise_color.value, COLORS.KINDA_BLUE]
       ),
     };
   });
@@ -36,10 +38,18 @@ export default function LongPressExample() {
         duration: 100,
       });
     },
-    onFinalize: () => {
-      colorProgress.value = withTiming(0, {
-        duration: 100,
-      });
+    onFinalize: (_, success) => {
+      finalise_color.value = success ? COLORS.GREEN : COLORS.RED;
+      colorProgress.value = 1;
+      colorProgress.value = withTiming(
+        0,
+        {
+          duration: 300,
+        },
+        () => {
+          finalise_color.value = COLORS.PURPLE;
+        }
+      );
     },
   });
 
