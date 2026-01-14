@@ -42,6 +42,7 @@ export default function createNativeWrapper<P>(
         childProps: {
           enabled: props.enabled,
           hitSlop: props.hitSlop,
+          testID: props.testID,
         } as P,
       }
     );
