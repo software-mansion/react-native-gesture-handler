@@ -14,7 +14,7 @@ import Step5 from './\_steps/step5.md';
 
 RNGH3 offers a straightforward way to add gestures to your app. Simply wrap your target view with the [GestureDetector](/docs/fundamentals/gesture-detectors#gesture-detector) component, define your gesture, and pass it in. That’s it!
 
-To see the new API in action, let's build a simple app where you can drag a ball around the screen. To follow along, you'll need both `react-native-gesture-handler` (to handle gestures) and `react-native-reanimated` (to handle the animations).
+To see the new API in action, let's build a simple app where you can drag a ball around the screen. To follow along, you'll need both `react-native-gesture-handler` (to handle gestures) and [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) (to handle the animations).
 
 <Step title="Step 1">
   <div>Start by defining the basic structure of the application:</div>
