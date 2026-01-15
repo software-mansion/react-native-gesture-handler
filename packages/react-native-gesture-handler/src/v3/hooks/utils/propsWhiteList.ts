@@ -45,6 +45,11 @@ export const allowedNativeProps = new Set<
   'needsPointerData',
 ]);
 
+// Don't pass testID to the native side in production
+if (!__DEV__) {
+  allowedNativeProps.delete('testID');
+}
+
 export const HandlerCallbacks = new Set<
   keyof Required<GestureCallbacks<unknown>>
 >([
