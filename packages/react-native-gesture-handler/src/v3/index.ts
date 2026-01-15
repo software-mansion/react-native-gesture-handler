@@ -71,6 +71,12 @@ export {
   RefreshControl,
 } from './components';
 
+export {
+  PressableProps,
+  PressableStateCallbackType,
+  Pressable,
+} from './components';
+
 export type { ComposedGesture } from './types';
 
 export { GestureStateManager } from './gestureStateManager';
