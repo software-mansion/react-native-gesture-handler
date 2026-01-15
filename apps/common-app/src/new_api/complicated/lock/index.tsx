@@ -108,7 +108,7 @@ export default function Lock() {
       </View>
       <Text style={commonStyles.header}>{locked ? 'Locked' : 'Unlocked!'}</Text>
       <Text style={commonStyles.instructions}>
-        Tou unlock rotate 90 degrees clockwise, and scale to fill the square.
+        To unlock rotate 90 degrees clockwise, and scale to fill the square.
         Then longPress to confirm unlocking.
       </Text>
     </View>
