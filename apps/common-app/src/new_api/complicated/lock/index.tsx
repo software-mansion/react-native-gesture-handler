@@ -13,7 +13,7 @@ import {
   useRotationGesture,
   useSimultaneousGestures,
 } from 'react-native-gesture-handler';
-import { COLORS } from '../../../common';
+import { COLORS, commonStyles } from '../../../common';
 
 export default function Lock() {
   const rotation = useSharedValue(-Math.PI / 2);
@@ -96,7 +96,7 @@ export default function Lock() {
   }));
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.centerView}>
       <View style={styles.outerBox}>
         <GestureDetector gesture={unlockingGesture}>
           <Animated.View style={[styles.box, animatedStyle]}>
@@ -106,8 +106,8 @@ export default function Lock() {
           </Animated.View>
         </GestureDetector>
       </View>
-      <Text>{locked ? 'Locked' : 'Unlocked!'}</Text>
-      <Text style={styles.instructions}>
+      <Text style={commonStyles.header}>{locked ? 'Locked' : 'Unlocked!'}</Text>
+      <Text style={commonStyles.instructions}>
         Tou unlock rotate 90 degrees clockwise, and scale to fill the square.
         Then longPress to confirm unlocking.
       </Text>
@@ -116,23 +116,11 @@ export default function Lock() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   lockIcon: {
     fontSize: 40,
     color: '#fff',
     fontWeight: 'bold',
   },
-  instructions: {
-    color: COLORS.GRAY,
-    marginTop: 8,
-    textAlign: 'center',
-    paddingHorizontal: 16,
-  },
-
   outerBox: {
     height: 200,
     width: 200,

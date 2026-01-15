@@ -1,4 +1,4 @@
-import { COLORS } from '../../../common';
+import { COLORS, commonStyles } from '../../../common';
 import React, { useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
@@ -118,7 +118,7 @@ export default function MinimalCard() {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.centerView}>
       <GestureDetector gesture={panGesture}>
         <Animated.View
           style={[
@@ -141,11 +141,6 @@ export default function MinimalCard() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   card: {
     width: 280,
     height: 380,

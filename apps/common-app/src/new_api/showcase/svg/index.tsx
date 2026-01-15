@@ -1,6 +1,6 @@
-import { COLORS, Feedback } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import React, { useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import {
   InterceptingGestureDetector,
   useTapGesture,
@@ -37,7 +37,7 @@ export default function LogicDetectorExample() {
   const noop = () => {};
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.centerView}>
       <View style={{ backgroundColor: COLORS.PURPLE }}>
         <InterceptingGestureDetector gesture={containerTap}>
           <Svg height="250" width="250">
@@ -66,12 +66,3 @@ export default function LogicDetectorExample() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 48,
-  },
-});

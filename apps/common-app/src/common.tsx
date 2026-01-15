@@ -32,6 +32,48 @@ export interface ExamplesSection {
   data: Example[];
 }
 
+/* eslint-disable react-native/no-unused-styles */
+export const commonStyles = StyleSheet.create({
+  centerView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  box: {
+    height: 150,
+    width: 150,
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+  ball: {
+    height: 120,
+    width: 120,
+    borderRadius: 60,
+    marginBottom: 100,
+    // @ts-expect-error `grab` is correct value for `cursor` property
+    cursor: 'grab',
+  },
+  instructions: {
+    marginTop: 8,
+    textAlign: 'center',
+    paddingHorizontal: 16,
+  },
+  subcontainer: {
+    flex: 1,
+    width: '100%',
+    gap: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+  },
+  header: {
+    fontSize: 24,
+    marginVertical: 10,
+    justifyContent: 'center',
+  },
+});
+/* eslint-enable react-native/no-unused-styles */
+
 const styles = StyleSheet.create({
   lipsum: {
     padding: 10,

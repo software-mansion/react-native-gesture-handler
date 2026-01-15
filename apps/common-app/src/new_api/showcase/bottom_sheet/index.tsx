@@ -20,7 +20,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { COLORS, LoremIpsum } from '../../../common';
+import { COLORS, commonStyles, LoremIpsum } from '../../../common';
 
 const HEADER_HEIGTH = 50;
 const windowHeight = Dimensions.get('window').height;
@@ -113,7 +113,7 @@ function Example() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.centerView}>
       <LoremIpsum words={200} />
       <GestureDetector gesture={blockScrollUntilAtTheTop}>
         <Animated.View style={[styles.bottomSheet, bottomSheetAnimatedStyle]}>
@@ -141,9 +141,6 @@ function Example() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
     height: HEADER_HEIGTH,
     backgroundColor: COLORS.NAVY,

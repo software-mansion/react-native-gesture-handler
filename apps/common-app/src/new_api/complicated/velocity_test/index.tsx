@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, {
   interpolateColor,
   measure,
@@ -11,7 +11,7 @@ import Animated, {
 
 import React from 'react';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-import { COLORS } from '../../../common';
+import { COLORS, commonStyles } from '../../../common';
 
 const BOX_SIZE = 120;
 
@@ -77,26 +77,10 @@ export default function App() {
   });
 
   return (
-    <View style={styles.container} ref={aref} collapsable={false}>
+    <View style={commonStyles.centerView} ref={aref} collapsable={false}>
       <GestureDetector gesture={pan}>
-        <Animated.View style={[styles.box, animatedStyles]} />
+        <Animated.View style={[commonStyles.ball, animatedStyles]} />
       </GestureDetector>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-  },
-  box: {
-    width: BOX_SIZE,
-    height: BOX_SIZE,
-    borderRadius: BOX_SIZE / 2,
-    // @ts-expect-error `grab` is correct value for `cursor` property
-    cursor: 'grab',
-  },
-});

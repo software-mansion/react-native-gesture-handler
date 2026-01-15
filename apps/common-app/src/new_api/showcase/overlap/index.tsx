@@ -1,4 +1,4 @@
-import { COLORS, Feedback } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import React, { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import {
@@ -16,7 +16,7 @@ function Box(props: {
   return (
     <View
       style={[
-        styles.box,
+        commonStyles.box,
         { backgroundColor: props.color },
         props.overlap ? styles.overlap : {},
         props.elevated ? styles.elevated : {},
@@ -51,9 +51,9 @@ function OverlapSiblings() {
   });
 
   return (
-    <View style={styles.subcontainer}>
+    <View style={commonStyles.subcontainer}>
       <View style={styles.row}>
-        <Text style={styles.text}>Overlap Siblings</Text>
+        <Text style={commonStyles.header}>Overlap Siblings</Text>
         <InterceptingGestureDetector>
           <View style={{ width: 225 }}>
             <VirtualGestureDetector gesture={tapPurple}>
@@ -95,9 +95,9 @@ function OverlapParents() {
   });
 
   return (
-    <View style={styles.subcontainer}>
+    <View style={commonStyles.subcontainer}>
       <View style={styles.row}>
-        <Text style={styles.text}>Overlap Child</Text>
+        <Text style={commonStyles.header}>Overlap Child</Text>
 
         <InterceptingGestureDetector>
           <View style={{ width: 225 }}>
@@ -122,7 +122,7 @@ function OverlapParents() {
 
 export default function Example() {
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.centerView}>
       <OverlapSiblings />
       <OverlapParents />
     </View>
@@ -130,33 +130,16 @@ export default function Example() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  subcontainer: {
-    flex: 1,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-  },
   row: {
     padding: 30,
     alignItems: 'center',
     height: 225,
     marginBottom: 60,
   },
-  box: {
-    borderRadius: 20,
-    width: 150,
-    height: 150,
-  },
   overlap: {
     position: 'absolute',
     left: 75,
     top: 75,
-  },
-  text: {
-    fontSize: 24,
-    margin: 4,
   },
   elevated: {
     zIndex: 10,

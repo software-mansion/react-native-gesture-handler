@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Platform, StyleSheet } from 'react-native';
+import { commonStyles } from '../../../common';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const SVG = require('../../../common_assets/hoverable_icons/svg.png');
@@ -97,7 +98,7 @@ export default function Example() {
   const BoxComponent = Platform.OS === 'ios' ? BoxNative : BoxReanimated;
 
   return (
-    <Animated.View style={styles.container}>
+    <Animated.View style={commonStyles.centerView}>
       <Animated.View style={styles.wrapper}>
         {images.map((source, index) => (
           <BoxComponent key={index} source={source} />
@@ -108,11 +109,6 @@ export default function Example() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   image: {
     overflow: 'visible',
     width: SIZE,

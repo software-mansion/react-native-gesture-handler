@@ -1,6 +1,6 @@
-import { COLORS } from '../../../common';
+import { COLORS, commonStyles } from '../../../common';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -46,24 +46,10 @@ export default function PanExample() {
   });
 
   return (
-    <View style={styles.centerView}>
+    <View style={commonStyles.centerView}>
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.box, animatedStyle]} />
+        <Animated.View style={[commonStyles.box, animatedStyle]} />
       </GestureDetector>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  centerView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  box: {
-    height: 120,
-    width: 120,
-    borderRadius: 20,
-    marginBottom: 100,
-  },
-});

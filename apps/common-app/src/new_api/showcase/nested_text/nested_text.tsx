@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -8,7 +8,7 @@ import {
   useTapGesture,
 } from 'react-native-gesture-handler';
 
-import { COLORS, Feedback } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 function NativeDetectorExample() {
   const feedbackRef = React.useRef<{ showMessage: (msg: string) => void }>(
@@ -37,8 +37,8 @@ function NativeDetectorExample() {
   });
 
   return (
-    <View style={styles.subcontainer}>
-      <Text style={styles.header}>
+    <View style={commonStyles.subcontainer}>
+      <Text style={commonStyles.header}>
         Native Detector example - this one should work
       </Text>
       <InterceptingGestureDetector gesture={tapAll}>
@@ -80,8 +80,8 @@ function LegacyDetectorExample() {
   });
 
   return (
-    <View style={styles.subcontainer}>
-      <Text style={styles.header}>
+    <View style={commonStyles.subcontainer}>
+      <Text style={commonStyles.header}>
         Legacy Detector example - this one should only work on web
       </Text>
       <GestureDetector gesture={tapAll}>
@@ -107,27 +107,9 @@ function LegacyDetectorExample() {
 
 export default function NativeTextExample() {
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.centerView}>
       <NativeDetectorExample />
       <LegacyDetectorExample />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  subcontainer: {
-    flex: 1,
-    gap: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-  },
-  header: {
-    fontSize: 18,
-    textAlign: 'center',
-    paddingHorizontal: 24,
-  },
-});

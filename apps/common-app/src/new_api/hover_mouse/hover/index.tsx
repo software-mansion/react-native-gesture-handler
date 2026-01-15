@@ -1,4 +1,4 @@
-import { COLORS, Feedback } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import React, { RefObject, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import {
@@ -54,9 +54,9 @@ export default function Example() {
   const [hover5, style5] = useColoredHover('blue', feedbackRefLower);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.subcontainer}>
-        <Text style={styles.title}>Parent & child</Text>
+    <View style={commonStyles.centerView}>
+      <View style={commonStyles.subcontainer}>
+        <Text style={commonStyles.header}>Parent & child</Text>
         <GestureDetector gesture={hover1}>
           <Animated.View style={[styles.parentBox, style1]}>
             <GestureDetector gesture={hover2}>
@@ -68,8 +68,8 @@ export default function Example() {
         <View style={styles.spacer} />
       </View>
 
-      <View style={styles.subcontainer}>
-        <Text style={styles.title}>Absolute positioning</Text>
+      <View style={commonStyles.subcontainer}>
+        <Text style={commonStyles.header}>Absolute positioning</Text>
         <View style={styles.absoluteContainer}>
           <GestureDetector gesture={hover3}>
             <Animated.View style={[styles.absoluteRed, style3]} />
@@ -90,21 +90,6 @@ export default function Example() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  subcontainer: {
-    flex: 1,
-    gap: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-  },
-  title: {
-    fontSize: 22,
-    marginVertical: 8,
-  },
   spacer: {
     height: 50,
   },

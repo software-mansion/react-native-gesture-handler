@@ -1,6 +1,6 @@
-import { COLORS } from '../../../common';
+import { COLORS, commonStyles } from '../../../common';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import {
   GestureDetector,
   useLongPressGesture,
@@ -73,13 +73,13 @@ export default function PanExample() {
   });
 
   return (
-    <View style={styles.centerView}>
+    <View style={commonStyles.centerView}>
       <View>
         <GestureDetector gesture={gestures}>
-          <Animated.View style={[styles.box, animatedStyle]} />
+          <Animated.View style={[commonStyles.ball, animatedStyle]} />
         </GestureDetector>
       </View>
-      <Text style={styles.instructions}>
+      <Text style={commonStyles.instructions}>
         The ball has simultanous pan and longPress gestures. Upon update pan
         changes minDistance of longPress, such that longPress will fail if is
         moved horizontally.
@@ -87,22 +87,3 @@ export default function PanExample() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  centerView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  box: {
-    height: 120,
-    width: 120,
-    borderRadius: 60,
-    marginBottom: 100,
-  },
-  instructions: {
-    marginTop: 8,
-    textAlign: 'center',
-    paddingHorizontal: 16,
-  },
-});
