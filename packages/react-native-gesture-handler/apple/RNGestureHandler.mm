@@ -666,17 +666,20 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
-- (BOOL)containsPointInView
+- (CGRect)getViewBounds
 {
   CGRect bounds = _recognizer.view.bounds;
-  CGPoint pt = [_recognizer locationInView:_recognizer.view];
-
   if (bounds.size.width == 0 and bounds.size.height == 0 and bounds.origin.x == 0 and bounds.origin.y == 0 and
       _recognizer.view.subviews.count) {
     bounds = _recognizer.view.subviews[0].bounds;
-    pt = [_recognizer locationInView:_recognizer.view.subviews[0]];
   }
-  CGRect hitFrame = RNGHHitSlopInsetRect(bounds, _hitSlop);
+  return bounds;
+}
+
+- (BOOL)containsPointInView
+{
+  CGPoint pt = [_recognizer locationInView:_recognizer.view];
+  CGRect hitFrame = RNGHHitSlopInsetRect([self getViewBounds], _hitSlop);
   return CGRectContainsPoint(hitFrame, pt);
 }
 
