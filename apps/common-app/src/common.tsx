@@ -70,6 +70,7 @@ export const commonStyles = StyleSheet.create({
     fontSize: 24,
     marginVertical: 10,
     justifyContent: 'center',
+    textAlign: 'center',
   },
 });
 /* eslint-enable react-native/no-unused-styles */
