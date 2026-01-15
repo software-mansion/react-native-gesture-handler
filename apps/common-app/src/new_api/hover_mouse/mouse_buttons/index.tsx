@@ -8,292 +8,160 @@ import {
   usePanGesture,
   useLongPressGesture,
   useFlingGesture,
-  SingleGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View, Text } from 'react-native';
 import { COLORS, Feedback } from '../../../common';
 
-const COLORS_ARR = [
-  COLORS.PURPLE,
-  COLORS.GREEN,
-  COLORS.NAVY,
-  COLORS.RED,
-  COLORS.KINDA_RED,
-];
 export default function Buttons() {
   const feedbackRef = useRef<{ showMessage: (msg: string) => void }>(null);
-  type TestProps = {
-    name: string;
-    gestures: SingleGesture[];
-  };
-
-  function Test({ name, gestures }: TestProps) {
-    return (
-      <View style={styles.center}>
-        <Text>{name}</Text>
-        <View style={[styles.row, styles.center]}>
-          {gestures.map((handler, index) => {
-            return (
-              <View style={styles.rowItem} key={index}>
-                <GestureDetector gesture={handler as any} key={index}>
-                  <View
-                    style={[styles.box, { backgroundColor: COLORS_ARR[index] }]}
-                  />
-                </GestureDetector>
-              </View>
-            );
-          })}
-        </View>
-      </View>
-    );
-  }
-
-  function TapTests() {
-    const leftTap = useTapGesture({
-      mouseButton: MouseButton.LEFT,
-      onDeactivate: () => {
-        feedbackRef.current?.showMessage('Tap with left');
-      },
-      disableReanimated: true,
-    });
-
-    const middleTap = useTapGesture({
-      mouseButton: MouseButton.MIDDLE,
-      onDeactivate: () => {
-        feedbackRef.current?.showMessage('Tap with middle');
-      },
-      disableReanimated: true,
-    });
-
-    const rightTap = useTapGesture({
-      mouseButton: MouseButton.RIGHT,
-      onDeactivate: () => {
-        feedbackRef.current?.showMessage('Tap with right');
-      },
-      disableReanimated: true,
-    });
-
-    const leftRightTap = useTapGesture({
-      mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
-      onDeactivate: () => {
-        feedbackRef.current?.showMessage('Tap with left | right');
-      },
-      disableReanimated: true,
-    });
-
-    const allTap = useTapGesture({
-      mouseButton: MouseButton.ALL,
-      onDeactivate: () => {
-        feedbackRef.current?.showMessage('Tap with any button');
-      },
-      disableReanimated: true,
-    });
-
-    const gestures = [leftTap, middleTap, rightTap, leftRightTap, allTap];
-
-    return <Test name={'Tap'} gestures={gestures} />;
-  }
-
-  function PanTests() {
-    const leftPan = usePanGesture({
-      mouseButton: MouseButton.LEFT,
-      onUpdate: () => {
-        feedbackRef.current?.showMessage('Panning with left');
-      },
-    });
-
-    const middlePan = usePanGesture({
-      mouseButton: MouseButton.MIDDLE,
-      onUpdate: () => {
-        feedbackRef.current?.showMessage('Panning with middle');
-      },
-    });
-
-    const rightPan = usePanGesture({
-      mouseButton: MouseButton.RIGHT,
-      onUpdate: () => {
-        feedbackRef.current?.showMessage('Panning with right');
-      },
-    });
-
-    const leftRightPan = usePanGesture({
-      mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
-      onUpdate: () => {
-        feedbackRef.current?.showMessage('Panning with left | right');
-      },
-    });
-
-    const allPan = usePanGesture({
-      mouseButton: MouseButton.ALL,
-      onUpdate: () => {
-        feedbackRef.current?.showMessage('Panning with any button');
-      },
-    });
-
-    const gestures = [leftPan, middlePan, rightPan, leftRightPan, allPan];
-
-    return <Test name={'Pan'} gestures={gestures} />;
-  }
-
-  function LongPressTests() {
-    const leftLongPress = useLongPressGesture({
-      mouseButton: MouseButton.LEFT,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('LongPress with left');
-      },
-    });
-
-    const middleLongPress = useLongPressGesture({
-      mouseButton: MouseButton.MIDDLE,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('LongPress with middle');
-      },
-    });
-
-    const rightLongPress = useLongPressGesture({
-      mouseButton: MouseButton.RIGHT,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('LongPress with right');
-      },
-    });
-
-    const leftRightLongPress = useLongPressGesture({
-      mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('LongPress with left | right');
-      },
-    });
-
-    const allLongPress = useLongPressGesture({
-      mouseButton: MouseButton.ALL,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('LongPress with any button');
-      },
-    });
-
-    const gestures = [
-      leftLongPress,
-      middleLongPress,
-      rightLongPress,
-      leftRightLongPress,
-      allLongPress,
-    ];
-
-    return <Test name={'LongPress'} gestures={gestures} />;
-  }
-
-  function FlingTests() {
-    const leftFling = useFlingGesture({
-      direction: Directions.LEFT | Directions.RIGHT,
-      mouseButton: MouseButton.LEFT,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('Fling with left');
-      },
-    });
-
-    const middleFling = useFlingGesture({
-      direction: Directions.LEFT | Directions.RIGHT,
-      mouseButton: MouseButton.MIDDLE,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('Fling with middle');
-      },
-    });
-
-    const rightFling = useFlingGesture({
-      direction: Directions.LEFT | Directions.RIGHT,
-      mouseButton: MouseButton.RIGHT,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('Fling with right');
-      },
-    });
-
-    const leftRightFling = useFlingGesture({
-      direction: Directions.LEFT | Directions.RIGHT,
-      mouseButton: MouseButton.LEFT | MouseButton.RIGHT,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('Fling with left | right');
-      },
-    });
-
-    const allFling = useFlingGesture({
-      direction: Directions.LEFT | Directions.RIGHT,
-      mouseButton: MouseButton.ALL,
-      onActivate: () => {
-        feedbackRef.current?.showMessage('Fling with any button');
-      },
-    });
-
-    const gestures = [
-      leftFling,
-      middleFling,
-      rightFling,
-      leftRightFling,
-      allFling,
-    ];
-
-    return <Test name={'Fling'} gestures={gestures} />;
-  }
-
-  const Titles = () => {
-    return (
-      <View style={styles.row}>
-        <View style={styles.rowItem}>
-          <Text style={styles.title}>Left</Text>
-        </View>
-
-        <View style={styles.rowItem}>
-          <Text style={styles.title}>Middle</Text>
-        </View>
-        <View style={styles.rowItem}>
-          <Text style={styles.title}>Right</Text>
-        </View>
-        <View style={styles.rowItem}>
-          <Text style={styles.title}>Left or right</Text>
-        </View>
-        <View style={styles.rowItem}>
-          <Text style={styles.title}>Any button</Text>
-        </View>
-      </View>
-    );
-  };
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <Titles />
-      <TapTests />
-      <PanTests />
-      <LongPressTests />
-      <FlingTests />
-      <View style={styles.center}>
+    <View>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}>
+        <View style={styles.row}>
+          <Tests
+            name="left"
+            color={COLORS.PURPLE}
+            mouseButton={MouseButton.LEFT}
+            feedbackRef={feedbackRef}
+          />
+          <Tests
+            name="middle"
+            color={COLORS.GREEN}
+            mouseButton={MouseButton.MIDDLE}
+            feedbackRef={feedbackRef}
+          />
+          <Tests
+            name="right"
+            color={COLORS.NAVY}
+            mouseButton={MouseButton.RIGHT}
+            feedbackRef={feedbackRef}
+          />
+          <Tests
+            name="left | right"
+            color={COLORS.RED}
+            mouseButton={MouseButton.LEFT | MouseButton.RIGHT}
+            feedbackRef={feedbackRef}
+          />
+          <Tests
+            name="any"
+            color={COLORS.YELLOW}
+            mouseButton={MouseButton.ALL}
+            feedbackRef={feedbackRef}
+          />
+        </View>
+      </ScrollView>
+      <View style={styles.feedbackContainer}>
         <Feedback ref={feedbackRef} />
       </View>
-    </ScrollView>
+    </View>
+  );
+}
+
+type TestsProps = {
+  name: string;
+  color: string;
+  mouseButton: MouseButton;
+  feedbackRef: React.RefObject<{ showMessage: (msg: string) => void } | null>;
+};
+
+function Tests({ name, color, mouseButton, feedbackRef }: TestsProps) {
+  const tap = useTapGesture({
+    mouseButton,
+    onDeactivate: () => {
+      feedbackRef.current?.showMessage(`Tap with ${name}`);
+    },
+    disableReanimated: true,
+  });
+
+  const pan = usePanGesture({
+    mouseButton,
+    onUpdate: () => {
+      feedbackRef.current?.showMessage(`Panning with ${name}`);
+    },
+  });
+
+  const longPress = useLongPressGesture({
+    mouseButton,
+    onActivate: () => {
+      feedbackRef.current?.showMessage(`LongPress with ${name}`);
+    },
+  });
+
+  const fling = useFlingGesture({
+    direction: Directions.LEFT | Directions.RIGHT,
+    mouseButton,
+    onActivate: () => {
+      feedbackRef.current?.showMessage(`Fling with ${name}`);
+    },
+  });
+
+  const gestures = [tap, longPress, pan, fling];
+
+  const gestureLabels = ['Tap', 'LongPress', 'Pan', 'Fling'];
+
+  return (
+    <View style={styles.testColumn}>
+      <Text style={styles.title}>{name}</Text>
+      <View style={styles.gesturesColumn}>
+        {gestures.map((gesture, index) => (
+          <View style={styles.gestureItem} key={index}>
+            <GestureDetector gesture={gesture as any}>
+              <View style={[styles.box, { backgroundColor: color }]}>
+                <Text style={styles.gestureLabel}>{gestureLabels[index]}</Text>
+              </View>
+            </GestureDetector>
+          </View>
+        ))}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  center: {
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  box: {
-    width: 75,
-    height: 75,
+  scrollContent: {
+    flexGrow: 1,
   },
   row: {
-    padding: 10,
-    width: '100%',
     flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 20,
+  },
+  testColumn: {
+    alignItems: 'center',
+    marginHorizontal: 10,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginHorizontal: 5,
+    marginBottom: 10,
+    textAlign: 'center',
   },
-  rowItem: {
-    flex: 1,
-    height: '100%',
+  gesturesColumn: {
+    flexDirection: 'column',
     alignItems: 'center',
-    borderRightWidth: 2,
+  },
+  gestureItem: {
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  gestureLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'center',
+  },
+  box: {
+    width: 75,
+    height: 75,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  feedbackContainer: {
+    alignItems: 'center',
+    padding: 20,
   },
 });
