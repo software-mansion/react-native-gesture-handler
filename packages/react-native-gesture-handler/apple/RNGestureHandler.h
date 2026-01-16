@@ -95,7 +95,6 @@
 - (void)updateRelations:(nonnull NSDictionary *)relations;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
-- (CGRect)getViewBounds;
 - (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
