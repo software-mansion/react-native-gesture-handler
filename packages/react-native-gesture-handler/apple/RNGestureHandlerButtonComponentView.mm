@@ -9,10 +9,26 @@
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
+#import <react/renderer/components/view/ViewProps.h>
 
 #import "RNGestureHandlerButton.h"
 
 using namespace facebook::react;
+
+static NSString *RCTPointerEventsToString(facebook::react::PointerEventsMode pointerEvents)
+{
+  switch (pointerEvents) {
+    case facebook::react::PointerEventsMode::None:
+      return @"none";
+    case facebook::react::PointerEventsMode::BoxNone:
+      return @"box-none";
+    case facebook::react::PointerEventsMode::BoxOnly:
+      return @"box-only";
+    case facebook::react::PointerEventsMode::Auto:
+    default:
+      return @"auto";
+  }
+}
 
 @interface RNGestureHandlerButtonComponentView () <RCTRNGestureHandlerButtonViewProtocol>
 @end
@@ -207,8 +223,37 @@ using namespace facebook::react;
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
       -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
+  if (!oldProps) {
+    _buttonView.pointerEvents = RCTPointerEventsToString(newProps.pointerEvents);
+  } else {
+    const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
+    if (oldButtonProps.pointerEvents != newProps.pointerEvents) {
+      _buttonView.pointerEvents = RCTPointerEventsToString(newProps.pointerEvents);
+    }
+  }
+
   [super updateProps:props oldProps:oldProps];
 }
+
+#if !TARGET_OS_OSX
+// Override hitTest to forward touches to _buttonView
+// This is necessary because RCTViewComponentView's hitTest might handle pointerEvents
+// from ViewProps and prevent touches from reaching _buttonView (which is the contentView).
+// Since _buttonView has its own pointerEvents handling, we always forward to it.
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (![self pointInside:point withEvent:event]) {
+    return nil;
+  }
+
+  CGPoint buttonPoint = [self convertPoint:point toView:_buttonView];
+
+  UIView *hitView = [_buttonView hitTest:buttonPoint withEvent:event];
+
+  return hitView;
+}
+#endif
+
 @end
 
 Class<RCTComponentViewProtocol> RNGestureHandlerButtonCls(void)

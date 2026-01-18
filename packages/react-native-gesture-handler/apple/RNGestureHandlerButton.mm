@@ -93,6 +93,29 @@
 
 - (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+  NSString *pointerEvents = _pointerEvents ?: @"auto";
+  
+  if ([pointerEvents isEqualToString:@"none"]) {
+    return nil;
+  }
+  
+  if ([pointerEvents isEqualToString:@"box-none"]) {
+    for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+      if (!subview.isHidden && subview.alpha > 0) {
+        CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+        UIView *hitView = [subview hitTest:convertedPoint withEvent:event];
+        if (hitView != nil && [self shouldHandleTouch:hitView]) {
+          return hitView;
+        }
+      }
+    }
+    return nil;
+  }
+  
+  if ([pointerEvents isEqualToString:@"box-only"]) {
+    return [self pointInside:point withEvent:event] ? self : nil;
+  }
+  
   RNGHUIView *inner = [super hitTest:point withEvent:event];
   while (inner && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
