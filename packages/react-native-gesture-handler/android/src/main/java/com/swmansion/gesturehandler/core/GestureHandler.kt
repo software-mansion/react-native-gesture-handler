@@ -30,6 +30,7 @@ open class GestureHandler {
   private var trackedPointersIDsCount = 0
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
+  var testID: String? = null
   var view: View? = null
     private set
 
@@ -126,6 +127,7 @@ open class GestureHandler {
   }
 
   open fun resetConfig() {
+    testID = null
     needsPointerData = DEFAULT_NEEDS_POINTER_DATA
     manualActivation = DEFAULT_MANUAL_ACTIVATION
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
@@ -854,7 +856,7 @@ open class GestureHandler {
   open fun wantsToAttachDirectlyToView() = false
 
   override fun toString(): String {
-    val viewString = if (view == null) null else view!!.javaClass.simpleName
+    val viewString = testID ?: view?.javaClass?.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
   }
 
@@ -906,6 +908,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
         handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
       }
+      if (config.hasKey(KEY_TEST_ID)) {
+        handler.testID = config.getString(KEY_TEST_ID)
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
@@ -927,6 +932,7 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
+      private const val KEY_TEST_ID = "testID"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
@@ -1018,7 +1024,7 @@ open class GestureHandler {
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
     const val POINTER_TYPE_OTHER = 3
-    private const val MAX_POINTERS_COUNT = 12
+    private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {

@@ -26,7 +26,9 @@ export function NativeDetector<THandlerData, TConfig>({
   configureRelations(gesture);
 
   const handlerTags = useMemo(() => {
-    return isComposedGesture(gesture) ? gesture.tags : [gesture.tag];
+    return isComposedGesture(gesture)
+      ? gesture.handlerTags
+      : [gesture.handlerTag];
   }, [gesture]);
 
   return (
