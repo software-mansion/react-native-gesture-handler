@@ -53,6 +53,10 @@ export type GestureEvent<THandlerData> = {
   handlerTag: number;
 } & HandlerData<THandlerData>;
 
+export type GestureEndEvent<THandlerData> = {
+  canceled: boolean;
+} & GestureEvent<THandlerData>;
+
 export type UnpackedGestureHandlerEvent<THandlerData> =
   | GestureEvent<THandlerData>
   | GestureTouchEvent;

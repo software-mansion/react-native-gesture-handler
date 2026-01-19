@@ -8,10 +8,11 @@ import type {
   RectButtonProps,
 } from './GestureButtonsProps';
 
-import type { GestureEvent } from '../types';
+import type { GestureEndEvent, GestureEvent } from '../types';
 import type { NativeViewHandlerData } from '../hooks/gestures/native/useNativeGesture';
 
 type CallbackEventType = GestureEvent<NativeViewHandlerData>;
+type EndCallbackEventType = GestureEndEvent<NativeViewHandlerData>;
 
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
@@ -58,15 +59,15 @@ export const BaseButton = (props: BaseButtonProps) => {
     }
   };
 
-  const onDeactivate = (e: CallbackEventType, success: boolean) => {
+  const onDeactivate = (e: EndCallbackEventType) => {
     onActiveStateChange?.(false);
 
-    if (success && !longPressDetected.current) {
+    if (!e.canceled && !longPressDetected.current) {
       onPress?.(e.pointerInside);
     }
   };
 
-  const onFinalize = (_e: CallbackEventType) => {
+  const onFinalize = (_e: EndCallbackEventType) => {
     if (longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
