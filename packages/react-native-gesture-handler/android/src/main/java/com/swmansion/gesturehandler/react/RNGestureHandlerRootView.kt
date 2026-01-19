@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
@@ -91,6 +92,20 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
         parent = parent.parent
       }
       return false
+    }
+
+    fun findGestureHandlerRootView(viewGroup: ViewGroup): RNGestureHandlerRootView? {
+      var parent: ViewParent? = viewGroup.parent
+      var gestureHandlerRootView: RNGestureHandlerRootView? = null
+
+      while (parent != null) {
+        if (parent is RNGestureHandlerRootView) {
+          gestureHandlerRootView = parent
+        }
+        parent = parent.parent
+      }
+
+      return gestureHandlerRootView
     }
   }
 }

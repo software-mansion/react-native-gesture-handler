@@ -2,7 +2,6 @@ package com.swmansion.gesturehandler.react
 
 import android.content.Context
 import android.view.View
-import android.view.ViewParent
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -10,6 +9,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
@@ -203,23 +203,11 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       child.value.clear()
     }
   }
+
   fun recordHandlerIfNotPresent(handler: GestureHandler) {
-    findGestureHandlerRootView()?.recordHandlerIfNotPresent(handler)
+    RNGestureHandlerRootView.findGestureHandlerRootView(this)?.recordHandlerIfNotPresent(handler)
   }
 
-  private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {
-    var parent: ViewParent? = this.parent
-    var gestureHandlerRootView: RNGestureHandlerRootView? = null
-
-    while (parent != null) {
-      if (parent is RNGestureHandlerRootView) {
-        gestureHandlerRootView = parent
-      }
-      parent = parent.parent
-    }
-
-    return gestureHandlerRootView
-  }
   private fun ReadableArray.mapVirtualChildren(): List<VirtualChildren> = List(size()) { i ->
     val child = getMap(i) ?: return@List null
     val handlerTags = child.getArray("handlerTags")?.toIntList().orEmpty()
