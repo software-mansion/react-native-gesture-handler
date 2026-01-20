@@ -304,18 +304,17 @@ const Pressable = (props: PressableProps) => {
       }
     },
     onFinalize: (_event, success) => {
-      if (Platform.OS !== 'web') {
-        // On Web we use LongPress().onFinalize() instead of Native().onFinalize(),
-        // as Native cancels on mouse move, and LongPress does not.
-        if (success) {
-          stateMachine.handleEvent(StateMachineEvent.FINALIZE);
-        } else {
-          stateMachine.handleEvent(StateMachineEvent.CANCEL);
-        }
+      // On Web we use LongPress.onFinalize instead of Native.onFinalize,
+      // as Native cancels on mouse move, and LongPress does not.
+      if (Platform.OS === 'web') {
+        return;
+      }
+      stateMachine.handleEvent(
+        success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
+      );
 
-        if (Platform.OS !== 'ios') {
-          handleFinalize();
-        }
+      if (Platform.OS !== 'ios') {
+        handleFinalize();
       }
     },
     disableReanimated: true,
