@@ -40,8 +40,8 @@ import { PureNativeButton } from './GestureButtons';
 
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { INT32_MAX } from '../../utils';
+
 const DEFAULT_LONG_PRESS_DURATION = 500;
-// const IS_TEST_ENV = isTestEnv();
 
 const Pressable = (props: PressableProps) => {
   const {
