@@ -15,7 +15,6 @@ import {
   LayoutChangeEvent,
   Platform,
   StyleProp,
-  View,
   ViewStyle,
 } from 'react-native';
 import {
@@ -355,25 +354,23 @@ const Pressable = (props: PressableProps) => {
   );
 
   return (
-    <View>
-      <GestureDetector gesture={gesture}>
-        <PureNativeButton
-          {...remainingProps}
-          onLayout={setDimensions}
-          accessible={accessible !== false}
-          hitSlop={appliedHitSlop}
-          enabled={disabled !== true}
-          touchSoundDisabled={android_disableSound ?? undefined}
-          rippleColor={rippleColor}
-          rippleRadius={android_ripple?.radius ?? undefined}
-          style={[pointerStyle, styleProp, { minWidth: 44, minHeight: 44 }]}>
-          {childrenProp}
-          {__DEV__ ? (
-            <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
-          ) : null}
-        </PureNativeButton>
-      </GestureDetector>
-    </View>
+    <GestureDetector gesture={gesture}>
+      <PureNativeButton
+        {...remainingProps}
+        onLayout={setDimensions}
+        accessible={accessible !== false}
+        hitSlop={appliedHitSlop}
+        enabled={disabled !== true}
+        touchSoundDisabled={android_disableSound ?? undefined}
+        rippleColor={rippleColor}
+        rippleRadius={android_ripple?.radius ?? undefined}
+        style={[pointerStyle, styleProp, { minWidth: 44, minHeight: 44 }]}>
+        {childrenProp}
+        {__DEV__ ? (
+          <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
+        ) : null}
+      </PureNativeButton>
+    </GestureDetector>
   );
 };
 
