@@ -238,9 +238,9 @@ const Pressable = (props: PressableProps) => {
       onHoverOut?.(gestureToPressableEvent(event));
     },
     disableReanimated: true,
-    simultaneousWith: simultaneousWith,
-    block: block,
-    requireToFail: requireToFail,
+    simultaneousWith,
+    block,
+    requireToFail,
   });
 
   const pressAndTouchGesture = useLongPressGesture({
