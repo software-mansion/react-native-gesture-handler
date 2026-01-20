@@ -4,6 +4,7 @@ import NestedTextExample from './showcase/nested_text/nested_text';
 import OverlapExample from './showcase/overlap';
 import SharedValueExample from './showcase/shared_value';
 import SvgExample from './showcase/svg';
+import StateManagerExample from './showcase/state_manager';
 
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
@@ -54,6 +55,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Showcase',
     data: [
+      { name: 'State Manager', component: StateManagerExample },
       { name: 'Svg', component: SvgExample },
       { name: 'Nested Text', component: NestedTextExample },
       { name: 'Shared Value', component: SharedValueExample },
