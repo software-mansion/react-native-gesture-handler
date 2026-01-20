@@ -6,6 +6,7 @@ import type {
 } from 'react-native/Libraries/Types/CodegenTypes';
 import type { ViewProps, ColorValue } from 'react-native';
 
+// @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
 interface NativeProps extends ViewProps {
   exclusive?: WithDefault<boolean, true>;
   foreground?: boolean;
@@ -17,6 +18,7 @@ interface NativeProps extends ViewProps {
   borderWidth?: Float;
   borderColor?: ColorValue;
   borderStyle?: WithDefault<string, 'solid'>;
+  pointerEvents?: WithDefault<'box-none' | 'none' | 'box-only' | 'auto', 'auto'>;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');
