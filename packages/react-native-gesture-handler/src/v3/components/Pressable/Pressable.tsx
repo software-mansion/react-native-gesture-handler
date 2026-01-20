@@ -267,14 +267,15 @@ const Pressable = (props: PressableProps) => {
       handlePressOut(pressableEvent, false);
     },
     onFinalize: (_event, success) => {
-      if (Platform.OS === 'web') {
-        if (success) {
-          stateMachine.handleEvent(StateMachineEvent.FINALIZE);
-        } else {
-          stateMachine.handleEvent(StateMachineEvent.CANCEL);
-        }
-        handleFinalize();
+      if (Platform.OS !== 'web') {
+        return;
       }
+
+      stateMachine.handleEvent(
+        success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
+      );
+
+      handleFinalize();
     },
     disableReanimated: true,
     simultaneousWith: simultaneousWith,
