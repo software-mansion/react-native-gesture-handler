@@ -236,10 +236,12 @@ const Pressable = (props: PressableProps) => {
       }
       onHoverOut?.(gestureToPressableEvent(event));
     },
+    enabled: disabled !== true,
     disableReanimated: true,
     simultaneousWith,
     block,
     requireToFail,
+    hitSlop: appliedHitSlop,
   });
 
   const pressAndTouchGesture = useLongPressGesture({
@@ -276,10 +278,12 @@ const Pressable = (props: PressableProps) => {
 
       handleFinalize();
     },
+    enabled: disabled !== true,
     disableReanimated: true,
     simultaneousWith: simultaneousWith,
     block: block,
     requireToFail: requireToFail,
+    hitSlop: appliedHitSlop,
   });
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
@@ -316,10 +320,12 @@ const Pressable = (props: PressableProps) => {
         handleFinalize();
       }
     },
+    enabled: disabled !== true,
     disableReanimated: true,
     simultaneousWith,
     block,
     requireToFail,
+    hitSlop: appliedHitSlop,
   });
 
   const gesture = useSimultaneousGestures(
