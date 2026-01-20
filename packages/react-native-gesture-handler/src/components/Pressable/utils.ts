@@ -13,6 +13,7 @@ import {
   InnerPressableEvent,
   PressableEvent,
 } from './PressableProps';
+import { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
@@ -45,9 +46,12 @@ const touchDataToPressEvent = (
 });
 
 const gestureToPressEvent = (
-  event: GestureStateChangeEvent<
-    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-  >,
+  event:
+    | GestureStateChangeEvent<
+        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+      >
+    | HoverGestureEvent
+    | LongPressGestureEvent,
   timestamp: number,
   targetId: number
 ): InnerPressableEvent => ({
@@ -73,9 +77,12 @@ const isTouchWithinInset = (
   (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
 const gestureToPressableEvent = (
-  event: GestureStateChangeEvent<
-    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-  >
+  event:
+    | GestureStateChangeEvent<
+        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+      >
+    | HoverGestureEvent
+    | LongPressGestureEvent
 ): PressableEvent => {
   const timestamp = Date.now();
 

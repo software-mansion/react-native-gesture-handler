@@ -6,10 +6,10 @@ import React, {
   useState,
 } from 'react';
 import {
+  PressableDimensions,
   PressableEvent,
   PressableProps,
-  FullPressableDimensions,
-} from './PressableProps';
+} from '../../components/Pressable/PressableProps';
 import {
   Insets,
   LayoutChangeEvent,
@@ -23,21 +23,23 @@ import {
   gestureTouchToPressableEvent,
   isTouchWithinInset,
   gestureToPressableEvent,
-} from './utils';
-
-import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
-import { PressableStateMachine } from './StateMachine';
+} from '../../components/Pressable/utils';
+import {
+  getStatesConfig,
+  StateMachineEvent,
+} from '../../components/Pressable/stateDefinitions';
+import { PressableStateMachine } from '../../components/Pressable/StateMachine';
 import {
   useHoverGesture,
   useLongPressGesture,
   useNativeGesture,
   useSimultaneousGestures,
-} from '../../hooks';
-import { GestureDetector } from '../../detectors';
-import { PureNativeButton } from '../GestureButtons';
+} from '../hooks';
+import { GestureDetector } from '../detectors';
+import { PureNativeButton } from './GestureButtons';
 
-import { PressabilityDebugView } from '../../../handlers/PressabilityDebugView';
-import { INT32_MAX } from '../../../utils';
+import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { INT32_MAX } from '../../utils';
 const DEFAULT_LONG_PRESS_DURATION = 500;
 // const IS_TEST_ENV = isTestEnv();
 
@@ -75,11 +77,9 @@ const Pressable = (props: PressableProps) => {
   const pressDelayTimeoutRef = useRef<number | null>(null);
   const isOnPressAllowed = useRef<boolean>(true);
   const isCurrentlyPressed = useRef<boolean>(false);
-  const dimensions = useRef<FullPressableDimensions>({
+  const dimensions = useRef<PressableDimensions>({
     width: 0,
     height: 0,
-    x: 0,
-    y: 0,
   });
 
   const normalizedHitSlop: Insets = useMemo(

@@ -147,8 +147,9 @@ export type {
 } from './handlers/gestureHandlerTypesCompat';
 
 export type {
-  PressableProps as LegacyPressableProps,
-  PressableStateCallbackType as LegacyPressableCallbackType,
+  PressableProps,
+  LegacyPressableProps,
+  PressableStateCallbackType,
 } from './components/Pressable';
 export { default as LegacyPressable } from './components/Pressable';
 
