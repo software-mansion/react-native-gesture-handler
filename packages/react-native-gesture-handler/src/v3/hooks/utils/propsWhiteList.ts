@@ -23,6 +23,7 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'mouseButton',
   'testID',
   'cancelsTouchesInView',
+  'manualActivation',
 ]);
 
 const ExternalRelationsConfig = new Set<keyof ExternalRelations>([
