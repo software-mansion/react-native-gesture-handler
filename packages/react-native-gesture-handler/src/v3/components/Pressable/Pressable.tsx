@@ -209,7 +209,7 @@ const Pressable = (props: PressableProps) => {
   const hoverOutTimeout = useRef<number | null>(null);
 
   const hoverGesture = useHoverGesture({
-    manualActivation: true, // Prevents Hover blocking native gesture on web
+    manualActivation: true, // Prevents Hover blocking Native gesture on web
     cancelsTouchesInView: false,
     onBegin: (event) => {
       if (hoverOutTimeout.current) {
@@ -299,7 +299,7 @@ const Pressable = (props: PressableProps) => {
     },
     onActivate: () => {
       if (Platform.OS !== 'android') {
-        // Gesture.Native().onStart() is broken with Android + hitSlop
+        // Native.onActivate is broken with Android + hitSlop
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }
     },
