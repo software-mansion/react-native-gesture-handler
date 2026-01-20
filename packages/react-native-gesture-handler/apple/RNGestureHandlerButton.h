@@ -22,13 +22,21 @@
 #else
 @interface RNGestureHandlerButton : UIControl
 #endif // TARGET_OS_OSX
+
+typedef NS_ENUM(NSInteger, RNGestureHandlerPointerEvents) {
+  RNGestureHandlerPointerEventsNone,
+  RNGestureHandlerPointerEventsBoxNone,
+  RNGestureHandlerPointerEventsBoxOnly,
+  RNGestureHandlerPointerEventsAuto
+};
+
 /**
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 @property (nonatomic, assign) CGFloat borderRadius;
 @property (nonatomic) BOOL userEnabled;
-@property (nonatomic, copy) NSString *pointerEvents;
+@property (nonatomic, assign) RNGestureHandlerPointerEvents pointerEvents;
 
 #if TARGET_OS_OSX && RCT_NEW_ARCH_ENABLED
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;

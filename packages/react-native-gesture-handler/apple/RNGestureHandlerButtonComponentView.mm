@@ -15,18 +15,18 @@
 
 using namespace facebook::react;
 
-static NSString *RCTPointerEventsToString(facebook::react::PointerEventsMode pointerEvents)
+static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::PointerEventsMode pointerEvents)
 {
   switch (pointerEvents) {
     case facebook::react::PointerEventsMode::None:
-      return @"none";
+      return RNGestureHandlerPointerEventsNone;
     case facebook::react::PointerEventsMode::BoxNone:
-      return @"box-none";
+      return RNGestureHandlerPointerEventsBoxNone;
     case facebook::react::PointerEventsMode::BoxOnly:
-      return @"box-only";
+      return RNGestureHandlerPointerEventsBoxOnly;
     case facebook::react::PointerEventsMode::Auto:
     default:
-      return @"auto";
+      return RNGestureHandlerPointerEventsAuto;
   }
 }
 
@@ -224,11 +224,11 @@ static NSString *RCTPointerEventsToString(facebook::react::PointerEventsMode poi
       -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
   if (!oldProps) {
-    _buttonView.pointerEvents = RCTPointerEventsToString(newProps.pointerEvents);
+    _buttonView.pointerEvents = RCTPointerEventsToEnum(newProps.pointerEvents);
   } else {
     const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
     if (oldButtonProps.pointerEvents != newProps.pointerEvents) {
-      _buttonView.pointerEvents = RCTPointerEventsToString(newProps.pointerEvents);
+      _buttonView.pointerEvents = RCTPointerEventsToEnum(newProps.pointerEvents);
     }
   }
 

@@ -1,17 +1,17 @@
 #import "RNGestureHandlerButtonManager.h"
 #import "RNGestureHandlerButton.h"
 
-static NSString *RCTPointerEventsToString(RCTPointerEvents pointerEvents)
+static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(RCTPointerEvents pointerEvents)
 {
   switch (pointerEvents) {
     case RCTPointerEventsNone:
-      return @"none";
+      return RNGestureHandlerPointerEventsNone;
     case RCTPointerEventsBoxNone:
-      return @"box-none";
+      return RNGestureHandlerPointerEventsBoxNone;
     case RCTPointerEventsBoxOnly:
-      return @"box-only";
+      return RNGestureHandlerPointerEventsBoxOnly;
     default:
-      return @"auto";
+      return RNGestureHandlerPointerEventsAuto;
   }
 }
 
@@ -46,9 +46,9 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RNGestureHandlerButton
 {
   if (json) {
     RCTPointerEvents pointerEvents = [RCTConvert RCTPointerEvents:json];
-    view.pointerEvents = RCTPointerEventsToString(pointerEvents);
+    view.pointerEvents = RCTPointerEventsToEnum(pointerEvents);
   } else {
-    view.pointerEvents = @"auto";
+    view.pointerEvents = RNGestureHandlerPointerEventsAuto;
   }
 }
 
