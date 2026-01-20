@@ -248,9 +248,7 @@ static NSString *RCTPointerEventsToString(facebook::react::PointerEventsMode poi
 
   CGPoint buttonPoint = [self convertPoint:point toView:_buttonView];
 
-  UIView *hitView = [_buttonView hitTest:buttonPoint withEvent:event];
-
-  return hitView;
+  return [_buttonView hitTest:buttonPoint withEvent:event];
 }
 #endif
 
