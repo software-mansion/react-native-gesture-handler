@@ -318,9 +318,9 @@ const Pressable = (props: PressableProps) => {
       }
     },
     disableReanimated: true,
-    simultaneousWith: simultaneousWith,
-    block: block,
-    requireToFail: requireToFail,
+    simultaneousWith,
+    block,
+    requireToFail,
   });
 
   const gesture = useSimultaneousGestures(
