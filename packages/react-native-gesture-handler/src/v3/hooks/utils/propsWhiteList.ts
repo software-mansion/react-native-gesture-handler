@@ -22,6 +22,7 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'activeCursor',
   'mouseButton',
   'testID',
+  'manualActivation',
 ]);
 
 const ExternalRelationsConfig = new Set<keyof ExternalRelations>([
