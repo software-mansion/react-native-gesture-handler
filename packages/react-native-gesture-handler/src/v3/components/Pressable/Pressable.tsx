@@ -209,7 +209,7 @@ const Pressable = (props: PressableProps) => {
   const hoverOutTimeout = useRef<number | null>(null);
 
   const hoverGesture = useHoverGesture({
-    // manualActivation: true, // Prevents Hover blocking Gesture.Native() on web
+    manualActivation: true, // Prevents Hover blocking native gesture on web
     cancelsTouchesInView: false,
     onBegin: (event) => {
       if (hoverOutTimeout.current) {
