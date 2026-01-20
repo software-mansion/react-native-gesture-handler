@@ -5,6 +5,7 @@ import {
   BaseButton,
   BorderlessButton,
   GestureHandlerRootView,
+  Pressable,
   RectButton,
 } from 'react-native-gesture-handler';
 
@@ -12,7 +13,8 @@ type ButtonWrapperProps = {
   ButtonComponent:
     | typeof BaseButton
     | typeof RectButton
-    | typeof BorderlessButton;
+    | typeof BorderlessButton
+    | typeof Pressable;
 
   color: string;
   feedback?: RefObject<FeedbackHandle | null>;
@@ -41,13 +43,14 @@ export default function ButtonsExample() {
   const feedbackRef1 = useRef<FeedbackHandle>(null);
   const feedbackRef2 = useRef<FeedbackHandle>(null);
   const feedbackRef3 = useRef<FeedbackHandle>(null);
+  const feedbackRef4 = useRef<FeedbackHandle>(null);
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.inner_container}>
         <ButtonWrapper
           ButtonComponent={BaseButton}
-          color={COLORS.KINDA_BLUE}
+          color={COLORS.NAVY}
           feedback={feedbackRef1}
         />
         <Feedback ref={feedbackRef1} />
@@ -55,7 +58,7 @@ export default function ButtonsExample() {
       <View style={styles.inner_container}>
         <ButtonWrapper
           ButtonComponent={RectButton}
-          color={COLORS.NAVY}
+          color={COLORS.PURPLE}
           feedback={feedbackRef2}
         />
         <Feedback ref={feedbackRef2} />
@@ -63,10 +66,18 @@ export default function ButtonsExample() {
       <View style={styles.inner_container}>
         <ButtonWrapper
           ButtonComponent={BorderlessButton}
-          color={COLORS.PURPLE}
+          color={COLORS.RED}
           feedback={feedbackRef3}
         />
         <Feedback ref={feedbackRef3} />
+      </View>
+      <View style={styles.inner_container}>
+        <ButtonWrapper
+          ButtonComponent={Pressable}
+          color={COLORS.GREEN}
+          feedback={feedbackRef4}
+        />
+        <Feedback ref={feedbackRef4} />
       </View>
     </GestureHandlerRootView>
   );
