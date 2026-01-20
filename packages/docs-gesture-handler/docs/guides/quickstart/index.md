@@ -35,7 +35,7 @@ To see the new API in action, let's build a simple app where you can drag a ball
 
 <Step title="Step 4">
   <div>
-    Now, define the <code>Pan</code> gesture logic. We need `SharedValue` to store the position of the ball at the moment we grab it to be able to correctly position it later, because we only have access to translation relative to the starting point of the gesture.
+    Now, define the <code>Pan</code> gesture logic.
   </div>
   <Step4 />
 </Step>
@@ -65,29 +65,18 @@ import Animated, {
 export default function Ball() {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({ x: 0, y: 0 });
-  const start = useSharedValue({ x: 0, y: 0 });
 
   const gesture = usePanGesture({
     onBegin: () => {
-      'worklet';
       isPressed.value = true;
     },
     onUpdate: (e) => {
-      'worklet';
       offset.value = {
-        x: e.translationX + start.value.x,
-        y: e.translationY + start.value.y,
-      };
-    },
-    onDeactivate: () => {
-      'worklet';
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
+        x: offset.value.x + e.changeX,
+        y: offset.value.y + e.changeY,
       };
     },
     onFinalize: () => {
-      'worklet';
       isPressed.value = false;
     },
   });
