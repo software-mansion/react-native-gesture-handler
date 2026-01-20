@@ -39,9 +39,10 @@ import { GestureDetector } from '../detectors';
 import { PureNativeButton } from './GestureButtons';
 
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX } from '../../utils';
+import { INT32_MAX, isTestEnv } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
+const IS_TEST_ENV = isTestEnv();
 
 const Pressable = (props: PressableProps) => {
   const {
@@ -370,7 +371,11 @@ const Pressable = (props: PressableProps) => {
         touchSoundDisabled={android_disableSound ?? undefined}
         rippleColor={rippleColor}
         rippleRadius={android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp, { minWidth: 44, minHeight: 44 }]}>
+        style={[pointerStyle, styleProp, { minWidth: 44, minHeight: 44 }]}
+        testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
+        testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
+        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
+        testOnly_onLongPress={IS_TEST_ENV ? onLongPress : undefined}>
         {childrenProp}
         {__DEV__ ? (
           <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
