@@ -22,14 +22,6 @@
 #else
 @interface RNGestureHandlerButton : UIControl
 #endif // TARGET_OS_OSX
-
-typedef NS_ENUM(NSInteger, RNGestureHandlerPointerEvents) {
-  RNGestureHandlerPointerEventsNone,
-  RNGestureHandlerPointerEventsBoxNone,
-  RNGestureHandlerPointerEventsBoxOnly,
-  RNGestureHandlerPointerEventsAuto
-};
-
 /**
  *  Insets used when hit testing inside this view.
  */
