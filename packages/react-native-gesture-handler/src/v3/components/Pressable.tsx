@@ -371,7 +371,7 @@ const Pressable = (props: PressableProps) => {
         touchSoundDisabled={android_disableSound ?? undefined}
         rippleColor={rippleColor}
         rippleRadius={android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp, { minWidth: 44, minHeight: 44 }]}
+        style={[pointerStyle, styleProp]}
         testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
         testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
         testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
