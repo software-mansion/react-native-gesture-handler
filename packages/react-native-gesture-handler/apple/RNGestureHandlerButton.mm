@@ -50,6 +50,7 @@
   if (self) {
     _hitTestEdgeInsets = UIEdgeInsetsZero;
     _userEnabled = YES;
+    _pointerEvents = RNGestureHandlerPointerEventsAuto;
 #if !TARGET_OS_TV && !TARGET_OS_OSX
     [self setExclusiveTouch:YES];
 #endif
@@ -93,6 +94,29 @@
 
 - (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+  RNGestureHandlerPointerEvents pointerEvents = _pointerEvents;
+  
+  if (pointerEvents == RNGestureHandlerPointerEventsNone) {
+    return nil;
+  }
+  
+  if (pointerEvents == RNGestureHandlerPointerEventsBoxNone) {
+    for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+      if (!subview.isHidden && subview.alpha > 0) {
+        CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+        UIView *hitView = [subview hitTest:convertedPoint withEvent:event];
+        if (hitView != nil && [self shouldHandleTouch:hitView]) {
+          return hitView;
+        }
+      }
+    }
+    return nil;
+  }
+  
+  if (pointerEvents == RNGestureHandlerPointerEventsBoxOnly) {
+    return [self pointInside:point withEvent:event] ? self : nil;
+  }
+  
   RNGHUIView *inner = [super hitTest:point withEvent:event];
   while (inner && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
