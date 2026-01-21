@@ -223,12 +223,14 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
       -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
+  const auto &newViewProps = static_cast<const ViewProps &>(newProps);
   if (!oldProps) {
-    _buttonView.pointerEvents = RCTPointerEventsToEnum(newProps.pointerEvents);
+    _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
   } else {
     const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
-    if (oldButtonProps.pointerEvents != newProps.pointerEvents) {
-      _buttonView.pointerEvents = RCTPointerEventsToEnum(newProps.pointerEvents);
+    const auto &oldViewProps = static_cast<const ViewProps &>(oldButtonProps);
+    if (oldViewProps.pointerEvents != newViewProps.pointerEvents) {
+      _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
     }
   }
 
