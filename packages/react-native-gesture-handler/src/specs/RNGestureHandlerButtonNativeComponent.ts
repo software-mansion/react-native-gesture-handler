@@ -18,7 +18,10 @@ interface NativeProps extends ViewProps {
   borderWidth?: Float;
   borderColor?: ColorValue;
   borderStyle?: WithDefault<string, 'solid'>;
-  pointerEvents?: WithDefault<'box-none' | 'none' | 'box-only' | 'auto', 'auto'>;
+  pointerEvents?: WithDefault<
+    'box-none' | 'none' | 'box-only' | 'auto',
+    'auto'
+  >;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');
