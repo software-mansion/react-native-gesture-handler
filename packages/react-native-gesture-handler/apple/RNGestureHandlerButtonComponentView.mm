@@ -223,6 +223,9 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
       -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
+  // We need to cast to ViewProps to access the pointerEvents property with the correct type.
+  // This is necessary because pointerEvents is redefined in the spec,
+  // which shadows the base property with a different, incompatible type.
   const auto &newViewProps = static_cast<const ViewProps &>(newProps);
   if (!oldProps) {
     _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
