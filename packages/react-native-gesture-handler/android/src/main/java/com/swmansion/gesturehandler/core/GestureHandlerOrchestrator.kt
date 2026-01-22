@@ -10,6 +10,7 @@ import com.facebook.react.uimanager.RootView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import com.swmansion.gesturehandler.react.isHoverAction
+import com.swmansion.gesturehandler.react.isScrollAction
 import java.util.*
 
 class GestureHandlerOrchestrator(
@@ -48,7 +49,8 @@ class GestureHandlerOrchestrator(
     val action = event.actionMasked
     if (action == MotionEvent.ACTION_DOWN ||
       action == MotionEvent.ACTION_POINTER_DOWN ||
-      action == MotionEvent.ACTION_HOVER_MOVE
+      action == MotionEvent.ACTION_HOVER_MOVE ||
+      action == MotionEvent.ACTION_SCROLL
     ) {
       extractGestureHandlers(event)
     } else if (action == MotionEvent.ACTION_CANCEL) {
@@ -290,11 +292,14 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    if (!handler.wantsEvent(sourceEvent)) {
+    val action = sourceEvent.actionMasked
+
+    // Scroll events bypass the normal wantsEvent check since they don't have traditional pointer tracking
+    val isScrollEvent = sourceEvent.isScrollAction()
+    if (!isScrollEvent && !handler.wantsEvent(sourceEvent)) {
       return
     }
 
-    val action = sourceEvent.actionMasked
     val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
 
     // Touch events are sent before the handler itself has a chance to process them,
@@ -311,34 +316,43 @@ class GestureHandlerOrchestrator(
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
       val isFirstEvent = handler.state == 0
-      handler.handle(event, sourceEvent)
-      if (handler.isActive) {
-        // After handler is done waiting for other one to fail its progress should be
-        // reset, otherwise there may be a visible jump in values sent by the handler.
-        // When handler is waiting it's already activated but the `isAwaiting` flag
-        // prevents it from receiving touch stream. When the flag is changed, the
-        // difference between this event and the last one may be large enough to be
-        // visible in interactions based on this gesture. This makes it consistent with
-        // the behavior on iOS.
-        if (handler.shouldResetProgress) {
-          handler.shouldResetProgress = false
-          handler.resetProgress()
+
+      // For scroll events, we handle them directly since they don't have traditional pointer tracking
+      if (isScrollEvent && handler is ScrollGestureHandler) {
+        handler.handleScrollEvent(event, sourceEvent)
+        if (handler.isActive) {
+          handler.dispatchHandlerUpdate(event)
         }
-        handler.dispatchHandlerUpdate(event)
-      }
+      } else {
+        handler.handle(event, sourceEvent)
+        if (handler.isActive) {
+          // After handler is done waiting for other one to fail its progress should be
+          // reset, otherwise there may be a visible jump in values sent by the handler.
+          // When handler is waiting it's already activated but the `isAwaiting` flag
+          // prevents it from receiving touch stream. When the flag is changed, the
+          // difference between this event and the last one may be large enough to be
+          // visible in interactions based on this gesture. This makes it consistent with
+          // the behavior on iOS.
+          if (handler.shouldResetProgress) {
+            handler.shouldResetProgress = false
+            handler.resetProgress()
+          }
+          handler.dispatchHandlerUpdate(event)
+        }
 
-      if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event, sourceEvent)
-      }
+        if (handler.needsPointerData && isFirstEvent) {
+          handler.updatePointerData(event, sourceEvent)
+        }
 
-      // if event was of type UP or POINTER_UP we request handler to stop tracking now that
-      // the event has been dispatched
-      if (action == MotionEvent.ACTION_UP ||
-        action == MotionEvent.ACTION_POINTER_UP ||
-        action == MotionEvent.ACTION_HOVER_EXIT
-      ) {
-        val pointerId = event.getPointerId(event.actionIndex)
-        handler.stopTrackingPointer(pointerId)
+        // if event was of type UP or POINTER_UP we request handler to stop tracking now that
+        // the event has been dispatched
+        if (action == MotionEvent.ACTION_UP ||
+          action == MotionEvent.ACTION_POINTER_UP ||
+          action == MotionEvent.ACTION_HOVER_EXIT
+        ) {
+          val pointerId = event.getPointerId(event.actionIndex)
+          handler.stopTrackingPointer(pointerId)
+        }
       }
     }
 
@@ -518,12 +532,20 @@ class GestureHandlerOrchestrator(
   // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
   // so we need to pass them into RootViewGestureHandler, otherwise press and hold
   // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
-  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, event: MotionEvent): Boolean {
-    val shouldSkipHoverEvents =
-      handler !is HoverGestureHandler &&
-        handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
+  // Similarly, scroll events should only be handled by ScrollGestureHandler.
+  private fun shouldHandlerSkipSpecialEvents(handler: GestureHandler, event: MotionEvent): Boolean {
+    if (event.isHoverAction()) {
+      val shouldSkipHoverEvents =
+        handler !is HoverGestureHandler &&
+          handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
+      return shouldSkipHoverEvents
+    }
 
-    return shouldSkipHoverEvents && event.isHoverAction()
+    if (event.isScrollAction()) {
+      return handler !is ScrollGestureHandler
+    }
+
+    return false
   }
 
   private fun recordViewHandlersForPointer(
@@ -541,7 +563,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          if (shouldHandlerSkipHoverEvents(handler, event)) {
+          if (shouldHandlerSkipSpecialEvents(handler, event)) {
             continue
           }
 

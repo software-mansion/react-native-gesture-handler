@@ -69,6 +69,7 @@ import HoverableIcons from './src/new_api/hoverable_icons';
 import VelocityTest from './src/new_api/velocityTest';
 import Swipeable from './src/new_api/swipeable';
 import Pressable from './src/new_api/pressable';
+import Scroll from './src/new_api/scroll';
 
 import EmptyExample from './src/empty/EmptyExample';
 import RectButtonBorders from './src/release_tests/rectButton';
@@ -113,6 +114,11 @@ const EXAMPLES: ExamplesSection[] = [
       { name: 'Pressable', component: Pressable },
       { name: 'Hover', component: Hover },
       { name: 'Hoverable icons', component: HoverableIcons },
+      {
+        name: 'Scroll',
+        component: Scroll,
+        unsupportedPlatforms: new Set(['web', 'ios', 'macos']),
+      },
       {
         name: 'Horizontal Drawer (Reanimated 2 & RNGH 2)',
         component: BetterHorizontalDrawer,
