@@ -80,6 +80,11 @@ Receives swipe direction as an argument.
 a function that is called when `swipeable` starts animating on close.
 Receives swipe direction as an argument.
 
+### `onSwipeableDragEnd`
+
+a function that is called when `swipeable` ends dragging.
+Receives swipe direction as an argument.
+
 ### `onSwipeableOpenStartDrag`
 
 a function that is called when a user starts to drag the `swipable` to open.
