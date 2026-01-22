@@ -24,4 +24,5 @@ public interface RNGestureHandlerButtonManagerInterface<T extends View> extends 
   void setBorderWidth(T view, float value);
   void setBorderColor(T view, @Nullable Integer value);
   void setBorderStyle(T view, @Nullable String value);
+  void setPointerEvents(T view, @Nullable String value);
 }
