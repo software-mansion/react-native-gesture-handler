@@ -21,6 +21,7 @@ import {
 import { tagMessage } from '../../../utils';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
+import { Platform } from 'react-native';
 
 interface VirtualChildrenForNative {
   viewTag: number;
@@ -176,29 +177,12 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     [virtualChildren, gesture?.detectorCallbacks]
   );
 
-  const reanimatedUpdateEvents = useMemo(
-    () => getHandlers('onReanimatedUpdateEvent'),
+  const reanimatedEvents = useMemo(
+    () => getHandlers('reanimatedEventHandler'),
     [getHandlers]
   );
-  const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
-    reanimatedUpdateEvents
-  );
-
-  const reanimatedStateChangeEvents = useMemo(
-    () => getHandlers('onReanimatedStateChange'),
-    [getHandlers]
-  );
-  const reanimatedStateChangeHandler = Reanimated?.useComposedEventHandler(
-    reanimatedStateChangeEvents
-  );
-
-  const reanimatedTouchEvents = useMemo(
-    () => getHandlers('onReanimatedTouchEvent'),
-    [getHandlers]
-  );
-  const reanimatedTouchEventHandler = Reanimated?.useComposedEventHandler(
-    reanimatedTouchEvents
-  );
+  const reanimatedEventHandler =
+    Reanimated?.useComposedEventHandler(reanimatedEvents);
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
 
@@ -215,40 +199,59 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
     return [];
   }, [gesture]);
 
+  // On web, we're triggering Reanimated callbacks ourselves, based on the type.
+  // To handle this properly, we need to provide all three callbacks, so we set
+  // all three to the Reanimated event handler.
+  // On native, Reanimated handles routing internally based on the event names
+  // passed to the useEvent hook. We only need to pass it once, so that Reanimated
+  // can setup its internal listeners.
+  const reanimatedHandlers =
+    Platform.OS === 'web'
+      ? {
+          onGestureHandlerReanimatedEvent: reanimatedEventHandler,
+          onGestureHandlerReanimatedStateChange: reanimatedEventHandler,
+          onGestureHandlerReanimatedTouchEvent: reanimatedEventHandler,
+        }
+      : {
+          onGestureHandlerReanimatedEvent: reanimatedEventHandler,
+        };
+
+  const jsEventHandler = useMemo(
+    () => createGestureEventHandler('jsEventHandler'),
+    [createGestureEventHandler]
+  );
+
   return (
     <InterceptingDetectorContext value={contextValue}>
       <NativeDetectorComponent
         pointerEvents={'box-none'}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerStateChange={useMemo(
-          () => createGestureEventHandler('onGestureHandlerStateChange'),
-          [createGestureEventHandler]
-        )}
+        onGestureHandlerStateChange={jsEventHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerEvent={useMemo(
-          () => createGestureEventHandler('onGestureHandlerEvent'),
-          [createGestureEventHandler]
-        )}
+        onGestureHandlerEvent={jsEventHandler}
+        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
+        onGestureHandlerTouchEvent={jsEventHandler}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerAnimatedEvent={
-          gesture?.detectorCallbacks.onGestureHandlerAnimatedEvent
+          gesture?.detectorCallbacks.animatedEventHandler
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-        onGestureHandlerTouchEvent={useMemo(
-          () => createGestureEventHandler('onGestureHandlerTouchEvent'),
-          [createGestureEventHandler]
-        )}
-        // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedStateChange={
-          shouldUseReanimatedDetector ? reanimatedStateChangeHandler : undefined
+          shouldUseReanimatedDetector
+            ? reanimatedHandlers.onGestureHandlerReanimatedStateChange
+            : undefined
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedEvent={
-          shouldUseReanimatedDetector ? reanimatedEventHandler : undefined
+          shouldUseReanimatedDetector
+            ? reanimatedHandlers.onGestureHandlerReanimatedEvent
+            : undefined
         }
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerReanimatedTouchEvent={
-          shouldUseReanimatedDetector ? reanimatedTouchEventHandler : undefined
+          shouldUseReanimatedDetector
+            ? reanimatedHandlers.onGestureHandlerReanimatedTouchEvent
+            : undefined
         }
         handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
