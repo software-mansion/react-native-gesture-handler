@@ -60,8 +60,6 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
   child->ensureUnsealed();
   auto mutableChild = std::const_pointer_cast<YogaLayoutableShadowNode>(child);
 
-  // TODO: figure out the correct way to setup metrics between detector and
-  // the child
   auto metrics = child->getLayoutMetrics();
   setLayoutMetrics(metrics);
 
