@@ -7,7 +7,7 @@ sidebar_position: 3
 
 ## Gesture Detector
 
-The `GestureDetector` is a key component of RNGH3. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition).
+The `GestureDetector` is a key component of RNGH3. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
 
 When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated).
 
@@ -159,10 +159,6 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
-## Interaction with Reanimated
-
-`GestureDetector` will decide whether to use [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to process provided gestures based on their configuration. If any of the callbacks is a worklet and Reanimated is not explicitly turned off, tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.
 
 ## Properties
 
