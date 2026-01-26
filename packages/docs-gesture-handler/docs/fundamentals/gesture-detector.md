@@ -9,7 +9,7 @@ sidebar_position: 3
 
 `GestureDetector` is the core component of RNGH3. Unlike in previous version, it no longer manages the lifecycle of gestures directly. It supports recognizing multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition).
 
-To facilitate a smooth migration, the gesture property accepts both RNGH3 and RNGH2 gestures.
+To facilitate a smooth migration, the gesture property accepts both gestures created using the hooks API and gestures created using the builder pattern.
 
 When using RNGH3 gestures, you can also integrate them directly with the [Animated API](https://reactnative.dev/docs/animated).
 
