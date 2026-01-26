@@ -7,7 +7,7 @@ sidebar_position: 5
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
-Using hook API allows for smooth integration with the [Animated API](https://reactnative.dev/docs/animated). `Animated.event` mapping depends on `useNativeDriver` property. `Animated.event` can only be used in `onUpdate` callbacks.
+Using hook API allows for smooth integration with the [Animated API](https://reactnative.dev/docs/animated) by allowing for passing an `Animated.event` as the argument to the `onUpdate` callback. The event mapping of `Animated.event` depends on the `useNativeDriver` property.
 
 :::danger Mixing Reanimated and Animated
 It is not possible to mix `Reanimated` and `Animated` in the same `GestureDetector`.
