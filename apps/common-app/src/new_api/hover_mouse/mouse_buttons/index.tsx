@@ -15,42 +15,33 @@ import { COLORS, Feedback } from '../../../common';
 export default function Buttons() {
   const feedbackRef = useRef<{ showMessage: (msg: string) => void }>(null);
 
+  const TEST_DATA = [
+    { name: 'left', color: COLORS.PURPLE, button: MouseButton.LEFT },
+    { name: 'middle', color: COLORS.GREEN, button: MouseButton.MIDDLE },
+    { name: 'right', color: COLORS.NAVY, button: MouseButton.RIGHT },
+    {
+      name: 'left | right',
+      color: COLORS.RED,
+      button: MouseButton.LEFT | MouseButton.RIGHT,
+    },
+    { name: 'any', color: COLORS.YELLOW, button: MouseButton.ALL },
+  ];
+
   return (
     <View>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollContent}>
         <View style={styles.row}>
-          <Tests
-            name="left"
-            color={COLORS.PURPLE}
-            mouseButton={MouseButton.LEFT}
-            feedbackRef={feedbackRef}
-          />
-          <Tests
-            name="middle"
-            color={COLORS.GREEN}
-            mouseButton={MouseButton.MIDDLE}
-            feedbackRef={feedbackRef}
-          />
-          <Tests
-            name="right"
-            color={COLORS.NAVY}
-            mouseButton={MouseButton.RIGHT}
-            feedbackRef={feedbackRef}
-          />
-          <Tests
-            name="left | right"
-            color={COLORS.RED}
-            mouseButton={MouseButton.LEFT | MouseButton.RIGHT}
-            feedbackRef={feedbackRef}
-          />
-          <Tests
-            name="any"
-            color={COLORS.YELLOW}
-            mouseButton={MouseButton.ALL}
-            feedbackRef={feedbackRef}
-          />
+          {TEST_DATA.map((test) => (
+            <Tests
+              key={test.name}
+              name={test.name}
+              color={test.color}
+              mouseButton={test.button}
+              feedbackRef={feedbackRef}
+            />
+          ))}
         </View>
       </ScrollView>
       <View style={styles.feedbackContainer}>
