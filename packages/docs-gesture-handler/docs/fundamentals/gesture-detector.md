@@ -11,6 +11,10 @@ The `GestureDetector` is a key component of RNGH3. It supports gestures created 
 
 When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated).
 
+:::danger Nesting Gesture Detectors
+Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in unexpected behavior.
+:::
+
 ### Example
 
 #### Simple example
@@ -108,17 +112,25 @@ import {
 import Svg, { Circle } from 'react-native-svg';
 
 export default function App() {
-  const outerTap = useTapGesture({});
-  const innerTap = useTapGesture({});
+  const outerTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Box tapped!');
+    },
+  });
+  const innerTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Circle tapped!');
+    },
+  });
 
   return (
     <GestureHandlerRootView style={styles.container}>
       // highlight-next-line
-      <InterceptingGestureDetector gesture={innerTap}>
+      <InterceptingGestureDetector gesture={outerTap}>
         <View style={styles.box}>
           <Svg height="250" width="250">
             // highlight-next-line
-            <VirtualGestureDetector gesture={outerTap}>
+            <VirtualGestureDetector gesture={innerTap}>
               <Circle
                 cx="125"
                 cy="125"
