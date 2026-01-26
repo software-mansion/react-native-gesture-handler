@@ -208,4 +208,4 @@ Specifies whether context menu should be enabled after clicking on underlying vi
   }
   ```
 
-  This example will throw an error, becuse we try to use the same instance of `Pan` in two different Gesture Detectors.
+  This example will throw an error, because the same instance of `Pan` is being used in two different Gesture Detectors.
