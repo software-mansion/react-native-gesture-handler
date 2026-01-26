@@ -7,7 +7,7 @@ sidebar_position: 4
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
-`GestureDetector` will decide whether to use [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to process provided gestures based on their configuration. If any of the callbacks is a [worklet](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) and Reanimated is not explicitly turned off, tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.
+`GestureDetector` will decide whether to use [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to process provided gestures based on their configuration. If any of the callbacks is a [worklet](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) and Reanimated is not explicitly [turned off](#disabling-reanimated), tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.
 
 ## Automatic [workletization](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#to-workletize) of gesture callbacks
 
@@ -119,11 +119,13 @@ export default function App() {
 
 ## Disabling Reanimated
 
-Gestures created with hook API have `Reanimated` enabled by default. There are two ways of disabling it for a specific gesture.
+Gestures created with the hook API have `Reanimated` enabled by default, meaning all callbacks are executed on the UI thread. There are two methods available to disable this behavior for a specific gesture.
 
 ### disableReanimated
 
-When `disableReanimated` is set to `true` in the gesture configuration, Reanimated will be turned off for that gesture throughout the whole gesture lifecycle.
+When `disableReanimated` is set to `true` in the gesture configuration, `Reanimated` will be completely turned off for that gesture throughout its entire lifecycle. This setting eliminates all interaction points with `Reanimated`, thereby reducing any potential overhead. Default value for this property is `false`.
+
+This property cannot be changed dynamically during the gesture's lifecycle.
 
 ```jsx
 const gesture = usePanGesture({
@@ -138,8 +140,9 @@ const gesture = usePanGesture({
 
 ### runOnJS
 
-With `runOnJS` you can temporarily disable executing callbacks on the UI thread.
+The `runOnJS` property allows you to dynamically control whether callbacks are executed on the JS thread or the UI thread. When set to `true`, callbacks will run on the JS thread. Setting it to `false` will execute them on the UI thread. Default value for this property is `false`.
 
+This property can be changed dynamically throughout the gesture's lifecycle.
 
 <CollapsibleCode 
 label="Show full example"

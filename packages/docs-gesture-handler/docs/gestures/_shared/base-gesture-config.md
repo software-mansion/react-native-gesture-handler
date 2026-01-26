@@ -74,21 +74,23 @@ Default value is `true`.
 
 ### runOnJS
 
+**Requires `react-native-reanimated`**
+
 ```ts
 runOnJS: boolean | SharedValue<boolean>;
 ```
 
-When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for switching between UI thread (when set to `false`) and JS thread (when set to `true`). **This property can be modified throughout the gesture's lifecycle**.
-Defaults to `false`.
+If set to `true`, callbacks will be executed on JS runtime. Can be changed dynamically throughout gesture lifecycle. Defaults to `false`. For more details, see the [runOnJS](/docs/fundamentals/reanimated-interactions#runonjs) section.
 
 ### disableReanimated
+
+**Requires `react-native-reanimated`**
 
 ```ts
 disableReanimated: boolean | SharedValue<boolean>;
 ```
 
-When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not. **This property cannot be modified throught the gesture's lifecycle**.
-Defaults to `false`.
+If set to `true`, the gesture will ignore any interaction with `Reanimated`. This property cannot be changed during the gesture's lifecycle. For more details, see the [disableReanimated](/docs/fundamentals/reanimated-interactions#disablereanimated) section.
 
 ### simultaneousWith
 
