@@ -10,7 +10,7 @@ import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
 ## Gesture Detector
 
-The `GestureDetector` is a key component of RNGH3. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
+The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
 
 When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated). More on that can be found in [Integreation with Animated](/docs/fundamentals/animated-interactions) section.
 
@@ -18,10 +18,10 @@ When using hook API, you can also integrate it directly with the [Animated API](
 
 ####  Nesting Gesture Detectors
 
-Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in unexpected behavior.
+Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in undefined behavior.
 
 #### Reusing Gestures
-Using the same instance of a gesture across multiple Gesture Detectors may result in unexpected behavior.
+Using the same instance of a gesture across multiple Gesture Detectors may result in undefined behavior.
 :::
 
 ```js
@@ -48,11 +48,11 @@ export default function App() {
 
 ## Virtual Detectors
 
-In RNGH3, `GestureDetector` is a standalone host component. Depending on your view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualNativeDetector`.
+Since RNGH3, `GestureDetector` is a standalone host component. Depending on the view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualNativeDetector`.
 
 ### InterceptingGestureDetector
 
-`InterceptingGestureDetector` functions similarly to a standard `GestureDetector`, but it can also act as a proxy for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the [`gesture`](#gesture) property is optional.
+`InterceptingGestureDetector` functions similarly to a `GestureDetector`, but it can also act as a proxy for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the [`gesture`](#gesture) property is optional.
 
 ### VirtualGestureDetector
 
