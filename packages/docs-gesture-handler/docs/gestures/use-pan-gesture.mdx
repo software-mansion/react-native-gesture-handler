@@ -1,0 +1,354 @@
+---
+id: use-pan-gesture
+title: Pan gesture
+sidebar_label: Pan gesture
+sidebar_position: 1
+---
+
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import PanGestureBasic from '@site/static/examples/PanGestureBasic';
+import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasicSrc';
+
+import BaseEventData from './\_shared/base-gesture-event-data.md';
+import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-config.md';
+import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
+import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<PanGestureBasic/>}
+    src={PanGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</div>
+
+A continuous gesture that can recognize a panning (dragging) gesture and track its movement.
+
+The gesture [activates](/docs/fundamentals/states-events#active) when a finger is placed on the screen and moved some initial distance.
+
+Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and number of fingers required for activation (allowing for multifinger swipes) may be specified.
+
+Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
+
+  <div className={appearOnMobile} style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+
+## Example
+
+```jsx
+import { StyleSheet } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  usePanGesture,
+} from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+
+export default function App() {
+  const position = useSharedValue(0);
+
+  const panGesture = usePanGesture({
+    onUpdate: (e) => {
+      position.value = e.translationX;
+    },
+    onDeactivate: () => {
+      position.value = withTiming(0, { duration: 100 });
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: position.value }],
+  }));
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.box, animatedStyle]} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
+```
+
+## Multi touch pan handling
+
+If your app relies on multi touch pan handling this section provides some information how the default behavior differs between the platform and how (if necessary) it can be unified.
+
+The difference in multi touch pan handling lies in the way how translation properties during the event are being calculated.
+On iOS the default behavior when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
+This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example UIScrollView component.
+
+On Android, the default behavior for native components like scroll view, pager views or drawers is different and hence gesture defaults to that when it comes to pan handling.
+The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
+This behavior can be changed on Android using [`averageTouches`](#averagetouches-android-only) flag.
+
+Note that on both Android and iOS when the additional finger is placed on the screen that translation prop is not affected even though the position of the pointer being tracked might have changed.
+Therefore it is safe to rely on translation most of the time as it only reflects the movement that happens regardless of how many fingers are placed on the screen and if that number changes over time.
+If you wish to track the "center of mass" virtual pointer and account for its changes when the number of finger changes you can use relative or absolute position provided in the event ([`x`](#x) and [`y`](#y) or [`absoluteX`](#absolutex) and [`absoluteY`](#absolutey)).
+
+## Config
+
+<SharedValueInfo />
+
+### minDistance
+
+```ts
+minDistance: number | SharedValue<number>;
+```
+
+Minimum distance the finger (or multiple finger) need to travel before the gesture [activates](/docs/fundamentals/states-events#active). Expressed in points.
+
+### minPointers
+
+```ts
+minPointers: number | SharedValue<number>;
+```
+
+A number of fingers that is required to be placed before gesture can [activate](/docs/fundamentals/states-events#active). Should be a higher or equal to 0 integer.
+
+### maxPointers
+
+```ts
+maxPointers: number | SharedValue<number>;
+```
+
+When the given number of fingers is placed on the screen and gesture hasn't yet [activated](/docs/fundamentals/states-events#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+
+### activateAfterLongPress
+
+```ts
+activateAfterLongPress: number | SharedValue<number>;
+```
+
+Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](/docs/fundamentals/states-events#active). If the finger is moved during that period, the gesture will [fail](/docs/fundamentals/states-events#failed). Should be a higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to [activate](/docs/fundamentals/states-events#active) the `Pan`.
+
+### activeOffsetX
+
+```ts
+activeOffsetX: number |
+  SharedValue<number> |
+  [number | SharedValue<number>, number | SharedValue<number>];
+```
+
+Range along X axis (in points) where fingers travels without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
+If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+
+### activeOffsetY
+
+```ts
+activeOffsetY: number |
+  SharedValue<number> |
+  [number | SharedValue<number>, number | SharedValue<number>];
+```
+
+Range along Y axis (in points) where fingers travels without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
+If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+
+### failOffsetY
+
+```ts
+failOffsetY: number |
+  SharedValue<number> |
+  [number | SharedValue<number>, number | SharedValue<number>];
+```
+
+When the finger moves outside this range (in points) along Y axis and gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
+If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+
+### failOffsetX
+
+```ts
+failOffsetX: number |
+  SharedValue<number> |
+  [number | SharedValue<number>, number | SharedValue<number>];
+```
+
+When the finger moves outside this range (in points) along X axis and gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
+If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
+
+### averageTouches (Android only)
+
+```ts
+averageTouches: boolean | SharedValue<boolean>;
+```
+
+Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
+
+### enableTrackpadTwoFingerGesture (iOS only)
+
+```ts
+enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;
+```
+
+Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
+
+### mouseButton (Web & Android only)
+
+```ts
+mouseButton: MouseButton | SharedValue<MouseButton>;
+```
+
+```ts
+enum MouseButton {
+  LEFT,
+  RIGHT,
+  MIDDLE,
+  BUTTON_4,
+  BUTTON_5,
+  ALL,
+}
+```
+
+Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+
+<BaseContinuousGestureConfig />
+<BaseGestureConfig />
+
+## Callbacks
+
+<BaseGestureCallbacks gesture={"Pan"}/>
+<BaseContinuousGestureCallbacks gesture={"Pan"}/>
+
+## Event data
+
+### translationX
+
+```ts
+translationX: number;
+```
+
+Translation of the pan gesture along X axis accumulated over the time of the gesture. The value is expressed in the point units.
+
+### translationY
+
+```ts
+translationY: number;
+```
+
+Translation of the pan gesture along Y axis accumulated over the time of the gesture. The value is expressed in the point units.
+
+### changeX
+
+```ts
+changeX: number;
+```
+
+The horizontal distance moved since the last event frame. This value represents the immediate incremental change in the X axis, rather than the total accumulated distance.
+
+### changeY
+
+```ts
+changeY: number;
+```
+
+The vertical distance moved since the last event frame. This value represents the immediate incremental change in the Y axis, rather than the total accumulated distance.
+
+### velocityX
+
+```ts
+velocityX: number;
+```
+
+Velocity of the pan gesture along the X axis in the current moment. The value is expressed in point units per second.
+
+### velocityY
+
+```ts
+velocityY: number;
+```
+
+Velocity of the pan gesture along the Y axis in the current moment. The value is expressed in point units per second.
+
+### x
+
+```ts
+x: number;
+```
+
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/gestures/gesture-detector). Expressed in point units.
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. The value is expressed in point units. It is recommended to use it instead of [`x`](#x) in cases when the original view can be transformed as an effect of the gesture.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. The value is expressed in point units. It is recommended to use it instead of [`y`](#y) in cases when the original view can be transformed as an effect of the gesture.
+
+### stylusData
+
+```ts
+stylusData: StylusData;
+```
+
+```ts
+interface StylusData {
+  tiltX: number;
+  tiltY: number;
+  azimuthAngle: number;
+  altitudeAngle: number;
+  pressure: number;
+}
+```
+
+Object that contains additional information about `stylus`. It consists of the following fields:
+
+- [`tiltX`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltX) - angle in degrees between the Y-Z plane of the stylus and the screen.
+- [`tiltY`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltY) - angle in degrees between the X-Z plane of the stylus and the screen.
+- [`altitudeAngle`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/altitudeAngle) - angle between stylus axis and the X-Y plane of a device screen.
+- [`azimuthAngle`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/azimuthAngle) - angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis.
+- [`pressure`](https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pressure) - indicates the normalized pressure of the stylus.
+
+<BaseEventData />

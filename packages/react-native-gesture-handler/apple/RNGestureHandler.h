@@ -74,6 +74,7 @@
 @property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
+@property (nonatomic, nullable) NSString *testID;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) RNGestureHandlerActionType actionType;
 @property (nonatomic) BOOL shouldCancelWhenOutside;

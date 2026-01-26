@@ -8,7 +8,7 @@ import {
 export function isComposedGesture<THandlerData, TConfig>(
   gesture: Gesture<THandlerData, TConfig> | ComposedGesture
 ): gesture is ComposedGesture {
-  return 'tags' in gesture;
+  return 'handlerTags' in gesture;
 }
 
 function extractHandlerTags(
@@ -22,12 +22,12 @@ function extractHandlerTags(
 
   if (Array.isArray(otherHandler)) {
     otherTags = otherHandler.flatMap((gesture: Gesture) =>
-      isComposedGesture(gesture) ? gesture.tags : gesture.tag
+      isComposedGesture(gesture) ? gesture.handlerTags : [gesture.handlerTag]
     );
   } else {
     otherTags = isComposedGesture(otherHandler)
-      ? otherHandler.tags
-      : [otherHandler.tag];
+      ? otherHandler.handlerTags
+      : [otherHandler.handlerTag];
   }
 
   return otherTags;

@@ -28,7 +28,7 @@ export type BaseDiscreteGestureConfig<THandlerData, TConfig> = Omit<
 >;
 
 export type SingleGesture<THandlerData, TConfig> = {
-  tag: number;
+  handlerTag: number;
   type: SingleGestureName;
   config: BaseGestureConfig<THandlerData, TConfig>;
   detectorCallbacks: DetectorCallbacks<THandlerData>;
@@ -42,7 +42,7 @@ export type DiscreteSingleGesture<THandlerData, TConfig> = {
 };
 
 export type ComposedGesture = {
-  tags: number[];
+  handlerTags: number[];
   type: ComposedGestureName;
   config: ComposedGestureConfig;
   detectorCallbacks: DetectorCallbacks<unknown>;

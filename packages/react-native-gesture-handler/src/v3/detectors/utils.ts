@@ -21,12 +21,12 @@ export const traverseAndConfigureRelations = (
   // If we are in the leaf node, we want to fill gesture relations arrays with current
   // waitFor and simultaneousHandlers. We also want to configure relations on the native side.
   if (!isComposedGesture(node)) {
-    node.gestureRelations = prepareRelations(node.config, node.tag);
+    node.gestureRelations = prepareRelations(node.config, node.handlerTag);
 
     node.gestureRelations.simultaneousHandlers.push(...simultaneousHandlers);
     node.gestureRelations.waitFor.push(...waitFor);
 
-    NativeProxy.configureRelations(node.tag, {
+    NativeProxy.configureRelations(node.handlerTag, {
       waitFor: node.gestureRelations.waitFor,
       simultaneousHandlers: node.gestureRelations.simultaneousHandlers,
       blocksHandlers: node.gestureRelations.blocksHandlers,
@@ -50,7 +50,9 @@ export const traverseAndConfigureRelations = (
         node.type !== ComposedGestureName.Simultaneous &&
         child.type === ComposedGestureName.Simultaneous
       ) {
-        child.tags.forEach((tag) => simultaneousHandlers.add(tag));
+        child.handlerTags.forEach((handlerTag) =>
+          simultaneousHandlers.add(handlerTag)
+        );
       }
 
       // If we go from a simultaneous gesture to a non-simultaneous gesture,
@@ -60,7 +62,9 @@ export const traverseAndConfigureRelations = (
         node.type === ComposedGestureName.Simultaneous &&
         child.type !== ComposedGestureName.Simultaneous
       ) {
-        child.tags.forEach((tag) => simultaneousHandlers.delete(tag));
+        child.handlerTags.forEach((handlerTag) =>
+          simultaneousHandlers.delete(handlerTag)
+        );
       }
 
       // We will keep the current length of `waitFor` to reset it to previous state
@@ -79,7 +83,9 @@ export const traverseAndConfigureRelations = (
         child.type === ComposedGestureName.Simultaneous &&
         node.type !== ComposedGestureName.Simultaneous
       ) {
-        node.tags.forEach((tag) => simultaneousHandlers.delete(tag));
+        node.handlerTags.forEach((handlerTag) =>
+          simultaneousHandlers.delete(handlerTag)
+        );
       }
 
       // If we go back from a non-simultaneous gesture to a simultaneous gesture,
@@ -89,13 +95,15 @@ export const traverseAndConfigureRelations = (
         child.type !== ComposedGestureName.Simultaneous &&
         node.type === ComposedGestureName.Simultaneous
       ) {
-        node.tags.forEach((tag) => simultaneousHandlers.add(tag));
+        node.handlerTags.forEach((handlerTag) =>
+          simultaneousHandlers.add(handlerTag)
+        );
       }
 
       // If we go back to an exclusive gesture, we want to add the tags of the child gesture to the `waitFor` array.
       // This will allow us to pass exclusive gesture tags to the right subtree of the current node.
       if (node.type === ComposedGestureName.Exclusive) {
-        child.tags.forEach((tag) => waitFor.push(tag));
+        child.handlerTags.forEach((handlerTag) => waitFor.push(handlerTag));
       }
 
       // If we go back from an exclusive gesture to a non-exclusive gesture, we want to reset the `waitFor` array
@@ -111,17 +119,17 @@ export const traverseAndConfigureRelations = (
     // This means that child is a leaf node.
     else {
       // We don't want to mark gesture as simultaneous with itself, so we remove its tag from the set.
-      const hasRemovedTag = simultaneousHandlers.delete(child.tag);
+      const hasRemovedTag = simultaneousHandlers.delete(child.handlerTag);
 
       traverseAndConfigureRelations(child, simultaneousHandlers, waitFor);
 
       if (hasRemovedTag) {
-        simultaneousHandlers.add(child.tag);
+        simultaneousHandlers.add(child.handlerTag);
       }
 
       // In the leaf node, we only care about filling `waitFor` array.
       if (node.type === ComposedGestureName.Exclusive) {
-        waitFor.push(child.tag);
+        waitFor.push(child.handlerTag);
       }
     }
   });
@@ -137,12 +145,17 @@ export function configureRelations<THandlerData, TConfig>(
 
     // If root is simultaneous, we want to add its tags to the set
     if (gesture.type === ComposedGestureName.Simultaneous) {
-      gesture.tags.forEach((tag) => simultaneousHandlers.add(tag));
+      gesture.handlerTags.forEach((handlerTag) =>
+        simultaneousHandlers.add(handlerTag)
+      );
     }
 
     traverseAndConfigureRelations(gesture, simultaneousHandlers);
   } else {
-    NativeProxy.configureRelations(gesture.tag, gesture.gestureRelations);
+    NativeProxy.configureRelations(
+      gesture.handlerTag,
+      gesture.gestureRelations
+    );
   }
 }
 

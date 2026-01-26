@@ -112,7 +112,7 @@ it('sends events with additional data to handlers', () => {
 ## getByGestureTestId(testID)
 
 Returns opaque data type associated with gesture. Gesture is found via `testID` attribute in rendered
-components (see [`withTestID` method](/docs/gestures/pan-gesture#withrefref)).
+components (see [`testID`](/docs/gestures/use-pan-gesture#testid)).
 
 ### Arguments
 

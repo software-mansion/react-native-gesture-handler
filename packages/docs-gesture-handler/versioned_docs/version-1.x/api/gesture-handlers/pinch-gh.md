@@ -5,7 +5,7 @@ sidebar_label: Pinch
 ---
 
 A continuous gesture handler that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
-The handler [activates](/docs/under-the-hood/state#active) when fingers are placed on the screen and change their position.
+The handler [activates](/docs/1.x/state#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
 
 The distance between the fingers is reported as a scale factor. At the beginning of the gesture, the scale factor is 1.0. As the distance between the two fingers increases, the scale factor increases proportionally.
