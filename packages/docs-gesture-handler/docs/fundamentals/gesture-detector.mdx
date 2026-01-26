@@ -5,6 +5,9 @@ sidebar_label: Gesture detectors
 sidebar_position: 3
 ---
 
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+
 ## Gesture Detector
 
 The `GestureDetector` is a key component of RNGH3. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
@@ -49,7 +52,19 @@ In RNGH3, `GestureDetector` is a standalone host component. Depending on your vi
 
 `VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
 
-```js
+### Known use cases
+
+Here are some of the most common use cases for virtual gesture detectors.
+
+#### SVG
+
+You can combine `VirtualGestureDetector` with `react-native-svg` to add gesture handling to individual SVG elements.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[10, 45]}
+src={`
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
@@ -107,7 +122,66 @@ const styles = StyleSheet.create({
     backgroundColor: '#b58df1',
   },
 });
-```
+`}/>
+
+
+#### Text
+
+You can use `VirtualGestureDetector` to add gesture handling to specific parts of a `Text` component.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[8, 37]}
+src={`
+import * as React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import {
+  GestureHandlerRootView,
+  InterceptingGestureDetector,
+  VirtualGestureDetector,
+  useTapGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const outerTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped on text!');
+    },
+  });
+
+  const nestedTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped on nested part!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <InterceptingGestureDetector gesture={outerTap}>
+        <Text style={{ fontSize: 18, textAlign: 'center' }}>
+          Nested text
+          <VirtualGestureDetector gesture={nestedTap}>
+            <Text style={{ fontSize: 24, color: '#001A72' }}>
+              try tapping on this part.
+            </Text>
+          </VirtualGestureDetector>
+          This part is not special :c
+        </Text>
+      </InterceptingGestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+});
+`}/>
+
 
 ## Properties
 
