@@ -86,7 +86,7 @@ In RNGH3, `GestureDetector` is a standalone native component. Depending on your 
 
 ### InterceptingGestureDetector
 
-`InterceptingGestureDetector` functions like a standard `GestureDetector`, but adds support for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the [`gesture`](#gesture) property is optional.
+`InterceptingGestureDetector` functions similarly to a standard `GestureDetector`, but it can also act as a proxy for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the [`gesture`](#gesture) property is optional.
 
 ### VirtualGestureDetector
 
