@@ -22,7 +22,7 @@ export function useGesture<THandlerData, TConfig>(
   type: SingleGestureName,
   config: BaseGestureConfig<THandlerData, TConfig>
 ): SingleGesture<THandlerData, TConfig> {
-  const tag = useMemo(() => getNextHandlerTag(), []);
+  const handlerTag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
 
   if (config.disableReanimated !== disableReanimated) {
@@ -41,7 +41,7 @@ export function useGesture<THandlerData, TConfig>(
     onGestureHandlerEvent,
     onReanimatedEvent,
     onGestureHandlerAnimatedEvent,
-  } = useGestureCallbacks(tag, config);
+  } = useGestureCallbacks(handlerTag, config);
 
   if (config.shouldUseReanimatedDetector && !onReanimatedEvent) {
     throw new Error(tagMessage('Failed to create reanimated event handlers.'));
@@ -55,23 +55,23 @@ export function useGesture<THandlerData, TConfig>(
           requireToFail: config.requireToFail,
           block: config.block,
         },
-        tag
+        handlerTag
       ),
-    [tag, config.simultaneousWith, config.requireToFail, config.block]
+    [handlerTag, config.simultaneousWith, config.requireToFail, config.block]
   );
 
-  const currentGestureRef = useRef({ type: '', tag: -1 });
+  const currentGestureRef = useRef({ type: '', handlerTag: -1 });
   if (
-    currentGestureRef.current.tag !== tag ||
+    currentGestureRef.current.handlerTag !== handlerTag ||
     currentGestureRef.current.type !== (type as string)
   ) {
-    currentGestureRef.current = { type, tag };
-    NativeProxy.createGestureHandler(type, tag, {});
+    currentGestureRef.current = { type, handlerTag };
+    NativeProxy.createGestureHandler(type, handlerTag, {});
   }
 
   const gesture = useMemo(
     () => ({
-      tag,
+      handlerTag,
       type,
       config,
       detectorCallbacks: {
@@ -100,7 +100,7 @@ export function useGesture<THandlerData, TConfig>(
       gestureRelations,
     }),
     [
-      tag,
+      handlerTag,
       type,
       config,
       onGestureHandlerEvent,
@@ -112,24 +112,24 @@ export function useGesture<THandlerData, TConfig>(
 
   useEffect(() => {
     return () => {
-      NativeProxy.dropGestureHandler(tag);
+      NativeProxy.dropGestureHandler(handlerTag);
       scheduleFlushOperations();
     };
-  }, [type, tag]);
+  }, [type, handlerTag]);
 
   useEffect(() => {
     const preparedConfig = prepareConfigForNativeSide(type, config);
-    NativeProxy.setGestureHandlerConfig(tag, preparedConfig);
+    NativeProxy.setGestureHandlerConfig(handlerTag, preparedConfig);
     scheduleFlushOperations();
 
-    bindSharedValues(config, tag);
-    registerGesture(tag, gesture);
+    bindSharedValues(config, handlerTag);
+    registerGesture(handlerTag, gesture);
 
     return () => {
-      unbindSharedValues(config, tag);
-      unregisterGesture(tag);
+      unbindSharedValues(config, handlerTag);
+      unregisterGesture(handlerTag);
     };
-  }, [tag, config, type, gesture]);
+  }, [handlerTag, config, type, gesture]);
 
   return gesture;
 }

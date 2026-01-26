@@ -31,6 +31,7 @@
     "!**/__mocks__",
     "android/build.gradle",
     "android/gradle.properties",
+    "android/CMakeLists.txt",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/src/main/jni/",
