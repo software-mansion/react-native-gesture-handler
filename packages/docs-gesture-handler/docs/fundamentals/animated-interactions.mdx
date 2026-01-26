@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
 
 ## useNativeDriver
 
-When using `Animated.event` with `useNativeDriver` set to `false`, it is important to set [`disableReanimated`](/docs/fundamentals/reanimated-interactions#disablereanimated) to `true` in the gesture configuration. 
+When using `Animated.event` with `useNativeDriver` set to `false`, it is required to set [`disableReanimated`](/docs/fundamentals/reanimated-interactions#disablereanimated) to `true` in the gesture configuration. 
 
 Mapping of `Animated.event` depends on the value of `useNativeDriver` property. When set to `true`, event data can be accessed through `nativeEvent.handlerData` property:
 
