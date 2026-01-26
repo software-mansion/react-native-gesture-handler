@@ -34,18 +34,32 @@ void RNGestureHandlerDetectorShadowNode::initialize() {
 }
 
 void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
-  YogaLayoutableShadowNode::layout(layoutContext);
   // TODO: consider allowing more than one child and doing bounding box
   react_native_assert(getChildren().size() == 1);
 
   auto child = std::static_pointer_cast<const YogaLayoutableShadowNode>(
       getChildren()[0]);
+  auto childWithProtectedAccess =
+      std::static_pointer_cast<const RNGestureHandlerDetectorShadowNode>(child);
+
+  auto shouldSkipCustomLayout =
+      !childWithProtectedAccess->yogaNode_.getHasNewLayout();
+
+  // Do default layout after reading the new layout flag from the child.
+  // Default layout will reset the flag on the child nodes.
+  YogaLayoutableShadowNode::layout(layoutContext);
+
+  // The child node did not have its layout changed, we can reuse previous
+  // values
+  if (shouldSkipCustomLayout) {
+    react_native_assert(previousLayoutMetrics_.has_value());
+    setLayoutMetrics(previousLayoutMetrics_.value());
+    return;
+  }
 
   child->ensureUnsealed();
   auto mutableChild = std::const_pointer_cast<YogaLayoutableShadowNode>(child);
 
-  // TODO: figure out the correct way to setup metrics between detector and
-  // the child
   auto metrics = child->getLayoutMetrics();
   metrics.frame = child->getLayoutMetrics().frame;
   setLayoutMetrics(metrics);
