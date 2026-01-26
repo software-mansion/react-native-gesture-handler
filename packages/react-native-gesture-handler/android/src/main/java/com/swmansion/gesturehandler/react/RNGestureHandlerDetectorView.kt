@@ -164,12 +164,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       child.getChildAt(0).id
       // TODO: figure out how to do it correctly
     } else if (child is ViewGroup && child.isNotEmpty()) {
-      val grandChild = child.getChildAt(0)
-      if (grandChild is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
-        grandChild.id
-      } else {
-        child.id
-      }
+      child.tryFindGestureHandlerButton()?.id ?: child.id
     } else {
       child.id
     }
@@ -222,4 +217,15 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }.filterNotNull()
 
   private fun ReadableArray.toIntList(): List<Int> = List(size()) { getInt(it) }
+
+  private fun ViewGroup.tryFindGestureHandlerButton(): RNGestureHandlerButtonViewManager.ButtonViewGroup? {
+    if (isNotEmpty()) {
+      val child = getChildAt(0)
+      if (child is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+        return child
+      }
+    }
+
+    return null
+  }
 }
