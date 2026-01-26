@@ -442,7 +442,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun recordHandlerIfNotPresent(handler: GestureHandler, view: View) {
+  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?) {
     if (gestureHandlers.contains(handler)) {
       return
     }
