@@ -7,11 +7,9 @@ sidebar_position: 3
 
 ## Gesture Detector
 
-`GestureDetector` is the core component of RNGH3. Unlike in previous version, it no longer manages the lifecycle of gestures directly. It supports recognizing multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition).
+The `GestureDetector` is a key component of RNGH3. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition).
 
-To facilitate a smooth migration, the gesture property accepts both gestures created using the hooks API and gestures created using the builder pattern.
-
-When using RNGH3 gestures, you can also integrate them directly with the [Animated API](https://reactnative.dev/docs/animated).
+When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated).
 
 ### Example
 
@@ -21,7 +19,11 @@ When using RNGH3 gestures, you can also integrate them directly with the [Animat
 import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
 
 export default function App() {
-  const tap = useTapGesture({});
+  const tap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tap!');
+    },
+  });
 
   return (
     <GestureHandlerRootView>
@@ -82,7 +84,7 @@ export default function App() {
 
 ## Virtual Detectors
 
-In RNGH3, `GestureDetector` is a standalone native component. Depending on your view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualNativeDetector`.
+In RNGH3, `GestureDetector` is a standalone host component. Depending on your view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualNativeDetector`.
 
 ### InterceptingGestureDetector
 
@@ -90,7 +92,7 @@ In RNGH3, `GestureDetector` is a standalone native component. Depending on your 
 
 ### VirtualGestureDetector
 
-`VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a native component, it does not interfere with the native view hierarchy. This allows you to attach gestures without disrupting functionality that depends on that hierarchy.
+`VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
 
 ### Example
 
