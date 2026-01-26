@@ -24,7 +24,7 @@ const GH = require('../../../common_assets/hoverable_icons/gh.png');
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const SCREENS = require('../../../common_assets/hoverable_icons/screens.png');
 
-const images = [GH, REA, SCREENS, SVG, FREEZE];
+const images = [REA, GH, SCREENS, SVG, FREEZE];
 const SIZE = 100;
 
 function BoxReanimated(props: { source: any }) {
