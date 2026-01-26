@@ -7,7 +7,7 @@ sidebar_position: 4
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
-`GestureDetector` will decide whether to use [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to process provided gestures based on their configuration. If any of the callbacks is a [worklet](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) and Reanimated is not explicitly turned off, tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.
+`GestureDetector` will decide whether to use [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to process provided gestures based on their configuration. If any of the callbacks is a [worklet](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) and Reanimated is not explicitly turned off, tools provided by the Reanimated will be utilized, bringing the ability to handle gestures synchronously on the main thread.
 
 ## Automatic [workletization](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#to-workletize) of gesture callbacks
 
