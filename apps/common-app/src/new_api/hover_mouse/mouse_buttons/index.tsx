@@ -28,10 +28,8 @@ export default function Buttons() {
   ];
 
   return (
-    <View>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.scrollContent}>
+    <View style={styles.container}>
+      <ScrollView>
         <View style={styles.row}>
           {TEST_DATA.map((test) => (
             <Tests
@@ -112,17 +110,19 @@ function Tests({ name, color, mouseButton, feedbackRef }: TestsProps) {
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
+  container: {
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-around',
     padding: 20,
   },
   testColumn: {
     alignItems: 'center',
     marginHorizontal: 10,
+    marginBottom: 30,
   },
   title: {
     fontSize: 16,
