@@ -149,7 +149,7 @@ Triggers [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) callback
 deactivate: (handlerTag: number) => void;
 ```
 
-Triggers first [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate), then [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callbacks on gesture with specified `handlerTag`.
+If the gesture had activated, it triggers the [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback. It also triggers the [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on gesture with the specified `handlerTag`.
 
 ### fail
 
