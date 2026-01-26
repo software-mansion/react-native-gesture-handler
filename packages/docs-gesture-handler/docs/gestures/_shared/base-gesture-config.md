@@ -78,7 +78,16 @@ Default value is `true`.
 runOnJS: boolean | SharedValue<boolean>;
 ```
 
-When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
+When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for switching between UI thread (when set to `false`) and JS thread (when set to `true`). **This property can be modified throughout the gesture's lifecycle**.
+Defaults to `false`.
+
+### disableReanimated
+
+```ts
+disableReanimated: boolean | SharedValue<boolean>;
+```
+
+When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not. **This property cannot be modified throught the gesture's lifecycle**.
 Defaults to `false`.
 
 ### simultaneousWith

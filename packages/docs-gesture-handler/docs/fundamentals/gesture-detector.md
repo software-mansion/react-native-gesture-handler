@@ -15,10 +15,6 @@ When using hook API, you can also integrate it directly with the [Animated API](
 Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in unexpected behavior.
 :::
 
-### Example
-
-#### Simple example
-
 ```js
 import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
 
@@ -41,51 +37,6 @@ export default function App() {
 }
 ```
 
-#### Usage with Animated API
-
-```js
-import * as React from 'react';
-import { Animated, useAnimatedValue } from 'react-native';
-import {
-  GestureHandlerRootView,
-  GestureDetector,
-  usePanGesture,
-} from 'react-native-gesture-handler';
-
-export default function App() {
-  const value = useAnimatedValue(0);
-  const event = Animated.event(
-    [{ nativeEvent: { handlerData: { translationX: value } } }],
-    {
-      useNativeDriver: true,
-    }
-  );
-
-  const gesture = usePanGesture({
-    onUpdate: event,
-  });
-
-  return (
-    <GestureHandlerRootView>
-      // highlight-next-line
-      <GestureDetector gesture={gesture}>
-        <Animated.View
-          style={[
-            {
-              width: 150,
-              height: 150,
-              backgroundColor: '#b58df1',
-            },
-            { transform: [{ translateX: value }] },
-          ]}
-        />
-        // highlight-next-line
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-```
-
 ## Virtual Detectors
 
 In RNGH3, `GestureDetector` is a standalone host component. Depending on your view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualNativeDetector`.
@@ -97,8 +48,6 @@ In RNGH3, `GestureDetector` is a standalone host component. Depending on your vi
 ### VirtualGestureDetector
 
 `VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
-
-### Example
 
 ```js
 import React from 'react';

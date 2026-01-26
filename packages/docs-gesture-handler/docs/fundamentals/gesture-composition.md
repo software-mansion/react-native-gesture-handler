@@ -2,7 +2,7 @@
 id: gesture-composition
 title: Gesture composition & interactions
 sidebar_label: Gesture composition & interactions
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 RNGH3 simplifies gesture interaction through dedicated composition hooks and configuration properties. To choose the right approach, simply ask: Are all the gestures attached to the same component?
