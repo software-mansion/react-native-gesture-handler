@@ -12,10 +12,16 @@ import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
 The `GestureDetector` is a key component of RNGH3. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
 
-When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated).
+When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated). More on that can be found in [Integreation with Animated](/docs/fundamentals/animated-interactions) section.
 
-:::danger Nesting Gesture Detectors
+:::danger
+
+####  Nesting Gesture Detectors
+
 Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in unexpected behavior.
+
+#### Reusing Gestures
+Using the same instance of a gesture across multiple Gesture Detectors may result in unexpected behavior.
 :::
 
 ```js
@@ -216,29 +222,3 @@ enableContextMenu: boolean;
 ```
 
 Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
-
-## Remarks
-
-- Using the same instance of a gesture across multiple Gesture Detectors is not possible. Have a look at the code below:
-
-  ```jsx
-  export default function Example() {
-    const pan = usePanGesture({});
-
-    return (
-      <View>
-        // highlight-next-line
-        <GestureDetector gesture={pan}>
-          <View>
-            // highlight-next-line
-            <GestureDetector gesture={pan}>
-              <View />
-            </GestureDetector>
-          </View>
-        </GestureDetector>
-      </View>
-    );
-  }
-  ```
-
-  This example will throw an error, because the same instance of `Pan` is being used in two different Gesture Detectors.
