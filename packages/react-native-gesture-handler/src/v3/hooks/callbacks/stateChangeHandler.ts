@@ -38,6 +38,11 @@ export function getStateChangeHandler<THandlerData>(
       (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
       state === State.ACTIVE
     ) {
+      // If the native recognizer skipped the BEGAN state, we still need to call the callback
+      if (oldState === State.UNDETERMINED) {
+        runCallback(CALLBACK_TYPE.BEGAN, callbacks, event);
+      }
+
       runCallback(CALLBACK_TYPE.START, callbacks, event);
     } else if (oldState !== state && state === State.END) {
       if (oldState === State.ACTIVE) {
