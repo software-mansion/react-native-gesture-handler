@@ -38,10 +38,6 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
   // TODO: consider allowing more than one child and doing bounding box
   react_native_assert(getChildren().size() == 1);
 
-  if (!this->yogaNode_.getHasNewLayout()) {
-    return;
-  }
-
   auto child = std::static_pointer_cast<const YogaLayoutableShadowNode>(
       getChildren()[0]);
 
@@ -51,6 +47,7 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
   // TODO: figure out the correct way to setup metrics between detector and
   // the child
   auto metrics = child->getLayoutMetrics();
+  metrics.frame = child->getLayoutMetrics().frame;
   setLayoutMetrics(metrics);
 
   auto childmetrics = child->getLayoutMetrics();
