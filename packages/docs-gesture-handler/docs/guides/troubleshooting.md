@@ -10,7 +10,7 @@ Thanks for giving this library a try! We are sorry that you might have encounter
 
 1. Search over the [issues on Github](https://github.com/software-mansion/react-native-gesture-handler/issues). There is a chance someone had this problem in the past and it has been resolved!
 2. When sure your problem hasn't been reported or was reported but the proposed solution doesn't work for you please follow [our issue reporting guidelines](#reporting-issues).
-3. You can try seeking help on [Software Mansion Discord](discord.com/invite/VemJ4df8Yr).
+3. You can try seeking help on [Software Mansion Discord](https://discord.com/invite/VemJ4df8Yr).
 4. If you feel like reading the source code I highly recommend it, as this is by far the best resource and gives you the most up to date insights into how the library works and what might be causing the bug.
 5. If you managed to find the solution consider [contributing](/docs/#contributing) a fix or update our documentation to make this information easier to find for the others in the future.
 
@@ -113,7 +113,7 @@ In the above cases, you should add a [`"worklet";`](https://docs.swmansion.com/r
 ```jsx
 const callback = () => {
   // highlight-next-line
-  "worklet";
+  'worklet';
   console.log(_WORKLET);
 };
 const gesture = Gesture.Tap().onBegin(callback);
@@ -122,7 +122,7 @@ const gesture = Gesture.Tap().onBegin(callback);
 ```jsx
 const callback = () => {
   // highlight-next-line
-  "worklet";
+  'worklet';
   console.log(_WORKLET);
 };
 const gesture = Gesture.Tap();
