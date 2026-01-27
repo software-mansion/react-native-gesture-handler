@@ -1,4 +1,5 @@
 #import "RNGestureHandlerDetector.h"
+#import "RNGestureHandlerButtonComponentView.h"
 #import "RNGestureHandlerDetectorComponentDescriptor.h"
 #import "RNGestureHandlerModule.h"
 
@@ -9,6 +10,7 @@
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
 
+#import <React/RCTScrollViewComponentView.h>
 #include <unordered_map>
 
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
@@ -295,10 +297,16 @@
 
   RNGHUIView *view = self.subviews[0];
 
+  // TODO: figure out how to do it correctly
   if ([view isKindOfClass:[RCTViewComponentView class]]) {
     RCTViewComponentView *componentView = (RCTViewComponentView *)view;
     if (componentView.contentView != nil) {
       view = componentView.contentView;
+    } else {
+      auto buttonView = [self tryFindGestureHandlerButton:view];
+      if (buttonView != nil) {
+        view = buttonView;
+      }
     }
   }
 
@@ -320,6 +328,25 @@
     [[handlerManager registry] detachHandlerWithTag:handlerTag];
     [_attachedHandlers removeObject:handlerTag];
   }
+}
+
+- (RNGHUIView *)tryFindGestureHandlerButton:(RNGHUIView *)inView
+{
+  if (inView.subviews.count == 0) {
+    return nil;
+  }
+  
+  auto view = inView.subviews[0];
+  
+  if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
+    RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+    
+    if (componentView.contentView != nil) {
+      return componentView.contentView;
+    }
+  }
+
+  return nil;
 }
 
 @end
