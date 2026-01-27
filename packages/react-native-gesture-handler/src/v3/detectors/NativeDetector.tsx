@@ -8,6 +8,7 @@ import {
   nativeDetectorStyles,
 } from './common';
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
+import { Platform } from 'react-native';
 
 export function NativeDetector<THandlerData, TConfig>({
   gesture,
@@ -31,6 +32,27 @@ export function NativeDetector<THandlerData, TConfig>({
       : [gesture.handlerTag];
   }, [gesture]);
 
+  // On web, we're triggering Reanimated callbacks ourselves, based on the type.
+  // To handle this properly, we need to provide all three callbacks, so we set
+  // all three to the Reanimated event handler.
+  // On native, Reanimated handles routing internally based on the event names
+  // passed to the useEvent hook. We only need to pass it once, so that Reanimated
+  // can setup its internal listeners.
+  const reanimatedHandlers =
+    Platform.OS === 'web'
+      ? {
+          onGestureHandlerReanimatedEvent:
+            gesture.detectorCallbacks.reanimatedEventHandler,
+          onGestureHandlerReanimatedStateChange:
+            gesture.detectorCallbacks.reanimatedEventHandler,
+          onGestureHandlerReanimatedTouchEvent:
+            gesture.detectorCallbacks.reanimatedEventHandler,
+        }
+      : {
+          onGestureHandlerReanimatedEvent:
+            gesture.detectorCallbacks.reanimatedEventHandler,
+        };
+
   return (
     <NativeDetectorComponent
       touchAction={touchAction}
@@ -38,30 +60,26 @@ export function NativeDetector<THandlerData, TConfig>({
       enableContextMenu={enableContextMenu}
       pointerEvents={'box-none'}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerStateChange={
-        gesture.detectorCallbacks.onGestureHandlerStateChange
-      }
+      onGestureHandlerStateChange={gesture.detectorCallbacks.jsEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerEvent={gesture.detectorCallbacks.onGestureHandlerEvent}
+      onGestureHandlerEvent={gesture.detectorCallbacks.jsEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
-      onGestureHandlerTouchEvent={
-        gesture.detectorCallbacks.onGestureHandlerTouchEvent
-      }
+      onGestureHandlerTouchEvent={gesture.detectorCallbacks.jsEventHandler}
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedStateChange={
-        gesture.detectorCallbacks.onReanimatedStateChange
+        reanimatedHandlers.onGestureHandlerReanimatedStateChange
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedEvent={
-        gesture.detectorCallbacks.onReanimatedUpdateEvent
+        reanimatedHandlers.onGestureHandlerReanimatedEvent
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerReanimatedTouchEvent={
-        gesture.detectorCallbacks.onReanimatedTouchEvent
+        reanimatedHandlers.onGestureHandlerReanimatedTouchEvent
       }
       // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
       onGestureHandlerAnimatedEvent={
-        gesture.detectorCallbacks.onGestureHandlerAnimatedEvent
+        gesture.detectorCallbacks.animatedEventHandler
       }
       moduleId={globalThis._RNGH_MODULE_ID}
       handlerTags={handlerTags}

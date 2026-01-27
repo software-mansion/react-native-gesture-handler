@@ -20,3 +20,5 @@ export {
   FlatList,
   RefreshControl,
 } from './GestureComponents';
+
+export { default as Pressable } from './Pressable';
