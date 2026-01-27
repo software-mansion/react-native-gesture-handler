@@ -5,6 +5,7 @@ import {
   GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
+import { NativeProxy } from '../../v3/NativeProxy';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
@@ -80,6 +81,7 @@ let Reanimated:
 
 try {
   Reanimated = require('react-native-reanimated');
+  NativeProxy.setReanimatedAvailability();
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
