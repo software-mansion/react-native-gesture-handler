@@ -9,6 +9,8 @@ import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
 Using hook API allows for smooth integration with the [Animated API](https://reactnative.dev/docs/animated) by allowing for passing an `Animated.event` as the argument to the `onUpdate` callback. The event mapping of `Animated.event` depends on the `useNativeDriver` property.
 
+When using Animated API, remember to set `useAnimated` property to `true`.
+
 :::danger Mixing Reanimated and Animated
 It is not possible to mix `Reanimated` and `Animated` within any of the [gesture detectors](/docs/fundamentals/gesture-detectors).
 :::
@@ -16,7 +18,7 @@ It is not possible to mix `Reanimated` and `Animated` within any of the [gesture
 <CollapsibleCode 
 label="Show full example"
 expandedLabel="Hide full example"
-lineBounds={[8, 31]}
+lineBounds={[8, 33]}
 src={`
 import * as React from 'react';
 import { Animated, StyleSheet, useAnimatedValue } from 'react-native';
@@ -39,6 +41,8 @@ export default function App() {
   const gesture = usePanGesture({
     // highlight-next-line
     onUpdate: event,
+    // highlight-next-line
+    useAnimated: true,
   });
 
   return (
