@@ -49,7 +49,6 @@ void RNGestureHandlerButtonWrapperShadowNode::appendChild(
 
 void RNGestureHandlerButtonWrapperShadowNode::layout(
     LayoutContext layoutContext) {
-  YogaLayoutableShadowNode::layout(layoutContext);
   react_native_assert(getChildren().size() == 1);
   react_native_assert(getChildren()[0]->getChildren().size() == 1);
 
@@ -58,6 +57,15 @@ void RNGestureHandlerButtonWrapperShadowNode::layout(
   auto grandChild = std::static_pointer_cast<const YogaLayoutableShadowNode>(
       child->getChildren()[0]);
 
+  auto gradChildWithProtectedAccess =
+      std::static_pointer_cast<const RNGestureHandlerButtonWrapperShadowNode>(
+          grandChild);
+
+  auto shouldSkipCustomLayout =
+      !gradChildWithProtectedAccess->yogaNode_.getHasNewLayout();
+
+  YogaLayoutableShadowNode::layout(layoutContext);
+
   child->ensureUnsealed();
   grandChild->ensureUnsealed();
 
@@ -65,9 +73,21 @@ void RNGestureHandlerButtonWrapperShadowNode::layout(
   auto mutableGrandChild =
       std::const_pointer_cast<YogaLayoutableShadowNode>(grandChild);
 
-  // TODO: figure out the correct way to setup metrics between button wrapper
-  // and the child
+  // The grand child node did not have its layout changed, we can reuse previous
+  // values
+  if (shouldSkipCustomLayout) {
+    react_native_assert(previousGrandChildLayoutMetrics_.has_value());
+    mutableChild->setLayoutMetrics(previousGrandChildLayoutMetrics_.value());
+
+    auto metricsNoOrigin = previousGrandChildLayoutMetrics_.value();
+    metricsNoOrigin.frame.origin = Point{};
+    mutableGrandChild->setLayoutMetrics(metricsNoOrigin);
+    return;
+  }
+
   auto metrics = grandChild->getLayoutMetrics();
+  previousGrandChildLayoutMetrics_ = metrics;
+
   mutableChild->setLayoutMetrics(metrics);
 
   auto metricsNoOrigin = grandChild->getLayoutMetrics();

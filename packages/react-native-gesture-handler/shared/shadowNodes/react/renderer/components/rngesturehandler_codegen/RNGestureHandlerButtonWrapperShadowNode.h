@@ -34,6 +34,12 @@ class RNGestureHandlerButtonWrapperShadowNode final
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment)
       : ConcreteViewShadowNode(sourceShadowNode, fragment) {
+    const auto &sourceWrapperNode =
+        static_cast<const RNGestureHandlerButtonWrapperShadowNode &>(
+            sourceShadowNode);
+    previousGrandChildLayoutMetrics_ =
+        sourceWrapperNode.previousGrandChildLayoutMetrics_;
+
     initialize();
   }
 
@@ -43,6 +49,8 @@ class RNGestureHandlerButtonWrapperShadowNode final
  private:
   void initialize();
   void prepareChildren();
+
+  std::optional<LayoutMetrics> previousGrandChildLayoutMetrics_;
 };
 
 } // namespace facebook::react
