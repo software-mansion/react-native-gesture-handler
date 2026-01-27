@@ -119,11 +119,11 @@ export default function App() {
 
 ## Disabling Reanimated
 
-Gestures created with the hook API have `Reanimated` enabled by default, meaning all callbacks are executed on the UI thread. There are two methods available to disable this behavior for a specific gesture.
+Gestures created with the hook API have `Reanimated` integration enabled by default, meaning all callbacks are executed on the UI thread. There are two methods available to disable this behavior for a specific gesture.
 
 ### disableReanimated
 
-When `disableReanimated` is set to `true` in the gesture configuration, `Reanimated` will be completely turned off for that gesture throughout its entire lifecycle. This setting eliminates all interaction points with `Reanimated`, thereby reducing any potential overhead. Default value for this property is `false`.
+When `disableReanimated` is set to `true` in the gesture configuration, `Reanimated` integration will be completely turned off for that gesture throughout its entire lifecycle. This setting eliminates all interaction points with `Reanimated`, thereby reducing any potential overhead. Default value for this property is `false`.
 
 This property cannot be changed dynamically during the gesture's lifecycle.
 
