@@ -5,6 +5,7 @@ import {
   GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
+import { NativeProxy } from '../../v3/NativeProxy';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
@@ -80,6 +81,7 @@ let Reanimated:
 
 try {
   Reanimated = require('react-native-reanimated');
+  NativeProxy.setReanimatedAvailable(true);
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
@@ -90,6 +92,7 @@ if (!Reanimated?.useSharedValue) {
   // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
   // reset the module to undefined so we can fallback to the default implementation
   Reanimated = undefined;
+  NativeProxy.setReanimatedAvailable(false);
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {
