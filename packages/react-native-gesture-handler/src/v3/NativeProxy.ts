@@ -51,7 +51,7 @@ export const NativeProxy = {
       RNGestureHandlerModule.configureRelations(handlerTag, relations);
     });
   },
-  setReanimatedAvailability: () => {
-    RNGestureHandlerModule.setReanimatedAvailability();
+  setReanimatedAvailable: (isAvailable: boolean) => {
+    RNGestureHandlerModule.setReanimatedAvailable(isAvailable);
   },
 } as const;

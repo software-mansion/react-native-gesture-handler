@@ -81,7 +81,7 @@ let Reanimated:
 
 try {
   Reanimated = require('react-native-reanimated');
-  NativeProxy.setReanimatedAvailability();
+  NativeProxy.setReanimatedAvailable(true);
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
@@ -92,6 +92,7 @@ if (!Reanimated?.useSharedValue) {
   // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
   // reset the module to undefined so we can fallback to the default implementation
   Reanimated = undefined;
+  NativeProxy.setReanimatedAvailable(false);
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {

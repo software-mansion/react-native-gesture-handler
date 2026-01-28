@@ -186,9 +186,9 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)setReanimatedAvailability
+- (void)setReanimatedAvailable:(BOOL)isAvailable
 {
-  _isReanimatedAvailable = YES;
+  _isReanimatedAvailable = isAvailable;
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag

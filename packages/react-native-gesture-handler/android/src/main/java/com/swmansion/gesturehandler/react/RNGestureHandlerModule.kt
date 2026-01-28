@@ -125,8 +125,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   override fun flushOperations() = Unit
 
   @ReactMethod
-  override fun setReanimatedAvailability() {
-    isReanimatedAvailable = true
+  override fun setReanimatedAvailable(isAvailable: Boolean) {
+    isReanimatedAvailable = isAvailable
   }
 
   @DoNotStrip
