@@ -30,6 +30,12 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [_gestureHandler reset];
   [super touchesBegan:touches withEvent:event];
+
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   // self.numberOfTouches doesn't work for this because in case than one finger is required,
