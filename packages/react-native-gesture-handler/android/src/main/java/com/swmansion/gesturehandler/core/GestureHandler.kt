@@ -223,6 +223,12 @@ open class GestureHandler {
 
   private fun isTrackingPointer(pointerId: Int) = trackedPointerIDs[pointerId] != -1
 
+  /**
+   * Controls whether adapted events should preserve original Android pointer IDs
+   * instead of remapping them to local 0-based IDs.
+   */
+  protected open fun shouldPreserveOriginalPointerIds(): Boolean = false
+
   private fun needAdapt(event: MotionEvent): Boolean {
     if (event.pointerCount != trackedPointersIDsCount) {
       return true
@@ -269,6 +275,7 @@ open class GestureHandler {
       }
     }
     initPointerProps(trackedPointersIDsCount)
+    val preserveOriginalIds = shouldPreserveOriginalPointerIds()
     var count = 0
     val deltaX = event.rawX - event.x
     val deltaY = event.rawY - event.y
@@ -279,7 +286,11 @@ open class GestureHandler {
       val origPointerId = event.getPointerId(index)
       if (trackedPointerIDs[origPointerId] != -1) {
         event.getPointerProperties(index, pointerProps[count])
-        pointerProps[count]!!.id = trackedPointerIDs[origPointerId]
+        pointerProps[count]!!.id = if (preserveOriginalIds) {
+          origPointerId
+        } else {
+          trackedPointerIDs[origPointerId]
+        }
         event.getPointerCoords(index, pointerCoords[count])
         if (index == actionIndex) {
           action = action or (count shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
