@@ -87,7 +87,7 @@ If set to `true`, callbacks will be executed on JS runtime. Can be changed dynam
 **Requires `react-native-reanimated`**
 
 ```ts
-disableReanimated: boolean | SharedValue<boolean>;
+disableReanimated: boolean;
 ```
 
 If set to `true`, the gesture will ignore any interaction with `Reanimated`. This property cannot be changed during the gesture's lifecycle. For more details, see the [disableReanimated](/docs/fundamentals/reanimated-interactions#disablereanimated) section.
@@ -121,6 +121,14 @@ block: Gesture | Gesture[]
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
 **IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition).[`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+
+### useAnimated
+
+```ts
+useAnimated: boolean;
+```
+
+Setting this property is set to `true` ensures that the [Animated API](/docs/fundamentals/animated-interactions) functions correctly when `useNativeDriver` is set to `false`. The default value is set to `false`.
 
 ### activeCursor
 
