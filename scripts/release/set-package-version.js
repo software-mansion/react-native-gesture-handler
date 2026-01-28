@@ -51,7 +51,7 @@ function getNextPreReleaseVersion(releaseType, version) {
     const targetVersion = `${version}-${releaseType}.${dotIndex}`;
     
     try {
-      // if the version is already published, increment the patch version and try again
+      // if the version is already published, increment the pre-release sequence (rc/beta number) and try again
       getPackageVersionByTag('react-native-gesture-handler', targetVersion);
       dotIndex++;
     } catch (error) {
@@ -62,7 +62,7 @@ function getNextPreReleaseVersion(releaseType, version) {
 
 function getVersion(releaseType, preReleaseVersion = null) {
   if (releaseType === ReleaseType.COMMITLY) {
-    const [major, minor] = getLatestVersion()
+    const [major, minor] = getLatestVersion();
 
     const currentSHA = execSync('git rev-parse HEAD').toString().trim();
     const now = new Date();
@@ -109,7 +109,7 @@ function setPackageVersion() {
     }
   }
 
-  assert([isCommitly, isBeta, isReleaseCandidate].filter(Boolean).length <= 1, 'Release cannot be commitly, beta, and release candidate at the same time');
+  assert([isCommitly, isBeta, isReleaseCandidate].filter(Boolean).length <= 1, 'Release flags --commitly, --beta, and --rc are mutually exclusive; specify at most one');
   assert(version === null || isBeta || isReleaseCandidate, 'Version should not be provided for stable nor commitly releases');
   assert(version !== null || (!isBeta && !isReleaseCandidate), 'Version must be provided for beta and release candidate releases');
 
