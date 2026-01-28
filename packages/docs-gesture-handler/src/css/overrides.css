@@ -121,33 +121,27 @@ details thead {
 
 table [class*='codeBlockContent'] pre,
 table [class*='codeBlockContent'] code {
-  border:none;
+  border: none;
   background-color: transparent;
   font-family: var(--ifm-font-family-monospace);
 }
 
 .codeCell {
   vertical-align: top;
-  /* padding:0; */
 }
 
 .codeComparison {
-  display: flex; 
-  flex-direction: row;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 20px;
-  border: 1px solid var(--swm-border);
-}
-
-.codeComparison .codeHolder:first-child {
-  border-right: 1px solid var(--swm-border);
+  gap: 20px;
 }
 
 .codeComparison pre,
 .codeComparison code {
-  border:none;
+  border: none;
   background-color: transparent;
   font-family: var(--ifm-font-family-monospace);
-
 }
 
 .codeComparisonHeader {
@@ -158,25 +152,8 @@ table [class*='codeBlockContent'] code {
 }
 
 .codeHolder {
-  width: 50%;
-}
-
-@media (max-width: 996px) {
-  .codeComparison{
-    display: flex; 
-    flex-direction: column;
-    margin-bottom: 20px;
-    border: 1px solid var(--swm-border);
-  }
-
-  .codeComparison .codeHolder:first-child {
-    border-right: none;
-    border-bottom: 1px solid var(--swm-border);
-  }
-
-  .codeHolder {
-    width: 100%;
-  }
+  border: 1px solid var(--swm-border);
+  width: 100%;
 }
 
 /* Add small padding, when some of the lines are too long in a code block */
