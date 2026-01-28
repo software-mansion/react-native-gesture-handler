@@ -31,7 +31,7 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
-This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
+This gesture's state will end immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the minimum required time or if the finger is moved further than the allowable distance.
 
 <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
@@ -102,7 +102,7 @@ Minimum time, expressed in milliseconds, that a finger must remain pressed on th
 maxDistance: number | SharedValue<number>;
 ```
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture. The default value is 10.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture. The default value is 10.
 
 ### mouseButton (Web & Android only)
 
