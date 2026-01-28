@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   TouchableHighlight,
   TouchableNativeFeedback,
@@ -17,7 +16,7 @@ import { Directions } from '../Directions';
 const NOOP = () => {
   // Do nothing
 };
-const PanGestureHandler = View;
+
 const attachGestureHandler = NOOP;
 const createGestureHandler = NOOP;
 const dropGestureHandler = NOOP;
@@ -26,6 +25,8 @@ const updateGestureHandlerConfig = NOOP;
 const flushOperations = NOOP;
 const configureRelations = NOOP;
 const install = NOOP;
+
+const PanGestureHandler = View;
 const NativeViewGestureHandler = View;
 const TapGestureHandler = View;
 const ForceTouchGestureHandler = View;
@@ -33,14 +34,7 @@ const LongPressGestureHandler = View;
 const PinchGestureHandler = View;
 const RotationGestureHandler = View;
 const FlingGestureHandler = View;
-export const RawButton = ({ enabled, ...rest }: any) => (
-  <TouchableNativeFeedback disabled={enabled === false} {...rest}>
-    <View />
-  </TouchableNativeFeedback>
-);
-export const BaseButton = RawButton;
-export const RectButton = RawButton;
-export const BorderlessButton = TouchableNativeFeedback;
+const HostGestureDetector = View;
 
 export default {
   TouchableHighlight,
@@ -68,6 +62,7 @@ export default {
   configureRelations,
   flushOperations,
   install,
+  HostGestureDetector,
   // Probably can be removed
   Directions,
   State,
