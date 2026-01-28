@@ -2,7 +2,10 @@ module.exports = {
   dependency: {
     platforms: {
       android: {
-        componentDescriptors: ['RNGestureHandlerDetectorComponentDescriptor'],
+        componentDescriptors: [
+          'RNGestureHandlerDetectorComponentDescriptor',
+          'RNGestureHandlerButtonWrapperComponentDescriptor',
+        ],
         cmakeListsPath: './CMakeLists.txt',
       },
     },

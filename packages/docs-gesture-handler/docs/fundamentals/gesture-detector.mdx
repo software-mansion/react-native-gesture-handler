@@ -1,0 +1,224 @@
+---
+id: gesture-detectors
+title: Gesture Detectors
+sidebar_label: Gesture detectors
+sidebar_position: 3
+---
+
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+
+## Gesture Detector
+
+The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hooks API or the builder pattern. Additionally, it allows for the recognition of multiple gestures through [gesture composition](/docs/fundamentals/gesture-composition). `GestureDetector` interacts closely with [`Reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/). For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions) section.
+
+When using hook API, you can also integrate it directly with the [Animated API](https://reactnative.dev/docs/animated). More on that can be found in [Integreation with Animated](/docs/fundamentals/animated-interactions) section.
+
+:::danger
+
+####  Nesting Gesture Detectors
+
+Because `GestureDetector` supports both the hook API and the builder pattern, it is important to avoid nesting detectors that use different APIs, as this can result in undefined behavior.
+
+#### Reusing Gestures
+Using the same instance of a gesture across multiple Gesture Detectors may result in undefined behavior.
+:::
+
+```js
+import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
+
+export default function App() {
+  const tap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tap!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView>
+      // highlight-next-line
+      <GestureDetector gesture={tap}>
+        <Animated.View />
+        // highlight-next-line
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+```
+
+## Virtual Detectors
+
+Since RNGH3, `GestureDetector` is a standalone host component. Depending on the view hierarchy, this can occasionally disrupt interactions between specific components. To resolve this, use `InterceptingGestureDetector` in combination with `VirtualNativeDetector`.
+
+### InterceptingGestureDetector
+
+`InterceptingGestureDetector` functions similarly to a `GestureDetector`, but it can also act as a proxy for `VirtualGestureDetector` within its component subtree. Because it can be used solely to establish the context for virtual detectors, the [`gesture`](#gesture) property is optional.
+
+### VirtualGestureDetector
+
+`VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
+
+### Known use cases
+
+Here are some of the most common use cases for virtual gesture detectors.
+
+#### SVG
+
+You can combine `VirtualGestureDetector` with `react-native-svg` to add gesture handling to individual SVG elements.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[10, 45]}
+src={`
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import {
+  GestureHandlerRootView,
+  InterceptingGestureDetector,
+  useTapGesture,
+  VirtualGestureDetector,
+} from 'react-native-gesture-handler';
+import Svg, { Circle } from 'react-native-svg';
+
+export default function App() {
+  const outerTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Box tapped!');
+    },
+  });
+  const innerTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Circle tapped!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      // highlight-next-line
+      <InterceptingGestureDetector gesture={outerTap}>
+        <View style={styles.box}>
+          <Svg height="250" width="250">
+            // highlight-next-line
+            <VirtualGestureDetector gesture={innerTap}>
+              <Circle
+                cx="125"
+                cy="125"
+                r="125"
+                fill="#001A72"
+                onPress={() => {}}
+              />
+              // highlight-next-line
+            </VirtualGestureDetector>
+          </Svg>
+        </View>
+        // highlight-next-line
+      </InterceptingGestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  box: {
+    backgroundColor: '#b58df1',
+  },
+});
+`}/>
+
+
+#### Text
+
+You can use `VirtualGestureDetector` to add gesture handling to specific parts of a `Text` component.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[8, 37]}
+src={`
+import * as React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import {
+  GestureHandlerRootView,
+  InterceptingGestureDetector,
+  VirtualGestureDetector,
+  useTapGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const outerTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped on text!');
+    },
+  });
+
+  const nestedTap = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped on nested part!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <InterceptingGestureDetector gesture={outerTap}>
+        <Text style={{ fontSize: 18, textAlign: 'center' }}>
+          Nested text
+          <VirtualGestureDetector gesture={nestedTap}>
+            <Text style={{ fontSize: 24, color: '#001A72' }}>
+              try tapping on this part.
+            </Text>
+          </VirtualGestureDetector>
+          This part is not special :c
+        </Text>
+      </InterceptingGestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+});
+`}/>
+
+
+## Properties
+
+### gesture
+
+```ts
+gesture: SingleGesture | ComposedGesture;
+```
+
+A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/fundamentals/gesture-composition).
+
+### userSelect (Web only)
+
+```ts
+userSelect: 'none' | 'auto' | 'text';
+```
+
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Default value is set to `"none"`.
+
+### touchAction (Web only)
+
+```ts
+userSelect: TouchAction;
+```
+
+This parameter allows to specify which `touchAction` property should be applied to underlying view. Supports all CSS [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action) values. Default value is set to `"none"`.
+
+### enableContextMenu (Web only)
+
+```ts
+enableContextMenu: boolean;
+```
+
+Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.

@@ -433,7 +433,7 @@ function getHandlerData(
   if (isHookGesture(componentOrGesture)) {
     return {
       handlerType: componentOrGesture.type as HandlerNames,
-      handlerTag: componentOrGesture.tag,
+      handlerTag: componentOrGesture.handlerTag,
       enabled: maybeUnpackValue(componentOrGesture.config.enabled),
       emitEvent: (eventName, args) => {
         const { state, oldState, handlerTag, ...rest } = args.nativeEvent;
@@ -445,12 +445,12 @@ function getHandlerData(
         };
 
         if (eventName === 'onGestureHandlerStateChange') {
-          componentOrGesture.detectorCallbacks.onGestureHandlerStateChange({
+          componentOrGesture.detectorCallbacks.jsEventHandler?.({
             oldState: oldState as State,
             ...event,
           });
         } else if (eventName === 'onGestureHandlerEvent') {
-          componentOrGesture.detectorCallbacks.onGestureHandlerEvent?.(event);
+          componentOrGesture.detectorCallbacks.jsEventHandler?.(event);
         }
       },
     };

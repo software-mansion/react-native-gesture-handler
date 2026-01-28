@@ -74,12 +74,23 @@ Default value is `true`.
 
 ### runOnJS
 
+**Requires `react-native-reanimated`**
+
 ```ts
 runOnJS: boolean | SharedValue<boolean>;
 ```
 
-When `react-native-reanimated` is installed, the callbacks passed to the gestures are automatically workletized and run on the UI thread when called. This option allows for changing this behavior: when `true`, all the callbacks will be run on the JS thread instead of the UI thread, regardless of whether they are worklets or not.
-Defaults to `false`.
+If set to `true`, callbacks will be executed on JS runtime. Can be changed dynamically throughout gesture lifecycle. Defaults to `false`. For more details, see the [runOnJS](/docs/fundamentals/reanimated-interactions#runonjs) section.
+
+### disableReanimated
+
+**Requires `react-native-reanimated`**
+
+```ts
+disableReanimated: boolean;
+```
+
+If set to `true`, the gesture will ignore any interaction with `Reanimated`. This property cannot be changed during the gesture's lifecycle. For more details, see the [disableReanimated](/docs/fundamentals/reanimated-interactions#disablereanimated) section.
 
 ### simultaneousWith
 
@@ -110,6 +121,14 @@ block: Gesture | Gesture[]
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
 **IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition).[`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+
+### useAnimated
+
+```ts
+useAnimated: boolean;
+```
+
+Setting this property is set to `true` ensures that the [Animated API](/docs/fundamentals/animated-interactions) functions correctly when `useNativeDriver` is set to `false`. The default value is set to `false`.
 
 ### activeCursor
 
