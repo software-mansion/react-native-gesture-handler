@@ -89,4 +89,7 @@ export default {
   },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   flushOperations() {},
+  setReanimatedAvailable(_isAvailable: boolean) {
+    // No-op on web
+  },
 };
