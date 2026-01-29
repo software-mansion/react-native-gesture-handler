@@ -48,7 +48,7 @@ runs:
             if [ $(node ./scripts/release/should-be-latest.js ${{ steps.set-package-version.outputs.version }}) = "true" ]; then
               TAG_ARGUMENT="--tag latest"
             else
-              TAG_ARGUMENT=""
+              TAG_ARGUMENT="--tag legacy"
             fi
           fi
         fi
@@ -104,6 +104,12 @@ runs:
       working-directory: packages/react-native-gesture-handler
       run: |
         npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }} ${{ inputs.dry-run == 'true' && '--dry-run' || '' }}
+
+    - name: Delete legacy tag
+      if: inputs.dry-run == 'false' && steps.figure-out-npm-tag.outputs.tag-argument == '--tag legacy'
+      shell: bash
+      run: |
+        npm dist-tag rm react-native-gesture-handler legacy || echo "No legacy tag to remove"
 
     - name: Configure git
       if: inputs.release-type == 'stable'
