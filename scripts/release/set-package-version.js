@@ -1,57 +1,9 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
-const { getPackageVersionByTag } = require('./npm-utils');
-const { parseVersion, getStableBranchVersion } = require('./version-utils');
+const { getStableBranchVersion, getLatestVersion, getNextPreReleaseVersion, getNextStableVersion } = require('./version-utils');
 const { parseArguments, ReleaseType } = require('./parse-arguments');
 
 const PACKAGE_PATH = './packages/react-native-gesture-handler/package.json';
-
-function getLatestVersion() {
-  const latestVersion = getPackageVersionByTag('react-native-gesture-handler', 'latest');
-  
-  try {
-    return parseVersion(latestVersion);
-  } catch (error) {
-    throw new Error(`Failed to parse latest version: ${latestVersion}`);
-  }
-}
-
-function getNextStableVersion() {
-  const [major, minor] = getStableBranchVersion();
-
-  // TODO: We'll worry about 3.x.x later :)
-  if (major !== 2) {
-    throw new Error(`Expected major version to be 2, but got ${major}`);
-  }
-
-  let nextPatch = 0;
-  while (true) {
-    const version = `${major}.${minor}.${nextPatch}`;
-    
-    try {
-      // if the version is already published, increment the patch version and try again
-      getPackageVersionByTag('react-native-gesture-handler', version);
-      nextPatch++;
-    } catch (error) {
-      return [Number(major), Number(minor), nextPatch];
-    }
-  }
-}
-
-function getNextPreReleaseVersion(releaseType, version) {
-  let dotIndex = 1;
-  while (true) {
-    const targetVersion = `${version}-${releaseType}.${dotIndex}`;
-    
-    try {
-      // if the version is already published, increment the pre-release sequence (rc/beta number) and try again
-      getPackageVersionByTag('react-native-gesture-handler', targetVersion);
-      dotIndex++;
-    } catch (error) {
-      return targetVersion;
-    }
-  }
-}
 
 function getVersion(releaseType, preReleaseVersion = null) {
   if (releaseType === ReleaseType.COMMITLY) {
