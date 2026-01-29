@@ -10,8 +10,8 @@ export default function CodeComparison({
   skipFormatting1 = false,
   skipFormatting2 = false,
 }) {
-  const formattedCode1 = useFormattedCode(code1);
-  const formattedCode2 = useFormattedCode(code2);
+  const formattedCode1 = useFormattedCode(skipFormatting1 ? '' : code1);
+  const formattedCode2 = useFormattedCode(skipFormatting2 ? '' : code2);
 
   return (
     <div className="codeComparison">

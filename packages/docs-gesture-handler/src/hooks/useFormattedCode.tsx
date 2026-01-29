@@ -13,8 +13,12 @@ export default function useFormattedCode(code: string) {
 
   useEffect(() => {
     async function formatCode() {
-      const newCode = await prettier.format(code, prettierOptions);
-      setFormattedCode(newCode);
+      try {
+        const newCode = await prettier.format(code, prettierOptions);
+        setFormattedCode(newCode);
+      } catch {
+        setFormattedCode(code);
+      }
     }
 
     void formatCode();
