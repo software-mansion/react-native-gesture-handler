@@ -128,7 +128,8 @@
     "ios": {
       "componentProvider": {
         "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView",
-        "RNGestureHandlerDetector": "RNGestureHandlerDetector"
+        "RNGestureHandlerDetector": "RNGestureHandlerDetector",
+        "RNGestureHandlerButtonWrapper": "RNGestureHandlerButtonWrapper"
       }
     }
   },

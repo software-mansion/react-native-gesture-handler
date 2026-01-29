@@ -159,6 +159,15 @@
   scrollView.delaysContentTouches = YES;
 }
 
+- (void)unbindFromView
+{
+  // Restore the React Native's overriden behavor for not delaying content touches
+  UIScrollView *scrollView = [self retrieveScrollView:self.recognizer.view];
+  scrollView.delaysContentTouches = NO;
+
+  [super unbindFromView];
+}
+
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self setCurrentPointerType:event];
