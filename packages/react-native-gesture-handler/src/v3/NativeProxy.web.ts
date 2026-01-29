@@ -35,4 +35,7 @@ export const NativeProxy = {
   configureRelations: (handlerTag: number, relations: GestureRelations) => {
     RNGestureHandlerModule.configureRelations(handlerTag, relations);
   },
+  setReanimatedAvailable: (isAvailable: boolean) => {
+    RNGestureHandlerModule.setReanimatedAvailable(isAvailable);
+  },
 } as const;
