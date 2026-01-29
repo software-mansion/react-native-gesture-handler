@@ -1,9 +1,12 @@
 name: publish-npm-package
 description: Build and publish react-native-gesture-handler package to npm
 inputs:
-  is-commitly:
-    description: Whether the release should be marked as nightly.
-    default: "true"
+  release-type:
+    description: Release type to be publised (stable, commitly, beta, rc).
+    default: "commitly"
+  version:
+    description: Specific version to publish (usually inferred from x.y-stable branch name).
+    default: ""
   dry-run:
     description: Whether to perform a dry run of the publish.
     default: "true"
@@ -28,7 +31,7 @@ runs:
       id: set-package-version
       shell: bash
       run: |
-        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.is-commitly == 'true' && '--commitly' || '' }})
+        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.release-type == 'commitly' && '--commitly' || '' }} ${{ inputs.release-type == 'beta' && '--beta' || '' }} ${{ inputs.release-type == 'rc' && '--rc' || '' }} ${{ inputs.version != '' && '--version ' + inputs.version || '' }})
         echo "Updated package version to $VERSION"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -67,13 +70,17 @@ runs:
       id: figure-out-npm-tag
       shell: bash
       run: |
-        if [ "${{ inputs.is-commitly }}" = "true" ]; then
+        if [ "${{ inputs.release-type == 'commitly' }}" = "true" ]; then
           TAG_ARGUMENT="--tag nightly"
         else
-          if [ $(node ./scripts/release/should-be-latest.js ${{ steps.set-package-version.outputs.version }}) = "true" ]; then
-            TAG_ARGUMENT="--tag latest"
+          if [ "${{ inputs.release-type == 'beta' || inputs.release-type == 'rc' }}" = "true" ]; then
+            TAG_ARGUMENT="--tag next"
           else
-            TAG_ARGUMENT=""
+            if [ $(node ./scripts/release/should-be-latest.js ${{ steps.set-package-version.outputs.version }}) = "true" ]; then
+              TAG_ARGUMENT="--tag latest"
+            else
+              TAG_ARGUMENT=""
+            fi
           fi
         fi
 
@@ -86,28 +93,27 @@ runs:
         echo "Version to be published: ${{ steps.set-package-version.outputs.version }}"
         echo "NPM tag argument: ${{ steps.figure-out-npm-tag.outputs.tag-argument }}"
 
+    - name: Validate latest version
+      if: steps.figure-out-npm-tag.outputs.tag-argument == '--tag latest'
+      shell: bash
+      run: |
+        node ./scripts/release/validate-latest-version.js ${{ steps.set-package-version.outputs.version }}
+
     - name: Publish npm package
       shell: bash
-      if: inputs.dry-run == 'false'
       working-directory: packages/react-native-gesture-handler
       run: |
-        npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }}
-
-    - name: Don't publish if dry-run is true
-      shell: bash
-      if: inputs.dry-run == 'true'
-      run: |
-        echo "At this point, the following command would have been run: npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }}"
+        npm publish $PACKAGE_NAME --provenance ${{ steps.figure-out-npm-tag.outputs.tag-argument }} ${{ inputs.dry-run == 'true' && '--dry-run' || '' }}
 
     - name: Configure git
-      if: inputs.is-commitly == 'false'
+      if: inputs.release-type == 'stable'
       shell: bash
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
     - name: Create release commit
-      if: inputs.is-commitly == 'false'
+      if: inputs.release-type == 'stable'
       shell: bash
       run: |
         git add packages/react-native-gesture-handler/package.json
@@ -121,7 +127,7 @@ runs:
         fi
 
     - name: Create release tag
-      if: inputs.is-commitly == 'false'
+      if: inputs.release-type == 'stable'
       shell: bash
       run: |
         git tag -a "v${{ steps.set-package-version.outputs.version }}" -m "Release v${{ steps.set-package-version.outputs.version }}"
