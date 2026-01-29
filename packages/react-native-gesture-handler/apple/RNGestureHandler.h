@@ -74,6 +74,7 @@
 @property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
+@property (nonatomic, nullable) NSString *testID;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) RNGestureHandlerActionType actionType;
 @property (nonatomic) BOOL shouldCancelWhenOutside;
@@ -92,7 +93,7 @@
 - (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateRelations:(nonnull NSDictionary *)relations;
-- (void)handleGesture:(nonnull id)recognizer;
+- (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
 - (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;

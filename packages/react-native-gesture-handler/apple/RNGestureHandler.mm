@@ -10,6 +10,7 @@
 
 #import <React/UIView+React.h>
 
+#import <React/RCTEnhancedScrollView.h>
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 
@@ -101,6 +102,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)resetConfig
 {
   self.enabled = YES;
+  self.testID = nil;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _hitSlop = RNGHHitSlopEmpty;
@@ -123,6 +125,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   id prop = config[@"enabled"];
   if (prop != nil) {
     self.enabled = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"testID"];
+  if (prop != nil) {
+    self.testID = [RCTConvert NSString:prop];
   }
 
   prop = config[@"shouldCancelWhenOutside"];
@@ -292,7 +299,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer
+- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
@@ -305,6 +312,20 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 
   _state = [self recognizerState];
+
+  // From iOS 26.0 when recognizers are reset, their state is also changed to UIGestureRecognizerStatePossible.
+  // This means that our logic that relies on sending events in `reset` methods doesn't work properly. The bug that
+  // `onFinalize` was not send after `onBegin` happened because both recognizer states, `Began` and `Possible`, are
+  // mapped to our internal `Began` state. Because of that, _lastState had the same value as `_state` and callbacks were
+  // not triggered.
+  //
+  // While this solution is not great, we decided to check whether sending events was triggered from `reset` method.
+  // This way we can detect double Began mapping by checking previous sent state and current state of recognizer.
+  if (fromReset && _lastState == RNGestureHandlerStateBegan &&
+      self.recognizer.state == UIGestureRecognizerStatePossible) {
+    _state = RNGestureHandlerStateFailed;
+  }
+
   [self handleGesture:recognizer inState:_state];
 }
 
@@ -632,6 +653,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIScrollView *)retrieveScrollView:(RNGHUIView *)view
 {
+  if ([view isKindOfClass:[RCTEnhancedScrollView class]]) {
+    return (RCTEnhancedScrollView *)view;
+  }
+
   if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
     RNGHUIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     return scrollView;

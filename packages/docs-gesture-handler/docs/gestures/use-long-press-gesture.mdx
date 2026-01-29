@@ -1,0 +1,174 @@
+---
+id: use-long-press-gesture
+title: Long press gesture
+sidebar_label: Long press gesture
+sidebar_position: 3
+---
+
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
+import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<LongPressGestureBasic/>}
+    src={LongPressGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</div>
+
+import BaseEventData from './\_shared/base-gesture-event-data.md';
+import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
+
+A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
+This gesture's state will turn into [END](/docs/fundamentals/states-events#end) immediately after the finger is released.
+The gesture will fail to recognize a touch event if the finger is lifted before the minimum required time or if the finger is moved further than the allowable distance.
+
+<div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+</div>
+
+## Example
+
+```jsx
+import { View, StyleSheet } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useLongPressGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const longPressGesture = useLongPressGesture({
+    onDeactivate: (e, success) => {
+      if (success) {
+        console.log(`Long pressed for ${e.duration} ms!`);
+      }
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={longPressGesture}>
+        <View style={styles.box} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  box: {
+    height: 120,
+    width: 120,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+    marginBottom: 30,
+  },
+});
+```
+
+## Config
+
+<SharedValueInfo />
+
+### minDuration
+
+```ts
+minDuration: number | SharedValue<number>;
+```
+
+Minimum time, expressed in milliseconds, that a finger must remain pressed on the corresponding view. The default value is 500.
+
+### maxDistance
+
+```ts
+maxDistance: number | SharedValue<number>;
+```
+
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture. The default value is 10.
+
+### mouseButton (Web & Android only)
+
+```ts
+mouseButton: MouseButton | SharedValue<MouseButton>;
+```
+
+```ts
+enum MouseButton {
+  LEFT,
+  RIGHT,
+  MIDDLE,
+  BUTTON_4,
+  BUTTON_5,
+  ALL,
+}
+```
+
+Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+
+<BaseGestureConfig />
+
+## Callbacks
+
+<BaseGestureCallbacks gesture={"LongPress"}/>
+
+## Event data
+
+### x
+
+```ts
+x: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+
+### duration
+
+```ts
+duration: number;
+```
+
+Duration of the long press (time since the start of the gesture), expressed in milliseconds.
+
+<BaseEventData />

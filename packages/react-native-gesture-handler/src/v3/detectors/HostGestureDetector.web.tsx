@@ -1,15 +1,19 @@
-import React, { Ref, RefObject, useEffect, useRef } from 'react';
+import React, { Ref, RefObject, useEffect, useMemo, useRef } from 'react';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { ActionType } from '../../ActionType';
 import { PropsRef } from '../../web/interfaces';
 import { View } from 'react-native';
 import { tagMessage } from '../../utils';
+import { TouchAction, UserSelect } from '../../handlers/gestureHandlerCommon';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];
   moduleId: number;
   children?: React.ReactNode;
   virtualChildren?: Set<VirtualChildrenWeb>;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
 }
 
 export interface VirtualChildrenWeb {
@@ -23,8 +27,10 @@ const EMPTY_HANDLERS = new Set<number>();
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
 
+  const handlerTagsSet = useMemo(() => new Set(handlerTags), [...handlerTags]);
+
   const viewRef = useRef<Element>(null);
-  const propsRef = useRef<PropsRef>(props);
+  const propsRef = useRef<GestureHandlerDetectorProps>(props);
   const attachedHandlers = useRef<Set<number>>(new Set<number>());
   const attachedNativeHandlers = useRef<Set<number>>(new Set<number>());
   const attachedVirtualHandlers = useRef<Map<number, Set<number>>>(new Map());
@@ -42,7 +48,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
 
   const attachHandlers = (
     viewRef: RefObject<Element | null>,
-    propsRef: RefObject<PropsRef>,
+    propsRef: RefObject<GestureHandlerDetectorProps>,
     currentHandlerTags: Set<number>,
     attachedHandlerTags: Set<number>,
     actionType: ActionType
@@ -72,11 +78,32 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         );
       }
       attachedHandlerTags.add(tag);
+
+      RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+        userSelect: props.userSelect,
+        touchAction: props.touchAction,
+        enableContextMenu: props.enableContextMenu,
+      });
     });
   };
 
   useEffect(() => {
+    const shouldUpdateDOMProps =
+      propsRef.current.userSelect !== props.userSelect ||
+      propsRef.current.touchAction !== props.touchAction ||
+      propsRef.current.enableContextMenu !== props.enableContextMenu;
+
     propsRef.current = props;
+
+    if (shouldUpdateDOMProps) {
+      for (const tag of attachedHandlers.current) {
+        RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+          userSelect: props.userSelect,
+          touchAction: props.touchAction,
+          enableContextMenu: props.enableContextMenu,
+        });
+      }
+    }
   }, [props]);
 
   useEffect(() => {
@@ -85,25 +112,31 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         tagMessage('Detector expected to have exactly one child element')
       );
     }
+  }, [children]);
 
-    const currentHandlerTags = new Set(handlerTags);
-    detachHandlers(currentHandlerTags, attachedHandlers.current);
+  useEffect(() => {
+    if (React.Children.count(children) !== 1) {
+      throw new Error(
+        tagMessage('Detector expected to have exactly one child element')
+      );
+    }
+
+    detachHandlers(handlerTagsSet, attachedHandlers.current);
 
     attachHandlers(
       viewRef,
       propsRef,
-      currentHandlerTags,
+      handlerTagsSet,
       attachedHandlers.current,
       ActionType.NATIVE_DETECTOR
     );
-
     return () => {
       detachHandlers(EMPTY_HANDLERS, attachedHandlers.current);
       attachedVirtualHandlers?.current.forEach((childHandlerTags) => {
         detachHandlers(EMPTY_HANDLERS, childHandlerTags);
       });
     };
-  }, [handlerTags, children]);
+  }, [handlerTagsSet, viewRef]);
 
   useEffect(() => {
     const virtualChildrenToDetach: Set<number> = new Set(

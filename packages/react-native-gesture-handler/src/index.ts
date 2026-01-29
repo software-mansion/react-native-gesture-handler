@@ -68,21 +68,23 @@ export type {
   SimultaneousGestureType as LegacySimultaneousGesture,
   ExclusiveGestureType as LegacyExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
-export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
+export type { GestureStateManagerType as LegacyGestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
-  RawButtonProps,
-  BaseButtonProps,
-  RectButtonProps,
-  BorderlessButtonProps,
+  LegacyRawButtonProps,
+  LegacyBaseButtonProps,
+  LegacyRectButtonProps,
+  LegacyBorderlessButtonProps,
 } from './components/GestureButtonsProps';
+
 export {
-  RawButton,
-  BaseButton,
-  RectButton,
-  BorderlessButton,
-  PureNativeButton,
+  LegacyRawButton,
+  LegacyBaseButton,
+  LegacyRectButton,
+  LegacyBorderlessButton,
+  LegacyPureNativeButton,
 } from './components/GestureButtons';
+
 export type {
   TouchableHighlightProps,
   TouchableOpacityProps,
@@ -95,13 +97,14 @@ export {
   TouchableWithoutFeedback,
 } from './components/touchables';
 export {
-  ScrollView,
-  Switch,
-  TextInput,
-  DrawerLayoutAndroid,
-  FlatList,
-  RefreshControl,
+  LegacyScrollView,
+  LegacySwitch,
+  LegacyTextInput,
+  LegacyDrawerLayoutAndroid,
+  LegacyFlatList,
+  LegacyRefreshControl,
 } from './components/GestureComponents';
+
 export { Text } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
@@ -137,30 +140,21 @@ export type {
   FlingGestureHandlerProperties,
   ForceTouchGestureHandlerProperties,
   // Buttons props
-  RawButtonProperties,
-  BaseButtonProperties,
-  RectButtonProperties,
-  BorderlessButtonProperties,
+  LegacyRawButtonProperties,
+  LegacyBaseButtonProperties,
+  LegacyRectButtonProperties,
+  LegacyBorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
 export type {
   PressableProps,
+  LegacyPressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';
-export { default as Pressable } from './components/Pressable';
+export { default as LegacyPressable } from './components/Pressable';
 
-export {
-  GestureDetector,
-  InterceptingGestureDetector,
-  GestureDetectorProps,
-  VirtualGestureDetector,
-} from './v3/detectors';
-
-export * from './v3/hooks/composition';
-
-export type { ComposedGesture } from './v3/types';
 export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
 
-export * from './v3/hooks/gestures';
+export * from './v3';
 
 initialize();

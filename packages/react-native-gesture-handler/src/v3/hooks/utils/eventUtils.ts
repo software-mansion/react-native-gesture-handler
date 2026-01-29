@@ -12,7 +12,7 @@ import {
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../../utils';
 
-export function isNativeEvent<THandlerData>(
+function isNativeEvent<THandlerData>(
   event: GestureHandlerEventWithHandlerData<THandlerData>
 ): event is
   | NativeSyntheticEvent<GestureUpdateEventWithHandlerData<THandlerData>>
@@ -25,7 +25,10 @@ export function isNativeEvent<THandlerData>(
 
 export function maybeExtractNativeEvent<THandlerData>(
   event: GestureHandlerEventWithHandlerData<THandlerData>
-) {
+):
+  | GestureTouchEvent
+  | GestureUpdateEventWithHandlerData<THandlerData>
+  | GestureStateChangeEventWithHandlerData<THandlerData> {
   'worklet';
 
   return isNativeEvent(event) ? event.nativeEvent : event;
@@ -38,7 +41,7 @@ export function flattenAndFilterEvent<THandlerData>(
 ): GestureEvent<THandlerData> {
   'worklet';
 
-  return { ...event.handlerData };
+  return { handlerTag: event.handlerTag, ...event.handlerData };
 }
 
 export function isEventForHandlerWithTag<THandlerData>(

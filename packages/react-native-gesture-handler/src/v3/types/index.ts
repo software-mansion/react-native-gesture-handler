@@ -1,6 +1,52 @@
-export * from './ReanimatedTypes';
-export * from './ConfigTypes';
-export * from './EventTypes';
-export * from './DetectorTypes';
-export * from './GestureTypes';
-export * from './UtilityTypes';
+export type {
+  SharedValue,
+  SharedValueOrT,
+  WithSharedValue,
+} from './ReanimatedTypes';
+
+export type {
+  HandlerData,
+  GestureUpdateEventWithHandlerData,
+  GestureStateChangeEventWithHandlerData,
+  GestureHandlerEventWithHandlerData,
+  UnpackedGestureHandlerEventWithHandlerData,
+  UnpackedGestureHandlerEvent,
+  UpdateEventWithHandlerData,
+  StateChangeEventWithHandlerData,
+  TouchEvent,
+  GestureEvent,
+  AnimatedEvent,
+  ChangeCalculatorType,
+  DiffCalculatorType,
+} from './EventTypes';
+
+export type {
+  GestureCallbacks,
+  GestureEventCallback,
+  GestureEventCallbackWithDidSucceed,
+  GestureTouchEventCallback,
+  GestureRelations,
+  InternalConfigProps,
+  CommonGestureConfig,
+  ComposedGestureConfig,
+} from './ConfigTypes';
+
+export type { DetectorCallbacks, VirtualChild } from './DetectorTypes';
+
+export { SingleGestureName, ComposedGestureName } from './GestureTypes';
+export type {
+  ExternalRelations,
+  BaseDiscreteGestureConfig,
+  BaseGestureConfig,
+  SingleGesture,
+  DiscreteSingleGesture,
+  ComposedGesture,
+  Gesture,
+  AnyGesture,
+} from './GestureTypes';
+
+export type {
+  HandlersPropsWhiteList,
+  FilterNeverProperties,
+  ExcludeInternalConfigProps,
+} from './UtilityTypes';

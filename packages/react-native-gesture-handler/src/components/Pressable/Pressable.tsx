@@ -9,8 +9,8 @@ import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObject
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import {
   PressableEvent,
-  PressableProps,
   PressableDimensions,
+  LegacyPressableProps,
 } from './PressableProps';
 import {
   Insets,
@@ -40,7 +40,7 @@ import { PressableStateMachine } from './StateMachine';
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
-const Pressable = (props: PressableProps) => {
+const Pressable = (props: LegacyPressableProps) => {
   const {
     testOnly_pressed,
     hitSlop,
@@ -245,7 +245,7 @@ const Pressable = (props: PressableProps) => {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(INT32_MAX) // Stops long press from blocking Gesture.Native()
+        .minDuration(Platform.OS === 'web' ? 0 : INT32_MAX) // Long press handles finalize on web, thus it must activate right away
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
@@ -328,7 +328,6 @@ const Pressable = (props: PressableProps) => {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(Platform.OS !== 'web');
 
     Object.entries(relationProps).forEach(([relationName, relation]) => {
       applyRelationProp(

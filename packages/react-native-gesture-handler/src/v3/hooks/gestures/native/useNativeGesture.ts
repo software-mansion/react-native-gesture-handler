@@ -10,7 +10,7 @@ import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
 import { NativeGestureNativeProperties } from './NativeProperties';
 
-type NativeViewHandlerData = {
+export type NativeViewHandlerData = {
   pointerInside: boolean;
 };
 

@@ -61,12 +61,14 @@ export class GestureHandlerWebDelegate
       this.gestureHandler.attachEventManager(manager)
     );
 
-    this.addContextMenuListeners();
+    this.updateDOM();
 
     this.isInitialized = true;
   }
 
   detach(): void {
+    this.restoreDefaultViewStyles();
+
     this.defaultViewStyles = {
       userSelect: '',
       touchAction: '',
@@ -81,6 +83,22 @@ export class GestureHandlerWebDelegate
     this.eventManagers = [];
 
     this.isInitialized = false;
+  }
+
+  restoreDefaultViewStyles(): void {
+    this.ensureView(this.view);
+
+    this.view.style['userSelect'] = this.defaultViewStyles.userSelect;
+    this.view.style['webkitUserSelect'] = this.defaultViewStyles.userSelect;
+    this.view.style['touchAction'] = this.defaultViewStyles.touchAction;
+    // @ts-ignore This one disables default events on Safari
+    this.view.style['WebkitTouchCallout'] = this.defaultViewStyles.touchAction;
+  }
+
+  updateDOM(): void {
+    this.setUserSelect();
+    this.setTouchAction();
+    this.setContextMenu();
   }
 
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean {
@@ -214,9 +232,7 @@ export class GestureHandlerWebDelegate
       return;
     }
 
-    this.setUserSelect();
-    this.setTouchAction();
-    this.setContextMenu();
+    this.updateDOM();
 
     this.eventManagers.forEach((manager) => {
       manager.setEnabled(this.gestureHandler.enabled);

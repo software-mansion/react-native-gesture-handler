@@ -1,0 +1,53 @@
+---
+id: use-manual-gesture
+title: Manual gesture
+sidebar_label: Manual gesture
+sidebar_position: 9
+---
+
+import BaseEventData from './\_shared/base-gesture-event-data.md';
+import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
+import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
+
+
+A plain gesture that has no specific activation criteria nor event data set. Its state has to be controlled manually using a [state manager](/docs/gestures/state-manager). It will not fail when all the pointers are lifted from the screen.
+
+## Example
+
+```jsx
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useManualGesture,
+} from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+
+export default function App() {
+  const manualGesture = useManualGesture({});
+
+  return (
+    <GestureHandlerRootView>
+      <GestureDetector gesture={manualGesture}>
+        <Animated.View />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+```
+
+## Config
+
+<SharedValueInfo />
+
+<BaseGestureConfig />
+
+## Callbacks
+
+<BaseGestureCallbacks gesture={"Manual"}/>
+<BaseContinuousGestureCallbacks gesture={"Manual"} />
+
+## Event data
+
+<BaseEventData />

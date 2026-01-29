@@ -10,12 +10,6 @@ export interface GestureStateManagerType {
   handlerTag: number;
 }
 
-// Declare methods to keep the TS happy
-declare const globalThis: {
-  _setGestureStateSync?: (handlerTag: number, state: State) => void;
-  _setGestureStateAsync?: (handlerTag: number, state: State) => void;
-};
-
 const wrappedSetGestureState = (handlerTag: number, state: State) => {
   'worklet';
 

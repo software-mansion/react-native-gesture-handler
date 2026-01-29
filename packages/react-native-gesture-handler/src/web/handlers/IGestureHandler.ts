@@ -17,6 +17,7 @@ export default interface IGestureHandler {
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
+  readonly testID?: string;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;
@@ -56,7 +57,7 @@ export default interface IGestureHandler {
   sendEvent: (newState: State, oldState: State) => void;
 
   setGestureConfig: (config: Config) => void;
-  updateGestureConfig: (config: Config) => void;
+  updateGestureConfig: (config: Partial<Config>) => void;
 
   isButton?: () => boolean;
 }

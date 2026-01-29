@@ -24,7 +24,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
     _gestureHandler = gestureHandler;
   }
   return self;
@@ -157,6 +157,15 @@
   // is set
   UIScrollView *scrollView = [self retrieveScrollView:view];
   scrollView.delaysContentTouches = YES;
+}
+
+- (void)unbindFromView
+{
+  // Restore the React Native's overriden behavor for not delaying content touches
+  UIScrollView *scrollView = [self retrieveScrollView:self.recognizer.view];
+  scrollView.delaysContentTouches = NO;
+
+  [super unbindFromView];
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event

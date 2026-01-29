@@ -14,7 +14,10 @@ import {
   useClonedAndRemappedConfig,
   getChangeEventCalculator,
 } from '../../utils';
-import { HoverGestureNativeProperties } from './HoverProperties';
+import {
+  HoverGestureExternalProperties,
+  HoverGestureNativeProperties,
+} from './HoverProperties';
 
 type HoverHandlerData = {
   x: number;
@@ -27,23 +30,29 @@ type HoverHandlerData = {
 };
 
 type HoverGestureProperties = WithSharedValue<
+  HoverGestureExternalProperties,
+  HoverEffect
+>;
+
+type HoverGestureInternalProperties = WithSharedValue<
   HoverGestureNativeProperties,
   HoverEffect
 >;
 
-type HoverGestureInternalConfig = BaseGestureConfig<
-  HoverHandlerData,
-  HoverGestureProperties
+export type HoverGestureConfig = ExcludeInternalConfigProps<
+  BaseGestureConfig<HoverHandlerData, HoverGestureProperties>
 >;
 
-export type HoverGestureConfig =
-  ExcludeInternalConfigProps<HoverGestureInternalConfig>;
+type HoverGestureInternalConfig = BaseGestureConfig<
+  HoverHandlerData,
+  HoverGestureInternalProperties
+>;
 
 export type HoverGestureEvent = GestureEvent<HoverHandlerData>;
 
 export type HoverGesture = SingleGesture<
   HoverHandlerData,
-  HoverGestureProperties
+  HoverGestureInternalProperties
 >;
 
 function diffCalculator(
@@ -65,13 +74,13 @@ function transformHoverProps(
   return config;
 }
 
-const HoverPropsMapping = new Map<string, string>();
+const HoverPropsMapping = new Map<string, string>([['effect', 'hoverEffect']]);
 
 export function useHoverGesture(config: HoverGestureConfig): HoverGesture {
   const hoverConfig = useClonedAndRemappedConfig<
     HoverHandlerData,
     HoverGestureProperties,
-    HoverGestureProperties
+    HoverGestureInternalProperties
   >(config, HoverPropsMapping, transformHoverProps);
 
   return useGesture(SingleGestureName.Hover, hoverConfig);

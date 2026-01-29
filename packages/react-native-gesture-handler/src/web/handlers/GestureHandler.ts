@@ -48,6 +48,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
+  private _testID?: string = undefined;
 
   private hitSlop?: HitSlop = undefined;
   private manualActivation: boolean = false;
@@ -712,18 +713,21 @@ export default abstract class GestureHandler implements IGestureHandler {
   //
 
   // Helper function to correctly set enabled property
-  private updateEnabled(enabled: boolean | undefined) {
+  private maybeUpdateEnabled(enabled: boolean | undefined): boolean {
     if (enabled === undefined) {
-      if (this._enabled) {
-        return;
+      if (this._enabled !== null) {
+        return false;
       }
 
       this._enabled = true;
-      this.delegate.onEnabledChange();
-    } else if (this._enabled !== enabled) {
-      this._enabled = enabled;
-      this.delegate.onEnabledChange();
+
+      return true;
     }
+
+    const prevEnabled = this._enabled;
+    this._enabled = enabled;
+
+    return enabled !== prevEnabled;
   }
 
   public setGestureConfig(config: Config) {
@@ -731,13 +735,17 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.updateGestureConfig(config);
   }
 
-  public updateGestureConfig(config: Config): void {
-    this.updateEnabled(config.enabled);
+  public updateGestureConfig(config: Partial<Config>): void {
+    const enabledChanged = this.maybeUpdateEnabled(config.enabled);
 
     if (config.hitSlop !== undefined) {
       this.hitSlop = config.hitSlop;
       this.hitSlop = config.hitSlop;
       this.validateHitSlops();
+    }
+
+    if (config.testID !== undefined) {
+      this._testID = config.testID;
     }
 
     if (config.dispatchesAnimatedEvents !== undefined) {
@@ -764,20 +772,31 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.shouldCancelWhenOutside = config.shouldCancelWhenOutside;
     }
 
-    if (config.enableContextMenu !== undefined) {
-      this.enableContextMenu = config.enableContextMenu;
-    }
-
     if (config.activeCursor !== undefined) {
       this._activeCursor = config.activeCursor;
     }
 
+    let shouldUpdateDOM = false;
+
+    if (config.enableContextMenu !== undefined) {
+      this.enableContextMenu = config.enableContextMenu;
+      shouldUpdateDOM = true;
+    }
+
     if (config.touchAction !== undefined) {
       this._touchAction = config.touchAction;
+      shouldUpdateDOM = true;
     }
 
     if (config.userSelect !== undefined) {
       this._userSelect = config.userSelect;
+      shouldUpdateDOM = true;
+    }
+
+    if (enabledChanged) {
+      this.delegate.onEnabledChange();
+    } else if (shouldUpdateDOM) {
+      this.delegate.updateDOM();
     }
 
     if (this.enabled) {
@@ -922,6 +941,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected resetConfig(): void {
+    this._testID = undefined;
     this.manualActivation = false;
     this.shouldCancelWhenOutside = false;
     this.mouseButton = undefined;
@@ -949,6 +969,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   public set handlerTag(value: number) {
     this._handlerTag = value;
+  }
+
+  public get testID() {
+    return this._testID;
   }
 
   public get delegate() {

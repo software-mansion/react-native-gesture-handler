@@ -21,6 +21,7 @@ import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.isHoverAction
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -29,6 +30,7 @@ open class GestureHandler {
   private var trackedPointersIDsCount = 0
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
+  var testID: String? = null
   var view: View? = null
     private set
 
@@ -36,30 +38,15 @@ open class GestureHandler {
   // Virtual Detector to which the gesture is assigned.
   var hostDetectorView: RNGestureHandlerDetectorView? = null
 
-  val viewForEvents: RNGestureHandlerDetectorView
+  val viewForEvents: View
     get() {
-      assert(usesNativeOrVirtualDetector(actionType)) {
-        "[react-native-gesture-handler] `viewForEvents` can only be used with NativeDetector."
-      }
-
-      val detector = if (actionType ==
-        ACTION_TYPE_VIRTUAL_DETECTOR
-      ) {
-        this.hostDetectorView
-      } else if (this is NativeViewGestureHandler) {
-        this.view?.parent
+      return if (usesNativeOrVirtualDetector(actionType)) {
+        hostDetectorView!!
       } else {
-        view
+        view!!
       }
-
-      if (detector !is RNGestureHandlerDetectorView) {
-        throw Error(
-          "[react-native-gesture-handler] Expected RNGestureHandlerDetectorView to be the target for the event.",
-        )
-      }
-
-      return detector
     }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -140,6 +127,7 @@ open class GestureHandler {
   }
 
   open fun resetConfig() {
+    testID = null
     needsPointerData = DEFAULT_NEEDS_POINTER_DATA
     manualActivation = DEFAULT_MANUAL_ACTIVATION
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
@@ -420,10 +408,7 @@ open class GestureHandler {
       setPointerType(sourceEvent)
     }
 
-    if (sourceEvent.action == MotionEvent.ACTION_HOVER_ENTER ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_MOVE ||
-      sourceEvent.action == MotionEvent.ACTION_HOVER_EXIT
-    ) {
+    if (sourceEvent.isHoverAction()) {
       onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
     } else {
       onHandle(adaptedTransformedEvent, adaptedSourceEvent)
@@ -861,7 +846,7 @@ open class GestureHandler {
   open fun wantsToAttachDirectlyToView() = false
 
   override fun toString(): String {
-    val viewString = if (view == null) null else view!!.javaClass.simpleName
+    val viewString = testID ?: view?.javaClass?.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
   }
 
@@ -913,6 +898,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
         handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
       }
+      if (config.hasKey(KEY_TEST_ID)) {
+        handler.testID = config.getString(KEY_TEST_ID)
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
@@ -934,6 +922,7 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
+      private const val KEY_TEST_ID = "testID"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
@@ -1025,7 +1014,7 @@ open class GestureHandler {
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
     const val POINTER_TYPE_OTHER = 3
-    private const val MAX_POINTERS_COUNT = 12
+    private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
