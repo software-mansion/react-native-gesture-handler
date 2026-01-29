@@ -1,8 +1,9 @@
+
 jest.mock('./src/RNGestureHandlerModule', () => require('./src/mocks/module'));
 jest.mock('./src/components/GestureButtons', () => require('./src/mocks/gestureButtons'));
 jest.mock('./src/components/Pressable/Pressable', () => require('./src/mocks/Pressable'));
-jest.mock('./src/components/GestureComponents', () => require('./src/mocks/gestureComponents'))
-jest.mock('./src/v3/detectors/HostGestureDetector', () => require('./src/mocks/hostDetector'))
+jest.mock('./src/components/GestureComponents', () => require('./src/mocks/gestureComponents'));
+jest.mock('./src/v3/detectors/HostGestureDetector', () => require('./src/mocks/hostDetector'));
 
 jest.mock('./lib/commonjs/RNGestureHandlerModule', () =>
   require('./lib/commonjs/mocks/module')
