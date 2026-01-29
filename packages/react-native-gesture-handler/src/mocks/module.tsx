@@ -11,6 +11,7 @@ const setGestureHandlerConfig = NOOP;
 const updateGestureHandlerConfig = NOOP;
 const flushOperations = NOOP;
 const configureRelations = NOOP;
+const setReanimatedAvailable = NOOP;
 const install = NOOP;
 
 const PanGestureHandler = View;
@@ -29,6 +30,7 @@ export default {
   setGestureHandlerConfig,
   updateGestureHandlerConfig,
   configureRelations,
+  setReanimatedAvailable,
   flushOperations,
   install,
   NativeViewGestureHandler,
