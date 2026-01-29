@@ -186,10 +186,14 @@ code2={
 
 ## Old components
 
-Components have been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the old components are also available and are prefixed with `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`.
+### Buttons 
+
+The implementation of buttons has been updated, resolving most button-related issues. They have also been internally rewritten to utilize the new hook API. The original button components are still accessible but have been renamed with the prefix `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`.
+
+Although the old button components are still available, their underlying implementation has been modified as well.
 
 <details>
-<summary>Legacy components</summary>
+<summary>Legacy buttons</summary>
 
 | RNGH2                 | RNGH3                       |
 | --------------------- | --------------------------- |
@@ -197,7 +201,18 @@ Components have been internally rewritten using the new hook API but are exporte
 | `BaseButton`          | `LegacyBaseButton`          |
 | `RectButton`          | `LegacyRectButton`          |
 | `BorderlessButton`    | `LegacyBorderlessButton`    |
-|                       |                             |
+
+</details>
+
+### Other components
+
+Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the old components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
+
+<details>
+<summary>Legacy components</summary>
+
+| RNGH2                 | RNGH3                       |
+| --------------------- | --------------------------- |
 | `ScrollView`          | `LegacyScrollView`          |
 | `FlatList`            | `LegacyFlatList`            |
 | `RefreshControl`      | `LegacyRefreshControl`      |
