@@ -29,10 +29,10 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: yarn --immutable
+          cache: yarn
 
       - name: Install node dependencies
-        run: yarn
+        run: yarn --immutable
 
       - name: Run jest tests
         run: yarn test
