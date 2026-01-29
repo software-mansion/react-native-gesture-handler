@@ -74,11 +74,17 @@ function getVersion(releaseType, preReleaseVersion = null) {
     const commitlyVersion = `${major}.${minor + 1}.${0}-nightly-${currentDate}-${currentSHA.slice(0, 9)}`;
     return commitlyVersion;
   } else if (releaseType === ReleaseType.BETA || releaseType === ReleaseType.RELEASE_CANDIDATE) {
-    if (preReleaseVersion == null) {
-      throw new Error(`Version must be provided for ${releaseType} releases`);
+    let versionToUse = preReleaseVersion;
+
+    if (!versionToUse) {
+      versionToUse = getStableBranchVersion().slice(0, 2).join('.') + '.0';
     }
 
-    return getNextPreReleaseVersion(releaseType, preReleaseVersion);
+    if (versionToUse == null) {
+      throw new Error(`Could not determine base version for pre-release type: ${releaseType}`);
+    }
+
+    return getNextPreReleaseVersion(releaseType, versionToUse);
   }
 
   const [major, minor, patch] = getNextStableVersion();
@@ -110,8 +116,7 @@ function setPackageVersion() {
   }
 
   assert([isCommitly, isBeta, isReleaseCandidate].filter(Boolean).length <= 1, 'Release flags --commitly, --beta, and --rc are mutually exclusive; specify at most one');
-  assert(version === null || isBeta || isReleaseCandidate, 'Version should not be provided for stable nor commitly releases');
-  assert(version !== null || (!isBeta && !isReleaseCandidate), 'Version must be provided for beta and release candidate releases');
+  assert(version === null || isBeta || isReleaseCandidate || !isCommitly, 'Version should not be provided for stable nor commitly releases');
 
   const releaseType = isCommitly
     ? ReleaseType.COMMITLY
