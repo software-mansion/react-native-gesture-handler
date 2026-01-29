@@ -311,6 +311,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return;
   }
 
+  // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
+  // since the handler is being reset, so these events are wrong.
+  if (fromReset && _lastState == RNGestureHandlerStateUndetermined) {
+    return;
+  }
+
   _state = [self recognizerState];
 
   // From iOS 26.0 when recognizers are reset, their state is also changed to UIGestureRecognizerStatePossible.
