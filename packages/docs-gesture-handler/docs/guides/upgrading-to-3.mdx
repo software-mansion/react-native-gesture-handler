@@ -151,7 +151,15 @@ Full changes are as follows:
 | `gesture.blocksExternalGesture`           | `gesture.block`             |
 
 
-## Using SVG
+## Migrating components relying on view hierarchy
+
+Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/fundamentals/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector).
+
+:::danger Detectors order
+`VirtualGestureDetector` has to be a child of `InterceptingGestureDetector`.
+:::
+
+### Migrating SVG
 
 In Gesture Handler 2 it was possible to use `GestureDetector` directly on `SVG`. In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`.
 
@@ -179,10 +187,6 @@ code2={
 </InterceptingGestureDetector>
 `}
 />
-
-:::danger Detectors order
-`VirtualGestureDetector` has to be a child of `InterceptingGestureDetector`.
-:::
 
 ## Old components
 
