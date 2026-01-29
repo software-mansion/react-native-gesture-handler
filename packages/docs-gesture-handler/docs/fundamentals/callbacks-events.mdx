@@ -5,7 +5,7 @@ sidebar_label: Gesture callbacks & events
 sidebar_position: 7
 ---
 
-import {GestureEventFlowChart, TouchEventFlowChart} from '@site/src/examples/CallbacksFlowCharts'
+import { GestureEventFlowChart, TouchEventFlowChart } from '@site/src/examples/CallbacksFlowCharts'
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
 At any given time, each handler instance has an assigned [state](/docs/under-the-hood/state) that can change when new touch events occur or can be forced to change by the touch system in certain circumstances. You can hook into state transitions using specific [gesture callbacks](#callbacks).
@@ -151,14 +151,6 @@ export const State = {
   CANCELLED: 3,
   ACTIVE: 4,
   END: 5,
-} as const;
-
-export const TouchEventType = {
-  UNDETERMINED: 0,
-  TOUCHES_DOWN: 1,
-  TOUCHES_MOVE: 2,
-  TOUCHES_UP: 3,
-  TOUCHES_CANCEL: 4,
 } as const;
 
 export const TouchEventType = {

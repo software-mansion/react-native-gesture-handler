@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Network } from 'vis-network/standalone';
 import { useColorMode } from '@docusaurus/theme-common';
 
@@ -13,14 +13,16 @@ const mobileThreshold = 996;
 
 export default function FlowChart({ nodes, edges }) {
   const containerRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth <= mobileThreshold : false
-  );
+  const [isMobile, setIsMobile] = useState(false);
 
   const { colorMode } = useColorMode();
   const isDark = colorMode === 'dark';
 
   useEffect(() => {
+    // This won't cause unnecessary re-renders as it's only run on mount
+    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect
+    setIsMobile(window.innerWidth <= mobileThreshold);
+
     const handleResize = () => {
       setIsMobile(window.innerWidth <= mobileThreshold);
     };
