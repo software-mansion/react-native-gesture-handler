@@ -33,6 +33,7 @@ export class GestureHandlerWebDelegate
   };
 
   private areContextMenuListenersAdded = false;
+  private wasContextMenuEnabled = false;
 
   init(viewRef: number, handler: IGestureHandler): void {
     if (!viewRef) {
@@ -158,9 +159,11 @@ export class GestureHandlerWebDelegate
     }
 
     if (this.shouldDisableContextMenu()) {
+      this.wasContextMenuEnabled = false;
       this.view.addEventListener('contextmenu', this.disableContextMenu);
       this.areContextMenuListenersAdded = true;
     } else if (this.gestureHandler.enableContextMenu) {
+      this.wasContextMenuEnabled = true;
       this.view.addEventListener('contextmenu', this.enableContextMenu);
       this.areContextMenuListenersAdded = true;
     }
@@ -173,10 +176,14 @@ export class GestureHandlerWebDelegate
 
     this.ensureView(this.view);
 
-    if (this.shouldDisableContextMenu()) {
+    if (!this.areContextMenuListenersAdded) {
+      return;
+    }
+
+    if (!this.wasContextMenuEnabled) {
       this.view.removeEventListener('contextmenu', this.disableContextMenu);
       this.areContextMenuListenersAdded = false;
-    } else if (this.gestureHandler.enableContextMenu) {
+    } else {
       this.view.removeEventListener('contextmenu', this.enableContextMenu);
       this.areContextMenuListenersAdded = false;
     }
@@ -220,11 +227,16 @@ export class GestureHandlerWebDelegate
   }
 
   private setContextMenu() {
-    if (this.gestureHandler.enabled) {
-      this.addContextMenuListeners();
-    } else {
+    if (!this.gestureHandler.enabled) {
+      this.removeContextMenuListeners();
+      return;
+    }
+
+    if (!this.wasContextMenuEnabled) {
       this.removeContextMenuListeners();
     }
+
+    this.addContextMenuListeners();
   }
 
   onEnabledChange(): void {
