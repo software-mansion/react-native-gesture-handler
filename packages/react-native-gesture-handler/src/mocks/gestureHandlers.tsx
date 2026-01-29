@@ -8,7 +8,6 @@ const LongPressGestureHandler = View;
 const PinchGestureHandler = View;
 const RotationGestureHandler = View;
 const FlingGestureHandler = View;
-const HostGestureDetector = View;
 
 export default {
   NativeViewGestureHandler,
@@ -19,5 +18,4 @@ export default {
   RotationGestureHandler,
   FlingGestureHandler,
   PanGestureHandler,
-  HostGestureDetector,
 } as const;
