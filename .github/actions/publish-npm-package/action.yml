@@ -62,6 +62,12 @@ runs:
       run: |
         node ./scripts/release/validate-latest-version.js ${{ steps.set-package-version.outputs.version }}
 
+    - name: Validate non-latest version
+      if: steps.figure-out-npm-tag.outputs.tag-argument != '--tag latest'
+      shell: bash
+      run: |
+        node ./scripts/release/validate-non-latest-version.js ${{ steps.set-package-version.outputs.version }}
+
     - name: Print outputs
       shell: bash
       run: |
