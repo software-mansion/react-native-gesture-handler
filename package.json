@@ -15,7 +15,8 @@
     "ts-check": "yarn workspaces foreach --all --parallel --topological-dev run ts-check",
     "lint-js": "yarn workspaces foreach --all --parallel --topological-dev run lint-js",
     "format-js": "yarn workspaces foreach --all --parallel --topological-dev run format-js",
-    "clean": "yarn workspaces foreach --all --parallel --topological-dev run clean && rm -rf node_modules yarn.lock"
+    "clean": "yarn workspaces foreach --all --parallel --topological-dev run clean && rm -rf node_modules yarn.lock",
+    "test": "jest ./scripts"
   },
   "devDependencies": {
     "@types/react": "^19.0.12",
@@ -28,6 +29,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.37.5",
     "husky": "^8.0.1",
+    "jest": "^28.1.0",
     "lint-staged": "^12.3.2",
     "prettier": "3.3.3",
     "typescript": "~5.8.3"
