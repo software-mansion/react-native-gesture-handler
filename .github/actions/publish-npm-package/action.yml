@@ -107,13 +107,15 @@ runs:
 
     - name: Configure git
       if: inputs.release-type == 'stable'
+      id: configure-git
       shell: bash
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        echo "branch-name=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
     - name: Create release commit
-      if: inputs.release-type == 'stable'
+      if: inputs.release-type == 'stable' && steps.configure-git.outputs.branch-name != 'main'
       shell: bash
       run: |
         git add packages/react-native-gesture-handler/package.json
