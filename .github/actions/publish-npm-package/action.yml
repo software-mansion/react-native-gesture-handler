@@ -35,6 +35,39 @@ runs:
         echo "Updated package version to $VERSION"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+    - name: Figure out the correct npm tag
+      id: figure-out-npm-tag
+      shell: bash
+      run: |
+        if [ "${{ inputs.release-type == 'commitly' }}" = "true" ]; then
+          TAG_ARGUMENT="--tag nightly"
+        else
+          if [ "${{ inputs.release-type == 'beta' || inputs.release-type == 'rc' }}" = "true" ]; then
+            TAG_ARGUMENT="--tag next"
+          else
+            if [ $(node ./scripts/release/should-be-latest.js ${{ steps.set-package-version.outputs.version }}) = "true" ]; then
+              TAG_ARGUMENT="--tag latest"
+            else
+              TAG_ARGUMENT=""
+            fi
+          fi
+        fi
+
+        echo "Determined tag argument: $TAG_ARGUMENT"
+        echo "tag-argument=$TAG_ARGUMENT" >> $GITHUB_OUTPUT
+
+    - name: Validate latest version
+      if: steps.figure-out-npm-tag.outputs.tag-argument == '--tag latest'
+      shell: bash
+      run: |
+        node ./scripts/release/validate-latest-version.js ${{ steps.set-package-version.outputs.version }}
+
+    - name: Print outputs
+      shell: bash
+      run: |
+        echo "Version to be published: ${{ steps.set-package-version.outputs.version }}"
+        echo "NPM tag argument: ${{ steps.figure-out-npm-tag.outputs.tag-argument }}"
+
     # Ensure npm 11.5.1 or later is installed for OIDC
     - name: Update npm
       shell: bash
@@ -65,39 +98,6 @@ runs:
       with:
         name: ${{ env.PACKAGE_NAME }}
         path: './packages/react-native-gesture-handler/${{ env.PACKAGE_NAME }}'
-
-    - name: Figure out the correct npm tag
-      id: figure-out-npm-tag
-      shell: bash
-      run: |
-        if [ "${{ inputs.release-type == 'commitly' }}" = "true" ]; then
-          TAG_ARGUMENT="--tag nightly"
-        else
-          if [ "${{ inputs.release-type == 'beta' || inputs.release-type == 'rc' }}" = "true" ]; then
-            TAG_ARGUMENT="--tag next"
-          else
-            if [ $(node ./scripts/release/should-be-latest.js ${{ steps.set-package-version.outputs.version }}) = "true" ]; then
-              TAG_ARGUMENT="--tag latest"
-            else
-              TAG_ARGUMENT=""
-            fi
-          fi
-        fi
-
-        echo "Determined tag argument: $TAG_ARGUMENT"
-        echo "tag-argument=$TAG_ARGUMENT" >> $GITHUB_OUTPUT
-
-    - name: Print outputs
-      shell: bash
-      run: |
-        echo "Version to be published: ${{ steps.set-package-version.outputs.version }}"
-        echo "NPM tag argument: ${{ steps.figure-out-npm-tag.outputs.tag-argument }}"
-
-    - name: Validate latest version
-      if: steps.figure-out-npm-tag.outputs.tag-argument == '--tag latest'
-      shell: bash
-      run: |
-        node ./scripts/release/validate-latest-version.js ${{ steps.set-package-version.outputs.version }}
 
     - name: Publish npm package
       shell: bash
