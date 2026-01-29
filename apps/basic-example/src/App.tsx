@@ -7,6 +7,7 @@ import Navigator from './Navigator';
 import Text from './Text';
 import NativeDetector from './NativeDetector';
 import RuntimeDecoration from './RuntimeDecoration';
+import ContentsButton from './ContentsButton';
 
 const EXAMPLES = [
   {
@@ -20,6 +21,10 @@ const EXAMPLES = [
   {
     name: 'Native Detector',
     component: NativeDetector,
+  },
+  {
+    name: 'Contents Button',
+    component: ContentsButton,
   },
 ];
 

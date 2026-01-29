@@ -1,4 +1,5 @@
 export type {
+  LegacyPressableProps,
   PressableProps,
   PressableStateCallbackType,
 } from './PressableProps';

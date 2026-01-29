@@ -1,4 +1,4 @@
-import React, { Ref, RefObject, useEffect, useRef } from 'react';
+import React, { Ref, RefObject, useEffect, useMemo, useRef } from 'react';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { ActionType } from '../../ActionType';
 import { PropsRef } from '../../web/interfaces';
@@ -26,6 +26,8 @@ const EMPTY_HANDLERS = new Set<number>();
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
+
+  const handlerTagsSet = useMemo(() => new Set(handlerTags), [...handlerTags]);
 
   const viewRef = useRef<Element>(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
@@ -110,25 +112,31 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         tagMessage('Detector expected to have exactly one child element')
       );
     }
+  }, [children]);
 
-    const currentHandlerTags = new Set(handlerTags);
-    detachHandlers(currentHandlerTags, attachedHandlers.current);
+  useEffect(() => {
+    if (React.Children.count(children) !== 1) {
+      throw new Error(
+        tagMessage('Detector expected to have exactly one child element')
+      );
+    }
+
+    detachHandlers(handlerTagsSet, attachedHandlers.current);
 
     attachHandlers(
       viewRef,
       propsRef,
-      currentHandlerTags,
+      handlerTagsSet,
       attachedHandlers.current,
       ActionType.NATIVE_DETECTOR
     );
-
     return () => {
       detachHandlers(EMPTY_HANDLERS, attachedHandlers.current);
       attachedVirtualHandlers?.current.forEach((childHandlerTags) => {
         detachHandlers(EMPTY_HANDLERS, childHandlerTags);
       });
     };
-  }, [handlerTags, children]);
+  }, [handlerTagsSet, viewRef]);
 
   useEffect(() => {
     const virtualChildrenToDetach: Set<number> = new Set(
