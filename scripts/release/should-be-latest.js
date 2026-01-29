@@ -12,17 +12,9 @@ function shouldBeLatest(version) {
   const latestVersion = getPackageVersionByTag('react-native-gesture-handler', 'latest');
   const [major, minor, patch] = parseVersion(latestVersion);
 
-  if (newMajor < major) {
-    throw new Error(`New major version ${newMajor} is less than latest major version ${major}`);
-  }
-
-  // TODO: We'll worry about 3.x.x later :)
-  if (newMajor !== major) {
-    throw new Error(`Expected major version to be ${major}, but got ${newMajor}`);
-  }
-
-  return (newMajor === major && newMinor === minor && newPatch === patch + 1) ||
-         (newMajor === major && newMinor === minor + 1 && newPatch === 0);
+  return (newMajor === major && newMinor === minor && newPatch >= patch + 1) ||
+         (newMajor === major && newMinor >= minor + 1) ||
+         (newMajor >= major + 1);
 }
 
 if (require.main === module) {
