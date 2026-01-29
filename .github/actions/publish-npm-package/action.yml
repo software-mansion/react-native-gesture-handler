@@ -2,7 +2,7 @@ name: publish-npm-package
 description: Build and publish react-native-gesture-handler package to npm
 inputs:
   release-type:
-    description: Release type to be publised (stable, commitly, beta, rc).
+    description: Release type to be published (stable, commitly, beta, rc).
     default: "commitly"
   version:
     description: Specific version to publish (usually inferred from x.y-stable branch name).
@@ -31,7 +31,7 @@ runs:
       id: set-package-version
       shell: bash
       run: |
-        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.release-type == 'commitly' && '--commitly' || '' }} ${{ inputs.release-type == 'beta' && '--beta' || '' }} ${{ inputs.release-type == 'rc' && '--rc' || '' }} ${{ inputs.version != '' && format('--version {0}', inputs.version) || '' }})
+        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.release-type == 'commitly' && '--commitly' || '' }} ${{ inputs.release-type == 'beta' && '--beta' || '' }} ${{ inputs.release-type == 'rc' && '--rc' || '' }} ${{ inputs.version != '' && format('--version ''{0}''', inputs.version) || '' }})
         echo "Updated package version to $VERSION"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 

@@ -22,10 +22,6 @@ function getVersion(releaseType, versionHint = null) {
       versionToUse = getStableBranchVersion().slice(0, 2).join('.') + '.0';
     }
 
-    if (versionToUse == null) {
-      throw new Error(`Could not determine base version for pre-release type: ${releaseType}`);
-    }
-
     return getNextPreReleaseVersion(releaseType, versionToUse);
   }
 

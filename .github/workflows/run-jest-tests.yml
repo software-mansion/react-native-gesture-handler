@@ -25,11 +25,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22
+      - name: Use Node.js 24
         uses: actions/setup-node@v6
         with:
-          node-version: 22
-          cache: yarn
+          node-version: 24
+          cache: yarn --immutable
 
       - name: Install node dependencies
         run: yarn

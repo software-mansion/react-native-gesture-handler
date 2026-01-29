@@ -11,7 +11,7 @@ function versionExists(version) {
 }
 
 function validateNonLatestVersion(version) {
-  const [newMajor, newMinor, newPatch, newPreRelease] = parseVersion(version);
+  const [newMajor, newMinor, newPatch, _] = parseVersion(version);
   
   if (versionExists(`${newMajor}.${newMinor}.${newPatch}`)) {
     throw new Error(`Version ${newMajor}.${newMinor}.${newPatch} already exists in the npm registry`);
