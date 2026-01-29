@@ -32,7 +32,7 @@ function parseArguments() {
   }
 
   assert([isCommitly, isBeta, isReleaseCandidate].filter(Boolean).length <= 1, 'Release flags --commitly, --beta, and --rc are mutually exclusive; specify at most one');
-  assert(version === null || isBeta || isReleaseCandidate, 'Version should not be provided for stable nor commitly releases');
+  assert(version === null || isBeta || isReleaseCandidate || !isCommitly, 'Version should not be provided for commitly releases');
 
   const releaseType = isCommitly
     ? ReleaseType.COMMITLY

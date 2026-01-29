@@ -1,8 +1,8 @@
 const { execSync } = require('child_process');
-const { getStableBranchVersion, getLatestVersion, getNextPreReleaseVersion, getNextStableVersion } = require('./version-utils');
+const { getStableBranchVersion, getLatestVersion, getNextPreReleaseVersion, getNextStableVersion, parseVersion } = require('./version-utils');
 const { ReleaseType } = require('./parse-arguments');
 
-function getVersion(releaseType, preReleaseVersion = null) {
+function getVersion(releaseType, versionHint = null) {
   if (releaseType === ReleaseType.COMMITLY) {
     const [major, minor] = getLatestVersion();
 
@@ -16,7 +16,7 @@ function getVersion(releaseType, preReleaseVersion = null) {
     const commitlyVersion = `${major}.${minor + 1}.${0}-nightly-${currentDate}-${currentSHA.slice(0, 9)}`;
     return commitlyVersion;
   } else if (releaseType === ReleaseType.BETA || releaseType === ReleaseType.RELEASE_CANDIDATE) {
-    let versionToUse = preReleaseVersion;
+    let versionToUse = versionHint;
 
     if (!versionToUse) {
       versionToUse = getStableBranchVersion().slice(0, 2).join('.') + '.0';
@@ -29,7 +29,7 @@ function getVersion(releaseType, preReleaseVersion = null) {
     return getNextPreReleaseVersion(releaseType, versionToUse);
   }
 
-  const [major, minor, patch] = getNextStableVersion();
+  const [major, minor, patch] = versionHint ? parseVersion(versionHint) : getNextStableVersion();
   return `${major}.${minor}.${patch}`;
 }
 

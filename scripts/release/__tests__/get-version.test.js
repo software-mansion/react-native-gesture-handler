@@ -7,10 +7,11 @@ jest.mock('../version-utils', () => ({
   getLatestVersion: jest.fn(),
   getNextPreReleaseVersion: jest.fn(),
   getNextStableVersion: jest.fn(),
+  parseVersion: jest.fn(),
 }));
 
 const { execSync } = require('child_process');
-const { getStableBranchVersion, getLatestVersion, getNextPreReleaseVersion, getNextStableVersion } = require('../version-utils');
+const { getStableBranchVersion, getLatestVersion, getNextPreReleaseVersion, getNextStableVersion, parseVersion } = require('../version-utils');
 const { getVersion } = require('../get-version');
 const { ReleaseType } = require('../parse-arguments');
 
@@ -183,13 +184,13 @@ describe('get-version', () => {
         expect(result).toBe('2.22.5');
       });
 
-      test('ignores preReleaseVersion parameter for stable', () => {
-        getNextStableVersion.mockReturnValue([2, 22, 0]);
+      test('uses versionHint parameter for stable when provided', () => {
+        parseVersion.mockReturnValue([2, 22, 0]);
 
-        const result = getVersion(ReleaseType.STABLE, '2.99.0');
+        const result = getVersion(ReleaseType.STABLE, '2.22.0');
 
         expect(result).toBe('2.22.0');
-        expect(getNextStableVersion).toHaveBeenCalled();
+        expect(parseVersion).toHaveBeenCalled();
       });
     });
   });

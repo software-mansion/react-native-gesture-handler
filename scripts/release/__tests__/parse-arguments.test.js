@@ -19,6 +19,12 @@ describe('parse-arguments', () => {
       expect(result).toEqual({ releaseType: ReleaseType.STABLE, version: null });
     });
 
+    test('returns stable release type with --version flag', () => {
+      process.argv = ['node', 'script.js', '--version', '2.22.0'];
+      const result = parseArguments();
+      expect(result).toEqual({ releaseType: ReleaseType.STABLE, version: '2.22.0' });
+    });
+
     // Single flag tests
     test('returns commitly release type with --commitly flag', () => {
       process.argv = ['node', 'script.js', '--commitly'];
@@ -78,12 +84,7 @@ describe('parse-arguments', () => {
       expect(() => parseArguments()).toThrow('Release flags --commitly, --beta, and --rc are mutually exclusive');
     });
 
-    // Version not allowed for stable/commitly
-    test('throws error when version provided for stable release', () => {
-      process.argv = ['node', 'script.js', '--version', '2.22.0'];
-      expect(() => parseArguments()).toThrow('Version should not be provided for stable nor commitly releases');
-    });
-
+    // Version not allowed for commitly
     test('throws error when version provided for commitly release', () => {
       process.argv = ['node', 'script.js', '--commitly', '--version', '2.22.0'];
       expect(() => parseArguments()).toThrow();
