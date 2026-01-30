@@ -1,6 +1,7 @@
 import { State } from '../State';
 import { tagMessage } from '../utils';
 import IGestureHandler from '../web/handlers/IGestureHandler';
+import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
 import NodeManager from '../web/tools/NodeManager';
 import { GestureStateManagerType } from './gestureStateManager';
 
@@ -20,6 +21,7 @@ export const GestureStateManager: GestureStateManagerType = {
     const handler = NodeManager.getHandler(handlerTag);
     ensureHandlerAttached(handler);
 
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
     handler.begin();
   },
 
@@ -33,6 +35,7 @@ export const GestureStateManager: GestureStateManagerType = {
       handler.begin();
     }
 
+    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
     handler.activate(true);
   },
 
