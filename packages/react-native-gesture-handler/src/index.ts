@@ -148,9 +148,10 @@ export type {
 
 export type {
   PressableProps,
+  LegacyPressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';
-export { default as Pressable } from './components/Pressable';
+export { default as LegacyPressable } from './components/Pressable';
 
 export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
 

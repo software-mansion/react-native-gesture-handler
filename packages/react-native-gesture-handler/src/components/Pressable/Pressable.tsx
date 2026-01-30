@@ -9,8 +9,8 @@ import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObject
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import {
   PressableEvent,
-  PressableProps,
   PressableDimensions,
+  LegacyPressableProps,
 } from './PressableProps';
 import {
   Insets,
@@ -40,7 +40,7 @@ import { PressableStateMachine } from './StateMachine';
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
-const Pressable = (props: PressableProps) => {
+const Pressable = (props: LegacyPressableProps) => {
   const {
     testOnly_pressed,
     hitSlop,

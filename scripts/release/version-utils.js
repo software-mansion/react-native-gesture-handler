@@ -1,11 +1,15 @@
 const { execSync } = require('child_process');
 
-const VERSION_REGEX = /^(\d+)\.(\d+)\.(\d+)$/;
+const VERSION_REGEX = /^(\d+)\.(\d+)\.(\d+)(-.*)?$/;
 const BRANCH_REGEX = /^(\d+)\.(\d+)-stable$/;
 
 function parseVersion(version) {
-  const [, major, minor, patch] = version.match(VERSION_REGEX);
-  return [Number(major), Number(minor), Number(patch)];
+  const match = version.match(VERSION_REGEX);
+  if (!match) {
+    throw new Error(`Invalid version string: ${version}`);
+  }
+  const [, major, minor, patch, preRelease] = match;
+  return [Number(major), Number(minor), Number(patch), preRelease || null];
 }
 
 function getStableBranchVersion() {

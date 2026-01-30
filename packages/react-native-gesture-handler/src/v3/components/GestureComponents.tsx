@@ -66,7 +66,7 @@ export const ScrollView = (
 
   const updateGesture = (gesture: NativeGesture) => {
     ghQueueMicrotask(() => {
-      if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+      if (!scrollGesture || scrollGesture.handlerTag !== gesture.handlerTag) {
         setScrollGesture(gesture);
         onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
       }
@@ -123,7 +123,7 @@ export const FlatList = ((props) => {
 
   const updateGesture = (gesture: NativeGesture) => {
     ghQueueMicrotask(() => {
-      if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+      if (!scrollGesture || scrollGesture.handlerTag !== gesture.handlerTag) {
         setScrollGesture(gesture);
         onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?.(gesture);
       }

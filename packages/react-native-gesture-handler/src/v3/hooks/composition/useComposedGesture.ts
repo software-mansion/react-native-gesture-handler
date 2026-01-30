@@ -1,11 +1,9 @@
 import {
-  StateChangeEventWithHandlerData,
-  UpdateEventWithHandlerData,
-  TouchEvent,
   ComposedGesture,
   ComposedGestureName,
   AnyGesture,
   ComposedGestureConfig,
+  GestureHandlerEventWithHandlerData,
 } from '../../types';
 import { tagMessage } from '../../../utils';
 import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
@@ -16,11 +14,11 @@ export function useComposedGesture(
   type: ComposedGestureName,
   ...gestures: AnyGesture[]
 ): ComposedGesture {
-  const tags = gestures.flatMap((gesture) =>
-    isComposedGesture(gesture) ? gesture.tags : gesture.tag
+  const handlerTags = gestures.flatMap((gesture) =>
+    isComposedGesture(gesture) ? gesture.handlerTags : [gesture.handlerTag]
   );
 
-  if (containsDuplicates(tags)) {
+  if (containsDuplicates(handlerTags)) {
     throw new Error(
       tagMessage(
         'Each gesture can be used only once in the gesture composition.'
@@ -45,63 +43,31 @@ export function useComposedGesture(
     );
   }
 
-  const onGestureHandlerStateChange = (
-    event: StateChangeEventWithHandlerData<unknown>
+  const jsEventHandler = (
+    event: GestureHandlerEventWithHandlerData<unknown>
   ) => {
     for (const gesture of gestures) {
-      if (gesture.detectorCallbacks.onGestureHandlerStateChange) {
-        gesture.detectorCallbacks.onGestureHandlerStateChange(event);
+      if (gesture.detectorCallbacks.jsEventHandler) {
+        gesture.detectorCallbacks.jsEventHandler(event);
       }
     }
   };
 
-  const onGestureHandlerEvent = (
-    event: UpdateEventWithHandlerData<unknown>
-  ) => {
-    for (const gesture of gestures) {
-      if (gesture.detectorCallbacks.onGestureHandlerEvent) {
-        gesture.detectorCallbacks.onGestureHandlerEvent(event);
-      }
-    }
-  };
-
-  const onGestureHandlerTouchEvent = (event: TouchEvent) => {
-    for (const gesture of gestures) {
-      if (gesture.detectorCallbacks.onGestureHandlerTouchEvent) {
-        gesture.detectorCallbacks.onGestureHandlerTouchEvent(event);
-      }
-    }
-  };
-
-  const onReanimatedStateChange = Reanimated?.useComposedEventHandler(
+  const reanimatedEventHandler = Reanimated?.useComposedEventHandler(
     gestures.map(
-      (gesture) => gesture.detectorCallbacks.onReanimatedStateChange || null
+      (gesture) => gesture.detectorCallbacks.reanimatedEventHandler || null
     )
   );
 
-  const onReanimatedUpdateEvent = Reanimated?.useComposedEventHandler(
-    gestures.map(
-      (gesture) => gesture.detectorCallbacks.onReanimatedUpdateEvent || null
-    )
-  );
-
-  const onReanimatedTouchEvent = Reanimated?.useComposedEventHandler(
-    gestures.map(
-      (gesture) => gesture.detectorCallbacks.onReanimatedTouchEvent || null
-    )
-  );
-
-  let onGestureHandlerAnimatedEvent;
+  let animatedEventHandler;
 
   const gesturesWithAnimatedEvent = gestures.filter(
-    (gesture) =>
-      gesture.detectorCallbacks.onGestureHandlerAnimatedEvent !== undefined
+    (gesture) => gesture.detectorCallbacks.animatedEventHandler !== undefined
   );
 
   if (gesturesWithAnimatedEvent.length > 0) {
-    onGestureHandlerAnimatedEvent =
-      gesturesWithAnimatedEvent[0].detectorCallbacks
-        .onGestureHandlerAnimatedEvent;
+    animatedEventHandler =
+      gesturesWithAnimatedEvent[0].detectorCallbacks.animatedEventHandler;
 
     if (__DEV__ && gesturesWithAnimatedEvent.length > 1) {
       console.warn(
@@ -113,17 +79,13 @@ export function useComposedGesture(
   }
 
   return {
-    tags,
+    handlerTags,
     type,
     config,
     detectorCallbacks: {
-      onGestureHandlerStateChange,
-      onGestureHandlerEvent,
-      onGestureHandlerTouchEvent,
-      onReanimatedStateChange,
-      onReanimatedUpdateEvent,
-      onReanimatedTouchEvent,
-      onGestureHandlerAnimatedEvent,
+      jsEventHandler,
+      reanimatedEventHandler,
+      animatedEventHandler,
     },
     externalSimultaneousHandlers: [],
     gestures,

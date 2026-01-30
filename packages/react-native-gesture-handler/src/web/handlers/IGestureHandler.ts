@@ -13,10 +13,12 @@ import type PointerTracker from '../tools/PointerTracker';
 import { SingleGestureName } from '../../v3/types';
 
 export default interface IGestureHandler {
+  attached: boolean;
   active: boolean;
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
+  readonly testID?: string;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;

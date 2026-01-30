@@ -2,6 +2,8 @@ package com.swmansion.gesturehandler.react
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -9,6 +11,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
@@ -160,6 +163,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     // Note: RefreshControl is wrapped with a VirtualDetector, and native gestures for it are attached in `attachVirtualChildren`.
     val id = if (child is ReactSwipeRefreshLayout) {
       child.getChildAt(0).id
+      // TODO: figure out how to do it correctly
+    } else if (child is ViewGroup && child.isNotEmpty()) {
+      child.tryFindGestureHandlerButton()?.id ?: child.id
     } else {
       child.id
     }
@@ -203,6 +209,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
   }
 
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    RNGestureHandlerRootView.findGestureHandlerRootView(this)?.recordHandlerIfNotPresent(handler)
+  }
+
   private fun ReadableArray.mapVirtualChildren(): List<VirtualChildren> = List(size()) { i ->
     val child = getMap(i) ?: return@List null
     val handlerTags = child.getArray("handlerTags")?.toIntList().orEmpty()
@@ -212,4 +222,15 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }.filterNotNull()
 
   private fun ReadableArray.toIntList(): List<Int> = List(size()) { getInt(it) }
+
+  private fun ViewGroup.tryFindGestureHandlerButton(): RNGestureHandlerButtonViewManager.ButtonViewGroup? {
+    if (isNotEmpty()) {
+      val child = getChildAt(0)
+      if (child is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+        return child
+      }
+    }
+
+    return null
+  }
 }

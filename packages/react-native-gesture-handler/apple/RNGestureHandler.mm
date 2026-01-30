@@ -10,6 +10,7 @@
 
 #import <React/UIView+React.h>
 
+#import <React/RCTEnhancedScrollView.h>
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 
@@ -101,6 +102,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)resetConfig
 {
   self.enabled = YES;
+  self.testID = nil;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
   _hitSlop = RNGHHitSlopEmpty;
@@ -123,6 +125,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   id prop = config[@"enabled"];
   if (prop != nil) {
     self.enabled = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"testID"];
+  if (prop != nil) {
+    self.testID = [RCTConvert NSString:prop];
   }
 
   prop = config[@"shouldCancelWhenOutside"];
@@ -294,6 +301,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
+  // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
+  // since the handler is being reset, so these events are wrong.
+  if (fromReset && _lastState == RNGestureHandlerStateUndetermined) {
+    return;
+  }
+
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
@@ -646,6 +659,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIScrollView *)retrieveScrollView:(RNGHUIView *)view
 {
+  if ([view isKindOfClass:[RCTEnhancedScrollView class]]) {
+    return (RCTEnhancedScrollView *)view;
+  }
+
   if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
     RNGHUIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     return scrollView;

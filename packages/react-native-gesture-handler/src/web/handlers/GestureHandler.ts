@@ -48,6 +48,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
+  private _testID?: string = undefined;
 
   private hitSlop?: HitSlop = undefined;
   private manualActivation: boolean = false;
@@ -65,6 +66,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private _awaiting = false;
   private _active = false;
+  private _attached = false;
 
   private _shouldResetProgress = false;
   private _pointerType: PointerType = PointerType.MOUSE;
@@ -85,6 +87,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ) {
+    this.attached = true;
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
@@ -105,6 +108,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.state = State.UNDETERMINED;
     this.forAnimated = false;
     this.forReanimated = false;
+    this.attached = false;
 
     this.delegate.detach();
   }
@@ -743,6 +747,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.validateHitSlops();
     }
 
+    if (config.testID !== undefined) {
+      this._testID = config.testID;
+    }
+
     if (config.dispatchesAnimatedEvents !== undefined) {
       this.forAnimated = config.dispatchesAnimatedEvents;
     }
@@ -936,6 +944,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected resetConfig(): void {
+    this._testID = undefined;
     this.manualActivation = false;
     this.shouldCancelWhenOutside = false;
     this.mouseButton = undefined;
@@ -963,6 +972,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   public set handlerTag(value: number) {
     this._handlerTag = value;
+  }
+
+  public get testID() {
+    return this._testID;
   }
 
   public get delegate() {
@@ -1007,6 +1020,13 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected set awaiting(value) {
     this._awaiting = value;
+  }
+
+  public get attached() {
+    return this._attached;
+  }
+  protected set attached(value) {
+    this._attached = value;
   }
 
   public get activationIndex() {

@@ -14,8 +14,4 @@ class ReanimatedProxy {
 
     reanimatedModule?.nodesManager?.onEventDispatch(event)
   }
-
-  companion object {
-    const val REANIMATED_INSTALLED = true
-  }
 }

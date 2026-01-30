@@ -57,8 +57,8 @@ export function VirtualDetector<THandlerData, TConfig>(
     }
 
     const handlerTags = isComposedGesture(props.gesture)
-      ? props.gesture.tags
-      : [props.gesture.tag];
+      ? props.gesture.handlerTags
+      : [props.gesture.handlerTag];
 
     if (props.gesture.config.dispatchesAnimatedEvents) {
       throw new Error(

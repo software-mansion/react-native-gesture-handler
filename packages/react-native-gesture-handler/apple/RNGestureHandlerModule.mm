@@ -42,7 +42,6 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   jsi::Runtime *_rnRuntime;
   int _moduleId;
 
-  bool _checkedIfReanimatedIsAvailable;
   bool _isReanimatedAvailable;
   bool _uiRuntimeDecorated;
 }
@@ -121,10 +120,6 @@ RCT_EXPORT_MODULE()
 
 - (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
-  if (!_checkedIfReanimatedIsAvailable) {
-    _isReanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
-  }
-
   if (_isReanimatedAvailable && !_uiRuntimeDecorated) {
     _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
@@ -191,6 +186,11 @@ RCT_EXPORT_MODULE()
   }];
 }
 
+- (void)setReanimatedAvailable:(BOOL)isAvailable
+{
+  _isReanimatedAvailable = isAvailable;
+}
+
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
   if (RCTIsMainQueue()) {
@@ -207,6 +207,12 @@ RCT_EXPORT_MODULE()
   RCTAssertMainQueue();
   RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   RNGestureHandler *handler = [manager handlerWithTag:@(handlerTag)];
+
+  if (handler.hostDetectorView == nil && [handler usesNativeOrVirtualDetector]) {
+    @throw [NSException exceptionWithName:@"HandlerNotAttached"
+                                   reason:@"Manually handled gesture had not been assigned to any detector"
+                                 userInfo:nil];
+  }
 
   if (handler != nil) {
     if (state == 1) { // FAILED
