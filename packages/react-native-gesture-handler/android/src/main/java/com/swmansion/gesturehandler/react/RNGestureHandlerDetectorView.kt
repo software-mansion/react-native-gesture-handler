@@ -11,6 +11,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
@@ -206,6 +207,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       }
       child.value.clear()
     }
+  }
+
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    RNGestureHandlerRootView.findGestureHandlerRootView(this)?.recordHandlerIfNotPresent(handler)
   }
 
   private fun ReadableArray.mapVirtualChildren(): List<VirtualChildren> = List(size()) { i ->
