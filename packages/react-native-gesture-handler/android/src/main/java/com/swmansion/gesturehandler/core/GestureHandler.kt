@@ -763,6 +763,10 @@ open class GestureHandler {
   protected open fun onCancel() {}
   protected open fun onFail() {}
 
+  fun recordHandlerIfNotPresent() {
+    hostDetectorView?.recordHandlerIfNotPresent(this)
+  }
+
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
       return clickedButton == MotionEvent.BUTTON_PRIMARY
