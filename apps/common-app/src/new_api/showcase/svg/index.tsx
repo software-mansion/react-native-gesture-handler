@@ -38,9 +38,9 @@ export default function LogicDetectorExample() {
 
   return (
     <View style={commonStyles.centerView}>
-      <View style={{ backgroundColor: COLORS.PURPLE }}>
-        <InterceptingGestureDetector gesture={containerTap}>
-          <Svg height="250" width="250">
+      <InterceptingGestureDetector gesture={containerTap}>
+        <View style={{ backgroundColor: COLORS.PURPLE }}>
+          <Svg height="250" width="250" onPress={noop}>
             <VirtualGestureDetector gesture={circleElementTap}>
               <Circle
                 cx="125"
@@ -60,8 +60,8 @@ export default function LogicDetectorExample() {
               />
             </VirtualGestureDetector>
           </Svg>
-        </InterceptingGestureDetector>
-      </View>
+        </View>
+      </InterceptingGestureDetector>
       <Feedback ref={feedbackRef} />
     </View>
   );
