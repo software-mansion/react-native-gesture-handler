@@ -143,6 +143,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   private fun setGestureStateSync(handlerTag: Int, newState: Int) {
     UiThreadUtil.assertOnUiThread()
+
     registry.getHandler(handlerTag)?.let { handler ->
       if (handler.state == GestureHandler.STATE_UNDETERMINED) {
         handler.forceReinitializeDuringOnHandle = true
