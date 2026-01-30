@@ -301,6 +301,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
+  // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
+  // since the handler is being reset, so these events are wrong.
+  if (fromReset && _lastState == RNGestureHandlerStateUndetermined) {
+    return;
+  }
+
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
@@ -308,12 +314,6 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   // would be nil.
   if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
       _actionType != RNGestureHandlerActionTypeVirtualDetector) {
-    return;
-  }
-
-  // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
-  // since the handler is being reset, so these events are wrong.
-  if (fromReset && _lastState == RNGestureHandlerStateUndetermined) {
     return;
   }
 
