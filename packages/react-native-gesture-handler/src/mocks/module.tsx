@@ -1,5 +1,3 @@
-import { View } from 'react-native';
-
 const NOOP = () => {
   // Do nothing
 };
@@ -14,15 +12,6 @@ const configureRelations = NOOP;
 const setReanimatedAvailable = NOOP;
 const install = NOOP;
 
-const PanGestureHandler = View;
-const NativeViewGestureHandler = View;
-const TapGestureHandler = View;
-const ForceTouchGestureHandler = View;
-const LongPressGestureHandler = View;
-const PinchGestureHandler = View;
-const RotationGestureHandler = View;
-const FlingGestureHandler = View;
-
 export default {
   attachGestureHandler,
   createGestureHandler,
@@ -33,12 +22,4 @@ export default {
   setReanimatedAvailable,
   flushOperations,
   install,
-  NativeViewGestureHandler,
-  TapGestureHandler,
-  ForceTouchGestureHandler,
-  LongPressGestureHandler,
-  PinchGestureHandler,
-  RotationGestureHandler,
-  FlingGestureHandler,
-  PanGestureHandler,
 } as const;
