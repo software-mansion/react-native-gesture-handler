@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -389,7 +390,7 @@ open class GestureHandler {
     // TODO: this is likely wrong, and the transformed event itself should be
     // in the coordinate system of the child view, but I'm not sure of the
     // consequences
-    if (view is RNGestureHandlerDetectorView) {
+    if (view is RNGestureHandlerDetectorView && (view as RNGestureHandlerDetectorView).isNotEmpty()) {
       val detector = view as RNGestureHandlerDetectorView
       val outPoint = PointF()
       GestureHandlerOrchestrator.transformPointToChildViewCoords(
