@@ -685,7 +685,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)containsPointInView
 {
-  RNGHUIView *viewToHitTest = _shouldCancelWhenOutside ? _recognizer.view.subviews[0] : _recognizer.view;
+  RNGHUIView *viewToHitTest = _recognizer.view;
+
+  if (_shouldCancelWhenOutside && [self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
+    viewToHitTest = _recognizer.view.subviews[0];
+  }
 
   CGPoint location = [_recognizer locationInView:viewToHitTest];
   CGRect hitFrame = RNGHHitSlopInsetRect(viewToHitTest.bounds, _hitSlop);
