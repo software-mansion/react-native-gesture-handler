@@ -40,7 +40,7 @@ export default function LogicDetectorExample() {
     <View style={commonStyles.centerView}>
       <InterceptingGestureDetector gesture={containerTap}>
         <View style={{ backgroundColor: COLORS.PURPLE }}>
-          <Svg height="250" width="250" onPress={noop}>
+          <Svg height="250" width="250">
             <VirtualGestureDetector gesture={circleElementTap}>
               <Circle
                 cx="125"
