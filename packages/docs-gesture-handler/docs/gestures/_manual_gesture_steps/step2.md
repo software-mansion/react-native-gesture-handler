@@ -1,14 +1,22 @@
-```jsx
+```tsx
 import { StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedStyle,
-  useSharedValue,
+  SharedValue,
 } from 'react-native-reanimated';
 
-function PointerElement(props: {
-  pointer: Animated.SharedValue<Pointer>,
-  active: Animated.SharedValue<boolean>,
-}) {
+type Pointer = {
+  x: number;
+  y: number;
+  visible: boolean;
+};
+
+type PointerElementProps = {
+  pointer: SharedValue<Pointer>;
+  active: SharedValue<boolean>;
+};
+
+function PointerElement(props: PointerElementProps) {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: props.pointer.value.x },
@@ -24,8 +32,6 @@ function PointerElement(props: {
 
   return <Animated.View style={[styles.pointer, animatedStyle]} />;
 }
-
-// ...
 
 const styles = StyleSheet.create({
   pointer: {
