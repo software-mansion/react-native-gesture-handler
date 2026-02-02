@@ -81,6 +81,12 @@
 {
   [_gestureHandler setCurrentPointerType:event];
   [super touchesBegan:touches withEvent:event];
+
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   self.state = UIGestureRecognizerStatePossible;

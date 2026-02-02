@@ -5,11 +5,13 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
+import com.swmansion.gesturehandler.core.GestureHandler
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var moduleId: Int = -1
@@ -37,6 +39,10 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
   fun tearDown() {
     rootHelper?.tearDown()
+  }
+
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    rootHelper?.recordHandlerIfNotPresent(handler)
   }
 
   override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
@@ -86,6 +92,20 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
         parent = parent.parent
       }
       return false
+    }
+
+    fun findGestureHandlerRootView(viewGroup: ViewGroup): RNGestureHandlerRootView? {
+      var parent: ViewParent? = viewGroup.parent
+      var gestureHandlerRootView: RNGestureHandlerRootView? = null
+
+      while (parent != null) {
+        if (parent is RNGestureHandlerRootView) {
+          gestureHandlerRootView = parent
+        }
+        parent = parent.parent
+      }
+
+      return gestureHandlerRootView
     }
   }
 }

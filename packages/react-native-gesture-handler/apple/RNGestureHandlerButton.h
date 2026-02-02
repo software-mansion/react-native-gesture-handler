@@ -26,6 +26,7 @@
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 @property (nonatomic, assign) CGFloat borderRadius;
 @property (nonatomic) BOOL userEnabled;
+@property (nonatomic, assign) RNGestureHandlerPointerEvents pointerEvents;
 
 #if TARGET_OS_OSX
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;

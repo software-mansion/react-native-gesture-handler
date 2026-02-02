@@ -442,7 +442,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun recordHandlerIfNotPresent(handler: GestureHandler, view: View) {
+  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?) {
     if (gestureHandlers.contains(handler)) {
       return
     }
@@ -750,13 +750,7 @@ class GestureHandlerOrchestrator(
       return isLeafOrTransparent && isTransformedTouchPointInView(coords[0], coords[1], view)
     }
 
-    private fun transformPointToChildViewCoords(
-      x: Float,
-      y: Float,
-      parent: ViewGroup,
-      child: View,
-      outLocalPoint: PointF,
-    ) {
+    fun transformPointToChildViewCoords(x: Float, y: Float, parent: ViewGroup, child: View, outLocalPoint: PointF) {
       var localX = x + parent.scrollX - child.left
       var localY = y + parent.scrollY - child.top
       val matrix = child.matrix

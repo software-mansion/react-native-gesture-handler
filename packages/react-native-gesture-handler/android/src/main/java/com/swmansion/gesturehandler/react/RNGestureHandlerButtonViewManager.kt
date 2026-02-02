@@ -21,12 +21,13 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
 import com.facebook.react.R
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.uimanager.PointerEvents
+import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
@@ -132,6 +133,17 @@ class RNGestureHandlerButtonViewManager :
     view.isSoundEffectsEnabled = !touchSoundDisabled
   }
 
+  @ReactProp(name = ViewProps.POINTER_EVENTS)
+  override fun setPointerEvents(view: ButtonViewGroup, pointerEvents: String?) {
+    view.pointerEvents = when (pointerEvents) {
+      "none" -> PointerEvents.NONE
+      "box-none" -> PointerEvents.BOX_NONE
+      "box-only" -> PointerEvents.BOX_ONLY
+      "auto", null -> PointerEvents.AUTO
+      else -> PointerEvents.AUTO
+    }
+  }
+
   override fun onAfterUpdateTransaction(view: ButtonViewGroup) {
     super.onAfterUpdateTransaction(view)
 
@@ -142,7 +154,8 @@ class RNGestureHandlerButtonViewManager :
 
   class ButtonViewGroup(context: Context?) :
     ViewGroup(context),
-    NativeViewGestureHandler.NativeViewGestureHandlerHook {
+    NativeViewGestureHandler.NativeViewGestureHandlerHook,
+    ReactPointerEventsView {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
       set(color) = withBackgroundUpdate {
@@ -199,6 +212,8 @@ class RNGestureHandlerButtonViewManager :
         borderBottomRightRadius != 0f
 
     var exclusive = true
+
+    override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
     private var buttonBackgroundColor = Color.TRANSPARENT
     private var needBackgroundUpdate = false
@@ -497,9 +512,9 @@ class RNGestureHandlerButtonViewManager :
       // a parent button from playing)
       return if (!isChildTouched()) {
         if (context.isScreenReaderOn()) {
-          findGestureHandlerRootView()?.activateNativeHandlers(this)
+          RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
         } else if (receivedKeyEvent) {
-          findGestureHandlerRootView()?.activateNativeHandlers(this)
+          RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
           receivedKeyEvent = false
         }
 
@@ -536,20 +551,6 @@ class RNGestureHandlerButtonViewManager :
     override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
       // No-op
       // by default Viewgroup would pass hotspot change events
-    }
-
-    private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {
-      var parent: ViewParent? = this.parent
-      var gestureHandlerRootView: RNGestureHandlerRootView? = null
-
-      while (parent != null) {
-        if (parent is RNGestureHandlerRootView) {
-          gestureHandlerRootView = parent
-        }
-        parent = parent.parent
-      }
-
-      return gestureHandlerRootView
     }
 
     companion object {

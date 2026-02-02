@@ -84,6 +84,10 @@ export interface GestureDetectorProps {
  * @see https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/gesture-detector
  */
 export const GestureDetector = (props: GestureDetectorProps) => {
+  if (!props.gesture) {
+    throw new Error('GestureDetector must have a gesture prop provided.');
+  }
+
   // Gesture config should be wrapped with useMemo to prevent unnecessary re-renders
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
