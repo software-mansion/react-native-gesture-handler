@@ -13,6 +13,7 @@ import type PointerTracker from '../tools/PointerTracker';
 import { SingleGestureName } from '../../v3/types';
 
 export default interface IGestureHandler {
+  attached: boolean;
   active: boolean;
   activationIndex: number;
   awaiting: boolean;

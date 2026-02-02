@@ -66,6 +66,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
   private _awaiting = false;
   private _active = false;
+  private _attached = false;
 
   private _shouldResetProgress = false;
   private _pointerType: PointerType = PointerType.MOUSE;
@@ -86,6 +87,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ) {
+    this.attached = true;
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
@@ -106,6 +108,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.state = State.UNDETERMINED;
     this.forAnimated = false;
     this.forReanimated = false;
+    this.attached = false;
 
     this.delegate.detach();
   }
@@ -1017,6 +1020,13 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected set awaiting(value) {
     this._awaiting = value;
+  }
+
+  public get attached() {
+    return this._attached;
+  }
+  protected set attached(value) {
+    this._attached = value;
   }
 
   public get activationIndex() {

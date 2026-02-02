@@ -208,6 +208,12 @@ RCT_EXPORT_MODULE()
   RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   RNGestureHandler *handler = [manager handlerWithTag:@(handlerTag)];
 
+  if (handler.hostDetectorView == nil && [handler usesNativeOrVirtualDetector]) {
+    @throw [NSException exceptionWithName:@"HandlerNotAttached"
+                                   reason:@"Manually handled gesture had not been assigned to any detector"
+                                 userInfo:nil];
+  }
+
   if (handler != nil) {
     if (state == 1) { // FAILED
       handler.recognizer.state = RNGHGestureRecognizerStateFailed;

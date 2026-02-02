@@ -301,6 +301,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
+  // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
+  // since the handler is being reset, so these events are wrong.
+  if (fromReset && _lastState == RNGestureHandlerStateUndetermined) {
+    return;
+  }
+
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
@@ -679,9 +685,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)containsPointInView
 {
-  CGPoint pt = [_recognizer locationInView:_recognizer.view];
-  CGRect hitFrame = RNGHHitSlopInsetRect(_recognizer.view.bounds, _hitSlop);
-  return CGRectContainsPoint(hitFrame, pt);
+  RNGHUIView *viewToHitTest = _recognizer.view;
+
+  if (_shouldCancelWhenOutside && [self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
+    viewToHitTest = _recognizer.view.subviews[0];
+  }
+
+  CGPoint location = [_recognizer locationInView:viewToHitTest];
+  CGRect hitFrame = RNGHHitSlopInsetRect(viewToHitTest.bounds, _hitSlop);
+
+  return CGRectContainsPoint(hitFrame, location);
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer

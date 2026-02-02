@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -384,18 +385,37 @@ open class GestureHandler {
       }
     }
 
-    x = adaptedTransformedEvent.x
-    y = adaptedTransformedEvent.y
     numberOfPointers = adaptedTransformedEvent.pointerCount
-    isWithinBounds = isWithinBounds(view, x, y)
-    if (shouldCancelWhenOutside && !isWithinBounds) {
-      if (state == STATE_ACTIVE) {
-        cancel()
-      } else if (state == STATE_BEGAN) {
-        fail()
-      }
-      return
+
+    // TODO: this is likely wrong, and the transformed event itself should be
+    // in the coordinate system of the child view, but I'm not sure of the
+    // consequences
+    if (view is RNGestureHandlerDetectorView && (view as RNGestureHandlerDetectorView).isNotEmpty()) {
+      val detector = view as RNGestureHandlerDetectorView
+      val outPoint = PointF()
+      GestureHandlerOrchestrator.transformPointToChildViewCoords(
+        adaptedTransformedEvent.x,
+        adaptedTransformedEvent.y,
+        detector,
+        detector.getChildAt(0),
+        outPoint,
+      )
+      x = outPoint.x
+      y = outPoint.y
+      isWithinBounds = isWithinBounds(detector.getChildAt(0), x, y)
+    } else {
+      x = adaptedTransformedEvent.x
+      y = adaptedTransformedEvent.y
+      isWithinBounds = isWithinBounds(view, x, y)
     }
+
+    if (shouldCancelWhenOutside) {
+      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
+        fail()
+        return
+      }
+    }
+
     lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
@@ -595,6 +615,16 @@ open class GestureHandler {
       // generated faster than they can be treated by JS thread
       eventCoalescingKey = nextEventCoalescingKey++
     }
+
+    check(hostDetectorView != null || orchestrator != null) {
+      "Manually handled gesture had not been assigned to any detector"
+    }
+
+    if (orchestrator == null) {
+      // If the state is set manually, the handler may not have been fully recorded by the orchestrator.
+      hostDetectorView?.recordHandlerIfNotPresent(this)
+    }
+
     orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
   }
@@ -752,6 +782,10 @@ open class GestureHandler {
   protected open fun onReset() {}
   protected open fun onCancel() {}
   protected open fun onFail() {}
+
+  fun recordHandlerIfNotPresent() {
+    hostDetectorView?.recordHandlerIfNotPresent(this)
+  }
 
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
