@@ -153,7 +153,7 @@ Full changes are as follows:
 Certain components, such as `SVG`, depend on the view hierarchy to function correctly. In Gesture Handler 3, `GestureDetector` disrupts these hierarchies. To resolve this issue, two new detectors have been introduced: [`InterceptingGestureDetector`](/docs/fundamentals/gesture-detectors#interceptinggesturedetector) and [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector).
 
 :::danger Detectors order
-`VirtualGestureDetector` has to be a child of `InterceptingGestureDetector`.
+`VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
 :::
 
 ### Migrating SVG
