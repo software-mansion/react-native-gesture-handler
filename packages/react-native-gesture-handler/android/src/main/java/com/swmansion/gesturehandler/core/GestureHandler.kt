@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -384,18 +385,37 @@ open class GestureHandler {
       }
     }
 
-    x = adaptedTransformedEvent.x
-    y = adaptedTransformedEvent.y
     numberOfPointers = adaptedTransformedEvent.pointerCount
-    isWithinBounds = isWithinBounds(view, x, y)
-    if (shouldCancelWhenOutside && !isWithinBounds) {
-      if (state == STATE_ACTIVE) {
-        cancel()
-      } else if (state == STATE_BEGAN) {
-        fail()
-      }
-      return
+
+    // TODO: this is likely wrong, and the transformed event itself should be
+    // in the coordinate system of the child view, but I'm not sure of the
+    // consequences
+    if (view is RNGestureHandlerDetectorView && (view as RNGestureHandlerDetectorView).isNotEmpty()) {
+      val detector = view as RNGestureHandlerDetectorView
+      val outPoint = PointF()
+      GestureHandlerOrchestrator.transformPointToChildViewCoords(
+        adaptedTransformedEvent.x,
+        adaptedTransformedEvent.y,
+        detector,
+        detector.getChildAt(0),
+        outPoint,
+      )
+      x = outPoint.x
+      y = outPoint.y
+      isWithinBounds = isWithinBounds(detector.getChildAt(0), x, y)
+    } else {
+      x = adaptedTransformedEvent.x
+      y = adaptedTransformedEvent.y
+      isWithinBounds = isWithinBounds(view, x, y)
     }
+
+    if (shouldCancelWhenOutside) {
+      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
+        fail()
+        return
+      }
+    }
+
     lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
