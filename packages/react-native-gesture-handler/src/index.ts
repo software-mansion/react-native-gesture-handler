@@ -30,6 +30,7 @@ export type {
   RotationGestureHandlerEventPayload,
   NativeViewGestureHandlerPayload,
   FlingGestureHandlerEventPayload,
+  ScrollGestureHandlerEventPayload,
 } from './handlers/GestureHandlerEventPayload';
 export type { TapGestureHandlerProps } from './handlers/TapGestureHandler';
 export type { ForceTouchGestureHandlerProps } from './handlers/ForceTouchGestureHandler';
@@ -62,6 +63,8 @@ export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gest
 export type { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
 export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
 export type { HoverGestureType as HoverGesture } from './handlers/gestures/hoverGesture';
+export type { ScrollGestureType as ScrollGesture } from './handlers/gestures/scrollGesture';
+export type { ScrollGestureChangeEventPayload } from './handlers/gestures/scrollGesture';
 export type {
   ComposedGestureType as ComposedGesture,
   RaceGestureType as RaceGesture,

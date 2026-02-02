@@ -21,6 +21,7 @@ import com.swmansion.gesturehandler.RNSVGHitTester
 import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
 import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
 import com.swmansion.gesturehandler.react.isHoverAction
+import com.swmansion.gesturehandler.react.isScrollAction
 import java.lang.IllegalStateException
 import java.util.*
 
@@ -388,6 +389,8 @@ open class GestureHandler {
 
     if (sourceEvent.isHoverAction()) {
       onHandleHover(adaptedTransformedEvent, adaptedSourceEvent)
+    } else if (sourceEvent.isScrollAction()) {
+      onHandleScroll(adaptedTransformedEvent, adaptedSourceEvent)
     } else {
       onHandle(adaptedTransformedEvent, adaptedSourceEvent)
     }
@@ -724,6 +727,8 @@ open class GestureHandler {
   }
 
   protected open fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) {}
+
+  protected open fun onHandleScroll(event: MotionEvent, sourceEvent: MotionEvent) {}
 
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
