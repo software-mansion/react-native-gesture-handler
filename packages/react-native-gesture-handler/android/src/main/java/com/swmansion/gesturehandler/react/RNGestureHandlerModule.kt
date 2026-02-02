@@ -155,6 +155,10 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         }
       }
 
+      if (newState == GestureHandler.STATE_ACTIVE || newState == GestureHandler.STATE_BEGAN) {
+        handler.recordHandlerIfNotPresent()
+      }
+
       when (newState) {
         GestureHandler.STATE_ACTIVE -> handler.activate(force = true)
         GestureHandler.STATE_BEGAN -> handler.begin()
