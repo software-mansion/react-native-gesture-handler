@@ -335,12 +335,12 @@
   if (inView.subviews.count == 0) {
     return nil;
   }
-  
+
   auto view = inView.subviews[0];
-  
+
   if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
     RCTViewComponentView *componentView = (RCTViewComponentView *)view;
-    
+
     if (componentView.contentView != nil) {
       return componentView.contentView;
     }

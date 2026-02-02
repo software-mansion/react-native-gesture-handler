@@ -97,7 +97,7 @@ Do not use `Native` gesture with components exported by React Native Gesture Han
 shouldActivateOnStart: boolean | SharedValue<boolean>;
 ```
 
-When `true`, underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/fundamentals/states-events#undetermined) state.
+When `true`, underlying handler will activate unconditionally when it receives any touches.
 
 ### disallowInterruption
 
@@ -105,7 +105,7 @@ When `true`, underlying handler will activate unconditionally when it receives a
 disallowInterruption: boolean | SharedValue<boolean>;
 ```
 
-When `true`, cancels all other gesture handlers when changes its state to [`ACTIVE`](/docs/fundamentals/states-events#active).
+When `true`, cancels all other gesture handlers when activates.
 
 <BaseGestureConfig />
 
