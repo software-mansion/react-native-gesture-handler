@@ -19,6 +19,7 @@ export type {
   // New api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  ActiveCursor,
 } from './handlers/gestureHandlerCommon';
 export { MouseButton } from './handlers/gestureHandlerCommon';
 export type { GestureType } from './handlers/gestures/gesture';
