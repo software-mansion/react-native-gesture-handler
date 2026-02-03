@@ -10,13 +10,19 @@ export type SharedValue<Value = unknown> = {
   ) => void;
 };
 
+// Utility type that turns `T` into `T | SharedValue<T>`. `P` is used to avoid splitting union types.
 export type SharedValueOrT<T, P = never> =
+  // We always want to get `T` in the resulting type.
   | T
+  // If `T` is one of the types in `P`, we don't want to split the union, so we return SharedValue<T>.
   | (Exclude<T, undefined> extends P
       ? SharedValue<Exclude<T, undefined>>
-      : T extends any
-        ? SharedValue<Exclude<T, undefined>>
-        : SharedValue<Exclude<T, undefined>>);
+      : // If `T` is not in `P`, we want to split the union and wrap each member with SharedValue, using Distributive Conditional Types (https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types).
+        T extends any
+        ? // Wrap each member of the union with SharedValue.
+          SharedValue<Exclude<T, undefined>>
+        : // If `T` is only one type, just return SharedValue<T>.
+          SharedValue<Exclude<T, undefined>>);
 
 // Utility type that decides whether to recurse for objects or apply SharedValue directly.
 export type WithSharedValue<T, P = never> = T extends object
