@@ -68,7 +68,7 @@ export type CommonGestureConfig = {
     cancelsTouchesInView?: boolean;
     manualActivation?: boolean;
   },
-  HitSlop | ActiveCursor | MouseButton
+  ActiveCursor | MouseButton
 >;
 
 export type ComposedGestureConfig = {

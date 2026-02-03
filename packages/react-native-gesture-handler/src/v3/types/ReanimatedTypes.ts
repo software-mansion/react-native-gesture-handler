@@ -10,19 +10,25 @@ export type SharedValue<Value = unknown> = {
   ) => void;
 };
 
-export type SharedValueOrT<T> = T | SharedValue<Exclude<T, undefined>>;
+export type SharedValueOrT<T, P = never> =
+  | T
+  | (Exclude<T, undefined> extends P
+      ? SharedValue<Exclude<T, undefined>>
+      : T extends any
+        ? SharedValue<Exclude<T, undefined>>
+        : SharedValue<Exclude<T, undefined>>);
 
 // Utility type that decides whether to recurse for objects or apply SharedValue directly.
 export type WithSharedValue<T, P = never> = T extends object
   ? WithSharedValueRecursive<T, P>
-  : Simplify<SharedValueOrT<T>>;
+  : Simplify<SharedValueOrT<T, P>>;
 
 // Apply SharedValue recursively. P is used to make sure that composed types won't be expanded.
 // For example, if we pass `HoverEffect` as P, then resulting type will have HoverEffect | SharedValue<HoverEffect>,
 // not HoverEffect, SharedValue<HoverEffect.NONE>, ...
 type WithSharedValueRecursive<T extends object, P> = {
   [K in keyof T]: Exclude<T[K], undefined> extends P
-    ? Simplify<SharedValueOrT<T[K]>>
+    ? Simplify<SharedValueOrT<T[K], P>>
     : // Special case for boolean as passing `boolean` as P doesn't look ok.
       boolean extends T[K]
       ? boolean | SharedValue<boolean>
