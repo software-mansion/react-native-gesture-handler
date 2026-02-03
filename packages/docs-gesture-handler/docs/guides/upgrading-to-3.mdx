@@ -32,6 +32,24 @@ code2={
 
 [`ForceTouch`](/docs/2.x/gestures/force-touch-gesture) gesture is not available in hook API.
 
+<details>
+<summary>Full changes</summary>
+
+| RNGH2                  | RNGH3                   |
+| ---------------------- | ----------------------- |
+| `Gesture.Pan()`        | `usePanGesture()`       |
+| `Gesture.Tap()`        | `useTapGesture()`       |
+| `Gesture.LongPress()`  | `useLongPressGesture()` |
+| `Gesture.Rotation()`   | `useRotationGesture()`  |
+| `Gesture.Pinch()`      | `usePinchGesture()`     |
+| `Gesture.Fling()`      | `useFlingGesture()`     |
+| `Gesture.Hover()`      | `useHoverGesture()`     |
+| `Gesture.Native()`     | `useNativeGesture()`    |
+| `Gesture.Manual()`     | `useManualGesture()`    |
+| `Gesture.ForceTouch()` | *Not available in hook API* |
+
+</details>
+
 ### Renamed callbacks
 
 In Gesture Handler 3 some of the callbacks were renamed, namely:
@@ -67,23 +85,26 @@ code2={
 `}
 />
 
-<details>
-<summary>Full changes</summary>
+### StateManager
 
-| RNGH2                  | RNGH3                   |
-| ---------------------- | ----------------------- |
-| `Gesture.Pan()`        | `usePanGesture()`       |
-| `Gesture.Tap()`        | `useTapGesture()`       |
-| `Gesture.LongPress()`  | `useLongPressGesture()` |
-| `Gesture.Rotation()`   | `useRotationGesture()`  |
-| `Gesture.Pinch()`      | `usePinchGesture()`     |
-| `Gesture.Fling()`      | `useFlingGesture()`     |
-| `Gesture.Hover()`      | `useHoverGesture()`     |
-| `Gesture.Native()`     | `useNativeGesture()`    |
-| `Gesture.Manual()`     | `useManualGesture()`    |
-| `Gesture.ForceTouch()` | *Not available in hook API* |
+In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global [`GestureStateManager`](/docs/fundamentals/state-manager).
 
-</details>
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const manual = Gesture.Manual().onTouchesDown((e, stateManager ) => {
+  stateManager.activate();
+});
+`}
+code2={
+`const manual = useManualGesture({
+  onTouchesDown: (e) => {
+    GestureStateManager.activate(e.handlerTag);
+  },
+});
+`}
+/>
 
 ## Migrating relations
 
@@ -228,7 +249,7 @@ Other components have also been internally rewritten using the new hook API but 
 Most of the types, like `TapGesture`, are still present in Gesture Handler 3. However, they are now used in new hook API. Types for old API now have `Legacy` prefix, e.g. `TapGesture` becomes `LegacyTapGesture`.
 
 <details>
-<summary>Full changes</summary>
+<summary>Legacy types</summary>
 
 | RNGH2                   | RNGH3                         |
 | ----------------------- | ----------------------------- |
