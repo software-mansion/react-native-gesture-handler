@@ -1,18 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import CodeBlock from '@theme/CodeBlock';
 import styles from './styles.module.css';
 
 import CollapseButton from '@site/src/components/CollapseButton';
 
-import * as prettier from 'prettier/standalone';
-import tsParser from 'prettier/plugins/typescript';
-import estreeParser from 'prettier/plugins/estree';
-
-const prettierOptions = {
-  parser: 'typescript',
-  plugins: [tsParser, estreeParser],
-};
-
+import useFormattedCode from '@site/src/hooks/useFormattedCode';
 interface Props {
   src: string;
   label: string;
@@ -27,15 +19,7 @@ export default function CollapsibleCode({
   lineBounds,
 }: Props) {
   const [collapsed, setCollapsed] = useState(true);
-  const [code, setCode] = useState<string>(src);
-
-  useEffect(() => {
-    async function formatCode() {
-      const formattedCode = await prettier.format(src, prettierOptions);
-      setCode(formattedCode);
-    }
-    void formatCode();
-  }, [src]);
+  const code = useFormattedCode(src);
 
   if (!lineBounds) {
     return <CodeBlock language="tsx">{code}</CodeBlock>;

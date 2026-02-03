@@ -55,6 +55,14 @@ table thead tr {
   border: transparent 2px solid;
 }
 
+details tr {
+  background: var(--ifm-background-color);
+}
+
+details thead {
+  background: var(--ifm-background-color);
+}
+
 @media (min-width: 996px) {
   .header-github {
     margin-left: 1.5em;
@@ -109,6 +117,43 @@ table thead tr {
   border-radius: 0;
   background-color: var(--swm-off-background);
   font-family: var(--ifm-font-family-monospace);
+}
+
+table [class*='codeBlockContent'] pre,
+table [class*='codeBlockContent'] code {
+  border: none;
+  background-color: transparent;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.codeCell {
+  vertical-align: top;
+}
+
+.codeComparison {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.codeComparison pre,
+.codeComparison code {
+  border: none;
+  background-color: transparent;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.codeComparisonHeader {
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 1px solid var(--swm-border);
+}
+
+.codeHolder {
+  border: 1px solid var(--swm-border);
+  width: 100%;
 }
 
 /* Add small padding, when some of the lines are too long in a code block */
