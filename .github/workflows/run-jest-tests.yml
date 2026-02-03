@@ -38,4 +38,6 @@ jobs:
         run: yarn test:root
 
       - name: Run jest package tests
+        # always run this step even if the previous step fails
+        if: ${{ always() }}
         run: yarn workspace react-native-gesture-handler test
