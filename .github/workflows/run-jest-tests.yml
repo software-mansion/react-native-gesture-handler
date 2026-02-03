@@ -34,5 +34,8 @@ jobs:
       - name: Install node dependencies
         run: yarn --immutable
 
-      - name: Run jest tests
-        run: yarn test
+      - name: Run jest root tests
+        run: yarn test:root
+
+      - name: Run jest package tests
+        run: yarn workspace react-native-gesture-handler test

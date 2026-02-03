@@ -16,7 +16,7 @@
     "lint-js": "yarn workspaces foreach --all --parallel --topological-dev run lint-js",
     "format-js": "yarn workspaces foreach --all --parallel --topological-dev run format-js",
     "clean": "yarn workspaces foreach --all --parallel --topological-dev run clean && rm -rf node_modules yarn.lock",
-    "test": "jest ./scripts"
+    "test:root": "jest ./scripts"
   },
   "devDependencies": {
     "@types/react": "^19.0.12",
