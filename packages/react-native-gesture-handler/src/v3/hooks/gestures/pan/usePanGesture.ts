@@ -76,8 +76,8 @@ function validateOffsetsArray(
     return;
   }
 
-  const offsetStart = maybeUnpackValue(offsets[0]);
-  const offsetEnd = maybeUnpackValue(offsets[1]);
+  const offsetStart = maybeUnpackValue<number>(offsets[0]);
+  const offsetEnd = maybeUnpackValue<number>(offsets[1]);
 
   if (offsetStart > 0 || offsetEnd < 0) {
     throw new Error(
@@ -125,7 +125,7 @@ function transformOffsetProp(
     config[`${propName}Start`] = propValue[0];
     config[`${propName}End`] = propValue[1];
   } else {
-    const offsetValue = maybeUnpackValue(propValue);
+    const offsetValue = maybeUnpackValue<number>(propValue);
 
     if (offsetValue < 0) {
       config[`${propName}Start`] = propValue;

@@ -434,7 +434,7 @@ function getHandlerData(
     return {
       handlerType: componentOrGesture.type as HandlerNames,
       handlerTag: componentOrGesture.handlerTag,
-      enabled: maybeUnpackValue(componentOrGesture.config.enabled),
+      enabled: maybeUnpackValue<boolean>(componentOrGesture.config.enabled),
       emitEvent: (eventName, args) => {
         const { state, oldState, handlerTag, ...rest } = args.nativeEvent;
 

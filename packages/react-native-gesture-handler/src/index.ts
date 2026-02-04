@@ -15,10 +15,13 @@ export type {
   HandlerStateChangeEventPayload,
   // Pointer events
   GestureTouchEvent,
+  GestureTouchEvent as SingleGestureTouchEvent,
   TouchData,
   // New api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  // Config types
+  ActiveCursor,
 } from './handlers/gestureHandlerCommon';
 export { MouseButton } from './handlers/gestureHandlerCommon';
 export type { GestureType } from './handlers/gestures/gesture';
@@ -152,8 +155,6 @@ export type {
   PressableStateCallbackType,
 } from './components/Pressable';
 export { default as LegacyPressable } from './components/Pressable';
-
-export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
 
 export * from './v3';
 
