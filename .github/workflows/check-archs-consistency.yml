@@ -15,26 +15,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  if: github.repository == 'software-mansion/react-native-gesture-handler'
+  main:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
 
-  check:
-    runs-on: ubuntu-latest
-    concurrency:
-      group: check-archs-consistency-${{ github.ref }}
-      cancel-in-progress: true
+    check:
+      runs-on: ubuntu-latest
+      concurrency:
+        group: check-archs-consistency-${{ github.ref }}
+        cancel-in-progress: true
 
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
+      steps:
+        - name: checkout
+          uses: actions/checkout@v4
 
-      - name: Use Node.js 24
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: yarn
+        - name: Use Node.js 24
+          uses: actions/setup-node@v6
+          with:
+            node-version: 24
+            cache: yarn
 
-      - name: Install node dependencies
-        run: yarn
+        - name: Install node dependencies
+          run: yarn
 
-      - name: Check Android Paper & Fabric generated interfaces consistency
-        run: yarn workspace react-native-gesture-handler architectures-consistency-check
+        - name: Check Android Paper & Fabric generated interfaces consistency
+          run: yarn workspace react-native-gesture-handler architectures-consistency-check
