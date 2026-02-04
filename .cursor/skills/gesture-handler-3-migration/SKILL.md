@@ -128,6 +128,30 @@ const gesture = usePanGesture({
 });
 ```
 
+The `state` and `oldState` properties are not available on events in the hook-based API. Instead rely on which callback has been invoked:
+- `onBegin`: `UNDETERMINED` -> `BEGAN`
+- `onActivate`: `BEGAN` -> `ACTIVE`
+- `onDeactivate`: `ACTIVE` -> `END`/`FAILED`/`CANCELLED`
+- `onFinalize`: `BEGAN`/`ACTIVE` -> `END`/`FAILED`/`CANCELLED` (always called after `onDeactivate`)
+
+(`onBegin`, `onFinalize`) and (`onActivate`, `onDeactivate`) are complementary - if the first one is called, the second one is guaranteed to be called in the future.
+
+To determine whether the gesture has ended or failed, check the `didSucceed` variable (second argument passed to the `onDeactivate` and `onFinalize`).
+
+Due to this change, all callbacks of a gesture are using the same type:
+
+| Hook                    | Event type              |
+| ---------               | --------------          |
+| `usePanGesture()`       | `PanGestureEvent`       |
+| `useTapGesture()`       | `TapGestureEvent`       |
+| `useLongPressGesture()` | `LongPressGestureEvent` |
+| `useRotationGesture()`  | `RotationGestureEvent`  |
+| `usePinchGesture()`     | `PinchGestureEvent`     |
+| `useFlingGesture()`     | `FlingGestureEvent`     |
+| `useHoverGesture()`     | `HoverGestureEvent`     |
+| `useNativeGesture()`    | `RotationGestureEvent`  |
+| `useManualGesture()`    | `ManualGestureEvent`    |
+
 #### StateManager
 
 In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global `GestureStateManager`.
