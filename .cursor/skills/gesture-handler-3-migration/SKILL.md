@@ -166,6 +166,14 @@ Due to this change, all callbacks of a gesture are using the same type:
 | `useNativeGesture()`    | `RotationGestureEvent`  |
 | `useManualGesture()`    | `ManualGestureEvent`    |
 
+The exception to this is touch events:
+- `onTouchesDown`
+- `onTouchesUp`
+- `onTouchesMove`
+- `onTouchesCancel`
+
+Where each callback receives `GestureTouchEvent` regardless of the hook used.
+
 #### StateManager
 
 In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global `GestureStateManager`.
