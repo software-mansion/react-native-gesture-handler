@@ -58,6 +58,7 @@ In Gesture Handler 3 some of the callbacks were renamed, namely:
 | --------- | -------------- |
 | `onStart` | `onActivate`   |
 | `onEnd`   | `onDeactivate` |
+| `onTouchesCancelled`   | `onTouchesCancel` |
 
 Here is comparison of the two APIs:
 
@@ -71,6 +72,9 @@ code1={
   })
   .onEnd(() => {
     console.log('Pan ended!');
+  })
+  .onTouchesCancelled(() => {
+    console.log('Pan touches cancelled!');
   });
 `}
 code2={
@@ -80,6 +84,9 @@ code2={
   },
   onDeactivate: () => {
     console.log('Pan deactivated!');
+  },
+  onTouchesCancel: () => {
+    console.log('Pan touches cancelled!');
   },
 });
 `}
