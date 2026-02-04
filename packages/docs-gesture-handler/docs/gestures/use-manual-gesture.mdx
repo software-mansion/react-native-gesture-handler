@@ -59,7 +59,7 @@ To demonstrate how to make a manual gesture we will make a simple one that track
 
 <Step title="Step 6">
     We also need to handle lifting fingers from the screen, which corresponds to `onTouchesUp`. Here we will just hide the pointers that were lifted and end the gesture if there are no more pointers on the screen.
-    Note that we are not handling `onTouchesCancelled` as in this very basic case we don't expect it to happen, however you should clear data about cancelled pointers (most of the time all active ones) when it is called.
+    Note that we are not handling `onTouchesCancel` as in this very basic case we don't expect it to happen, however you should clear data about cancelled pointers (most of the time all active ones) when it is called.
     <Step6 />
 </Step>
 

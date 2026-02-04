@@ -20,7 +20,7 @@ const nodes = new DataSet([
   },
   {
     id: 4,
-    label: 'onTouchesCancelled',
+    label: 'onTouchesCancel',
     level: 2,
   },
 ]);
