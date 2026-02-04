@@ -445,9 +445,7 @@ Certain components, such as `SVG`, depend on the view hierarchy to function corr
 
 `VirtualGestureDetector` is similar to the `GestureDetector` from RNGH2. Because it is not a host component, it does not interfere with the host view hierarchy. This allows you to attach gestures without disrupting functionality that depends on it.
 
-:::danger Detectors order
-`VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
-:::
+**Warning:** `VirtualGestureDetector` has to be a descendant of `InterceptingGestureDetector`.
 
 #### Migrating SVG
 
