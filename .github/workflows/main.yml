@@ -11,9 +11,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Check out
-        uses: actions/checkout@v1
+        uses: actions/checkout@v6
 
       - name: Generate docs
         run: >-
@@ -24,8 +27,8 @@ jobs:
           && yarn build
 
       - name: Publish generated content to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          FOLDER: packages/docs-gesture-handler/build
-          BRANCH: gh-pages
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          folder: packages/docs-gesture-handler/build
+          branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}

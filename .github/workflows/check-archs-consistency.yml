@@ -15,9 +15,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  if: github.repository == 'software-mansion/react-native-gesture-handler'
-
   check:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
     runs-on: ubuntu-latest
     concurrency:
       group: check-archs-consistency-${{ github.ref }}
