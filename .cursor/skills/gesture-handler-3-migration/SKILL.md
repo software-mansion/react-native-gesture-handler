@@ -17,6 +17,20 @@ This skill scans React Native components that use the Gesture Handler builder-ba
 
 Use the instructions below to correctly replace all legacy APIs with the modern ones.
 
+1. Identify all imports from 'react-native-gesture-handler'
+2. For each `Gesture.X()` call, replace with corresponding `useXGesture()` hook
+3. Replace `Gesture` import with imports for the used hooks
+4. Convert builder method chains to configuration objects
+5. Update callback names (onStart → onActivate, etc.)
+6. Replace composed gestures with relation hooks. Keep rules of hooks in mind
+7. Update GestureDetector usage if SVG is involved to Intercepting/Virtual GestureDetector
+8. Update usage of compoenent imported from 'react-native-gesture-handler' according to "Legacy components" section
+
+## Common Migration Errors
+- Mixing old builder API with hooks in same GestureDetector -> Use one API consistently
+- Referencing gesture object inside its own callbacks -> Use `event.handlerTag` instead
+- Using `onChange` -> Move logic to `onUpdate` and use change* properties from event
+
 ### Migrating gestures
 
 The most important change brought by the Gesture Handler 3 is the new hooks API. Migration is pretty straightforward. Instead of calling builder methods, everything is passed as a configuration object.
@@ -501,7 +515,7 @@ import { InterceptingGestureDetector, VirtualGestureDetector } from 'react-nativ
 </InterceptingGestureDetector>
 ```
 
-### Old components
+### Legacy components
 
 When the code using the component relies on the APIs that are no longer available on the components in Gesture Handler 3 (like `waitFor`, `simultaneousWith`, `blocksHandler`, `onHandlerStateChange`, `onGestureEvent` props), it cannot be easily migrated in isolation. In this case update the imports to the Legacy version of the component, and inform the user that the dependencies need to be migrated first.
 
