@@ -85,6 +85,35 @@ code2={
 `}
 />
 
+### onChange
+
+We decided to simplify API by removing `onChange` callback. You can now access `change*` properties in `onUpdate` callback.
+
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const pan = Gesture.Pan().onChange((e) => {
+  console.log(e.changeX);
+});
+`}
+code2={
+`const pan = usePanGesture({
+  onUpdate: (e) => {
+    console.log(e.changeX);
+  },
+});
+`}
+/>
+
+### state & oldState
+
+The `state` and `oldState` properties are no longer available in event objects. Tracking state changes can now only be accomplished using the appropriate [callbacks](/docs/fundamentals/callbacks-events).
+
+### Event types
+
+The types of events have been unified for all callbacks. Each event falls into one of two categories: [`GestureEvent`](/docs/fundamentals/callbacks-events#gestureevent) for gesture callbacks, or [`GestureTouchEvent`](/docs/fundamentals/callbacks-events#touchevent) for `TouchEvent` callbacks.
+
 ### StateManager
 
 In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global [`GestureStateManager`](/docs/fundamentals/state-manager).
