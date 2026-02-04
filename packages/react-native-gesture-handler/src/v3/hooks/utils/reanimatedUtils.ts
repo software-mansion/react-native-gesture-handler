@@ -99,7 +99,9 @@ export function hasWorkletEventHandlers<THandlerData, TConfig>(
   );
 }
 
-export function maybeUnpackValue<T>(v: SharedValueOrT<T>) {
+export function maybeUnpackValue<T>(
+  v: SharedValueOrT<T, boolean> | undefined
+): T {
   'worklet';
 
   return (Reanimated?.isSharedValue(v) ? v.value : v) as T;
