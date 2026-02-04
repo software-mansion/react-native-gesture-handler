@@ -5,7 +5,7 @@ description: Migrates files containing React Native components which use the Rea
 
 # Migrate to Gesture Handler 3
 
-This skill goes over the components using the Gesture Handler builder-based API updates it to use the new hook-based API. It also handles updating types and components which may have changed in the new version.
+This skill scans React Native components that use the Gesture Handler builder-based API and updates them to use the new hook-based API. It also updates related types and components to adapt to the new version.
 
 ## When to Use
 
@@ -43,7 +43,7 @@ const gesture = usePanGesture({
   },
   minDistance: 25,
 });
-````
+```
 
 `ForceTouch` gesture is not available in hooks API. If it's still being used, leave it as is.
 
@@ -132,7 +132,7 @@ const gesture = usePanGesture({
 
 In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global `GestureStateManager`.
 
-`GestureStateManager` provides methods for iperative state management:
+`GestureStateManager` provides methods for imperative state management:
 - .begin(handlerTag: number)
 - .activate(handlerTag: number)
 - .deactivate(handlerTag: number) (.end() in the old API)
@@ -301,7 +301,7 @@ const gesture = useTapGesture({
 ```jsx
 const callback = useCallback(() => {
   // highlight-next-line
-  'worklet;';
+  'worklet';
   console.log(_WORKLET);
 }, []);
 
