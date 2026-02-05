@@ -4,7 +4,15 @@ const { ReleaseType } = require('./parse-arguments');
 
 function getVersion(releaseType, versionHint = null) {
   if (releaseType === ReleaseType.COMMITLY) {
-    const [major, minor] = getLatestVersion();
+    let [major, minor] = getLatestVersion();
+
+    if (major === 2) {
+      // If the latest version is 2.x.x, we are still in the beta period for 3.x.x
+      // Override the values so the resulting version is 3.0.0
+      // TODO: Remove this once we have a stable 3.x.x release
+      major = 3;
+      minor = -1;
+    }
 
     const currentSHA = execSync('git rev-parse HEAD').toString().trim();
     const now = new Date();
