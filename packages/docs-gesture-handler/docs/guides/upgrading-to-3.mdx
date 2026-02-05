@@ -58,6 +58,7 @@ In Gesture Handler 3 some of the callbacks were renamed, namely:
 | --------- | -------------- |
 | `onStart` | `onActivate`   |
 | `onEnd`   | `onDeactivate` |
+| `onTouchesCancelled`   | `onTouchesCancel` |
 
 Here is comparison of the two APIs:
 
@@ -71,6 +72,9 @@ code1={
   })
   .onEnd(() => {
     console.log('Pan ended!');
+  })
+  .onTouchesCancelled(() => {
+    console.log('Pan touches cancelled!');
   });
 `}
 code2={
@@ -81,9 +85,41 @@ code2={
   onDeactivate: () => {
     console.log('Pan deactivated!');
   },
+  onTouchesCancel: () => {
+    console.log('Pan touches cancelled!');
+  },
 });
 `}
 />
+
+### onChange
+
+`onChange` callback has been removed, and its functionality has been integrated into `onUpdate`. You can now access `change*` properties in `onUpdate` callback.
+
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const pan = Gesture.Pan().onChange((e) => {
+  console.log(e.changeX);
+});
+`}
+code2={
+`const pan = usePanGesture({
+  onUpdate: (e) => {
+    console.log(e.changeX);
+  },
+});
+`}
+/>
+
+### state & oldState
+
+The `state` and `oldState` properties are no longer available in event objects. Tracking state changes can now only be accomplished using the appropriate [callbacks](/docs/fundamentals/callbacks-events).
+
+### Event types
+
+The types of events have been unified for all callbacks. Each event falls into one of two categories: [`GestureEvent`](/docs/fundamentals/callbacks-events#gestureevent) for gesture callbacks, or [`GestureTouchEvent`](/docs/fundamentals/callbacks-events#touchevent) for `TouchEvent` callbacks.
 
 ### StateManager
 
