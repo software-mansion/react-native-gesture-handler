@@ -11,17 +11,27 @@ export enum GestureDetectorType {
   Intercepting,
 }
 
-export interface NativeDetectorProps<THandlerData, TConfig> {
+interface CommonGestureDetectorProps {
   children?: React.ReactNode;
-  gesture: Gesture<THandlerData, TConfig>;
   userSelect?: UserSelect;
   touchAction?: TouchAction;
   enableContextMenu?: boolean;
 }
 
-export interface InterceptingGestureDetectorProps<THandlerData, TConfig> {
-  children?: React.ReactNode;
+export interface NativeDetectorProps<THandlerData, TConfig>
+  extends CommonGestureDetectorProps {
+  gesture: Gesture<THandlerData, TConfig>;
+}
+
+export interface InterceptingGestureDetectorProps<THandlerData, TConfig>
+  extends CommonGestureDetectorProps {
   gesture?: Gesture<THandlerData, TConfig>;
+}
+
+// TODO: Handle CommonGestureDetectorProps inside VirtualGestureDetector
+export interface VirtualDetectorProps<THandlerData, TConfig> {
+  children?: React.ReactNode;
+  gesture: Gesture<THandlerData, TConfig>;
 }
 
 export type GestureDetectorProps<THandlerData, TConfig> =

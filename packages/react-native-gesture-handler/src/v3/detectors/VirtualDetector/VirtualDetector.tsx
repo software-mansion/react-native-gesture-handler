@@ -6,7 +6,7 @@ import {
   useInterceptingDetectorContext,
 } from './useInterceptingDetectorContext';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
-import { NativeDetectorProps } from '../common';
+import { VirtualDetectorProps } from '../common';
 import { configureRelations } from '../utils';
 import { tagMessage } from '../../../utils';
 import { DetectorCallbacks, VirtualChild } from '../../types';
@@ -24,7 +24,7 @@ function useRequiredInterceptingDetectorContext() {
 }
 
 export function VirtualDetector<THandlerData, TConfig>(
-  props: NativeDetectorProps<THandlerData, TConfig>
+  props: VirtualDetectorProps<THandlerData, TConfig>
 ) {
   // Don't memoize virtual detectors to be able to listen to changes in children
   // TODO: replace with MutationObserver when it rolls out in React Native
