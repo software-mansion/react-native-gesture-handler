@@ -1,11 +1,11 @@
 name: Publish release to npm
 on:
   # For commitlies
-  push:
-    branches:
-      - main
-    paths:
-      - packages/react-native-gesture-handler/**
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - packages/react-native-gesture-handler/**
   # For manual releases
   workflow_dispatch:
     inputs:
