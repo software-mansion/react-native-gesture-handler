@@ -6,9 +6,22 @@ on:
       - main
     paths:
       - packages/react-native-gesture-handler/**
-  # For stable releases
+  # For manual releases
   workflow_dispatch:
     inputs:
+      release-type:
+        description: Type of release to publish.
+        type: choice
+        options:
+          - stable
+          - beta
+          - rc
+        default: stable
+      version:
+        description: Specific version to publish (usually inferred from x.y-stable branch name).
+        type: string
+        required: false
+        default: ''
       dry-run:
         description: Whether to perform a dry run of the publish.
         type: boolean
@@ -31,16 +44,17 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
 
-      - name: Publish stable release
+      - name: Publish manual release
         if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: ./.github/actions/publish-npm-package
         with:
-          is-commitly: false
+          release-type: ${{ inputs.release-type }}
+          version: ${{ inputs.version }}
           dry-run: ${{ inputs.dry-run }}
 
-      - name: Publish commitly release
+      - name: Publish automatic commitly release
         if: ${{ github.event_name == 'push' }}
         uses: ./.github/actions/publish-npm-package
         with:
-          is-commitly: true
+          release-type: 'commitly'
           dry-run: false
