@@ -36,7 +36,7 @@ export class ForceTouchGesture extends ContinousBaseGesture<
   ForceTouchGestureHandlerEventPayload,
   ForceTouchGestureChangeEventPayload
 > {
-  public config: BaseGestureConfig & ForceTouchGestureConfig = {};
+  public override config: BaseGestureConfig & ForceTouchGestureConfig = {};
 
   constructor() {
     super();
@@ -73,7 +73,7 @@ export class ForceTouchGesture extends ContinousBaseGesture<
     return this;
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         GestureUpdateEvent<

@@ -16,6 +16,7 @@
     "noStrictGenericChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitUseStrict": false,
+    "noImplicitOverride": true,
     "noUnusedParameters": true,
     "noUnusedLocals": true
   }

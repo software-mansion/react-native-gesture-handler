@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -18,8 +19,9 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.BuildConfig
 import com.swmansion.gesturehandler.RNSVGHitTester
-import com.swmansion.gesturehandler.react.RNGestureHandlerTouchEvent
-import com.swmansion.gesturehandler.react.eventbuilders.GestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerTouchEvent
+import com.swmansion.gesturehandler.react.events.eventbuilders.GestureHandlerEventDataBuilder
 import com.swmansion.gesturehandler.react.isHoverAction
 import java.lang.IllegalStateException
 import java.util.*
@@ -29,8 +31,23 @@ open class GestureHandler {
   private var trackedPointersIDsCount = 0
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
+  var testID: String? = null
   var view: View? = null
     private set
+
+  // Host detector view is a reference to a Native Detector designated to handle events from a
+  // Virtual Detector to which the gesture is assigned.
+  var hostDetectorView: RNGestureHandlerDetectorView? = null
+
+  val viewForEvents: View
+    get() {
+      return if (usesNativeOrVirtualDetector(actionType)) {
+        hostDetectorView!!
+      } else {
+        view!!
+      }
+    }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -53,6 +70,7 @@ open class GestureHandler {
     }
   var actionType = 0
 
+  var forceReinitializeDuringOnHandle = false
   var changedTouchesPayload: WritableArray? = null
     private set
   var allTouchesPayload: WritableArray? = null
@@ -63,6 +81,8 @@ open class GestureHandler {
     private set
   private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
   var needsPointerData = false
+  var dispatchesAnimatedEvents = false
+  var dispatchesReanimatedEvents = false
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -108,12 +128,15 @@ open class GestureHandler {
   }
 
   open fun resetConfig() {
+    testID = null
     needsPointerData = DEFAULT_NEEDS_POINTER_DATA
     manualActivation = DEFAULT_MANUAL_ACTIVATION
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
     isEnabled = DEFAULT_IS_ENABLED
     hitSlop = DEFAULT_HIT_SLOP
     mouseButton = DEFAULT_MOUSE_BUTTON
+    dispatchesAnimatedEvents = DEFAULT_DISPATCHES_ANIMATED_EVENTS
+    dispatchesReanimatedEvents = DEFAULT_DISPATCHES_REANIMATED_EVENTS
   }
 
   fun hasCommonPointers(other: GestureHandler): Boolean {
@@ -362,18 +385,37 @@ open class GestureHandler {
       }
     }
 
-    x = adaptedTransformedEvent.x
-    y = adaptedTransformedEvent.y
     numberOfPointers = adaptedTransformedEvent.pointerCount
-    isWithinBounds = isWithinBounds(view, x, y)
-    if (shouldCancelWhenOutside && !isWithinBounds) {
-      if (state == STATE_ACTIVE) {
-        cancel()
-      } else if (state == STATE_BEGAN) {
-        fail()
-      }
-      return
+
+    // TODO: this is likely wrong, and the transformed event itself should be
+    // in the coordinate system of the child view, but I'm not sure of the
+    // consequences
+    if (view is RNGestureHandlerDetectorView && (view as RNGestureHandlerDetectorView).isNotEmpty()) {
+      val detector = view as RNGestureHandlerDetectorView
+      val outPoint = PointF()
+      GestureHandlerOrchestrator.transformPointToChildViewCoords(
+        adaptedTransformedEvent.x,
+        adaptedTransformedEvent.y,
+        detector,
+        detector.getChildAt(0),
+        outPoint,
+      )
+      x = outPoint.x
+      y = outPoint.y
+      isWithinBounds = isWithinBounds(detector.getChildAt(0), x, y)
+    } else {
+      x = adaptedTransformedEvent.x
+      y = adaptedTransformedEvent.y
+      isWithinBounds = isWithinBounds(view, x, y)
     }
+
+    if (shouldCancelWhenOutside) {
+      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
+        fail()
+        return
+      }
+    }
+
     lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
@@ -500,7 +542,7 @@ open class GestureHandler {
   }
 
   private fun cancelPointers() {
-    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCELLED
+    touchEventType = RNGestureHandlerTouchEvent.EVENT_TOUCH_CANCEL
     changedTouchesPayload = null
     extractAllPointersData()
 
@@ -573,6 +615,16 @@ open class GestureHandler {
       // generated faster than they can be treated by JS thread
       eventCoalescingKey = nextEventCoalescingKey++
     }
+
+    check(hostDetectorView != null || orchestrator != null) {
+      "Manually handled gesture had not been assigned to any detector"
+    }
+
+    if (orchestrator == null) {
+      // If the state is set manually, the handler may not have been fully recorded by the orchestrator.
+      hostDetectorView?.recordHandlerIfNotPresent(this)
+    }
+
     orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
   }
@@ -719,6 +771,7 @@ open class GestureHandler {
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
 
+  protected open fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {}
   protected open fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     moveToState(STATE_FAILED)
   }
@@ -729,6 +782,10 @@ open class GestureHandler {
   protected open fun onReset() {}
   protected open fun onCancel() {}
   protected open fun onFail() {}
+
+  fun recordHandlerIfNotPresent() {
+    hostDetectorView?.recordHandlerIfNotPresent(this)
+  }
 
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
@@ -820,8 +877,10 @@ open class GestureHandler {
     }
   }
 
+  open fun wantsToAttachDirectlyToView() = false
+
   override fun toString(): String {
-    val viewString = if (view == null) null else view!!.javaClass.simpleName
+    val viewString = testID ?: view?.javaClass?.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
   }
 
@@ -843,8 +902,12 @@ open class GestureHandler {
 
     fun create(context: Context?, handlerTag: Int): T = create(context).also { it.tag = handlerTag }
 
-    open fun setConfig(handler: T, config: ReadableMap) {
+    fun setConfig(handler: T, config: ReadableMap) {
       handler.resetConfig()
+      updateConfig(handler, config)
+    }
+
+    open fun updateConfig(handler: T, config: ReadableMap) {
       if (config.hasKey(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)) {
         handler.shouldCancelWhenOutside = config.getBoolean(KEY_SHOULD_CANCEL_WHEN_OUTSIDE)
       }
@@ -857,11 +920,20 @@ open class GestureHandler {
       if (config.hasKey(KEY_NEEDS_POINTER_DATA)) {
         handler.needsPointerData = config.getBoolean(KEY_NEEDS_POINTER_DATA)
       }
+      if (config.hasKey(KEY_DISPATCHES_ANIMATED_EVENTS)) {
+        handler.dispatchesAnimatedEvents = config.getBoolean(KEY_DISPATCHES_ANIMATED_EVENTS)
+      }
+      if (config.hasKey(KEY_DISPATCHES_REANIMATED_EVENTS)) {
+        handler.dispatchesReanimatedEvents = config.getBoolean(KEY_DISPATCHES_REANIMATED_EVENTS)
+      }
       if (config.hasKey(KEY_MANUAL_ACTIVATION)) {
         handler.manualActivation = config.getBoolean(KEY_MANUAL_ACTIVATION)
       }
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
         handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
+      }
+      if (config.hasKey(KEY_TEST_ID)) {
+        handler.testID = config.getString(KEY_TEST_ID)
       }
     }
 
@@ -871,6 +943,8 @@ open class GestureHandler {
       private const val KEY_SHOULD_CANCEL_WHEN_OUTSIDE = "shouldCancelWhenOutside"
       private const val KEY_ENABLED = "enabled"
       private const val KEY_NEEDS_POINTER_DATA = "needsPointerData"
+      private const val KEY_DISPATCHES_ANIMATED_EVENTS = "dispatchesAnimatedEvents"
+      private const val KEY_DISPATCHES_REANIMATED_EVENTS = "dispatchesReanimatedEvents"
       private const val KEY_MANUAL_ACTIVATION = "manualActivation"
       private const val KEY_MOUSE_BUTTON = "mouseButton"
       private const val KEY_HIT_SLOP = "hitSlop"
@@ -882,6 +956,7 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
+      private const val KEY_TEST_ID = "testID"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
@@ -943,6 +1018,8 @@ open class GestureHandler {
     private const val DEFAULT_IS_ENABLED = true
     private val DEFAULT_HIT_SLOP = null
     private const val DEFAULT_MOUSE_BUTTON = 0
+    private const val DEFAULT_DISPATCHES_ANIMATED_EVENTS = false
+    private const val DEFAULT_DISPATCHES_REANIMATED_EVENTS = false
 
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1
@@ -965,11 +1042,13 @@ open class GestureHandler {
     const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
     const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
     const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
+    const val ACTION_TYPE_NATIVE_DETECTOR = 5
+    const val ACTION_TYPE_VIRTUAL_DETECTOR = 6
     const val POINTER_TYPE_TOUCH = 0
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
     const val POINTER_TYPE_OTHER = 3
-    private const val MAX_POINTERS_COUNT = 12
+    private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
@@ -999,6 +1078,9 @@ open class GestureHandler {
       }
       return null
     }
+
+    fun usesNativeOrVirtualDetector(actionType: Int): Boolean =
+      actionType == ACTION_TYPE_NATIVE_DETECTOR || actionType == ACTION_TYPE_VIRTUAL_DETECTOR
   }
 
   private data class PointerData(

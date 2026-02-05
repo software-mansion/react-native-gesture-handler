@@ -1,9 +1,10 @@
+import './globals';
+
 import { initialize } from './init';
 
 export { Directions } from './Directions';
 export { State } from './State';
 export { PointerType } from './PointerType';
-export { default as gestureHandlerRootHOC } from './components/gestureHandlerRootHOC';
 export { default as GestureHandlerRootView } from './components/GestureHandlerRootView';
 export type {
   // Event types
@@ -14,10 +15,13 @@ export type {
   HandlerStateChangeEventPayload,
   // Pointer events
   GestureTouchEvent,
+  GestureTouchEvent as SingleGestureTouchEvent,
   TouchData,
   // New api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  // Config types
+  ActiveCursor,
 } from './handlers/gestureHandlerCommon';
 export { MouseButton } from './handlers/gestureHandlerCommon';
 export type { GestureType } from './handlers/gestures/gesture';
@@ -50,39 +54,40 @@ export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
 export { default as createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
-export { GestureDetector } from './handlers/gestures/GestureDetector';
+export { GestureDetector as LegacyGestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
-export type { TapGestureType as TapGesture } from './handlers/gestures/tapGesture';
-export type { PanGestureType as PanGesture } from './handlers/gestures/panGesture';
-export type { FlingGestureType as FlingGesture } from './handlers/gestures/flingGesture';
-export type { LongPressGestureType as LongPressGesture } from './handlers/gestures/longPressGesture';
-export type { PinchGestureType as PinchGesture } from './handlers/gestures/pinchGesture';
-export type { RotationGestureType as RotationGesture } from './handlers/gestures/rotationGesture';
-export type { ForceTouchGestureType as ForceTouchGesture } from './handlers/gestures/forceTouchGesture';
-export type { NativeGestureType as NativeGesture } from './handlers/gestures/nativeGesture';
-export type { ManualGestureType as ManualGesture } from './handlers/gestures/manualGesture';
-export type { HoverGestureType as HoverGesture } from './handlers/gestures/hoverGesture';
+export type { TapGestureType as LegacyTapGesture } from './handlers/gestures/tapGesture';
+export type { PanGestureType as LegacyPanGesture } from './handlers/gestures/panGesture';
+export type { FlingGestureType as LegacyFlingGesture } from './handlers/gestures/flingGesture';
+export type { LongPressGestureType as LegacyLongPressGesture } from './handlers/gestures/longPressGesture';
+export type { PinchGestureType as LegacyPinchGesture } from './handlers/gestures/pinchGesture';
+export type { RotationGestureType as LegacyRotationGesture } from './handlers/gestures/rotationGesture';
+export type { ForceTouchGestureType as LegacyForceTouchGesture } from './handlers/gestures/forceTouchGesture';
+export type { ManualGestureType as LegacyManualGesture } from './handlers/gestures/manualGesture';
+export type { HoverGestureType as LegacyHoverGesture } from './handlers/gestures/hoverGesture';
 export type {
-  ComposedGestureType as ComposedGesture,
-  RaceGestureType as RaceGesture,
-  SimultaneousGestureType as SimultaneousGesture,
-  ExclusiveGestureType as ExclusiveGesture,
+  ComposedGestureType as LegacyComposedGesture,
+  RaceGestureType as LegacyRaceGesture,
+  SimultaneousGestureType as LegacySimultaneousGesture,
+  ExclusiveGestureType as LegacyExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
-export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
+export type { GestureStateManagerType as LegacyGestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
-  RawButtonProps,
-  BaseButtonProps,
-  RectButtonProps,
-  BorderlessButtonProps,
+  LegacyRawButtonProps,
+  LegacyBaseButtonProps,
+  LegacyRectButtonProps,
+  LegacyBorderlessButtonProps,
 } from './components/GestureButtonsProps';
+
 export {
-  RawButton,
-  BaseButton,
-  RectButton,
-  BorderlessButton,
-  PureNativeButton,
+  LegacyRawButton,
+  LegacyBaseButton,
+  LegacyRectButton,
+  LegacyBorderlessButton,
+  LegacyPureNativeButton,
 } from './components/GestureButtons';
+
 export type {
   TouchableHighlightProps,
   TouchableOpacityProps,
@@ -95,13 +100,14 @@ export {
   TouchableWithoutFeedback,
 } from './components/touchables';
 export {
-  ScrollView,
-  Switch,
-  TextInput,
-  DrawerLayoutAndroid,
-  FlatList,
-  RefreshControl,
+  LegacyScrollView,
+  LegacySwitch,
+  LegacyTextInput,
+  LegacyDrawerLayoutAndroid,
+  LegacyFlatList,
+  LegacyRefreshControl,
 } from './components/GestureComponents';
+
 export { Text } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
@@ -137,33 +143,19 @@ export type {
   FlingGestureHandlerProperties,
   ForceTouchGestureHandlerProperties,
   // Buttons props
-  RawButtonProperties,
-  BaseButtonProperties,
-  RectButtonProperties,
-  BorderlessButtonProperties,
+  LegacyRawButtonProperties,
+  LegacyBaseButtonProperties,
+  LegacyRectButtonProperties,
+  LegacyBorderlessButtonProperties,
 } from './handlers/gestureHandlerTypesCompat';
 
-export type { SwipeableProps } from './components/Swipeable';
-export { default as Swipeable } from './components/Swipeable';
 export type {
   PressableProps,
+  LegacyPressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';
-export { default as Pressable } from './components/Pressable';
+export { default as LegacyPressable } from './components/Pressable';
 
-export type {
-  DrawerLayoutProps,
-  DrawerPosition,
-  DrawerState,
-  DrawerType,
-  DrawerLockMode,
-  DrawerKeyboardDismissMode,
-} from './components/DrawerLayout';
-export { default as DrawerLayout } from './components/DrawerLayout';
-
-export {
-  enableExperimentalWebImplementation,
-  enableLegacyWebImplementation,
-} from './EnableNewWebImplementation';
+export * from './v3';
 
 initialize();

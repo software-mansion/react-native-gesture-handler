@@ -33,7 +33,7 @@ export class PanGesture extends ContinousBaseGesture<
   PanGestureHandlerEventPayload,
   PanGestureChangeEventPayload
 > {
-  public config: BaseGestureConfig & PanGestureConfig = {};
+  public override config: BaseGestureConfig & PanGestureConfig = {};
 
   constructor() {
     super();
@@ -205,7 +205,7 @@ export class PanGesture extends ContinousBaseGesture<
     return this;
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         PanGestureHandlerEventPayload & PanGestureChangeEventPayload

@@ -14,12 +14,8 @@
 #import <React/RCTUIKit.h>
 #endif
 
-#if RCT_NEW_ARCH_ENABLED
-
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
-
-#endif
 
 /**
  * Gesture Handler Button components overrides standard mechanism used by RN
@@ -178,9 +174,9 @@ static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
 
   return str;
 }
-#endif
 
-#if TARGET_OS_OSX && RCT_NEW_ARCH_ENABLED
+#else
+
 - (void)mountChildComponentView:(RNGHUIView *)childComponentView index:(NSInteger)index
 {
   if (childComponentView.superview != nil) {
@@ -233,6 +229,7 @@ static NSString *RNGHRecursiveAccessibilityLabel(UIView *view)
     self.hidden = layoutMetrics.displayType == facebook::react::DisplayType::None;
   }
 }
+
 #endif
 
 @end

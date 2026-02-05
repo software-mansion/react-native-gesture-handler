@@ -35,12 +35,23 @@
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag
                       toView:(RNGHUIView *)view
               withActionType:(RNGestureHandlerActionType)actionType
+            withHostDetector:(nullable RNGHUIView *)hostDetector
 {
   RNGestureHandler *handler = _handlers[handlerTag];
   RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
   [handler unbindFromView];
   handler.actionType = actionType;
   [handler bindToView:view];
+
+  if (hostDetector != nil) {
+    handler.hostDetectorView = hostDetector;
+  }
+}
+
+- (void)detachHandlerWithTag:(NSNumber *)handlerTag
+{
+  RNGestureHandler *handler = _handlers[handlerTag];
+  [handler unbindFromView];
 }
 
 - (void)dropHandlerWithTag:(NSNumber *)handlerTag

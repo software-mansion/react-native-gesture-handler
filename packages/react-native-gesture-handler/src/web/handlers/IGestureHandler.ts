@@ -1,24 +1,36 @@
 import type { PointerType } from '../../PointerType';
-import type { MouseButton } from '../../handlers/gestureHandlerCommon';
+import type {
+  ActiveCursor,
+  MouseButton,
+  TouchAction,
+  UserSelect,
+} from '../../handlers/gestureHandlerCommon';
 import type { State } from '../../State';
 import type { Config } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
+import { SingleGestureName } from '../../v3/types';
 
 export default interface IGestureHandler {
+  attached: boolean;
   active: boolean;
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
-  readonly config: Config;
+  readonly testID?: string;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
+  readonly name: SingleGestureName;
   state: State;
   shouldCancelWhenOutside: boolean;
   shouldResetProgress: boolean;
-  enabled: boolean;
-  pointerType: PointerType;
+  readonly enabled: boolean | null;
+  readonly pointerType: PointerType;
+  enableContextMenu: boolean;
+  readonly activeCursor?: ActiveCursor;
+  readonly touchAction?: TouchAction;
+  readonly userSelect?: UserSelect;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 
@@ -35,15 +47,18 @@ export default interface IGestureHandler {
   cancel: () => void;
 
   reset: () => void;
+  detach: () => void;
 
   shouldWaitForHandlerFailure: (handler: IGestureHandler) => boolean;
   shouldRequireToWaitForFailure: (handler: IGestureHandler) => boolean;
   shouldRecognizeSimultaneously: (handler: IGestureHandler) => boolean;
   shouldBeCancelledByOther: (handler: IGestureHandler) => boolean;
+  shouldAttachGestureToChildView: () => boolean;
 
   sendEvent: (newState: State, oldState: State) => void;
 
-  updateGestureConfig: (config: Config) => void;
+  setGestureConfig: (config: Config) => void;
+  updateGestureConfig: (config: Partial<Config>) => void;
 
   isButton?: () => boolean;
 }

@@ -1,7 +1,11 @@
+import { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { AdaptedEvent, Config } from '../interfaces';
+import { SingleGestureName } from '../../v3/types';
+import { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 
 import GestureHandler from './GestureHandler';
+import IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MIN_DURATION_MS = 500;
 const DEFAULT_MAX_DIST_DP = 10;
@@ -21,48 +25,60 @@ export default class LongPressGestureHandler extends GestureHandler {
 
   private activationTimeout: number | undefined;
 
-  public init(ref: number, propsRef: React.RefObject<unknown>) {
-    if (this.config.enableContextMenu === undefined) {
-      this.config.enableContextMenu = false;
-    }
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
 
-    super.init(ref, propsRef);
+    this.name = SingleGestureName.LongPress;
   }
 
-  protected transformNativeEvent() {
+  public override init(
+    ref: number,
+    propsRef: React.RefObject<PropsRef>,
+    actionType: ActionType
+  ) {
+    if (this.enableContextMenu === undefined) {
+      this.enableContextMenu = false;
+    }
+
+    super.init(ref, propsRef, actionType);
+  }
+
+  protected override transformNativeEvent() {
     return {
       ...super.transformNativeEvent(),
       duration: Date.now() - this.startTime,
     };
   }
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
 
-    if (this.config.minDurationMs !== undefined) {
-      this.minDurationMs = this.config.minDurationMs;
+    if (config.minDurationMs !== undefined) {
+      this.minDurationMs = config.minDurationMs;
     }
 
-    if (this.config.maxDist !== undefined) {
-      this.maxDistSq = this.config.maxDist * this.config.maxDist;
+    if (config.maxDist !== undefined) {
+      this.maxDistSq = config.maxDist * config.maxDist;
     }
 
-    if (this.config.numberOfPointers !== undefined) {
-      this.numberOfPointers = this.config.numberOfPointers;
+    if (config.numberOfPointers !== undefined) {
+      this.numberOfPointers = config.numberOfPointers;
     }
   }
 
-  protected resetConfig(): void {
+  protected override resetConfig(): void {
     super.resetConfig();
     this.minDurationMs = DEFAULT_MIN_DURATION_MS;
     this.maxDistSq = this.defaultMaxDistSq;
   }
 
-  protected onStateChange(_newState: State, _oldState: State): void {
+  protected override onStateChange(_newState: State, _oldState: State): void {
     clearTimeout(this.activationTimeout);
   }
 
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
       return;
     }
@@ -75,10 +91,8 @@ export default class LongPressGestureHandler extends GestureHandler {
 
     this.tryBegin();
     this.tryActivate();
-
-    this.tryToSendTouchEvent(event);
   }
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     super.onPointerAdd(event);
     this.tracker.addToTracker(event);
 
@@ -95,19 +109,19 @@ export default class LongPressGestureHandler extends GestureHandler {
     this.tryActivate();
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     super.onPointerMove(event);
     this.tracker.track(event);
     this.checkDistanceFail();
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected override onPointerOutOfBounds(event: AdaptedEvent): void {
     super.onPointerOutOfBounds(event);
     this.tracker.track(event);
     this.checkDistanceFail();
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
 
@@ -118,7 +132,7 @@ export default class LongPressGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.tracker.removeFromTracker(event.pointerId);
 

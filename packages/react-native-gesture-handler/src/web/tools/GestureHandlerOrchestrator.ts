@@ -20,7 +20,9 @@ export default class GestureHandlerOrchestrator {
 
   private scheduleFinishedHandlersCleanup(): void {
     if (this.handlingChangeSemaphore === 0) {
-      this.cleanupFinishedHandlers();
+      queueMicrotask(() => {
+        this.cleanupFinishedHandlers();
+      });
     }
   }
 

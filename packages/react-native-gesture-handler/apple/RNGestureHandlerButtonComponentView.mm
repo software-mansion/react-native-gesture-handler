@@ -1,5 +1,3 @@
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #import "RNGestureHandlerButtonComponentView.h"
 
 #import <React/RCTConversions.h>
@@ -263,5 +261,3 @@ Class<RCTComponentViewProtocol> RNGestureHandlerButtonCls(void)
 {
   return RNGestureHandlerButtonComponentView.class;
 }
-
-#endif // RCT_NEW_ARCH_ENABLED

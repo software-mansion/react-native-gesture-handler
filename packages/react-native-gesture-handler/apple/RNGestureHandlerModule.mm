@@ -7,56 +7,53 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTViewManager.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/RCTTurboModule.h>
+#import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 
-#import <react/renderer/components/text/ParagraphShadowNode.h>
-#import <react/renderer/components/text/TextShadowNode.h>
-#import <react/renderer/uimanager/primitives.h>
-#endif // RCT_NEW_ARCH_ENABLED
+#import "RNGHRuntimeDecorator.h"
 
 #import "RNGestureHandler.h"
 #import "RNGestureHandlerDirection.h"
-#import "RNGestureHandlerManager.h"
 #import "RNGestureHandlerState.h"
 
 #import "RNGestureHandlerButton.h"
-#import "RNGestureHandlerStateManager.h"
 
 #import <React/RCTJSThread.h>
+#import <jsi/jsi.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
+using namespace gesturehandler;
 using namespace facebook;
 using namespace react;
-#endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RCT_NEW_ARCH_ENABLED
-@interface RNGestureHandlerModule () <RNGestureHandlerStateManager, RCTTurboModule>
+@interface RNGestureHandlerModule () <RCTTurboModule, RCTTurboModuleWithJSIBindings>
 
 @end
-#else
-@interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
-
-@end
-#endif // RCT_NEW_ARCH_ENABLED
 
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
 @implementation RNGestureHandlerModule {
-  RNGestureHandlerManager *_manager;
-
   // Oparations called after views have been updated.
   NSMutableArray<GestureHandlerOperation> *_operations;
+
+  jsi::Runtime *_rnRuntime;
+  int _moduleId;
+
+  bool _isReanimatedAvailable;
+  bool _uiRuntimeDecorated;
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
-@synthesize dispatchToJSThread = _dispatchToJSThread;
-#endif // RCT_NEW_ARCH_ENABLED
+
+static std::unordered_map<int, RNGestureHandlerManager *> _managers;
+
++ (RNGestureHandlerManager *)handlerManagerForModuleId:(int)moduleId
+{
+  return _managers[moduleId];
+}
 
 RCT_EXPORT_MODULE()
 
@@ -67,16 +64,12 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  RNGestureHandlerManager *handlerManager = _manager;
+  RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   dispatch_async(dispatch_get_main_queue(), ^{
     [handlerManager dropAllGestureHandlers];
   });
 
-  _manager = nil;
-
-#ifndef RCT_NEW_ARCH_ENABLED
-  [self.bridge.uiManager.observerCoordinator removeObserver:self];
-#endif // RCT_NEW_ARCH_ENABLED
+  _managers[_moduleId] = nullptr;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -90,89 +83,54 @@ RCT_EXPORT_MODULE()
   return RCTGetUIManagerQueue();
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
-void decorateRuntime(jsi::Runtime &runtime)
+- (void)installJSIBindingsWithRuntime:(jsi::Runtime &)rnRuntime
+                          callInvoker:(const std::shared_ptr<facebook::react::CallInvoker> &)callinvoker
 {
-  auto isViewFlatteningDisabled = jsi::Function::createFromHostFunction(
-      runtime,
-      jsi::PropNameID::forAscii(runtime, "isViewFlatteningDisabled"),
-      1,
-      [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *arguments, size_t count) -> jsi::Value {
-        if (!arguments[0].isObject()) {
-          return jsi::Value::null();
-        }
+  _rnRuntime = &rnRuntime;
+  __weak RNGestureHandlerModule *weakSelf = self;
 
-#if REACT_NATIVE_MINOR_VERSION >= 81
-        auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(runtime, arguments[0]);
-#else
-        auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
-#endif
-
-        if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
-          return jsi::Value(true);
-        }
-
-        if (dynamic_pointer_cast<const TextShadowNode>(shadowNode)) {
-          return jsi::Value(true);
-        }
-
-        bool isViewFlatteningDisabled = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
-
-        return jsi::Value(isViewFlatteningDisabled);
-      });
-  runtime.global().setProperty(runtime, "isViewFlatteningDisabled", std::move(isViewFlatteningDisabled));
+  RNGHRuntimeDecorator::installRNRuntimeBindings(rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
+    RNGestureHandlerModule *strongSelf = weakSelf;
+    if (strongSelf != nil) {
+      [strongSelf setGestureState:state forHandler:handlerTag];
+    }
+  });
 }
-#endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (void)initialize
 {
-  _manager = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
-                                                        viewRegistry:_viewRegistry_DEPRECATED];
+  static int nextModuleId = 0;
+  _moduleId = nextModuleId++;
+  _managers[_moduleId] = [[RNGestureHandlerManager alloc] initWithModuleRegistry:self.moduleRegistry
+                                                                    viewRegistry:_viewRegistry_DEPRECATED];
   _operations = [NSMutableArray new];
 }
-#else
-- (void)setBridge:(RCTBridge *)bridge
+
+- (bool)installUIRuntimeBindings
 {
-  [super setBridge:bridge];
+  __weak RNGestureHandlerModule *weakSelf = self;
 
-  _manager = [[RNGestureHandlerManager alloc] initWithUIManager:bridge.uiManager
-                                                eventDispatcher:bridge.eventDispatcher];
-  _operations = [NSMutableArray new];
-
-  [bridge.uiManager.observerCoordinator addObserver:self];
+  return RNGHRuntimeDecorator::installUIRuntimeBindings(*_rnRuntime, _moduleId, [weakSelf](int handlerTag, int state) {
+    RNGestureHandlerModule *strongSelf = weakSelf;
+    if (strongSelf != nil) {
+      [strongSelf setGestureState:state forHandler:handlerTag];
+    }
+  });
 }
-#endif // RCT_NEW_ARCH_ENABLED
 
-#ifdef RCT_NEW_ARCH_ENABLED
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install)
+- (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
-  dispatch_block_t block = ^{
-    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
-    auto runtime = (jsi::Runtime *)cxxBridge.runtime;
-    decorateRuntime(*runtime);
-  };
-  if (_dispatchToJSThread) {
-    _dispatchToJSThread(block);
-  } else {
-    [self.bridge dispatchBlock:block queue:RCTJSThread];
+  if (_isReanimatedAvailable && !_uiRuntimeDecorated) {
+    _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
 
-  return @true;
-}
-#endif // RCT_NEW_ARCH_ENABLED
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
 
-RCT_EXPORT_METHOD(createGestureHandler
-                  : (nonnull NSString *)handlerName handlerTag
-                  : (double)handlerTag config
-                  : (NSDictionary *)config)
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager createGestureHandler:handlerName tag:[NSNumber numberWithDouble:handlerTag] config:config];
-  }];
+  return @1;
 }
 
-RCT_EXPORT_METHOD(attachGestureHandler : (double)handlerTag newView : (double)viewTag actionType : (double)actionType)
+- (void)attachGestureHandler:(double)handlerTag newView:(double)viewTag actionType:(double)actionType
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager attachGestureHandler:[NSNumber numberWithDouble:handlerTag]
@@ -181,57 +139,80 @@ RCT_EXPORT_METHOD(attachGestureHandler : (double)handlerTag newView : (double)vi
   }];
 }
 
-RCT_EXPORT_METHOD(updateGestureHandler : (double)handlerTag newConfig : (NSDictionary *)config)
+- (void)setGestureHandlerConfig:(double)handlerTag newConfig:(NSDictionary *)config
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager updateGestureHandler:[NSNumber numberWithDouble:handlerTag] config:config];
+    [manager setGestureHandlerConfig:[NSNumber numberWithDouble:handlerTag] config:config];
   }];
 }
 
-RCT_EXPORT_METHOD(dropGestureHandler : (double)handlerTag)
+- (void)updateGestureHandlerConfig:(double)handlerTag newConfig:(NSDictionary *)config
+{
+  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+    [manager updateGestureHandlerConfig:[NSNumber numberWithDouble:handlerTag] config:config];
+  }];
+}
+
+- (void)configureRelations:(double)handlerTag relations:(NSDictionary *)relations
+{
+  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
+    [manager updateGestureHandlerRelations:[NSNumber numberWithDouble:handlerTag] relations:relations];
+  }];
+}
+
+- (void)dropGestureHandler:(double)handlerTag
 {
   [self addOperationBlock:^(RNGestureHandlerManager *manager) {
     [manager dropGestureHandler:[NSNumber numberWithDouble:handlerTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(handleSetJSResponder : (double)viewTag blockNativeResponder : (BOOL)blockNativeResponder)
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager handleSetJSResponder:[NSNumber numberWithDouble:viewTag] blockNativeResponder:blockNativeResponder];
-  }];
-}
-
-RCT_EXPORT_METHOD(handleClearJSResponder)
-{
-  [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-    [manager handleClearJSResponder];
-  }];
-}
-
-RCT_EXPORT_METHOD(flushOperations)
+- (void)flushOperations
 {
   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
   // On the old arch we rely on `uiManagerWillPerformMounting`
-#ifdef RCT_NEW_ARCH_ENABLED
   if (_operations.count == 0) {
     return;
   }
 
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   NSArray<GestureHandlerOperation> *operations = _operations;
   _operations = [NSMutableArray new];
 
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
     for (GestureHandlerOperation operation in operations) {
-      operation(self->_manager);
+      operation(manager);
     }
   }];
-#endif // RCT_NEW_ARCH_ENABLED
+}
+
+- (void)setReanimatedAvailable:(BOOL)isAvailable
+{
+  _isReanimatedAvailable = isAvailable;
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
-  RNGestureHandler *handler = [_manager handlerWithTag:@(handlerTag)];
+  if (RCTIsMainQueue()) {
+    [self setGestureStateSync:state forHandler:handlerTag];
+  } else {
+    RCTExecuteOnMainQueue(^{
+      [self setGestureStateSync:state forHandler:handlerTag];
+    });
+  }
+}
+
+- (void)setGestureStateSync:(int)state forHandler:(int)handlerTag
+{
+  RCTAssertMainQueue();
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+  RNGestureHandler *handler = [manager handlerWithTag:@(handlerTag)];
+
+  if (handler.hostDetectorView == nil && [handler usesNativeOrVirtualDetector]) {
+    @throw [NSException exceptionWithName:@"HandlerNotAttached"
+                                   reason:@"Manually handled gesture had not been assigned to any detector"
+                                 userInfo:nil];
+  }
 
   if (handler != nil) {
     if (state == 1) { // FAILED
@@ -267,34 +248,6 @@ RCT_EXPORT_METHOD(flushOperations)
   [_operations addObject:operation];
 }
 
-#ifndef RCT_NEW_ARCH_ENABLED
-
-#pragma mark - RCTUIManagerObserver
-
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
-{
-  [self uiManagerWillPerformMounting:uiManager];
-}
-
-- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
-{
-  if (_operations.count == 0) {
-    return;
-  }
-
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
-  [uiManager
-      addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RNGHUIView *> *viewRegistry) {
-        for (GestureHandlerOperation operation in operations) {
-          operation(self->_manager);
-        }
-      }];
-}
-
-#endif // RCT_NEW_ARCH_ENABLED
-
 #pragma mark Events
 
 - (NSArray<NSString *> *)supportedEvents
@@ -324,12 +277,10 @@ RCT_EXPORT_METHOD(flushOperations)
   };
 }
 
-#if RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeRNGestureHandlerModuleSpecJSI>(params);
 }
-#endif
 
 @end

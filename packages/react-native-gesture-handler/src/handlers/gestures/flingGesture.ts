@@ -3,7 +3,7 @@ import { FlingGestureConfig } from '../FlingGestureHandler';
 import type { FlingGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
-  public config: BaseGestureConfig & FlingGestureConfig = {};
+  public override config: BaseGestureConfig & FlingGestureConfig = {};
 
   constructor() {
     super();

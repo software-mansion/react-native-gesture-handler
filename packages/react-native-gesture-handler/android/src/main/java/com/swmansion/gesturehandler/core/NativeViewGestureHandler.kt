@@ -15,7 +15,7 @@ import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
-import com.swmansion.gesturehandler.react.eventbuilders.NativeGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.NativeGestureHandlerEventDataBuilder
 import com.swmansion.gesturehandler.react.isScreenReaderOn
 
 class NativeViewGestureHandler : GestureHandler() {
@@ -167,14 +167,16 @@ class NativeViewGestureHandler : GestureHandler() {
     this.hook = defaultHook
   }
 
+  override fun wantsToAttachDirectlyToView() = true
+
   class Factory : GestureHandler.Factory<NativeViewGestureHandler>() {
     override val type = NativeViewGestureHandler::class.java
     override val name = "NativeViewGestureHandler"
 
     override fun create(context: Context?): NativeViewGestureHandler = NativeViewGestureHandler()
 
-    override fun setConfig(handler: NativeViewGestureHandler, config: ReadableMap) {
-      super.setConfig(handler, config)
+    override fun updateConfig(handler: NativeViewGestureHandler, config: ReadableMap) {
+      super.updateConfig(handler, config)
       if (config.hasKey(KEY_SHOULD_ACTIVATE_ON_START)) {
         handler.shouldActivateOnStart = config.getBoolean(KEY_SHOULD_ACTIVATE_ON_START)
       }
@@ -199,6 +201,12 @@ class NativeViewGestureHandler : GestureHandler() {
     private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
 
     private val defaultHook = object : NativeViewGestureHandlerHook {}
+
+    enum class ScrollDirection(val value: Int) {
+      UP(-1),
+      DOWN(1),
+      NONE(0),
+    }
   }
 
   interface NativeViewGestureHandlerHook {
@@ -302,6 +310,7 @@ class NativeViewGestureHandler : GestureHandler() {
     private val handler: NativeViewGestureHandler,
     private val swipeRefreshLayout: ReactSwipeRefreshLayout,
   ) : NativeViewGestureHandlerHook {
+    private var lastY: Float? = null
     override fun wantsToHandleEventBeforeActivation() = true
 
     override fun handleEventBeforeActivation(event: MotionEvent) {
@@ -321,10 +330,31 @@ class NativeViewGestureHandler : GestureHandler() {
           it is NativeViewGestureHandler
         }
 
-      // If handler was found, it's active and the ScrollView is not at the top, fail the RefreshControl
-      if (scrollHandler != null && scrollHandler.state == STATE_ACTIVE && scroll.scrollY > 0) {
+      // In old API ScrollView was detecting scroll even if RefreshControl hasn't been cancelled yet.
+      // This doesn't work on new API, therefore we check scroll direction. This shouldn't affect old APIs.
+      // To determine scroll direction, we will compare current event with previous one.
+      // Note: Scrolling up is handled by `canScrollVertically` method.
+      val scrollDirection = lastY?.let {
+        val dy = it - event.y
+
+        when {
+          dy < 0 -> ScrollDirection.UP
+          dy > 0 -> ScrollDirection.DOWN
+          else -> ScrollDirection.NONE
+        }
+      } ?: ScrollDirection.NONE
+
+      // We want to fail RefreshControl if we find active ScrollView handler and we either:
+      // 1. scroll down,
+      // 2. scroll up when we are not at the top of the list.
+      if (scrollHandler != null &&
+        scrollHandler.state == STATE_ACTIVE &&
+        (scrollDirection == ScrollDirection.DOWN || scroll.canScrollVertically(ScrollDirection.UP.value))
+      ) {
         handler.fail()
       }
+
+      lastY = event.y
 
       // The drawback is that the smooth transition from scrolling to refreshing in a single swipe
       // is impossible this way and two swipes are required:

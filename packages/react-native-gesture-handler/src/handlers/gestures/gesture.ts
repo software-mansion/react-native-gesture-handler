@@ -96,7 +96,7 @@ export const CALLBACK_TYPE = {
   TOUCHES_DOWN: 7,
   TOUCHES_MOVE: 8,
   TOUCHES_UP: 9,
-  TOUCHES_CANCELLED: 10,
+  TOUCHES_CANCEL: 10,
 } as const;
 
 // Allow using CALLBACK_TYPE as object and type
@@ -274,7 +274,7 @@ export abstract class BaseGesture<
   onTouchesCancelled(callback: TouchEventHandlerType) {
     this.config.needsPointerData = true;
     this.handlers.onTouchesCancelled = callback;
-    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCELLED] =
+    this.handlers.isWorklet[CALLBACK_TYPE.TOUCHES_CANCEL] =
       this.isWorklet(callback);
 
     return this;

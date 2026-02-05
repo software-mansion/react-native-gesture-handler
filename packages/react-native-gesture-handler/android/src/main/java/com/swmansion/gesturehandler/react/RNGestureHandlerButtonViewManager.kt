@@ -21,7 +21,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
 import com.facebook.react.R
@@ -513,9 +512,9 @@ class RNGestureHandlerButtonViewManager :
       // a parent button from playing)
       return if (!isChildTouched()) {
         if (context.isScreenReaderOn()) {
-          findGestureHandlerRootView()?.activateNativeHandlers(this)
+          RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
         } else if (receivedKeyEvent) {
-          findGestureHandlerRootView()?.activateNativeHandlers(this)
+          RNGestureHandlerRootView.findGestureHandlerRootView(this)?.activateNativeHandlers(this)
           receivedKeyEvent = false
         }
 
@@ -552,20 +551,6 @@ class RNGestureHandlerButtonViewManager :
     override fun dispatchDrawableHotspotChanged(x: Float, y: Float) {
       // No-op
       // by default Viewgroup would pass hotspot change events
-    }
-
-    private fun findGestureHandlerRootView(): RNGestureHandlerRootView? {
-      var parent: ViewParent? = this.parent
-      var gestureHandlerRootView: RNGestureHandlerRootView? = null
-
-      while (parent != null) {
-        if (parent is RNGestureHandlerRootView) {
-          gestureHandlerRootView = parent
-        }
-        parent = parent.parent
-      }
-
-      return gestureHandlerRootView
     }
 
     companion object {

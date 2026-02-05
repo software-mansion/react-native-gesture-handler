@@ -10,7 +10,7 @@ Thanks for giving this library a try! We are sorry that you might have encounter
 
 1. Search over the [issues on Github](https://github.com/software-mansion/react-native-gesture-handler/issues). There is a chance someone had this problem in the past and it has been resolved!
 2. When sure your problem hasn't been reported or was reported but the proposed solution doesn't work for you please follow [our issue reporting guidelines](#reporting-issues).
-3. You can try seeking help on [Expo Developers Discord](https://chat.expo.dev/) where we often hang out.
+3. You can try seeking help on [Software Mansion Discord](https://discord.com/invite/VemJ4df8Yr).
 4. If you feel like reading the source code I highly recommend it, as this is by far the best resource and gives you the most up to date insights into how the library works and what might be causing the bug.
 5. If you managed to find the solution consider [contributing](/docs/#contributing) a fix or update our documentation to make this information easier to find for the others in the future.
 
@@ -72,59 +72,4 @@ or
 
 ```bash
 npm install
-```
-
-### Automatic [workletization](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#to-workletize) of gesture callbacks
-
-[Reanimated's Babel plugin](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#reanimated-babel-plugin) is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that as long as all your callbacks are defined in a single chain, you don't need to add a `'worklet';` directive at the beginning of the functions. Here is an example that will be automatically workletized:
-
-```jsx
-const gesture = Gesture.Tap().onBegin(() => {
-  console.log(_WORKLET);
-});
-```
-
-And here are some examples that won't:
-
-```jsx
-const gesture = Gesture.Tap();
-gesture.onBegin(() => {
-  console.log(_WORKLET);
-});
-```
-
-```jsx
-const callback = () => {
-  console.log(_WORKLET);
-};
-const gesture = Gesture.Tap().onBegin(callback);
-```
-
-```jsx
-const callback = () => {
-  console.log(_WORKLET);
-};
-const gesture = Gesture.Tap();
-gesture.onBegin(callback);
-```
-
-In the above cases, you should add a [`"worklet";`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#worklet) directive at the beginning of the callbacks, like so:
-
-```jsx
-const callback = () => {
-  // highlight-next-line
-  "worklet";
-  console.log(_WORKLET);
-};
-const gesture = Gesture.Tap().onBegin(callback);
-```
-
-```jsx
-const callback = () => {
-  // highlight-next-line
-  "worklet";
-  console.log(_WORKLET);
-};
-const gesture = Gesture.Tap();
-gesture.onBegin(callback);
 ```

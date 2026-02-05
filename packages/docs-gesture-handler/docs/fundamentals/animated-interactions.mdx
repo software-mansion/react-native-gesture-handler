@@ -1,0 +1,155 @@
+---
+id: animated-interactions
+title: Integration with Animated
+sidebar_label: Integration with Animated
+sidebar_position: 5
+---
+
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+Using hook API allows for smooth integration with the [Animated API](https://reactnative.dev/docs/animated) by allowing for passing an `Animated.event` as the argument to the `onUpdate` callback. The event mapping of `Animated.event` depends on the `useNativeDriver` property.
+
+When using Animated API, remember to set `useAnimated` property to `true`.
+
+:::danger Mixing Reanimated and Animated
+It is not possible to mix `Reanimated` and `Animated` within any of the [gesture detectors](/docs/fundamentals/gesture-detectors).
+:::
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[8, 33]}
+src={`
+import * as React from 'react';
+import { Animated, StyleSheet, useAnimatedValue } from 'react-native';
+import {
+  GestureHandlerRootView,
+  GestureDetector,
+  usePanGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const value = useAnimatedValue(0);
+
+  const event = Animated.event(
+    [{ nativeEvent: { handlerData: { translationX: value } } }],
+    {
+      useNativeDriver: true,
+    }
+  );
+
+  const gesture = usePanGesture({
+    // highlight-next-line
+    onUpdate: event,
+    // highlight-next-line
+    useAnimated: true,
+  });
+
+  return (
+    <GestureHandlerRootView>
+      <GestureDetector gesture={gesture}>
+        <Animated.View
+          style={[styles.box, { transform: [{ translateX: value }] }]}
+        />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  box: {
+    width: 150,
+    height: 150,
+    backgroundColor: '#b58df1',
+  },
+});
+`}/>
+
+## useNativeDriver
+
+When using `Animated.event` with `useNativeDriver` set to `false`, it is required to set [`disableReanimated`](/docs/fundamentals/reanimated-interactions#disablereanimated) to `true` in the gesture configuration. 
+
+Mapping of `Animated.event` depends on the value of `useNativeDriver` property. When set to `true`, event data can be accessed through `nativeEvent.handlerData` property:
+
+```jsx
+  const value = useAnimatedValue(0);
+
+  const event = Animated.event(
+    [{ nativeEvent: { handlerData: { /* translationX: value, ... */ } } }],
+    { useNativeDriver: true }
+  );
+```
+
+In case of `useNativeDriver` set to `false`, event data is accessed directly:
+
+```jsx
+  const value = useAnimatedValue(0);
+
+  const event = Animated.event(
+    [ { /* translationX: value, ... */ } ],
+    { useNativeDriver: false }
+  );
+```
+
+## Usage with VirtualGestureDetector
+
+Using `Animated.event` with [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector) is possible only when `useNativeDriver` is set to `false`.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[8, 33]}
+src={`
+import React from 'react';
+import { View, StyleSheet, Animated, useAnimatedValue } from 'react-native';
+import {
+  GestureHandlerRootView,
+  InterceptingGestureDetector,
+  usePanGesture,
+  VirtualGestureDetector,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const value = useAnimatedValue(0);
+  const event = Animated.event([{ translationX: value }], {
+    useNativeDriver: false,
+  });
+
+  const panGesture = usePanGesture({
+    onUpdate: event,
+    disableReanimated: true,
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <InterceptingGestureDetector>
+        <View style={styles.outerBox}>
+          <VirtualGestureDetector gesture={panGesture}>
+            <Animated.View
+              style={[styles.innerBox, { transform: [{ translateX: value }] }]}
+            />
+          </VirtualGestureDetector>
+        </View>
+      </InterceptingGestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  outerBox: {
+    backgroundColor: '#b58df1',
+    width: 150,
+    height: 150,
+  },
+  innerBox: {
+    width: 100,
+    height: 100,
+    backgroundColor: 'blue',
+  },
+});
+`}/>

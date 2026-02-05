@@ -1,0 +1,173 @@
+---
+id: callbacks-events
+title: Gesture callbacks & events
+sidebar_label: Gesture callbacks & events
+sidebar_position: 7
+---
+
+import { GestureEventFlowChart, TouchEventFlowChart } from '@site/src/examples/CallbacksFlowCharts'
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+At any given time, each handler instance has an assigned [state](/docs/under-the-hood/state) that can change when new touch events occur or can be forced to change by the touch system in certain circumstances. You can hook into state transitions using specific [gesture callbacks](#callbacks).
+
+When `Reanimated` is installed, all callbacks are automatically workletized. For more details, refer to the [Integration with Reanimated](/docs/fundamentals/reanimated-interactions#automatic-workletization-of-gesture-callbacks) section.
+
+## Callbacks flow
+
+### GestureEvent callbacks
+
+<GestureEventFlowChart />
+
+Note that some of these callbacks are complementary:
+
+- if `onBegin` was called, it is guaranteed that `onFinalize` will be called later.
+- if `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
+
+### TouchEvent callbacks
+
+<TouchEventFlowChart />
+
+## Callbacks
+
+### onBegin
+
+```ts
+onBegin: (event: GestureEvent<HandlerData>) => void
+```
+
+Called when a handler begins to recognize gestures. If `onBegin` was called, it is guaranteed that `onFinalize` will be called later.
+
+### onActivate
+
+```ts
+onActivate: (event: GestureEvent<HandlerData>) => void
+```
+ 
+Called when activation criteria for handler are met. If `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
+
+### onUpdate
+
+```ts
+onUpdate: (event: GestureEvent<HandlerData>) => void
+```
+
+Called each time a pointer tracked by the gesture changes state, typically due to movement, after the gesture has been activated.
+
+### onDeactivate
+
+```ts
+onDeactivate: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
+```
+
+Called after when handler stops recognizing gestures, but only if handler activated. It is called before `onFinalize`. If the handler was interrupted, the `didSucceed` argument is set to `false`. Otherwise it is set to `true`.
+
+### onFinalize
+
+```ts
+onFinalize: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
+```
+
+Called when handler stops recognizing gestures. If handler managed to activate, the `didSucceed` argument is set to `true` and `onFinalize` will be called right after `onDeactivate`. Otherwise it is set to `false`.
+
+### onTouchesDown
+
+```ts
+onTouchesDown: (event: GestureTouchEvent) => void
+```
+
+Called when new pointers are placed on the screen. It may carry information about more than one pointer because the events are batched.
+
+### onTouchesMove
+
+```ts
+onTouchesMove: (event: GestureTouchEvent) => void
+```
+
+Called when pointers are moved on the screen. It may carry information about more than one pointer because the events are batched.
+
+### onTouchesUp
+
+```ts
+onTouchesUp: (event: GestureTouchEvent) => void
+```
+
+Called when pointers are lifted from the screen. It may carry information about more than one pointer because the events are batched.
+
+### onTouchesCancel
+
+```ts
+onTouchesCancel: (event: GestureTouchEvent) => void
+```
+
+Called when there will be no more information about this pointer. It may be called because the gesture has ended or was interrupted. It may carry information about more than one pointer because the events are batched.
+
+## Events
+
+### GestureEvent
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 4]}
+src={`
+export type GestureEvent<HandlerData> = {
+  handlerTag: number;
+  numberOfPointers: number;
+  pointerType: PointerType;
+} & HandlerData;
+
+export enum PointerType {
+  TOUCH,
+  STYLUS,
+  MOUSE,
+  KEY,
+  OTHER,
+}
+`}/>
+
+`GestureEvent` contains properties common to all gestures (`handlerTag`, `numberOfPointers`, `pointerType`) along with gesture-specific data defined in each gesture's documentation.
+
+### TouchEvent
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 8]}
+src={`
+export type GestureTouchEvent = {
+  handlerTag: number;
+  numberOfTouches: number;
+  state: State;
+  eventType: TouchEventType;
+  allTouches: TouchData[];
+  changedTouches: TouchData[];
+  pointerType: PointerType;
+};
+
+export const State = {
+  UNDETERMINED: 0,
+  FAILED: 1,
+  BEGAN: 2,
+  CANCELLED: 3,
+  ACTIVE: 4,
+  END: 5,
+} as const;
+
+export const TouchEventType = {
+  UNDETERMINED: 0,
+  TOUCHES_DOWN: 1,
+  TOUCHES_MOVE: 2,
+  TOUCHES_UP: 3,
+  TOUCHES_CANCEL: 4,
+} as const;
+
+export enum PointerType {
+  TOUCH,
+  STYLUS,
+  MOUSE,
+  KEY,
+  OTHER,
+}
+`}/>
+
+`TouchEvent` carries information about raw touch events, like touching the screen or moving the finger. 

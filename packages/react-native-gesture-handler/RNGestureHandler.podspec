@@ -18,20 +18,16 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.author       = { package["author"]["name"] => package["author"]["email"] }
   s.source       = { :git => "https://github.com/software-mansion/react-native-gesture-handler", :tag => "#{s.version}" }
-  s.source_files = "apple/**/*.{h,m,mm}"
+  s.source_files = "apple/**/*.{h,m,mm}", "shared/**/*.{h,cpp}"
   s.requires_arc = true
   s.platforms       = { ios: '11.0', tvos: '11.0', osx: '10.15', visionos: '1.0' }
   s.xcconfig = {
     "OTHER_CFLAGS" => "$(inherited) #{compilation_metadata_generation_flag} #{version_flag}"
   }
 
-  if defined?(install_modules_dependencies()) != nil
-    install_modules_dependencies(s);
-  else
-    s.dependency "React-Core"
-  end
+  install_modules_dependencies(s);
 
-  if ENV['USE_FRAMEWORKS'] != nil && ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  if ENV['USE_FRAMEWORKS'] != nil
     add_dependency(s, "React-FabricComponents", :additional_framework_paths => [
       "react/renderer/textlayoutmanager/platform/ios",
       "react/renderer/components/textinput/platform/ios",

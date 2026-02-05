@@ -13,13 +13,8 @@
 #endif
 
 #import <React/RCTConvert.h>
-#import <React/UIView+React.h>
-
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTScrollViewComponentView.h>
-#else
-#import <React/RCTScrollView.h>
-#endif // RCT_NEW_ARCH_ENABLED
+#import <React/UIView+React.h>
 
 #pragma mark RNDummyGestureRecognizer
 
@@ -128,9 +123,9 @@
   return self;
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
 }
@@ -162,6 +157,15 @@
   // is set
   UIScrollView *scrollView = [self retrieveScrollView:view];
   scrollView.delaysContentTouches = YES;
+}
+
+- (void)unbindFromView
+{
+  // Restore the React Native's overriden behavor for not delaying content touches
+  UIScrollView *scrollView = [self retrieveScrollView:self.recognizer.view];
+  scrollView.delaysContentTouches = NO;
+
+  [super unbindFromView];
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
@@ -227,6 +231,11 @@
   [self sendEventsInState:RNGestureHandlerStateCancelled
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO withPointerType:_pointerType]];
+}
+
+- (BOOL)wantsToAttachDirectlyToView
+{
+  return YES;
 }
 
 #else

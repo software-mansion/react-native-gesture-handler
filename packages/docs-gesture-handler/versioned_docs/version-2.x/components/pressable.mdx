@@ -1,0 +1,162 @@
+---
+id: pressable
+title: Pressable
+sidebar_label: Pressable
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import GifGallery from '@site/components/GifGallery';
+
+<GifGallery>
+  <img src={useBaseUrl('gifs/pressable.gif')} width="70%" />
+</GifGallery>
+
+:::info
+This component is a drop-in replacement for the `Pressable` component.
+:::
+
+`Pressable` is a component that can detect various stages of tap, press, and hover interactions on any of its children.
+
+### Usage:
+
+To use `Pressable`, import it in the following way:
+
+```js
+import { Pressable } from 'react-native-gesture-handler';
+```
+
+## Properties
+
+### `children`
+
+either children or a render function that receives a boolean reflecting whether
+the component is currently pressed.
+
+### `style`
+
+either view styles or a function that receives a boolean reflecting whether
+the component is currently pressed and returns view styles.
+
+### `onPress`
+
+called after `onPressOut` when a single tap gesture is detected.
+
+### `onPressIn`
+
+called before `onPress` when a touch is engaged.
+
+### `onPressOut`
+
+called before `onPress` when a touch is released.
+
+### `onLongPress`
+
+called immediately after pointer has been down for at least `delayLongPress` milliseconds (`500` ms by default).
+
+After `onLongPress` has been called, `onPressOut` will be called as soon as the pointer is lifted and `onPress` will not be called at all.
+
+### `cancelable`
+
+whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
+
+### `onHoverIn` (Web only)
+
+called when pointer is hovering over the element.
+
+### `onHoverOut` (Web only)
+
+called when pointer stops hovering over the element.
+
+### `delayHoverIn` (Web only)
+
+duration to wait after hover in before calling `onHoverIn`.
+
+### `delayHoverOut` (Web only)
+
+duration to wait after hover out before calling `onHoverOut`.
+
+### `delayLongPress`
+
+duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
+
+### `disabled`
+
+whether the `Pressable` behavior is disabled.
+
+### `hitSlop` (Android & iOS only)
+
+additional distance outside of the view in which a press is detected and `onPressIn` is triggered.
+
+Accepts values of type `number` or [`Rect`](https://reactnative.dev/docs/rect)
+
+### `pressRetentionOffset` (Android & iOS only)
+
+additional distance outside of the view (or `hitSlop` if present) in which a touch is considered a
+press before `onPressOut` is triggered.
+
+Accepts values of type `number` or [`Rect`](https://reactnative.dev/docs/rect)
+
+### `android_disableSound` (Android only)
+
+if `true`, doesn't play system sound on touch.
+
+### `android_ripple` (Android only)
+
+enables the Android ripple effect and configures its color, radius and other parameters.
+
+Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig)
+
+### `testOnly_pressed`
+
+used only for documentation or testing (e.g. snapshot testing).
+
+### `unstable_pressDelay`
+
+duration (in milliseconds) to wait after press down before calling `onPressIn`.
+
+### Example:
+
+See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/new_api/pressable/index.tsx) from `GestureHandler` example app.
+
+import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
+
+```js
+import { View, Text, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
+
+export default function Example() {
+  return (
+    <Pressable
+      style={({ pressed }) => (pressed ? styles.highlight : styles.pressable)}
+      hitSlop={20}
+      pressRetentionOffset={20}>
+      <View style={styles.textWrapper}>
+        <Text style={styles.text}>Pressable!</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  pressable: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'mediumpurple',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  highlight: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'red',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  textWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: 'black',
+  },
+});
+```

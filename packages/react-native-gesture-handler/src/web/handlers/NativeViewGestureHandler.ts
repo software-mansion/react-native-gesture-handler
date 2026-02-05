@@ -1,9 +1,13 @@
 import { Platform } from 'react-native';
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config } from '../interfaces';
+import { AdaptedEvent, Config, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
+import { ActionType } from '../../ActionType';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
+import { SingleGestureName } from '../../v3/types';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
@@ -16,8 +20,19 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
-  public init(ref: number, propsRef: React.RefObject<unknown>): void {
-    super.init(ref, propsRef);
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = SingleGestureName.Native;
+  }
+
+  public override init(
+    ref: number,
+    propsRef: React.RefObject<PropsRef>,
+    actionType: ActionType
+  ): void {
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = true;
 
@@ -31,14 +46,14 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.buttonRole = view.getAttribute('role') === 'button';
   }
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
 
-    if (this.config.shouldActivateOnStart !== undefined) {
-      this.shouldActivateOnStart = this.config.shouldActivateOnStart;
+    if (config.shouldActivateOnStart !== undefined) {
+      this.shouldActivateOnStart = config.shouldActivateOnStart;
     }
-    if (this.config.disallowInterruption !== undefined) {
-      this.disallowInterruption = this.config.disallowInterruption;
+    if (config.disallowInterruption !== undefined) {
+      this.disallowInterruption = config.disallowInterruption;
     }
 
     const view = this.delegate.view as HTMLElement;
@@ -55,15 +70,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
     view.style['WebkitTouchCallout'] = 'auto';
   }
 
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
     this.newPointerAction();
-
-    this.tryToSendTouchEvent(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
     this.newPointerAction();
@@ -88,7 +101,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     this.tracker.track(event);
 
     const lastCoords = this.tracker.getAbsoluteCoordsAverage();
@@ -105,18 +118,18 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerLeave(): void {
+  protected override onPointerLeave(): void {
     if (this.state === State.BEGAN || this.state === State.ACTIVE) {
       this.cancel();
     }
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.onUp(event);
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.onUp(event);
   }
@@ -133,7 +146,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+  public override shouldRecognizeSimultaneously(
+    handler: GestureHandler
+  ): boolean {
     if (super.shouldRecognizeSimultaneously(handler)) {
       return true;
     }
@@ -161,8 +176,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
     );
   }
 
-  public shouldBeCancelledByOther(_handler: GestureHandler): boolean {
+  public override shouldBeCancelledByOther(_handler: GestureHandler): boolean {
     return !this.disallowInterruption;
+  }
+
+  public override shouldAttachGestureToChildView(): boolean {
+    return true;
   }
 
   public disallowsInterruption(): boolean {
@@ -171,5 +190,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
   public isButton(): boolean {
     return this.buttonRole;
+  }
+
+  protected override transformNativeEvent(): Record<string, unknown> {
+    return {
+      pointerInside: this.delegate.isPointerInBounds(
+        this.tracker.getAbsoluteCoordsAverage()
+      ),
+    };
   }
 }
