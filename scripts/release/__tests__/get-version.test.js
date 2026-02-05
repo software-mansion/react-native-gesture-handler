@@ -58,7 +58,7 @@ describe('get-version', () => {
         expect(result).toBe('3.1.0-nightly-20260129-fedcba987');
       });
 
-      test('overrides major version from latest', () => {
+      test('overrides major 2.x release to 3.0.0 nightly', () => {
         getLatestVersion.mockReturnValue([2, 22, 0, null]);
         execSync.mockReturnValue(Buffer.from('fedcba987654321\n'));
 
