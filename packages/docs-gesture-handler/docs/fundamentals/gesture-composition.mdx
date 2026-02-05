@@ -5,6 +5,9 @@ sidebar_label: Gesture composition & interactions
 sidebar_position: 6
 ---
 
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+import simultaneous from '!!raw-loader!.//\_examples/simultaneous';
+
 RNGH3 simplifies gesture interaction through dedicated composition hooks and configuration properties. To choose the right approach, simply ask: Are all the gestures attached to the same component?
 
 - If yes: Use composition hooks. These allow you to bundle multiple gestures—including previously composed ones—into a single object for a GestureDetector.
@@ -19,7 +22,11 @@ Only one of the provided gestures can become active at the same time. The first 
 
 For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `useCompetingGestures`:
 
-```js
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[9, 32]}
+src={`
 import { View, StyleSheet } from 'react-native';
 import {
   GestureDetector,
@@ -68,7 +75,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```
+`}/>
 
 ### useSimultaneousGestures
 
@@ -78,103 +85,13 @@ For example, if you want to make a gallery app, you might want user to be able t
 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
-```js
-import { StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  usePanGesture,
-  usePinchGesture,
-  useRotationGesture,
-  useSimultaneousGestures,
-} from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+{/* We load from source because example contains string interpolation `${}` */}
 
-export default function App() {
-  const offset = useSharedValue({ x: 0, y: 0 });
-  const start = useSharedValue({ x: 0, y: 0 });
-
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-  const rotation = useSharedValue(0);
-  const savedRotation = useSharedValue(0);
-
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: offset.value.x },
-        { translateY: offset.value.y },
-        { scale: scale.value },
-        { rotateZ: `${rotation.value}rad` },
-      ],
-    };
-  });
-
-  const dragGesture = usePanGesture({
-    averageTouches: true,
-    onUpdate: (e) => {
-      offset.value = {
-        x: e.translationX + start.value.x,
-        y: e.translationY + start.value.y,
-      };
-    },
-    onDeactivate: () => {
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      };
-    },
-  });
-
-  const zoomGesture = usePinchGesture({
-    onUpdate: (e) => {
-      scale.value = savedScale.value * e.scale;
-    },
-    onDeactivate: () => {
-      savedScale.value = scale.value;
-    },
-  });
-
-  const rotationGesture = useRotationGesture({
-    onUpdate: (e) => {
-      rotation.value = savedRotation.value + e.rotation;
-    },
-    onDeactivate: () => {
-      savedRotation.value = rotation.value;
-    },
-  });
-
-  const composedGesture = useSimultaneousGestures(
-    dragGesture,
-    zoomGesture,
-    rotationGesture
-  );
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={composedGesture}>
-        <Animated.View style={[styles.box, animatedStyles]} />
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  box: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'blue',
-  },
-});
-```
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[14, 81]}
+src={simultaneous}/> 
 
 ### useExclusiveGestures
 
@@ -182,7 +99,11 @@ Only one of the provided gestures can become active. Priority is determined by t
 
 For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:
 
-```js
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[8, 35]}
+src={`
 import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
@@ -232,7 +153,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'plum',
   },
 });
-```
+`}/>
+
 
 ## Cross-component interactions
 
@@ -242,7 +164,11 @@ const styles = StyleSheet.create({
 
 For example, you may want to have two nested components, both of them can be tapped by the user to trigger different actions: outer view requires one tap, but the inner one requires 2 taps. If you don't want the first tap on the inner view to activate the outer handler, you must make the outer gesture wait until the inner one fails:
 
-```jsx
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[8, 38]}
+src={`
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
@@ -251,7 +177,7 @@ import {
   useTapGesture,
 } from 'react-native-gesture-handler';
 
-export default function Example() {
+export default function App() {
   const innerTap = useTapGesture({
     numberOfTaps: 2,
     onDeactivate: (_, success) => {
@@ -301,13 +227,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-```
+`}/>
 
 ### block
 
 `block` works similarly to `requireToFail` but the direction of the relation is reversed - instead of being one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
 
-```jsx
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[22, 86]}
+src={`
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
@@ -324,32 +254,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const ITEMS = ['red', 'green', 'blue', 'yellow'];
-
-export default function Example() {
-  const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
-    null
-  );
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={(gesture) => {
-          if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
-            setScrollGesture(gesture);
-          }
-        }}>
-        {ITEMS.map((item) => (
-          <Item
-            backgroundColor={item}
-            key={item}
-            scrollGesture={scrollGesture}
-          />
-        ))}
-      </ScrollView>
-    </GestureHandlerRootView>
-  );
-}
 
 type ItemProps = {
   backgroundColor: string;
@@ -395,6 +299,32 @@ function Item({ backgroundColor, scrollGesture }: ItemProps) {
   );
 }
 
+export default function App() {
+  const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
+    null
+  );
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={(gesture) => {
+          if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
+            setScrollGesture(gesture);
+          }
+        }}>
+        {ITEMS.map((item) => (
+          <Item
+            backgroundColor={item}
+            key={item}
+            scrollGesture={scrollGesture}
+          />
+        ))}
+      </ScrollView>
+    </GestureHandlerRootView>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -404,13 +334,17 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
   },
 });
-```
+`}/>
 
 ### simultaneousWith
 
 `simultaneousWith` allows gestures across different components to be recognized simultaneously. For example, you may want to have two nested views, both with tap gesture attached. Both of them require one tap, but tapping the inner one should also activate the gesture attached to the outer view:
 
-```jsx
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[8, 37]}
+src={`
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
@@ -419,7 +353,7 @@ import {
   useTapGesture,
 } from 'react-native-gesture-handler';
 
-export default function Example() {
+export default function App() {
   const innerTap = useTapGesture({
     onDeactivate: (_, success) => {
       if (success) {
@@ -468,4 +402,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-```
+`}/>
