@@ -3,20 +3,16 @@
 // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/56937
 import React from 'react';
 import { render, cleanup } from '@testing-library/react-native';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import {
   GestureHandlerRootView,
   PanGestureHandler,
-  LongPressGestureHandler,
-  LongPressGestureHandlerGestureEvent,
-  RotationGestureHandler,
   Gesture,
   GestureDetector,
   State,
   LegacyPanGesture,
   LegacyTapGesture,
 } from '../index';
-import { useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 
 beforeEach(cleanup);
@@ -32,215 +28,6 @@ const mockedEventHandlers = () => {
     finish: jest.fn(),
   };
 };
-
-interface EventHandlersProps {
-  eventHandlers: ReturnType<typeof mockedEventHandlers>;
-}
-
-describe('Using RNGH v1 base API', () => {
-  function SingleHandler({ eventHandlers }: EventHandlersProps) {
-    const handlers = {
-      onBegan: eventHandlers.begin,
-      onActivated: eventHandlers.active,
-      onEnded: eventHandlers.end,
-      onCancelled: eventHandlers.cancel,
-      onFailed: eventHandlers.fail,
-      onGestureEvent: eventHandlers.active,
-    };
-
-    return (
-      <GestureHandlerRootView>
-        <PanGestureHandler testID="pan" {...handlers}>
-          <Text>Pan handler</Text>
-        </PanGestureHandler>
-      </GestureHandlerRootView>
-    );
-  }
-
-  function NestedHandlers({ eventHandlers }: EventHandlersProps) {
-    const handlers = {
-      onBegan: eventHandlers.begin,
-      onActivated: eventHandlers.active,
-      onEnded: eventHandlers.end,
-      onCancelled: eventHandlers.cancel,
-      onFailed: eventHandlers.fail,
-      onGestureEvent: eventHandlers.active,
-    };
-    return (
-      <GestureHandlerRootView>
-        <PanGestureHandler testID="pan" {...handlers}>
-          <View>
-            <Text>Pan handler</Text>
-            <RotationGestureHandler testID="rotation" {...handlers}>
-              <Text>Rotation handler</Text>
-            </RotationGestureHandler>
-          </View>
-        </PanGestureHandler>
-      </GestureHandlerRootView>
-    );
-  }
-
-  test('receives events', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandler<PanGestureHandler>(getByTestId('pan'), [
-      { oldState: State.UNDETERMINED, state: State.BEGAN },
-      { oldState: State.BEGAN, state: State.ACTIVE },
-      { oldState: State.ACTIVE, state: State.ACTIVE },
-      { oldState: State.ACTIVE, state: State.END },
-    ]);
-    expect(handlers.begin).toHaveBeenCalled();
-    expect(handlers.active).toHaveBeenCalled();
-    expect(handlers.end).toHaveBeenCalled();
-    expect(handlers.cancel).not.toHaveBeenCalled();
-    expect(handlers.fail).not.toHaveBeenCalled();
-  });
-
-  test('receives events correct number of times', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandler<PanGestureHandler>(getByTestId('pan'), [
-      { oldState: State.UNDETERMINED, state: State.BEGAN },
-      { oldState: State.BEGAN, state: State.ACTIVE },
-      { oldState: State.ACTIVE, state: State.ACTIVE }, // gesture event
-      { oldState: State.ACTIVE, state: State.END },
-    ]);
-    expect(handlers.begin).toHaveBeenCalledTimes(1);
-    expect(handlers.active).toHaveBeenCalledTimes(2);
-    expect(handlers.end).toHaveBeenCalledTimes(1);
-    expect(handlers.cancel).not.toHaveBeenCalled();
-    expect(handlers.fail).not.toHaveBeenCalled();
-  });
-
-  test('receives events with correct base fields (state, oldState, numberOfPointers, handlerTag)', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    const component = getByTestId('pan');
-
-    const COMMON_EVENT_DATA = {
-      numberOfPointers: 3,
-      handlerTag: component.props.handlerTag as number,
-    };
-    fireGestureHandler<PanGestureHandler>(component, [
-      {
-        ...COMMON_EVENT_DATA,
-        oldState: State.UNDETERMINED,
-        state: State.BEGAN,
-      }, // BEGIN - state change
-      { ...COMMON_EVENT_DATA, oldState: State.BEGAN, state: State.ACTIVE },
-      { ...COMMON_EVENT_DATA, state: State.ACTIVE }, // gesture event
-    ]);
-
-    // gesture state change
-    expect(handlers.begin).toHaveBeenLastCalledWith({
-      nativeEvent: expect.objectContaining({
-        ...COMMON_EVENT_DATA,
-        oldState: State.UNDETERMINED,
-        state: State.BEGAN,
-      }),
-    });
-
-    // last ACTIVE gesture event, without `oldState`
-    expect(handlers.active).toHaveBeenLastCalledWith({
-      nativeEvent: expect.objectContaining({
-        ...COMMON_EVENT_DATA,
-        state: State.ACTIVE,
-      }),
-    });
-    expect(handlers.active).toHaveBeenLastCalledWith({
-      nativeEvent: expect.not.objectContaining({
-        oldState: expect.any(Number),
-      }),
-    });
-  });
-
-  test.each([
-    [
-      'pan',
-      {
-        translationY: 800,
-        velocityY: 2,
-      },
-      {
-        translationX: 100,
-      },
-    ],
-    [
-      'rotation',
-      {
-        anchorY: 0,
-        rotation: 3.14,
-      },
-      { numberOfPointers: 2 },
-    ],
-  ])(
-    'receives additional properties depending on handler type ("%s")',
-    (
-      handlerName: string,
-      additionalEventData: Record<string, unknown>,
-      defaultEventData: Record<string, unknown>
-    ) => {
-      const handlers = mockedEventHandlers();
-      const { getByTestId } = render(
-        <NestedHandlers eventHandlers={handlers} />
-      );
-
-      fireGestureHandler(getByTestId(handlerName), [
-        {
-          ...additionalEventData,
-          oldState: State.UNDETERMINED,
-          state: State.BEGAN,
-        },
-        {
-          ...additionalEventData,
-          oldState: State.BEGAN,
-          state: State.ACTIVE,
-        },
-      ]);
-
-      expect(handlers.begin).toHaveBeenLastCalledWith({
-        nativeEvent: expect.objectContaining({
-          ...additionalEventData,
-          ...defaultEventData,
-        }),
-      });
-    }
-  );
-});
-
-describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
-  function UseAnimatedGestureHandler({ eventHandlers }: EventHandlersProps) {
-    const eventHandler =
-      useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>({
-        onStart: eventHandlers.begin,
-      });
-    return (
-      <LongPressGestureHandler
-        testID="longPress"
-        onHandlerStateChange={eventHandler}>
-        <Text>Long press handler</Text>
-      </LongPressGestureHandler>
-    );
-  }
-
-  test('calls callback with (event data, context)', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(
-      <UseAnimatedGestureHandler eventHandlers={handlers} />
-    );
-
-    fireGestureHandler<LongPressGestureHandler>(getByTestId('longPress'), [
-      { state: State.BEGAN },
-      { state: State.ACTIVE },
-      { state: State.END },
-    ]);
-
-    expect(handlers.begin).toHaveBeenCalledWith(
-      expect.objectContaining({ state: State.BEGAN }),
-      expect.any(Object)
-    );
-  });
-});
 
 describe('Using RNGH v2 gesture API', () => {
   interface SingleHandlerProps {
