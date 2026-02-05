@@ -39,23 +39,32 @@ describe('get-version', () => {
     // Commitly/nightly release tests
     describe('commitly releases', () => {
       test('returns nightly version with date and SHA', () => {
-        getLatestVersion.mockReturnValue([2, 22, 0, null]);
+        getLatestVersion.mockReturnValue([3, 0, 0, null]);
         execSync.mockReturnValue(Buffer.from('abc123def456789\n'));
 
         const result = getVersion(ReleaseType.COMMITLY);
 
-        expect(result).toBe('2.23.0-nightly-20260129-abc123def');
+        expect(result).toBe('3.1.0-nightly-20260129-abc123def');
         expect(getLatestVersion).toHaveBeenCalled();
         expect(execSync).toHaveBeenCalledWith('git rev-parse HEAD');
       });
 
       test('increments minor version from latest', () => {
-        getLatestVersion.mockReturnValue([2, 25, 3, null]);
+        getLatestVersion.mockReturnValue([3, 0, 0, null]);
         execSync.mockReturnValue(Buffer.from('fedcba987654321\n'));
 
         const result = getVersion(ReleaseType.COMMITLY);
 
-        expect(result).toBe('2.26.0-nightly-20260129-fedcba987');
+        expect(result).toBe('3.1.0-nightly-20260129-fedcba987');
+      });
+
+      test('overrides major version from latest', () => {
+        getLatestVersion.mockReturnValue([2, 22, 0, null]);
+        execSync.mockReturnValue(Buffer.from('fedcba987654321\n'));
+
+        const result = getVersion(ReleaseType.COMMITLY);
+
+        expect(result).toBe('3.0.0-nightly-20260129-fedcba987');
       });
 
       test('uses first 9 characters of SHA', () => {
