@@ -5,6 +5,7 @@ import OverlapExample from './showcase/overlap';
 import SharedValueExample from './showcase/shared_value';
 import SvgExample from './showcase/svg';
 import StateManagerExample from './showcase/state_manager';
+import TimerExample from './showcase/timer';
 
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
@@ -31,6 +32,13 @@ import FlatListExample from './components/flatlist';
 import ScrollViewExample from './components/scrollview';
 import Swipeable from './components/swipeable/index';
 import SwitchTextInputExample from './components/switchAndInput';
+
+import RectButtonExample from './tests/rectButton';
+import TwoFingerPanExample from './tests/twoFingerPan';
+import WebStylesResetExample from './tests/webStylesReset';
+import PointerTypeExample from './tests/pointerType';
+import ReattachingExample from './tests/reattaching';
+import NestedRootViewExample from './tests/nestedRootView';
 
 import { ExamplesSection } from '../common';
 import EmptyExample from '../empty';
@@ -62,6 +70,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Bottom Sheet', component: BottomSheetExample },
       { name: 'Overlap', component: OverlapExample },
       { name: 'Animated', component: AnimatedExample },
+      { name: 'Timer', component: TimerExample },
     ],
   },
   {
@@ -93,6 +102,17 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Switch & TextInput', component: SwitchTextInputExample },
       { name: 'Reanimated Swipeable', component: Swipeable },
       { name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout },
+    ],
+  },
+  {
+    sectionTitle: 'Tests',
+    data: [
+      { name: 'RectButton', component: RectButtonExample },
+      { name: 'Two Finger Pan', component: TwoFingerPanExample },
+      { name: 'Web Styles Reset', component: WebStylesResetExample },
+      { name: 'Pointer Type', component: PointerTypeExample },
+      { name: 'Reattaching', component: ReattachingExample },
+      { name: 'Modal with Nested Root View', component: NestedRootViewExample },
     ],
   },
 ];
