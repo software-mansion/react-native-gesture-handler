@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.RootView
+import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 import com.swmansion.gesturehandler.react.isHoverAction
@@ -745,9 +746,12 @@ class GestureHandlerOrchestrator(
 
       // TODO: this is not an ideal solution as we only consider ViewGroups that has no background set
       // TODO: ideally we should determine the pixel color under the given coordinates and return
-      // false if the color is transparent
-      val isLeafOrTransparent = view !is ViewGroup || view.getBackground() != null
-      return isLeafOrTransparent && isTransformedTouchPointInView(coords[0], coords[1], view)
+      val isLeaf = view !is ViewGroup
+      val isNotTransparent = view.getBackground() != null
+      val isDirectDetectorChild = view.parent is RNGestureHandlerDetectorView
+      val isPointInView = isTransformedTouchPointInView(coords[0], coords[1], view)
+
+      return (isLeaf || isNotTransparent || isDirectDetectorChild) && isPointInView
     }
 
     fun transformPointToChildViewCoords(x: Float, y: Float, parent: ViewGroup, child: View, outLocalPoint: PointF) {
