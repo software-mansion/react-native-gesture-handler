@@ -31,9 +31,9 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
+Gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
-On iOS additional visual effects may be configured.
+On iOS additional [visual effects](#effect-ios-only) may be configured.
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -41,9 +41,17 @@ On iOS additional visual effects may be configured.
     </video>
   </div>
 
+:::note
+Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.
+:::
+
 ## Example
 
-```jsx
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[7, 17]}
+src={`
 import { View, StyleSheet } from 'react-native';
 import {
   GestureDetector,
@@ -77,11 +85,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```
-
-## Remarks
-
-- Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan` gesture](/docs/gestures/use-pan-gesture).
+`}/>
 
 ## Config
 
@@ -89,17 +93,20 @@ const styles = StyleSheet.create({
 
 ### effect (iOS only)
 
-```ts
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
 effect: HoverEffect | SharedValue<HoverEffect>;
-```
 
-```ts
 enum HoverEffect {
   NONE = 0,
   LIFT = 1,
   HIGHLIGHT = 2,
 }
-```
+`}/>
 
 Visual effect applied to the view while the view is hovered. Defaults to `HoverEffect.None`
 
