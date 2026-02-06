@@ -32,11 +32,17 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-A continuous gesture that can recognize a rotation gesture and track its movement.
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
-The gesture activates when fingers are placed on the screen and rotate around a common point.
+import RotationExample from '!!raw-loader!./_examples/RotationExample';
 
-Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
+Gesture that can recognize rotation and track its movement.
+
+The gesture activates when fingers are placed on the screen and rotate around a common point. It provides information such as the amount [rotated](#rotation), the focal point of the rotation ([anchor](#anchorx)), and its instantaneous [velocity](#velocity).
+
+:::note
+When implementing rotation based on `anchor` point, make sure to use it after the gesture had activated, i.e. in `onActivate` or `onUpdate` callbacks. Using it in `onBegin` may lead to unexpected behavior.
+:::
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -46,59 +52,11 @@ Gesture callback can be used for continuous tracking of the rotation gesture. It
 
 ## Example
 
-```jsx
-import { StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  useRotationGesture,
-} from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-
-export default function App() {
-  const rotation = useSharedValue(1);
-
-  const rotationGesture = useRotationGesture({
-    onUpdate: (e) => {
-      rotation.value = savedRotation.value + e.rotation;
-    },
-  });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${(rotation.value / Math.PI) * 180}deg` }],
-  }));
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={rotationGesture}>
-        <Animated.View style={[styles.box, animatedStyle]} />
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-```
-
-## Remarks
-
-- When implementing rotation based on `anchor` point, make sure to use it after gesture has activated, i.e. in `onActivate` or `onUpdate` callbacks. Using it in `onBegin` may lead to unexpected behavior.
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[11, 31]}
+src={RotationExample}/>
 
 ## Config
 
