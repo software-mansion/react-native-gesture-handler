@@ -7,15 +7,15 @@ sidebar_position: 6
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
-RNGH3 allows to manually control [gestures lifecycle](/docs/under-the-hood/state) by using `GestureStateManager`.
+RNGH3 allows to manually control [gestures lifecycle](/docs/under-the-hood/state) by using [`GestureStateManager`](#gesturestatemanager).
 
 ## State management
 
-Manual state management is based on `handlerTag`. There are two ways of manual state control.
+Manual state management is based on `handlerTag`. There are two ways of manual state control. Some gestures also support [`manualActivation`](#manualactivation) property, which blocks their automatic activation, event if they met specific criteria.
 
 ### Inside gesture definition
 
-If you want to manipulate gesture's state in its callbacks, you can get `handlerTag` from event parameter.
+If you want to manipulate gesture's state in its callbacks, you can get `handlerTag` from event parameter. 
 
 <CollapsibleCode
 label="Show full example"
@@ -125,7 +125,59 @@ const styles = StyleSheet.create({
 });
 `}/>
 
-## Methods
+
+### manualActivation
+
+When `manualActivation` property is set to `true` on a gesture, it will not activate automatically even if its activation criteria are met. You will need to use [`GestureStateManager`](#gesturestatemanager) to manipulate its state manually.
+
+In the example below, [`Pan`](/docs/gestures/use-pan-gesture) gesture will not activate by simply panning on the blue box - using `GestureStateManager` is necessary.
+
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[7, 22]}
+src={`
+import { View } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  usePanGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const pan = usePanGesture({
+    onActivate: () => {
+      console.log('Pan gesture activated');
+    },
+    manualActivation: true,
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={pan}>
+        <View style={styles.box} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = {
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  box: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'blue',
+  },
+};
+`}/>
+
+## GestureStateManager
+
+`GestureStateManager` provides methods to manipulate gesture's state imperatively.
 
 ### begin
 

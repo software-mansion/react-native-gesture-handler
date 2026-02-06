@@ -21,10 +21,10 @@ import Step6 from './\_manual_gesture_steps/step6.md';
 import Step7 from './\_manual_gesture_steps/step7.md';
 
 
-A plain gesture that has no specific activation criteria nor event data set. Its state has to be controlled manually using a [state manager](/docs/fundamentals/state-manager). It will not fail when all the pointers are lifted from the screen.
+A plain gesture that has no specific activation criteria nor event data set. Its [state](/docs/under-the-hood/state) has to be controlled manually using a [state manager](/docs/fundamentals/state-manager). It will not fail when all the pointers are lifted from the screen.
 
 :::tip
-If you need to modify the activation criteria of gestures other than `Manual`, check their configuration for relevant properties or use `manualActivation` to manage their state directly.
+If you need to modify the activation criteria of gestures other than `Manual`, check their configuration for relevant properties or use [`manualActivation`](/docs/fundamentals/state-manager#manualactivation) to manage their state directly.
 :::
 
 ## Example
@@ -48,18 +48,18 @@ To demonstrate how to make a manual gesture we will make a simple one that track
 </Step>
 
 <Step title="Step 4">
-    We have our components set up and we can finally get to making the gesture! We will start with `onTouchesDown` where we need to set position of the pointers and make them visible. We can get this information from the touches property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
+    We have our components set up and we can finally get to making the gesture! We will start with [`onTouchesDown`](/docs/fundamentals/callbacks-events#ontouchesdown) where we need to set position of the pointers and make them visible. We can get this information from the touches property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
     <Step4 />
 </Step>
 
 <Step title="Step 5">
-    Next, we will handle pointer movement. In `onTouchesMove` we will simply update the position of moved pointers.
+    Next, we will handle pointer movement. In [`onTouchesMove`](/docs/fundamentals/callbacks-events#ontouchesmove) we will simply update the position of moved pointers.
     <Step5 />
 </Step>
 
 <Step title="Step 6">
-    We also need to handle lifting fingers from the screen, which corresponds to `onTouchesUp`. Here we will just hide the pointers that were lifted and end the gesture if there are no more pointers on the screen.
-    Note that we are not handling `onTouchesCancel` as in this very basic case we don't expect it to happen, however you should clear data about cancelled pointers (most of the time all active ones) when it is called.
+    We also need to handle lifting fingers from the screen, which corresponds to [`onTouchesUp`](/docs/fundamentals/callbacks-events#ontouchesup). Here we will just hide the pointers that were lifted and end the gesture if there are no more pointers on the screen.
+    Note that we are not handling [`onTouchesCancel`](/docs/fundamentals/callbacks-events#ontouchescancel) as in this very basic case we don't expect it to happen, however you should clear data about cancelled pointers (most of the time all active ones) when it is called.
     <Step6 />
 </Step>
 
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
 
 ## Modifying existing gestures
 
-While manual gestures open great possibilities we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers, would be a waste of time as those gestures are already available. Therefore, you can use touch events with every gesture to extract more detailed information about the gesture than what the basic events alone provide. We also added a `manualActivation` modifier on all continuous gestures, which prevents the gesture it is applied to from activating automatically, giving you full control over its behavior.
+While manual gestures open great possibilities we are aware that reimplementing pinch or rotation from scratch just because you need to activate in specific circumstances or require position of the fingers, would be a waste of time as those gestures are already available. Therefore, you can use touch events with every gesture to extract more detailed information about the gesture than what the basic events alone provide. We also added a [`manualActivation`](/docs/fundamentals/state-manager#manualactivation) modifier on all continuous gestures, which prevents the gesture it is applied to from activating automatically, giving you full control over its behavior.
 
 ## Config
 
