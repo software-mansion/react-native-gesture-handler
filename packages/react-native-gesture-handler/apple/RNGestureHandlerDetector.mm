@@ -47,8 +47,9 @@
 {
   if (newWindow == nil) {
     RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-    react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
-        const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
+    react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
+
+    const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
 
     for (const auto handler : props.handlerTags) {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
@@ -190,9 +191,9 @@
       attachedHandlers:(NSMutableSet *)attachedHandlers
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
 
-      NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
+  NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
 
   for (const int tag : handlerTags) {
     [handlersToDetach removeObject:@(tag)];
@@ -262,9 +263,9 @@
 - (void)updateVirtualChildren:(const std::vector<RNGestureHandlerDetectorVirtualChildrenStruct> &)virtualChildren
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
 
-      NSMutableSet *virtualChildrenToDetach = [NSMutableSet set];
+  NSMutableSet *virtualChildrenToDetach = [NSMutableSet set];
   for (const auto &child : _attachedVirtualHandlers) {
     [virtualChildrenToDetach addObject:@(child.first)];
   }
