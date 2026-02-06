@@ -26,10 +26,10 @@ describe('parse-arguments', () => {
     });
 
     // Single flag tests
-    test('returns commitly release type with --commitly flag', () => {
-      process.argv = ['node', 'script.js', '--commitly'];
+    test('returns nightly release type with --nightly flag', () => {
+      process.argv = ['node', 'script.js', '--nightly'];
       const result = parseArguments();
-      expect(result).toEqual({ releaseType: ReleaseType.COMMITLY, version: null });
+      expect(result).toEqual({ releaseType: ReleaseType.NIGHTLY, version: null });
     });
 
     test('returns beta release type with --beta flag', () => {
@@ -64,29 +64,29 @@ describe('parse-arguments', () => {
     });
 
     // Mutual exclusivity tests
-    test('throws error when --commitly and --beta are both provided', () => {
-      process.argv = ['node', 'script.js', '--commitly', '--beta'];
-      expect(() => parseArguments()).toThrow('Release flags --commitly, --beta, and --rc are mutually exclusive');
+    test('throws error when --nightly and --beta are both provided', () => {
+      process.argv = ['node', 'script.js', '--nightly', '--beta'];
+      expect(() => parseArguments()).toThrow('Release flags --nightly, --beta, and --rc are mutually exclusive');
     });
 
-    test('throws error when --commitly and --rc are both provided', () => {
-      process.argv = ['node', 'script.js', '--commitly', '--rc'];
-      expect(() => parseArguments()).toThrow('Release flags --commitly, --beta, and --rc are mutually exclusive');
+    test('throws error when --nightly and --rc are both provided', () => {
+      process.argv = ['node', 'script.js', '--nightly', '--rc'];
+      expect(() => parseArguments()).toThrow('Release flags --nightly, --beta, and --rc are mutually exclusive');
     });
 
     test('throws error when --beta and --rc are both provided', () => {
       process.argv = ['node', 'script.js', '--beta', '--rc'];
-      expect(() => parseArguments()).toThrow('Release flags --commitly, --beta, and --rc are mutually exclusive');
+      expect(() => parseArguments()).toThrow('Release flags --nightly, --beta, and --rc are mutually exclusive');
     });
 
     test('throws error when all three flags are provided', () => {
-      process.argv = ['node', 'script.js', '--commitly', '--beta', '--rc'];
-      expect(() => parseArguments()).toThrow('Release flags --commitly, --beta, and --rc are mutually exclusive');
+      process.argv = ['node', 'script.js', '--nightly', '--beta', '--rc'];
+      expect(() => parseArguments()).toThrow('Release flags --nightly, --beta, and --rc are mutually exclusive');
     });
 
-    // Version not allowed for commitly
-    test('throws error when version provided for commitly release', () => {
-      process.argv = ['node', 'script.js', '--commitly', '--version', '2.22.0'];
+    // Version not allowed for nightly
+    test('throws error when version provided for nightly release', () => {
+      process.argv = ['node', 'script.js', '--nightly', '--version', '2.22.0'];
       expect(() => parseArguments()).toThrow();
     });
 
@@ -147,7 +147,7 @@ describe('parse-arguments', () => {
       expect(ReleaseType.STABLE).toBe('stable');
       expect(ReleaseType.BETA).toBe('beta');
       expect(ReleaseType.RELEASE_CANDIDATE).toBe('rc');
-      expect(ReleaseType.COMMITLY).toBe('commitly');
+      expect(ReleaseType.NIGHTLY).toBe('nightly');
     });
   });
 });

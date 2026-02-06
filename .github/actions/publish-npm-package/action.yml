@@ -2,8 +2,8 @@ name: publish-npm-package
 description: Build and publish react-native-gesture-handler package to npm
 inputs:
   release-type:
-    description: Release type to be published (stable, commitly, beta, rc).
-    default: "commitly"
+    description: Release type to be published (stable, nightly, beta, rc).
+    default: "nightly"
   version:
     description: Specific version to publish (usually inferred from x.y-stable branch name).
     default: ""
@@ -31,7 +31,7 @@ runs:
       id: set-package-version
       shell: bash
       run: |
-        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.release-type == 'commitly' && '--commitly' || '' }} ${{ inputs.release-type == 'beta' && '--beta' || '' }} ${{ inputs.release-type == 'rc' && '--rc' || '' }} ${{ inputs.version != '' && format('--version ''{0}''', inputs.version) || '' }})
+        VERSION=$(node ./scripts/release/set-package-version.js ${{ inputs.release-type == 'nightly' && '--nightly' || '' }} ${{ inputs.release-type == 'beta' && '--beta' || '' }} ${{ inputs.release-type == 'rc' && '--rc' || '' }} ${{ inputs.version != '' && format('--version ''{0}''', inputs.version) || '' }})
         echo "Updated package version to $VERSION"
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -39,7 +39,7 @@ runs:
       id: figure-out-npm-tag
       shell: bash
       run: |
-        if [ "${{ inputs.release-type == 'commitly' }}" = "true" ]; then
+        if [ "${{ inputs.release-type == 'nightly' }}" = "true" ]; then
           TAG_ARGUMENT="--tag nightly"
         else
           if [ "${{ inputs.release-type == 'beta' || inputs.release-type == 'rc' }}" = "true" ]; then

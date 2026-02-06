@@ -4,19 +4,19 @@ const ReleaseType = {
   STABLE: 'stable',
   BETA: 'beta',
   RELEASE_CANDIDATE: 'rc',
-  COMMITLY: 'commitly',
+  NIGHTLY: 'nightly',
 };
 
 function parseArguments() {
   let version = null;
-  let isCommitly = false;
+  let isNightly = false;
   let isBeta = false;
   let isReleaseCandidate = false;
 
   for (let i = 2; i < process.argv.length; i++) {
     const arg = process.argv[i];
-    if (arg === '--commitly') {
-      isCommitly = true;
+    if (arg === '--nightly') {
+      isNightly = true;
     } else if (arg === '--beta') {
       isBeta = true;
     } else if (arg === '--rc') {
@@ -31,11 +31,11 @@ function parseArguments() {
     }
   }
 
-  assert([isCommitly, isBeta, isReleaseCandidate].filter(Boolean).length <= 1, 'Release flags --commitly, --beta, and --rc are mutually exclusive; specify at most one');
-  assert(version === null || isBeta || isReleaseCandidate || !isCommitly, 'Version should not be provided for commitly releases');
+  assert([isNightly, isBeta, isReleaseCandidate].filter(Boolean).length <= 1, 'Release flags --nightly, --beta, and --rc are mutually exclusive; specify at most one');
+  assert(version === null || isBeta || isReleaseCandidate || !isNightly, 'Version should not be provided for nightly releases');
 
-  const releaseType = isCommitly
-    ? ReleaseType.COMMITLY
+  const releaseType = isNightly
+    ? ReleaseType.NIGHTLY
     : isBeta
       ? ReleaseType.BETA
       : isReleaseCandidate
