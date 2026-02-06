@@ -30,7 +30,7 @@ Use the instructions below to correctly replace all legacy APIs with the modern 
 
 All hook gestures have their counterparts in the builder API: `Gesture.X()` becomes `useXGesture(config)`. The methods are now config object fields with the same name as the relevant builder methods, unless specified otherwise.
 
-The exception to thait is `esture.ForceTouch` which DOES NOT have a counterpart in the hook API.
+The exception to thait is `Gesture.ForceTouch` which DOES NOT have a counterpart in the hook API.
 
 #### Callback changes
 
@@ -98,7 +98,7 @@ Properties used to define cross-components interactions were renamed:
 
 The `GestureDetector` is a key component of `react-native-gesture-handler`. It supports gestures created either using the hooks API or the builder pattern (but those cannot be mixed, it's either or).
 
-Using the same instance of a gesture across multiple Gesture Detectors may result in undefined behavior.
+Don't use the same instance of a gesture across multiple Gesture Detectors as it will lead to an undefined behavior.
 
 ### Integration with Reanimated
 
