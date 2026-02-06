@@ -1,3 +1,5 @@
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
 ### enabled
 
 ```ts
@@ -21,11 +23,14 @@ Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for
 
 ### hitSlop
 
-```ts
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
 hitSlop: HitSlop | SharedValue<HitSlop>;
-```
 
-```ts
 type HitSlop =
   | number
   | null
@@ -40,7 +45,7 @@ type HitSlop =
   | Record<'width' | 'right', number>
   | Record<'height' | 'top', number>
   | Record<'height' | 'bottom', number>;
-```
+`}/>
 
 This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
 When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
