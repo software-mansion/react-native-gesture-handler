@@ -1,9 +1,10 @@
 const { execSync } = require('child_process');
 const { getStableBranchVersion, getLatestVersion, getNextPreReleaseVersion, getNextStableVersion, parseVersion } = require('./version-utils');
 const { ReleaseType } = require('./parse-arguments');
+const { getPackageVersionByTag } = require('./npm-utils');
 
 function getVersion(releaseType, versionHint = null) {
-  if (releaseType === ReleaseType.COMMITLY) {
+  if (releaseType === ReleaseType.NIGHTLY) {
     let [major, minor] = getLatestVersion();
 
     if (major === 2) {
@@ -14,15 +15,24 @@ function getVersion(releaseType, versionHint = null) {
       minor = -1;
     }
 
-    const currentSHA = execSync('git rev-parse HEAD').toString().trim();
+    const currentSHA = execSync('git rev-parse HEAD').toString().trim().slice(0, 9);
+
+    const latestNightlyVersion = getPackageVersionByTag('react-native-gesture-handler', 'nightly');
+    const latestNightlySHA = latestNightlyVersion.split('-').pop();
+
+    // Don't publish the same commit twice
+    if (latestNightlySHA === currentSHA) {
+      throw new Error(`Latest nightly version ${latestNightlyVersion} SHA ${latestNightlySHA} is the same as current SHA ${currentSHA}`);
+    }
+
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     const currentDate = `${year}${month}${day}`;
 
-    const commitlyVersion = `${major}.${minor + 1}.${0}-nightly-${currentDate}-${currentSHA.slice(0, 9)}`;
-    return commitlyVersion;
+    const nightlyVersion = `${major}.${minor + 1}.${0}-nightly-${currentDate}-${currentSHA}`;
+    return nightlyVersion;
   } else if (releaseType === ReleaseType.BETA || releaseType === ReleaseType.RELEASE_CANDIDATE) {
     let versionToUse = versionHint;
 

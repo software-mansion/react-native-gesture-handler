@@ -10,8 +10,13 @@ jest.mock('../version-utils', () => ({
   parseVersion: jest.fn(),
 }));
 
+jest.mock('../npm-utils', () => ({
+  getPackageVersionByTag: jest.fn(),
+}));
+
 const { execSync } = require('child_process');
 const { getStableBranchVersion, getLatestVersion, getNextPreReleaseVersion, getNextStableVersion, parseVersion } = require('../version-utils');
+const { getPackageVersionByTag } = require('../npm-utils');
 const { getVersion } = require('../get-version');
 const { ReleaseType } = require('../parse-arguments');
 
@@ -29,6 +34,9 @@ describe('get-version', () => {
         return new RealDate(...args);
       }
     };
+
+    // By default, simulate that the latest nightly was published with a different SHA
+    getPackageVersionByTag.mockReturnValue('3.0.0-nightly-20260128-previoussha');
   });
 
   afterEach(() => {
@@ -36,13 +44,13 @@ describe('get-version', () => {
   });
 
   describe('getVersion', () => {
-    // Commitly/nightly release tests
-    describe('commitly releases', () => {
+    // Nightly release tests
+    describe('nightly releases', () => {
       test('returns nightly version with date and SHA', () => {
         getLatestVersion.mockReturnValue([3, 0, 0, null]);
         execSync.mockReturnValue(Buffer.from('abc123def456789\n'));
 
-        const result = getVersion(ReleaseType.COMMITLY);
+        const result = getVersion(ReleaseType.NIGHTLY);
 
         expect(result).toBe('3.1.0-nightly-20260129-abc123def');
         expect(getLatestVersion).toHaveBeenCalled();
@@ -53,7 +61,7 @@ describe('get-version', () => {
         getLatestVersion.mockReturnValue([3, 0, 0, null]);
         execSync.mockReturnValue(Buffer.from('fedcba987654321\n'));
 
-        const result = getVersion(ReleaseType.COMMITLY);
+        const result = getVersion(ReleaseType.NIGHTLY);
 
         expect(result).toBe('3.1.0-nightly-20260129-fedcba987');
       });
@@ -62,7 +70,7 @@ describe('get-version', () => {
         getLatestVersion.mockReturnValue([2, 22, 0, null]);
         execSync.mockReturnValue(Buffer.from('fedcba987654321\n'));
 
-        const result = getVersion(ReleaseType.COMMITLY);
+        const result = getVersion(ReleaseType.NIGHTLY);
 
         expect(result).toBe('3.0.0-nightly-20260129-fedcba987');
       });
@@ -71,7 +79,7 @@ describe('get-version', () => {
         getLatestVersion.mockReturnValue([2, 22, 0, null]);
         execSync.mockReturnValue(Buffer.from('123456789abcdef0\n'));
 
-        const result = getVersion(ReleaseType.COMMITLY);
+        const result = getVersion(ReleaseType.NIGHTLY);
 
         expect(result).toContain('-123456789');
         expect(result).not.toContain('abcdef0');
@@ -89,9 +97,27 @@ describe('get-version', () => {
         getLatestVersion.mockReturnValue([2, 22, 0, null]);
         execSync.mockReturnValue(Buffer.from('abc123def\n'));
 
-        const result = getVersion(ReleaseType.COMMITLY);
+        const result = getVersion(ReleaseType.NIGHTLY);
 
         expect(result).toContain('-nightly-20261205-');
+      });
+
+      test('throws when latest nightly SHA matches current SHA', () => {
+        global.Date = class extends RealDate {
+          constructor(...args) {
+            if (args.length === 0) {
+              return new RealDate('2026-12-05T12:00:00Z');
+            }
+            return new RealDate(...args);
+          }
+        };
+        getLatestVersion.mockReturnValue([2, 22, 0, null]);
+        execSync.mockReturnValue(Buffer.from('abc123def\n'));
+        getPackageVersionByTag.mockReturnValue('3.0.0-nightly-20261205-abc123def');
+
+        expect(() => getVersion(ReleaseType.NIGHTLY)).toThrow(
+          'Latest nightly version 3.0.0-nightly-20261205-abc123def SHA abc123def is the same as current SHA abc123def'
+        );
       });
 
       test('pads single digit month and day', () => {
@@ -106,7 +132,7 @@ describe('get-version', () => {
         getLatestVersion.mockReturnValue([2, 22, 0, null]);
         execSync.mockReturnValue(Buffer.from('abc123def\n'));
 
-        const result = getVersion(ReleaseType.COMMITLY);
+        const result = getVersion(ReleaseType.NIGHTLY);
 
         expect(result).toContain('-nightly-20260307-');
       });
