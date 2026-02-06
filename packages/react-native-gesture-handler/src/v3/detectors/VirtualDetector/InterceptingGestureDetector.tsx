@@ -32,6 +32,9 @@ interface VirtualChildrenForNative {
 export function InterceptingGestureDetector<THandlerData, TConfig>({
   gesture,
   children,
+  touchAction,
+  userSelect,
+  enableContextMenu,
 }: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
   useEnsureGestureHandlerRootView();
 
@@ -224,6 +227,9 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   return (
     <InterceptingDetectorContext value={contextValue}>
       <NativeDetectorComponent
+        touchAction={touchAction}
+        userSelect={userSelect}
+        enableContextMenu={enableContextMenu}
         pointerEvents={'box-none'}
         // @ts-ignore This is a type mismatch between RNGH types and RN Codegen types
         onGestureHandlerStateChange={jsEventHandler}

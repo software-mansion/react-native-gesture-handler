@@ -1,23 +1,24 @@
-name: Test Gesture Handler 3 API
+name: Run Jest tests
 
 on:
   pull_request:
     paths:
-      - packages/react-native-gesture-handler/src/v3/**
-      - packages/react-native-gesture-handler/src/__tests__/RelationsTraversal.test.tsx
-      - packages/react-native-gesture-handler/src/__tests__/API_V3.test.tsx
+      - '**/*.js'
+      - '**/*.jsx'
+      - '**/*.ts'
+      - '**/*.tsx'
   push:
     branches:
       - main
   workflow_dispatch:
 
 jobs:
-  check:
+  build:
     if: github.repository == 'software-mansion/react-native-gesture-handler'
 
     runs-on: ubuntu-latest
     concurrency:
-      group: rngh-api-v3-${{ github.ref }}
+      group: jest-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
@@ -33,6 +34,10 @@ jobs:
       - name: Install node dependencies
         run: yarn --immutable
 
-      - name: Run tests
-        working-directory: packages/react-native-gesture-handler
-        run: yarn test RelationsTraversal API_V3
+      - name: Run jest scripts tests
+        run: yarn test:scripts
+
+      - name: Run jest package tests
+        # always run this step even if the previous step fails
+        if: ${{ always() }}
+        run: yarn workspace react-native-gesture-handler test
