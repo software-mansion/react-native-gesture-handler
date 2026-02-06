@@ -30,9 +30,13 @@ import BaseGestureConfig from './\_shared/base-gesture-config.mdx';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
-This gesture's state will end immediately after the finger is released.
-The gesture will fail to recognize a touch event if the finger is lifted before the minimum required time or if the finger is moved further than the allowable distance.
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+import LongPressExample from '!!raw-loader!./_examples/LongPressExample';
+
+Gesture that activates when the corresponding view is pressed for a sufficiently long time.
+This gesture will deactivate immediately after the finger is released.
+The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#minduration) or if the finger is moved further than the [allowable distance](#maxdistance).
 
 <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -42,47 +46,12 @@ The gesture will fail to recognize a touch event if the finger is lifted before 
 
 ## Example
 
-```jsx
-import { View, StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  useLongPressGesture,
-} from 'react-native-gesture-handler';
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[7, 23]}
+src={LongPressExample}/>
 
-export default function App() {
-  const longPressGesture = useLongPressGesture({
-    onDeactivate: (e, success) => {
-      if (success) {
-        console.log(`Long pressed for ${e.duration} ms!`);
-      }
-    },
-  });
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={longPressGesture}>
-        <View style={styles.box} />
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-```
 
 ## Config
 
@@ -106,11 +75,14 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 
 ### mouseButton (Web & Android only)
 
-```ts
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
 mouseButton: MouseButton | SharedValue<MouseButton>;
-```
 
-```ts
 enum MouseButton {
   LEFT,
   RIGHT,
@@ -119,7 +91,7 @@ enum MouseButton {
   BUTTON_5,
   ALL,
 }
-```
+`}/>
 
 Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
