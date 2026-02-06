@@ -17,6 +17,7 @@
               withActionType:(RNGestureHandlerActionType)actionType
             withHostDetector:(nullable RNGHUIView *)hostDetector;
 - (void)detachHandlerWithTag:(nonnull NSNumber *)handlerTag;
+- (void)detachHandlerWithTag:(nonnull NSNumber *)handlerTag fromHostDetector:(nonnull RNGHUIView *)hostDetectorView;
 - (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropAllHandlers;
 

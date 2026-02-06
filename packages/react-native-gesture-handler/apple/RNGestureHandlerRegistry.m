@@ -48,9 +48,11 @@
   }
 }
 
-- (void)detachHandlerWithTag:(NSNumber *)handlerTag
+- (void)detachHandlerWithTag:(NSNumber *)handlerTag fromHostDetector:(RNGHUIView *)hostDetectorView
 {
   RNGestureHandler *handler = _handlers[handlerTag];
+  if (handler.hostDetectorView != hostDetectorView)
+    return;
   [handler unbindFromView];
 }
 
