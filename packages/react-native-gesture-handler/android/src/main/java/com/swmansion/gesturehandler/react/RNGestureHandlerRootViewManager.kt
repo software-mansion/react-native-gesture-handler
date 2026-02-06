@@ -7,6 +7,8 @@ import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerInterface
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerEvent
+import com.swmansion.gesturehandler.react.events.RNGestureHandlerStateChangeEvent
 
 /**
  * React native's view manager used for creating instances of []RNGestureHandlerRootView}. It
@@ -31,6 +33,10 @@ class RNGestureHandlerRootViewManager :
 
   override fun onDropViewInstance(view: RNGestureHandlerRootView) {
     view.tearDown()
+  }
+
+  override fun setModuleId(view: RNGestureHandlerRootView, value: Int) {
+    view.setModuleId(value)
   }
 
   @ReactProp(name = "unstable_forceActive")

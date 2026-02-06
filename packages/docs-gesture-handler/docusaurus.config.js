@@ -46,7 +46,7 @@ const config = {
           lastVersion: 'current', // <- this makes 2.x docs as default
           versions: {
             current: {
-              label: '2.x',
+              label: '3.x',
             },
           },
         },

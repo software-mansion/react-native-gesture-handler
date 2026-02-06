@@ -1,0 +1,160 @@
+---
+id: state-manager
+title: State manager
+sidebar_label: State manager
+sidebar_position: 6
+---
+
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+RNGH3 allows to manually control gestures lifecycle by using `GestureStateManager`.
+
+## State management
+
+Manual state management is based on `handlerTag`. There are two ways of manual state control.
+
+### Inside gesture definition
+
+If you want to manipulate gesture's state in its callbacks, you can get `handlerTag` from event parameter.
+
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[9, 17]}
+src={`
+import { StyleSheet, View } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  GestureStateManager,
+  useLongPressGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const longPress = useLongPressGesture({
+    onTouchesDown: (e) => {
+      // highlight-next-line
+      GestureStateManager.activate(e.handlerTag);
+    },
+    onActivate: () => {
+      console.log('LongPress activated!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={longPress}>
+        <View style={styles.box} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+
+  box: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'blue',
+  },
+});
+`}/>
+
+
+### Outside gesture definition
+
+If you want to control gesture lifecycle outside of it, you can use `handlerTag` from created gesture object.
+
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[10, 21]}
+src={`
+import { StyleSheet, View } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  GestureStateManager,
+  useLongPressGesture,
+  usePanGesture,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const pan = usePanGesture({
+    onActivate: () => {
+      console.log('Pan activated!');
+    },
+  });
+
+  const longPress = useLongPressGesture({
+    onActivate: () => {
+      // highlight-next-line
+      GestureStateManager.activate(pan.handlerTag);
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={longPress}>
+        <View style={styles.box} />
+      </GestureDetector>
+      <GestureDetector gesture={pan}>
+        <View style={styles.box} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+
+  box: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'blue',
+  },
+});
+`}/>
+
+## Methods
+
+### begin
+
+```tsx
+begin: (handlerTag: number) => void;
+```
+
+Triggers [`onBegin`](/docs/fundamentals/callbacks-events#onbegin) callback on gesture with specified `handlerTag`.
+
+### activate
+
+```tsx
+activate: (handlerTag: number) => void;
+```
+
+Triggers [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) callback on gesture with specified `handlerTag`.
+
+### deactivate
+
+```tsx
+deactivate: (handlerTag: number) => void;
+```
+
+If the gesture had activated, it triggers the [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback. It also triggers the [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on gesture with the specified `handlerTag`.
+
+### fail
+
+```tsx
+fail: (handlerTag: number) => void;
+```
+
+Triggers [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on gesture with specified `handlerTag`. If gesture had activated, it will also trigger [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback.

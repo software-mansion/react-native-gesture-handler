@@ -1,0 +1,30 @@
+package com.swmansion.gesturehandler.react.events.eventbuilders
+
+import com.facebook.react.bridge.WritableMap
+import com.facebook.react.uimanager.PixelUtil
+import com.swmansion.gesturehandler.core.HoverGestureHandler
+import com.swmansion.gesturehandler.core.StylusData
+
+class HoverGestureHandlerEventDataBuilder(handler: HoverGestureHandler) :
+  GestureHandlerEventDataBuilder<HoverGestureHandler>(handler) {
+  private val x: Float = handler.lastRelativePositionX
+  private val y: Float = handler.lastRelativePositionY
+  private val absoluteX: Float = handler.lastPositionInWindowX
+  private val absoluteY: Float = handler.lastPositionInWindowY
+  private val stylusData: StylusData = handler.stylusData
+
+  override fun buildEventData(eventData: WritableMap) {
+    super.buildEventData(eventData)
+
+    with(eventData) {
+      putDouble("x", PixelUtil.toDIPFromPixel(x).toDouble())
+      putDouble("y", PixelUtil.toDIPFromPixel(y).toDouble())
+      putDouble("absoluteX", PixelUtil.toDIPFromPixel(absoluteX).toDouble())
+      putDouble("absoluteY", PixelUtil.toDIPFromPixel(absoluteY).toDouble())
+
+      if (stylusData.pressure != -1.0) {
+        putMap("stylusData", stylusData.toReadableMap())
+      }
+    }
+  }
+}

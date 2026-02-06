@@ -7,7 +7,7 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
-import com.swmansion.gesturehandler.react.eventbuilders.LongPressGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.LongPressGestureHandlerEventDataBuilder
 
 class LongPressGestureHandler(context: Context) : GestureHandler() {
   var minDurationMs = DEFAULT_MIN_DURATION_MS
@@ -65,14 +65,23 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
     return Pair(x, y)
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    previousTime = SystemClock.uptimeMillis()
+    startTime = previousTime
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
     }
 
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
+    }
+
     if (state == STATE_UNDETERMINED) {
-      previousTime = SystemClock.uptimeMillis()
-      startTime = previousTime
+      initialize(event, sourceEvent)
       begin()
 
       val (x, y) = getAverageCoords(sourceEvent)
@@ -181,8 +190,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler() {
 
     override fun create(context: Context?): LongPressGestureHandler = LongPressGestureHandler((context)!!)
 
-    override fun setConfig(handler: LongPressGestureHandler, config: ReadableMap) {
-      super.setConfig(handler, config)
+    override fun updateConfig(handler: LongPressGestureHandler, config: ReadableMap) {
+      super.updateConfig(handler, config)
       if (config.hasKey(KEY_MIN_DURATION_MS)) {
         handler.minDurationMs = config.getInt(KEY_MIN_DURATION_MS).toLong()
       }

@@ -2,17 +2,19 @@ const { getPackageVersionByTag } = require('./npm-utils');
 const { parseVersion } = require('./version-utils');
 
 function shouldBeLatest(version) {
-  const latestVersion = getPackageVersionByTag('react-native-gesture-handler', 'latest');
-  const [major, minor, patch] = parseVersion(latestVersion);
-  const [newMajor, newMinor, newPatch] = parseVersion(version);
+  const [newMajor, newMinor, newPatch, newPreRelease] = parseVersion(version);
 
-  // TODO: We'll worry about 3.x.x later :)
-  if (newMajor !== major) {
-    throw new Error(`Expected major version to be ${major}, but got ${newMajor}`);
+  // Pre-releases should never be latest
+  if (newPreRelease !== null) {
+    return false;
   }
 
-  return (newMajor === major && newMinor === minor && newPatch === patch + 1) ||
-         (newMajor === major && newMinor === minor + 1 && newPatch === 0);
+  const latestVersion = getPackageVersionByTag('react-native-gesture-handler', 'latest');
+  const [major, minor, patch] = parseVersion(latestVersion);
+
+  return (newMajor === major && newMinor === minor && newPatch >= patch + 1) ||
+         (newMajor === major && newMinor >= minor + 1) ||
+         (newMajor >= major + 1);
 }
 
 if (require.main === module) {

@@ -65,13 +65,14 @@ export function updateHandlers(
       handler.config = newGestures[i].config;
       handler.handlers = newGestures[i].handlers;
 
-      RNGestureHandlerModule.updateGestureHandler(
+      RNGestureHandlerModule.setGestureHandlerConfig(
         handler.handlerTag,
-        filterConfig(
-          handler.config,
-          ALLOWED_PROPS,
-          extractGestureRelations(handler)
-        )
+        filterConfig(handler.config, ALLOWED_PROPS)
+      );
+
+      RNGestureHandlerModule.configureRelations(
+        handler.handlerTag,
+        extractGestureRelations(handler)
       );
 
       registerHandler(handler.handlerTag, handler, handler.config.testId);

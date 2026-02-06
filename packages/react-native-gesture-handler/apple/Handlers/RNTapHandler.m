@@ -78,6 +78,11 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   if (_tapsSoFar == 0) {
@@ -284,9 +289,9 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   recognizer.maxDistSq = NAN;
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
 
   APPLY_INT_PROP(numberOfTaps);

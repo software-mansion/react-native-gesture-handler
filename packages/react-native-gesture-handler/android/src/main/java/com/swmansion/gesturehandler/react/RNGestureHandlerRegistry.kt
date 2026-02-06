@@ -21,11 +21,17 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   fun getHandler(handlerTag: Int): GestureHandler? = handlers[handlerTag]
 
   @Synchronized
-  fun attachHandlerToView(handlerTag: Int, viewTag: Int, actionType: Int): Boolean {
+  fun attachHandlerToView(
+    handlerTag: Int,
+    viewTag: Int,
+    actionType: Int,
+    hostDetectorView: RNGestureHandlerDetectorView? = null,
+  ): Boolean {
     val handler = handlers[handlerTag]
     return handler?.let {
-      detachHandler(handler)
+      detachHandlerInternal(handler)
       handler.actionType = actionType
+      handler.hostDetectorView = hostDetectorView
       registerHandlerForViewWithTag(viewTag, handler)
       true
     } ?: false
@@ -48,7 +54,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  private fun detachHandler(handler: GestureHandler) {
+  private fun detachHandlerInternal(handler: GestureHandler) {
     val attachedToView = attachedTo[handler.tag]
     if (attachedToView != null) {
       attachedTo.remove(handler.tag)
@@ -72,9 +78,16 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
+  fun detachHandler(handlerTag: Int) {
+    handlers[handlerTag]?.let {
+      detachHandlerInternal(it)
+    }
+  }
+
+  @Synchronized
   fun dropHandler(handlerTag: Int) {
     handlers[handlerTag]?.let {
-      detachHandler(it)
+      detachHandlerInternal(it)
       handlers.remove(handlerTag)
     }
   }
@@ -87,7 +100,7 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler>? = handlersForView[viewTag]
+  override fun getHandlersForViewWithTag(viewTag: Int): ArrayList<GestureHandler>? = handlersForView[viewTag]
 
   @Synchronized
   override fun getHandlersForView(view: View): ArrayList<GestureHandler>? = getHandlersForViewWithTag(view.id)

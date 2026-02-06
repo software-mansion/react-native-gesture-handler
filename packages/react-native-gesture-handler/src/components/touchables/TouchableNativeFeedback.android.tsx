@@ -70,7 +70,7 @@ export default class TouchableNativeFeedback extends Component<TouchableNativeFe
     extraProps['foreground'] = this.props.useForeground;
     return extraProps;
   }
-  render() {
+  override render() {
     const { style = {}, ...rest } = this.props;
     return (
       <GenericTouchable

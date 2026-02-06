@@ -1210,7 +1210,71 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
   - react-native-safe-area-context (5.4.0):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-safe-area-context/common (= 5.4.0)
+    - react-native-safe-area-context/fabric (= 5.4.0)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-safe-area-context/common (5.4.0):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-safe-area-context/fabric (5.4.0):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-safe-area-context/common
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - React-NativeModulesApple (0.78.4):
     - glog
     - React-callinvoker
@@ -1483,7 +1547,26 @@ PODS:
     - React-perflogger (= 0.78.4)
     - React-utils (= 0.78.4)
   - RNCAsyncStorage (2.1.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNGestureHandler (2.29.0):
     - DoubleConversion
     - glog
@@ -1615,7 +1698,48 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - RNSVG (15.11.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNSVG/common (= 15.11.2)
+    - Yoga
+  - RNSVG/common (15.11.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -1649,6 +1773,7 @@ DEPENDENCIES:
   - React-idlecallbacksnativemodule (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/idlecallbacks`)
   - React-ImageManager (from `../node_modules/react-native-macos/ReactCommon/react/renderer/imagemanager/platform/ios`)
   - React-jsc (from `../node_modules/react-native-macos/ReactCommon/jsc`)
+  - React-jsc/Fabric (from `../node_modules/react-native-macos/ReactCommon/jsc`)
   - React-jserrorhandler (from `../node_modules/react-native-macos/ReactCommon/jserrorhandler`)
   - React-jsi (from `../node_modules/react-native-macos/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native-macos/ReactCommon/jsiexecutor`)
@@ -1872,16 +1997,16 @@ SPEC CHECKSUMS:
   React-logger: 7710d15dff02b5cf12f74c64f7fc07d3d0ed35a8
   React-Mapbuffer: eae1ba319b99b32da165269bfeea4ae5923f9e09
   React-microtasksnativemodule: 1ac5c0eb9461aeb4a8ae6d264ed463fa1183ecde
-  react-native-safe-area-context: 9d72abf6d8473da73033b597090a80b709c0b2f1
+  react-native-safe-area-context: 35ad50501de86ff63b51709735ebfa012b00f0d1
   React-NativeModulesApple: c1f7efd2131cde7c2b4a8405447dbe48eb8411e9
   React-perflogger: 258d7a5191bf8eb541a6441234cd9ce8d3cfa08e
   React-performancetimeline: 68314836dc1ea3cacae38bd43d80ee5116a423bf
   React-RCTActionSheet: 9618e6d1a0c5270801c0b01fb85b91259ae9bf1c
   React-RCTAnimation: 354b6f0e127038892f86d04b1d08ba14678da282
-  React-RCTAppDelegate: ed5d22102427ba8fcc9e8d3a678394d1e20bef84
+  React-RCTAppDelegate: a9ac893453831d6529330ff5e6990f236841ad1d
   React-RCTBlob: 08edc5e6f168bbc0b3f972af19c57027cbfd41e4
-  React-RCTFabric: 0104b278f3afe1c2778de6ac7a5b7a82bdb1b488
-  React-RCTFBReactNativeSpec: 53a80cd8ac923d76792c21fac336ebd1782320cb
+  React-RCTFabric: f869385817b97ad531056aa073d3c119297f32e5
+  React-RCTFBReactNativeSpec: 22f3364aa043eb8cc0f7c2eaf2cde3242a8c2187
   React-RCTImage: 2ad45f2da96fa8be00bc859c0441d4ad98ee74e5
   React-RCTLinking: 87fdc9bcb872563502daadc073922bd957268f7e
   React-RCTNetwork: 465f3d9e6168ccaad96f5da05cc9182845f4bbcc
@@ -1900,13 +2025,13 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 93ba70597920a832aaa2c0dad33ddcafb70254f1
   ReactCodegen: a69b3fe94242a2d03ceebfc2a2b9eb634ddbb0ec
   ReactCommon: d8a297276a8a494803194d834d5ee331c6be176c
-  RNCAsyncStorage: b9f5f78da5d16a853fe3dc22e8268d932fc45a83
-  RNGestureHandler: ad19b514902de0d788e868c45ae63ea69b300433
-  RNReanimated: fbef88e66ee113f1f6cb466617a9982985fa4ac6
-  RNSVG: 4c63b12b7b5761063bca4f20dd228f6a8370f614
+  RNCAsyncStorage: f87e7905ae8a3ee95a69f4bd7046fcaaf8e46f13
+  RNGestureHandler: 53b193301ab8233d270dbd13205a3bde088a5afa
+  RNReanimated: 3ff8cc2ee703e06f73039e89214392435aaf5fd2
+  RNSVG: c46446a6250639d369ec1e39bc4d8284984bb330
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 68988998b6d10a0802dd7d5c6d40bf018e09ffd9
 
-PODFILE CHECKSUM: ba6f2105d3e43bf0ae77356a9afcc8b532e3c306
+PODFILE CHECKSUM: 753d3d7d386258a325dca769aa778dc6a0cb56b4
 
 COCOAPODS: 1.15.2

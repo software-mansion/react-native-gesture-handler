@@ -9,13 +9,12 @@
     "format-js": "prettier --write --list-different './src/**/*.{js,jsx,ts,tsx}'",
     "format:js": "yarn format-js",
     "format:android": "node ../../scripts/format-android.js",
-    "format:apple": "node ../../scripts/format-apple.js",
+    "format:apple": "FORMAT_GLOB_PATTERN=\"../packages/react-native-gesture-handler/apple/**/*.{h,m,mm,cpp}\" node ../../scripts/format-cpp.js",
+    "format:cpp": "FORMAT_GLOB_PATTERN=\"../packages/react-native-gesture-handler/{shared,android/src}/**/*.{h,cpp}\" node ../../scripts/format-cpp.js",
     "lint-js": "eslint --ext '.js,.ts,.tsx' src/ && yarn prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:js": "yarn lint-js",
     "lint:android": "./android/gradlew -p android spotlessCheck -q",
     "circular-dependency-check": "yarn madge --extensions js,ts,tsx --circular src",
-    "architectures-consistency-check": "node ../../scripts/codegen-check-consistency.js",
-    "sync-architectures": "node ../../scripts/codegen-sync-archs.js",
     "clean": "rm -rf node_modules android/build android/.cxx",
     "prepack": "cp ../../README.md ./README.md",
     "postpack": "rm ./README.md"
@@ -32,29 +31,25 @@
     "!**/__mocks__",
     "android/build.gradle",
     "android/gradle.properties",
+    "android/CMakeLists.txt",
     "android/src/main/AndroidManifest.xml",
     "android/src/main/java/",
     "android/src/main/jni/",
-    "android/fabric/src/main/java",
-    "android/paper/src/main/java",
-    "android/paper77/src/main/java",
     "android/common/src/main/java/",
     "android/reanimated/src/main/java/",
     "android/noreanimated/src/main/java/",
-    "android/package77/",
-    "android/packageDeprecated/",
     "android/svg",
     "android/nosvg",
     "apple/",
+    "shared/",
     "scripts/",
-    "Swipeable/",
     "ReanimatedSwipeable/",
     "jest-utils/",
-    "DrawerLayout/",
     "ReanimatedDrawerLayout/",
     "README.md",
     "jestSetup.js",
-    "RNGestureHandler.podspec"
+    "RNGestureHandler.podspec",
+    "react-native.config.js"
   ],
   "repository": {
     "type": "git",
@@ -71,8 +66,6 @@
   },
   "homepage": "https://docs.swmansion.com/react-native-gesture-handler/",
   "dependencies": {
-    "@egjs/hammerjs": "^2.0.17",
-    "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
@@ -81,7 +74,6 @@
     "@babel/preset-typescript": "^7.12.7",
     "@react-native/babel-preset": "0.84.0-rc.3",
     "@testing-library/react-native": "^12.5.1",
-    "@types/hoist-non-react-statics": "^3.3.1",
     "@types/invariant": "^2.2.37",
     "@types/jest": "^27.0.3",
     "@types/react": "^19.2.0",
@@ -135,7 +127,9 @@
     },
     "ios": {
       "componentProvider": {
-        "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView"
+        "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView",
+        "RNGestureHandlerDetector": "RNGestureHandlerDetector",
+        "RNGestureHandlerButtonWrapper": "RNGestureHandlerButtonWrapper"
       }
     }
   },

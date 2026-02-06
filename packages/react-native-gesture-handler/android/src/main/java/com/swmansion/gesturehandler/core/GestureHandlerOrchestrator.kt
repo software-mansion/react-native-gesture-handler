@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.RootView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
@@ -297,15 +298,7 @@ class GestureHandlerOrchestrator(
     val action = sourceEvent.actionMasked
     val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
 
-    // Touch events are sent before the handler itself has a chance to process them,
-    // mainly because `onTouchesUp` should be send before gesture finishes. This means that
-    // the first `onTouchesDown` event is sent before a gesture begins, activation in
-    // callback for this event causes problems because the handler doesn't have a chance
-    // to initialize itself with starting values of pointer (in pan this causes translation
-    // to be equal to the coordinates of the pointer). The simplest solution is to send
-    // the first `onTouchesDown` event after the handler processes it and changes state
-    // to `BEGAN`.
-    if (handler.needsPointerData && handler.state != 0) {
+    if (handler.needsPointerData) {
       handler.updatePointerData(event, sourceEvent)
     }
 
@@ -325,10 +318,6 @@ class GestureHandlerOrchestrator(
           handler.resetProgress()
         }
         handler.dispatchHandlerUpdate(event)
-      }
-
-      if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event, sourceEvent)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
@@ -453,7 +442,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun recordHandlerIfNotPresent(handler: GestureHandler, view: View) {
+  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?) {
     if (gestureHandlers.contains(handler)) {
       return
     }
@@ -560,6 +549,26 @@ class GestureHandlerOrchestrator(
       extractAncestorHandlers(view, coords, pointerId)
     ) {
       found = true
+    }
+
+    if (view is ReactCompoundView) {
+      val tagForCoords = view.reactTagForTouch(coords[0], coords[1])
+
+      if (tagForCoords != view.id) {
+        handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
+          synchronized(it) {
+            for (handler in it) {
+              if (shouldHandlerSkipHoverEvents(handler, event)) {
+                continue
+              }
+
+              recordHandlerIfNotPresent(handler, view)
+              handler.startTrackingPointer(pointerId)
+              found = true
+            }
+          }
+        }
+      }
     }
 
     return found
@@ -741,13 +750,7 @@ class GestureHandlerOrchestrator(
       return isLeafOrTransparent && isTransformedTouchPointInView(coords[0], coords[1], view)
     }
 
-    private fun transformPointToChildViewCoords(
-      x: Float,
-      y: Float,
-      parent: ViewGroup,
-      child: View,
-      outLocalPoint: PointF,
-    ) {
+    fun transformPointToChildViewCoords(x: Float, y: Float, parent: ViewGroup, child: View, outLocalPoint: PointF) {
       var localX = x + parent.scrollX - child.left
       var localY = y + parent.scrollY - child.top
       val matrix = child.matrix

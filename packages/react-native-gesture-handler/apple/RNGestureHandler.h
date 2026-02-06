@@ -1,7 +1,9 @@
 #import "RNGHUIKit.h"
 #import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerDirection.h"
+#import "RNGestureHandlerEventHandlerType.h"
 #import "RNGestureHandlerEvents.h"
+#import "RNGestureHandlerPointerEvents.h"
 #import "RNGestureHandlerPointerTracker.h"
 #import "RNGestureHandlerPointerType.h"
 #import "RNGestureHandlerState.h"
@@ -38,7 +40,14 @@
 
 @protocol RNGestureHandlerEventEmitter
 
-- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType;
+- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event
+    withActionType:(RNGestureHandlerActionType)actionType
+    forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType
+           forView:(nonnull RNGHUIView *)detectorView;
+
+- (void)sendNativeTouchEventForGestureHandler:(nonnull RNGestureHandler *)handler
+                              withPointerType:(NSInteger)pointerType
+                               forHandlerType:(RNGestureHandlerEventHandlerType)eventHandlerType;
 
 @end
 
@@ -66,20 +75,25 @@
 @property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
+@property (nonatomic, nullable) NSString *testID;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) RNGestureHandlerActionType actionType;
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
+@property (nonatomic) BOOL dispatchesAnimatedEvents;
+@property (nonatomic) BOOL dispatchesReanimatedEvents;
+@property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
+@property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
 
-#if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
-#endif
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
 - (void)bindToView:(nonnull RNGHUIView *)view;
 - (void)unbindFromView;
 - (void)resetConfig NS_REQUIRES_SUPER;
-- (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
+- (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
+- (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
+- (void)updateRelations:(nonnull NSDictionary *)relations;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
 - (BOOL)containsPointInView;
@@ -94,6 +108,9 @@
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
+- (nonnull RNGHUIView *)findViewForEvents;
+- (BOOL)wantsToAttachDirectlyToView;
+- (BOOL)usesNativeOrVirtualDetector;
 
 #if !TARGET_OS_OSX
 - (BOOL)isUIScrollViewPanGestureRecognizer:(nonnull UIGestureRecognizer *)gestureRecognizer;

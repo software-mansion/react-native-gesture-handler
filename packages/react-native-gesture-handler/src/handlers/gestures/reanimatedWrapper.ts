@@ -1,13 +1,47 @@
 import { ComponentClass } from 'react';
-import {
-  GestureUpdateEvent,
-  GestureStateChangeEvent,
-} from '../gestureHandlerCommon';
 import { tagMessage } from '../../utils';
+import {
+  GestureCallbacks,
+  GestureUpdateEventWithHandlerData,
+  SharedValue,
+} from '../../v3/types';
+import { NativeProxy } from '../../v3/NativeProxy';
 
-export interface SharedValue<T> {
-  value: T;
+export type ReanimatedContext<THandlerData> = {
+  lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;
+};
+
+interface WorkletProps {
+  __closure: unknown;
+  __workletHash: number;
+  __initData?: unknown;
+  __init?: () => unknown;
+  __stackDetails?: unknown;
+  __pluginVersion?: string;
 }
+
+type WorkletFunction<
+  TArgs extends unknown[] = unknown[],
+  TReturn = unknown,
+> = ((...args: TArgs) => TReturn) & WorkletProps;
+
+export type ReanimatedHandler<THandlerData> = {
+  doDependenciesDiffer: boolean;
+  context: ReanimatedContext<THandlerData>;
+};
+
+export type NativeEventsManager = new (component: {
+  props: Record<string, unknown>;
+  _componentRef: React.Ref<unknown>;
+  // Removed in https://github.com/software-mansion/react-native-reanimated/pull/6736
+  // but we likely want to keep it for compatibility with older Reanimated versions
+  _componentViewTag: number;
+  getComponentViewTag: () => number;
+}) => {
+  attachEvents: () => void;
+  detachEvents: () => void;
+  updateEvents: (prevProps: Record<string, unknown>) => void;
+};
 
 let Reanimated:
   | {
@@ -18,18 +52,36 @@ let Reanimated:
           options?: unknown
         ): ComponentClass<P>;
       };
-      useEvent: (
-        callback: (event: GestureUpdateEvent | GestureStateChangeEvent) => void,
+      NativeEventsManager: NativeEventsManager;
+      useHandler: <THandlerData>(
+        handlers: GestureCallbacks<THandlerData>
+      ) => ReanimatedHandler<THandlerData>;
+      useEvent: <T>(
+        callback: (event: T) => void,
         events: string[],
         rebuild: boolean
-      ) => unknown;
+      ) => (event: unknown) => void;
       useSharedValue: <T>(value: T) => SharedValue<T>;
       setGestureState: (handlerTag: number, newState: number) => void;
+      isSharedValue: <T = unknown>(value: unknown) => value is SharedValue<T>;
+      isWorkletFunction<
+        Args extends unknown[] = unknown[],
+        ReturnValue = unknown,
+      >(
+        value: unknown
+      ): value is WorkletFunction<Args, ReturnValue>;
+      useComposedEventHandler<T>(
+        handlers: (((event: T) => void) | null)[]
+      ): (event: T) => void;
+      runOnUI<A extends any[], R>(
+        fn: (...args: A) => R
+      ): (...args: Parameters<typeof fn>) => void;
     }
   | undefined;
 
 try {
   Reanimated = require('react-native-reanimated');
+  NativeProxy.setReanimatedAvailable(true);
 } catch (e) {
   // When 'react-native-reanimated' is not available we want to quietly continue
   // @ts-ignore TS demands the variable to be initialized
@@ -40,6 +92,7 @@ if (!Reanimated?.useSharedValue) {
   // @ts-ignore Make sure the loaded module is actually Reanimated, if it's not
   // reset the module to undefined so we can fallback to the default implementation
   Reanimated = undefined;
+  NativeProxy.setReanimatedAvailable(false);
 }
 
 if (Reanimated !== undefined && !Reanimated.setGestureState) {
