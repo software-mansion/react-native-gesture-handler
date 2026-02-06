@@ -10,6 +10,7 @@ interface Props {
   label: string;
   expandedLabel: string;
   lineBounds: number[];
+  collapsed?: boolean;
 }
 
 export default function CollapsibleCode({
@@ -17,8 +18,9 @@ export default function CollapsibleCode({
   label,
   expandedLabel,
   lineBounds,
+  collapsed = true,
 }: Props) {
-  const [collapsed, setCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(collapsed);
   const code = useFormattedCode(src);
 
   if (!lineBounds) {
@@ -35,11 +37,11 @@ export default function CollapsibleCode({
       <CollapseButton
         label={label}
         expandedLabel={expandedLabel}
-        collapsed={collapsed}
-        onCollapse={() => setCollapsed(!collapsed)}
+        collapsed={isCollapsed}
+        onCollapse={() => setIsCollapsed(!isCollapsed)}
         className={styles.collapseButton}
       />
-      <CodeBlock language="tsx">{collapsed ? linesToShow : code}</CodeBlock>
+      <CodeBlock language="tsx">{isCollapsed ? linesToShow : code}</CodeBlock>
     </div>
   );
 }

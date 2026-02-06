@@ -23,7 +23,7 @@ To see the new API in action, let's build a simple app where you can drag a ball
 
 <Step title="Step 2">
   <div>
-    Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value">`SharedValues`</a> to track the ball's position and create the animated styles required to position the ball on the screen:
+    Next, define the <a href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value" target="_blank">`SharedValues`</a> to track the ball's position and create the animated styles required to position the ball on the screen:
   </div>
   <Step2 />
 </Step>

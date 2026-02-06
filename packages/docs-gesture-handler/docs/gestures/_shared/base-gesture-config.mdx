@@ -1,3 +1,5 @@
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
 ### enabled
 
 ```ts
@@ -21,11 +23,14 @@ Most handlers' `shouldCancelWhenOutside` property defaults to `false` except for
 
 ### hitSlop
 
-```ts
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
 hitSlop: HitSlop | SharedValue<HitSlop>;
-```
 
-```ts
 type HitSlop =
   | number
   | null
@@ -40,7 +45,7 @@ type HitSlop =
   | Record<'width' | 'right', number>
   | Record<'height' | 'top', number>
   | Record<'height' | 'bottom', number>;
-```
+`}/>
 
 This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
 When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
@@ -100,7 +105,7 @@ simultaneousWith: Gesture | Gesture[]
 
 Adds a gesture that should be recognized simultaneously with this one.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### requireToFail
 
@@ -110,7 +115,7 @@ requireToFail: Gesture | Gesture[]
 
 Adds a relation requiring another gesture to fail, before this one can activate.
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition). [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### block
 
@@ -120,7 +125,7 @@ block: Gesture | Gesture[]
 
 Adds a relation that makes other gestures wait with activation until this gesture fails (or doesn't start at all).
 
-**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition).[`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize the `otherGestures` and it needs to be added to another detector in order to be recognized.
+**IMPORTANT:** Note that this method only marks the relation between gestures, without [composing them](/docs/fundamentals/gesture-composition).[`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) will not recognize other gestures and it needs to be added to another detector in order to be recognized.
 
 ### useAnimated
 
