@@ -171,18 +171,21 @@ RCT_EXPORT_MODULE()
 {
   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
   // On the old arch we rely on `uiManagerWillPerformMounting`
-  if (_operations.count == 0) {
-    return;
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  if (_operations.count > 0) {
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+      for (GestureHandlerOperation operation in operations) {
+        operation(manager);
+      }
+    }];
   }
 
-  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
-    for (GestureHandlerOperation operation in operations) {
-      operation(manager);
-    }
+    [manager reattachHandlersIfNeeded];
   }];
 }
 
