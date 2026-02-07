@@ -54,6 +54,7 @@ const Swipeable = (props: SwipeableProps) => {
     onSwipeableWillClose,
     onSwipeableOpen,
     onSwipeableClose,
+    onSwipeableDragEnd,
     renderLeftActions,
     renderRightActions,
     simultaneousWithExternalGesture,
@@ -430,6 +431,10 @@ const Swipeable = (props: SwipeableProps) => {
         if (translationX < rightThresholdProp) {
           toValue = -rightWidth.value;
         }
+      }
+
+      if(onSwipeableDragEnd){
+        runOnJS(onSwipeableDragEnd)(translationX < 0 ? SwipeDirection.RIGHT : SwipeDirection.LEFT);
       }
 
       animateRow(toValue, velocityX / friction);
