@@ -76,6 +76,14 @@ delayLongPress?: number;
 
 Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
 
+### borderless (**Android only**)
+
+```ts
+borderless?: boolean;
+```
+
+set this to `false` if you want the ripple animation to render only within view bounds.
+
 ## RectButton
 
 This type of button component is ideal for use with rectangular elements or content blocks that can be pressed, such as table rows or buttons featuring text and icons. It ensures platform-specific interactions, such as rendering a rectangular ripple on Android or highlighting the background on iOS and older Android versions. In addition to the props offered by [`BaseButton`](#basebutton), it accepts the following:
@@ -100,13 +108,13 @@ Opacity applied to the underlay when button is in active state.
 
 This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](/docs/components/buttons#basebutton), it accepts the following:
 
-### `borderless` (**Android only**)
+### activeOpacity (**iOS only**)
 
-set this to `false` if you want the ripple animation to render only within view bounds.
+```ts
+activeOpacity?: number;
+```
 
-### `activeOpacity` (**iOS only**)
-
-opacity applied to the button when it is in an active state.
+Opacity applied to the button when it is in an active state.
 
 ## Accessibility
 
