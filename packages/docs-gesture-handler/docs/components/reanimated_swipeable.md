@@ -139,10 +139,10 @@ const panGesture = Gesture.Pan();
 
 <GestureDetector gesture={panGesture}>
   <ReanimatedSwipeable simultaneousWithExternalGesture={panGesture} />
-</GestureDetector>
+</GestureDetector>;
 ```
 
-More details can be found in the [gesture composition documentation](../fundamentals/gesture-composition.md#simultaneouswithexternalgesture).
+More details can be found in the [gesture composition documentation](/docs/fundamentals/gesture-composition#simultaneouswith).
 
 ### `enableTrackpadTwoFingerGesture` (iOS only)
 
