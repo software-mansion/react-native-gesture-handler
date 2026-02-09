@@ -44,13 +44,13 @@ You can resolve this problem manually by modifying your `package.json` file. Thi
 
 <Tabs groupId="package-managers">
   <TabItem value="npm" label="NPM">
-    You can check which libraries are using Gesture Handler with the command:
+    You can check which libraries are using Gesture Handler, along with its version, with the command:
     
     ```bash
     npm ls react-native-gesture-handler
     ```
 
-    Add [`overrides`](https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides) property.
+    Then you can decide which version of Gesture Handler to use by adding the [`overrides`](https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides) property.
 
     ```json
     "overrides": {
@@ -65,13 +65,13 @@ You can resolve this problem manually by modifying your `package.json` file. Thi
     ```
   </TabItem>
   <TabItem value="yarn" label="YARN">
-    You can check which libraries are using Gesture Handler with the command:
+    You can check which libraries are using Gesture Handler, along with its version, with the command:
 
     ```bash
     yarn why react-native-gesture-handler
     ```
 
-    Add [`resolutions`](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) property.
+    Then you can decide which version of Gesture Handler to use by adding the [`resolutions`](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) property.
 
     ```json
     "resolutions": {
