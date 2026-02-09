@@ -238,11 +238,6 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       attachedHandlers.remove(tag)
     }
 
-    for (tag in nativeHandlers.toMutableSet()) {
-      registry.detachHandlerFromHostDetector(tag, this)
-      nativeHandlers.remove(tag)
-    }
-
     for (child in attachedVirtualHandlers) {
       for (tag in child.value) {
         registry.detachHandlerFromHostDetector(tag, this)
