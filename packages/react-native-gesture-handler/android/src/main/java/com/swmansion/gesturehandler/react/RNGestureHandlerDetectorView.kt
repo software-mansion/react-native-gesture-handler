@@ -37,6 +37,41 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     attachHandlers(newHandlers)
   }
 
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+
+    if (moduleId != -1) {
+      handlersToAttach?.let {
+        attachHandlers(it)
+      }
+
+      virtualChildrenToAttach?.let {
+        attachVirtualChildren(it)
+      }
+
+      handlersToAttach = null
+      virtualChildrenToAttach = null
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    if (attachedHandlers.isNotEmpty()) {
+      handlersToAttach = attachedHandlers.toMutableList().also {
+        it.addAll(nativeHandlers.toList())
+      }
+    }
+
+    if (!virtualChildrenToAttach.isNullOrEmpty()) {
+      virtualChildrenToAttach = attachedVirtualHandlers.map {
+        VirtualChildren(it.value.toList(), it.key)
+      }
+    }
+
+    detachAllHandlers()
+
+    super.onDetachedFromWindow()
+  }
+
   fun setModuleId(id: Int) {
     assert(this.moduleId == -1) { "Tried to change moduleId of a native detector" }
 
@@ -192,13 +227,18 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     eventDispatcher?.dispatchEvent(event)
   }
 
-  fun onViewDrop() {
+  fun detachAllHandlers() {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in attachedHandlers.toMutableSet()) {
       registry.detachHandlerFromHostDetector(tag, this)
       attachedHandlers.remove(tag)
+    }
+
+    for (tag in nativeHandlers.toMutableSet()) {
+      registry.detachHandlerFromHostDetector(tag, this)
+      nativeHandlers.remove(tag)
     }
 
     for (child in attachedVirtualHandlers) {
