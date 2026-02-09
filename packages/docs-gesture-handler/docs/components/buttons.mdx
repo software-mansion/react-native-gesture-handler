@@ -13,13 +13,18 @@ import GifGallery from '@site/components/GifGallery';
 
 The Gesture Handler library offers native components that function as buttons, serving as alternatives to `TouchableHighlight` or `TouchableOpacity` from the core React Native framework. These buttons process touch recognition natively, which ensures a deterministic response. This capability significantly enhances performance; for example, it allows for immediate ripple effects on Android, unlike `TouchableNativeFeedback`, which requires a touch event roundtrip to JavaScript that can cause delays, especially noticeable on older devices. Additionally, these components handle default platform interactions natively, particularly in scrollable containers where interactions are smartly delayed to prevent unintended highlighting during a fling.
 
-Currently Gesture Handler library exposes three components that render native touchable elements under the hood:
+Gesture Handler library exposes components that render native touchable elements under the hood:
 
+- [`RawButton`](#rawbutton)
 - [`BaseButton`](#basebutton)
 - [`RectButton`](#rectbutton)
 - [`BorderlessButton`](#borderlessbutton)
 
 On top of that all the buttons are wrapped with [`Native`](/docs/gestures/use-native-gesture) gesture and therefore allow for all its [properties](/docs/gestures/use-native-gesture#config) to be applied to them.
+
+## RawButton
+
+The most basic button component does not provide any feedback and lacks props such as `onPress`. It serves as a foundation for other button components and is ideal if you wish to implement your own custom interactions for when the button is pressed.
 
 ## BaseButton
 
@@ -175,41 +180,3 @@ It should be used if you wish to handle non-crucial actions and supportive behav
   <img src={useBaseUrl('gifs/androidmail.gif')} width="280" />
   <img src={useBaseUrl('gifs/iosmail.gif')} width="280" />
 </GifGallery>
-
-### PureNativeButton
-
-Use a `PureNativeButton` for accessing the host component used for build more complex buttons listed above.
-Normally it is not recommended to use, but it might be useful if you want to wrap it using [Animated](https://reactnative.dev/docs/animated) or [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/).
-
-```tsx
-import {
-  createNativeWrapper,
-  PureNativeButton,
-} from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
-const { event, Value, createAnimatedComponent } = Animated;
-
-const AnimatedRawButton = createNativeWrapper(
-  createAnimatedComponent(PureNativeButton),
-  {
-    shouldCancelWhenOutside: false,
-    shouldActivateOnStart: false,
-  }
-);
-
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    const state = new Value();
-    this._onGestureEvent = event([
-      {
-        nativeEvent: { state },
-      },
-    ]);
-  }
-
-  render() {
-    return <AnimatedRawButton onHandlerStateChange={this._onGestureEvent} />;
-  }
-}
-```
