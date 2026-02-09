@@ -1,11 +1,8 @@
 name: Publish release to npm
 on:
-  # For commitlies
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - packages/react-native-gesture-handler/**
+  # For nightly releases
+  schedule:
+    - cron: '27 23 * * *' # at 23:27 every day
   # For manual releases
   workflow_dispatch:
     inputs:
@@ -14,6 +11,7 @@ on:
         type: choice
         options:
           - stable
+          - nightly
           - beta
           - rc
         default: stable
@@ -52,9 +50,9 @@ jobs:
           version: ${{ inputs.version }}
           dry-run: ${{ inputs.dry-run }}
 
-      - name: Publish automatic commitly release
-        if: ${{ github.event_name == 'push' }}
+      - name: Publish automatic nightly release
+        if: ${{ github.event_name == 'schedule' }}
         uses: ./.github/actions/publish-npm-package
         with:
-          release-type: 'commitly'
+          release-type: 'nightly'
           dry-run: false

@@ -109,7 +109,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
 
     for (tag in handlersToDetach) {
-      registry.detachHandler(tag)
+      registry.detachHandlerFromHostDetector(tag, this)
       nativeHandlers.remove(tag)
       attachedHandlers.remove(tag)
     }
@@ -134,7 +134,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     for (child in virtualChildrenToDetach) {
       for (tag in attachedVirtualHandlers[child]!!) {
-        registry.detachHandler(tag)
+        registry.detachHandlerFromHostDetector(tag, this)
       }
       attachedVirtualHandlers.remove(tag)
     }
@@ -182,7 +182,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in nativeHandlers) {
-      registry.detachHandler(tag)
+      registry.detachHandlerFromHostDetector(tag, this)
       attachedHandlers.remove(tag)
     }
   }
@@ -197,13 +197,13 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in attachedHandlers.toMutableSet()) {
-      registry.detachHandler(tag)
+      registry.detachHandlerFromHostDetector(tag, this)
       attachedHandlers.remove(tag)
     }
 
     for (child in attachedVirtualHandlers) {
       for (tag in child.value) {
-        registry.detachHandler(tag)
+        registry.detachHandlerFromHostDetector(tag, this)
       }
       child.value.clear()
     }
