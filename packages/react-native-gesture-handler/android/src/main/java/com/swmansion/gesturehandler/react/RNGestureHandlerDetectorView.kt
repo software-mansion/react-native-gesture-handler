@@ -57,13 +57,15 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   override fun onDetachedFromWindow() {
     if (attachedHandlers.isNotEmpty()) {
       handlersToAttach = attachedHandlers.toMutableList().also {
-        it.addAll(nativeHandlers.toList())
+        it.addAll(handlersToAttach ?: emptyList())
       }
     }
 
-    if (!virtualChildrenToAttach.isNullOrEmpty()) {
+    if (attachedVirtualHandlers.isNotEmpty()) {
       virtualChildrenToAttach = attachedVirtualHandlers.map {
         VirtualChildren(it.value.toList(), it.key)
+      }.toMutableList().also {
+        it.addAll(virtualChildrenToAttach ?: emptyList())
       }
     }
 
