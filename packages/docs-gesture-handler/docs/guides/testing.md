@@ -45,7 +45,7 @@ with one of `END`/`FAIL`/`CANCEL` states), calling appropriate callbacks associa
     defaults.
   - Missing `BEGIN` and `END` events are added with data copied from first and last
     passed event, respectively.
-  - If first event don't have `state` field, the `ACTIVE` state is assumed.
+  - If first event doesn't have `state` field, the `ACTIVE` state is assumed.
 
 Some `eventList` examples:
 
