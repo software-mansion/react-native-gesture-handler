@@ -26,9 +26,59 @@ On top of that all the buttons are wrapped with [`Native`](/docs/gestures/use-na
 
 The most basic button component does not provide any feedback and lacks props such as `onPress`. It serves as a foundation for other button components and is ideal if you wish to implement your own custom interactions for when the button is pressed.
 
+`RawButton` accepts all [`Native` gesture props](/docs/gestures/use-native-gesture#config), [accessibility props](https://reactnative.dev/docs/accessibility#accessibility-properties), along with the following additional properties:
+
+### exclusive
+
+```ts
+exclusive?: boolean;
+```
+
+Defines if more than one button could be pressed simultaneously. By default set to `true`.
+
+### rippleColor (**Android only**)
+
+```ts
+rippleColor?: number | ColorValue | null;
+```
+
+Defines [color](https://reactnative.dev/docs/colors) of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
+
+### rippleRadius (**Android only**)
+
+```ts
+rippleRadius?: number | null;
+```
+
+Defines radius of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
+
+### borderless (**Android only**)
+
+```ts
+borderless?: boolean;
+```
+
+If set to `false`, [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation will render only within view bounds.
+
+### foreground (**Android only**)
+
+```ts
+foreground?: boolean;
+```
+
+Defines whether the [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation should be drawn on the foreground of the view.
+
+### touchSoundDisabled (**Android only**)
+
+```ts
+touchSoundDisabled?: boolean;
+```
+
+If set to `true`, the system will not play a sound when the button is pressed.
+
 ## BaseButton
 
-Can be used as a base class if you'd like to implement some custom interaction for when the button is pressed.
+Can be used as a base class if you'd like to implement some custom interaction for when the button is pressed. It has all the props of [`RawButton`](#rawbutton) and in addition to that it also provides the following props:
 
 ### onPress
 
@@ -56,23 +106,6 @@ onActiveStateChange?: (active: boolean) => void;
 
 Triggered when the button transitions between active and inactive states. It passes the current active state as a boolean variable to the method as the first parameter.
 
-
-### rippleColor (**Android only**)
-
-```ts
-rippleColor?: number | ColorValue | null;
-```
-
-Defines [color](https://reactnative.dev/docs/colors) of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
-
-### exclusive
-
-```ts
-exclusive?: boolean;
-```
-
-Defines if more than one button could be pressed simultaneously. By default set to `true`.
-
 ### delayLongPress
 
 ```ts
@@ -80,14 +113,6 @@ delayLongPress?: number;
 ```
 
 Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
-
-### borderless (**Android only**)
-
-```ts
-borderless?: boolean;
-```
-
-set this to `false` if you want the ripple animation to render only within view bounds.
 
 ## RectButton
 
