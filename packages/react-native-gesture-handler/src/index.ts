@@ -52,7 +52,7 @@ export { PanGestureHandler } from './handlers/PanGestureHandler';
 export { PinchGestureHandler } from './handlers/PinchGestureHandler';
 export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
-export { default as createNativeWrapper } from './handlers/createNativeWrapper';
+export { default as legacy_createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
 export { GestureDetector as LegacyGestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
