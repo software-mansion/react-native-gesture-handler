@@ -173,7 +173,7 @@ Other components have also been internally rewritten using the new hook API but 
 
 While new `createNativeWrapper` should work out of the box, keep in mind that it wraps your component with `GestureDetector`, which in Gesture Handler 3 is a host component. This affects view hierarchy, so depending on use case, you might want to use `VirtualGestureDetector` instead.
 
-Before changing, ask user about their intention - if they prefer to keep legacy version, change it to `legacy_createNativeWrapper`. If not, keep `createNativeWrapper`, then notify user that in case of problems with view hierarchy they should introduce `InterceptingGestureDetector` and pass `GestureDetectorType.Virtual`as `detectorType` argument in `createNativeWrapper`.
+Before changing, ask user about their intention - if they prefer to keep legacy version, change it to `legacy_createNativeWrapper`. If not, keep `createNativeWrapper`, then notify user that in case of problems with view hierarchy they should wrap the relevant subtree with `InterceptingGestureDetector` and pass `GestureDetectorType.Virtual` as the `detectorType` argument in `createNativeWrapper`.
 
 ### Replaced types
 
