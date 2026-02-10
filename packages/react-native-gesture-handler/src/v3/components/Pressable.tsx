@@ -15,6 +15,7 @@ import {
   LayoutChangeEvent,
   Platform,
   StyleProp,
+  View,
   ViewStyle,
 } from 'react-native';
 import {
@@ -362,25 +363,27 @@ const Pressable = (props: PressableProps) => {
 
   return (
     <GestureDetector gesture={gesture}>
-      <PureNativeButton
-        {...remainingProps}
-        onLayout={setDimensions}
-        accessible={accessible !== false}
-        hitSlop={appliedHitSlop}
-        enabled={disabled !== true}
-        touchSoundDisabled={android_disableSound ?? undefined}
-        rippleColor={rippleColor}
-        rippleRadius={android_ripple?.radius ?? undefined}
-        style={[pointerStyle, styleProp]}
-        testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
-        testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
-        testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
-        testOnly_onLongPress={IS_TEST_ENV ? onLongPress : undefined}>
-        {childrenProp}
-        {__DEV__ ? (
-          <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
-        ) : null}
-      </PureNativeButton>
+      <View>
+        <PureNativeButton
+          {...remainingProps}
+          onLayout={setDimensions}
+          accessible={accessible !== false}
+          hitSlop={appliedHitSlop}
+          enabled={disabled !== true}
+          touchSoundDisabled={android_disableSound ?? undefined}
+          rippleColor={rippleColor}
+          rippleRadius={android_ripple?.radius ?? undefined}
+          style={[pointerStyle, styleProp]}
+          testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
+          testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
+          testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
+          testOnly_onLongPress={IS_TEST_ENV ? onLongPress : undefined}>
+          {childrenProp}
+          {__DEV__ ? (
+            <PressabilityDebugView color="red" hitSlop={normalizedHitSlop} />
+          ) : null}
+        </PureNativeButton>
+      </View>
     </GestureDetector>
   );
 };
