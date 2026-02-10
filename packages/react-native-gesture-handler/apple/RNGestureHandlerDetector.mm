@@ -53,11 +53,11 @@
 
     for (const auto handler : props.handlerTags) {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
-      [handlerManager.registry detachHandlerWithTag:handlerTag];
+      [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
     }
     for (const auto &child : _attachedVirtualHandlers) {
       for (id handlerTag : child.second) {
-        [handlerManager.registry detachHandlerWithTag:handlerTag];
+        [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
       }
     }
     _attachedVirtualHandlers.clear();
@@ -232,7 +232,7 @@
   }
 
   for (const id tag : handlersToDetach) {
-    [handlerManager.registry detachHandlerWithTag:tag];
+    [handlerManager.registry detachHandlerWithTag:tag fromHostDetector:self];
     [attachedHandlers removeObject:tag];
     [_nativeHandlers removeObject:tag];
   }
@@ -276,7 +276,7 @@
 
   for (const NSNumber *tag : virtualChildrenToDetach) {
     for (id handlerTag : _attachedVirtualHandlers[tag.intValue]) {
-      [handlerManager.registry detachHandlerWithTag:handlerTag];
+      [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
     }
     _attachedVirtualHandlers.erase(tag.intValue);
   }
@@ -326,7 +326,7 @@
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   for (NSNumber *handlerTag in _nativeHandlers) {
-    [[handlerManager registry] detachHandlerWithTag:handlerTag];
+    [[handlerManager registry] detachHandlerWithTag:handlerTag fromHostDetector:self];
     [_attachedHandlers removeObject:handlerTag];
   }
 }
