@@ -28,9 +28,22 @@ void RNGestureHandlerDetectorShadowNode::initialize() {
         children.size() == 1 &&
         "RNGestureHandlerDetector received more than one child");
 
-    const auto clonedChild = children[0]->clone({});
-    replaceChild(*children[0], clonedChild);
+    // Will clone the child and ensure it's not flattened
+    replaceChild(*children[0], children[0], 0);
   }
+}
+
+void RNGestureHandlerDetectorShadowNode::appendChild(
+    const std::shared_ptr<const ShadowNode> &child) {
+  YogaLayoutableShadowNode::appendChild(unflattenNode(child));
+}
+
+void RNGestureHandlerDetectorShadowNode::replaceChild(
+    const ShadowNode &oldChild,
+    const std::shared_ptr<const ShadowNode> &newChild,
+    size_t suggestedIndex) {
+  YogaLayoutableShadowNode::replaceChild(
+      oldChild, unflattenNode(newChild), suggestedIndex);
 }
 
 void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
@@ -67,6 +80,20 @@ void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
   auto childmetrics = child->getLayoutMetrics();
   childmetrics.frame.origin = Point{};
   mutableChild->setLayoutMetrics(childmetrics);
+}
+
+std::shared_ptr<const ShadowNode>
+RNGestureHandlerDetectorShadowNode::unflattenNode(
+    const std::shared_ptr<const ShadowNode> &node) {
+  auto clonedNode = node->clone({});
+  auto clonedNodeWithProtectedAccess =
+      std::static_pointer_cast<RNGestureHandlerDetectorShadowNode>(clonedNode);
+
+  clonedNodeWithProtectedAccess->traits_.set(ShadowNodeTraits::FormsView);
+  clonedNodeWithProtectedAccess->traits_.set(
+      ShadowNodeTraits::FormsStackingContext);
+
+  return clonedNode;
 }
 
 } // namespace facebook::react
