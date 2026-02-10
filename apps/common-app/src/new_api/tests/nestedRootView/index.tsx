@@ -77,7 +77,7 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={commonStyles.centerView}>
       <Text style={[commonStyles.header, styles.description]}>
         DraggableBox inside modal should be moveable
       </Text>
@@ -106,11 +106,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     borderWidth: 2,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: COLORS.offWhite,
   },
   description: {
     margin: 20,

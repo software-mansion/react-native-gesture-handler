@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -9,7 +9,7 @@ import Animated, {
 import {
   GestureDetector,
   PointerType,
-  usePanGesture,
+  useLongPressGesture,
 } from 'react-native-gesture-handler';
 import {
   commonStyles,
@@ -19,25 +19,26 @@ import {
 } from '../../../common';
 
 const Colors = {
+  Default: COLORS.NAVY,
   Touch: COLORS.GREEN,
   Stylus: COLORS.YELLOW,
   Mouse: COLORS.PURPLE,
 };
 
-interface CircleProps {
+interface BoxProps {
   feedbackRef: React.RefObject<FeedbackHandle | null>;
 }
 
-function Circle({ feedbackRef }: CircleProps) {
+function Box({ feedbackRef }: BoxProps) {
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
 
   const progress = useSharedValue(0);
 
-  const currentColor = useSharedValue(Colors.Touch);
-  const prevColor = useSharedValue(Colors.Touch);
+  const currentColor = useSharedValue(Colors.Default);
+  const prevColor = useSharedValue(Colors.Default);
 
-  const style = useAnimatedStyle(() => {
+  const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: translationX.value },
@@ -51,7 +52,7 @@ function Circle({ feedbackRef }: CircleProps) {
     };
   });
 
-  const panGesture = usePanGesture({
+  const panGesture = useLongPressGesture({
     onActivate: (e) => {
       progress.value = 0;
       prevColor.value = currentColor.value;
@@ -70,22 +71,29 @@ function Circle({ feedbackRef }: CircleProps) {
           currentColor.value = Colors.Mouse;
           typeLabel = 'Mouse';
           break;
+        default:
+          currentColor.value = Colors.Touch;
       }
 
       feedbackRef.current?.showMessage(typeLabel);
       progress.value = withTiming(1, { duration: 250 });
     },
-    onUpdate: (e) => {
-      translationX.value += e.changeX;
-      translationY.value += e.changeY;
+    onDeactivate: () => {
+      translationX.value = withTiming(0);
+      translationY.value = withTiming(0);
+
+      prevColor.value = currentColor.value;
+      currentColor.value = Colors.Default;
+      progress.value = 0;
+      progress.value = withTiming(1, { duration: 500 });
     },
-    minDistance: 0,
+    minDuration: 0,
     runOnJS: true,
   });
 
   return (
     <GestureDetector gesture={panGesture}>
-      <Animated.View style={[styles.circle, style]} />
+      <Animated.View style={[commonStyles.box, animatedStyle]} />
     </GestureDetector>
   );
 }
@@ -95,25 +103,8 @@ export default function Example() {
 
   return (
     <View style={commonStyles.centerView}>
-      <View style={styles.circleContainer}>
-        <Circle feedbackRef={feedbackRef} />
-        <Feedback ref={feedbackRef} />
-      </View>
+      <Box feedbackRef={feedbackRef} />
+      <Feedback ref={feedbackRef} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  circleContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  circle: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: COLORS.NAVY,
-  },
-});
