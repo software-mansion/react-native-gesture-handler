@@ -20,24 +20,14 @@ import ReanimatedDrawerLayout from 'react-native-gesture-handler/ReanimatedDrawe
 
 ### drawerType
 
-<CollapsibleCode 
-label="Show composed types definitions"
-expandedLabel="Hide composed types definitions"
-lineBounds={[0, 1]}
-src={`
+```ts
 drawerType?: DrawerType;
-
-export enum DrawerType {
-    FRONT,
-    BACK,
-    SLIDE,
-}
-`}/>
+```
 
 Specifies the way the drawer will be displayed.
 Accepts values of the `DrawerType` enum. Defaults to `FRONT`.
 
-| Type | Description |
+| `drawerType` | Description |
 | -- | -- |
 |`FRONT` | The drawer will be displayed above the content view. |
 |`BACK` | The drawer will be displayed below the content view, revealed by sliding away the content view. |

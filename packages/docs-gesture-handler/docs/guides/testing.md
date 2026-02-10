@@ -86,8 +86,6 @@ getByGestureTestId: (testID: string) => Gesture;
 Returns opaque data type associated with gesture. Gesture is found via [`testID`](/docs/gestures/use-pan-gesture#testid) attribute in rendered
 components.
 
-- `testID` - String identifying gesture.
-
 :::warning
 `testID` must be unique among components rendered in test.
 :::
