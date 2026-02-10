@@ -126,13 +126,13 @@ const config = {
   plugins: [
     ...[
       process.env.NODE_ENV === 'production' && '@docusaurus/plugin-debug',
+      process.env.NODE_ENV === 'production' && [
+        '@docusaurus/plugin-google-tag-manager',
+        {
+          containerId: 'GTM-PHF2NKVT',
+        },
+      ],
     ].filter(Boolean),
-    [
-      '@docusaurus/plugin-google-tag-manager',
-      {
-        containerId: 'GTM-PHF2NKVT',
-      },
-    ],
     async function reanimatedDocusaurusPlugin(context, options) {
       return {
         name: 'react-native-reanimated/docusaurus-plugin',
