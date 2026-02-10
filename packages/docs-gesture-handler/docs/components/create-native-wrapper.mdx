@@ -24,7 +24,7 @@ function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
   config: NativeWrapperProperties,
   detectorType: GestureDetectorType,
-): React.FC<P>
+): React.FC<P & NativeWrapperProperties>
 ```
 
 [`config`](#config) and [`detectorType`](#detectortype) parameters are optional. Their default values are described in their respective sections below.
