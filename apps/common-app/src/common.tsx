@@ -72,6 +72,14 @@ export const commonStyles = StyleSheet.create({
     justifyContent: 'center',
     textAlign: 'center',
   },
+  row: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 40,
+    padding: 20,
+  },
 });
 /* eslint-enable react-native/no-unused-styles */
 
@@ -93,7 +101,7 @@ const styles = StyleSheet.create({
     color: '#4A5568',
   },
   feedback: {
-    marginTop: 20,
+    marginVertical: 10,
     fontSize: 16,
     fontWeight: '600',
   },
