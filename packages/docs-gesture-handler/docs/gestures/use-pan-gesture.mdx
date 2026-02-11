@@ -143,7 +143,7 @@ Minimum distance the finger (or multiple finger) need to travel before the gestu
 minPointers: number | SharedValue<number>;
 ```
 
-A number of fingers that is required to be placed before gesture can activate. Should be a higher or equal to 0.
+A number of fingers that is required to be placed before gesture can activate. Should be higher or equal to 0.
 
 ### maxPointers
 
@@ -151,7 +151,7 @@ A number of fingers that is required to be placed before gesture can activate. S
 maxPointers: number | SharedValue<number>;
 ```
 
-When the given number of fingers is placed on the screen and gesture hasn't yet activated it will fail recognizing the gesture. Should be a higher or equal to 0.
+When the given number of fingers is placed on the screen and gesture hasn't yet activated it will fail recognizing the gesture. Should be higher or equal to 0.
 
 ### activateAfterLongPress
 
@@ -159,7 +159,7 @@ When the given number of fingers is placed on the screen and gesture hasn't yet 
 activateAfterLongPress: number | SharedValue<number>;
 ```
 
-Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to activate. If the finger is moved during that period, the gesture will fail. Should be a higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to activate the `Pan`.
+Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to activate. If the finger is moved during that period, the gesture will fail. Should be higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to activate the `Pan`.
 
 ### activeOffsetX
 
