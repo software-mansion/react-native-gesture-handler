@@ -6,7 +6,14 @@ sidebar_position: 6
 ---
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
-import simultaneous from '!!raw-loader!.//\_examples/simultaneous';
+
+import Competing from '!!raw-loader!.//\_examples/hooks/Competing';
+import Simultaneous from '!!raw-loader!.//\_examples/hooks/Simultaneous';
+import Exclusive from '!!raw-loader!.//\_examples/hooks/Exclusive';
+
+import RequireToFail from '!!raw-loader!.//\_examples/props/RequireToFail';
+import Block from '!!raw-loader!.//\_examples/props/Block';
+import SimultaneousWith from '!!raw-loader!.//\_examples/props/SimultaneousWith';
 
 RNGH3 simplifies gesture interaction through dedicated composition hooks and configuration properties. To choose the right approach, simply ask: Are all the gestures attached to the same component?
 
@@ -26,56 +33,7 @@ For example, lets say that you have a component that you want to make draggable 
 label="Show full example"
 expandedLabel="Hide full example"
 lineBounds={[9, 32]}
-src={`
-import { View, StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  usePanGesture,
-  useLongPressGesture,
-  GestureHandlerRootView,
-  useCompetingGestures,
-} from 'react-native-gesture-handler';
-
-export default function App() {
-  const panGesture = usePanGesture({
-    onUpdate: () => {
-      console.log('Pan');
-    },
-  });
-  const longPressGesture = useLongPressGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
-        console.log('Long Press');
-      }
-    },
-  });
-
-  const gesture = useCompetingGestures(panGesture, longPressGesture);
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={gesture}>
-        <View style={styles.box} />
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  box: {
-    height: 120,
-    width: 120,
-    backgroundColor: '#b58df1',
-    borderRadius: 20,
-    marginBottom: 30,
-  },
-});
-`}/>
+src={Competing}/>
 
 ### useSimultaneousGestures
 
@@ -85,13 +43,11 @@ For example, if you want to make a gallery app, you might want user to be able t
 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
-{/* We load from source because example contains string interpolation `${}` */}
-
 <CollapsibleCode 
 label="Show full example"
 expandedLabel="Hide full example"
 lineBounds={[14, 81]}
-src={simultaneous}/> 
+src={Simultaneous}/> 
 
 ### useExclusiveGestures
 
@@ -103,57 +59,7 @@ For example, if you want to make a component that responds to single tap as well
 label="Show full example"
 expandedLabel="Hide full example"
 lineBounds={[8, 35]}
-src={`
-import { StyleSheet, View } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  useTapGesture,
-  useExclusiveGestures,
-} from 'react-native-gesture-handler';
-
-export default function App() {
-  const singleTap = useTapGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
-        console.log('Single tap!');
-      }
-    },
-  });
-
-  const doubleTap = useTapGesture({
-    numberOfTaps: 2,
-    onDeactivate: (_, success) => {
-      if (success) {
-        console.log('Double tap!');
-      }
-    },
-  });
-
-  const taps = useExclusiveGestures(doubleTap, singleTap);
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={taps}>
-        <View style={styles.box} />
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  box: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'plum',
-  },
-});
-`}/>
+src={Exclusive}/> 
 
 
 ## Cross-component interactions
@@ -168,66 +74,7 @@ For example, you may want to have two nested components, both of them can be tap
 label="Show full example"
 expandedLabel="Hide full example"
 lineBounds={[8, 38]}
-src={`
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  useTapGesture,
-} from 'react-native-gesture-handler';
-
-export default function App() {
-  const innerTap = useTapGesture({
-    numberOfTaps: 2,
-    onDeactivate: (_, success) => {
-      if (success) {
-        console.log('inner tap');
-      }
-    },
-  });
-
-  const outerTap = useTapGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
-        console.log('outer tap');
-      }
-    },
-    requireToFail: innerTap,
-  });
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={outerTap}>
-        <View style={styles.outer}>
-          <GestureDetector gesture={innerTap}>
-            <View style={styles.inner} />
-          </GestureDetector>
-        </View>
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  outer: {
-    width: 250,
-    height: 250,
-    backgroundColor: 'lightblue',
-  },
-  inner: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'blue',
-    alignSelf: 'center',
-  },
-});
-`}/>
+src={RequireToFail}/>
 
 ### block
 
@@ -237,104 +84,7 @@ const styles = StyleSheet.create({
 label="Show full example"
 expandedLabel="Hide full example"
 lineBounds={[22, 86]}
-src={`
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  ScrollView,
-  NativeGesture,
-  usePinchGesture,
-} from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
-
-const ITEMS = ['red', 'green', 'blue', 'yellow'];
-
-type ItemProps = {
-  backgroundColor: string;
-  scrollGesture: NativeGesture | null;
-};
-
-function Item({ backgroundColor, scrollGesture }: ItemProps) {
-  const scale = useSharedValue(1);
-  const zIndex = useSharedValue(1);
-
-  const pinch = usePinchGesture({
-    onBegin: () => {
-      zIndex.value = 100;
-    },
-    onUpdate: (e) => {
-      scale.value *= e.scaleChange;
-    },
-    onFinalize: () => {
-      scale.value = withTiming(1, undefined, (finished) => {
-        if (finished) {
-          zIndex.value = 1;
-        }
-      });
-    },
-    block: scrollGesture ?? undefined,
-  });
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    zIndex: zIndex.value,
-  }));
-
-  return (
-    <GestureDetector gesture={pinch}>
-      <Animated.View
-        style={[
-          { backgroundColor: backgroundColor },
-          styles.item,
-          animatedStyles,
-        ]}
-      />
-    </GestureDetector>
-  );
-}
-
-export default function App() {
-  const [scrollGesture, setScrollGesture] = useState<NativeGesture | null>(
-    null
-  );
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={(gesture) => {
-          if (!scrollGesture || scrollGesture.tag !== gesture.tag) {
-            setScrollGesture(gesture);
-          }
-        }}>
-        {ITEMS.map((item) => (
-          <Item
-            backgroundColor={item}
-            key={item}
-            scrollGesture={scrollGesture}
-          />
-        ))}
-      </ScrollView>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    flex: 1,
-    aspectRatio: 1,
-  },
-});
-`}/>
+src={Block}/>
 
 ### simultaneousWith
 
@@ -344,62 +94,4 @@ const styles = StyleSheet.create({
 label="Show full example"
 expandedLabel="Hide full example"
 lineBounds={[8, 37]}
-src={`
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import {
-  GestureDetector,
-  GestureHandlerRootView,
-  useTapGesture,
-} from 'react-native-gesture-handler';
-
-export default function App() {
-  const innerTap = useTapGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
-        console.log('inner tap');
-      }
-    },
-  });
-
-  const outerTap = useTapGesture({
-    onDeactivate: (_, success) => {
-      if (success) {
-        console.log('outer tap');
-      }
-    },
-    simultaneousWith: innerTap,
-  });
-
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={outerTap}>
-        <View style={styles.outer}>
-          <GestureDetector gesture={innerTap}>
-            <View style={styles.inner} />
-          </GestureDetector>
-        </View>
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  outer: {
-    width: 250,
-    height: 250,
-    backgroundColor: 'lightblue',
-  },
-  inner: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'blue',
-    alignSelf: 'center',
-  },
-});
-`}/>
+src={SimultaneousWith}/>
