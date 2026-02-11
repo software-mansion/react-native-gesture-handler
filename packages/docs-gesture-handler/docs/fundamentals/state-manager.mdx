@@ -11,11 +11,11 @@ RNGH3 allows to manually control [gestures lifecycle](/docs/under-the-hood/state
 
 ## State management
 
-Manual state management is based on `handlerTag`. There are two ways of manual state control. Some gestures also support [`manualActivation`](#manualactivation) property, which blocks their automatic activation, event if they met specific criteria.
+Manual state management is based on `handlerTag`. There are two ways of manual state control. Some gestures also support [`manualActivation`](#manualactivation) property, which blocks their automatic activation, even if they meet their activation criteria.
 
 ### Inside gesture definition
 
-If you want to manipulate gesture's state in its callbacks, you can get `handlerTag` from event parameter. 
+If you want to manipulate gesture's state in its callbacks, you can get `handlerTag` from event parameter.
 
 <CollapsibleCode
 label="Show full example"

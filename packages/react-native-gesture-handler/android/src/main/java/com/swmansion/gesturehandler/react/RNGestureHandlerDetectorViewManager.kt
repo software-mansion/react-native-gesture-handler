@@ -43,7 +43,7 @@ class RNGestureHandlerDetectorViewManager :
   }
 
   override fun onDropViewInstance(view: RNGestureHandlerDetectorView) {
-    view.onViewDrop()
+    view.detachAllHandlers()
     super.onDropViewInstance(view)
   }
 
