@@ -63,7 +63,6 @@ export {
   BaseButton,
   RectButton,
   BorderlessButton,
-  PureNativeButton,
   Pressable,
   ScrollView,
   Switch,
