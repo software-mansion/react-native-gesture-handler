@@ -5,12 +5,15 @@ import {
   NativeViewHandlerData,
 } from '../hooks/gestures/native/useNativeGesture';
 
-export type NativeWrapperProperties<T> = CommonGestureConfig &
+export type WrapperSpecificProperties<T = unknown> = {
+  ref?: React.RefObject<T>;
+  onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
+    gesture: NativeGesture
+  ) => void;
+};
+
+export type NativeWrapperProperties<T = unknown> = CommonGestureConfig &
   GestureCallbacks<NativeViewHandlerData> &
   NativeGestureNativeProperties &
-  ExternalRelations & {
-    ref?: React.RefObject<T>;
-    onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
-      gesture: NativeGesture
-    ) => void;
-  };
+  ExternalRelations &
+  WrapperSpecificProperties<T>;

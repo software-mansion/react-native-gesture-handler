@@ -7,7 +7,7 @@ import GestureHandlerButton, {
 export interface RawButtonProps
   extends ButtonProps,
     Omit<
-      NativeWrapperProperties<typeof GestureHandlerButton>,
+      NativeWrapperProperties<ReturnType<typeof GestureHandlerButton>>,
       'hitSlop' | 'enabled'
     > {}
 

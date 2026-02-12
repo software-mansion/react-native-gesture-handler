@@ -3,13 +3,18 @@ import React, { useEffect } from 'react';
 import { NativeWrapperProps } from './hooks/utils';
 import { useNativeGesture } from './hooks/gestures';
 import { NativeDetector } from './detectors/NativeDetector';
-import type { NativeWrapperProperties } from './types/NativeWrapperType';
+import type {
+  NativeWrapperProperties,
+  WrapperSpecificProperties,
+} from './types/NativeWrapperType';
 import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 
 export default function createNativeWrapper<R = unknown, P = unknown>(
   Component: React.ComponentType<P>,
-  config: Readonly<NativeWrapperProperties<R>> = {},
+  config: Readonly<
+    Omit<NativeWrapperProperties<R>, keyof WrapperSpecificProperties<R>>
+  > = {},
   detectorType: GestureDetectorType = GestureDetectorType.Native
 ) {
   const ComponentWrapper = (props: P & NativeWrapperProperties<R>) => {
