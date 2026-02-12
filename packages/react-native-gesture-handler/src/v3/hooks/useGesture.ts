@@ -90,6 +90,7 @@ export function useGesture<THandlerData, TConfig>(
 
   useEffect(() => {
     return () => {
+      currentGestureRef.current = { type: '', handlerTag: -1 };
       NativeProxy.dropGestureHandler(handlerTag);
       scheduleFlushOperations();
     };
