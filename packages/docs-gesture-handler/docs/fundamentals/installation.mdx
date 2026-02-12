@@ -19,9 +19,9 @@ import { GestureHandlerCompatibility } from '../../components/Compatibility';
 
 ### Running gestures on the UI thread
 
-In order to respond to gestures on UI thread, you also have to install [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) along with [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+Using Reanimated is the recommended method of handling gesture-driven interactions on the UI thread. In order to use it, you need to install [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) along with [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). Another approach is to use React Native's [Animated API](https://reactnative.dev/docs/animated).
 
-While using Reanimated is the recommended method for responding to gestures on the UI thread, you can also use the [Animated API](https://reactnative.dev/docs/animated). For more details on how to implement these, refer to the dedicated sections for [Reanimated](/docs/fundamentals/reanimated-interactions) and [Animated](/docs/fundamentals/animated-interactions).
+For more details on how to implement these, refer to the dedicated sections for [Reanimated](/docs/fundamentals/reanimated-interactions) and [Animated](/docs/fundamentals/animated-interactions).
 
 ## Setup
 
