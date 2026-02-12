@@ -126,6 +126,12 @@ const config = {
   plugins: [
     ...[
       process.env.NODE_ENV === 'production' && '@docusaurus/plugin-debug',
+      process.env.NODE_ENV === 'production' && [
+        '@docusaurus/plugin-google-tag-manager',
+        {
+          containerId: 'GTM-PHF2NKVT',
+        },
+      ],
     ].filter(Boolean),
     async function reanimatedDocusaurusPlugin(context, options) {
       return {
