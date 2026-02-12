@@ -25,6 +25,10 @@ Keep `GestureHandlerRootView` as close to the actual root of the app as possible
 When integrating with navigation libraries, wrapping the navigator component with `GestureHandlerRootView` is generally sufficient. However, if you encounter issues with gestures not functioning properly, you might need to wrap each individual screen component with `GestureHandlerRootView` as well.
 :::
 
+:::tip
+If you're using Gesture Handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
+:::
+
 ## Styling
 
 `GestureHandlerRootView` can be thought of as a regular `View` component, therefore it accepts all the same props, including [`style`](https://reactnative.dev/docs/0.81/view-style-props).
@@ -35,10 +39,10 @@ If you don't provide anything to the `style` prop, it will default to `{ flex: 1
 
 In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones. If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway. 
 
-## Using GestureHandlerRootView with third party libraries
+## unstable_forceActive
+
+```ts
+unstable_forceActive?: boolean;
+```
 
 If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView unstable_forceActive>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
-
-:::tip
-If you're using Gesture Handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
-:::
