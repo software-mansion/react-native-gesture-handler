@@ -137,7 +137,7 @@ Opacity applied to the underlay when button is in active state.
 
 ## BorderlessButton
 
-This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](/docs/components/buttons#basebutton), it accepts the following:
+This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](#basebutton), it accepts the following:
 
 ### activeOpacity (**iOS only**)
 
@@ -171,7 +171,7 @@ const AccessibleButton = () => (
 
 ## Design patterns
 
-Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration theirs design concepts.
+Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their design concepts.
 
 If you wish to get specific information about platforms design patterns, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/components/menus-and-actions/buttons) and [Material.io guideline](https://material.io/components/buttons#text-button), which widely describe how to implement coherent design.
 

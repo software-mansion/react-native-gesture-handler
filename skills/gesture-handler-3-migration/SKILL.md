@@ -167,7 +167,7 @@ Don't suggest replacing buttons from Gesture Handler with components from React 
 
 The implementation of buttons has been updated, resolving most button-related issues. They have also been internally rewritten to utilize the new hook API. The legacy JS implementations of button components are still accessible but have been renamed with the prefix `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`. Those still use the new native component under the hood.
 
-`PureNativeButton` has been removed. If encountered, inform the user that it has been removed and let them decide how to handle that case. They can achieve similar funcionality with other buttons.
+`PureNativeButton` has been removed. If encountered, inform the user that it has been removed and let them decide how to handle that case. They can achieve similar functionality with other buttons.
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
 
