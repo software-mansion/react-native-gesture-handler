@@ -44,6 +44,8 @@ export const commonStyles = StyleSheet.create({
     width: 150,
     borderRadius: 20,
     marginBottom: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   ball: {
     height: 120,
