@@ -85,7 +85,6 @@ export {
   LegacyBaseButton,
   LegacyRectButton,
   LegacyBorderlessButton,
-  LegacyPureNativeButton,
 } from './components/GestureButtons';
 
 export type {
