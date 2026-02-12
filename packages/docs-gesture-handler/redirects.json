@@ -1,0 +1,48 @@
+{
+  "redirects": [
+    {
+      "to": "/docs/gestures/use-pan-gesture",
+      "from": "/docs/gestures/pan-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-tap-gesture",
+      "from": "/docs/gestures/tap-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-long-press-gesture",
+      "from": "/docs/gestures/long-press-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-rotation-gesture",
+      "from": "/docs/gestures/rotation-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-pinch-gesture",
+      "from": "/docs/gestures/pinch-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-fling-gesture",
+      "from": "/docs/gestures/fling-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-hover-gesture",
+      "from": "/docs/gestures/hover-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-native-gesture",
+      "from": "/docs/gestures/native-gesture"
+    },
+    {
+      "to": "/docs/gestures/use-manual-gesture",
+      "from": "/docs/gestures/manual-gesture"
+    },
+    {
+      "to": "/docs/2.x/guides/upgrading-to-2",
+      "from": "/docs/guides/upgrading-to-2"
+    },
+    {
+      "to": "/docs/fundamentals/gesture-detectors",
+      "from": "/docs/gestures/gesture-detector"
+    }
+  ]
+}
