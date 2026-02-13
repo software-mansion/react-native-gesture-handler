@@ -8,7 +8,6 @@ const darkCodeTheme = require('./src/theme/CodeBlock/highlighting-dark.js');
 const webpack = require('webpack');
 
 const redirectsData = require('./redirects.json');
-const { red } = require('@mui/material/colors');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
