@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
   },
 
   versionBadge: {
-    backgroundColor: 'pink',
+    backgroundColor: '#DB7093',
   },
 });
