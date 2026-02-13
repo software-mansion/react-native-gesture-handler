@@ -127,6 +127,13 @@ export interface SwipeableProps {
   ) => void;
 
   /**
+   * Called when action panel drag ends.
+   */
+  onSwipeableDragEnd?: (
+    direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+  ) => void;
+
+  /**
    * Called when action panel starts being shown on dragging to open.
    */
   onSwipeableOpenStartDrag?: (
