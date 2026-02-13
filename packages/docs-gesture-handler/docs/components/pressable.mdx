@@ -7,133 +7,237 @@ sidebar_label: Pressable
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery';
 
-<GifGallery>
-  <img src={useBaseUrl('gifs/pressable.gif')} width="70%" />
-</GifGallery>
-
 :::info
 This component is a drop-in replacement for the `Pressable` component.
 :::
 
+<GifGallery>
+  <img src={useBaseUrl('gifs/pressable.gif')} width="70%" />
+</GifGallery> 
+
 `Pressable` is a component that can detect various stages of tap, press, and hover interactions on any of its children.
 
-### Usage:
+To use `Pressable`, ensure that your app is wrapped in `GestureHandlerRootView` and import it as follows:
 
-To use `Pressable`, import it in the following way:
-
-```js
+```ts
 import { Pressable } from 'react-native-gesture-handler';
 ```
 
 ## Properties
 
-### `children`
+### children
 
-either children or a render function that receives a boolean reflecting whether
-the component is currently pressed.
+```ts
+children?:
+  | React.ReactNode
+  | ((state: PressableStateCallbackType) => React.ReactNode);
+```
 
-### `style`
+Either children or a render prop that receives a boolean reflecting whether the component is currently pressed.
 
-either view styles or a function that receives a boolean reflecting whether
-the component is currently pressed and returns view styles.
+### style
 
-### `onPress`
+```ts
+style?:
+  | StyleProp<ViewStyle>
+  | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+```
 
-called after `onPressOut` when a single tap gesture is detected.
+Either view styles or a function that receives a boolean reflecting whether the component is currently pressed and returns view styles.
 
-### `onPressIn`
+### onPress
 
-called before `onPress` when a touch is engaged.
+```ts
+onPress?: null | ((event: PressableEvent) => void);
+```
 
-### `onPressOut`
+Called after [`onPressOut`](#onpressout) when a single tap gesture is detected. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
-called before `onPress` when a touch is released.
+### onPressIn
 
-### `onLongPress`
+```ts
+onPressIn?: null | ((event: PressableEvent) => void);
+```
 
-called immediately after pointer has been down for at least `delayLongPress` milliseconds (`500` ms by default).
+Called before `onPress` when a touch is engaged. Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
-After `onLongPress` has been called, `onPressOut` will be called as soon as the pointer is lifted and `onPress` will not be called at all.
+### onPressOut
 
-### `cancelable`
+```ts
+onPressOut?: null | ((event: PressableEvent) => void);
+```
 
-whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
+Called before `onPress` when a touch is released (before [`onPress`](#onpress)). Details about the event object can be found in the [PressableEvent](#pressableevent) section below.
 
-### `onHoverIn` (Web only)
+### onLongPress
 
-called when pointer is hovering over the element.
+```ts
+onLongPress?: null | ((event: PressableEvent) => void);
+```
 
-### `onHoverOut` (Web only)
+Called immediately after pointer has been down for at least [`delayLongPress`](#delaylongpress) milliseconds.
 
-called when pointer stops hovering over the element.
+After `onLongPress` has been called, [`onPressOut`](#onpressout) will be called as soon as the pointer is lifted and [`onPress`](#onpress) will not be called at all.
 
-### `delayHoverIn` (Web only)
+### cancelable
 
-duration to wait after hover in before calling `onHoverIn`.
+```ts
+cancelable?: null | boolean;
+```
 
-### `delayHoverOut` (Web only)
+Whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
 
-duration to wait after hover out before calling `onHoverOut`.
+### onHoverIn (Web only)
 
-### `delayLongPress`
+```ts
+onHoverIn?: null | ((event: PressableEvent) => void);
+```
 
-duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
+Called when pointer is hovering over the element.
 
-### `disabled`
+### onHoverOut (Web only)
 
-whether the `Pressable` behavior is disabled.
+```ts
+onHoverOut?: null | ((event: PressableEvent) => void);
+```
 
-### `hitSlop` (Android & iOS only)
+Called when pointer stops hovering over the element.
 
-additional distance outside of the view in which a press is detected and `onPressIn` is triggered.
+### delayHoverIn (Web only)
 
-Accepts values of type `number` or [`Rect`](https://reactnative.dev/docs/rect)
+```ts
+delayHoverIn?: number | null;
+```
 
-### `pressRetentionOffset` (Android & iOS only)
+Duration to wait after hover in before calling `onHoverIn`.
 
-additional distance outside of the view (or `hitSlop` if present) in which a touch is considered a
-press before `onPressOut` is triggered.
+### delayHoverOut (Web only)
 
-Accepts values of type `number` or [`Rect`](https://reactnative.dev/docs/rect)
+```ts
+delayHoverOut?: number | null;
+```
 
-### `android_disableSound` (Android only)
+Duration to wait after hover out before calling `onHoverOut`.
 
-if `true`, doesn't play system sound on touch.
+### delayLongPress
 
-### `android_ripple` (Android only)
+```ts
+delayLongPress?: null | number;
+```
 
-enables the Android ripple effect and configures its color, radius and other parameters.
+Duration (in milliseconds) from `onPressIn` before `onLongPress` is called. Default value is `500` ms.
 
-Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig)
+### disabled
 
-### `testOnly_pressed`
+```ts
+disabled?: null | boolean;
+```
 
-used only for documentation or testing (e.g. snapshot testing).
+Whether the `Pressable` behavior is disabled.
 
-### `unstable_pressDelay`
+### hitSlop (Android & iOS only)
 
-duration (in milliseconds) to wait after press down before calling `onPressIn`.
+```ts
+hitSlop?: null | Insets | number;
+```
 
-### Example:
+Additional distance outside of the view in which a press is detected and [`onPressIn`](#onpressin) is triggered.
 
-See the full [pressable example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/new_api/pressable/index.tsx) from `GestureHandler` example app.
+The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
-import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample';
+### pressRetentionOffset (Android & iOS only)
 
-```js
+```ts
+pressRetentionOffset?: null | Insets | number;
+```
+
+Additional distance outside of the view (or [`hitSlop`](#hitslop) if present) in which a touch is considered a
+press before [`onPressOut`](#onpressout) is triggered.
+
+The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
+
+### android_disableSound (Android only)
+
+```ts
+android_disableSound?: null | boolean;
+```
+
+If `true`, doesn't play system sound on touch.
+
+### android_ripple (Android only)
+
+```ts
+android_ripple?: null | PressableAndroidRippleConfig;
+```
+
+Enables the Android [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) effect and configures its color, radius and other parameters.
+
+Accepts values of type [`RippleConfig`](https://reactnative.dev/docs/pressable#rippleconfig).
+
+### testOnly_pressed
+
+```ts
+testOnly_pressed?: null | boolean;
+```
+
+Used only for documentation or testing (e.g. snapshot testing).
+
+### unstable_pressDelay
+
+```ts
+unstable_pressDelay?: number | undefined;
+```
+
+Duration (in milliseconds) to wait after press down before calling [`onPressIn`](#onpressin).
+
+## PressableEvent
+
+All `Pressable` callbacks receive an event object as a parameter, which is of type `PressableEvent` and has the following structure:
+
+```ts
+export type PressableEvent = { nativeEvent: InnerPressableEvent };
+
+export type InnerPressableEvent = {
+  changedTouches: InnerPressableEvent[];
+  identifier: number;
+  locationX: number;
+  locationY: number;
+  pageX: number;
+  pageY: number;
+  target: number;
+  timestamp: number;
+  touches: InnerPressableEvent[];
+  force?: number;
+};
+```
+
+## Example
+
+See the full example in [Gesture Handler repository](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/legacy/v2_api/pressable/index.tsx).
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[5, 20]}
+src={`
 import { View, Text, StyleSheet } from 'react-native';
-import { Pressable } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  Pressable,
+} from 'react-native-gesture-handler';
 
 export default function Example() {
   return (
-    <Pressable
-      style={({ pressed }) => (pressed ? styles.highlight : styles.pressable)}
-      hitSlop={20}
-      pressRetentionOffset={20}>
-      <View style={styles.textWrapper}>
-        <Text style={styles.text}>Pressable!</Text>
-      </View>
-    </Pressable>
+    <GestureHandlerRootView>
+      <Pressable
+        style={({ pressed }) => (pressed ? styles.highlight : styles.pressable)}
+        hitSlop={20}
+        pressRetentionOffset={20}>
+        <View style={styles.textWrapper}>
+          <Text style={styles.text}>Pressable!</Text>
+        </View>
+      </Pressable>
+    </GestureHandlerRootView>
   );
 }
 
@@ -159,4 +263,4 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
-```
+`}/>

@@ -5,7 +5,7 @@ sidebar_label: Touchables
 ---
 
 :::warning
-Touchables will be removed in the future version of Gesture Handler. Use Pressable instead.
+Touchables will be removed in the future version of Gesture Handler. Use [`Pressable`](/docs/components/pressable) instead.
 :::
 
 Gesture Handler library provides an implementation of RN's touchable components that are based on [native buttons](buttons.mdx) and does not rely on JS responder system utilized by RN. Our touchable implementation follows the same API and aims to be a drop-in replacement for touchables available in React Native.
@@ -28,12 +28,12 @@ Our intention was to make switch for these touchables as simple as possible. In 
 need only to change imports of touchables.
 
 :::info
-Gesture Handler's TouchableOpacity uses native driver for animations by default. If this causes problems for you, you can set `useNativeAnimations` prop to false.
+Gesture Handler's `TouchableOpacity` uses native driver for animations by default. If this causes problems for you, you can set `useNativeAnimations` prop to false.
 :::
 
 ### Example:
 
-```javascript
+```ts
 import {
   TouchableNativeFeedback,
   TouchableHighlight,
@@ -44,7 +44,7 @@ import {
 
 has to be replaced with:
 
-```javascript
+```ts
 import {
   TouchableNativeFeedback,
   TouchableHighlight,
@@ -53,4 +53,4 @@ import {
 } from 'react-native-gesture-handler';
 ```
 
-For a comparison of both touchable implementations see our [touchables example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/release_tests/touchables/index.tsx)
+For a comparison of both touchable implementations see our [touchables example](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/legacy/release_tests/touchables/index.tsx)
