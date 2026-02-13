@@ -114,7 +114,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     sectionTitle: 'Tests',
     data: [
       { name: 'RectButton', component: RectButtonExample },
-      { name: 'Two Finger Pan', component: TwoFingerPanExample },
+      { name: 'Two Finger Trackpad Pan', component: TwoFingerPanExample },
       {
         name: 'Web Styles Reset',
         component: WebStylesResetExample,
