@@ -14,50 +14,32 @@ const PRESS_RETENTION_OFFSET = HIT_SLOP;
 export function HitSlopExample() {
   const feedbackRef = useRef<FeedbackHandle>(null);
 
-  const pressIn = () => {
-    feedbackRef.current?.showMessage('Pressable pressed in');
-  };
-
-  const pressOut = () => {
-    feedbackRef.current?.showMessage('Pressable pressed out');
-  };
-
-  const press = () => {
-    feedbackRef.current?.showMessage('Pressable pressed');
-  };
-
-  const hoverIn = () => {
-    feedbackRef.current?.showMessage('Hovered in');
-  };
-
-  const hoverOut = () => {
-    feedbackRef.current?.showMessage('Hovered out');
-  };
-
-  const longPress = () => {
-    feedbackRef.current?.showMessage('Long pressed');
-  };
+  const show = (msg: string) => feedbackRef.current?.showMessage(msg);
 
   return (
-    <View style={[commonStyles.centerView]}>
+    <View style={commonStyles.centered}>
       <View style={styles.retentionIndicator}>
         <View style={styles.slopIndicator}>
-          <View style={styles.container}>
+          <View style={styles.buttonContainer}>
             <TestingBase
               style={styles.pressable}
               hitSlop={HIT_SLOP}
               pressRetentionOffset={PRESS_RETENTION_OFFSET}
-              onPressIn={() => pressIn()}
-              onPressOut={() => pressOut()}
-              onPress={() => press()}
-              onHoverIn={() => hoverIn()}
-              onHoverOut={() => hoverOut()}
-              onLongPress={() => longPress()}
+              onPressIn={() => show('Pressable pressed in')}
+              onPressOut={() => show('Pressable pressed out')}
+              onPress={() => show('Pressable pressed')}
+              onHoverIn={() => show('Hovered in')}
+              onHoverOut={() => show('Hovered out')}
+              onLongPress={() => show('Long pressed')}
             />
           </View>
-          <Text style={styles.text}>Hit Slop</Text>
+          <Text style={[commonStyles.caption, styles.indicatorLabel]}>
+            Hit Slop
+          </Text>
         </View>
-        <Text style={styles.text}>Retention Offset</Text>
+        <Text style={[commonStyles.caption, styles.indicatorLabel]}>
+          Retention Offset
+        </Text>
       </View>
       <Feedback ref={feedbackRef} />
     </View>
@@ -65,38 +47,35 @@ export function HitSlopExample() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  buttonContainer: {
     alignItems: 'center',
-    gap: 40,
+    gap: 20,
+    paddingVertical: 20,
   },
   pressable: {
     backgroundColor: COLORS.PURPLE,
-    width: 100,
-    height: 100,
-    borderRadius: 20,
+    width: 80,
+    height: 80,
+    borderRadius: 12,
   },
-  text: {
+  indicatorLabel: {
     alignSelf: 'flex-end',
+    marginRight: 8,
     marginBottom: 4,
-    marginRight: 6,
-    marginTop: 12,
-    color: COLORS.GRAY,
-    fontWeight: 'bold',
   },
   slopIndicator: {
-    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     width: 100 + HIT_SLOP * 2,
     borderRightWidth: 2,
     borderColor: COLORS.KINDA_BLUE,
   },
   retentionIndicator: {
-    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     width: 180 + PRESS_RETENTION_OFFSET * 2,
     borderRightWidth: 2,
     borderColor: COLORS.GRAY,
-    margin: 20,
+    marginVertical: 20,
   },
 });

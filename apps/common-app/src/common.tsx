@@ -32,6 +32,21 @@ export interface ExamplesSection {
   data: Example[];
 }
 
+export const COLORS = {
+  offWhite: '#f8f9ff',
+  headerSeparator: '#eef0ff',
+  PURPLE: '#b58df1',
+  NAVY: '#001A72',
+  RED: '#A41623',
+  YELLOW: '#F2AF29',
+  GREEN: '#0F956F',
+  GRAY: '#ADB1C2',
+  KINDA_RED: '#FFB2AD',
+  KINDA_YELLOW: '#FFF096',
+  KINDA_GREEN: '#C4E7DB',
+  KINDA_BLUE: '#A0D5EF',
+};
+
 /* eslint-disable react-native/no-unused-styles */
 export const commonStyles = StyleSheet.create({
   centerView: {
@@ -81,6 +96,17 @@ export const commonStyles = StyleSheet.create({
     flexDirection: 'row',
     gap: 40,
     padding: 20,
+  },
+  centered: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  caption: {
+    fontSize: 12,
+    color: COLORS.GRAY,
+    fontWeight: '600',
+    marginTop: 4,
   },
 });
 /* eslint-enable react-native/no-unused-styles */
@@ -205,21 +231,6 @@ export const Feedback = ({ duration = 1000, ref }: FeedbackProps) => {
       {text}
     </Animated.Text>
   );
-};
-
-export const COLORS = {
-  offWhite: '#f8f9ff',
-  headerSeparator: '#eef0ff',
-  PURPLE: '#b58df1',
-  NAVY: '#001A72',
-  RED: '#A41623',
-  YELLOW: '#F2AF29',
-  GREEN: '#0F956F',
-  GRAY: '#ADB1C2',
-  KINDA_RED: '#FFB2AD',
-  KINDA_YELLOW: '#FFF096',
-  KINDA_GREEN: '#C4E7DB',
-  KINDA_BLUE: '#A0D5EF',
 };
 
 const LOREM_IPSUM = `

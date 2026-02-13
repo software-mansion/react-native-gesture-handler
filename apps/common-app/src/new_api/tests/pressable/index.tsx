@@ -23,7 +23,7 @@ const TestingEntry = ({
 }: TestingEntryProps) => (
   <View style={commonStyles.subcontainer}>
     <View style={styles.data}>
-      <View style={commonStyles.centerView}>
+      <View style={commonStyles.centered}>
         <Text style={commonStyles.header}>{title}</Text>
         {platform && <Text style={styles.code}>{platform}</Text>}
       </View>
@@ -69,10 +69,7 @@ export default function Example() {
 
 const styles = StyleSheet.create({
   data: {
-    flex: 1,
-    alignSelf: 'center',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    marginBottom: 10,
   },
   code: {
     fontSize: 16,
