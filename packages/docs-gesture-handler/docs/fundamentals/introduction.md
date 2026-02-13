@@ -10,9 +10,9 @@ Gesture Handler provides a declarative API exposing the native platform's touch 
 
 The main benefits of using React Native Gesture Handler are:
 
-- A way to use a platform's native touch handling system for recognizing gestures (like pinch, rotation, pan and a few others).
-- The ability to define relations between gestures to ensure gestures, and possibly native components, will not conflict with each other.
-- Mechanisms to use touchable components that run in native thread and follow platform default behavior; e.g. in the event they are in a scrollable component, turning into pressed state is slightly delayed to prevent it from highlighting when you fling.
+- A way to use a platform's native touch handling system for recognizing gestures (like [pinch](/docs/gestures/use-pinch-gesture), [rotation](/docs/gestures/use-rotation-gesture), [pan](/docs/gestures/use-pan-gesture) and a few others).
+- The ability to define [relations between gestures](/docs/fundamentals/gesture-composition) to ensure gestures, and possibly native components, will not conflict with each other.
+- Mechanisms for components that run in native thread and follow platform default behavior, such as delaying the transition to a pressed state within scrollable components to prevent highlighting during a quick scroll or fling.
 - Close integration with [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) to process touch events on the UI thread.
 - Support for different input devices like touch screens, pens and mice.
 - Ability to include any native component into the Gesture Handler's touch system, making it work alongside your gestures.
@@ -46,7 +46,7 @@ All PRs are welcome, but talk to us before you start working on something big.
 The easiest way to get started with contributing code is by:
 
 - Reviewing the list of [open issues](https://github.com/software-mansion/react-native-gesture-handler/issues) and trying to solve the one that seem approachable to you.
-- Updating the [documentation](https://github.com/software-mansion/react-native-gesture-handler/blob/main/docs) whenever you see some information is unclear, missing or out of date.
+- Updating the [documentation](https://github.com/software-mansion/react-native-gesture-handler/tree/main/packages/docs-gesture-handler) whenever you see some information is unclear, missing or out of date.
 
 Code is only one way how you can contribute. You may want to consider [replying on issues](https://github.com/software-mansion/react-native-gesture-handler/issues) if you know how to help.
 

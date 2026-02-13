@@ -11,11 +11,19 @@ import { GestureHandlerCompatibility } from '../../components/Compatibility';
 
 ## Requirements
 
+### Compatibility with React Native versions
+
 `react-native-gesture-handler` supports the three latest minor releases of `react-native`.
 
 <GestureHandlerCompatibility spacerAfterIndex={1} />
 
-In order to fully utilize the [touch events](/docs/gestures/touch-events/) you also need to use `react-native-reanimated` 2.3.0 or newer.
+### Running gestures on the UI thread
+
+Using Reanimated is the recommended method of handling gesture-driven interactions on the UI thread. In order to use it, you need to install [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) along with [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). Another approach is to use React Native's [Animated API](https://reactnative.dev/docs/animated).
+
+For more details on how to implement these, refer to the dedicated sections for [Reanimated](/docs/fundamentals/reanimated-interactions) and [Animated](/docs/fundamentals/animated-interactions).
+
+## Setup
 
 Setting up `react-native-gesture-handler` is pretty straightforward:
 
@@ -39,7 +47,7 @@ Setting up `react-native-gesture-handler` is pretty straightforward:
   </TabItem>
 </Tabs>
 
-### 2. Wrap your app with `GestureHandlerRootView` component
+### 2. Wrap your app with GestureHandlerRootView component
 
 ```jsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -52,18 +60,9 @@ export default function App() {
   );
 }
 ```
+Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/fundamentals/gesture-composition). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
-If you don't provide anything to the `styles` prop, it will default to `flex: 1`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything. Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all gesture relations. The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
-
-If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway. In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones.
-
-:::tip
-If you're using gesture handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
-:::
-
-:::tip
-If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView unstable_forceActive>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
-:::
+Check out [`GestureHandlerRootView`](/docs/fundamentals/root-view) section for more details.
 
 ### 3. Platform specific setup
 
@@ -77,7 +76,7 @@ npx expo prebuild
 
 #### Android
 
-Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in Modals you need to wrap Modal's content with `GestureHandlerRootView`:
+Setting up Gesture Handler on Android doesn't require any more steps. Keep in mind that if you want to use gestures in [Modals](https://reactnative.dev/docs/modal) you need to wrap Modal's content with `GestureHandlerRootView`:
 
 ```jsx
 import { Modal } from 'react-native';
@@ -92,14 +91,12 @@ export function CustomModal({ children, ...rest }) {
 }
 ```
 
-##### Kotlin
-
 Gesture Handler on Android is implemented in Kotlin. If you need to set a specific Kotlin version to be used by the library, set the `kotlinVersion` ext property in `android/build.gradle` file and RNGH will use that version:
 
 ```groovy
 buildscript {
     ext {
-        kotlinVersion = "1.6.21"
+        kotlinVersion = "2.1.20"
     }
 }
 ```
@@ -109,7 +106,15 @@ buildscript {
 While developing for iOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
 
 ```bash
-cd ios && pod install && cd ..
+cd ios && bundle install && bundle exec pod install && cd ..
+```
+
+#### macOS
+
+While developing for macOS, make sure to install [pods](https://cocoapods.org/) first before running the app:
+
+```bash
+cd macos && bundle install && bundle exec pod install && cd ..
 ```
 
 #### Web
@@ -125,6 +130,7 @@ import { Navigation } from 'react-native-navigation';
 import FirstTabScreen from './FirstTabScreen';
 import SecondTabScreen from './SecondTabScreen';
 import PushedScreen from './PushedScreen';
+
 // register all screens of the app (including internal ones)
 export function registerScreens() {
   Navigation.registerComponent(
@@ -164,5 +170,3 @@ export function registerScreens() {
 ```
 
 You can check out [this example project](https://github.com/henrikra/nativeNavigationGestureHandler) to see this kind of set up in action.
-
-Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
