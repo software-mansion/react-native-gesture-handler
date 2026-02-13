@@ -91,7 +91,9 @@ export const PropsWhiteLists = new Map<
 
 export const EMPTY_WHITE_LIST = new Set<string>();
 
-export const NativeWrapperProps = new Set<keyof NativeWrapperProperties>([
+export const NativeWrapperProps = new Set<
+  keyof NativeWrapperProperties<unknown>
+>([
   ...CommonConfig,
   ...HandlerCallbacks,
   ...NativeHandlerNativeProperties,
