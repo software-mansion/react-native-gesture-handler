@@ -1,0 +1,154 @@
+---
+id: create-native-wrapper
+title: createNativeWrapper
+sidebar_label: createNativeWrapper
+---
+
+`createNativeWrapper` is a function that lets you wrap components which are not provided by Gesture Handler with a [`Native gesture`](/docs/gestures/use-native-gesture), allowing them to participate in the gesture recognition process.
+
+```tsx
+import { Switch } from 'react-native';
+import { createNativeWrapper } from 'react-native-gesture-handler';
+
+const RNGHSwitch = createNativeWrapper(Switch);
+```
+
+Full example can be seen in the [Example section](#example) below.
+
+This function can be useful when you want some third-party components to participate in gesture recognition process.
+
+## createNativeWrapper
+
+```ts
+function createNativeWrapper<P>(
+  Component: React.ComponentType<P>,
+  config: Readonly<NativeWrapperProperties> = {},
+  detectorType: GestureDetectorType = GestureDetectorType.Native,
+): React.FC<P & NativeWrapperProperties>
+```
+
+[`config`](#config) and [`detectorType`](#detectortype) parameters are optional. Their default values are described in their respective sections below.
+
+This function returns original component wrapped with a specified [`GestureDetector`](/docs/fundamentals/gesture-detectors) that has a [`Native gesture`](/docs/gestures/use-native-gesture) attached to it:
+
+```tsx
+<DetectorComponent gesture={native}>
+    <Component {...childProps} />
+</DetectorComponent>
+```
+
+### Component
+
+Component to be wrapped with `Native gesture`. It can be any React component, including those from third-party libraries.
+
+### config
+
+Configuration for the `Native gesture` that will be attached to the wrapped component. For more details on available options, see the `Native gesture` [configuration](/docs/gestures/use-native-gesture#config) documentation. Defaults to an empty object.
+
+### detectorType
+
+```ts
+enum GestureDetectorType {
+  Native,
+  Virtual,
+  Intercepting,
+}
+```
+
+Type of the gesture detector that will be used to recognize the `Native gesture`. For more details on available options, see the [Gesture Detectors](/docs/fundamentals/gesture-detectors) documentation. Defaults to `GestureDetectorType.Native` (which is just [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector)).
+
+## onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER
+
+:::danger
+This callback may lead to infinite re-renders if not used carefully.
+:::
+
+```ts
+onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (gesture: NativeGesture) => void;
+```
+
+Components wrapped with `createNativeWrapper` receive an additional prop named `onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER`. This callback is triggered on every update of the `Native gesture` associated with the wrapped component, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/fundamentals/gesture-composition) with other gestures.
+
+
+To prevent infinite re-renders, ensure you are not updating the component with the same gesture repeatedly, e.g.:
+
+```tsx
+const WrappedComponent = createNativeWrapper(Component);
+
+const ParentComponent = () => {
+  const [nativeGesture, setNativeGesture] = useState<NativeGesture | null>(
+    null
+  );
+
+  const onGestureUpdate = (gesture: NativeGesture) => {
+    if (!nativeGesture || nativeGesture.handlerTag !== gesture.handlerTag) {
+      setNativeGesture(gesture);
+      ...
+    }
+  };
+};
+
+<WrappedComponent
+  ...
+  onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER={onGestureUpdate}
+/>;
+```
+
+You can also check example usage in our [`ScrollView` component](https://github.com/software-mansion/react-native-gesture-handler/blob/18af65aa7d1d425cecbdba3224271246ea739132/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L80).
+
+## Components wrapped using createNativeWrapper
+
+Gesture Handler reexports some of the React Native components that are already wrapped using `createNativeWrapper`. These include:
+
+- `Switch`
+- `TextInput`
+- `ScrollView`
+- `FlatList`
+- `RefreshControl`
+
+[Buttons](/docs/components/buttons) are also wrapped using `createNativeWrapper` by default.
+
+## Example
+
+This example only demonstrates the usage of `createNativeWrapper`. `Switch` component from Gesture Handler comes wrapped with `createNativeWrapper` by default.
+
+```tsx
+import { useState } from 'react';
+import { Switch } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useTapGesture,
+  createNativeWrapper,
+} from 'react-native-gesture-handler';
+
+const RNGHSwitch = createNativeWrapper(Switch);
+
+export default function App() {
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const tap1 = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped!');
+    },
+  });
+
+  const tap2 = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1, paddingTop: 100 }}>
+      <GestureDetector gesture={tap1}>
+        <Switch value={isEnabled} onValueChange={setIsEnabled} />
+      </GestureDetector>
+      <GestureDetector gesture={tap2}>
+        <RNGHSwitch value={isEnabled} onValueChange={setIsEnabled} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+```
+In this scenario, the `Switch` from React Native cannot be toggled on because the `tap1` gesture intercepts it. However, when wrapped with `createNativeWrapper`, the `RNGHSwitch` becomes capable of participating in the gesture recognition process. This setup allows the switch to be toggled on while still enabling `tap2` to recognize taps on it.

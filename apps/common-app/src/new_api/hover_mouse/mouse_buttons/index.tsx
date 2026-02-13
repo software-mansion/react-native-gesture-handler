@@ -70,6 +70,7 @@ function Tests({ name, color, mouseButton, feedbackRef }: TestsProps) {
     onUpdate: () => {
       feedbackRef.current?.showMessage(`Panning with ${name}`);
     },
+    disableReanimated: true,
   });
 
   const longPress = useLongPressGesture({
@@ -77,6 +78,7 @@ function Tests({ name, color, mouseButton, feedbackRef }: TestsProps) {
     onActivate: () => {
       feedbackRef.current?.showMessage(`LongPress with ${name}`);
     },
+    disableReanimated: true,
   });
 
   const fling = useFlingGesture({
@@ -85,6 +87,7 @@ function Tests({ name, color, mouseButton, feedbackRef }: TestsProps) {
     onActivate: () => {
       feedbackRef.current?.showMessage(`Fling with ${name}`);
     },
+    disableReanimated: true,
   });
 
   const gestures = [tap, longPress, pan, fling];

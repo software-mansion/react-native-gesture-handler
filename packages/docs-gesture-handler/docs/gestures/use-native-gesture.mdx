@@ -5,21 +5,30 @@ sidebar_label: Native gesture
 sidebar_position: 8
 ---
 
-import BaseEventData from './\_shared/base-gesture-event-data.md';
-import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseEventData from './\_shared/base-gesture-event-data.mdx';
+import BaseGestureConfig from './\_shared/base-gesture-config.mdx';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
 A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
 
-When used, the native component should be the direct child of a `GestureDetector`.
+When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+:::danger
+Do not use `Native` gesture with components exported by React Native Gesture Handler, as they already have it pre-applied. Attaching `Native` gesture twice will result in undefined behavior.
+:::
 
 ## Example
 
-This example renders a `ScrollView` with multiple colored rectangles, where each rectangle has a black section. Starting a touch on a black section will disable the `ScrollView` for the duration of the `Pan` gesture.
+This example renders a `ScrollView` with multiple colored rectangles, where each rectangle has a black section. Starting a touch on a black section will disable the `ScrollView` for the duration of the [`Pan`](/docs/gestures/use-pan-gesture) gesture.
 
-```jsx
+
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[15, 54]}
+src={`
 import { View, ScrollView } from 'react-native';
 import {
   GestureDetector,
@@ -30,28 +39,6 @@ import {
 } from 'react-native-gesture-handler';
 
 const COLORS = ['red', 'green', 'blue', 'purple', 'orange', 'cyan'];
-
-export default function App() {
-  const nativeGesture = useNativeGesture({});
-
-  return (
-    <GestureHandlerRootView>
-      <GestureDetector gesture={nativeGesture}>
-        <ScrollView style={{ flex: 1 }}>
-          <View>
-            {COLORS.map((color) => (
-              <Rectangle
-                key={color}
-                color={color}
-                scrollGesture={nativeGesture}
-              />
-            ))}
-          </View>
-        </ScrollView>
-      </GestureDetector>
-    </GestureHandlerRootView>
-  );
-}
 
 type RectangleProps = {
   color: string;
@@ -75,17 +62,35 @@ function Rectangle({ color, scrollGesture }: RectangleProps) {
     </>
   );
 }
-```
+
+export default function App() {
+  const nativeGesture = useNativeGesture({});
+
+  return (
+    <GestureHandlerRootView>
+      <GestureDetector gesture={nativeGesture}>
+        <ScrollView style={{ flex: 1 }}>
+          <View>
+            {COLORS.map((color) => (
+              <Rectangle
+                key={color}
+                color={color}
+                scrollGesture={nativeGesture}
+              />
+            ))}
+          </View>
+        </ScrollView>
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+`}/>
 
 ## Remarks
 
 - `Native` gesture can be used as part of [gesture composition and cross-component interactions](/docs/fundamentals/gesture-composition) just like any other gesture. You can use this to block a native component for the duration of the gesture or to make it work alongside a gesture.
 
 - Due to platform API limitations, the `Native` gesture has restricted functionality on `web`. For instance, it cannot be used to block scrolling on a `ScrollView`.
-
-:::danger
-Do not use `Native` gesture with components exported by React Native Gesture Handler. Those come with a native gesture handler preapplied. Attaching a native gesture twice will likely result in the components not working as intended.
-:::
 
 ## Config
 
