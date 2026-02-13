@@ -7,7 +7,7 @@ sidebar_label: Reanimated Swipeable
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery'
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 :::info
 This component is a drop-in replacement for the `Swipeable` component, rewritten using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started).
@@ -242,9 +242,9 @@ blocksExternalGesture?: AnyGesture | AnyGesture[];
 
 Gestures that `Swipeable` will prevent from activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
 
-<HeaderWithBadge platforms={['iOS']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### enableTrackpadTwoFingerGesture
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean;
@@ -252,9 +252,9 @@ enableTrackpadTwoFingerGesture?: boolean;
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
 
-<HeaderWithBadge platforms={['android', 'web']}>
+<HeaderWithBadges platforms={['android', 'web']}>
 ### mouseButton
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 <CollapsibleCode 
 label="Show composed types definitions"
@@ -275,9 +275,9 @@ enum MouseButton {
 
 Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
-<HeaderWithBadge platforms={[ 'web']}>
+<HeaderWithBadges platforms={[ 'web']}>
 ### enableContextMenu
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableContextMenu: boolean;
