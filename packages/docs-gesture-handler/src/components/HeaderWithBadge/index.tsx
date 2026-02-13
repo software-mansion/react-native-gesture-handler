@@ -1,15 +1,15 @@
 import { StyleSheet } from 'react-native';
 
 interface HeaderWithBadgeProps {
-  platforms: ('android' | 'ios' | 'web')[];
+  platforms: ('android' | 'iOS' | 'web')[];
   children?: React.ReactNode;
 }
 
-export function Badge({ platform }: { platform: 'android' | 'ios' | 'web' }) {
+export function Badge({ platform }: { platform: 'android' | 'iOS' | 'web' }) {
   const platformBadge =
     platform === 'android'
       ? styles.androidBadge
-      : platform === 'ios'
+      : platform === 'iOS'
         ? styles.iosBadge
         : platform === 'web'
           ? styles.webBadge

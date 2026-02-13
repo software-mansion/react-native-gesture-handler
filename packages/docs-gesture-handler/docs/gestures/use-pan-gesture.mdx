@@ -21,6 +21,8 @@ import SharedValueInfo from './\_shared/shared-value-info.md';
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
+import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -209,7 +211,9 @@ When the finger moves outside this range (in points) along X axis and gesture ha
 If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
-### averageTouches (Android only)
+<HeaderWithBadge platforms={['android']}>
+### averageTouches
+</HeaderWithBadge>
 
 ```ts
 averageTouches: boolean | SharedValue<boolean>;
@@ -217,7 +221,9 @@ averageTouches: boolean | SharedValue<boolean>;
 
 Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
 
-### enableTrackpadTwoFingerGesture (iOS only)
+<HeaderWithBadge platforms={['iOS']}>
+### enableTrackpadTwoFingerGesture
+</HeaderWithBadge>
 
 ```ts
 enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;
@@ -225,7 +231,9 @@ enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
 
-### mouseButton (Web & Android only)
+<HeaderWithBadge platforms={['android', 'web']}>
+### mouseButton
+</HeaderWithBadge>
 
 <CollapsibleCode 
 label="Show composed types definitions"

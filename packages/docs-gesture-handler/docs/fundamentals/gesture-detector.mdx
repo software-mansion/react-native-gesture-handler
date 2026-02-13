@@ -6,7 +6,7 @@ sidebar_position: 3
 ---
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
-
+import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
 
 ## Gesture Detector
 
@@ -190,7 +190,9 @@ gesture: SingleGesture | ComposedGesture;
 
 A gesture object containing the configuration and callbacks. Can be any of the base gestures or any [`ComposedGesture`](/docs/fundamentals/gesture-composition).
 
-### userSelect (Web only)
+<HeaderWithBadge platforms={['web']}>
+### userSelect
+</HeaderWithBadge>
 
 ```ts
 userSelect: 'none' | 'auto' | 'text';
@@ -198,7 +200,9 @@ userSelect: 'none' | 'auto' | 'text';
 
 This parameter allows to specify which `userSelect` property should be applied to underlying view. Default value is set to `"none"`.
 
-### touchAction (Web only)
+<HeaderWithBadge platforms={['web']}>
+### touchAction
+</HeaderWithBadge>
 
 ```ts
 touchAction: TouchAction;
@@ -206,7 +210,9 @@ touchAction: TouchAction;
 
 This parameter allows to specify which `touchAction` property should be applied to underlying view. Supports all CSS [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action) values. Default value is set to `"none"`.
 
-### enableContextMenu (Web only)
+<HeaderWithBadge platforms={['web']}>
+### enableContextMenu
+</HeaderWithBadge>
 
 ```ts
 enableContextMenu: boolean;
