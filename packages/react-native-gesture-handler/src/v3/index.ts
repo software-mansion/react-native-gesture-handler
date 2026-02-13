@@ -74,3 +74,5 @@ export {
 export type { ComposedGesture } from './types';
 
 export { GestureStateManager } from './gestureStateManager';
+
+export { default as createNativeWrapper } from './createNativeWrapper';
