@@ -77,10 +77,12 @@ void RNGestureHandlerButtonWrapperShadowNode::layout(
   // values
   if (shouldSkipCustomLayout) {
     react_native_assert(previousGrandChildLayoutMetrics_.has_value());
-    mutableChild->setLayoutMetrics(previousGrandChildLayoutMetrics_.value());
+    setLayoutMetrics(previousGrandChildLayoutMetrics_.value());
 
     auto metricsNoOrigin = previousGrandChildLayoutMetrics_.value();
     metricsNoOrigin.frame.origin = Point{};
+
+    mutableChild->setLayoutMetrics(metricsNoOrigin);
     mutableGrandChild->setLayoutMetrics(metricsNoOrigin);
     return;
   }
@@ -88,10 +90,12 @@ void RNGestureHandlerButtonWrapperShadowNode::layout(
   auto metrics = grandChild->getLayoutMetrics();
   previousGrandChildLayoutMetrics_ = metrics;
 
-  mutableChild->setLayoutMetrics(metrics);
+  setLayoutMetrics(metrics);
 
   auto metricsNoOrigin = grandChild->getLayoutMetrics();
   metricsNoOrigin.frame.origin = Point{};
+
+  mutableChild->setLayoutMetrics(metricsNoOrigin);
   mutableGrandChild->setLayoutMetrics(metricsNoOrigin);
 }
 
