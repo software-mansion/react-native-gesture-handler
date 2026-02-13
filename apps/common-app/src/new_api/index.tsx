@@ -79,7 +79,11 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     sectionTitle: 'Hover and mouse',
     data: [
       { name: 'Stylus Data', component: StylusDataExample },
-      { name: 'Context Menu', component: ContextMenuExample },
+      {
+        name: 'Context Menu',
+        component: ContextMenuExample,
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'Hover Icons', component: HoverIconsExample },
       { name: 'Hoverable Icons', component: HoverableIconsExample },
       { name: 'Mouse Buttons', component: MouseButtonsExample },
@@ -111,7 +115,11 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
     data: [
       { name: 'RectButton', component: RectButtonExample },
       { name: 'Two Finger Pan', component: TwoFingerPanExample },
-      { name: 'Web Styles Reset', component: WebStylesResetExample },
+      {
+        name: 'Web Styles Reset',
+        component: WebStylesResetExample,
+        unsupportedPlatforms: new Set(['android', 'ios', 'macos']),
+      },
       { name: 'Pointer Type', component: PointerTypeExample },
       { name: 'Reattaching', component: ReattachingExample },
       { name: 'Modal with Nested Root View', component: NestedRootViewExample },
