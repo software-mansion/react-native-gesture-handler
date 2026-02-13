@@ -47,7 +47,7 @@ Setting up `react-native-gesture-handler` is pretty straightforward:
   </TabItem>
 </Tabs>
 
-### 2. Wrap your app with `GestureHandlerRootView` component
+### 2. Wrap your app with GestureHandlerRootView component
 
 ```jsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -62,21 +62,7 @@ export default function App() {
 ```
 Keep `GestureHandlerRootView` as close to the actual root of the app as possible. It's the entry point for all gestures and all [gesture relations](/docs/fundamentals/gesture-composition). The gestures won't be recognized outside of the root view, and relations only work between gestures mounted under the same root view.
 
-If you don't provide anything to the `styles` prop, it will default to `flex: 1`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything. 
-
-If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway. In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones.
-
-:::note
-Remember that you need to wrap each screen that you use in your app with `GestureHandlerRootView` as with native navigation libraries each screen maps to a separate root view. It will not be enough to wrap the main screen only.
-:::
-
-#### Using `GestureHandlerRootView` with third party libraries
-
-If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView unstable_forceActive>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
-
-:::tip
-If you're using Gesture Handler in your component library, you may want to wrap your library's code in the `GestureHandlerRootView` component. This will avoid extra configuration for the user.
-:::
+Check out [`GestureHandlerRootView`](/docs/fundamentals/root-view) section for more details.
 
 ### 3. Platform specific setup
 
