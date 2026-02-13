@@ -1,11 +1,26 @@
 import { StyleSheet } from 'react-native';
 
-interface HeaderWithBadgeProps {
-  platforms: ('android' | 'iOS' | 'web')[];
+type HeaderWithBadgesProps = {
+  platforms?: ('android' | 'iOS' | 'web')[];
+  version?: string;
   children?: React.ReactNode;
+};
+
+type PlatformBadgeProps = {
+  platform: 'android' | 'iOS' | 'web';
+};
+
+type VersionBadgeProps = {
+  version: string;
+};
+
+export function VersionBadge({ version }: VersionBadgeProps) {
+  return (
+    <div style={{ ...styles.badge, ...styles.versionBadge }}>{version}</div>
+  );
 }
 
-export function Badge({ platform }: { platform: 'android' | 'iOS' | 'web' }) {
+export function PlatformBadge({ platform }: PlatformBadgeProps) {
   const platformBadge =
     platform === 'android'
       ? styles.androidBadge
@@ -18,17 +33,20 @@ export function Badge({ platform }: { platform: 'android' | 'iOS' | 'web' }) {
   return <div style={{ ...styles.badge, ...platformBadge }}>{platform}</div>;
 }
 
-export default function HeaderWithBadge({
+export default function HeaderWithBadges({
   platforms,
+  version,
   children,
-}: HeaderWithBadgeProps) {
+}: HeaderWithBadgesProps) {
   return (
     <div style={styles.container}>
       {children}
 
-      {platforms.map((platform) => (
-        <Badge key={platform} platform={platform} />
+      {platforms?.map((platform) => (
+        <PlatformBadge key={platform} platform={platform} />
       ))}
+
+      {version && <VersionBadge version={version} />}
     </div>
   );
 }
@@ -64,5 +82,9 @@ const styles = StyleSheet.create({
 
   webBadge: {
     backgroundColor: '#1067c4',
+  },
+
+  versionBadge: {
+    backgroundColor: 'pink',
   },
 });

@@ -11,7 +11,7 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
 
@@ -98,9 +98,9 @@ export default function App() {
 
 <SharedValueInfo />
 
-<HeaderWithBadge platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### shouldActivateOnStart
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 
 ```ts
