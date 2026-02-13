@@ -247,7 +247,7 @@ code2={
 
 The implementation of buttons has been updated, resolving most button-related issues. They have also been internally rewritten to utilize the new hook API. The original button components are still accessible but have been renamed with the prefix `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`.
 
-Although the legacy JS implementation of the buttons is still available, they also use the new host component internally.
+Although the legacy JS implementation of the buttons is still available, they also use the new host component internally. Because of that, `PureNativeButton` is no longer available in Gesture Handler 3.
 
 <details>
 <summary>Legacy buttons</summary>
@@ -258,6 +258,7 @@ Although the legacy JS implementation of the buttons is still available, they al
 | `BaseButton`          | `LegacyBaseButton`          |
 | `RectButton`          | `LegacyRectButton`          |
 | `BorderlessButton`    | `LegacyBorderlessButton`    |
+| `PureNativeButton`    | *Not available in Gesture Handler 3*    |
 
 </details>
 
