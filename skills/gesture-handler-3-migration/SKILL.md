@@ -35,6 +35,7 @@ The exception to thait is `Gesture.ForceTouch` which DOES NOT have a counterpart
 #### Callback changes
 
 In Gesture Handler 3 some of the callbacks were renamed, namely:
+
 - `onStart` -> `onActivate`
 - `onEnd` -> `onDeactivate`
 - `onTouchesCancelled` -> `onTouchesCancel`
@@ -42,6 +43,7 @@ In Gesture Handler 3 some of the callbacks were renamed, namely:
 In the hooks API `onChange` is no longer available. Instead the `*change*` properties were moved to the event available inside `onUpdate`.
 
 All callbacks of a gesture are now using the same type:
+
 - `usePanGesture()` -> `PanGestureEvent`
 - `useTapGesture()` -> `TapGestureEvent`
 - `useLongPressGesture()` -> `LongPressGestureEvent`
@@ -53,6 +55,7 @@ All callbacks of a gesture are now using the same type:
 - `useManualGesture()` -> `ManualGestureEvent`
 
 The exception to this is touch events:
+
 - `onTouchesDown`
 - `onTouchesUp`
 - `onTouchesMove`
@@ -65,12 +68,14 @@ Where each callback receives `GestureTouchEvent` regardless of the hook used.
 In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbacks. Instead, you should use the global `GestureStateManager`.
 
 `GestureStateManager` provides methods for imperative state management:
+
 - .begin(handlerTag: number)
 - .activate(handlerTag: number)
 - .deactivate(handlerTag: number) (.end() in the old API)
 - .fail(handlerTag: number)
 
 `handlerTag` can be obtained in two ways:
+
 1. From the gesture object returned by the hook (`gesture.handlerTag`)
 2. From the event inside callback (`event.handlerTag`)
 
@@ -83,6 +88,7 @@ Callback definitions CANNOT reference the gesture that's being defined. In this 
 `Gesture.Simultaneous(gesture1, gesture2);` becomes `useSimultaneousGestures(pan1, pan2);`
 
 All relations from the old API and their counterparts in the new one:
+
 - `Gesture.Race()` -> `useCompetingGestures()`
 - `Gesture.Simultaneous()` -> `useSimultaneousGestures()`
 - `Gesture.Exclusive()` -> `useExclusiveGestures()`
@@ -90,6 +96,7 @@ All relations from the old API and their counterparts in the new one:
 #### Cross components relations properties
 
 Properties used to define cross-components interactions were renamed:
+
 - `.simultaneousWithExternalGesture` -> `simultaneousWith:`
 - `.requireExternalGestureToFail` -> `requireToFail:`
 - `.blocksExternalGesture` -> `block:`
@@ -161,6 +168,12 @@ Don't suggest replacing buttons from Gesture Handler with components from React 
 The implementation of buttons has been updated, resolving most button-related issues. They have also been internally rewritten to utilize the new hook API. The legacy JS implementations of button components are still accessible but have been renamed with the prefix `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`. Those still use the new native component under the hood.
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
+
+`createNativeWrapper` has been rewritten using the new hook API and exported under the original name. The old implementation is still available as `legacy_createNativeWrapper`. It also accepts new optional parameter - `detectorType`, which allows you to specify the type of the gesture detector that will be used internally. By default it uses `GestureDetector`.
+
+While new `createNativeWrapper` should work out of the box, keep in mind that it wraps your component with `GestureDetector`, which in Gesture Handler 3 is a host component. This affects view hierarchy, so depending on use case, you might want to use `VirtualGestureDetector` instead.
+
+Before changing, ask user about their intention - if they prefer to keep legacy version, change it to `legacy_createNativeWrapper`. If not, keep `createNativeWrapper`, then notify user that in case of problems with view hierarchy they should wrap the relevant subtree with `InterceptingGestureDetector` and pass `GestureDetectorType.Virtual` as the `detectorType` argument in `createNativeWrapper`.
 
 ### Replaced types
 
