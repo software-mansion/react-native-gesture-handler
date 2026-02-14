@@ -85,6 +85,7 @@
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
 @property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
 @property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
+@property (nonatomic, copy, nullable) NSNumber *viewTag;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
