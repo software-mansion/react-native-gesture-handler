@@ -24,7 +24,7 @@ export default function createNativeWrapper<
   detectorType: GestureDetectorType = GestureDetectorType.Native
 ) {
   const ComponentWrapper = (
-    props: PropsType & NativeWrapperProperties<RefType>
+    props: PropsType & NativeWrapperProperties<RefType | null>
   ) => {
     const { ref, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER, ...restProps } =
       props;

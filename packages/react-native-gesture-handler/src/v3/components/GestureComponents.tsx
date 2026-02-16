@@ -36,7 +36,7 @@ export const RefreshControl = createNativeWrapper<
 export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
 const GHScrollView = createNativeWrapper<
-  RNScrollView | null,
+  RNScrollView,
   PropsWithChildren<RNScrollViewProps>
 >(
   RNScrollView,
