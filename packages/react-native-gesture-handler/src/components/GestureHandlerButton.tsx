@@ -26,7 +26,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    * set true.
    */
   exclusive?: boolean;
-  // TODO: we should transform props in `createNativeWrapper`
+
   /**
    * Android only.
    *
