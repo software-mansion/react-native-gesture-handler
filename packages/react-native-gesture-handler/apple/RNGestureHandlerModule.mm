@@ -234,11 +234,7 @@ RCT_EXPORT_MODULE()
     [handler.pointerTracker cancelPointers];
   }
 
-  // do not send state change event when activating because it bypasses
-  // shouldRequireFailureOfGestureRecognizer
-  if (state != 4) {
-    [handler handleGesture:handler.recognizer fromReset:NO];
-  }
+  [handler handleGesture:handler.recognizer fromReset:NO];
 }
 
 #pragma mark-- Batch handling
