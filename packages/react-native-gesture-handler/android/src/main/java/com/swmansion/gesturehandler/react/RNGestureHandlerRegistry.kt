@@ -78,8 +78,9 @@ class RNGestureHandlerRegistry : GestureHandlerRegistry {
   }
 
   @Synchronized
-  fun detachHandler(handlerTag: Int) {
+  fun detachHandlerFromHostDetector(handlerTag: Int, hostDetectorView: RNGestureHandlerDetectorView?) {
     handlers[handlerTag]?.let {
+      if (it.hostDetectorView != hostDetectorView) return
       detachHandlerInternal(it)
     }
   }
