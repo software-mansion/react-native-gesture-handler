@@ -3,10 +3,9 @@ id: upgrading-to-3
 title: Upgrading to the new API introduced in Gesture Handler 3
 ---
 
-## Migrating gestures
-
-
 import CodeComparison from '@site/src/components/CodeComparison';
+
+## Migrating gestures
 
 The most important change brought by the Gesture Handler 3 is the new hook API. Migration is pretty straightforward. Instead of calling builder methods, everything is passed as a configuration object.
 
@@ -280,6 +279,14 @@ Other components have also been internally rewritten using the new hook API but 
 | `DrawerLayoutAndroid` | `LegacyDrawerLayoutAndroid` |
 
 </details>
+
+### createNativeWrapper
+
+`createNativeWrapper` has been rewritten using the new hook API and exported under the original name. The old implementation is still available as `legacy_createNativeWrapper`. It also accepts new optional parameter - `detectorType`, which allows you to specify the type of the [gesture detector](/docs/fundamentals/gesture-detectors) that will be used internally. By default it uses `GestureDetector`.
+
+While new `createNativeWrapper` should work out of the box, keep in mind that it wraps your component with `GestureDetector`, which in Gesture Handler 3 is a host component. This affects view hierarchy, so depending on your use case, you might want to use [`VirtualGestureDetector`](/docs/fundamentals/gesture-detectors#virtualgesturedetector) instead. To do that, simply pass the desired detector type as the second parameter of `createNativeWrapper`.
+
+More on `createNativeWrapper` can be in the [dedicated section](/docs/components/create-native-wrapper) of the documentation.
 
 ## Replaced types
 

@@ -23,40 +23,31 @@ Example:
 
 ## Testing Gestures' and Gesture handlers' callbacks
 
-RNGH provides an API for triggering selected handlers:
+RNGH provides APIs, specifically [`fireGestureHandler`](#firegesturehandler) and [`getByGestureTestId`](#getbygesturetestid), to trigger selected handlers.
 
-- [`fireGestureHandler(gestureOrHandler, eventList)`](/docs/guides/testing#firegesturehandlergestureorhandler-eventlist)
-- [`getByGestureTestId(testID)`](/docs/guides/testing#getbygesturetestidtestid)
+### fireGestureHandler
 
-## fireGestureHandler(gestureOrHandler, eventList)
+```ts
+fireGestureHandler: (componentOrGesture, eventList) => void;
+```
 
 Simulates one event stream (i.e. event sequence starting with `BEGIN` state and ending
 with one of `END`/`FAIL`/`CANCEL` states), calling appropriate callbacks associated with given gesture handler.
 
-### Arguments
+- `componentOrGesture` - Either Gesture Handler component found by `Jest` queries (e.g. `getByTestId`) or Gesture found by [`getByGestureTestId()`](#getbygesturetestidtestid)
 
-#### `gestureOrHandler`
+- `eventList` - Event data passed to appropriate callback. RNGH fills event list if required
+  data is missing using these rules:
+  - `oldState` is filled using state of the previous event. `BEGIN` events use
+    `UNDETERMINED` value as previous event.
+  - Events after first `ACTIVE` state can omit `state` field.
+  - Handler specific data is filled (e.g. `numberOfTouches`, `x` fields) with
+    defaults.
+  - Missing `BEGIN` and `END` events are added with data copied from first and last
+    passed event, respectively.
+  - If first event doesn't have `state` field, the `ACTIVE` state is assumed.
 
-Represents either:
-
-1. Gesture handler component found by Jest queries (e.g. `getByTestId`)
-2. Gesture found by [`getByGestureTestId()`](/docs/guides/testing#getbygesturetestidtestid)
-
-#### `eventList`
-
-Event data passed to appropriate callback. RNGH fills event list if required
-data is missing using these rules:
-
-1. `oldState` is filled using state of the previous event. `BEGIN` events use
-   `UNDETERMINED` value as previous event.
-2. Events after first `ACTIVE` state can omit `state` field.
-3. Handler specific data is filled (e.g. `numberOfTouches`, `x` fields) with
-   defaults.
-4. Missing `BEGIN` and `END` events are added with data copied from first and last
-   passed event, respectively.
-5. If first event don't have `state` field, the `ACTIVE` state is assumed.
-
-Some examples:
+Some `eventList` examples:
 
 ```jsx
 const oldStateFilled = [
@@ -86,44 +77,44 @@ const implicitBeginAndEnd = [
 const allImplicits = []; // 3 events, one BEGIN, one ACTIVE, one END with defaults.
 ```
 
-### Example
-
-Extracted from RNGH tests, check `Events.test.tsx` for full implementation.
+### getByGestureTestId
 
 ```tsx
-it('sends events with additional data to handlers', () => {
-  const panHandlers = mockedEventHandlers();
-  render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
-  fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
-    { state: State.BEGAN, translationX: 0 },
-    { state: State.ACTIVE, translationX: 10 },
-    { translationX: 20 },
-    { translationX: 20 },
-    { state: State.END, translationX: 30 },
-  ]);
-
-  expect(panHandlers.active).toHaveBeenCalledTimes(3);
-  expect(panHandlers.active).toHaveBeenLastCalledWith(
-    expect.objectContaining({ translationX: 20 })
-  );
-});
+getByGestureTestId: (testID: string) => Gesture;
 ```
 
-## getByGestureTestId(testID)
+Returns opaque data type associated with gesture. Gesture is found via [`testID`](/docs/gestures/use-pan-gesture#testid) attribute in rendered
+components.
 
-Returns opaque data type associated with gesture. Gesture is found via `testID` attribute in rendered
-components (see [`testID`](/docs/gestures/use-pan-gesture#testid)).
-
-### Arguments
-
-#### `testID`
-
-String identifying gesture.
-
-### Notes
-
+:::warning
 `testID` must be unique among components rendered in test.
+:::
 
-### Example
+## Example
 
-See above example for `fireGestureHandler`.
+Extracted from RNGH tests, check [`api_v3.test.tsx`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/__tests__/api_v3.test.tsx) for full implementation.
+
+```tsx
+test('Pan gesture', () => {
+  const onBegin = jest.fn();
+  const onStart = jest.fn();
+
+  const panGesture = renderHook(() =>
+    usePanGesture({
+      disableReanimated: true,
+      onBegin: (e) => onBegin(e),
+      onActivate: (e) => onStart(e),
+    })
+  ).result.current;
+
+  fireGestureHandler(panGesture, [
+    { oldState: State.UNDETERMINED, state: State.BEGAN },
+    { oldState: State.BEGAN, state: State.ACTIVE },
+    { oldState: State.ACTIVE, state: State.ACTIVE },
+    { oldState: State.ACTIVE, state: State.END },
+  ]);
+
+  expect(onBegin).toHaveBeenCalledTimes(1);
+  expect(onStart).toHaveBeenCalledTimes(1);
+});
+```

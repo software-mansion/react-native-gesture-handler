@@ -171,6 +171,12 @@ The implementation of buttons has been updated, resolving most button-related is
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
 
+`createNativeWrapper` has been rewritten using the new hook API and exported under the original name. The old implementation is still available as `legacy_createNativeWrapper`. It also accepts new optional parameter - `detectorType`, which allows you to specify the type of the gesture detector that will be used internally. By default it uses `GestureDetector`.
+
+While new `createNativeWrapper` should work out of the box, keep in mind that it wraps your component with `GestureDetector`, which in Gesture Handler 3 is a host component. This affects view hierarchy, so depending on use case, you might want to use `VirtualGestureDetector` instead.
+
+Before changing, ask user about their intention - if they prefer to keep legacy version, change it to `legacy_createNativeWrapper`. If not, keep `createNativeWrapper`, then notify user that in case of problems with view hierarchy they should wrap the relevant subtree with `InterceptingGestureDetector` and pass `GestureDetectorType.Virtual` as the `detectorType` argument in `createNativeWrapper`.
+
 ### Replaced types
 
 Most of the types used in the builder API, like `TapGesture`, are still present in Gesture Handler 3. However, they are now used in new hook API. Types for builder API now have `Legacy` prefix, e.g. `TapGesture` becomes `LegacyTapGesture`.
