@@ -75,12 +75,12 @@ interface CommonPressableProps
   extends AccessibilityProps,
     Omit<ViewProps, 'children' | 'style' | 'hitSlop'> {
   /**
-   * Called when the hover is activated to provide visual feedback.
+   * Called when pointer is hovering over the element.
    */
   onHoverIn?: null | ((event: PressableEvent) => void);
 
   /**
-   * Called when the hover is deactivated to undo visual feedback.
+   * Called when pointer stops hovering over the element.
    */
   onHoverOut?: null | ((event: PressableEvent) => void);
 
@@ -100,7 +100,7 @@ interface CommonPressableProps
   onPressOut?: null | ((event: PressableEvent) => void);
 
   /**
-   * Called when a long-tap gesture is detected.
+   * Called immediately after pointer has been down for at least `delayLongPress` milliseconds (`500` ms by default).
    */
   onLongPress?: null | ((event: PressableEvent) => void);
 
@@ -140,7 +140,7 @@ interface CommonPressableProps
   delayHoverOut?: number | null;
 
   /**
-   * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
+   * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called. Default value is `500` ms.
    */
   delayLongPress?: null | number;
 

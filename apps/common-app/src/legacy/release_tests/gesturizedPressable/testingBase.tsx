@@ -7,8 +7,8 @@ import {
   PressableProps as RNPressableProps,
 } from 'react-native';
 import {
-  Pressable as GesturizedPressable,
-  PressableProps as GHPressableProps,
+  LegacyPressable as GesturizedPressable,
+  LegacyPressableProps as GHPressableProps,
 } from 'react-native-gesture-handler';
 
 const TestingBase = (props: GHPressableProps & RNPressableProps) => (
