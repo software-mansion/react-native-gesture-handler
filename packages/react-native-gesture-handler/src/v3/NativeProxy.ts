@@ -22,9 +22,9 @@ export const NativeProxy = {
       config || {}
     );
   },
-  setGestureHandlerConfig: <THandlerData, TConfig>(
+  setGestureHandlerConfig: <TBaseHandlerData, THandlerData, TConfig>(
     handlerTag: number,
-    newConfig: BaseGestureConfig<THandlerData, TConfig>
+    newConfig: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
   ) => {
     scheduleOperationToBeFlushed(() => {
       RNGestureHandlerModule.setGestureHandlerConfig(handlerTag, newConfig);
@@ -33,9 +33,9 @@ export const NativeProxy = {
   // updateGestureHandlerConfig can be called on the UI thread when using
   // SharedValue binding. Therefore, it needs to be a worklet and we flush
   // immediately since we're likely already on the UI thread.
-  updateGestureHandlerConfig: <THandlerData, TConfig>(
+  updateGestureHandlerConfig: <TBaseHandlerData, THandlerData, TConfig>(
     handlerTag: number,
-    newConfig: BaseGestureConfig<THandlerData, TConfig>
+    newConfig: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
   ) => {
     'worklet';
     updateGestureHandlerConfig(handlerTag, newConfig);

@@ -83,9 +83,11 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
   }
 }
 
-export function shouldHandleTouchEvents<THandlerData, TConfig>(
-  config: BaseGestureConfig<THandlerData, TConfig>
-) {
+export function shouldHandleTouchEvents<
+  TBaseHandlerData,
+  THandlerData,
+  TConfig,
+>(config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>) {
   return (
     !!config.onTouchesDown ||
     !!config.onTouchesMove ||

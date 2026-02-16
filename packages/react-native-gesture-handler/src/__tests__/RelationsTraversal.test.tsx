@@ -10,9 +10,9 @@ import { SingleGesture, SingleGestureName } from '../v3/types';
 import { renderHook } from '@testing-library/react-native';
 
 describe('Ensure only one leaf node', () => {
-  let pan1: SingleGesture<unknown, unknown>,
-    pan2: SingleGesture<unknown, unknown>,
-    pan3: SingleGesture<unknown, unknown>;
+  let pan1: SingleGesture<unknown, unknown, unknown>,
+    pan2: SingleGesture<unknown, unknown, unknown>,
+    pan3: SingleGesture<unknown, unknown, unknown>;
 
   beforeEach(() => {
     pan1 = renderHook(() =>
@@ -55,8 +55,8 @@ describe('Ensure only one leaf node', () => {
 });
 
 describe('Simple relations', () => {
-  let pan1: SingleGesture<unknown, unknown>,
-    pan2: SingleGesture<unknown, unknown>;
+  let pan1: SingleGesture<unknown, unknown, unknown>,
+    pan2: SingleGesture<unknown, unknown, unknown>;
 
   beforeEach(() => {
     pan1 = renderHook(() =>
@@ -203,12 +203,12 @@ describe('External relations', () => {
 });
 
 describe('Complex relations', () => {
-  let pan1: SingleGesture<unknown, unknown>,
-    pan2: SingleGesture<unknown, unknown>,
-    pan3: SingleGesture<unknown, unknown>;
-  let tap1: SingleGesture<unknown, unknown>,
-    tap2: SingleGesture<unknown, unknown>,
-    tap3: SingleGesture<unknown, unknown>;
+  let pan1: SingleGesture<unknown, unknown, unknown>,
+    pan2: SingleGesture<unknown, unknown, unknown>,
+    pan3: SingleGesture<unknown, unknown, unknown>;
+  let tap1: SingleGesture<unknown, unknown, unknown>,
+    tap2: SingleGesture<unknown, unknown, unknown>,
+    tap3: SingleGesture<unknown, unknown, unknown>;
 
   beforeEach(() => {
     tap1 = renderHook(() =>

@@ -9,9 +9,9 @@ import {
   UnpackedGestureHandlerEvent,
 } from '../../types';
 
-export function useMemoizedGestureCallbacks<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>
-): GestureCallbacks<THandlerData> {
+export function useMemoizedGestureCallbacks<TBaseHandlerData, THandlerData>(
+  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>
+): GestureCallbacks<TBaseHandlerData, THandlerData> {
   return useMemo(
     () => ({
       ...(callbacks.onBegin ? { onBegin: callbacks.onBegin } : {}),
@@ -46,11 +46,13 @@ export function useMemoizedGestureCallbacks<THandlerData>(
   );
 }
 
-function getHandler<THandlerData>(
+function getHandler<TBaseHandlerData, THandlerData>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<THandlerData>
+  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>
 ):
+  | GestureEventCallback<TBaseHandlerData>
   | GestureEventCallback<THandlerData>
+  | GestureEventCallbackWithDidSucceed<TBaseHandlerData>
   | GestureEventCallbackWithDidSucceed<THandlerData>
   | GestureTouchEventCallback
   | undefined {
@@ -97,9 +99,9 @@ export function touchEventTypeToCallbackType(
 type SingleParameterCallback<T> = (event: T) => void;
 type DoubleParameterCallback<T> = (event: T, didSucceed: boolean) => void;
 
-export function runCallback<THandlerData>(
+export function runCallback<TBaseHandlerData, THandlerData>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<THandlerData>,
+  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>,
   event: UnpackedGestureHandlerEvent<THandlerData>,
   didSucceed?: boolean
 ) {

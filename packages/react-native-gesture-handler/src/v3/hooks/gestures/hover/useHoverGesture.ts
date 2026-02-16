@@ -19,12 +19,15 @@ import {
   HoverGestureNativeProperties,
 } from './HoverProperties';
 
-type HoverHandlerData = {
+type HoverBaseHandlerData = {
   x: number;
   y: number;
   absoluteX: number;
   absoluteY: number;
   stylusData: StylusData;
+};
+
+type HoverHandlerData = HoverBaseHandlerData & {
   changeX: number;
   changeY: number;
 };
@@ -40,10 +43,15 @@ type HoverGestureInternalProperties = WithSharedValue<
 >;
 
 export type HoverGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<HoverHandlerData, HoverGestureProperties>
+  BaseGestureConfig<
+    HoverBaseHandlerData,
+    HoverHandlerData,
+    HoverGestureProperties
+  >
 >;
 
 type HoverGestureInternalConfig = BaseGestureConfig<
+  HoverBaseHandlerData,
   HoverHandlerData,
   HoverGestureInternalProperties
 >;
@@ -51,6 +59,7 @@ type HoverGestureInternalConfig = BaseGestureConfig<
 export type HoverGestureEvent = GestureEvent<HoverHandlerData>;
 
 export type HoverGesture = SingleGesture<
+  HoverBaseHandlerData,
   HoverHandlerData,
   HoverGestureInternalProperties
 >;
@@ -78,6 +87,7 @@ const HoverPropsMapping = new Map<string, string>([['effect', 'hoverEffect']]);
 
 export function useHoverGesture(config: HoverGestureConfig): HoverGesture {
   const hoverConfig = useClonedAndRemappedConfig<
+    HoverBaseHandlerData,
     HoverHandlerData,
     HoverGestureProperties,
     HoverGestureInternalProperties

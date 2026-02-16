@@ -16,29 +16,35 @@ export type ExternalRelations = {
 };
 
 // Similarly, this type cannot be moved into ConfigTypes.ts because it depends on `ExternalRelations`
-export type BaseGestureConfig<THandlerData, TConfig> = ExternalRelations &
-  GestureCallbacks<THandlerData> &
-  FilterNeverProperties<TConfig> &
-  InternalConfigProps<THandlerData> &
-  CommonGestureConfig;
+export type BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig> =
+  ExternalRelations &
+    GestureCallbacks<TBaseHandlerData, THandlerData> &
+    FilterNeverProperties<TConfig> &
+    InternalConfigProps<THandlerData> &
+    CommonGestureConfig;
 
-export type BaseDiscreteGestureConfig<THandlerData, TConfig> = Omit<
-  BaseGestureConfig<THandlerData, TConfig>,
-  'onUpdate'
->;
+export type BaseDiscreteGestureConfig<TBaseHandlerData, THandlerData, TConfig> =
+  Omit<BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>, 'onUpdate'>;
 
-export type SingleGesture<THandlerData, TConfig> = {
+export type SingleGesture<TBaseHandlerData, THandlerData, TConfig> = {
   handlerTag: number;
   type: SingleGestureName;
-  config: BaseGestureConfig<THandlerData, TConfig>;
+  config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>;
   detectorCallbacks: DetectorCallbacks<THandlerData>;
   gestureRelations: GestureRelations;
 };
 
-export type DiscreteSingleGesture<THandlerData, TConfig> = {
-  [K in keyof SingleGesture<THandlerData, TConfig>]: K extends 'config'
-    ? Omit<SingleGesture<THandlerData, TConfig>[K], 'onUpdate'>
-    : SingleGesture<THandlerData, TConfig>[K];
+export type DiscreteSingleGesture<TBaseHandlerData, THandlerData, TConfig> = {
+  [K in keyof SingleGesture<
+    TBaseHandlerData,
+    THandlerData,
+    TConfig
+  >]: K extends 'config'
+    ? Omit<
+        SingleGesture<TBaseHandlerData, THandlerData, TConfig>[K],
+        'onUpdate'
+      >
+    : SingleGesture<TBaseHandlerData, THandlerData, TConfig>[K];
 };
 
 export type ComposedGesture = {
@@ -50,12 +56,14 @@ export type ComposedGesture = {
   gestures: Gesture[];
 };
 
-export type Gesture<THandlerData = unknown, TConfig = unknown> =
-  | SingleGesture<THandlerData, TConfig>
-  | ComposedGesture;
+export type Gesture<
+  TBaseHandlerData = unknown,
+  THandlerData = unknown,
+  TConfig = unknown,
+> = SingleGesture<TBaseHandlerData, THandlerData, TConfig> | ComposedGesture;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyGesture = Gesture<any, unknown>;
+export type AnyGesture = Gesture<any, any, unknown>;
 
 export enum SingleGestureName {
   Tap = 'TapGestureHandler',

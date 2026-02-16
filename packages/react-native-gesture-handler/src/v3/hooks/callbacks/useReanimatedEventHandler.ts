@@ -15,9 +15,9 @@ const workletNOOP = () => {
   // no-op
 };
 
-export function useReanimatedEventHandler<THandlerData>(
+export function useReanimatedEventHandler<TBaseHandlerData, THandlerData>(
   handlerTag: number,
-  handlers: GestureCallbacks<THandlerData>,
+  handlers: GestureCallbacks<TBaseHandlerData, THandlerData>,
   reanimatedHandler: ReanimatedHandler<THandlerData> | undefined,
   changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined
 ) {

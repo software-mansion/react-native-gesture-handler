@@ -19,9 +19,9 @@ import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 
-function handleStateChangeEvent<THandlerData>(
+function handleStateChangeEvent<TBaseHandlerData, THandlerData>(
   eventWithData: GestureStateChangeEventWithHandlerData<THandlerData>,
-  callbacks: GestureCallbacks<THandlerData>,
+  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>,
   context: ReanimatedContext<THandlerData>
 ) {
   'worklet';
@@ -59,9 +59,9 @@ function handleStateChangeEvent<THandlerData>(
   }
 }
 
-export function handleUpdateEvent<THandlerData>(
+export function handleUpdateEvent<TBaseHandlerData, THandlerData>(
   eventWithData: GestureUpdateEventWithHandlerData<THandlerData>,
-  handlers: GestureCallbacks<THandlerData>,
+  handlers: GestureCallbacks<TBaseHandlerData, THandlerData>,
   changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined,
   context: ReanimatedContext<THandlerData>
 ) {
@@ -86,9 +86,9 @@ export function handleUpdateEvent<THandlerData>(
   context.lastUpdateEvent = eventWithData;
 }
 
-export function handleTouchEvent<THandlerData>(
+export function handleTouchEvent<TBaseHandlerData, THandlerData>(
   event: GestureTouchEvent,
-  handlers: GestureCallbacks<THandlerData>
+  handlers: GestureCallbacks<TBaseHandlerData, THandlerData>
 ) {
   'worklet';
 
@@ -97,10 +97,10 @@ export function handleTouchEvent<THandlerData>(
   }
 }
 
-export function eventHandler<THandlerData>(
+export function eventHandler<TBaseHandlerData, THandlerData>(
   handlerTag: number,
   sourceEvent: GestureHandlerEventWithHandlerData<THandlerData>,
-  handlers: GestureCallbacks<THandlerData>,
+  handlers: GestureCallbacks<TBaseHandlerData, THandlerData>,
   changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined,
   jsContext: ReanimatedContext<THandlerData>,
   dispatchesAnimatedEvents: boolean

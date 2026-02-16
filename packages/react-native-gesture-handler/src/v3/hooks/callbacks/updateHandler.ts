@@ -14,9 +14,9 @@ import {
   runCallback,
 } from '../utils';
 
-export function getUpdateHandler<THandlerData>(
+export function getUpdateHandler<TBaseHandlerData, THandlerData>(
   handlerTag: number,
-  callbacks: GestureCallbacks<THandlerData>,
+  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>,
   context: ReanimatedContext<THandlerData> | undefined,
   changeEventCalculator?: ChangeCalculatorType<THandlerData>
 ) {

@@ -13,9 +13,9 @@ import {
   runCallback,
 } from '../utils';
 
-export function getStateChangeHandler<THandlerData>(
+export function getStateChangeHandler<TBaseHandlerData, THandlerData>(
   handlerTag: number,
-  callbacks: GestureCallbacks<THandlerData>,
+  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>,
   context?: ReanimatedContext<THandlerData>
 ) {
   return (sourceEvent: StateChangeEventWithHandlerData<THandlerData>) => {

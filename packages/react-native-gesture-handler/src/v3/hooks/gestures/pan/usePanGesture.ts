@@ -20,7 +20,7 @@ import {
   PanGestureNativeProperties,
 } from './PanProperties';
 
-export type PanHandlerData = {
+export type PanBaseHandlerData = {
   x: number;
   y: number;
   absoluteX: number;
@@ -30,6 +30,9 @@ export type PanHandlerData = {
   velocityX: number;
   velocityY: number;
   stylusData: StylusData;
+};
+
+export type PanHandlerData = PanBaseHandlerData & {
   changeX: number;
   changeY: number;
 };
@@ -41,10 +44,11 @@ export type PanGestureInternalProperties =
   WithSharedValue<PanGestureNativeProperties>;
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<PanHandlerData, PanGestureProperties>
+  BaseGestureConfig<PanBaseHandlerData, PanHandlerData, PanGestureProperties>
 >;
 
 type PanGestureInternalConfig = BaseGestureConfig<
+  PanBaseHandlerData,
   PanHandlerData,
   PanGestureInternalProperties
 >;
@@ -52,6 +56,7 @@ type PanGestureInternalConfig = BaseGestureConfig<
 export type PanGestureEvent = GestureEvent<PanHandlerData>;
 
 export type PanGesture = SingleGesture<
+  PanBaseHandlerData,
   PanHandlerData,
   PanGestureInternalProperties
 >;
@@ -172,13 +177,15 @@ export function usePanGesture(config: PanGestureConfig): PanGesture {
   }
 
   const panConfig = useClonedAndRemappedConfig<
+    PanBaseHandlerData,
     PanHandlerData,
     PanGestureProperties,
     PanGestureInternalProperties
   >(config, PanPropsMapping, transformPanProps);
 
-  return useGesture<PanHandlerData, PanGestureInternalProperties>(
-    SingleGestureName.Pan,
-    panConfig
-  );
+  return useGesture<
+    PanBaseHandlerData,
+    PanHandlerData,
+    PanGestureInternalProperties
+  >(SingleGestureName.Pan, panConfig);
 }

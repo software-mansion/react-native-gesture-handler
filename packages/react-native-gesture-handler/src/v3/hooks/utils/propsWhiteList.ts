@@ -52,7 +52,7 @@ if (!__DEV__) {
 }
 
 export const HandlerCallbacks = new Set<
-  keyof Required<GestureCallbacks<unknown>>
+  keyof Required<GestureCallbacks<unknown, unknown>>
 >([
   'onBegin',
   'onActivate',
@@ -65,7 +65,9 @@ export const HandlerCallbacks = new Set<
   'onTouchesCancel',
 ]);
 
-export const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
+export const PropsToFilter = new Set<
+  BaseGestureConfig<unknown, unknown, unknown>
+>([
   ...HandlerCallbacks,
   ...ExternalRelationsConfig,
 

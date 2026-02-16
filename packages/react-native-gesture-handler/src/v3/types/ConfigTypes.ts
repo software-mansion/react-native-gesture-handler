@@ -24,12 +24,12 @@ export type GestureEventCallbackWithDidSucceed<THandlerData> = (
 
 export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
 
-export type GestureCallbacks<THandlerData> = {
-  onBegin?: GestureEventCallback<THandlerData>;
+export type GestureCallbacks<TBaseHandlerData, THandlerData> = {
+  onBegin?: GestureEventCallback<TBaseHandlerData>;
   onActivate?: GestureEventCallback<THandlerData>;
-  onDeactivate?: GestureEventCallbackWithDidSucceed<THandlerData>;
-  onFinalize?: GestureEventCallbackWithDidSucceed<THandlerData>;
   onUpdate?: GestureEventCallback<THandlerData> | AnimatedEvent;
+  onDeactivate?: GestureEventCallbackWithDidSucceed<THandlerData>;
+  onFinalize?: GestureEventCallbackWithDidSucceed<TBaseHandlerData>;
   onTouchesDown?: GestureTouchEventCallback;
   onTouchesMove?: GestureTouchEventCallback;
   onTouchesUp?: GestureTouchEventCallback;

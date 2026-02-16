@@ -19,6 +19,7 @@ type NativeViewGestureProperties =
 
 type NativeViewGestureInternalConfig = BaseDiscreteGestureConfig<
   NativeViewHandlerData,
+  NativeViewHandlerData,
   NativeViewGestureProperties
 >;
 
@@ -29,6 +30,7 @@ export type NativeGestureEvent = GestureEvent<NativeViewHandlerData>;
 
 export type NativeGesture = SingleGesture<
   NativeViewHandlerData,
+  NativeViewHandlerData,
   NativeViewGestureProperties
 >;
 
@@ -36,6 +38,7 @@ export function useNativeGesture(
   config: NativeViewGestureConfig
 ): NativeGesture {
   const nativeConfig = useClonedAndRemappedConfig<
+    NativeViewHandlerData,
     NativeViewHandlerData,
     NativeViewGestureProperties,
     NativeViewGestureProperties

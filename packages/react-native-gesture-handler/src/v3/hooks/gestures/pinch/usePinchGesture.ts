@@ -13,17 +13,21 @@ import {
 } from '../../utils';
 import { PinchGestureNativeProperties } from './PinchProperties';
 
-type PinchHandlerData = {
+type PinchBaseHandlerData = {
   scale: number;
+  velocity: number;
+};
+
+type PinchHandlerData = PinchBaseHandlerData & {
   focalX: number;
   focalY: number;
-  velocity: number;
   scaleChange: number;
 };
 
 type PinchGestureProperties = PinchGestureNativeProperties;
 
 type PinchGestureInternalConfig = BaseGestureConfig<
+  PinchBaseHandlerData,
   PinchHandlerData,
   PinchGestureProperties
 >;
@@ -34,6 +38,7 @@ export type PinchGestureConfig =
 export type PinchGestureEvent = GestureEvent<PinchHandlerData>;
 
 export type PinchGesture = SingleGesture<
+  PinchBaseHandlerData,
   PinchHandlerData,
   PinchGestureProperties
 >;
@@ -60,6 +65,7 @@ const PinchPropsMapping = new Map<string, string>();
 
 export function usePinchGesture(config: PinchGestureConfig): PinchGesture {
   const pinchConfig = useClonedAndRemappedConfig<
+    PinchBaseHandlerData,
     PinchHandlerData,
     PinchGestureProperties,
     // no internal props, pass record as PinchGestureProperties maps everything to never

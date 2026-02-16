@@ -13,17 +13,21 @@ import {
 } from '../../utils';
 import { RotationGestureNativeProperties } from './RotationProperties';
 
-type RotationHandlerData = {
+type RotationBaseHandlerData = {
   rotation: number;
+  velocity: number;
+};
+
+type RotationHandlerData = RotationBaseHandlerData & {
   anchorX: number;
   anchorY: number;
-  velocity: number;
   rotationChange: number;
 };
 
 type RotationGestureProperties = RotationGestureNativeProperties;
 
 type RotationGestureInternalConfig = BaseGestureConfig<
+  RotationBaseHandlerData,
   RotationHandlerData,
   RotationGestureProperties
 >;
@@ -34,6 +38,7 @@ export type RotationGestureConfig =
 export type RotationGestureEvent = GestureEvent<RotationHandlerData>;
 
 export type RotationGesture = SingleGesture<
+  RotationBaseHandlerData,
   RotationHandlerData,
   RotationGestureProperties
 >;
@@ -64,6 +69,7 @@ export function useRotationGesture(
   config: RotationGestureConfig
 ): RotationGesture {
   const rotationConfig = useClonedAndRemappedConfig<
+    RotationBaseHandlerData,
     RotationHandlerData,
     RotationGestureProperties,
     // no internal props, pass record as RotationGestureProperties maps everything to never

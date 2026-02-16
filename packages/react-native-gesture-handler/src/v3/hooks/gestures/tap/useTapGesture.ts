@@ -25,12 +25,17 @@ type TapGestureProperties = WithSharedValue<TapGestureExternalConfig>;
 type TapGestureInternalProperties = WithSharedValue<TapGestureNativeConfig>;
 
 export type TapGestureConfig = ExcludeInternalConfigProps<
-  BaseDiscreteGestureConfig<TapHandlerData, TapGestureProperties>
+  BaseDiscreteGestureConfig<
+    TapHandlerData,
+    TapHandlerData,
+    TapGestureProperties
+  >
 >;
 
 export type TapGestureEvent = GestureEvent<TapHandlerData>;
 
 export type TapGesture = DiscreteSingleGesture<
+  TapHandlerData,
   TapHandlerData,
   TapGestureInternalProperties
 >;
@@ -47,12 +52,14 @@ const TapPropsMapping = new Map<
 export function useTapGesture(config: TapGestureConfig): TapGesture {
   const tapConfig = useClonedAndRemappedConfig<
     TapHandlerData,
+    TapHandlerData,
     TapGestureProperties,
     TapGestureInternalProperties
   >(config, TapPropsMapping);
 
-  return useGesture<TapHandlerData, TapGestureInternalProperties>(
-    SingleGestureName.Tap,
-    tapConfig
-  );
+  return useGesture<
+    TapHandlerData,
+    TapHandlerData,
+    TapGestureInternalProperties
+  >(SingleGestureName.Tap, tapConfig);
 }
