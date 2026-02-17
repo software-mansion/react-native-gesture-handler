@@ -18,6 +18,7 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
 
 function handleStateChangeEvent<
   THandlerData,
@@ -127,13 +128,18 @@ export function eventHandler<
     return;
   }
 
-  if ('oldState' in eventWithData && eventWithData.oldState !== undefined) {
+  if (isStateChangeEvent(eventWithData)) {
     handleStateChangeEvent(eventWithData, handlers, jsContext);
-  } else if ('allTouches' in eventWithData) {
+    return;
+  }
+
+  if (isTouchEvent(eventWithData)) {
     handleTouchEvent(eventWithData, handlers);
-  } else if (!dispatchesAnimatedEvents) {
+    return;
+  }
+
+  if (!dispatchesAnimatedEvents) {
     handleUpdateEvent(
-      // @ts-ignore Siema
       eventWithData,
       handlers,
       changeEventCalculator,

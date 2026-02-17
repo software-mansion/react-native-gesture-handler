@@ -126,3 +126,31 @@ export function getChangeEventCalculator<THandlerData>(
     return current;
   };
 }
+
+export function isTouchEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  event:
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+    | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    | GestureTouchEvent
+): event is GestureTouchEvent {
+  'worklet';
+
+  return 'allTouches' in event;
+}
+
+export function isStateChangeEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  event:
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+    | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    | GestureTouchEvent
+): event is GestureStateChangeEventWithHandlerData<THandlerData> {
+  'worklet';
+
+  return 'oldState' in event && event.oldState !== undefined;
+}
