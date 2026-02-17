@@ -10,21 +10,15 @@ import type {
 import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 
-export default function createNativeWrapper<
-  RefType = unknown,
-  PropsType = unknown,
->(
-  Component: React.ComponentType<PropsType>,
+export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
+  Component: React.ComponentType<TProps>,
   config: Readonly<
-    Omit<
-      NativeWrapperProperties<RefType>,
-      keyof WrapperSpecificProperties<RefType>
-    >
+    Omit<NativeWrapperProperties<TRef>, keyof WrapperSpecificProperties<TRef>>
   > = {},
   detectorType: GestureDetectorType = GestureDetectorType.Native
 ) {
   const ComponentWrapper = (
-    props: PropsType & NativeWrapperProperties<RefType | null>
+    props: TProps & NativeWrapperProperties<TRef | null>
   ) => {
     const { ref, onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER, ...restProps } =
       props;
@@ -47,7 +41,7 @@ export default function createNativeWrapper<
           enabled: props.enabled,
           hitSlop: props.hitSlop,
           testID: props.testID,
-        } as PropsType,
+        } as TProps,
       }
     );
 
