@@ -16,10 +16,10 @@ import {
 import { useMemo } from 'react';
 
 export function prepareConfig<
-  TBaseHandlerData,
-  THandlerData,
   TConfig extends object,
->(config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>) {
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
   const runOnJS = maybeUnpackValue(config.runOnJS);
 
   if (
@@ -67,18 +67,18 @@ export function prepareConfig<
 }
 
 export function prepareConfigForNativeSide<
-  TBaseHandlerData,
+  TConfig extends object,
   THandlerData,
-  TConfig,
+  TExtendedHandlerData extends THandlerData,
 >(
   handlerType: SingleGestureName,
-  config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
   // @ts-ignore Seems like TypeScript can't infer the type here properly because of generic
   const filteredConfig: BaseGestureConfig<
-    TBaseHandlerData,
+    TConfig,
     THandlerData,
-    TConfig
+    TExtendedHandlerData
   > = {};
   const handlerPropsWhiteList =
     PropsWhiteLists.get(handlerType) ?? EMPTY_WHITE_LIST;
@@ -103,15 +103,19 @@ export function prepareConfigForNativeSide<
   return filteredConfig;
 }
 
-function cloneConfig<TBaseHandlerData, THandlerData, TConfig>(
+function cloneConfig<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   config: ExcludeInternalConfigProps<
-    BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
+    BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
   >
-): BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig> {
+): BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData> {
   return { ...config } as BaseGestureConfig<
-    TBaseHandlerData,
+    TConfig,
     THandlerData,
-    TConfig
+    TExtendedHandlerData
   >;
 }
 
@@ -138,21 +142,23 @@ function remapProps<
 }
 
 export function useClonedAndRemappedConfig<
-  TBaseHandlerData,
+  TConfig extends Record<string, unknown>,
   THandlerData,
-  TConfig extends object,
-  TInternalConfig extends Record<string, unknown>,
+  TInternalConfig extends Record<string, unknown> = TConfig,
+  TExtendedHandlerData extends THandlerData = THandlerData,
 >(
   config: ExcludeInternalConfigProps<
-    BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
+    BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
   >,
   propsMapping: Map<string, string> = new Map(),
   propsTransformer: (config: TInternalConfig) => TInternalConfig = (cfg) => cfg
-): BaseGestureConfig<TBaseHandlerData, THandlerData, TInternalConfig> {
+): BaseGestureConfig<TInternalConfig, THandlerData, TExtendedHandlerData> {
   return useMemo(() => {
-    const clonedConfig = cloneConfig<TBaseHandlerData, THandlerData, TConfig>(
-      config
-    );
+    const clonedConfig = cloneConfig<
+      TConfig,
+      THandlerData,
+      TExtendedHandlerData
+    >(config);
 
     return propsTransformer(
       remapProps<TConfig, TInternalConfig>(

@@ -36,9 +36,13 @@ function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   };
 }
 
-export function useGestureCallbacks<TBaseHandlerData, THandlerData, TConfig>(
+export function useGestureCallbacks<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
   const callbacks = useMemoizedGestureCallbacks(config);
 
@@ -59,7 +63,7 @@ export function useGestureCallbacks<TBaseHandlerData, THandlerData, TConfig>(
   }
 
   let animatedEventHandler:
-    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void)
+    | ((event: GestureUpdateEventWithHandlerData<TExtendedHandlerData>) => void)
     | AnimatedEvent
     | undefined;
   if (config.dispatchesAnimatedEvents) {

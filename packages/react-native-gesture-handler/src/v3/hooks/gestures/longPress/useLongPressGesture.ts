@@ -28,25 +28,19 @@ type LongPressGestureInternalProperties =
   WithSharedValue<LongPressGestureNativeProperties>;
 
 export type LongPressGestureConfig = ExcludeInternalConfigProps<
-  BaseDiscreteGestureConfig<
-    LongPressHandlerData,
-    LongPressHandlerData,
-    LongPressGestureProperties
-  >
+  BaseDiscreteGestureConfig<LongPressGestureProperties, LongPressHandlerData>
 >;
 
 type LongPressGestureInternalConfig = BaseDiscreteGestureConfig<
-  LongPressHandlerData,
-  LongPressHandlerData,
-  LongPressGestureInternalProperties
+  LongPressGestureInternalProperties,
+  LongPressHandlerData
 >;
 
 export type LongPressGestureEvent = GestureEvent<LongPressHandlerData>;
 
 export type LongPressGesture = SingleGesture<
-  LongPressHandlerData,
-  LongPressHandlerData,
-  LongPressGestureProperties
+  LongPressGestureProperties,
+  LongPressHandlerData
 >;
 
 const LongPressPropsMapping = new Map<
@@ -71,15 +65,13 @@ export function useLongPressGesture(
   config: LongPressGestureConfig
 ): LongPressGesture {
   const longPressConfig = useClonedAndRemappedConfig<
-    LongPressHandlerData,
-    LongPressHandlerData,
     LongPressGestureProperties,
+    LongPressHandlerData,
     LongPressGestureInternalProperties
   >(config, LongPressPropsMapping, transformLongPressProps);
 
-  return useGesture<
-    LongPressHandlerData,
-    LongPressHandlerData,
-    LongPressGestureInternalProperties
-  >(SingleGestureName.LongPress, longPressConfig);
+  return useGesture<LongPressGestureInternalProperties, LongPressHandlerData>(
+    SingleGestureName.LongPress,
+    longPressConfig
+  );
 }

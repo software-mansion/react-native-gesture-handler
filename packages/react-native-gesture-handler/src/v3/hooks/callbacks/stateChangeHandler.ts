@@ -13,10 +13,13 @@ import {
   runCallback,
 } from '../utils';
 
-export function getStateChangeHandler<TBaseHandlerData, THandlerData>(
+export function getStateChangeHandler<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>,
-  context?: ReanimatedContext<THandlerData>
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  context?: ReanimatedContext<TExtendedHandlerData>
 ) {
   return (sourceEvent: StateChangeEventWithHandlerData<THandlerData>) => {
     'worklet';

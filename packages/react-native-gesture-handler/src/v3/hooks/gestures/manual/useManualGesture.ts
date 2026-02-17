@@ -14,9 +14,8 @@ type ManualHandlerData = Record<string, never>;
 type ManualGestureProperties = ManualGestureNativeProperties;
 
 type ManualGestureInternalConfig = BaseGestureConfig<
-  ManualHandlerData,
-  ManualHandlerData,
-  ManualGestureProperties
+  ManualGestureProperties,
+  ManualHandlerData
 >;
 
 export type ManualGestureConfig =
@@ -25,17 +24,14 @@ export type ManualGestureConfig =
 export type ManualGestureEvent = GestureEvent<ManualHandlerData>;
 
 export type ManualGesture = SingleGesture<
-  ManualHandlerData,
-  ManualHandlerData,
-  ManualGestureProperties
+  ManualGestureProperties,
+  ManualHandlerData
 >;
 
 export function useManualGesture(config: ManualGestureConfig): ManualGesture {
   const manualConfig = useClonedAndRemappedConfig<
-    ManualHandlerData,
-    ManualHandlerData,
     ManualGestureProperties,
-    ManualGestureProperties
+    ManualHandlerData
   >(config);
 
   return useGesture(SingleGestureName.Manual, manualConfig);

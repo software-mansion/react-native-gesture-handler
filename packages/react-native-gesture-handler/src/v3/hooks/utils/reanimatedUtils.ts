@@ -26,8 +26,12 @@ const SHARED_VALUE_OFFSET = 1.618;
 // Don't transfer entire NativeProxy to the UI thread
 const { updateGestureHandlerConfig } = NativeProxy;
 
-export function bindSharedValues<TBaseHandlerData, THandlerData, TConfig>(
-  config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>,
+export function bindSharedValues<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>,
   handlerTag: number
 ) {
   if (Reanimated === undefined) {
@@ -64,8 +68,12 @@ export function bindSharedValues<TBaseHandlerData, THandlerData, TConfig>(
   }
 }
 
-export function unbindSharedValues<TBaseHandlerData, THandlerData, TConfig>(
-  config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>,
+export function unbindSharedValues<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>,
   handlerTag: number
 ) {
   if (Reanimated === undefined) {
@@ -89,14 +97,14 @@ export function unbindSharedValues<TBaseHandlerData, THandlerData, TConfig>(
 }
 
 export function hasWorkletEventHandlers<
-  TBaseHandlerData,
-  THandlerData,
   TConfig,
->(config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>) {
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
   return Object.entries(config).some(
     ([key, value]) =>
       HandlerCallbacks.has(
-        key as keyof GestureCallbacks<TBaseHandlerData, THandlerData>
+        key as keyof GestureCallbacks<THandlerData, TExtendedHandlerData>
       ) &&
       typeof value === 'function' &&
       '__workletHash' in value

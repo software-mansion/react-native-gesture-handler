@@ -7,19 +7,28 @@ import {
 import { useMemo } from 'react';
 import { eventHandler } from './eventHandler';
 
-export function useGestureEventHandler<TBaseHandlerData, THandlerData, TConfig>(
+export function useGestureEventHandler<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  handlers: GestureCallbacks<TBaseHandlerData, THandlerData>,
-  config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
-  const jsContext: ReanimatedContext<THandlerData> = useMemo(() => {
+  const jsContext: ReanimatedContext<TExtendedHandlerData> = useMemo(() => {
     return {
       lastUpdateEvent: undefined,
     };
   }, []);
 
   return useMemo(() => {
-    return (event: GestureHandlerEventWithHandlerData<THandlerData>) => {
+    return (
+      event: GestureHandlerEventWithHandlerData<
+        THandlerData,
+        TExtendedHandlerData
+      >
+    ) => {
       eventHandler(
         handlerTag,
         event,

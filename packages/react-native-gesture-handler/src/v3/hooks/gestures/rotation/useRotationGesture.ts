@@ -13,12 +13,12 @@ import {
 } from '../../utils';
 import { RotationGestureNativeProperties } from './RotationProperties';
 
-type RotationBaseHandlerData = {
+type RotationHandlerData = {
   rotation: number;
   velocity: number;
 };
 
-type RotationHandlerData = RotationBaseHandlerData & {
+type RotationExtendedHandlerData = RotationHandlerData & {
   anchorX: number;
   anchorY: number;
   rotationChange: number;
@@ -27,9 +27,9 @@ type RotationHandlerData = RotationBaseHandlerData & {
 type RotationGestureProperties = RotationGestureNativeProperties;
 
 type RotationGestureInternalConfig = BaseGestureConfig<
-  RotationBaseHandlerData,
+  RotationGestureProperties,
   RotationHandlerData,
-  RotationGestureProperties
+  RotationExtendedHandlerData
 >;
 
 export type RotationGestureConfig =
@@ -38,14 +38,14 @@ export type RotationGestureConfig =
 export type RotationGestureEvent = GestureEvent<RotationHandlerData>;
 
 export type RotationGesture = SingleGesture<
-  RotationBaseHandlerData,
+  RotationGestureProperties,
   RotationHandlerData,
-  RotationGestureProperties
+  RotationExtendedHandlerData
 >;
 
 function diffCalculator(
-  current: HandlerData<RotationHandlerData>,
-  previous: HandlerData<RotationHandlerData> | null
+  current: HandlerData<RotationExtendedHandlerData>,
+  previous: HandlerData<RotationExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -69,11 +69,11 @@ export function useRotationGesture(
   config: RotationGestureConfig
 ): RotationGesture {
   const rotationConfig = useClonedAndRemappedConfig<
-    RotationBaseHandlerData,
-    RotationHandlerData,
     RotationGestureProperties,
+    RotationHandlerData,
     // no internal props, pass record as RotationGestureProperties maps everything to never
-    Record<string, unknown>
+    Record<string, unknown>,
+    RotationExtendedHandlerData
   >(config, RotationPropsMapping, transformRotationProps);
 
   return useGesture(SingleGestureName.Rotation, rotationConfig);

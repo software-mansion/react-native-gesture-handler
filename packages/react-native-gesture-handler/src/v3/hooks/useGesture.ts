@@ -17,10 +17,14 @@ import {
 } from '../../handlers/handlersRegistry';
 import { NativeProxy } from '../NativeProxy';
 
-export function useGesture<TBaseHandlerData, THandlerData, TConfig>(
+export function useGesture<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+>(
   type: SingleGestureName,
-  config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>
-): SingleGesture<TBaseHandlerData, THandlerData, TConfig> {
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
+): SingleGesture<TConfig, THandlerData, TExtendedHandlerData> {
   const handlerTag = useMemo(() => getNextHandlerTag(), []);
   const disableReanimated = useMemo(() => config.disableReanimated, []);
 

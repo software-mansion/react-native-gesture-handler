@@ -9,9 +9,12 @@ import {
   UnpackedGestureHandlerEvent,
 } from '../../types';
 
-export function useMemoizedGestureCallbacks<TBaseHandlerData, THandlerData>(
-  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>
-): GestureCallbacks<TBaseHandlerData, THandlerData> {
+export function useMemoizedGestureCallbacks<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
+): GestureCallbacks<THandlerData, TExtendedHandlerData> {
   return useMemo(
     () => ({
       ...(callbacks.onBegin ? { onBegin: callbacks.onBegin } : {}),
@@ -46,14 +49,14 @@ export function useMemoizedGestureCallbacks<TBaseHandlerData, THandlerData>(
   );
 }
 
-function getHandler<TBaseHandlerData, THandlerData>(
+function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
 ):
-  | GestureEventCallback<TBaseHandlerData>
   | GestureEventCallback<THandlerData>
-  | GestureEventCallbackWithDidSucceed<TBaseHandlerData>
+  | GestureEventCallback<TExtendedHandlerData>
   | GestureEventCallbackWithDidSucceed<THandlerData>
+  | GestureEventCallbackWithDidSucceed<TExtendedHandlerData>
   | GestureTouchEventCallback
   | undefined {
   'worklet';
@@ -63,7 +66,7 @@ function getHandler<TBaseHandlerData, THandlerData>(
     case CALLBACK_TYPE.START:
       return callbacks.onActivate;
     case CALLBACK_TYPE.UPDATE:
-      return callbacks.onUpdate as GestureEventCallback<THandlerData>; // Animated event is handled in different place.
+      return callbacks.onUpdate as GestureEventCallback<TExtendedHandlerData>; // Animated event is handled in different place.
     case CALLBACK_TYPE.END:
       return callbacks.onDeactivate;
     case CALLBACK_TYPE.FINALIZE:
@@ -99,9 +102,12 @@ export function touchEventTypeToCallbackType(
 type SingleParameterCallback<T> = (event: T) => void;
 type DoubleParameterCallback<T> = (event: T, didSucceed: boolean) => void;
 
-export function runCallback<TBaseHandlerData, THandlerData>(
+export function runCallback<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<TBaseHandlerData, THandlerData>,
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
   event: UnpackedGestureHandlerEvent<THandlerData>,
   didSucceed?: boolean
 ) {

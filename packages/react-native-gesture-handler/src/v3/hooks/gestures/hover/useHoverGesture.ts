@@ -19,7 +19,7 @@ import {
   HoverGestureNativeProperties,
 } from './HoverProperties';
 
-type HoverBaseHandlerData = {
+type HoverHandlerData = {
   x: number;
   y: number;
   absoluteX: number;
@@ -27,7 +27,7 @@ type HoverBaseHandlerData = {
   stylusData: StylusData;
 };
 
-type HoverHandlerData = HoverBaseHandlerData & {
+type HoverExtendedHandlerData = HoverHandlerData & {
   changeX: number;
   changeY: number;
 };
@@ -44,29 +44,29 @@ type HoverGestureInternalProperties = WithSharedValue<
 
 export type HoverGestureConfig = ExcludeInternalConfigProps<
   BaseGestureConfig<
-    HoverBaseHandlerData,
+    HoverGestureProperties,
     HoverHandlerData,
-    HoverGestureProperties
+    HoverExtendedHandlerData
   >
 >;
 
 type HoverGestureInternalConfig = BaseGestureConfig<
-  HoverBaseHandlerData,
+  HoverGestureInternalProperties,
   HoverHandlerData,
-  HoverGestureInternalProperties
+  HoverExtendedHandlerData
 >;
 
-export type HoverGestureEvent = GestureEvent<HoverHandlerData>;
+export type HoverGestureEvent = GestureEvent<HoverExtendedHandlerData>;
 
 export type HoverGesture = SingleGesture<
-  HoverBaseHandlerData,
+  HoverGestureInternalProperties,
   HoverHandlerData,
-  HoverGestureInternalProperties
+  HoverExtendedHandlerData
 >;
 
 function diffCalculator(
-  current: HandlerData<HoverHandlerData>,
-  previous: HandlerData<HoverHandlerData> | null
+  current: HandlerData<HoverExtendedHandlerData>,
+  previous: HandlerData<HoverExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -87,10 +87,10 @@ const HoverPropsMapping = new Map<string, string>([['effect', 'hoverEffect']]);
 
 export function useHoverGesture(config: HoverGestureConfig): HoverGesture {
   const hoverConfig = useClonedAndRemappedConfig<
-    HoverBaseHandlerData,
-    HoverHandlerData,
     HoverGestureProperties,
-    HoverGestureInternalProperties
+    HoverHandlerData,
+    HoverGestureInternalProperties,
+    HoverExtendedHandlerData
   >(config, HoverPropsMapping, transformHoverProps);
 
   return useGesture(SingleGestureName.Hover, hoverConfig);

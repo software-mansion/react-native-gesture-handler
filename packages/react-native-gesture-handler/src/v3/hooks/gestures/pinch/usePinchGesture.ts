@@ -13,12 +13,12 @@ import {
 } from '../../utils';
 import { PinchGestureNativeProperties } from './PinchProperties';
 
-type PinchBaseHandlerData = {
+type PinchHandlerData = {
   scale: number;
   velocity: number;
 };
 
-type PinchHandlerData = PinchBaseHandlerData & {
+type PinchExtendedHandlerData = PinchHandlerData & {
   focalX: number;
   focalY: number;
   scaleChange: number;
@@ -27,9 +27,9 @@ type PinchHandlerData = PinchBaseHandlerData & {
 type PinchGestureProperties = PinchGestureNativeProperties;
 
 type PinchGestureInternalConfig = BaseGestureConfig<
-  PinchBaseHandlerData,
+  PinchGestureProperties,
   PinchHandlerData,
-  PinchGestureProperties
+  PinchExtendedHandlerData
 >;
 
 export type PinchGestureConfig =
@@ -38,14 +38,14 @@ export type PinchGestureConfig =
 export type PinchGestureEvent = GestureEvent<PinchHandlerData>;
 
 export type PinchGesture = SingleGesture<
-  PinchBaseHandlerData,
+  PinchGestureProperties,
   PinchHandlerData,
-  PinchGestureProperties
+  PinchExtendedHandlerData
 >;
 
 function diffCalculator(
-  current: HandlerData<PinchHandlerData>,
-  previous: HandlerData<PinchHandlerData> | null
+  current: HandlerData<PinchExtendedHandlerData>,
+  previous: HandlerData<PinchExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -65,11 +65,11 @@ const PinchPropsMapping = new Map<string, string>();
 
 export function usePinchGesture(config: PinchGestureConfig): PinchGesture {
   const pinchConfig = useClonedAndRemappedConfig<
-    PinchBaseHandlerData,
-    PinchHandlerData,
     PinchGestureProperties,
+    PinchHandlerData,
     // no internal props, pass record as PinchGestureProperties maps everything to never
-    Record<string, unknown>
+    Record<string, unknown>,
+    PinchExtendedHandlerData
   >(config, PinchPropsMapping, transformPinchProps);
 
   pinchConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);

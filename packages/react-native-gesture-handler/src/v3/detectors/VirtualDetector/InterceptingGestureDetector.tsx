@@ -29,13 +29,21 @@ interface VirtualChildrenForNative {
   viewRef: unknown;
 }
 
-export function InterceptingGestureDetector<THandlerData, TConfig>({
+export function InterceptingGestureDetector<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>({
   gesture,
   children,
   touchAction,
   userSelect,
   enableContextMenu,
-}: InterceptingGestureDetectorProps<THandlerData, TConfig>) {
+}: InterceptingGestureDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData
+>) {
   useEnsureGestureHandlerRootView();
 
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
@@ -131,8 +139,13 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   }
 
   const createGestureEventHandler = useCallback(
-    (key: keyof DetectorCallbacks<THandlerData>) => {
-      return (e: GestureHandlerEventWithHandlerData<THandlerData>) => {
+    (key: keyof DetectorCallbacks<THandlerData, TExtendedHandlerData>) => {
+      return (
+        e: GestureHandlerEventWithHandlerData<
+          THandlerData,
+          TExtendedHandlerData
+        >
+      ) => {
         if (typeof gesture?.detectorCallbacks[key] === 'function') {
           // @ts-expect-error passing event to a union of functions where only one is typed as such
           gesture.detectorCallbacks[key](e);
@@ -151,15 +164,18 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   );
 
   const getHandlers = useCallback(
-    (key: keyof DetectorCallbacks<unknown>) => {
+    (key: keyof DetectorCallbacks<unknown, unknown>) => {
       const handlers: ((
-        e: GestureHandlerEventWithHandlerData<THandlerData>
+        e: GestureHandlerEventWithHandlerData<
+          THandlerData,
+          TExtendedHandlerData
+        >
       ) => void)[] = [];
 
       if (gesture?.detectorCallbacks[key]) {
         handlers.push(
           gesture.detectorCallbacks[key] as (
-            e: GestureHandlerEventWithHandlerData<unknown>
+            e: GestureHandlerEventWithHandlerData<unknown, unknown>
           ) => void
         );
       }
@@ -169,7 +185,10 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         if (handler) {
           handlers.push(
             handler as (
-              e: GestureHandlerEventWithHandlerData<THandlerData>
+              e: GestureHandlerEventWithHandlerData<
+                THandlerData,
+                TExtendedHandlerData
+              >
             ) => void
           );
         }

@@ -12,10 +12,12 @@ import {
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { tagMessage } from '../../../utils';
 
-function isNativeEvent<THandlerData>(
-  event: GestureHandlerEventWithHandlerData<THandlerData>
+function isNativeEvent<THandlerData, TExtendedHandlerData extends THandlerData>(
+  event: GestureHandlerEventWithHandlerData<THandlerData, TExtendedHandlerData>
 ): event is
-  | NativeSyntheticEvent<GestureUpdateEventWithHandlerData<THandlerData>>
+  | NativeSyntheticEvent<
+      GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    >
   | NativeSyntheticEvent<GestureStateChangeEventWithHandlerData<THandlerData>>
   | NativeSyntheticEvent<GestureTouchEvent> {
   'worklet';
@@ -23,11 +25,14 @@ function isNativeEvent<THandlerData>(
   return 'nativeEvent' in event;
 }
 
-export function maybeExtractNativeEvent<THandlerData>(
-  event: GestureHandlerEventWithHandlerData<THandlerData>
+export function maybeExtractNativeEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  event: GestureHandlerEventWithHandlerData<THandlerData, TExtendedHandlerData>
 ):
   | GestureTouchEvent
-  | GestureUpdateEventWithHandlerData<THandlerData>
+  | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
   | GestureStateChangeEventWithHandlerData<THandlerData> {
   'worklet';
 
@@ -44,9 +49,15 @@ export function flattenAndFilterEvent<THandlerData>(
   return { handlerTag: event.handlerTag, ...event.handlerData };
 }
 
-export function isEventForHandlerWithTag<THandlerData>(
+export function isEventForHandlerWithTag<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  event: GestureUpdateEventWithHandlerData<THandlerData> | GestureTouchEvent
+  event:
+    | GestureStateChangeEventWithHandlerData<THandlerData>
+    | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+    | GestureTouchEvent
 ) {
   'worklet';
 
@@ -84,10 +95,10 @@ export function checkMappingForChangeProperties(animatedEvent: AnimatedEvent) {
 }
 
 export function shouldHandleTouchEvents<
-  TBaseHandlerData,
-  THandlerData,
   TConfig,
->(config: BaseGestureConfig<TBaseHandlerData, THandlerData, TConfig>) {
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>) {
   return (
     !!config.onTouchesDown ||
     !!config.onTouchesMove ||

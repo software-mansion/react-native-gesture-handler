@@ -20,7 +20,7 @@ import {
   PanGestureNativeProperties,
 } from './PanProperties';
 
-export type PanBaseHandlerData = {
+export type PanHandlerData = {
   x: number;
   y: number;
   absoluteX: number;
@@ -32,7 +32,7 @@ export type PanBaseHandlerData = {
   stylusData: StylusData;
 };
 
-export type PanHandlerData = PanBaseHandlerData & {
+export type PanExtendedHandlerData = PanHandlerData & {
   changeX: number;
   changeY: number;
 };
@@ -44,21 +44,25 @@ export type PanGestureInternalProperties =
   WithSharedValue<PanGestureNativeProperties>;
 
 export type PanGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<PanBaseHandlerData, PanHandlerData, PanGestureProperties>
+  BaseGestureConfig<
+    PanGestureProperties,
+    PanHandlerData,
+    PanExtendedHandlerData
+  >
 >;
 
 type PanGestureInternalConfig = BaseGestureConfig<
-  PanBaseHandlerData,
+  PanGestureInternalProperties,
   PanHandlerData,
-  PanGestureInternalProperties
+  PanExtendedHandlerData
 >;
 
 export type PanGestureEvent = GestureEvent<PanHandlerData>;
 
 export type PanGesture = SingleGesture<
-  PanBaseHandlerData,
+  PanGestureInternalProperties,
   PanHandlerData,
-  PanGestureInternalProperties
+  PanExtendedHandlerData
 >;
 
 const PanPropsMapping = new Map<
@@ -144,8 +148,8 @@ function transformOffsetProp(
 }
 
 function diffCalculator(
-  current: HandlerData<PanHandlerData>,
-  previous: HandlerData<PanHandlerData> | null
+  current: HandlerData<PanExtendedHandlerData>,
+  previous: HandlerData<PanExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -177,15 +181,15 @@ export function usePanGesture(config: PanGestureConfig): PanGesture {
   }
 
   const panConfig = useClonedAndRemappedConfig<
-    PanBaseHandlerData,
-    PanHandlerData,
     PanGestureProperties,
-    PanGestureInternalProperties
+    PanHandlerData,
+    PanGestureInternalProperties,
+    PanExtendedHandlerData
   >(config, PanPropsMapping, transformPanProps);
 
   return useGesture<
-    PanBaseHandlerData,
+    PanGestureInternalProperties,
     PanHandlerData,
-    PanGestureInternalProperties
+    PanExtendedHandlerData
   >(SingleGestureName.Pan, panConfig);
 }

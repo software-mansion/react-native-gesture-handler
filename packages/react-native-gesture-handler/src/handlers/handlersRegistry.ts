@@ -13,9 +13,13 @@ const gestures = new Map<number, GestureType>();
 const oldHandlers = new Map<number, GestureHandlerCallbacks>();
 const testIDs = new Map<string, number>();
 
-export function registerGesture<TBaseHandlerData, THandlerData, TConfig>(
+export function registerGesture<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  gesture: SingleGesture<TBaseHandlerData, THandlerData, TConfig>
+  gesture: SingleGesture<TConfig, THandlerData, TExtendedHandlerData>
 ) {
   if (isTestEnv() && gesture.config.testID) {
     hookGestures.set(handlerTag, gesture);

@@ -20,9 +20,8 @@ type FlingHandlerData = {
 type FlingGestureProperties = WithSharedValue<FlingGestureNativeProperties>;
 
 type FlingGestureInternalConfig = BaseDiscreteGestureConfig<
-  FlingHandlerData,
-  FlingHandlerData,
-  FlingGestureProperties
+  FlingGestureProperties,
+  FlingHandlerData
 >;
 
 export type FlingGestureConfig =
@@ -31,17 +30,14 @@ export type FlingGestureConfig =
 export type FlingGestureEvent = GestureEvent<FlingHandlerData>;
 
 export type FlingGesture = SingleGesture<
-  FlingHandlerData,
-  FlingHandlerData,
-  FlingGestureProperties
+  FlingGestureProperties,
+  FlingHandlerData
 >;
 
 export function useFlingGesture(config: FlingGestureConfig): FlingGesture {
   const flingConfig = useClonedAndRemappedConfig<
-    FlingHandlerData,
-    FlingHandlerData,
     FlingGestureProperties,
-    FlingGestureProperties
+    FlingHandlerData
   >(config);
 
   return useGesture(SingleGestureName.Fling, flingConfig);
