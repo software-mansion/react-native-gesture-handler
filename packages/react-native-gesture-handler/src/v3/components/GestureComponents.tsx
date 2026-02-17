@@ -18,10 +18,10 @@ import {
 
 import createNativeWrapper from '../createNativeWrapper';
 
-import { NativeWrapperProperties } from '../types/NativeWrapperType';
-import { NativeWrapperProps } from '../hooks/utils';
+import type { NativeWrapperProperties } from '../types/NativeWrapperType';
+import type { NativeWrapperProps } from '../hooks/utils';
 import { GestureDetectorType } from '../detectors';
-import { NativeGesture } from '../hooks/gestures/native/NativeTypes';
+import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 export const RefreshControl = createNativeWrapper(

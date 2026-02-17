@@ -29,7 +29,7 @@ export type GestureStateChangeEventWithHandlerData<T> =
 
 export type GestureHandlerEventWithHandlerData<
   THandlerData,
-  TExtendedHandlerData extends THandlerData, // = THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
 > =
   | UpdateEventWithHandlerData<TExtendedHandlerData>
   | StateChangeEventWithHandlerData<THandlerData>
@@ -37,7 +37,7 @@ export type GestureHandlerEventWithHandlerData<
 
 export type UnpackedGestureHandlerEventWithHandlerData<
   THandlerData,
-  TExtendedHandlerData extends THandlerData, // = THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
 > =
   | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
   | GestureStateChangeEventWithHandlerData<THandlerData>

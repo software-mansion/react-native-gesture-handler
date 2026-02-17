@@ -26,7 +26,7 @@ export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
 
 export type GestureCallbacks<
   THandlerData,
-  TExtendedHandlerData extends THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
 > = {
   onBegin?: GestureEventCallback<THandlerData>;
   onActivate?: GestureEventCallback<TExtendedHandlerData>;

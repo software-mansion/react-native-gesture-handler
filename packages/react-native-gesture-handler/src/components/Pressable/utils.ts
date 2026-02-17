@@ -1,20 +1,20 @@
 import { Insets } from 'react-native';
-import {
+import type {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
 } from '../../handlers/GestureHandlerEventPayload';
-import {
+import type {
   TouchData,
   GestureStateChangeEvent,
   GestureTouchEvent,
 } from '../../handlers/gestureHandlerCommon';
-import {
+import type {
   PressableDimensions,
   InnerPressableEvent,
   PressableEvent,
 } from './PressableProps';
-import { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
-import { HoverGestureActiveEvent } from '../../v3/hooks';
+import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
+import type { HoverGestureActiveEvent } from '../../v3/hooks';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
