@@ -27,7 +27,7 @@ export default function HeaderWithBadge({
     <div style={styles.container}>
       {children}
 
-      {platforms.map((platform) => (
+      {platforms.sort().map((platform) => (
         <Badge key={platform} platform={platform} />
       ))}
     </div>
