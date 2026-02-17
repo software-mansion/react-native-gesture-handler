@@ -222,6 +222,10 @@ RCT_EXPORT_MODULE()
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = RNGHGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
+      if (handler.recognizer.state == 0) {
+        // Force going from UNDETERMINED to ACTIVE through BEGAN to preserve the correct state transition flow.
+        [self setGestureStateSync:2 forHandler:handlerTag];
+      }
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
     } else if (state == 5) { // ENDED
@@ -234,7 +238,11 @@ RCT_EXPORT_MODULE()
     [handler.pointerTracker cancelPointers];
   }
 
-  [handler handleGesture:handler.recognizer fromReset:NO];
+  // do not send state change event when activating because it bypasses
+  // shouldRequireFailureOfGestureRecognizer
+  if (state != 4) {
+    [handler handleGesture:handler.recognizer fromReset:NO];
+  }
 }
 
 #pragma mark-- Batch handling
