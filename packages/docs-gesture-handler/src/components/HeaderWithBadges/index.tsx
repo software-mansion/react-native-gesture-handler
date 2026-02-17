@@ -1,5 +1,13 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useColorMode } from '@docusaurus/theme-common';
+
+const COLORS = {
+  SWM_OFF_WHITE: '#f8f9ff',
+  SWM_PURPLE_LIGHT_100: '#782aeb',
+  SWM_NAVY_LIGHT_60: '#6676aa',
+  SWM_NAVY: '#232736',
+};
 
 type HeaderWithBadgesProps = {
   platforms?: ('android' | 'iOS' | 'web')[];
@@ -16,8 +24,18 @@ type VersionBadgeProps = {
 };
 
 export function VersionBadge({ version }: VersionBadgeProps) {
+  const { colorMode } = useColorMode();
+  const isDark = colorMode === 'dark';
+
   return (
-    <div style={{ ...styles.badge, ...styles.versionBadge }}>{version}</div>
+    <div
+      style={{
+        ...styles.badge,
+        ...styles.versionBadge,
+        ...(isDark ? styles.versionBadgeDark : styles.versionBadgeLight),
+      }}>
+      Available from {version}
+    </div>
   );
 }
 
@@ -86,6 +104,20 @@ const styles = StyleSheet.create({
   },
 
   versionBadge: {
-    backgroundColor: '#DB7093',
+    marginLeft: 'auto',
+    borderWidth: 1,
+    borderStyle: 'solid',
+  },
+
+  versionBadgeLight: {
+    borderColor: COLORS.SWM_PURPLE_LIGHT_100,
+    backgroundColor: COLORS.SWM_OFF_WHITE,
+    color: COLORS.SWM_PURPLE_LIGHT_100,
+  },
+
+  versionBadgeDark: {
+    borderColor: COLORS.SWM_NAVY_LIGHT_60,
+    backgroundColor: COLORS.SWM_NAVY,
+    color: COLORS.SWM_OFF_WHITE,
   },
 });
