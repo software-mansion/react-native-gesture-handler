@@ -6,7 +6,7 @@ import {
 
 export type DetectorCallbacks<
   THandlerData,
-  TExtendedHandlerData extends THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
 > = {
   jsEventHandler:
     | undefined
