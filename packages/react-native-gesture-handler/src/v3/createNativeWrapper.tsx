@@ -4,7 +4,7 @@ import { NativeWrapperProps } from './hooks/utils';
 import { useNativeGesture } from './hooks/gestures';
 import { NativeDetector } from './detectors/NativeDetector';
 import type { NativeWrapperProperties } from './types/NativeWrapperType';
-import { NativeGesture } from './hooks/gestures/native/useNativeGesture';
+import { NativeGesture } from './hooks/gestures/native/NativeTypes';
 import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
 import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
 

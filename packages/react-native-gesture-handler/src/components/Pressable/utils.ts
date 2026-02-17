@@ -14,7 +14,7 @@ import {
   PressableEvent,
 } from './PressableProps';
 import { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
-import { OptionalProps } from '../../v3/types/UtilityTypes';
+import { HoverGestureActiveEvent } from '../../v3/hooks';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
@@ -51,7 +51,8 @@ const gestureToPressEvent = (
     | GestureStateChangeEvent<
         HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
       >
-    | OptionalProps<HoverGestureEvent, 'changeX' | 'changeY'>
+    | HoverGestureEvent
+    | HoverGestureActiveEvent
     | LongPressGestureEvent,
   timestamp: number,
   targetId: number
@@ -82,7 +83,8 @@ const gestureToPressableEvent = (
     | GestureStateChangeEvent<
         HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
       >
-    | OptionalProps<HoverGestureEvent, 'changeX' | 'changeY'>
+    | HoverGestureEvent
+    | HoverGestureActiveEvent
     | LongPressGestureEvent
 ): PressableEvent => {
   const timestamp = Date.now();
