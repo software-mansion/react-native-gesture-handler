@@ -1,3 +1,11 @@
+import {
+  BaseDiscreteGestureConfig,
+  ExcludeInternalConfigProps,
+  GestureEvent,
+  SingleGesture,
+  WithSharedValue,
+} from '../../../types';
+
 type CommonLongPressGestureProperties = {
   /**
    * Determine exact number of points required to handle the long press gesture.
@@ -31,3 +39,34 @@ export type LongPressGestureNativeProperties =
 export const LongPressNativeProperties = new Set<
   keyof LongPressGestureNativeProperties
 >(['minDurationMs', 'maxDist', 'numberOfPointers']);
+
+export type LongPressHandlerData = {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+  duration: number;
+};
+
+export type LongPressGestureProperties =
+  WithSharedValue<LongPressGestureExternalProperties>;
+
+export type LongPressGestureInternalProperties =
+  WithSharedValue<LongPressGestureNativeProperties>;
+
+export type LongPressGestureConfig = ExcludeInternalConfigProps<
+  BaseDiscreteGestureConfig<LongPressGestureProperties, LongPressHandlerData>
+>;
+
+export type LongPressGestureInternalConfig = BaseDiscreteGestureConfig<
+  LongPressGestureInternalProperties,
+  LongPressHandlerData
+>;
+
+export type LongPressGestureEvent = GestureEvent<LongPressHandlerData>;
+export type LongPressGestureActiveEvent = LongPressGestureEvent;
+
+export type LongPressGesture = SingleGesture<
+  LongPressGestureProperties,
+  LongPressHandlerData
+>;

@@ -1,47 +1,17 @@
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  HandlerData,
-  SingleGestureName,
-  GestureEvent,
-} from '../../../types';
+import { HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   useClonedAndRemappedConfig,
   getChangeEventCalculator,
 } from '../../utils';
-import { PinchGestureNativeProperties } from './PinchProperties';
-
-type PinchHandlerData = {
-  scale: number;
-  velocity: number;
-};
-
-type PinchExtendedHandlerData = PinchHandlerData & {
-  focalX: number;
-  focalY: number;
-  scaleChange: number;
-};
-
-type PinchGestureProperties = PinchGestureNativeProperties;
-
-type PinchGestureInternalConfig = BaseGestureConfig<
+import {
+  PinchExtendedHandlerData,
+  PinchGesture,
+  PinchGestureConfig,
+  PinchGestureInternalConfig,
   PinchGestureProperties,
   PinchHandlerData,
-  PinchExtendedHandlerData
->;
-
-export type PinchGestureConfig =
-  ExcludeInternalConfigProps<PinchGestureInternalConfig>;
-
-export type PinchGestureEvent = GestureEvent<PinchHandlerData>;
-
-export type PinchGesture = SingleGesture<
-  PinchGestureProperties,
-  PinchHandlerData,
-  PinchExtendedHandlerData
->;
+} from './PinchTypes';
 
 function diffCalculator(
   current: HandlerData<PinchExtendedHandlerData>,

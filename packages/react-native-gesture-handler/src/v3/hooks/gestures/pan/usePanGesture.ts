@@ -1,12 +1,7 @@
-import { StylusData } from '../../../../handlers/gestureHandlerCommon';
 import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
   HandlerData,
   SingleGestureName,
   WithSharedValue,
-  GestureEvent,
 } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
@@ -16,54 +11,14 @@ import {
 } from '../../utils';
 import {
   OffsetProps,
-  PanGestureExternalProperties,
-  PanGestureNativeProperties,
-} from './PanProperties';
-
-export type PanHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-  translationX: number;
-  translationY: number;
-  velocityX: number;
-  velocityY: number;
-  stylusData: StylusData;
-};
-
-export type PanExtendedHandlerData = PanHandlerData & {
-  changeX: number;
-  changeY: number;
-};
-
-export type PanGestureProperties =
-  WithSharedValue<PanGestureExternalProperties>;
-
-export type PanGestureInternalProperties =
-  WithSharedValue<PanGestureNativeProperties>;
-
-export type PanGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<
-    PanGestureProperties,
-    PanHandlerData,
-    PanExtendedHandlerData
-  >
->;
-
-type PanGestureInternalConfig = BaseGestureConfig<
+  PanExtendedHandlerData,
+  PanGesture,
+  PanGestureConfig,
+  PanGestureInternalConfig,
   PanGestureInternalProperties,
+  PanGestureProperties,
   PanHandlerData,
-  PanExtendedHandlerData
->;
-
-export type PanGestureEvent = GestureEvent<PanHandlerData>;
-
-export type PanGesture = SingleGesture<
-  PanGestureInternalProperties,
-  PanHandlerData,
-  PanExtendedHandlerData
->;
+} from './PanTypes';
 
 const PanPropsMapping = new Map<
   keyof PanGestureProperties,

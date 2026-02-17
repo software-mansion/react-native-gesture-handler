@@ -1,3 +1,12 @@
+import { StylusData } from '../../../../handlers/gestureHandlerCommon';
+import {
+  BaseGestureConfig,
+  ExcludeInternalConfigProps,
+  GestureEvent,
+  SingleGesture,
+  WithSharedValue,
+} from '../../../types';
+
 type CommonPanGestureProperties = {
   /**
    * Minimum distance the finger (or multiple finger) need to travel before the
@@ -117,3 +126,49 @@ export const PanNativeProperties = new Set<keyof PanGestureNativeProperties>([
   'failOffsetXStart',
   'failOffsetXEnd',
 ]);
+
+export type PanHandlerData = {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+  translationX: number;
+  translationY: number;
+  velocityX: number;
+  velocityY: number;
+  stylusData: StylusData;
+};
+
+export type PanExtendedHandlerData = PanHandlerData & {
+  changeX: number;
+  changeY: number;
+};
+
+export type PanGestureProperties =
+  WithSharedValue<PanGestureExternalProperties>;
+
+export type PanGestureInternalProperties =
+  WithSharedValue<PanGestureNativeProperties>;
+
+export type PanGestureConfig = ExcludeInternalConfigProps<
+  BaseGestureConfig<
+    PanGestureProperties,
+    PanHandlerData,
+    PanExtendedHandlerData
+  >
+>;
+
+export type PanGestureInternalConfig = BaseGestureConfig<
+  PanGestureInternalProperties,
+  PanHandlerData,
+  PanExtendedHandlerData
+>;
+
+export type PanGestureEvent = GestureEvent<PanHandlerData>;
+export type PanGestureActiveEvent = GestureEvent<PanExtendedHandlerData>;
+
+export type PanGesture = SingleGesture<
+  PanGestureInternalProperties,
+  PanHandlerData,
+  PanExtendedHandlerData
+>;

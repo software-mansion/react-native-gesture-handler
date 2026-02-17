@@ -1,68 +1,18 @@
-import { StylusData } from '../../../../handlers/gestureHandlerCommon';
-import { HoverEffect } from '../../../../handlers/gestures/hoverGesture';
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  HandlerData,
-  SingleGestureName,
-  WithSharedValue,
-  GestureEvent,
-} from '../../../types';
+import { HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   useClonedAndRemappedConfig,
   getChangeEventCalculator,
 } from '../../utils';
 import {
-  HoverGestureExternalProperties,
-  HoverGestureNativeProperties,
-} from './HoverProperties';
-
-type HoverHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-  stylusData: StylusData;
-};
-
-type HoverExtendedHandlerData = HoverHandlerData & {
-  changeX: number;
-  changeY: number;
-};
-
-type HoverGestureProperties = WithSharedValue<
-  HoverGestureExternalProperties,
-  HoverEffect
->;
-
-type HoverGestureInternalProperties = WithSharedValue<
-  HoverGestureNativeProperties,
-  HoverEffect
->;
-
-export type HoverGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<
-    HoverGestureProperties,
-    HoverHandlerData,
-    HoverExtendedHandlerData
-  >
->;
-
-type HoverGestureInternalConfig = BaseGestureConfig<
+  HoverExtendedHandlerData,
+  HoverGesture,
+  HoverGestureConfig,
+  HoverGestureInternalConfig,
   HoverGestureInternalProperties,
+  HoverGestureProperties,
   HoverHandlerData,
-  HoverExtendedHandlerData
->;
-
-export type HoverGestureEvent = GestureEvent<HoverExtendedHandlerData>;
-
-export type HoverGesture = SingleGesture<
-  HoverGestureInternalProperties,
-  HoverHandlerData,
-  HoverExtendedHandlerData
->;
+} from './HoverTypes';
 
 function diffCalculator(
   current: HandlerData<HoverExtendedHandlerData>,

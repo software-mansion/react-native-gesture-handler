@@ -1,47 +1,17 @@
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  HandlerData,
-  SingleGestureName,
-  GestureEvent,
-} from '../../../types';
+import { HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   useClonedAndRemappedConfig,
   getChangeEventCalculator,
 } from '../../utils';
-import { RotationGestureNativeProperties } from './RotationProperties';
-
-type RotationHandlerData = {
-  rotation: number;
-  velocity: number;
-};
-
-type RotationExtendedHandlerData = RotationHandlerData & {
-  anchorX: number;
-  anchorY: number;
-  rotationChange: number;
-};
-
-type RotationGestureProperties = RotationGestureNativeProperties;
-
-type RotationGestureInternalConfig = BaseGestureConfig<
+import {
+  RotationExtendedHandlerData,
+  RotationGesture,
+  RotationGestureConfig,
+  RotationGestureInternalConfig,
   RotationGestureProperties,
   RotationHandlerData,
-  RotationExtendedHandlerData
->;
-
-export type RotationGestureConfig =
-  ExcludeInternalConfigProps<RotationGestureInternalConfig>;
-
-export type RotationGestureEvent = GestureEvent<RotationHandlerData>;
-
-export type RotationGesture = SingleGesture<
-  RotationGestureProperties,
-  RotationHandlerData,
-  RotationExtendedHandlerData
->;
+} from './RotationTypes';
 
 function diffCalculator(
   current: HandlerData<RotationExtendedHandlerData>,

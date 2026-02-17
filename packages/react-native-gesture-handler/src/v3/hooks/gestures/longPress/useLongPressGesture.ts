@@ -1,47 +1,14 @@
-import {
-  BaseDiscreteGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  SingleGestureName,
-  WithSharedValue,
-  GestureEvent,
-} from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
 import {
-  LongPressGestureExternalProperties,
-  LongPressGestureNativeProperties,
-} from './LongPressProperties';
-
-type LongPressHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-  duration: number;
-};
-
-type LongPressGestureProperties =
-  WithSharedValue<LongPressGestureExternalProperties>;
-
-type LongPressGestureInternalProperties =
-  WithSharedValue<LongPressGestureNativeProperties>;
-
-export type LongPressGestureConfig = ExcludeInternalConfigProps<
-  BaseDiscreteGestureConfig<LongPressGestureProperties, LongPressHandlerData>
->;
-
-type LongPressGestureInternalConfig = BaseDiscreteGestureConfig<
+  LongPressGesture,
+  LongPressGestureConfig,
+  LongPressGestureInternalConfig,
   LongPressGestureInternalProperties,
-  LongPressHandlerData
->;
-
-export type LongPressGestureEvent = GestureEvent<LongPressHandlerData>;
-
-export type LongPressGesture = SingleGesture<
   LongPressGestureProperties,
-  LongPressHandlerData
->;
+  LongPressHandlerData,
+} from './LongPressTypes';
 
 const LongPressPropsMapping = new Map<
   keyof LongPressGestureProperties,
