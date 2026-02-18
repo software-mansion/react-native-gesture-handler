@@ -1,0 +1,61 @@
+.headerWithBadges {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.badge {
+  border-radius: 16px;
+  padding: 2px 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.androidBadge {
+  background-color: #0f8142;
+}
+
+.iosBadge {
+  background-color: #000000;
+}
+
+.webBadge {
+  background-color: #1067c4;
+}
+
+.versionBadge {
+  margin-left: auto;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.versionBadgeLight {
+  border-color: var(--swm-purple-light-100);
+  background-color: var(--swm-off-white);
+  color: var(--swm-purple-light-100);
+}
+
+.versionBadgeDark {
+  border-color: var(--swm-navy-light-60);
+  background-color: var(--swm-navy);
+  color: var(--swm-off-white);
+}
+
+@media (max-width: 420px) {
+  .headerWithBadges {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .versionBadge {
+    margin-left: 0px;
+    border-width: 1px;
+    border-style: solid;
+  }
+}
