@@ -224,7 +224,8 @@ RCT_EXPORT_MODULE()
     } else if (state == 4) { // ACTIVE
       if (handler.recognizer.state == 0) {
         // Force going from UNDETERMINED to ACTIVE through BEGAN to preserve the correct state transition flow.
-        [self setGestureStateSync:2 forHandler:handlerTag];
+        handler.recognizer.state = RNGHGestureRecognizerStatePossible;
+        [handler handleGesture:handler.recognizer fromReset:NO];
       }
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
