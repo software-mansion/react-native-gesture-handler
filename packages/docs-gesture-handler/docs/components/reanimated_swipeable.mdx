@@ -1,0 +1,384 @@
+---
+id: reanimated_swipeable
+title: Reanimated Swipeable
+sidebar_label: Reanimated Swipeable
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import GifGallery from '@site/components/GifGallery'
+
+:::info
+This component is a drop-in replacement for the `Swipeable` component, rewritten using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started).
+:::
+
+<GifGallery>
+  <img src={useBaseUrl("gifs/sampleswipeable.gif")} height="120" />
+</GifGallery>
+
+
+Reanimated `Swipeable` is designed for implementing swipeable rows or similar interactions. It places its children inside a pannable container that enables horizontal swiping to the left and right. Depending on the direction of the swipe, one of two "action" containers will be displayed, which can be configured using the [`renderLeftActions`](#renderleftactions) or [`renderRightActions`](#renderrightactions) props.
+
+To use Reanimated `Swipeable`, first ensure that Reanimated is installed and that your app is wrapped in `GestureHandlerRootView`. You can then import it as follows:
+
+```ts
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+```
+
+## Properties
+
+### friction
+
+```ts
+friction?: number;
+```
+
+Number that specifies how much the visual interaction will be delayed compared to the gesture distance.
+
+e.g. value of `1` will indicate that the swipeable panel should exactly follow the gesture, `2` means it is going to be two times "slower".
+
+### leftThreshold
+
+```ts
+leftThreshold?: number;
+```
+
+Distance from the left edge at which released panel will animate to the open state (or the open panel will animate into the closed state). By default it's a half of the panel's width.
+
+### rightThreshold
+
+```ts
+rightThreshold?: number;
+```
+
+Distance from the right edge at which released panel will animate to the open state (or the open panel will animate into the closed state). By default it's a half of the panel's width.
+
+### dragOffsetFromLeftEdge
+
+```ts
+dragOffsetFromLeftEdge?: number;
+```
+
+Distance that the panel must be dragged from the left edge to be considered a swipe. The default value is `10`.
+
+### dragOffsetFromRightEdge
+
+```ts
+dragOffsetFromRightEdge?: number;
+```
+
+Distance that the panel must be dragged from the right edge to be considered a swipe. The default value is `10`.
+
+### overshootLeft
+
+```ts
+overshootLeft?: boolean;
+```
+
+A boolean value indicating if the swipeable panel can be pulled further than the left actions panel's width. It is set to `true` by default as long as the left panel render function is present.
+
+### overshootRight
+
+```ts
+overshootRight?: boolean;
+```
+
+A boolean value indicating if the swipeable panel can be pulled further than the right actions panel's width. It is set to `true` by default as long as the right panel render function is present.
+
+### overshootFriction
+
+```ts
+overshootFriction?: number;
+```
+
+A number specifying the delay of visual interaction compared to the gesture distance when overshooting. The default value is `1`, which means no friction. For a more native feel, try using a value of `8` or higher.
+
+### onSwipeableOpen
+
+```ts
+onSwipeableOpen?: (
+  direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+) => void;
+```
+
+A function that is called when `Swipeable` is opened (either right or left).
+Receives swipe direction as an argument.
+
+### onSwipeableClose
+
+```ts
+onSwipeableClose?: (
+  direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+) => void;
+```
+
+A function that is called when `Swipeable` is closed.
+Receives swipe direction as an argument.
+
+### onSwipeableWillOpen
+
+```ts
+onSwipeableWillOpen?: (
+  direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+) => void;
+```
+
+A function that is called when `Swipeable` starts animating on open (either right or left).
+Receives swipe direction as an argument.
+
+### onSwipeableWillClose
+
+```ts
+onSwipeableWillClose?: (
+  direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+) => void;
+```
+
+A function that is called when `Swipeable` starts animating on close.
+Receives swipe direction as an argument.
+
+### onSwipeableOpenStartDrag
+
+```ts
+onSwipeableOpenStartDrag?: (
+  direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+) => void;
+```
+
+A function that is called when a user starts to drag the `Swipeable` to open.
+Receives swipe direction as an argument.
+
+### onSwipeableCloseStartDrag
+
+```ts
+onSwipeableCloseStartDrag?: (
+  direction: SwipeDirection.LEFT | SwipeDirection.RIGHT
+) => void;
+```
+
+A function that is called when a user starts to drag the `Swipeable` to close.
+Receives swipe direction as an argument.
+
+### renderLeftActions
+
+```ts
+renderLeftActions?: (
+  progress: SharedValue<number>,
+  translation: SharedValue<number>,
+  swipeableMethods: SwipeableMethods
+) => React.ReactNode;
+```
+
+A function that returns a component which will be rendered beneath the `Swipeable` after it is swiped to the right. This function accepts the following parameters:
+
+- `progress` - a [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) that represents the swiping progress relative to the width of the returned element.
+  - It equals `0` when the `Swipeable` is fully closed and `1` when it is fully opened.
+  - As the element overshoots its open position, the value approaches `Infinity`.
+- `translation` - a horizontal offset of the `Swipeable` relative to its closed position.
+- `swipeableMethods` - provides an object exposing methods detailed in the [methods section](#methods).
+
+This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node). To accommodate `rtl` (right-to-left) flexbox layouts, use the [`flexDirection`](https://reactnative.dev/docs/flexbox#flex-direction) style property.
+
+### renderRightActions
+
+```ts
+renderRightActions?: (
+  progress: SharedValue<number>,
+  translation: SharedValue<number>,
+  swipeableMethods: SwipeableMethods
+) => React.ReactNode;
+```
+
+A function that returns a component which will be rendered beneath the `Swipeable` after it is swiped to the left. This function accepts the following parameters:
+
+- `progress` - a [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) that represents the swiping progress relative to the width of the returned element.
+  - It equals `0` when the `Swipeable` is fully closed and `1` when it is fully opened.
+  - As the element overshoots its open position, the value approaches `Infinity`.
+- `translation` - a horizontal offset of the `Swipeable` relative to its closed position.
+- `swipeableMethods` - provides an object exposing methods detailed in the [methods section](#methods).
+
+This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node). To accommodate `rtl` (right-to-left) flexbox layouts, use the [`flexDirection`](https://reactnative.dev/docs/flexbox#flex-direction) style property.
+
+
+### containerStyle
+
+```ts
+containerStyle?: StyleProp<ViewStyle>;
+```
+
+Style object for the container ([`Animated.View`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#animated-component)).
+
+### childrenContainerStyle
+
+```ts
+childrenContainerStyle?: StyleProp<ViewStyle>;
+```
+
+Style object for the children container ([`Animated.View`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#animated-component)).
+
+### simultaneousWithExternalGesture
+
+```ts
+simultaneousWithExternalGesture?: AnyGesture | AnyGesture[];
+```
+
+Gestures to be recognized simultaneously with the `Swipeable` (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+
+### requireExternalGestureToFail
+
+```ts
+requireExternalGestureToFail?: AnyGesture | AnyGesture[];
+```
+
+Gestures that `Swipeable` has to wait for before activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+
+
+### blocksExternalGesture
+
+```ts
+blocksExternalGesture?: AnyGesture | AnyGesture[];
+```
+
+Gestures that `Swipeable` will prevent from activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
+
+### enableTrackpadTwoFingerGesture (iOS only)
+
+```ts
+enableTrackpadTwoFingerGesture?: boolean;
+```
+
+Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
+
+### mouseButton (Web & Android only)
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+mouseButton: MouseButton | SharedValue<MouseButton>;
+
+enum MouseButton {
+  LEFT,
+  RIGHT,
+  MIDDLE,
+  BUTTON_4,
+  BUTTON_5,
+  ALL,
+}
+`}/>
+
+Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+
+### enableContextMenu (Web only)
+
+```ts
+enableContextMenu: boolean;
+```
+
+Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
+
+
+## Methods
+
+Using a reference to `Swipeable` allows you to manually trigger the opening and closing of the component, as well as reset its swiping state.
+
+```ts
+const swipeableRef = useRef<SwipeableMethods>(null);
+```
+
+### close
+
+```ts
+close: () => void;
+```
+
+A method that closes component.
+
+### openLeft
+
+```ts
+openLeft: () => void;
+```
+
+A method that opens component on left side.
+
+### openRight
+
+```ts
+openRight: () => void;
+```
+
+A method that opens component on right side.
+
+### reset
+
+```ts
+reset: () => void;
+```
+
+A method that resets the swiping states of this `Swipeable` component. Unlike [`close`](#close), this method does not trigger any animation.
+
+## Example
+
+Example of a `Swipeable` component can be found in [Gesture Handler repository](https://github.com/software-mansion/react-native-gesture-handler/blob/main/apps/common-app/src/new_api/components/swipeable/index.tsx).
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[10, 41]}
+src={`
+import React from 'react';
+import { Text, StyleSheet } from 'react-native';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, {
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+
+function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('showRightProgress:', prog.value);
+    console.log('appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value + 50 }],
+    };
+  });
+
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.rightAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
+
+export default function Example() {
+  return (
+    <GestureHandlerRootView>
+      <ReanimatedSwipeable
+        containerStyle={styles.swipeable}
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderRightActions={RightAction}>
+        <Text>Swipe me!</Text>
+      </ReanimatedSwipeable>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  separator: {
+    width: '100%',
+    borderTopWidth: 1,
+  },
+  swipeable: {
+    height: 50,
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+});
+`}/>

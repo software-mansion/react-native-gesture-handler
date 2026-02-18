@@ -3,6 +3,7 @@
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEventHandlerType.h"
 #import "RNGestureHandlerEvents.h"
+#import "RNGestureHandlerPointerEvents.h"
 #import "RNGestureHandlerPointerTracker.h"
 #import "RNGestureHandlerPointerType.h"
 #import "RNGestureHandlerState.h"

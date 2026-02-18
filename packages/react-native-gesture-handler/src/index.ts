@@ -15,10 +15,13 @@ export type {
   HandlerStateChangeEventPayload,
   // Pointer events
   GestureTouchEvent,
+  GestureTouchEvent as SingleGestureTouchEvent,
   TouchData,
   // New api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  // Config types
+  ActiveCursor,
 } from './handlers/gestureHandlerCommon';
 export { MouseButton } from './handlers/gestureHandlerCommon';
 export type { GestureType } from './handlers/gestures/gesture';
@@ -49,7 +52,7 @@ export { PanGestureHandler } from './handlers/PanGestureHandler';
 export { PinchGestureHandler } from './handlers/PinchGestureHandler';
 export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
-export { default as createNativeWrapper } from './handlers/createNativeWrapper';
+export { default as legacy_createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
 export { GestureDetector as LegacyGestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
@@ -82,7 +85,6 @@ export {
   LegacyBaseButton,
   LegacyRectButton,
   LegacyBorderlessButton,
-  LegacyPureNativeButton,
 } from './components/GestureButtons';
 
 export type {
@@ -152,8 +154,6 @@ export type {
   PressableStateCallbackType,
 } from './components/Pressable';
 export { default as LegacyPressable } from './components/Pressable';
-
-export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
 
 export * from './v3';
 

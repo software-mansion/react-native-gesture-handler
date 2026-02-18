@@ -25,19 +25,21 @@ import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBas
   />
 </div>
 
-import BaseEventData from './\_shared/base-gesture-event-data.md';
-import BaseGestureConfig from './\_shared/base-gesture-config.md';
+import BaseEventData from './\_shared/base-gesture-event-data.mdx';
+import BaseGestureConfig from './\_shared/base-gesture-config.mdx';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-A discrete gesture that recognizes one or many taps.
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+A discrete gesture that recognizes taps.
 
 Tap gestures detect one or more fingers briefly touching the screen.
 The pointers involved in these gestures must not move significantly from their initial touch positions. This can be changed via configuration.
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a gesture to [activate](/docs/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDistance, maxDuration, and maxDelay (explained below) must be met. Immediately after the gesture [activates](/docs/fundamentals/states-events#active), it will [end](/docs/fundamentals/states-events#end).
+In order for a gesture to activate, specified gesture requirements such as [`minPointers`](#minpointers), [`numberOfTaps`](#numberoftaps), [`maxDistance`](#maxdistance), [`maxDuration`](#maxduration), and [`maxDelay`](#maxdelay) must be met.
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -47,7 +49,11 @@ In order for a gesture to [activate](/docs/fundamentals/states-events#active), s
 
 ## Example
 
-```jsx
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[7, 21]}
+src={`
 import { View, StyleSheet } from 'react-native';
 import {
   GestureDetector,
@@ -85,7 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-```
+`}/>
 
 ## Config
 
@@ -97,7 +103,7 @@ const styles = StyleSheet.create({
 minPointers: number | SharedValue<number>;
 ```
 
-Minimum number of pointers (fingers) required to be placed before the gesture [activates](/docs/fundamentals/states-events#active). Should be a positive integer. The default value is 1.
+Minimum number of pointers (fingers) required to be placed before the gesture activates. Should be a positive integer. The default value is 1.
 
 ### maxDuration
 
@@ -121,7 +127,7 @@ Maximum time, expressed in milliseconds, that can pass before the next tap — i
 numberOfTaps: number | SharedValue<number>;
 ```
 
-Number of tap gestures required to [activate](/docs/fundamentals/states-events#active) the gesture. The default value is 1.
+Number of tap gestures required to activate the gesture. The default value is 1.
 
 ### maxDeltaX
 
@@ -129,7 +135,7 @@ Number of tap gestures required to [activate](/docs/fundamentals/states-events#a
 maxDeltaX: number | SharedValue<number>;
 ```
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the gesture hasn't yet activated, it will fail to recognize the gesture.
 
 ### maxDeltaY
 
@@ -137,7 +143,7 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 maxDeltaY: number | SharedValue<number>;
 ```
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the gesture hasn't yet activated, it will fail to recognize the gesture.
 
 ### maxDistance
 
@@ -145,15 +151,18 @@ Maximum distance, expressed in points, that defines how far the finger is allowe
 maxDistance: number | SharedValue<number>;
 ```
 
-Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet [activated](/docs/fundamentals/states-events#active), it will fail to recognize the gesture.
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture.
 
 ### mouseButton (Web & Android only)
 
-```ts
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
 mouseButton: MouseButton | SharedValue<MouseButton>;
-```
 
-```ts
 enum MouseButton {
   LEFT,
   RIGHT,
@@ -162,7 +171,7 @@ enum MouseButton {
   BUTTON_5,
   ALL,
 }
-```
+`}/>
 
 Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 

@@ -1,6 +1,20 @@
 #import "RNGestureHandlerButtonManager.h"
 #import "RNGestureHandlerButton.h"
 
+static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(RCTPointerEvents pointerEvents)
+{
+  switch (pointerEvents) {
+    case RCTPointerEventsNone:
+      return RNGestureHandlerPointerEventsNone;
+    case RCTPointerEventsBoxNone:
+      return RNGestureHandlerPointerEventsBoxNone;
+    case RCTPointerEventsBoxOnly:
+      return RNGestureHandlerPointerEventsBoxOnly;
+    default:
+      return RNGestureHandlerPointerEventsAuto;
+  }
+}
+
 @implementation RNGestureHandlerButtonManager
 
 RCT_EXPORT_MODULE(RNGestureHandlerButton)
@@ -25,6 +39,16 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
         UIEdgeInsetsMake(-hitSlopInsets.top, -hitSlopInsets.left, -hitSlopInsets.bottom, -hitSlopInsets.right);
   } else {
     view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RNGestureHandlerButton)
+{
+  if (json) {
+    RCTPointerEvents pointerEvents = [RCTConvert RCTPointerEvents:json];
+    view.pointerEvents = RCTPointerEventsToEnum(pointerEvents);
+  } else {
+    view.pointerEvents = RNGestureHandlerPointerEventsAuto;
   }
 }
 

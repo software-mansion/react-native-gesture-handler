@@ -42,7 +42,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           sidebarCollapsible: false,
           editUrl:
-            'https://github.com/software-mansion/react-native-gesture-handler/edit/main/docs',
+            'https://github.com/software-mansion/react-native-gesture-handler/edit/main/packages/docs-gesture-handler/',
           lastVersion: 'current', // <- this makes 2.x docs as default
           versions: {
             current: {
@@ -113,7 +113,7 @@ const config = {
           'All trademarks and copyrights belong to their respective owners.',
       },
       prism: {
-        additionalLanguages: ['bash'],
+        additionalLanguages: ['bash', 'groovy'],
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
@@ -126,6 +126,12 @@ const config = {
   plugins: [
     ...[
       process.env.NODE_ENV === 'production' && '@docusaurus/plugin-debug',
+      process.env.NODE_ENV === 'production' && [
+        '@docusaurus/plugin-google-tag-manager',
+        {
+          containerId: 'GTM-PHF2NKVT',
+        },
+      ],
     ].filter(Boolean),
     async function reanimatedDocusaurusPlugin(context, options) {
       return {

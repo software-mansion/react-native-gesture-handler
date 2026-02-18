@@ -1,0 +1,43 @@
+name: Run Jest tests
+
+on:
+  pull_request:
+    paths:
+      - '**/*.js'
+      - '**/*.jsx'
+      - '**/*.ts'
+      - '**/*.tsx'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: ubuntu-latest
+    concurrency:
+      group: jest-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install node dependencies
+        run: yarn --immutable
+
+      - name: Run jest scripts tests
+        run: yarn test:scripts
+
+      - name: Run jest package tests
+        # always run this step even if the previous step fails
+        if: ${{ always() }}
+        run: yarn workspace react-native-gesture-handler test
