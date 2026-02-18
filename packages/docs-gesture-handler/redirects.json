@@ -1,40 +1,44 @@
 {
   "redirects": [
     {
-      "to": "/docs/gestures/use-pan-gesture",
+      "to": "/docs/legacy-gestures/pan-gesture",
       "from": "/docs/gestures/pan-gesture"
     },
     {
-      "to": "/docs/gestures/use-tap-gesture",
+      "to": "/docs/legacy-gestures/tap-gesture",
       "from": "/docs/gestures/tap-gesture"
     },
     {
-      "to": "/docs/gestures/use-long-press-gesture",
+      "to": "/docs/legacy-gestures/long-press-gesture",
       "from": "/docs/gestures/long-press-gesture"
     },
     {
-      "to": "/docs/gestures/use-rotation-gesture",
+      "to": "/docs/legacy-gestures/rotation-gesture",
       "from": "/docs/gestures/rotation-gesture"
     },
     {
-      "to": "/docs/gestures/use-pinch-gesture",
+      "to": "/docs/legacy-gestures/pinch-gesture",
       "from": "/docs/gestures/pinch-gesture"
     },
     {
-      "to": "/docs/gestures/use-fling-gesture",
+      "to": "/docs/legacy-gestures/fling-gesture",
       "from": "/docs/gestures/fling-gesture"
     },
     {
-      "to": "/docs/gestures/use-hover-gesture",
+      "to": "/docs/legacy-gestures/hover-gesture",
       "from": "/docs/gestures/hover-gesture"
     },
     {
-      "to": "/docs/gestures/use-native-gesture",
+      "to": "/docs/legacy-gestures/native-gesture",
       "from": "/docs/gestures/native-gesture"
     },
     {
-      "to": "/docs/gestures/use-manual-gesture",
+      "to": "/docs/legacy-gestures/manual-gesture",
       "from": "/docs/gestures/manual-gesture"
+    },
+    {
+      "to": "/docs/legacy-gestures/force-touch-gesture",
+      "from": "/docs/gestures/force-touch-gesture"
     },
     {
       "to": "/docs/2.x/guides/upgrading-to-2",
