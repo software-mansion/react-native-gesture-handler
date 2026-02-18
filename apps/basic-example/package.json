@@ -20,7 +20,7 @@
     "react": "19.2.3",
     "react-native": "0.84.0",
     "react-native-gesture-handler": "workspace:*",
-    "react-native-reanimated": "patch:react-native-reanimated@npm%3A4.2.1#~/.yarn/patches/react-native-reanimated-npm-4.2.1-8be3b216b9.patch",
+    "react-native-reanimated": "^4.2.2",
     "react-native-worklets": "^0.7.4"
   },
   "devDependencies": {
