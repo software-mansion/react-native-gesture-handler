@@ -43,11 +43,20 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   );
   const virtualChildrenForNativeComponent: VirtualChildrenForNative[] = useMemo(
     () =>
-      Array.from(virtualChildren).map((child) => ({
-        viewTag: child.viewTag,
-        handlerTags: child.handlerTags,
-        viewRef: child.viewRef,
-      })),
+      Platform.OS === 'web'
+        ? Array.from(virtualChildren).map((child) => ({
+            viewTag: child.viewTag,
+            handlerTags: child.handlerTags,
+            viewRef: child.viewRef,
+            userSelect: child.userSelect,
+            touchAction: child.touchAction,
+            enableContextMenu: child.enableContextMenu,
+          }))
+        : Array.from(virtualChildren).map((child) => ({
+            viewTag: child.viewTag,
+            handlerTags: child.handlerTags,
+            viewRef: child.viewRef,
+          })),
     [virtualChildren]
   );
   const [mode, setMode] = useState<InterceptingDetectorMode>(
