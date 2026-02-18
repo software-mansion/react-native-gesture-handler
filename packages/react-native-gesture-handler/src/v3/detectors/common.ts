@@ -31,7 +31,6 @@ export interface InterceptingGestureDetectorProps<THandlerData, TConfig>
 // TODO: Handle CommonGestureDetectorProps inside VirtualGestureDetector
 export interface VirtualDetectorProps<THandlerData, TConfig>
   extends CommonGestureDetectorProps {
-  children?: React.ReactNode;
   gesture: Gesture<THandlerData, TConfig>;
 }
 
