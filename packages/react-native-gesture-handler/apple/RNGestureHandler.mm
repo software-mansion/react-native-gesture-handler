@@ -299,6 +299,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
 }
 
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  [self handleGesture:recognizer fromReset:NO];
+}
+
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
   // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
