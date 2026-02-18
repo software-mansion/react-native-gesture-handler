@@ -288,8 +288,22 @@ export class GestureHandlerWebDelegate
     value: string
   ): void {
     this.ensureView(this.view);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-    (this.view.style as any)[property] = value;
+
+    const hasDisplayContents =
+      this.view.style.display === 'contents' ||
+      getComputedStyle(this.view).display === 'contents';
+
+    if (hasDisplayContents) {
+      for (const child of Array.from(this.view.children)) {
+        if (child instanceof HTMLElement) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+          (child.style as any)[property] = value;
+        }
+      }
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+      (this.view.style as any)[property] = value;
+    }
   }
 
   private ensureView(view: any): asserts view is HTMLElement {
