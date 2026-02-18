@@ -393,16 +393,31 @@ open class GestureHandler {
     if (view is RNGestureHandlerDetectorView && (view as RNGestureHandlerDetectorView).isNotEmpty()) {
       val detector = view as RNGestureHandlerDetectorView
       val outPoint = PointF()
-      GestureHandlerOrchestrator.transformPointToChildViewCoords(
-        adaptedTransformedEvent.x,
-        adaptedTransformedEvent.y,
-        detector,
-        detector.getChildAt(0),
-        outPoint,
-      )
-      x = outPoint.x
-      y = outPoint.y
-      isWithinBounds = isWithinBounds(detector.getChildAt(0), x, y)
+      var foundChild = false
+
+      for (i in 0 until detector.childCount) {
+        val child = detector.getChildAt(i)
+        GestureHandlerOrchestrator.transformPointToChildViewCoords(
+          adaptedTransformedEvent.x,
+          adaptedTransformedEvent.y,
+          detector,
+          child,
+          outPoint,
+        )
+        if (isWithinBounds(child, outPoint.x, outPoint.y)) {
+          x = outPoint.x
+          y = outPoint.y
+          isWithinBounds = true
+          foundChild = true
+          break
+        }
+      }
+
+      if (!foundChild) {
+        x = adaptedTransformedEvent.x
+        y = adaptedTransformedEvent.y
+        isWithinBounds = false
+      }
     } else {
       x = adaptedTransformedEvent.x
       y = adaptedTransformedEvent.y
