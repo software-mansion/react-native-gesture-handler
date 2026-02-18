@@ -390,17 +390,17 @@ open class GestureHandler {
     // TODO: this is likely wrong, and the transformed event itself should be
     // in the coordinate system of the child view, but I'm not sure of the
     // consequences
-    if (view is RNGestureHandlerDetectorView && (view as RNGestureHandlerDetectorView).isNotEmpty()) {
-      val detector = view as RNGestureHandlerDetectorView
+    val detectorView = view as? RNGestureHandlerDetectorView
+    if (detectorView != null && detectorView.isNotEmpty()) {
       val outPoint = PointF()
       var foundChild = false
 
-      for (i in 0 until detector.childCount) {
-        val child = detector.getChildAt(i)
+      for (i in 0 until detectorView.childCount) {
+        val child = detectorView.getChildAt(i)
         GestureHandlerOrchestrator.transformPointToChildViewCoords(
           adaptedTransformedEvent.x,
           adaptedTransformedEvent.y,
-          detector,
+          detectorView,
           child,
           outPoint,
         )
