@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Network } from 'vis-network/standalone';
 import { useColorMode } from '@docusaurus/theme-common';
 

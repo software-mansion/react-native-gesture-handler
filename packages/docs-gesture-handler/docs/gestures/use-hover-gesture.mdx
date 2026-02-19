@@ -12,7 +12,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
@@ -93,9 +93,9 @@ const styles = StyleSheet.create({
 
 <SharedValueInfo />
 
-<HeaderWithBadge platforms={['iOS']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### effect
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 <CollapsibleCode 
 label="Show composed types definitions"

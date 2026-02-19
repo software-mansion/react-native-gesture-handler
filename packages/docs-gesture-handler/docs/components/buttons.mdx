@@ -7,7 +7,7 @@ sidebar_label: Buttons
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery';
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 <GifGallery>
   <img src={useBaseUrl('gifs/samplebutton.gif')} width="280" />
@@ -39,9 +39,9 @@ exclusive?: boolean;
 
 Defines if more than one button could be pressed simultaneously. By default set to `true`.
 
-<HeaderWithBadge platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### rippleColor
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 rippleColor?: number | ColorValue | null;
@@ -49,9 +49,9 @@ rippleColor?: number | ColorValue | null;
 
 Defines [color](https://reactnative.dev/docs/colors) of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-<HeaderWithBadge platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### rippleRadius
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 
 ```ts
@@ -60,9 +60,9 @@ rippleRadius?: number | null;
 
 Defines radius of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-<HeaderWithBadge platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### borderless
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 borderless?: boolean;
@@ -70,9 +70,9 @@ borderless?: boolean;
 
 If set to `false`, [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation will render only within view bounds.
 
-<HeaderWithBadge platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### foreground
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 foreground?: boolean;
@@ -80,9 +80,9 @@ foreground?: boolean;
 
 Defines whether the [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation should be drawn on the foreground of the view.
 
-<HeaderWithBadge platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### touchSoundDisabled
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 touchSoundDisabled?: boolean;
@@ -140,9 +140,9 @@ underlayColor?: string;
 
 Background color that will be dimmed when button is in active state.
 
-<HeaderWithBadge platforms={['iOS']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### activeOpacity
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 activeOpacity?: number;
@@ -154,9 +154,9 @@ Opacity applied to the underlay when button is in active state.
 
 This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](#basebutton), it accepts the following:
 
-<HeaderWithBadge platforms={['iOS']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### activeOpacity
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 activeOpacity?: number;
