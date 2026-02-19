@@ -91,11 +91,11 @@
 - (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   RNGestureHandlerPointerEvents pointerEvents = _pointerEvents;
-  
+
   if (pointerEvents == RNGestureHandlerPointerEventsNone) {
     return nil;
   }
-  
+
   if (pointerEvents == RNGestureHandlerPointerEventsBoxNone) {
     for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
       if (!subview.isHidden && subview.alpha > 0) {
@@ -108,11 +108,11 @@
     }
     return nil;
   }
-  
+
   if (pointerEvents == RNGestureHandlerPointerEventsBoxOnly) {
     return [self pointInside:point withEvent:event] ? self : nil;
   }
-  
+
   RNGHUIView *inner = [super hitTest:point withEvent:event];
   while (inner && ![self shouldHandleTouch:inner]) {
     inner = inner.superview;
