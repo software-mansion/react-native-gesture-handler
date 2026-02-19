@@ -18,4 +18,6 @@
 - (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)dropAllHandlers;
 
+@property (nonatomic, readonly, nonnull) NSDictionary<NSNumber *, RNGestureHandler *> *handlers;
+
 @end

@@ -37,4 +37,8 @@
 
 - (nullable RNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
 
+- (nullable RNGHUIView *)viewForReactTag:(nonnull NSNumber *)reactTag;
+
+- (void)reattachHandlersIfNeeded;
+
 @end

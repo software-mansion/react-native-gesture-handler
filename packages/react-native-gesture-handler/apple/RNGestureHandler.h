@@ -72,6 +72,7 @@
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
+@property (nonatomic, copy, nullable) NSNumber *viewTag;
 
 #if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
