@@ -37,4 +37,6 @@
 
 - (nullable RNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
 
+- (void)reattachHandlersIfNeeded;
+
 @end

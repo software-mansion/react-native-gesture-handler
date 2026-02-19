@@ -242,12 +242,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   [recognizerView addGestureRecognizer:self.recognizer];
   [self bindManualActivationToView:recognizerView];
+
+  self.viewTag = view.reactTag;
 }
 
 - (void)unbindFromView
 {
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
+  self.viewTag = nil;
 
   [self unbindManualActivation];
 }

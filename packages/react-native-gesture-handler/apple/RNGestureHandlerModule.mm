@@ -211,20 +211,22 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 
 RCT_EXPORT_METHOD(flushOperations)
 {
-  // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
-  // On the old arch we rely on `uiManagerWillPerformMounting`
+// On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
+// On the old arch we rely on `uiManagerWillPerformMounting`
 #ifdef RCT_NEW_ARCH_ENABLED
-  if (_operations.count == 0) {
-    return;
+  if (_operations.count > 0) {
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+      for (GestureHandlerOperation operation in operations) {
+        operation(self->_manager);
+      }
+    }];
   }
 
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
-    for (GestureHandlerOperation operation in operations) {
-      operation(self->_manager);
-    }
+    [self->_manager reattachHandlersIfNeeded];
   }];
 #endif // RCT_NEW_ARCH_ENABLED
 }
