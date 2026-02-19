@@ -349,7 +349,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
               inState:(RNGestureHandlerState)state
-     manualActivation:(Boolean)manualActivation
+     manualActivation:(BOOL)manualActivation
 {
   _state = state;
 
