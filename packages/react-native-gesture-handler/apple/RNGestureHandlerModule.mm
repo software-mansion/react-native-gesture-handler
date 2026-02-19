@@ -222,9 +222,8 @@ RCT_EXPORT_MODULE()
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = RNGHGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
-      if (handler.recognizer.state == 0) {
+      if (handler.recognizer.state == UIGestureRecognizerStatePossible) {
         // Force going from UNDETERMINED to ACTIVE through BEGAN to preserve the correct state transition flow.
-        handler.recognizer.state = RNGHGestureRecognizerStatePossible;
         [handler handleGesture:handler.recognizer fromReset:NO];
       }
       [handler stopActivationBlocker];
