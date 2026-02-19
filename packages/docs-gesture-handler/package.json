@@ -51,6 +51,7 @@
     "react-native-worklets": "^0.1.0",
     "source-map": "^0.7.4",
     "source-map-loader": "^4.0.1",
+    "unist-util-visit": "^5.1.0",
     "usehooks-ts": "^2.9.1",
     "vis-network": "^10.0.2"
   },

@@ -1,0 +1,29 @@
+.table-of-contents .platform-indicator-android,
+.table-of-contents .platform-indicator-ios,
+.table-of-contents .platform-indicator-web {
+  display: inline-block;
+
+  /* Circle shape */
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+
+  margin-left: 4px;
+
+  /* Vertical alignment */
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+.table-of-contents .platform-indicator-android {
+  background: #34a853;
+}
+
+.table-of-contents .platform-indicator-ios {
+  background: #000000;
+}
+
+.table-of-contents .platform-indicator-web {
+  background: #1067c4;
+}
