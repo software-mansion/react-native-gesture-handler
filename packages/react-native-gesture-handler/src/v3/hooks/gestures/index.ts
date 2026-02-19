@@ -136,14 +136,22 @@ export type SingleGesture =
   | NativeGesture
   | PanGesture;
 
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 export type SingleGestureEvent =
   | TapGestureEvent
+  | TapGestureActiveEvent
   | FlingGestureEvent
+  | FlingGestureActiveEvent
   | LongPressGestureEvent
+  | LongPressGestureActiveEvent
   | RotationGestureEvent
+  | RotationGestureActiveEvent
   | HoverGestureEvent
   | HoverGestureActiveEvent
   | ManualGestureEvent
+  | ManualGestureActiveEvent
   | NativeGestureEvent
+  | NativeGestureActiveEvent
   | PanGestureEvent
   | PanGestureActiveEvent;
+/* eslint-enable @typescript-eslint/no-duplicate-type-constituents */
