@@ -1,22 +1,41 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-interface HeaderWithBadgeProps {
-  platforms: ('android' | 'iOS' | 'web')[];
+type HeaderWithBadgeProps = {
+  platforms: string[];
   children?: React.ReactNode;
-}
+};
 
-export function Badge({ platform }: { platform: 'android' | 'iOS' | 'web' }) {
-  const platformBadge =
-    platform === 'android'
-      ? styles.androidBadge
-      : platform === 'iOS'
-        ? styles.iosBadge
-        : platform === 'web'
-          ? styles.webBadge
-          : {};
+type Platform = 'android' | 'ios' | 'web';
 
-  return <div style={{ ...styles.badge, ...platformBadge }}>{platform}</div>;
+const platformNameMap: Record<Platform, string> = {
+  android: 'Android',
+  ios: 'iOS',
+  web: 'Web',
+};
+
+export function Badge({ platform }: { platform: Platform }) {
+  let platformBadgeStyle;
+
+  switch (platform) {
+    case 'android':
+      platformBadgeStyle = styles.androidBadge;
+      break;
+    case 'ios':
+      platformBadgeStyle = styles.iosBadge;
+      break;
+    case 'web':
+      platformBadgeStyle = styles.webBadge;
+      break;
+    default:
+      platformBadgeStyle = {};
+  }
+
+  return (
+    <div style={{ ...styles.badge, ...platformBadgeStyle }}>
+      {platformNameMap[platform]}
+    </div>
+  );
 }
 
 export default function HeaderWithBadge({
@@ -27,9 +46,12 @@ export default function HeaderWithBadge({
     <div style={styles.container}>
       {children}
 
-      {platforms.sort().map((platform) => (
-        <Badge key={platform} platform={platform} />
-      ))}
+      {platforms
+        .map((platform) => platform.toLowerCase() as Platform)
+        .sort()
+        .map((platform) => (
+          <Badge key={platform} platform={platform} />
+        ))}
     </div>
   );
 }
