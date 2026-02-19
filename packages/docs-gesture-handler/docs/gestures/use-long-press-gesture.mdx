@@ -12,6 +12,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
 import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
 
+import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -73,7 +75,9 @@ maxDistance: number | SharedValue<number>;
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture. The default value is 10.
 
-### mouseButton (Web & Android only)
+<HeaderWithBadge platforms={['android', 'web']}>
+### mouseButton
+</HeaderWithBadge>
 
 <CollapsibleCode 
 label="Show composed types definitions"

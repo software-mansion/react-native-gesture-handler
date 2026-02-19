@@ -7,6 +7,8 @@ sidebar_label: Pressable
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery';
 
+import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+
 :::info
 This component is a drop-in replacement for the `Pressable` component.
 :::
@@ -87,7 +89,9 @@ cancelable?: null | boolean;
 
 Whether a press gesture can be interrupted by a parent gesture such as a scroll event. Defaults to `true`.
 
-### onHoverIn (Web only)
+<HeaderWithBadge platforms={['android', 'web']}>
+### onHoverIn
+</HeaderWithBadge>
 
 ```ts
 onHoverIn?: null | ((event: PressableEvent) => void);
@@ -95,7 +99,9 @@ onHoverIn?: null | ((event: PressableEvent) => void);
 
 Called when pointer is hovering over the element.
 
-### onHoverOut (Web only)
+<HeaderWithBadge platforms={['android', 'web']}>
+### onHoverOut
+</HeaderWithBadge>
 
 ```ts
 onHoverOut?: null | ((event: PressableEvent) => void);
@@ -103,7 +109,9 @@ onHoverOut?: null | ((event: PressableEvent) => void);
 
 Called when pointer stops hovering over the element.
 
-### delayHoverIn (Web only)
+<HeaderWithBadge platforms={['web']}>
+### delayHoverIn
+</HeaderWithBadge>
 
 ```ts
 delayHoverIn?: number | null;
@@ -111,7 +119,9 @@ delayHoverIn?: number | null;
 
 Duration to wait after hover in before calling `onHoverIn`.
 
-### delayHoverOut (Web only)
+<HeaderWithBadge platforms={['web']}>
+### delayHoverOut
+</HeaderWithBadge>
 
 ```ts
 delayHoverOut?: number | null;
@@ -135,7 +145,9 @@ disabled?: null | boolean;
 
 Whether the `Pressable` behavior is disabled.
 
-### hitSlop (Android & iOS only)
+<HeaderWithBadge platforms={['android', 'iOS']}>
+### hitSlop
+</HeaderWithBadge>
 
 ```ts
 hitSlop?: null | Insets | number;
@@ -145,7 +157,9 @@ Additional distance outside of the view in which a press is detected and [`onPre
 
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
-### pressRetentionOffset (Android & iOS only)
+<HeaderWithBadge platforms={['android', 'iOS']}>
+### pressRetentionOffset
+</HeaderWithBadge>
 
 ```ts
 pressRetentionOffset?: null | Insets | number;
@@ -156,7 +170,9 @@ press before [`onPressOut`](#onpressout) is triggered.
 
 The `Insets` type is essentially the same as [`Rect`](https://reactnative.dev/docs/rect).
 
-### android_disableSound (Android only)
+<HeaderWithBadge platforms={['android']}>
+### android_disableSound
+</HeaderWithBadge>
 
 ```ts
 android_disableSound?: null | boolean;
@@ -164,7 +180,9 @@ android_disableSound?: null | boolean;
 
 If `true`, doesn't play system sound on touch.
 
-### android_ripple (Android only)
+<HeaderWithBadge platforms={['android']}>
+### android_ripple
+</HeaderWithBadge>
 
 ```ts
 android_ripple?: null | PressableAndroidRippleConfig;
