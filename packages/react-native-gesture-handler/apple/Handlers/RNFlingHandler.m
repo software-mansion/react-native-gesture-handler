@@ -140,7 +140,14 @@
 
 - (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer fromReset:(BOOL)fromReset
 {
-  [_gestureHandler handleGesture:self fromReset:fromReset];
+  [_gestureHandler handleGesture:self fromReset:fromReset manualActivation:NO];
+}
+
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
+            fromReset:(BOOL)fromReset
+     manualActivation:(BOOL)manualActivation
+{
+  [_gestureHandler handleGesture:self fromReset:fromReset manualActivation:manualActivation];
 }
 
 - (void)mouseDown:(NSEvent *)event
