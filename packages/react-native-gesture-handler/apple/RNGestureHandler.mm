@@ -283,6 +283,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #endif
 }
 
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  [self handleGesture:recognizer fromReset:NO];
+}
+
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
