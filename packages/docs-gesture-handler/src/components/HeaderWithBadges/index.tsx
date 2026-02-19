@@ -5,17 +5,25 @@ import styles from './styles.module.css';
 import clsx from 'clsx';
 
 type HeaderWithBadgesProps = {
-  platforms?: ('android' | 'iOS' | 'web')[];
+  platforms: string[];
   version?: string;
   children?: React.ReactNode;
 };
 
+type Platform = 'android' | 'ios' | 'web';
+
 type PlatformBadgeProps = {
-  platform: 'android' | 'iOS' | 'web';
+  platform: Platform;
 };
 
 type VersionBadgeProps = {
   version: string;
+};
+
+const platformNameMap: Record<Platform, string> = {
+  android: 'Android',
+  ios: 'iOS',
+  web: 'Web',
 };
 
 export function VersionBadge({ version }: VersionBadgeProps) {
@@ -35,16 +43,27 @@ export function VersionBadge({ version }: VersionBadgeProps) {
 }
 
 export function PlatformBadge({ platform }: PlatformBadgeProps) {
-  const platformBadge =
-    platform === 'android'
-      ? styles.androidBadge
-      : platform === 'iOS'
-        ? styles.iosBadge
-        : platform === 'web'
-          ? styles.webBadge
-          : {};
+  let platformBadgeStyle;
 
-  return <div className={clsx(styles.badge, platformBadge)}>{platform}</div>;
+  switch (platform) {
+    case 'android':
+      platformBadgeStyle = styles.androidBadge;
+      break;
+    case 'ios':
+      platformBadgeStyle = styles.iosBadge;
+      break;
+    case 'web':
+      platformBadgeStyle = styles.webBadge;
+      break;
+    default:
+      platformBadgeStyle = {};
+  }
+
+  return (
+    <div className={clsx(styles.badge, platformBadgeStyle)}>
+      {platformNameMap[platform]}
+    </div>
+  );
 }
 
 export default function HeaderWithBadges({
@@ -57,7 +76,8 @@ export default function HeaderWithBadges({
       {children}
 
       {platforms
-        ?.sort()
+        ?.map((platform) => platform.toLowerCase() as Platform)
+        .sort()
         .map((platform) => (
           <PlatformBadge key={platform} platform={platform} />
         ))}
