@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
 
   androidBadge: {
-    backgroundColor: '#0f8142',
+    backgroundColor: '#34a853',
   },
 
   iosBadge: {
