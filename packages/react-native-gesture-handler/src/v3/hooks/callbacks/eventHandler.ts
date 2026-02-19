@@ -10,6 +10,7 @@ import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper'
 import {
   ChangeCalculatorType,
   GestureCallbacks,
+  GestureEvent,
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
@@ -19,12 +20,30 @@ import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
+import { ExtendedHandlerData } from '../gestures';
+
+const defaultValues = {
+  changeX: 0,
+  changeY: 0,
+  scaleChange: 0,
+  rotationChange: 0,
+};
+
+function fillInDefaultValues(event: GestureEvent<ExtendedHandlerData>) {
+  for (const [key, value] of Object.entries(defaultValues)) {
+    if (key in event) {
+      event[key as keyof typeof defaultValues] = value;
+    }
+  }
+}
 
 function handleStateChangeEvent<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
 >(
-  eventWithData: GestureStateChangeEventWithHandlerData<THandlerData>,
+  eventWithData: GestureStateChangeEventWithHandlerData<
+    THandlerData | TExtendedHandlerData
+  >,
   callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
   context: ReanimatedContext<TExtendedHandlerData>
 ) {
@@ -38,9 +57,11 @@ function handleStateChangeEvent<
     (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
     state === State.ACTIVE
   ) {
+    fillInDefaultValues(event as GestureEvent<ExtendedHandlerData>);
     runCallback(CALLBACK_TYPE.START, callbacks, event);
   } else if (oldState !== state && state === State.END) {
     if (oldState === State.ACTIVE) {
+      fillInDefaultValues(event as GestureEvent<ExtendedHandlerData>);
       runCallback(CALLBACK_TYPE.END, callbacks, event, true);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
@@ -53,6 +74,7 @@ function handleStateChangeEvent<
     state !== oldState
   ) {
     if (oldState === State.ACTIVE) {
+      fillInDefaultValues(event as GestureEvent<ExtendedHandlerData>);
       runCallback(CALLBACK_TYPE.END, callbacks, event, false);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
