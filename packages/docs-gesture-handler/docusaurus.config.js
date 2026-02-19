@@ -1,6 +1,7 @@
 /*
 In swizzled components look for "SWM -" string to see our modifications
 */
+const platformsCirclePlugin = require('./plugins/platforms-circles.js');
 
 const lightCodeTheme = require('./src/theme/CodeBlock/highlighting-light.js');
 const darkCodeTheme = require('./src/theme/CodeBlock/highlighting-dark.js');
@@ -49,6 +50,10 @@ const config = {
               label: '3.x',
             },
           },
+          beforeDefaultRemarkPlugins: [
+            platformsCirclePlugin.processHeaderMarkers,
+          ],
+          remarkPlugins: [platformsCirclePlugin.removeHeaderJSX],
         },
         theme: {
           customCss: require.resolve('./src/css/index.css'),
