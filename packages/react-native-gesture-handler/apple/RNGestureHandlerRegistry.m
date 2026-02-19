@@ -22,6 +22,11 @@
   return self;
 }
 
+- (NSDictionary<NSNumber *, RNGestureHandler *> *)handlers
+{
+  return _handlers;
+}
+
 - (RNGestureHandler *)handlerWithTag:(NSNumber *)handlerTag
 {
   return _handlers[handlerTag];

@@ -1,5 +1,7 @@
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
+import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+
 ### enabled
 
 ```ts
@@ -67,7 +69,9 @@ testID: string;
 
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
-### cancelsTouchesInView (**iOS only**)
+<HeaderWithBadge platforms={['iOS']}>
+### cancelsTouchesInView
+</HeaderWithBadge>
 
 ```ts
 cancelsTouchesInView: boolean | SharedValue<boolean>;

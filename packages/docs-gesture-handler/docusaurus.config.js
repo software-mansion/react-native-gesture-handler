@@ -7,6 +7,8 @@ const darkCodeTheme = require('./src/theme/CodeBlock/highlighting-dark.js');
 // @ts-check
 const webpack = require('webpack');
 
+const redirectsData = require('./redirects.json');
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'React Native Gesture Handler',
@@ -133,9 +135,15 @@ const config = {
         },
       ],
     ].filter(Boolean),
-    async function reanimatedDocusaurusPlugin(context, options) {
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: redirectsData.redirects,
+      },
+    ],
+    async function gestureHandlerDocusaurusPlugin(context, options) {
       return {
-        name: 'react-native-reanimated/docusaurus-plugin',
+        name: 'react-native-gesture-handler/docusaurus-plugin',
         configureWebpack(config, isServer, utils) {
           const processMock = !isServer ? { process: { env: {} } } : {};
 

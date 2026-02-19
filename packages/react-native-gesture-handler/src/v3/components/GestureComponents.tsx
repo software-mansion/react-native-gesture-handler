@@ -1,9 +1,4 @@
-import React, {
-  PropsWithChildren,
-  ReactElement,
-  useState,
-  RefObject,
-} from 'react';
+import React, { PropsWithChildren, ReactElement, useState } from 'react';
 import {
   ScrollView as RNScrollView,
   ScrollViewProps as RNScrollViewProps,
@@ -14,6 +9,7 @@ import {
   FlatList as RNFlatList,
   FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
+  RefreshControlProps as RNRefreshControlProps,
 } from 'react-native';
 
 import createNativeWrapper from '../createNativeWrapper';
@@ -24,7 +20,10 @@ import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
-export const RefreshControl = createNativeWrapper(
+export const RefreshControl = createNativeWrapper<
+  RNRefreshControl,
+  RNRefreshControlProps
+>(
   RNRefreshControl,
   {
     disallowInterruption: true,
@@ -36,7 +35,10 @@ export const RefreshControl = createNativeWrapper(
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type RefreshControl = typeof RefreshControl & RNRefreshControl;
 
-const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
+const GHScrollView = createNativeWrapper<
+  RNScrollView,
+  PropsWithChildren<RNScrollViewProps>
+>(
   RNScrollView,
   {
     disallowInterruption: true,
@@ -46,13 +48,7 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
 );
 
 export const ScrollView = (
-  props: RNScrollViewProps &
-    NativeWrapperProperties & {
-      ref?: React.RefObject<RNScrollView | null>;
-      onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
-        gesture: NativeGesture
-      ) => void;
-    }
+  props: RNScrollViewProps & NativeWrapperProperties<RNScrollView | null>
 ) => {
   const {
     refreshControl,
@@ -95,7 +91,7 @@ export const ScrollView = (
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ScrollView = typeof ScrollView & RNScrollView;
 
-export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
+export const Switch = createNativeWrapper<RNSwitch, RNSwitchProps>(RNSwitch, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
   disallowInterruption: true,
@@ -104,7 +100,9 @@ export const Switch = createNativeWrapper<RNSwitchProps>(RNSwitch, {
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Switch = typeof Switch & RNSwitch;
 
-export const TextInput = createNativeWrapper<RNTextInputProps>(RNTextInput);
+export const TextInput = createNativeWrapper<RNTextInput, RNTextInputProps>(
+  RNTextInput
+);
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type TextInput = typeof TextInput & RNTextInput;
@@ -175,12 +173,7 @@ export const FlatList = ((props) => {
 }) as <ItemT = any>(
   props: PropsWithChildren<
     Omit<RNFlatListProps<ItemT>, 'renderScrollComponent' | 'ref'> &
-      NativeWrapperProperties & {
-        ref?: RefObject<RNFlatList<ItemT> | null>;
-        onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
-          gesture: NativeGesture
-        ) => void;
-      }
+      NativeWrapperProperties<RNFlatList<ItemT> | null>
   >
 ) => ReactElement | null;
 

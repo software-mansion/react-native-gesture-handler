@@ -262,6 +262,8 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   [recognizerView addGestureRecognizer:self.recognizer];
   [self bindManualActivationToView:recognizerView];
+
+  self.viewTag = view.reactTag;
 }
 
 - (void)unbindFromView
@@ -271,6 +273,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   self.hostDetectorView = nil;
   self.virtualViewTag = nil;
+  self.viewTag = nil;
 
   [self unbindManualActivation];
 }
@@ -297,6 +300,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  [self handleGesture:recognizer fromReset:NO];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
