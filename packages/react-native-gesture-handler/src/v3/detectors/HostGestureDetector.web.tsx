@@ -62,6 +62,14 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         ).shouldAttachGestureToChildView() &&
         actionType === ActionType.NATIVE_DETECTOR
       ) {
+        if (viewRef.current!.childElementCount > 1) {
+          throw new Error(
+            tagMessage(
+              'Cannot have more than one child view when native gesture handlers are attached to the detector'
+            )
+          );
+        }
+
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current!.firstChild,
@@ -107,20 +115,6 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [props]);
 
   useEffect(() => {
-    if (React.Children.count(children) !== 1) {
-      throw new Error(
-        tagMessage('Detector expected to have exactly one child element')
-      );
-    }
-  }, [children]);
-
-  useEffect(() => {
-    if (React.Children.count(children) !== 1) {
-      throw new Error(
-        tagMessage('Detector expected to have exactly one child element')
-      );
-    }
-
     detachHandlers(handlerTagsSet, attachedHandlers.current);
 
     attachHandlers(

@@ -6,7 +6,7 @@ import {
 } from './GestureHandlerDelegate';
 import PointerEventManager from './PointerEventManager';
 import { State } from '../../State';
-import { isPointerInBounds } from '../utils';
+import { isPointerInBounds, getEffectiveBoundingRect } from '../utils';
 import EventManager from './EventManager';
 import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import KeyboardEventManager from './KeyboardEventManager';
@@ -89,11 +89,10 @@ export class GestureHandlerWebDelegate
   restoreDefaultViewStyles(): void {
     this.ensureView(this.view);
 
-    this.view.style['userSelect'] = this.defaultViewStyles.userSelect;
-    this.view.style['webkitUserSelect'] = this.defaultViewStyles.userSelect;
-    this.view.style['touchAction'] = this.defaultViewStyles.touchAction;
-    // @ts-ignore This one disables default events on Safari
-    this.view.style['WebkitTouchCallout'] = this.defaultViewStyles.touchAction;
+    this.setViewStyle('userSelect', this.defaultViewStyles.userSelect);
+    this.setViewStyle('webkitUserSelect', this.defaultViewStyles.userSelect);
+    this.setViewStyle('touchAction', this.defaultViewStyles.touchAction);
+    this.setViewStyle('WebkitTouchCallout', this.defaultViewStyles.touchAction);
   }
 
   updateDOM(): void {
@@ -114,7 +113,7 @@ export class GestureHandlerWebDelegate
       throw new Error(tagMessage('Cannot measure a null view'));
     }
 
-    const rect = this.view.getBoundingClientRect();
+    const rect = getEffectiveBoundingRect(this.view);
 
     return {
       pageX: rect.left,
@@ -202,13 +201,12 @@ export class GestureHandlerWebDelegate
 
     this.ensureView(this.view);
 
-    this.view.style['userSelect'] = this.gestureHandler.enabled
+    const value = this.gestureHandler.enabled
       ? (userSelect ?? 'none')
       : this.defaultViewStyles.userSelect;
 
-    this.view.style['webkitUserSelect'] = this.gestureHandler.enabled
-      ? (userSelect ?? 'none')
-      : this.defaultViewStyles.userSelect;
+    this.setViewStyle('userSelect', value);
+    this.setViewStyle('webkitUserSelect', value);
   }
 
   private setTouchAction() {
@@ -216,14 +214,12 @@ export class GestureHandlerWebDelegate
 
     this.ensureView(this.view);
 
-    this.view.style['touchAction'] = this.gestureHandler.enabled
+    const value = this.gestureHandler.enabled
       ? (touchAction ?? 'none')
       : this.defaultViewStyles.touchAction;
 
-    // @ts-ignore This one disables default events on Safari
-    this.view.style['WebkitTouchCallout'] = this.gestureHandler.enabled
-      ? (touchAction ?? 'none')
-      : this.defaultViewStyles.touchAction;
+    this.setViewStyle('touchAction', value);
+    this.setViewStyle('WebkitTouchCallout', value);
   }
 
   private setContextMenu() {
@@ -285,6 +281,29 @@ export class GestureHandlerWebDelegate
     });
 
     this.isInitialized = false;
+  }
+
+  private setViewStyle(
+    property: Extract<keyof CSSStyleDeclaration, string> | 'WebkitTouchCallout',
+    value: string
+  ): void {
+    this.ensureView(this.view);
+
+    const hasDisplayContents =
+      this.view.style.display === 'contents' ||
+      getComputedStyle(this.view).display === 'contents';
+
+    if (hasDisplayContents) {
+      for (const child of Array.from(this.view.children)) {
+        if (child instanceof HTMLElement) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+          (child.style as any)[property] = value;
+        }
+      }
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+      (this.view.style as any)[property] = value;
+    }
   }
 
   private ensureView(view: any): asserts view is HTMLElement {

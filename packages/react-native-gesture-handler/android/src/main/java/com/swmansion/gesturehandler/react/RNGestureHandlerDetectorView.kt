@@ -108,6 +108,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   override fun addView(child: View, index: Int, params: LayoutParams?) {
     super.addView(child, index, params)
 
+    if (nativeHandlers.isNotEmpty()) {
+      assert(childCount == 1) {
+        "Cannot have more than one child view when native gesture handlers are attached to the detector"
+      }
+    }
+
     tryAttachNativeHandlersToChildView(child)
   }
 
@@ -134,6 +140,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         if (shouldAttachGestureToChildView(tag) && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
           // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
+          assert(childCount <= 1) {
+            "Cannot attach native gesture handlers when the detector has multiple children"
+          }
           nativeHandlers.add(tag)
         } else {
           registry.attachHandlerToView(tag, viewTag, actionType, this)
@@ -191,6 +200,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   private fun tryAttachNativeHandlersToChildView(child: View) {
+    if (nativeHandlers.isEmpty()) return
+
+    assert(childCount == 1) {
+      "Cannot have more than one child view when native gesture handlers are attached to the detector"
+    }
+
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
