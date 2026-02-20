@@ -4,4 +4,5 @@ module.exports = {
     '@babel/preset-typescript',
     'module:@react-native/babel-preset',
   ],
+  targets: { node: 'current' },
 };
