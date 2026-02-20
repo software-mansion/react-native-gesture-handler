@@ -1,0 +1,25 @@
+import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+
+<HeaderWithBadge platforms={['android', 'web']}>
+### mouseButton
+</HeaderWithBadge>
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
+mouseButton: MouseButton | SharedValue<MouseButton>;
+
+enum MouseButton {
+  LEFT,
+  RIGHT,
+  MIDDLE,
+  BUTTON_4,
+  BUTTON_5,
+  ALL,
+}
+`}/>
+
+Allows users to choose which mouse buttons to respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
