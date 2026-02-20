@@ -76,14 +76,24 @@ export function VirtualDetector<THandlerData, TConfig>(
       methods: props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
       // used by HostGestureDetector on web
       viewRef: Platform.OS === 'web' ? viewRef : undefined,
+      userSelect: props.userSelect,
+      touchAction: props.touchAction,
+      enableContextMenu: props.enableContextMenu,
     };
-
     register(virtualChild);
-
     return () => {
       unregister(virtualChild);
     };
-  }, [viewTag, props.gesture, register, unregister, setMode]);
+  }, [
+    viewTag,
+    props.gesture,
+    props.userSelect,
+    props.touchAction,
+    props.enableContextMenu,
+    register,
+    unregister,
+    setMode,
+  ]);
 
   configureRelations(props.gesture);
 

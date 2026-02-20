@@ -22,6 +22,7 @@ import { tagMessage } from '../../../utils';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 import { Platform } from 'react-native';
+import { VirtualChildrenWeb } from '../HostGestureDetector.web';
 
 interface VirtualChildrenForNative {
   viewTag: number;
@@ -41,13 +42,25 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
     () => new Set()
   );
-  const virtualChildrenForNativeComponent: VirtualChildrenForNative[] = useMemo(
+  const strippedVirtualChildren: (
+    | VirtualChildrenForNative
+    | VirtualChildrenWeb
+  )[] = useMemo(
     () =>
-      Array.from(virtualChildren).map((child) => ({
-        viewTag: child.viewTag,
-        handlerTags: child.handlerTags,
-        viewRef: child.viewRef,
-      })),
+      Platform.OS === 'web'
+        ? Array.from(virtualChildren).map((child) => ({
+            viewTag: child.viewTag,
+            handlerTags: child.handlerTags,
+            viewRef: child.viewRef,
+            userSelect: child.userSelect,
+            touchAction: child.touchAction,
+            enableContextMenu: child.enableContextMenu,
+          }))
+        : Array.from(virtualChildren).map((child) => ({
+            viewTag: child.viewTag,
+            handlerTags: child.handlerTags,
+            viewRef: child.viewRef,
+          })),
     [virtualChildren]
   );
   const [mode, setMode] = useState<InterceptingDetectorMode>(
@@ -261,7 +274,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         }
         handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
-        virtualChildren={virtualChildrenForNativeComponent}
+        virtualChildren={strippedVirtualChildren}
         moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>

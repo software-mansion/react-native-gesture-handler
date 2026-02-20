@@ -20,6 +20,9 @@ export interface VirtualChildrenWeb {
   viewTag: number;
   handlerTags: number[];
   viewRef: RefObject<Element | null>;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
 }
 
 const EMPTY_HANDLERS = new Set<number>();
@@ -174,6 +177,13 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         attachedVirtualHandlers.current.get(child.viewTag)!,
         ActionType.VIRTUAL_DETECTOR
       );
+      currentHandlerTags.forEach((tag) => {
+        RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+          userSelect: child.userSelect,
+          touchAction: child.touchAction,
+          enableContextMenu: child.enableContextMenu,
+        });
+      });
     });
   }, [props.virtualChildren]);
 
