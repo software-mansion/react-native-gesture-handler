@@ -14,6 +14,9 @@ import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestur
 
 import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
 
+import MouseButtonProp from './\_shared/mouse-button.mdx';
+
+
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -142,29 +145,7 @@ numberOfPointers: number | SharedValue<number>;
 
 Determine exact number of points required to handle the fling gesture.
 
-<HeaderWithBadge platforms={['android', 'web']}>
-### mouseButton
-</HeaderWithBadge>
-
-<CollapsibleCode 
-label="Show composed types definitions"
-expandedLabel="Hide composed types definitions"
-lineBounds={[0, 1]}
-collapsed={false}
-src={`
-mouseButton: MouseButton | SharedValue<MouseButton>;
-
-enum MouseButton {
-  LEFT,
-  RIGHT,
-  MIDDLE,
-  BUTTON_4,
-  BUTTON_5,
-  ALL,
-}
-`}/>
-
-Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+<MouseButtonProp />
 
 <BaseGestureConfig />
 

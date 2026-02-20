@@ -252,29 +252,6 @@ enableTrackpadTwoFingerGesture?: boolean;
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
 
-<HeaderWithBadge platforms={['android', 'web']}>
-### mouseButton
-</HeaderWithBadge>
-
-<CollapsibleCode 
-label="Show composed types definitions"
-expandedLabel="Hide composed types definitions"
-lineBounds={[0, 1]}
-src={`
-mouseButton: MouseButton | SharedValue<MouseButton>;
-
-enum MouseButton {
-  LEFT,
-  RIGHT,
-  MIDDLE,
-  BUTTON_4,
-  BUTTON_5,
-  ALL,
-}
-`}/>
-
-Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
-
 <HeaderWithBadge platforms={['web']}>
 ### enableContextMenu
 </HeaderWithBadge>

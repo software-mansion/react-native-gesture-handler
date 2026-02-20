@@ -14,6 +14,9 @@ import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPre
 
 import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
 
+import MouseButtonProp from './\_shared/mouse-button.mdx';
+
+
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -75,29 +78,7 @@ maxDistance: number | SharedValue<number>;
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture. The default value is 10.
 
-<HeaderWithBadge platforms={['android', 'web']}>
-### mouseButton
-</HeaderWithBadge>
-
-<CollapsibleCode 
-label="Show composed types definitions"
-expandedLabel="Hide composed types definitions"
-lineBounds={[0, 1]}
-collapsed={false}
-src={`
-mouseButton: MouseButton | SharedValue<MouseButton>;
-
-enum MouseButton {
-  LEFT,
-  RIGHT,
-  MIDDLE,
-  BUTTON_4,
-  BUTTON_5,
-  ALL,
-}
-`}/>
-
-Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+<MouseButtonProp />
 
 <BaseGestureConfig />
 
