@@ -18,11 +18,15 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
 
-function handleStateChangeEvent<THandlerData>(
+function handleStateChangeEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   eventWithData: GestureStateChangeEventWithHandlerData<THandlerData>,
-  callbacks: GestureCallbacks<THandlerData>,
-  context: ReanimatedContext<THandlerData>
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  context: ReanimatedContext<TExtendedHandlerData>
 ) {
   'worklet';
   const { oldState, state } = eventWithData;
@@ -59,11 +63,14 @@ function handleStateChangeEvent<THandlerData>(
   }
 }
 
-export function handleUpdateEvent<THandlerData>(
-  eventWithData: GestureUpdateEventWithHandlerData<THandlerData>,
-  handlers: GestureCallbacks<THandlerData>,
-  changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined,
-  context: ReanimatedContext<THandlerData>
+export function handleUpdateEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  eventWithData: GestureUpdateEventWithHandlerData<TExtendedHandlerData>,
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined,
+  context: ReanimatedContext<TExtendedHandlerData>
 ) {
   'worklet';
   const eventWithChanges = changeEventCalculator
@@ -86,9 +93,12 @@ export function handleUpdateEvent<THandlerData>(
   context.lastUpdateEvent = eventWithData;
 }
 
-export function handleTouchEvent<THandlerData>(
+export function handleTouchEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   event: GestureTouchEvent,
-  handlers: GestureCallbacks<THandlerData>
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
 ) {
   'worklet';
 
@@ -97,12 +107,18 @@ export function handleTouchEvent<THandlerData>(
   }
 }
 
-export function eventHandler<THandlerData>(
+export function eventHandler<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  sourceEvent: GestureHandlerEventWithHandlerData<THandlerData>,
-  handlers: GestureCallbacks<THandlerData>,
-  changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined,
-  jsContext: ReanimatedContext<THandlerData>,
+  sourceEvent: GestureHandlerEventWithHandlerData<
+    THandlerData,
+    TExtendedHandlerData
+  >,
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined,
+  jsContext: ReanimatedContext<TExtendedHandlerData>,
   dispatchesAnimatedEvents: boolean
 ) {
   'worklet';
@@ -112,11 +128,17 @@ export function eventHandler<THandlerData>(
     return;
   }
 
-  if ('oldState' in eventWithData && eventWithData.oldState !== undefined) {
+  if (isStateChangeEvent(eventWithData)) {
     handleStateChangeEvent(eventWithData, handlers, jsContext);
-  } else if ('allTouches' in eventWithData) {
+    return;
+  }
+
+  if (isTouchEvent(eventWithData)) {
     handleTouchEvent(eventWithData, handlers);
-  } else if (!dispatchesAnimatedEvents) {
+    return;
+  }
+
+  if (!dispatchesAnimatedEvents) {
     handleUpdateEvent(
       eventWithData,
       handlers,

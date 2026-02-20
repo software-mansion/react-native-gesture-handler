@@ -23,9 +23,11 @@ function useRequiredInterceptingDetectorContext() {
   return context;
 }
 
-export function VirtualDetector<THandlerData, TConfig>(
-  props: VirtualDetectorProps<THandlerData, TConfig>
-) {
+export function VirtualDetector<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(props: VirtualDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
   // Don't memoize virtual detectors to be able to listen to changes in children
   // TODO: replace with MutationObserver when it rolls out in React Native
   'use no memo';
@@ -73,7 +75,10 @@ export function VirtualDetector<THandlerData, TConfig>(
     const virtualChild: VirtualChild = {
       viewTag,
       handlerTags,
-      methods: props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
+      methods: props.gesture.detectorCallbacks as DetectorCallbacks<
+        unknown,
+        unknown
+      >,
       // used by HostGestureDetector on web
       viewRef: Platform.OS === 'web' ? viewRef : undefined,
     };

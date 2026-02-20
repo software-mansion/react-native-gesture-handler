@@ -44,7 +44,7 @@ export function useComposedGesture(
   }
 
   const jsEventHandler = (
-    event: GestureHandlerEventWithHandlerData<unknown>
+    event: GestureHandlerEventWithHandlerData<unknown, unknown>
   ) => {
     for (const gesture of gestures) {
       if (gesture.detectorCallbacks.jsEventHandler) {

@@ -14,18 +14,21 @@ import {
   runCallback,
 } from '../utils';
 
-export function getUpdateHandler<THandlerData>(
+export function getUpdateHandler<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  callbacks: GestureCallbacks<THandlerData>,
-  context: ReanimatedContext<THandlerData> | undefined,
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  context: ReanimatedContext<TExtendedHandlerData> | undefined,
+  changeEventCalculator?: ChangeCalculatorType<TExtendedHandlerData>
 ) {
-  return (sourceEvent: UpdateEventWithHandlerData<THandlerData>) => {
+  return (sourceEvent: UpdateEventWithHandlerData<TExtendedHandlerData>) => {
     'worklet';
 
     const eventWithData = maybeExtractNativeEvent(
       sourceEvent
-    ) as GestureUpdateEventWithHandlerData<THandlerData>;
+    ) as GestureUpdateEventWithHandlerData<TExtendedHandlerData>;
 
     const eventWithChanges = changeEventCalculator
       ? changeEventCalculator(

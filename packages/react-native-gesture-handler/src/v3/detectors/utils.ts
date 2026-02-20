@@ -135,8 +135,8 @@ export const traverseAndConfigureRelations = (
   });
 };
 
-export function configureRelations<THandlerData, TConfig>(
-  gesture: Gesture<THandlerData, TConfig>
+export function configureRelations<TConfig, THandlerData>(
+  gesture: Gesture<TConfig, THandlerData>
 ) {
   if (isComposedGesture(gesture)) {
     const simultaneousHandlers = new Set<number>(

@@ -27,13 +27,19 @@ export type GestureStateChangeEventWithHandlerData<T> =
     handlerData: HandlerData<T>;
   };
 
-export type GestureHandlerEventWithHandlerData<THandlerData> =
-  | UpdateEventWithHandlerData<THandlerData>
+export type GestureHandlerEventWithHandlerData<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> =
+  | UpdateEventWithHandlerData<TExtendedHandlerData>
   | StateChangeEventWithHandlerData<THandlerData>
   | TouchEvent;
 
-export type UnpackedGestureHandlerEventWithHandlerData<THandlerData> =
-  | GestureUpdateEventWithHandlerData<THandlerData>
+export type UnpackedGestureHandlerEventWithHandlerData<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> =
+  | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
   | GestureStateChangeEventWithHandlerData<THandlerData>
   | GestureTouchEvent;
 

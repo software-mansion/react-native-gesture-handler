@@ -1,9 +1,10 @@
 import { CommonGestureConfig, ExternalRelations, GestureCallbacks } from '.';
-import { NativeGestureNativeProperties } from '../hooks/gestures/native/NativeProperties';
+
 import {
+  NativeGestureNativeProperties,
+  NativeHandlerData,
   NativeGesture,
-  NativeViewHandlerData,
-} from '../hooks/gestures/native/useNativeGesture';
+} from '../hooks/gestures/native/NativeTypes';
 
 export type WrapperSpecificProperties<T = unknown> = {
   ref?: React.RefObject<T>;
@@ -13,7 +14,7 @@ export type WrapperSpecificProperties<T = unknown> = {
 };
 
 export type NativeWrapperProperties<T = unknown> = CommonGestureConfig &
-  GestureCallbacks<NativeViewHandlerData> &
+  GestureCallbacks<NativeHandlerData> &
   NativeGestureNativeProperties &
   ExternalRelations &
   WrapperSpecificProperties<T>;

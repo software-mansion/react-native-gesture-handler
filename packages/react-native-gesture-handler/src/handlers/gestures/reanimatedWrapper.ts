@@ -53,9 +53,9 @@ let Reanimated:
         ): ComponentClass<P>;
       };
       NativeEventsManager: NativeEventsManager;
-      useHandler: <THandlerData>(
-        handlers: GestureCallbacks<THandlerData>
-      ) => ReanimatedHandler<THandlerData>;
+      useHandler: <THandlerData, TExtendedHandlerData extends THandlerData>(
+        handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
+      ) => ReanimatedHandler<TExtendedHandlerData>;
       useEvent: <T>(
         callback: (event: T) => void,
         events: string[],

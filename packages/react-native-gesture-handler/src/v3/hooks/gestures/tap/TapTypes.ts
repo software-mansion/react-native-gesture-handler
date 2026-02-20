@@ -1,3 +1,11 @@
+import {
+  BaseDiscreteGestureConfig,
+  DiscreteSingleGesture,
+  ExcludeInternalConfigProps,
+  GestureEvent,
+  WithSharedValue,
+} from '../../../types';
+
 type CommonTapGestureConfig = {
   /**
    * Minimum number of pointers (fingers) required to be placed before the
@@ -66,3 +74,27 @@ export const TapNativeProperties = new Set<keyof TapGestureNativeConfig>([
   'maxDelayMs',
   'maxDist',
 ]);
+
+export type TapHandlerData = {
+  x: number;
+  y: number;
+  absoluteX: number;
+  absoluteY: number;
+};
+
+export type TapGestureProperties = WithSharedValue<TapGestureExternalConfig>;
+
+export type TapGestureInternalProperties =
+  WithSharedValue<TapGestureNativeConfig>;
+
+export type TapGestureConfig = ExcludeInternalConfigProps<
+  BaseDiscreteGestureConfig<TapGestureProperties, TapHandlerData>
+>;
+
+export type TapGestureEvent = GestureEvent<TapHandlerData>;
+export type TapGestureActiveEvent = TapGestureEvent;
+
+export type TapGesture = DiscreteSingleGesture<
+  TapGestureInternalProperties,
+  TapHandlerData
+>;

@@ -29,7 +29,7 @@ export type {
   ManualGestureConfig,
   ManualGestureEvent,
   NativeGesture,
-  NativeViewGestureConfig,
+  NativeGestureConfig,
   NativeGestureEvent,
   PanGesture,
   PanGestureConfig,

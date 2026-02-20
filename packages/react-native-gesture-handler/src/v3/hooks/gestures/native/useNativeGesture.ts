@@ -1,44 +1,17 @@
-import {
-  BaseDiscreteGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  SingleGestureName,
-  WithSharedValue,
-  GestureEvent,
-} from '../../../types';
+import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
-import { NativeGestureNativeProperties } from './NativeProperties';
+import {
+  NativeGesture,
+  NativeGestureConfig,
+  NativeGestureProperties,
+  NativeHandlerData,
+} from './NativeTypes';
 
-export type NativeViewHandlerData = {
-  pointerInside: boolean;
-};
-
-type NativeViewGestureProperties =
-  WithSharedValue<NativeGestureNativeProperties>;
-
-type NativeViewGestureInternalConfig = BaseDiscreteGestureConfig<
-  NativeViewHandlerData,
-  NativeViewGestureProperties
->;
-
-export type NativeViewGestureConfig =
-  ExcludeInternalConfigProps<NativeViewGestureInternalConfig>;
-
-export type NativeGestureEvent = GestureEvent<NativeViewHandlerData>;
-
-export type NativeGesture = SingleGesture<
-  NativeViewHandlerData,
-  NativeViewGestureProperties
->;
-
-export function useNativeGesture(
-  config: NativeViewGestureConfig
-): NativeGesture {
+export function useNativeGesture(config: NativeGestureConfig): NativeGesture {
   const nativeConfig = useClonedAndRemappedConfig<
-    NativeViewHandlerData,
-    NativeViewGestureProperties,
-    NativeViewGestureProperties
+    NativeGestureProperties,
+    NativeHandlerData
   >(config);
 
   return useGesture(SingleGestureName.Native, nativeConfig);

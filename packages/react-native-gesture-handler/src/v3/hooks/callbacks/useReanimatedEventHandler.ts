@@ -15,11 +15,14 @@ const workletNOOP = () => {
   // no-op
 };
 
-export function useReanimatedEventHandler<THandlerData>(
+export function useReanimatedEventHandler<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  handlers: GestureCallbacks<THandlerData>,
-  reanimatedHandler: ReanimatedHandler<THandlerData> | undefined,
-  changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  reanimatedHandler: ReanimatedHandler<TExtendedHandlerData> | undefined,
+  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined
 ) {
   const workletizedHandlers = useMemo(() => {
     // We don't want to call hooks conditionally, `useEvent` will be always called.
@@ -37,7 +40,10 @@ export function useReanimatedEventHandler<THandlerData>(
   }, [handlers]);
 
   const callback = (
-    event: UnpackedGestureHandlerEventWithHandlerData<THandlerData>
+    event: UnpackedGestureHandlerEventWithHandlerData<
+      THandlerData,
+      TExtendedHandlerData
+    >
   ) => {
     'worklet';
     eventHandler(
