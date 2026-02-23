@@ -177,6 +177,7 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         attachedVirtualHandlers.current.get(child.viewTag)!,
         ActionType.VIRTUAL_DETECTOR
       );
+
       currentHandlerTags.forEach((tag) => {
         RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
           userSelect: child.userSelect,
