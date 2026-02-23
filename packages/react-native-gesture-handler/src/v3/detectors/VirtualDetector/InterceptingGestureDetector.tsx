@@ -22,12 +22,18 @@ import { tagMessage } from '../../../utils';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 import { Platform } from 'react-native';
-import { VirtualChildrenWeb } from '../HostGestureDetector.web';
+import {
+  TouchAction,
+  UserSelect,
+} from '../../../handlers/gestureHandlerCommon';
 
 interface VirtualChildrenForNative {
   viewTag: number;
   handlerTags: number[];
   viewRef: unknown;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
 }
 
 export function InterceptingGestureDetector<THandlerData, TConfig>({
@@ -42,10 +48,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
     () => new Set()
   );
-  const strippedVirtualChildren: (
-    | VirtualChildrenForNative
-    | VirtualChildrenWeb
-  )[] = useMemo(
+  const strippedVirtualChildren: VirtualChildrenForNative[] = useMemo(
     () =>
       Platform.OS === 'web'
         ? Array.from(virtualChildren).map((child) => ({
