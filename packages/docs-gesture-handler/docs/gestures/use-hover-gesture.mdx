@@ -12,6 +12,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
+import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -91,7 +93,9 @@ const styles = StyleSheet.create({
 
 <SharedValueInfo />
 
-### effect (iOS only)
+<HeaderWithBadge platforms={['iOS']}>
+### effect
+</HeaderWithBadge>
 
 <CollapsibleCode 
 label="Show composed types definitions"

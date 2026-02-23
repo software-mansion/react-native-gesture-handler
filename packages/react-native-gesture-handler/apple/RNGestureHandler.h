@@ -85,6 +85,7 @@
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
 @property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
 @property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
+@property (nonatomic, copy, nullable) NSNumber *viewTag;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
@@ -94,6 +95,7 @@
 - (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateRelations:(nonnull NSDictionary *)relations;
+- (void)handleGesture:(nonnull id)recognizer;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
 - (BOOL)containsPointInView;
