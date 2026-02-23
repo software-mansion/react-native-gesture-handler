@@ -49,7 +49,7 @@ API_AVAILABLE(ios(13.4))
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self fromReset:NO];
+  [_gestureHandler handleGesture:self fromReset:NO manualActivation:NO];
 }
 
 - (void)cancel
