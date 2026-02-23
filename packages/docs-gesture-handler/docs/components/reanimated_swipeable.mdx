@@ -252,7 +252,53 @@ enableTrackpadTwoFingerGesture?: boolean;
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
 
-## Methods
+### enabled
+
+```ts
+enabled: boolean;
+```
+
+Indicates whether `ReanimatedSwipeable` should be analyzing stream of touch events or not. Defaults to `true`.
+
+### testID
+
+```ts
+testID: string;
+```
+
+Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.
+
+### hitSlop
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
+hitSlop: HitSlop | SharedValue<HitSlop>;
+
+type HitSlop =
+  | number
+  | null
+  | undefined
+  | Partial<
+      Record<
+        'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+        number
+      >
+    >
+  | Record<'width' | 'left', number>
+  | Record<'width' | 'right', number>
+  | Record<'height' | 'top', number>
+  | Record<'height' | 'bottom', number>;
+`}/>
+
+This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
+When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+See [hitSlop section](/docs/gestures/use-pan-gesture#hitslop) in `Pan` gesture for more details.
+
+## Swipeable ref methods
 
 Using a reference to `Swipeable` allows you to manually trigger the opening and closing of the component, as well as reset its swiping state.
 

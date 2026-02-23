@@ -203,10 +203,6 @@ export interface SwipeableProps {
    * used with the swipeable's gesture handler.
    */
   block?: AnyGesture | AnyGesture[];
-
-  id?: string;
-
-  cancelsTouchesInView?: boolean;
 }
 
 export interface SwipeableMethods {
