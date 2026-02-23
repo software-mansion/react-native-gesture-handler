@@ -33,7 +33,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
   }
 #if TARGET_OS_OSX
@@ -42,14 +42,13 @@
 #endif
   return self;
 }
-- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
-{
-  [self handleGesture:recognizer fromReset:fromReset manualActivation:NO];
-}
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
-            fromReset:(BOOL)fromReset
-     manualActivation:(BOOL)manualActivation
+{
+  [self handleGesture:recognizer manualActivation:NO];
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer manualActivation:(BOOL)manualActivation
 {
   if (self.state == UIGestureRecognizerStateBegan) {
 #if TARGET_OS_OSX
@@ -58,7 +57,7 @@
     self.scale = 1;
 #endif
   }
-  [_gestureHandler handleGesture:recognizer fromReset:fromReset manualActivation:manualActivation];
+  [_gestureHandler handleGesture:recognizer fromReset:NO manualActivation:manualActivation];
 }
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event

@@ -33,11 +33,13 @@
 - (NSUInteger)getDuration;
 
 #if !TARGET_OS_OSX
+- (void)handleGesture:(UIGestureRecognizer *)recognizer;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
             fromReset:(BOOL)fromReset
      manualActivation:(BOOL)manualActivation;
 #else
+- (void)handleGesture:(NSGestureRecognizer *)recognizer;
 - (void)handleGesture:(NSGestureRecognizer *)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(NSGestureRecognizer *)recognizer
             fromReset:(BOOL)fromReset
@@ -53,10 +55,16 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
   }
   return self;
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  previousTime = CACurrentMediaTime();
+  [_gestureHandler handleGesture:recognizer fromReset:NO];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset

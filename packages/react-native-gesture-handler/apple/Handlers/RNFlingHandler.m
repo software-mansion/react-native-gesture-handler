@@ -16,7 +16,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _lastPoint = CGPointZero;
     _hasBegan = NO;
@@ -125,7 +125,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
 
     maxDuration = 1.0;
@@ -138,16 +138,14 @@
   return self;
 }
 
-- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer fromReset:(BOOL)fromReset
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
 {
-  [_gestureHandler handleGesture:self fromReset:fromReset manualActivation:NO];
+  [_gestureHandler handleGesture:self manualActivation:NO];
 }
 
-- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
-            fromReset:(BOOL)fromReset
-     manualActivation:(BOOL)manualActivation
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer manualActivation:(BOOL)manualActivation
 {
-  [_gestureHandler handleGesture:self fromReset:fromReset manualActivation:manualActivation];
+  [_gestureHandler handleGesture:self manualActivation:manualActivation];
 }
 
 - (void)mouseDown:(NSEvent *)event
