@@ -670,7 +670,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         userSelect={userSelect}
         enableContextMenu={enableContextMenu}>
         <Animated.View style={styles.main} onLayout={handleContainerLayout}>
-          <GestureDetector gesture={overlayDismissGesture}>
+          <GestureDetector
+            gesture={overlayDismissGesture}
+            userSelect={userSelect}>
             <Animated.View
               style={[
                 drawerType === DrawerType.FRONT
