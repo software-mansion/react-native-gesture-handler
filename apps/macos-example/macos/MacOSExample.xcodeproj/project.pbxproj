@@ -148,6 +148,7 @@
 				381D8A6E24576A4E00465D17 /* Bundle React Native code and images */,
 				6D0EC1752E57E7826E33BE11 /* [CP] Copy Pods Resources */,
 				D01A669245645FE4195DB892 /* [CP-User] Generate metadata for clangd */,
+				74A914BC92C8F532A0EFF786 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -298,6 +299,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MacOSExample-macOS/Pods-MacOSExample-macOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		74A914BC92C8F532A0EFF786 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MacOSExample-macOS/Pods-MacOSExample-macOS-frameworks.sh",
+				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/macosx/hermes.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MacOSExample-macOS/Pods-MacOSExample-macOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D01A669245645FE4195DB892 /* [CP-User] Generate metadata for clangd */ = {
@@ -495,7 +514,7 @@
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
-				USE_HERMES = false;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -553,7 +572,7 @@
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
-				USE_HERMES = false;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
