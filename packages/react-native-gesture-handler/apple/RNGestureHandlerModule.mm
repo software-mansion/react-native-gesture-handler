@@ -171,18 +171,21 @@ RCT_EXPORT_MODULE()
 {
   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
   // On the old arch we rely on `uiManagerWillPerformMounting`
-  if (_operations.count == 0) {
-    return;
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  if (_operations.count > 0) {
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+      for (GestureHandlerOperation operation in operations) {
+        operation(manager);
+      }
+    }];
   }
 
-  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
-    for (GestureHandlerOperation operation in operations) {
-      operation(manager);
-    }
+    [manager reattachHandlersIfNeeded];
   }];
 }
 
@@ -222,6 +225,10 @@ RCT_EXPORT_MODULE()
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = RNGHGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
+      if (handler.recognizer.state == UIGestureRecognizerStatePossible) {
+        // Force going from UNDETERMINED to ACTIVE through BEGAN to preserve the correct state transition flow.
+        [handler handleGesture:handler.recognizer fromReset:NO];
+      }
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
     } else if (state == 5) { // ENDED
