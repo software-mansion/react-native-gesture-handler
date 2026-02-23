@@ -27,7 +27,7 @@ import {
   UserSelect,
 } from '../../../handlers/gestureHandlerCommon';
 
-interface VirtualChildrenForNative {
+interface StrippedVirtualChildren {
   viewTag: number;
   handlerTags: number[];
   viewRef: unknown;
@@ -48,7 +48,7 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
     () => new Set()
   );
-  const strippedVirtualChildren: VirtualChildrenForNative[] = useMemo(
+  const strippedVirtualChildren: StrippedVirtualChildren[] = useMemo(
     () =>
       Platform.OS === 'web'
         ? Array.from(virtualChildren).map((child) => ({
