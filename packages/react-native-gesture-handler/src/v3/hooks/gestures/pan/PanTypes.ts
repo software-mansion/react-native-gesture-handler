@@ -132,16 +132,16 @@ export type PanHandlerData = {
   y: number;
   absoluteX: number;
   absoluteY: number;
-  translationX: number;
-  translationY: number;
-  velocityX: number;
-  velocityY: number;
   stylusData: StylusData;
 };
 
 export type PanExtendedHandlerData = PanHandlerData & {
   changeX: number;
   changeY: number;
+  translationX: number;
+  translationY: number;
+  velocityX: number;
+  velocityY: number;
 };
 
 export type PanGestureProperties =

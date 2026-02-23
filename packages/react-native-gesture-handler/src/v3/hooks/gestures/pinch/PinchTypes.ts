@@ -7,12 +7,13 @@ import {
 
 export type PinchGestureNativeProperties = Record<string, never>;
 
-export type PinchHandlerData = {
+// We want to keep `{}` because it does not break ts-server suggestions
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type PinchHandlerData = {};
+
+export type PinchExtendedHandlerData = {
   scale: number;
   velocity: number;
-};
-
-export type PinchExtendedHandlerData = PinchHandlerData & {
   focalX: number;
   focalY: number;
   scaleChange: number;

@@ -70,12 +70,12 @@ export type AnimatedEvent = {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export type ChangeCalculatorType<THandlerData> = (
-  current: GestureUpdateEventWithHandlerData<THandlerData>,
-  previous?: GestureUpdateEventWithHandlerData<THandlerData>
-) => GestureUpdateEventWithHandlerData<THandlerData>;
+export type ChangeCalculatorType<TExtendedHandlerData> = (
+  current: GestureUpdateEventWithHandlerData<TExtendedHandlerData>,
+  previous?: GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+) => GestureUpdateEventWithHandlerData<TExtendedHandlerData>;
 
-export type DiffCalculatorType<THandlerData> = (
-  current: HandlerData<THandlerData>,
-  previous: HandlerData<THandlerData> | null
-) => Partial<HandlerData<THandlerData>>;
+export type DiffCalculatorType<TExtendedHandlerData> = (
+  current: HandlerData<TExtendedHandlerData>,
+  previous: HandlerData<TExtendedHandlerData> | null
+) => Partial<HandlerData<TExtendedHandlerData>>;

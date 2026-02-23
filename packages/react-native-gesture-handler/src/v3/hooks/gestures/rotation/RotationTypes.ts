@@ -7,12 +7,13 @@ import {
 
 export type RotationGestureNativeProperties = Record<string, never>;
 
-export type RotationHandlerData = {
+// We want to keep `{}` because it does not break ts-server suggestions
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type RotationHandlerData = {};
+
+export type RotationExtendedHandlerData = {
   rotation: number;
   velocity: number;
-};
-
-export type RotationExtendedHandlerData = RotationHandlerData & {
   anchorX: number;
   anchorY: number;
   rotationChange: number;

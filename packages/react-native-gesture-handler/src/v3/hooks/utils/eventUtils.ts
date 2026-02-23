@@ -107,13 +107,13 @@ export function shouldHandleTouchEvents<
   );
 }
 
-export function getChangeEventCalculator<THandlerData>(
-  diffCalculator: DiffCalculatorType<THandlerData>
-): ChangeCalculatorType<THandlerData> {
+export function getChangeEventCalculator<TExtendedHandlerData>(
+  diffCalculator: DiffCalculatorType<TExtendedHandlerData>
+): ChangeCalculatorType<TExtendedHandlerData> {
   'worklet';
   return (
-    current: GestureUpdateEventWithHandlerData<THandlerData>,
-    previous?: GestureUpdateEventWithHandlerData<THandlerData>
+    current: GestureUpdateEventWithHandlerData<TExtendedHandlerData>,
+    previous?: GestureUpdateEventWithHandlerData<TExtendedHandlerData>
   ) => {
     'worklet';
     const currentEventData = current.handlerData;

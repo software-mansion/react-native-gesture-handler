@@ -17,7 +17,7 @@ import {
   SwipeDirection,
 } from './ReanimatedSwipeableProps';
 import {
-  PanGestureEvent,
+  PanGestureActiveEvent,
   usePanGesture,
   useTapGesture,
 } from '../../v3/hooks/gestures';
@@ -402,7 +402,7 @@ const Swipeable = (props: SwipeableProps) => {
   );
 
   const handleRelease = useCallback(
-    (event: PanGestureEvent) => {
+    (event: PanGestureActiveEvent) => {
       'worklet';
       const { velocityX } = event;
       userDrag.value = event.translationX;
@@ -476,7 +476,7 @@ const Swipeable = (props: SwipeableProps) => {
     block: blocksExternalGesture,
     hitSlop: hitSlop,
     onActivate: updateElementWidths,
-    onUpdate: (event: PanGestureEvent) => {
+    onUpdate: (event: PanGestureActiveEvent) => {
       'worklet';
       userDrag.value = event.translationX;
 
@@ -500,7 +500,7 @@ const Swipeable = (props: SwipeableProps) => {
 
       updateAnimatedEvent();
     },
-    onDeactivate: (event: PanGestureEvent) => {
+    onDeactivate: (event: PanGestureActiveEvent) => {
       'worklet';
       handleRelease(event);
     },

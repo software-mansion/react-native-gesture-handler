@@ -9,7 +9,6 @@ import type {
   HoverGesture,
   HoverGestureActiveEvent,
   HoverGestureConfig,
-  HoverExtendedHandlerData,
 } from './hover/HoverTypes';
 import type {
   LongPressGestureEvent,
@@ -34,21 +33,18 @@ import type {
   PanGesture,
   PanGestureActiveEvent,
   PanGestureConfig,
-  PanExtendedHandlerData,
 } from './pan/PanTypes';
 import type {
   PinchGestureEvent,
   PinchGesture,
   PinchGestureActiveEvent,
   PinchGestureConfig,
-  PinchExtendedHandlerData,
 } from './pinch/PinchTypes';
 import type {
   RotationGestureEvent,
   RotationGestureActiveEvent,
   RotationGesture,
   RotationGestureConfig,
-  RotationExtendedHandlerData,
 } from './rotation/RotationTypes';
 import type {
   TapGestureEvent,
@@ -159,8 +155,3 @@ export type SingleGestureEvent =
   | PanGestureEvent
   | PanGestureActiveEvent;
 /* eslint-enable @typescript-eslint/no-duplicate-type-constituents */
-
-export type ExtendedHandlerData = PanExtendedHandlerData &
-  HoverExtendedHandlerData &
-  PinchExtendedHandlerData &
-  RotationExtendedHandlerData;

@@ -45,7 +45,7 @@ export type GestureRelations = {
   blocksHandlers: number[];
 };
 
-export type InternalConfigProps<THandlerData> = {
+export type InternalConfigProps<TExtendedHandlerData> = {
   shouldUseReanimatedDetector?: boolean;
   dispatchesReanimatedEvents?: boolean;
   dispatchesAnimatedEvents?: boolean;
@@ -53,7 +53,7 @@ export type InternalConfigProps<THandlerData> = {
   userSelect?: UserSelect;
   touchAction?: TouchAction;
   enableContextMenu?: boolean;
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+  changeEventCalculator?: ChangeCalculatorType<TExtendedHandlerData>;
 };
 
 export type CommonGestureConfig = {

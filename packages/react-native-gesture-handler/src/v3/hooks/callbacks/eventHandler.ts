@@ -20,7 +20,10 @@ import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
-import { ExtendedHandlerData } from '../gestures';
+
+import { RotationExtendedHandlerData } from '../gestures/rotation/RotationTypes';
+import { PanExtendedHandlerData } from '../gestures/pan/PanTypes';
+import { PinchExtendedHandlerData } from '../gestures/pinch/PinchTypes';
 
 const defaultValues = {
   changeX: 0,
@@ -29,11 +32,43 @@ const defaultValues = {
   rotationChange: 0,
 };
 
-function fillInDefaultValues(event: GestureEvent<ExtendedHandlerData>) {
-  for (const [key, value] of Object.entries(defaultValues)) {
-    if (key in event) {
-      event[key as keyof typeof defaultValues] = value;
-    }
+function isPanEvent(
+  event: GestureEvent<unknown>
+): event is GestureEvent<PanExtendedHandlerData> {
+  'worklet';
+  return 'translationX' in event;
+}
+
+function isPinchEvent(
+  event: GestureEvent<unknown>
+): event is GestureEvent<PinchExtendedHandlerData> {
+  'worklet';
+  return 'scale' in event;
+}
+
+function isRotationEvent(
+  event: GestureEvent<unknown>
+): event is GestureEvent<RotationExtendedHandlerData> {
+  'worklet';
+  return 'rotation' in event;
+}
+
+function fillInDefaultValues(event: GestureEvent<unknown>) {
+  'worklet';
+
+  if (isPanEvent(event)) {
+    event.changeX = defaultValues.changeX;
+    event.changeY = defaultValues.changeY;
+    return;
+  }
+
+  if (isPinchEvent(event)) {
+    event.scaleChange = defaultValues.scaleChange;
+    return;
+  }
+
+  if (isRotationEvent(event)) {
+    event.rotationChange = defaultValues.rotationChange;
   }
 }
 
@@ -57,11 +92,11 @@ function handleStateChangeEvent<
     (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
     state === State.ACTIVE
   ) {
-    fillInDefaultValues(event as GestureEvent<ExtendedHandlerData>);
+    fillInDefaultValues(event);
     runCallback(CALLBACK_TYPE.START, callbacks, event);
   } else if (oldState !== state && state === State.END) {
     if (oldState === State.ACTIVE) {
-      fillInDefaultValues(event as GestureEvent<ExtendedHandlerData>);
+      fillInDefaultValues(event);
       runCallback(CALLBACK_TYPE.END, callbacks, event, true);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
@@ -74,7 +109,7 @@ function handleStateChangeEvent<
     state !== oldState
   ) {
     if (oldState === State.ACTIVE) {
-      fillInDefaultValues(event as GestureEvent<ExtendedHandlerData>);
+      fillInDefaultValues(event);
       runCallback(CALLBACK_TYPE.END, callbacks, event, false);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
