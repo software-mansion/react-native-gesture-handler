@@ -144,7 +144,7 @@
 }
 
 - (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
-            fromReset:fromReset
+            fromReset:(BOOL)fromReset
      manualActivation:(BOOL)manualActivation
 {
   [_gestureHandler handleGesture:self fromReset:fromReset manualActivation:manualActivation];
