@@ -6,7 +6,7 @@ sidebar_label: Reanimated Drawer Layout
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 :::info
 This component acts as a cross-platform replacement for React Native's [`DrawerLayoutAndroid`](http://reactnative.dev/docs/drawerlayoutandroid.html) component, written using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started). For detailed information on standard parameters, please refer to the [React Native documentation](http://reactnative.dev/docs/drawerlayoutandroid.html).
@@ -134,9 +134,9 @@ export enum DrawerState {
 
 A function is called when the status of the drawer changes, taking `newState` to represent the drawer's interaction state and `drawerWillShow`, which is `true` when the drawer starts animating towards the open position and `false` otherwise.
 
-<HeaderWithBadge platforms={['iOS']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### enableTrackpadTwoFingerGesture
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean;
@@ -153,9 +153,9 @@ children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
 
 Either a component rendered in the content view or a function. If `children` is a function, it receives an `openValue` parameter -  [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) that indicates the progress of the drawer's opening or closing animation. This value equals `0` when the drawer is closed and `1` when it is fully opened. The drawer component can use this value to animate its children during the opening or closing process. This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node).
 
-<HeaderWithBadge platforms={['android', 'web']}>
+<HeaderWithBadges platforms={['android', 'web']}>
 ### mouseButton
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 <CollapsibleCode 
 label="Show composed types definitions"
@@ -176,9 +176,9 @@ enum MouseButton {
 
 Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
 
-<HeaderWithBadge platforms={['web']}>
+<HeaderWithBadges platforms={['web']}>
 ### enableContextMenu
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableContextMenu: boolean;
