@@ -30,7 +30,7 @@ import {
 interface StrippedVirtualChildren {
   viewTag: number;
   handlerTags: number[];
-  viewRef: unknown;
+  viewRef?: unknown;
   userSelect?: UserSelect;
   touchAction?: TouchAction;
   enableContextMenu?: boolean;
@@ -62,7 +62,6 @@ export function InterceptingGestureDetector<THandlerData, TConfig>({
         : Array.from(virtualChildren).map((child) => ({
             viewTag: child.viewTag,
             handlerTags: child.handlerTags,
-            viewRef: child.viewRef,
           })),
     [virtualChildren]
   );
