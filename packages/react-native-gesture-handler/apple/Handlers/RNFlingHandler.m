@@ -143,11 +143,6 @@
   [_gestureHandler handleGesture:self fromReset:NO fromManual:NO];
 }
 
-- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer fromReset:fromReset fromManual:(BOOL)fromManual
-{
-  [_gestureHandler handleGesture:self fromReset:fromReset fromManual:fromManual];
-}
-
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];

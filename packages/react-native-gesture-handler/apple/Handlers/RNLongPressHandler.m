@@ -57,7 +57,7 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
-  [_gestureHandler handleGesture:recognizer fromReset:NO fromManual:NO];
+  [self handleGesture:recognizer fromReset:NO fromManual:NO];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManual:(BOOL)fromManual
