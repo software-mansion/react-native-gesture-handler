@@ -75,12 +75,12 @@
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self fromReset:NO manualActivation:NO];
+  [_gestureHandler handleGesture:self fromReset:NO fromManual:NO];
 }
 
 - (void)triggerActionFromReset
 {
-  [_gestureHandler handleGesture:self fromReset:YES manualActivation:NO];
+  [_gestureHandler handleGesture:self fromReset:YES fromManual:NO];
 }
 
 #if !TARGET_OS_OSX

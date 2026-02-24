@@ -63,12 +63,12 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self fromReset:NO manualActivation:NO];
+  [_gestureHandler handleGesture:self fromReset:NO fromManual:NO];
 }
 
 - (void)triggerActionFromReset
 {
-  [_gestureHandler handleGesture:self fromReset:YES manualActivation:NO];
+  [_gestureHandler handleGesture:self fromReset:YES fromManual:NO];
 }
 
 - (void)cancel

@@ -70,12 +70,12 @@
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self fromReset:NO manualActivation:NO];
+  [_gestureHandler handleGesture:self fromReset:NO fromManual:NO];
 }
 
 - (void)triggerActionFromReset
 {
-  [_gestureHandler handleGesture:self fromReset:YES manualActivation:NO];
+  [_gestureHandler handleGesture:self fromReset:YES fromManual:NO];
 }
 
 - (void)reset
@@ -140,14 +140,12 @@
 
 - (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
 {
-  [_gestureHandler handleGesture:self fromReset:NO manualActivation:NO];
+  [_gestureHandler handleGesture:self fromReset:NO fromManual:NO];
 }
 
-- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
-            fromReset:(BOOL)fromReset
-     manualActivation:(BOOL)manualActivation
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer fromReset:fromReset fromManual:(BOOL)fromManual
 {
-  [_gestureHandler handleGesture:self fromReset:fromReset manualActivation:manualActivation];
+  [_gestureHandler handleGesture:self fromReset:fromReset fromManual:fromManual];
 }
 
 - (void)mouseDown:(NSEvent *)event
