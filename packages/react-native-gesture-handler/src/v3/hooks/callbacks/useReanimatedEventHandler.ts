@@ -32,7 +32,6 @@ export function useReanimatedEventHandler<THandlerData>(
         onUpdate: workletNOOP,
       };
     }
-
     return handlers;
   }, [handlers]);
 
@@ -58,7 +57,7 @@ export function useReanimatedEventHandler<THandlerData>(
       'onGestureHandlerReanimatedStateChange',
       'onGestureHandlerReanimatedTouchEvent',
     ],
-    !!reanimatedHandler?.doDependenciesDiffer
+    __DEV__ ? true : !!reanimatedHandler?.doDependenciesDiffer
   );
 
   return reanimatedEvent;
