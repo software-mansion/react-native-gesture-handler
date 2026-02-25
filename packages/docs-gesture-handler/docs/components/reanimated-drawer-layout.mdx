@@ -6,7 +6,7 @@ sidebar_label: Reanimated Drawer Layout
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 import MouseButtonProp from '../gestures/\_shared/mouse-button.mdx';
 
@@ -221,9 +221,9 @@ export enum DrawerState {
 
 A function is called when the status of the drawer changes, taking `newState` to represent the drawer's interaction state and `drawerWillShow`, which is `true` when the drawer starts animating towards the open position and `false` otherwise.
 
-<HeaderWithBadge platforms={['iOS']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### enableTrackpadTwoFingerGesture
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean;
@@ -242,9 +242,9 @@ Either a component rendered in the content view or a function. If `children` is 
 
 <MouseButtonProp />
 
-<HeaderWithBadge platforms={['web']}>
+<HeaderWithBadges platforms={['web']}>
 ### enableContextMenu
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableContextMenu: boolean;

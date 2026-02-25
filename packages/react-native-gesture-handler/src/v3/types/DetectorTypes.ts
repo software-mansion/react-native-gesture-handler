@@ -3,6 +3,7 @@ import {
   GestureUpdateEventWithHandlerData,
   GestureHandlerEventWithHandlerData,
 } from './EventTypes';
+import { TouchAction, UserSelect } from '../../handlers/gestureHandlerCommon';
 
 export type DetectorCallbacks<THandlerData> = {
   jsEventHandler:
@@ -24,4 +25,7 @@ export type VirtualChild = {
 
   // only set on web
   viewRef: unknown;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
 };

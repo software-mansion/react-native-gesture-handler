@@ -7,7 +7,7 @@ sidebar_label: Reanimated Swipeable
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery'
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 :::info
 This component is a drop-in replacement for the `Swipeable` component, rewritten using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started).
@@ -242,9 +242,9 @@ blocksExternalGesture?: AnyGesture | AnyGesture[];
 
 Gestures that `Swipeable` will prevent from activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
 
-<HeaderWithBadge platforms={['iOS']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### enableTrackpadTwoFingerGesture
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean;
@@ -297,6 +297,16 @@ type HitSlop =
 This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
 When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
 See [hitSlop section](/docs/gestures/use-pan-gesture#hitslop) in `Pan` gesture for more details.
+
+<HeaderWithBadges platforms={['web']}>
+### enableContextMenu
+</HeaderWithBadges>
+
+```ts
+enableContextMenu: boolean;
+```
+
+Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
 
 ## Swipeable ref methods
 
