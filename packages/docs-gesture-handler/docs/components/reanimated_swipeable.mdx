@@ -252,41 +252,53 @@ enableTrackpadTwoFingerGesture?: boolean;
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with `enableTrackpadTwoFingerGesture` swiping with two fingers will also trigger the gesture.
 
-<HeaderWithBadges platforms={['android', 'web']}>
-### mouseButton
-</HeaderWithBadges>
+### enabled
+
+```ts
+enabled: boolean;
+```
+
+Indicates whether `ReanimatedSwipeable` should be analyzing stream of touch events or not. Defaults to `true`.
+
+### testID
+
+```ts
+testID: string;
+```
+
+Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.
+
+### hitSlop
 
 <CollapsibleCode 
 label="Show composed types definitions"
 expandedLabel="Hide composed types definitions"
 lineBounds={[0, 1]}
+collapsed={false}
 src={`
-mouseButton: MouseButton | SharedValue<MouseButton>;
+hitSlop: HitSlop | SharedValue<HitSlop>;
 
-enum MouseButton {
-  LEFT,
-  RIGHT,
-  MIDDLE,
-  BUTTON_4,
-  BUTTON_5,
-  ALL,
-}
+type HitSlop =
+  | number
+  | null
+  | undefined
+  | Partial<
+      Record<
+        'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+        number
+      >
+    >
+  | Record<'width' | 'left', number>
+  | Record<'width' | 'right', number>
+  | Record<'height' | 'top', number>
+  | Record<'height' | 'bottom', number>;
 `}/>
 
-Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
+When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+See [hitSlop section](/docs/gestures/use-pan-gesture#hitslop) in `Pan` gesture for more details.
 
-<HeaderWithBadges platforms={['web']}>
-### enableContextMenu
-</HeaderWithBadges>
-
-```ts
-enableContextMenu: boolean;
-```
-
-Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false`.
-
-
-## Methods
+## Swipeable ref methods
 
 Using a reference to `Swipeable` allows you to manually trigger the opening and closing of the component, as well as reset its swiping state.
 

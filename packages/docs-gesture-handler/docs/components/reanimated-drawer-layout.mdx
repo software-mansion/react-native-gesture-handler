@@ -8,6 +8,8 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
+import MouseButtonProp from '../gestures/\_shared/mouse-button.mdx';
+
 :::info
 This component acts as a cross-platform replacement for React Native's [`DrawerLayoutAndroid`](http://reactnative.dev/docs/drawerlayoutandroid.html) component, written using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started). For detailed information on standard parameters, please refer to the [React Native documentation](http://reactnative.dev/docs/drawerlayoutandroid.html).
 :::
@@ -29,15 +31,100 @@ drawerType?: DrawerType;
 Specifies the way the drawer will be displayed.
 Accepts values of the `DrawerType` enum. Defaults to `FRONT`.
 
-| `drawerType` | Description |
-| -- | -- |
-|`FRONT` | The drawer will be displayed above the content view. |
-|`BACK` | The drawer will be displayed below the content view, revealed by sliding away the content view. |
-|`SLIDE` | The drawer will appear attached to the content view, opening it slides both the drawer and the content view. |
+- `FRONT` The drawer will be displayed above the content view. 
+- `BACK` The drawer will be displayed below the content view, revealed by sliding away the content view.
+- `SLIDE` The drawer will appear attached to the content view, opening it slides both the drawer and the content view.
 
 | `FRONT`                                               | `BACK`                                               | `SLIDE`                                               |
 | ----------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------- |
 | <img src={useBaseUrl('gifs/new-drawer-front.gif')} /> | <img src={useBaseUrl('gifs/new-drawer-back.gif')} /> | <img src={useBaseUrl('gifs/new-drawer-slide.gif')} /> |
+
+### drawerBackgroundColor
+
+```ts
+drawerBackgroundColor?: string;
+```
+
+Color of the drawer's background.
+
+### drawerWidth
+
+```ts
+drawerWidth?: number;
+```
+
+Width of the drawer. Defaults to `200`.
+
+### drawerLockMode
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+drawerLockMode?: DrawerLockMode;
+
+export enum DrawerLockMode {
+    UNLOCKED,
+    LOCKED_CLOSED,
+    LOCKED_OPEN,
+}
+`}/>
+
+Specifies the lock mode of the drawer.
+
+ - `UNLOCKED` The drawer is unlocked and can be opened or closed by gestures.
+ - `LOCKED_CLOSED` The drawer will move freely until it settles in a closed position, then the gestures will be disabled.
+ - `LOCKED_OPEN` The drawer will move freely until it settles in an opened position, then the gestures will be disabled.
+
+### keyboardDismissMode
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+keyboardDismissMode?: DrawerKeyboardDismissMode;
+
+export enum DrawerKeyboardDismissMode {
+    NONE,
+    ON_DRAG,
+}
+`}/>
+
+Determines if system keyboard should be closed upon dragging the drawer.
+
+### animationSpeed
+
+```ts
+animationSpeed?: number;
+```
+
+Speed of animation that will play when letting go, or dismissing the drawer.
+
+### minSwipeDistance
+
+```ts
+minSwipeDistance?: number;
+```
+
+Minimal distance to swipe before the drawer starts moving.
+
+### contentContainerStyle
+
+```ts
+contentContainerStyle?: StyleProp<ViewStyle>;
+```
+
+Style of the content view container.
+
+### drawerContainerStyle
+
+```ts
+drawerContainerStyle?: StyleProp<ViewStyle>;
+```
+
+Style wrapping the drawer.
 
 ### edgeWidth
 
@@ -153,28 +240,7 @@ children?: ReactNode | ((openValue?: SharedValue<number>) => ReactNode);
 
 Either a component rendered in the content view or a function. If `children` is a function, it receives an `openValue` parameter -  [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) that indicates the progress of the drawer's opening or closing animation. This value equals `0` when the drawer is closed and `1` when it is fully opened. The drawer component can use this value to animate its children during the opening or closing process. This function must return a [`ReactNode`](https://reactnative.dev/docs/react-node).
 
-<HeaderWithBadges platforms={['android', 'web']}>
-### mouseButton
-</HeaderWithBadges>
-
-<CollapsibleCode 
-label="Show composed types definitions"
-expandedLabel="Hide composed types definitions"
-lineBounds={[0, 1]}
-src={`
-mouseButton: MouseButton | SharedValue<MouseButton>;
-
-enum MouseButton {
-  LEFT,
-  RIGHT,
-  MIDDLE,
-  BUTTON_4,
-  BUTTON_5,
-  ALL,
-}
-`}/>
-
-Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+<MouseButtonProp />
 
 <HeaderWithBadges platforms={['web']}>
 ### enableContextMenu
@@ -186,8 +252,27 @@ enableContextMenu: boolean;
 
 Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton-web--android-only) is specified.
 
+<HeaderWithBadges platforms={['web']}>
+### userSelect
+</HeaderWithBadges>
 
-## Methods
+```ts
+userSelect: 'none' | 'auto' | 'text';
+```
+
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Default value is set to `"none"`.
+
+<HeaderWithBadges platforms={['web']}>
+### activeCursor
+</HeaderWithBadges>
+
+```ts
+activeCursor: ActiveCursor;
+```
+
+This parameter allows to specify which cursor should be used when gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
+
+## Drawer ref methods
 
 Using a reference to `ReanimatedDrawerLayout` allows you to manually trigger the opening and closing of the component.
 
