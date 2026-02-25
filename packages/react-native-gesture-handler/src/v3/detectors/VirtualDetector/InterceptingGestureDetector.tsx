@@ -22,11 +22,18 @@ import { tagMessage } from '../../../utils';
 import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 import { Platform } from 'react-native';
+import {
+  TouchAction,
+  UserSelect,
+} from '../../../handlers/gestureHandlerCommon';
 
-interface VirtualChildrenForNative {
+interface StrippedVirtualChildren {
   viewTag: number;
   handlerTags: number[];
-  viewRef: unknown;
+  viewRef?: unknown;
+  userSelect?: UserSelect;
+  touchAction?: TouchAction;
+  enableContextMenu?: boolean;
 }
 
 export function InterceptingGestureDetector<
@@ -49,13 +56,21 @@ export function InterceptingGestureDetector<
   const [virtualChildren, setVirtualChildren] = useState<Set<VirtualChild>>(
     () => new Set()
   );
-  const virtualChildrenForNativeComponent: VirtualChildrenForNative[] = useMemo(
+  const strippedVirtualChildren: StrippedVirtualChildren[] = useMemo(
     () =>
-      Array.from(virtualChildren).map((child) => ({
-        viewTag: child.viewTag,
-        handlerTags: child.handlerTags,
-        viewRef: child.viewRef,
-      })),
+      Platform.OS === 'web'
+        ? Array.from(virtualChildren).map((child) => ({
+            viewTag: child.viewTag,
+            handlerTags: child.handlerTags,
+            viewRef: child.viewRef,
+            userSelect: child.userSelect,
+            touchAction: child.touchAction,
+            enableContextMenu: child.enableContextMenu,
+          }))
+        : Array.from(virtualChildren).map((child) => ({
+            viewTag: child.viewTag,
+            handlerTags: child.handlerTags,
+          })),
     [virtualChildren]
   );
   const [mode, setMode] = useState<InterceptingDetectorMode>(
@@ -280,7 +295,7 @@ export function InterceptingGestureDetector<
         }
         handlerTags={handlerTags}
         style={nativeDetectorStyles.detector}
-        virtualChildren={virtualChildrenForNativeComponent}
+        virtualChildren={strippedVirtualChildren}
         moduleId={globalThis._RNGH_MODULE_ID}>
         {children}
       </NativeDetectorComponent>

@@ -12,7 +12,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import TapGestureBasic from '@site/static/examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
@@ -155,9 +155,9 @@ maxDistance: number | SharedValue<number>;
 
 Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture.
 
-<HeaderWithBadge platforms={['android', 'web']}>
+<HeaderWithBadges platforms={['android', 'web']}>
 ### mouseButton
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 <CollapsibleCode 
 label="Show composed types definitions"
