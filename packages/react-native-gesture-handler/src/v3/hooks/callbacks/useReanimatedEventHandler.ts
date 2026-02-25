@@ -21,7 +21,9 @@ export function useReanimatedEventHandler<THandlerData>(
   reanimatedHandler: ReanimatedHandler<THandlerData> | undefined,
   changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined
 ) {
+  let didUpdateHandlers = false;
   const workletizedHandlers = useMemo(() => {
+    didUpdateHandlers = true;
     // We don't want to call hooks conditionally, `useEvent` will be always called.
     // The only difference is whether we will send events to Reanimated or not.
     // The problem here is that if someone passes `Animated.event` as `onUpdate` prop,
@@ -57,7 +59,7 @@ export function useReanimatedEventHandler<THandlerData>(
       'onGestureHandlerReanimatedStateChange',
       'onGestureHandlerReanimatedTouchEvent',
     ],
-    __DEV__ ? true : !!reanimatedHandler?.doDependenciesDiffer
+    didUpdateHandlers || !!reanimatedHandler?.doDependenciesDiffer
   );
 
   return reanimatedEvent;
