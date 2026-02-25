@@ -58,7 +58,8 @@ export function useGestureCallbacks<
       handlerTag,
       callbacks,
       reanimatedHandler,
-      config.changeEventCalculator
+      config.changeEventCalculator,
+      config.fillInDefaultValues
     );
   }
 

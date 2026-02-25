@@ -6,6 +6,7 @@ import {
 import {
   ChangeCalculatorType,
   GestureCallbacks,
+  GestureEvent,
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
 import { eventHandler } from './eventHandler';
@@ -22,7 +23,8 @@ export function useReanimatedEventHandler<
   handlerTag: number,
   handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
   reanimatedHandler: ReanimatedHandler<TExtendedHandlerData> | undefined,
-  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined
+  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined,
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void
 ) {
   const workletizedHandlers = useMemo(() => {
     // We don't want to call hooks conditionally, `useEvent` will be always called.
@@ -53,7 +55,8 @@ export function useReanimatedEventHandler<
       changeEventCalculator,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
       reanimatedHandler?.context!,
-      false
+      false,
+      fillInDefaultValues
     );
   };
 

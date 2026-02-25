@@ -1,4 +1,5 @@
 import {
+  GestureEvent,
   HandlerData,
   SingleGestureName,
   WithSharedValue,
@@ -117,6 +118,13 @@ function diffCalculator(
   };
 }
 
+function fillInDefaultValues(event: GestureEvent<PanExtendedHandlerData>) {
+  'worklet';
+
+  event.changeX = 0;
+  event.changeY = 0;
+}
+
 function transformPanProps(
   config: PanGestureConfig & PanGestureInternalConfig
 ) {
@@ -126,6 +134,7 @@ function transformPanProps(
   transformOffsetProp(config, 'activeOffsetX');
 
   config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
 
   return config;
 }

@@ -21,57 +21,6 @@ import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
 
-import { RotationExtendedHandlerData } from '../gestures/rotation/RotationTypes';
-import { PanExtendedHandlerData } from '../gestures/pan/PanTypes';
-import { PinchExtendedHandlerData } from '../gestures/pinch/PinchTypes';
-
-const defaultValues = {
-  changeX: 0,
-  changeY: 0,
-  scaleChange: 1,
-  rotationChange: 0,
-};
-
-function isPanEvent(
-  event: GestureEvent<unknown>
-): event is GestureEvent<PanExtendedHandlerData> {
-  'worklet';
-  return 'translationX' in event;
-}
-
-function isPinchEvent(
-  event: GestureEvent<unknown>
-): event is GestureEvent<PinchExtendedHandlerData> {
-  'worklet';
-  return 'scale' in event;
-}
-
-function isRotationEvent(
-  event: GestureEvent<unknown>
-): event is GestureEvent<RotationExtendedHandlerData> {
-  'worklet';
-  return 'rotation' in event;
-}
-
-function fillInDefaultValues(event: GestureEvent<unknown>) {
-  'worklet';
-
-  if (isPanEvent(event)) {
-    event.changeX = defaultValues.changeX;
-    event.changeY = defaultValues.changeY;
-    return;
-  }
-
-  if (isPinchEvent(event)) {
-    event.scaleChange = defaultValues.scaleChange;
-    return;
-  }
-
-  if (isRotationEvent(event)) {
-    event.rotationChange = defaultValues.rotationChange;
-  }
-}
-
 function handleStateChangeEvent<
   THandlerData,
   TExtendedHandlerData extends THandlerData,
@@ -80,7 +29,8 @@ function handleStateChangeEvent<
     THandlerData | TExtendedHandlerData
   >,
   callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
-  context: ReanimatedContext<TExtendedHandlerData>
+  context: ReanimatedContext<TExtendedHandlerData>,
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void
 ) {
   'worklet';
   const { oldState, state } = eventWithData;
@@ -92,11 +42,11 @@ function handleStateChangeEvent<
     (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
     state === State.ACTIVE
   ) {
-    fillInDefaultValues(event);
+    fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
     runCallback(CALLBACK_TYPE.START, callbacks, event);
   } else if (oldState !== state && state === State.END) {
     if (oldState === State.ACTIVE) {
-      fillInDefaultValues(event);
+      fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
       runCallback(CALLBACK_TYPE.END, callbacks, event, true);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
@@ -109,7 +59,7 @@ function handleStateChangeEvent<
     state !== oldState
   ) {
     if (oldState === State.ACTIVE) {
-      fillInDefaultValues(event);
+      fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
       runCallback(CALLBACK_TYPE.END, callbacks, event, false);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
@@ -176,7 +126,8 @@ export function eventHandler<
   handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
   changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined,
   jsContext: ReanimatedContext<TExtendedHandlerData>,
-  dispatchesAnimatedEvents: boolean
+  dispatchesAnimatedEvents: boolean,
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void
 ) {
   'worklet';
   const eventWithData = maybeExtractNativeEvent(sourceEvent);
@@ -186,7 +137,12 @@ export function eventHandler<
   }
 
   if (isStateChangeEvent(eventWithData)) {
-    handleStateChangeEvent(eventWithData, handlers, jsContext);
+    handleStateChangeEvent(
+      eventWithData,
+      handlers,
+      jsContext,
+      fillInDefaultValues
+    );
     return;
   }
 

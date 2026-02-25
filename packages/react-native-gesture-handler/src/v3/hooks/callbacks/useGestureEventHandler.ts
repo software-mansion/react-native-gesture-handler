@@ -35,7 +35,8 @@ export function useGestureEventHandler<
         handlers,
         config.changeEventCalculator,
         jsContext,
-        !!config.dispatchesAnimatedEvents
+        !!config.dispatchesAnimatedEvents,
+        config.fillInDefaultValues
       );
     };
   }, [
@@ -43,6 +44,7 @@ export function useGestureEventHandler<
     handlers,
     config.changeEventCalculator,
     config.dispatchesAnimatedEvents,
+    config.fillInDefaultValues,
     jsContext,
   ]);
 }

@@ -1,4 +1,4 @@
-import { HandlerData, SingleGestureName } from '../../../types';
+import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   useClonedAndRemappedConfig,
@@ -23,10 +23,16 @@ function diffCalculator(
   };
 }
 
+function fillInDefaultValues(event: GestureEvent<PinchExtendedHandlerData>) {
+  'worklet';
+  event.scaleChange = 1;
+}
+
 function transformPinchProps(
   config: PinchGestureConfig & PinchGestureInternalConfig
 ) {
   config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
 
   return config;
 }
@@ -41,8 +47,6 @@ export function usePinchGesture(config: PinchGestureConfig): PinchGesture {
     Record<string, unknown>,
     PinchExtendedHandlerData
   >(config, PinchPropsMapping, transformPinchProps);
-
-  pinchConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }

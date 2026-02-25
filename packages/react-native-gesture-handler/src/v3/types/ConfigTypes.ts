@@ -54,6 +54,7 @@ export type InternalConfigProps<TExtendedHandlerData> = {
   touchAction?: TouchAction;
   enableContextMenu?: boolean;
   changeEventCalculator?: ChangeCalculatorType<TExtendedHandlerData>;
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void;
 };
 
 export type CommonGestureConfig = {
