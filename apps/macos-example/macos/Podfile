@@ -16,7 +16,6 @@ target 'MacOSExample-macOS' do
 
   use_react_native!(
     :path => '../node_modules/react-native-macos',
-    :hermes_enabled => false,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
     :new_arch_enabled => true,
