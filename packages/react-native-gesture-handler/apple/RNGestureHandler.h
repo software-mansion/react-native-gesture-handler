@@ -97,9 +97,9 @@
 - (void)updateRelations:(nonnull NSDictionary *)relations;
 - (void)handleGesture:(nonnull id)recognizer;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
-- (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset fromManual:(BOOL)fromManual;
+- (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
-- (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state fromManual:(BOOL)fromManual;
+- (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state fromManualStateChange:(BOOL)fromManualStateChange;
 - (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
@@ -112,7 +112,7 @@
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData
-               fromManual:(BOOL)fromManual;
+               fromManualStateChange:(BOOL)fromManualStateChange;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;

@@ -309,10 +309,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
-  [self handleGesture:recognizer fromReset:fromReset fromManual:NO];
+  [self handleGesture:recognizer fromReset:fromReset fromManualStateChange:NO];
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManual:(BOOL)fromManual
+- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange
 {
   // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
   // since the handler is being reset, so these events are wrong.
@@ -345,15 +345,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _state = RNGestureHandlerStateFailed;
   }
 
-  [self handleGesture:recognizer inState:_state fromManual:fromManual];
+  [self handleGesture:recognizer inState:_state fromManualStateChange:fromManualStateChange];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state
 {
-  [self handleGesture:recognizer inState:state fromManual:NO];
+  [self handleGesture:recognizer inState:state fromManualStateChange:NO];
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state fromManual:(BOOL)fromManual
+- (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state fromManualStateChange:(BOOL)fromManualStateChange
 {
   _state = state;
 
@@ -371,7 +371,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   react_native_assert(tag != nil && "Tag should be defined when dispatching an event");
 
-  [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData fromManual:fromManual];
+  [self sendEventsInState:self.state forViewWithTag:tag withExtraData:eventData fromManualStateChange:fromManualStateChange];
 }
 
 - (RNGestureHandlerEventHandlerType)eventHandlerType
@@ -385,13 +385,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
 {
-  [self sendEventsInState:state forViewWithTag:reactTag withExtraData:extraData fromManual:NO];
+  [self sendEventsInState:state forViewWithTag:reactTag withExtraData:extraData fromManualStateChange:NO];
 }
 
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
-               fromManual:(BOOL)fromManual
+               fromManualStateChange:(BOOL)fromManualStateChange
 {
   if (state != _lastState) {
     // don't send change events from END to FAILED or CANCELLED, this may happen when gesture is ended in `onTouchesUp`
@@ -418,7 +418,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       self->_eventCoalescingKey = nextEventCoalescingKey++;
 
     } else if (
-        state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !fromManual &&
+        state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !fromManualStateChange &&
         !_manualActivation) {
       id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                             handlerTag:_tag
