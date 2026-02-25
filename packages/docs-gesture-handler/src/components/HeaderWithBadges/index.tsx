@@ -5,7 +5,7 @@ import styles from './styles.module.css';
 import clsx from 'clsx';
 
 type HeaderWithBadgesProps = {
-  platforms: string[];
+  platforms?: string[];
   version?: string;
   children?: React.ReactNode;
 };
