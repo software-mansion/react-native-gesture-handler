@@ -3,6 +3,8 @@ require_relative '../../../scripts/clangd-add-xcode-step.rb'
 
 prepare_react_native_project!
 
+ENV['RCT_NEW_ARCH_ENABLED']='1'
+
 ENV['GH_EXAMPLE_APP_NAME'] = 'MacOSExample'
 
 target 'MacOSExample-macOS' do
@@ -17,7 +19,8 @@ target 'MacOSExample-macOS' do
     :hermes_enabled => false,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :new_arch_enabled => true
+    :new_arch_enabled => true,
+    :fabric_enabled => true
   )
 
   post_install do |installer|

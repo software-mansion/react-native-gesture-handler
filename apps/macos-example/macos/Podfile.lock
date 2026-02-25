@@ -1749,7 +1749,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-safe-area-context (5.6.2):
+  - react-native-safe-area-context (5.7.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -1767,8 +1767,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.6.2)
-    - react-native-safe-area-context/fabric (= 5.6.2)
+    - react-native-safe-area-context/common (= 5.7.0)
+    - react-native-safe-area-context/fabric (= 5.7.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1779,7 +1779,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/common (5.6.2):
+  - react-native-safe-area-context/common (5.7.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -1807,7 +1807,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-safe-area-context/fabric (5.6.2):
+  - react-native-safe-area-context/fabric (5.7.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2921,7 +2921,7 @@ SPEC CHECKSUMS:
   React-logger: 86f7d7aba95df93aa8769f093e336625edb7d263
   React-Mapbuffer: 67b579421aed59754817bf86da7400161a9d5cb9
   React-microtasksnativemodule: bc94fd99e424f4cfc1e3e491f722a08833440754
-  react-native-safe-area-context: c00143b4823773bba23f2f19f85663ae89ceb460
+  react-native-safe-area-context: befb5404eb8a16fdc07fa2bebab3568ecabcbb8a
   React-NativeModulesApple: 16f31e7cfbfc914b39a8b119b883f5f7a076d904
   React-oscompat: 575d3dbc887477c0f3d42ecf1b9a48863b50be87
   React-perflogger: 47bd43e583750565fd167dc3aa1ba59b8163768d
@@ -2960,6 +2960,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 6048a55441c73f8e3916a8eac6b83886708c77f9
 
-PODFILE CHECKSUM: a8d6eda0b23c959101b3fea051bb4a6ae74ce6f1
+PODFILE CHECKSUM: b6fbc476fb850359de18abae9e1f277d332f5960
 
 COCOAPODS: 1.15.2
