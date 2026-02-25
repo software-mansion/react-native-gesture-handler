@@ -43,15 +43,15 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
-  [self handleGesture:recognizer fromReset:NO fromManual:NO];
+  [self handleGesture:recognizer fromReset:NO fromManualStateChange:NO];
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManual:(BOOL)fromManual
+- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange
 {
   if (self.state == UIGestureRecognizerStateBegan) {
     self.rotation = 0;
   }
-  [_gestureHandler handleGesture:recognizer fromReset:fromReset fromManual:fromManual];
+  [_gestureHandler handleGesture:recognizer fromReset:fromReset fromManualStateChange:fromManualStateChange];
 }
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event

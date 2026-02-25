@@ -70,12 +70,12 @@
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self fromReset:NO fromManual:NO];
+  [_gestureHandler handleGesture:self fromReset:NO fromManualStateChange:NO];
 }
 
 - (void)triggerActionFromReset
 {
-  [_gestureHandler handleGesture:self fromReset:YES fromManual:NO];
+  [_gestureHandler handleGesture:self fromReset:YES fromManualStateChange:NO];
 }
 
 - (void)reset
