@@ -28,7 +28,7 @@ import { PinchExtendedHandlerData } from '../gestures/pinch/PinchTypes';
 const defaultValues = {
   changeX: 0,
   changeY: 0,
-  scaleChange: 0,
+  scaleChange: 1,
   rotationChange: 0,
 };
 
