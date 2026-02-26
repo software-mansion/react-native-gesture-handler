@@ -178,4 +178,4 @@ export const FlatList = ((props) => {
 ) => ReactElement | null;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type FlatList = typeof FlatList & RNFlatList;
+export type FlatList<ItemT = any> = typeof FlatList & RNFlatList<ItemT>;
