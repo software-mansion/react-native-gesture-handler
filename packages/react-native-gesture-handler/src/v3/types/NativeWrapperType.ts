@@ -7,7 +7,7 @@ import {
 } from '../hooks/gestures/native/NativeTypes';
 
 export type WrapperSpecificProperties<T = unknown> = {
-  ref?: React.RefObject<T>;
+  ref?: React.Ref<T>;
   onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (
     gesture: NativeGesture
   ) => void;
