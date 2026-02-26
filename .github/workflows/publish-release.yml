@@ -56,7 +56,7 @@ jobs:
 
       - name: Publish manual release
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: software-mansion-labs/npm-package-publish@main
+        uses: software-mansion/npm-package-publish@273bbdd5df5d28ae2de6c3ecd4a6f8067e4ff370
         with:
           package-name: 'react-native-gesture-handler'
           package-json-path: 'packages/react-native-gesture-handler/package.json'
@@ -67,7 +67,7 @@ jobs:
 
       - name: Publish automatic nightly release
         if: ${{ github.event_name == 'schedule' }}
-        uses: software-mansion-labs/npm-package-publish@main
+        uses: software-mansion/npm-package-publish@273bbdd5df5d28ae2de6c3ecd4a6f8067e4ff370
         with:
           package-name: 'react-native-gesture-handler'
           package-json-path: 'packages/react-native-gesture-handler/package.json'
