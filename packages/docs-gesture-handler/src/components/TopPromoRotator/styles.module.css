@@ -1,0 +1,77 @@
+.wrapper {
+  position: relative;
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.banner {
+  display: flex;
+  height: 50px;
+  min-height: 50px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #001a72;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 300ms ease-out;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.banner:hover {
+  color: #001a72 !important;
+  text-decoration: none !important;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.banner:hover * {
+  text-decoration: none !important;
+}
+
+.banner:hover .underline {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+.hiddenOnMobile {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .hiddenOnMobile {
+    display: none;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  transform: rotate(-90deg);
+  display: block;
+}
+
+.underline {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
