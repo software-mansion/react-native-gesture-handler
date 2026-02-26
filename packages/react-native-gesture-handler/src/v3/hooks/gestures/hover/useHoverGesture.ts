@@ -1,4 +1,4 @@
-import { HandlerData, SingleGestureName } from '../../../types';
+import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   useClonedAndRemappedConfig,
@@ -25,10 +25,18 @@ function diffCalculator(
   };
 }
 
+function fillInDefaultValues(event: GestureEvent<HoverExtendedHandlerData>) {
+  'worklet';
+
+  event.changeX = 0;
+  event.changeY = 0;
+}
+
 function transformHoverProps(
   config: HoverGestureConfig & HoverGestureInternalConfig
 ) {
   config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
 
   return config;
 }
