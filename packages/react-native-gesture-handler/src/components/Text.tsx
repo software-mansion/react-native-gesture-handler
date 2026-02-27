@@ -1,4 +1,4 @@
-import React, { Ref, RefObject, useEffect, useMemo, useRef } from 'react';
+import React, { Ref, useEffect, useMemo, useRef } from 'react';
 import {
   Platform,
   Text as RNText,
@@ -11,7 +11,7 @@ import { GestureDetector } from '../handlers/gestures/GestureDetector';
 type TextProps = RNTextProps & { ref?: Ref<RNText | null> };
 
 export const LegacyText = (props: TextProps) => {
-  const { onPress, onLongPress, ...rest } = props;
+  const { onPress, onLongPress, ref, ...rest } = props;
 
   const textRef = useRef<RNText | null>(null);
   const native = useMemo(() => Gesture.Native().runOnJS(true), []);
@@ -19,14 +19,14 @@ export const LegacyText = (props: TextProps) => {
   const refHandler = (node: RNText | null) => {
     textRef.current = node;
 
-    if (!props.ref) {
+    if (!ref) {
       return;
     }
 
-    if (typeof props.ref === 'function') {
-      props.ref(node);
+    if (typeof ref === 'function') {
+      ref(node);
     } else {
-      props.ref.current = node;
+      ref.current = node;
     }
   };
 
@@ -40,16 +40,12 @@ export const LegacyText = (props: TextProps) => {
       return;
     }
 
-    const textElement = props.ref
-      ? (props.ref as RefObject<React.ComponentRef<typeof RNText>>).current
-      : textRef.current;
-
     // At this point we are sure that textElement is div in HTML tree
-    (textElement as unknown as HTMLDivElement)?.setAttribute(
+    (textRef.current as unknown as HTMLDivElement)?.setAttribute(
       'rnghtext',
       'true'
     );
-  }, [props.ref]);
+  }, [ref]);
 
   return onPress || onLongPress ? (
     <GestureDetector gesture={native}>
@@ -61,7 +57,7 @@ export const LegacyText = (props: TextProps) => {
       />
     </GestureDetector>
   ) : (
-    <RNText ref={props.ref} {...rest} />
+    <RNText ref={refHandler} {...rest} />
   );
 };
 
