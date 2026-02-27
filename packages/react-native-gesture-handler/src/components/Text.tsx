@@ -14,6 +14,9 @@ import {
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
+/**
+ * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3 you can wrap `Text` with `GestureDetector`.
+ */
 export const LegacyText = forwardRef(
   (
     props: RNTextProps,
@@ -73,5 +76,9 @@ export const LegacyText = forwardRef(
     );
   }
 );
+
+/**
+ * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3 you can wrap `Text` with `GestureDetector`.
+ */
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type LegacyText = typeof LegacyText & RNText;
