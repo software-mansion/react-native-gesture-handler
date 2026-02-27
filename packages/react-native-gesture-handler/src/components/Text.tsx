@@ -10,7 +10,7 @@ import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
 type TextProps = RNTextProps & { ref?: Ref<RNText | null> };
 
-export const Text = (props: TextProps) => {
+export const LegacyText = (props: TextProps) => {
   const { onPress, onLongPress, ...rest } = props;
 
   const textRef = useRef<RNText | null>(null);
@@ -66,4 +66,4 @@ export const Text = (props: TextProps) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type Text = typeof Text & RNText;
+export type LegacyText = typeof LegacyText & RNText;

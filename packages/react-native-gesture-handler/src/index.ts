@@ -107,7 +107,7 @@ export {
   LegacyRefreshControl,
 } from './components/GestureComponents';
 
-export { Text } from './components/Text';
+export { LegacyText } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   // Events
