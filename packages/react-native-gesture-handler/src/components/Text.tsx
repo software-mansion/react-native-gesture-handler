@@ -14,7 +14,7 @@ import {
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
-export const Text = forwardRef(
+export const LegacyText = forwardRef(
   (
     props: RNTextProps,
     ref: ForwardedRef<React.ComponentRef<typeof RNText>>
@@ -74,4 +74,4 @@ export const Text = forwardRef(
   }
 );
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type Text = typeof Text & RNText;
+export type LegacyText = typeof LegacyText & RNText;

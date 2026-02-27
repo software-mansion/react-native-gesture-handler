@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
-  Text,
+  LegacyText,
   GestureHandlerRootView,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
@@ -11,29 +11,29 @@ export default function NestedText() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <Text style={{ fontSize: 30 }}>{`Counter: ${counter}`}</Text>
+      <LegacyText style={{ fontSize: 30 }}>{`Counter: ${counter}`}</LegacyText>
 
       <TouchableOpacity
         onPress={() => {
           console.log('Touchable');
           setCounter((prev) => prev + 1);
         }}>
-        <Text
+        <LegacyText
           style={[styles.textCommon, styles.outerText]}
           onPress={() => {
             console.log('Outer text');
             setCounter((prev) => prev + 1);
           }}>
           {'Outer Text '}
-          <Text
+          <LegacyText
             style={[styles.textCommon, styles.innerText]}
             onPress={() => {
               console.log('Nested text');
               setCounter((prev) => prev + 1);
             }}>
             {'Nested Text'}
-          </Text>
-        </Text>
+          </LegacyText>
+        </LegacyText>
       </TouchableOpacity>
     </GestureHandlerRootView>
   );
