@@ -72,6 +72,7 @@ export const PropsToFilter = new Set<
   ...ExternalRelationsConfig,
 
   // Config props
+  'fillInDefaultValues',
   'changeEventCalculator',
   'disableReanimated',
   'shouldUseReanimatedDetector',
