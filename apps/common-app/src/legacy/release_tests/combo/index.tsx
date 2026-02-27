@@ -16,7 +16,7 @@ import {
   TapGestureHandler,
   TextInput,
   RectButton,
-  createNativeWrapper,
+  legacy_createNativeWrapper,
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider';
@@ -30,7 +30,7 @@ import { PressBox } from '../../basic/multitap';
 import { LoremIpsum } from '../../../common';
 import { InfoButton } from './InfoButton';
 
-const WrappedSlider = createNativeWrapper(Slider, {
+const WrappedSlider = legacy_createNativeWrapper(Slider, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
   disallowInterruption: true,
