@@ -1,4 +1,4 @@
-import React, { Ref, RefObject, useEffect, useRef } from 'react';
+import React, { Ref, RefObject, useEffect, useMemo, useRef } from 'react';
 import {
   Platform,
   Text as RNText,
@@ -14,7 +14,7 @@ export const Text = (props: TextProps) => {
   const { onPress, onLongPress, ...rest } = props;
 
   const textRef = useRef<RNText | null>(null);
-  const native = Gesture.Native().runOnJS(true);
+  const native = useMemo(() => Gesture.Native().runOnJS(true), []);
 
   const refHandler = (node: RNText | null) => {
     textRef.current = node;
