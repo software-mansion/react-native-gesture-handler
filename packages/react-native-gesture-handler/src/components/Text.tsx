@@ -50,7 +50,7 @@ export const Text = (props: TextProps) => {
       'rnghtext',
       'true'
     );
-  }, [ref]);
+  }, []);
 
   return onPress || onLongPress ? (
     <GestureDetector gesture={native}>
