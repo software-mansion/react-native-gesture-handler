@@ -1,4 +1,4 @@
-import React, { Ref, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { Ref, useEffect, useMemo, useRef } from 'react';
 import {
   Platform,
   Text as RNText,
@@ -17,8 +17,8 @@ export const Text = (props: TextProps) => {
   const textRef = useRef<RNText | null>(null);
   const native = useMemo(() => Gesture.Native().runOnJS(true), []);
 
-  const refHandler = useCallback(
-    (node: RNText | null) => {
+  const refHandler = useMemo(() => {
+    const handler: RNGHTextRef = (node: RNText | null) => {
       textRef.current = node;
 
       if (!ref) {
@@ -30,14 +30,15 @@ export const Text = (props: TextProps) => {
       } else {
         ref.current = node;
       }
-    },
-    [ref]
-  );
+    };
 
-  // This is a special case for `Text` component. After https://github.com/software-mansion/react-native-gesture-handler/pull/3379 we check for
-  // `displayName` field. However, `Text` from RN has this field set to `Text`, but is also present in `RNSVGElements` set.
-  // We don't want to treat our `Text` as the one from `SVG`, therefore we add special field to ref.
-  (refHandler as RNGHTextRef).rngh = true;
+    // This is a special case for `Text` component. After https://github.com/software-mansion/react-native-gesture-handler/pull/3379 we check for
+    // `displayName` field. However, `Text` from RN has this field set to `Text`, but is also present in `RNSVGElements` set.
+    // We don't want to treat our `Text` as the one from `SVG`, therefore we add special field to ref.
+    handler.rngh = true;
+
+    return handler;
+  }, [ref]);
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
