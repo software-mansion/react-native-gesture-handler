@@ -38,7 +38,7 @@
 #if !TARGET_OS_OSX
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -166,7 +166,7 @@
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self setCurrentPointerType:event];
+  [self setCurrentPointerTypeForEvent:event];
   [self reset];
 
   if (_disallowInterruption) {
