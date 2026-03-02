@@ -238,7 +238,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   // super call was moved to interactionsBegan method to keep the
   // original order of calls
   [self interactionsBegan:touches withEvent:event];
