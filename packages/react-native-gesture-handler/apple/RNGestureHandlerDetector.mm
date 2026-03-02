@@ -158,6 +158,12 @@
 {
   [super didAddSubview:view];
 
+  if (_nativeHandlers.count > 0) {
+    react_native_assert(
+        self.subviews.count == 1 &&
+        "Cannot have more than one child view when native gesture handlers are attached to the detector");
+  }
+
   [self tryAttachNativeHandlersToChildView];
 }
 
@@ -201,6 +207,9 @@
       if ([self shouldAttachGestureToSubview:@(tag)] && actionType == RNGestureHandlerActionTypeNativeDetector) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
+        react_native_assert(
+            self.subviews.count <= 1 &&
+            "Cannot attach native gesture handlers when the detector has multiple children");
         [_nativeHandlers addObject:@(tag)];
       } else {
         if (actionType == RNGestureHandlerActionTypeVirtualDetector) {
@@ -294,6 +303,14 @@
 
 - (void)tryAttachNativeHandlersToChildView
 {
+  if (_nativeHandlers.count == 0) {
+    return;
+  }
+
+  react_native_assert(
+      self.subviews.count == 1 &&
+      "Cannot have more than one child view when native gesture handlers are attached to the detector");
+
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   RNGHUIView *view = self.subviews[0];

@@ -8,8 +8,14 @@ import {
 } from '../../handlers/gestures/GestureDetector';
 import { useEnsureGestureHandlerRootView } from './useEnsureGestureHandlerRootView';
 
-export function GestureDetector<THandlerData, TConfig>(
-  props: NativeDetectorProps<THandlerData, TConfig> | LegacyGestureDetectorProps
+export function GestureDetector<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  props:
+    | NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>
+    | LegacyGestureDetectorProps
 ) {
   useEnsureGestureHandlerRootView();
 
@@ -22,7 +28,11 @@ export function GestureDetector<THandlerData, TConfig>(
 
   return (
     <NativeDetector
-      {...(props as NativeDetectorProps<THandlerData, TConfig>)}
+      {...(props as NativeDetectorProps<
+        TConfig,
+        THandlerData,
+        TExtendedHandlerData
+      >)}
     />
   );
 }

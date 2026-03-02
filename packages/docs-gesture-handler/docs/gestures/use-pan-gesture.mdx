@@ -18,10 +18,11 @@ import BaseContinuousGestureConfig from './\_shared/base-continuous-gesture-conf
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
+import MouseButtonProp from './\_shared/mouse-button.mdx';
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
-import HeaderWithBadge from '@site/src/components/HeaderWithBadge';
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
@@ -211,9 +212,9 @@ When the finger moves outside this range (in points) along X axis and gesture ha
 If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
-<HeaderWithBadge platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### averageTouches
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 averageTouches: boolean | SharedValue<boolean>;
@@ -221,9 +222,9 @@ averageTouches: boolean | SharedValue<boolean>;
 
 Android, by default, will calculate translation values based on the position of the leading pointer (the first one that was placed on the screen). This modifier allows that behavior to be changed to the one that is default on iOS - the averaged position of all active pointers will be used to calculate the translation values.
 
-<HeaderWithBadge platforms={['iOS', 'web']}>
+<HeaderWithBadges platforms={['iOS', 'web']}>
 ### enableTrackpadTwoFingerGesture
-</HeaderWithBadge>
+</HeaderWithBadges>
 
 ```ts
 enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;
@@ -231,29 +232,7 @@ enableTrackpadTwoFingerGesture: boolean | SharedValue<boolean>;
 
 Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.
 
-<HeaderWithBadge platforms={['android', 'web']}>
-### mouseButton
-</HeaderWithBadge>
-
-<CollapsibleCode 
-label="Show composed types definitions"
-expandedLabel="Hide composed types definitions"
-lineBounds={[0, 1]}
-collapsed={false}
-src={`
-mouseButton: MouseButton | SharedValue<MouseButton>;
-
-enum MouseButton {
-  LEFT,
-  RIGHT,
-  MIDDLE,
-  BUTTON_4,
-  BUTTON_5,
-  ALL,
-}
-`}/>
-
-Allows users to choose which mouse button should handler respond to. Arguments can be combined using `|` operator, e.g. `mouseButton(MouseButton.LEFT | MouseButton.RIGHT)`. Default value is set to `MouseButton.LEFT`.
+<MouseButtonProp />
 
 <BaseContinuousGestureConfig />
 <BaseGestureConfig />

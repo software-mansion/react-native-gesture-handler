@@ -54,7 +54,6 @@ export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
 export { default as legacy_createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
-export { GestureDetector as LegacyGestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export type { TapGestureType as LegacyTapGesture } from './handlers/gestures/tapGesture';
 export type { PanGestureType as LegacyPanGesture } from './handlers/gestures/panGesture';
@@ -107,7 +106,7 @@ export {
   LegacyRefreshControl,
 } from './components/GestureComponents';
 
-export { Text } from './components/Text';
+export { LegacyText } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   // Events

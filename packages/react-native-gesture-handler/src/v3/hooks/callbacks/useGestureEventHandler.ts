@@ -7,26 +7,36 @@ import {
 import { useMemo } from 'react';
 import { eventHandler } from './eventHandler';
 
-export function useGestureEventHandler<THandlerData, TConfig>(
+export function useGestureEventHandler<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  handlers: GestureCallbacks<THandlerData>,
-  config: BaseGestureConfig<THandlerData, TConfig>
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
-  const jsContext: ReanimatedContext<THandlerData> = useMemo(() => {
+  const jsContext: ReanimatedContext<TExtendedHandlerData> = useMemo(() => {
     return {
       lastUpdateEvent: undefined,
     };
   }, []);
 
   return useMemo(() => {
-    return (event: GestureHandlerEventWithHandlerData<THandlerData>) => {
+    return (
+      event: GestureHandlerEventWithHandlerData<
+        THandlerData,
+        TExtendedHandlerData
+      >
+    ) => {
       eventHandler(
         handlerTag,
         event,
         handlers,
         config.changeEventCalculator,
         jsContext,
-        !!config.dispatchesAnimatedEvents
+        !!config.dispatchesAnimatedEvents,
+        config.fillInDefaultValues
       );
     };
   }, [
@@ -34,6 +44,7 @@ export function useGestureEventHandler<THandlerData, TConfig>(
     handlers,
     config.changeEventCalculator,
     config.dispatchesAnimatedEvents,
+    config.fillInDefaultValues,
     jsContext,
   ]);
 }

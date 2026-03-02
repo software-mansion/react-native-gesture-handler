@@ -17,15 +17,23 @@ export const NativeProxy = {
       config || {}
     );
   },
-  setGestureHandlerConfig: <THandlerData, TConfig>(
+  setGestureHandlerConfig: <
+    TConfig,
+    THandlerData,
+    TExtendedHandlerData extends THandlerData,
+  >(
     handlerTag: number,
-    newConfig: BaseGestureConfig<THandlerData, TConfig>
+    newConfig: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
   ) => {
     RNGestureHandlerModule.setGestureHandlerConfig(handlerTag, newConfig);
   },
-  updateGestureHandlerConfig: <THandlerData, TConfig>(
+  updateGestureHandlerConfig: <
+    TConfig,
+    THandlerData,
+    TExtendedHandlerData extends THandlerData,
+  >(
     handlerTag: number,
-    newConfig: BaseGestureConfig<THandlerData, TConfig>
+    newConfig: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
   ) => {
     RNGestureHandlerModule.updateGestureHandlerConfig(handlerTag, newConfig);
   },

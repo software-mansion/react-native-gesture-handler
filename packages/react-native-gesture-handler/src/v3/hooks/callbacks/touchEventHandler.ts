@@ -8,9 +8,12 @@ import {
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 
-export function getTouchEventHandler<THandlerData>(
+export function getTouchEventHandler<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  callbacks: GestureCallbacks<THandlerData>
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
 ) {
   return (sourceEvent: TouchEvent) => {
     'worklet';

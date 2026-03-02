@@ -18,7 +18,10 @@ export default function findNodeHandle(
   }
 
   if (viewRef instanceof Element) {
-    if (viewRef.style.display === 'contents') {
+    if (
+      viewRef.style.display === 'contents' &&
+      viewRef.childElementCount === 1
+    ) {
       return findNodeHandle(viewRef.firstChild as HTMLElement);
     }
 
@@ -31,9 +34,15 @@ export default function findNodeHandle(
 
   // In new API, we receive ref object which `current` field points to  wrapper `div` with `display: contents;`.
   // We want to return the first descendant (in DFS order) that doesn't have this property.
+  // When a `display: contents` wrapper has multiple children (e.g. multi-child detector),
+  // we stop traversal and return the wrapper itself since there is no single child to resolve to.
   let element = (viewRef as GestureHandlerRef)?.current;
 
-  while (element && element.style.display === 'contents') {
+  while (
+    element &&
+    element.style.display === 'contents' &&
+    element.childElementCount === 1
+  ) {
     element = element.firstChild as HTMLElement;
   }
 

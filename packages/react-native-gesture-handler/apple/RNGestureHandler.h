@@ -127,7 +127,8 @@
 #endif
 
 #if !TARGET_OS_OSX
-- (void)setCurrentPointerType:(nonnull UIEvent *)event;
+- (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType;
+- (void)setCurrentPointerTypeForEvent:(nonnull UIEvent *)event;
 #else
 - (void)setCurrentPointerTypeToMouse;
 #endif

@@ -14,10 +14,10 @@ import {
 
 import createNativeWrapper from '../createNativeWrapper';
 
-import { NativeWrapperProperties } from '../types/NativeWrapperType';
-import { NativeWrapperProps } from '../hooks/utils';
+import type { NativeWrapperProperties } from '../types/NativeWrapperType';
+import type { NativeWrapperProps } from '../hooks/utils';
 import { GestureDetectorType } from '../detectors';
-import { NativeGesture } from '../hooks/gestures/native/useNativeGesture';
+import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 export const RefreshControl = createNativeWrapper<
@@ -178,4 +178,4 @@ export const FlatList = ((props) => {
 ) => ReactElement | null;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type FlatList = typeof FlatList & RNFlatList;
+export type FlatList<ItemT = any> = typeof FlatList & RNFlatList<ItemT>;

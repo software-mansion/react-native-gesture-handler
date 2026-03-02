@@ -40,7 +40,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   if (_firstTouch) {
     // ignore rest of fingers
     return;

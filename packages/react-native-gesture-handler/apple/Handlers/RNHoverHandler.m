@@ -40,11 +40,20 @@ API_AVAILABLE(ios(13.4))
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _hoverEffect = RNGestureHandlerHoverEffectNone;
   }
   return self;
+}
+
+- (void)handleGesture:(UIHoverGestureRecognizer *)recognizer
+{
+  if (recognizer.state == UIGestureRecognizerStateBegan) {
+    [_gestureHandler setCurrentPointerType:RNGestureHandlerMouse];
+  }
+
+  [_gestureHandler handleGesture:self];
 }
 
 - (void)triggerAction
@@ -153,11 +162,22 @@ API_AVAILABLE(ios(13.4))
 #endif
 }
 
+- (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType
+{
+  _pointerType = pointerType;
+
+  if (@available(iOS 16.1, *)) {
+    if (((UIHoverGestureRecognizer *)self.recognizer).zOffset > 0.0) {
+      _pointerType = RNGestureHandlerStylus;
+    }
+  }
+}
+
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
                                 withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-                                     withPointerType:UITouchTypePencil];
+                                     withPointerType:_pointerType];
 }
 
 @end
@@ -173,6 +193,7 @@ API_AVAILABLE(ios(13.4))
 {
   if ((self = [super initWithTag:tag])) {
     _recognizer = [NSGestureRecognizer alloc];
+    _pointerType = RNGestureHandlerMouse;
   }
 
   return self;

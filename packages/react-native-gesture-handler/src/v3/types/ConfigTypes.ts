@@ -24,12 +24,15 @@ export type GestureEventCallbackWithDidSucceed<THandlerData> = (
 
 export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
 
-export type GestureCallbacks<THandlerData> = {
+export type GestureCallbacks<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> = {
   onBegin?: GestureEventCallback<THandlerData>;
-  onActivate?: GestureEventCallback<THandlerData>;
-  onDeactivate?: GestureEventCallbackWithDidSucceed<THandlerData>;
+  onActivate?: GestureEventCallback<TExtendedHandlerData>;
+  onUpdate?: GestureEventCallback<TExtendedHandlerData> | AnimatedEvent;
+  onDeactivate?: GestureEventCallbackWithDidSucceed<TExtendedHandlerData>;
   onFinalize?: GestureEventCallbackWithDidSucceed<THandlerData>;
-  onUpdate?: GestureEventCallback<THandlerData> | AnimatedEvent;
   onTouchesDown?: GestureTouchEventCallback;
   onTouchesMove?: GestureTouchEventCallback;
   onTouchesUp?: GestureTouchEventCallback;
@@ -42,7 +45,7 @@ export type GestureRelations = {
   blocksHandlers: number[];
 };
 
-export type InternalConfigProps<THandlerData> = {
+export type InternalConfigProps<TExtendedHandlerData> = {
   shouldUseReanimatedDetector?: boolean;
   dispatchesReanimatedEvents?: boolean;
   dispatchesAnimatedEvents?: boolean;
@@ -50,7 +53,8 @@ export type InternalConfigProps<THandlerData> = {
   userSelect?: UserSelect;
   touchAction?: TouchAction;
   enableContextMenu?: boolean;
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+  changeEventCalculator?: ChangeCalculatorType<TExtendedHandlerData>;
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void;
 };
 
 export type CommonGestureConfig = {

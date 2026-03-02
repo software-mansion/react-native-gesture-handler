@@ -8,14 +8,18 @@ export const handlerIDToTag: Record<string, number> = {};
 // There were attempts to create types that merge possible HandlerData and Config,
 // but ts was not able to infer them properly in many cases, so we use any here.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const hookGestures = new Map<number, SingleGesture<any, any>>();
+const hookGestures = new Map<number, SingleGesture<any, any, any>>();
 const gestures = new Map<number, GestureType>();
 const oldHandlers = new Map<number, GestureHandlerCallbacks>();
 const testIDs = new Map<string, number>();
 
-export function registerGesture<THandlerData, TConfig>(
+export function registerGesture<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  gesture: SingleGesture<THandlerData, TConfig>
+  gesture: SingleGesture<TConfig, THandlerData, TExtendedHandlerData>
 ) {
   if (isTestEnv() && gesture.config.testID) {
     hookGestures.set(handlerTag, gesture);
