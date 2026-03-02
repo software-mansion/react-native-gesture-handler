@@ -14,7 +14,7 @@ type TextProps = RNTextProps & {
 type RNGHTextRef = Ref<RNText | null> & { rngh?: boolean };
 
 /**
- * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3 you can wrap `Text` with `GestureDetector`.
+ * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3, you should wrap `Text` with `GestureDetector`, `InterceptingGestureDetector`, or `VirtualGestureDetector`.
  */
 export const LegacyText = (props: TextProps) => {
   const { onPress, onLongPress, ref, ...rest } = props;
@@ -72,7 +72,7 @@ export const LegacyText = (props: TextProps) => {
 };
 
 /**
- * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3 you can wrap `Text` with `GestureDetector`.
+ * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3, you should wrap `Text` with `GestureDetector`, `InterceptingGestureDetector`, or `VirtualGestureDetector`.
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type LegacyText = typeof LegacyText & RNText;
