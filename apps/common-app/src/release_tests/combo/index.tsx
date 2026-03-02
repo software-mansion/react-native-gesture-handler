@@ -16,10 +16,8 @@ import {
   TapGestureHandler,
   TextInput,
   RectButton,
-  createNativeWrapper,
   TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-import Slider from '@react-native-community/slider';
 
 import { Swipeable, InfoButton } from '../rows';
 import { DraggableBox } from '../../basic/draggable';
@@ -27,12 +25,6 @@ import { PinchableBox } from '../../recipes/scaleAndRotate';
 import { PressBox } from '../../basic/multitap';
 
 import { LoremIpsum } from '../../common';
-
-const WrappedSlider = createNativeWrapper(Slider, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: true,
-  disallowInterruption: true,
-});
 
 type TouchableHighlightProps = RNTouchableHighlightProps & {
   onClick: () => void;
@@ -151,8 +143,6 @@ class Combo extends Component<ComboProps> {
               <Text>Hello</Text>
             </View>
           </TouchableHighlight>
-          {/* @ts-ignore Slider is a union type and it seems like TS has some trouble with infering props type */}
-          <WrappedSlider style={styles.slider} />
           <TextInput
             style={styles.textinput}
             placeholder="Type something here!"
@@ -247,10 +237,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontWeight: 'bold',
     backgroundColor: 'transparent',
-  },
-  slider: {
-    margin: 10,
-    flex: 1,
   },
   scrollView: {
     flex: 1,
