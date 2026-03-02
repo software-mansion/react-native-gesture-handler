@@ -1,10 +1,4 @@
-import React, {
-  ForwardedRef,
-  forwardRef,
-  RefObject,
-  useEffect,
-  useRef,
-} from 'react';
+import React, { ComponentRef, Ref, useEffect, useMemo, useRef } from 'react';
 import {
   Platform,
   Text as RNText,
@@ -14,20 +8,22 @@ import {
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
-export const Text = forwardRef(
-  (
-    props: RNTextProps,
-    ref: ForwardedRef<React.ComponentRef<typeof RNText>>
-  ) => {
-    const { onPress, onLongPress, ...rest } = props;
+type TextProps = RNTextProps & {
+  ref?: Ref<ComponentRef<typeof RNText> | null>;
+};
+type RNGHTextRef = Ref<RNText | null> & { rngh?: boolean };
 
-    const textRef = useRef<RNText | null>(null);
-    const native = Gesture.Native().runOnJS(true);
+export const Text = (props: TextProps) => {
+  const { onPress, onLongPress, ref, ...rest } = props;
 
-    const refHandler = (node: any) => {
+  const textRef = useRef<RNText | null>(null);
+  const native = useMemo(() => Gesture.Native().runOnJS(true), []);
+
+  const refHandler = useMemo(() => {
+    const handler: RNGHTextRef = (node: RNText | null) => {
       textRef.current = node;
 
-      if (ref === null) {
+      if (!ref) {
         return;
       }
 
@@ -41,37 +37,36 @@ export const Text = forwardRef(
     // This is a special case for `Text` component. After https://github.com/software-mansion/react-native-gesture-handler/pull/3379 we check for
     // `displayName` field. However, `Text` from RN has this field set to `Text`, but is also present in `RNSVGElements` set.
     // We don't want to treat our `Text` as the one from `SVG`, therefore we add special field to ref.
-    refHandler.rngh = true;
+    handler.rngh = true;
 
-    useEffect(() => {
-      if (Platform.OS !== 'web') {
-        return;
-      }
+    return handler;
+  }, [ref]);
 
-      const textElement = ref
-        ? (ref as RefObject<React.ComponentRef<typeof RNText>>).current
-        : textRef.current;
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
 
-      // At this point we are sure that textElement is div in HTML tree
-      (textElement as unknown as HTMLDivElement)?.setAttribute(
-        'rnghtext',
-        'true'
-      );
-    }, []);
-
-    return onPress || onLongPress ? (
-      <GestureDetector gesture={native}>
-        <RNText
-          onPress={onPress}
-          onLongPress={onLongPress}
-          ref={refHandler}
-          {...rest}
-        />
-      </GestureDetector>
-    ) : (
-      <RNText ref={ref} {...rest} />
+    // At this point we are sure that textElement is div in HTML tree
+    (textRef.current as unknown as HTMLDivElement)?.setAttribute(
+      'rnghtext',
+      'true'
     );
-  }
-);
+  }, []);
+
+  return onPress || onLongPress ? (
+    <GestureDetector gesture={native}>
+      <RNText
+        onPress={onPress}
+        onLongPress={onLongPress}
+        ref={refHandler}
+        {...rest}
+      />
+    </GestureDetector>
+  ) : (
+    <RNText ref={refHandler} {...rest} />
+  );
+};
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Text = typeof Text & RNText;
