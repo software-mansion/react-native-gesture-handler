@@ -34,7 +34,9 @@
 
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  _handlers[gestureHandler.tag] = gestureHandler;
+  @synchronized(_handlers) {
+    _handlers[gestureHandler.tag] = gestureHandler;
+  }
 }
 
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag
