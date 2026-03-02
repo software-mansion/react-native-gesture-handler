@@ -200,7 +200,10 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   private fun tryAttachNativeHandlersToChildView(child: View) {
-    if (nativeHandlers.isEmpty()) return
+    if (nativeHandlers.isEmpty()) {
+       return
+    }
+
 
     assert(childCount == 1) {
       "Cannot have more than one child view when native gesture handlers are attached to the detector"
