@@ -40,7 +40,10 @@ import { PressableStateMachine } from './StateMachine';
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
-const Pressable = (props: LegacyPressableProps) => {
+/**
+ * @deprecated `LegacyPressable` is deprecated, use `Pressable` instead.
+ */
+const LegacyPressable = (props: LegacyPressableProps) => {
   const {
     testOnly_pressed,
     hitSlop,
@@ -390,4 +393,4 @@ const Pressable = (props: LegacyPressableProps) => {
   );
 };
 
-export default Pressable;
+export default LegacyPressable;

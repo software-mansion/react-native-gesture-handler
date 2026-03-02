@@ -11,7 +11,10 @@ import { GestureDetector } from '../handlers/gestures/GestureDetector';
 type TextProps = RNTextProps & { ref?: Ref<RNText | null> };
 type RNGHTextRef = Ref<RNText | null> & { rngh?: boolean };
 
-export const Text = (props: TextProps) => {
+/**
+ * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3 you can wrap `Text` with `GestureDetector`.
+ */
+export const LegacyText = (props: TextProps) => {
   const { onPress, onLongPress, ref, ...rest } = props;
 
   const textRef = useRef<RNText | null>(null);
@@ -66,5 +69,8 @@ export const Text = (props: TextProps) => {
   );
 };
 
+/**
+ * @deprecated `LegacyText` is deprecated. Since Gesture Handler 3 you can wrap `Text` with `GestureDetector`.
+ */
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type Text = typeof Text & RNText;
+export type LegacyText = typeof LegacyText & RNText;
