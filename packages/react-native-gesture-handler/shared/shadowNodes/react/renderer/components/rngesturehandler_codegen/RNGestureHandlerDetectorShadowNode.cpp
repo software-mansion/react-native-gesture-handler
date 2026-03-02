@@ -11,6 +11,8 @@
 
 #include "RNGestureHandlerDetectorShadowNode.h"
 
+#include <limits>
+
 namespace facebook::react {
 
 extern const char RNGestureHandlerDetectorComponentName[] =
@@ -20,16 +22,12 @@ void RNGestureHandlerDetectorShadowNode::initialize() {
   // Disable forcing view flattening
   ShadowNode::traits_.unset(ShadowNodeTraits::ForceFlattenView);
 
-  // When the detector is cloned and has a child node, the child node should be
-  // cloned as well to ensure it is mutable.
+  // When the detector is cloned and has child nodes, the children should be
+  // cloned as well to ensure they are mutable.
   const auto &children = getChildren();
-  if (!children.empty()) {
-    react_native_assert(
-        children.size() == 1 &&
-        "RNGestureHandlerDetector received more than one child");
-
+  for (size_t i = 0; i < children.size(); i++) {
     // Will clone the child and ensure it's not flattened
-    replaceChild(*children[0], children[0], 0);
+    replaceChild(*children[i], children[i], i);
   }
 }
 
@@ -47,39 +45,72 @@ void RNGestureHandlerDetectorShadowNode::replaceChild(
 }
 
 void RNGestureHandlerDetectorShadowNode::layout(LayoutContext layoutContext) {
-  // TODO: consider allowing more than one child and doing bounding box
-  react_native_assert(getChildren().size() == 1);
+  const auto &children = getChildren();
+  react_native_assert(
+      !children.empty() &&
+      "GestureDetector must have at least one child node.");
 
-  auto child = std::static_pointer_cast<const YogaLayoutableShadowNode>(
-      getChildren()[0]);
-  auto childWithProtectedAccess =
-      std::static_pointer_cast<const RNGestureHandlerDetectorShadowNode>(child);
+  // Check if any child has a new layout
+  bool anyChildHasNewLayout = false;
+  for (const auto &child : children) {
+    auto yogaChild =
+        std::static_pointer_cast<const YogaLayoutableShadowNode>(child);
+    auto childWithProtectedAccess =
+        std::static_pointer_cast<const RNGestureHandlerDetectorShadowNode>(
+            yogaChild);
+    if (childWithProtectedAccess->yogaNode_.getHasNewLayout()) {
+      anyChildHasNewLayout = true;
+      break;
+    }
+  }
 
-  auto shouldSkipCustomLayout =
-      !childWithProtectedAccess->yogaNode_.getHasNewLayout();
-
-  // Do default layout after reading the new layout flag from the child.
-  // Default layout will reset the flag on the child nodes.
+  // Do default layout after reading the new layout flags from children.
+  // Default layout will reset the flag on child nodes.
   YogaLayoutableShadowNode::layout(layoutContext);
 
-  // The child node did not have its layout changed, we can reuse previous
-  // values
-  if (shouldSkipCustomLayout) {
+  // No child had its layout changed, we can reuse previous values
+  if (!anyChildHasNewLayout) {
     react_native_assert(previousLayoutMetrics_.has_value());
     setLayoutMetrics(previousLayoutMetrics_.value());
     return;
   }
 
-  child->ensureUnsealed();
-  auto mutableChild = std::const_pointer_cast<YogaLayoutableShadowNode>(child);
+  // Calculate bounding box of all children
+  Float minX = std::numeric_limits<Float>::infinity();
+  Float minY = std::numeric_limits<Float>::infinity();
+  Float maxX = -std::numeric_limits<Float>::infinity();
+  Float maxY = -std::numeric_limits<Float>::infinity();
 
-  auto metrics = child->getLayoutMetrics();
-  metrics.frame = child->getLayoutMetrics().frame;
+  for (const auto &child : children) {
+    auto yogaChild =
+        std::static_pointer_cast<const YogaLayoutableShadowNode>(child);
+    const auto &frame = yogaChild->getLayoutMetrics().frame;
+
+    minX = std::min(minX, frame.origin.x);
+    minY = std::min(minY, frame.origin.y);
+    maxX = std::max(maxX, frame.origin.x + frame.size.width);
+    maxY = std::max(maxY, frame.origin.y + frame.size.height);
+  }
+
+  // Set detector's metrics to the bounding box of all children
+  auto metrics = getLayoutMetrics();
+  metrics.frame.origin = Point{minX, minY};
+  metrics.frame.size = Size{maxX - minX, maxY - minY};
   setLayoutMetrics(metrics);
 
-  auto childmetrics = child->getLayoutMetrics();
-  childmetrics.frame.origin = Point{};
-  mutableChild->setLayoutMetrics(childmetrics);
+  // Shift all children so their positions are relative to the detector's origin
+  for (const auto &child : children) {
+    auto yogaChild =
+        std::static_pointer_cast<const YogaLayoutableShadowNode>(child);
+    yogaChild->ensureUnsealed();
+    auto mutableChild =
+        std::const_pointer_cast<YogaLayoutableShadowNode>(yogaChild);
+
+    auto childMetrics = yogaChild->getLayoutMetrics();
+    childMetrics.frame.origin.x -= minX;
+    childMetrics.frame.origin.y -= minY;
+    mutableChild->setLayoutMetrics(childMetrics);
+  }
 }
 
 std::shared_ptr<const ShadowNode>
