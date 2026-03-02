@@ -5,6 +5,7 @@ import {
   calculateViewScale,
   tryExtractStylusData,
   isPointerInBounds,
+  getEffectiveBoundingRect,
 } from '../utils';
 import { PointerType } from '../../PointerType';
 
@@ -200,7 +201,7 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
   }
 
   protected mapEvent(event: PointerEvent, eventType: EventTypes): AdaptedEvent {
-    const rect = this.view.getBoundingClientRect();
+    const rect = getEffectiveBoundingRect(this.view);
     const { scaleX, scaleY } = calculateViewScale(this.view);
 
     return {
