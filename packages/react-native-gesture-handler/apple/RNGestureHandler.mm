@@ -425,7 +425,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       self->_eventCoalescingKey = nextEventCoalescingKey++;
 
     } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-      if (!fromManualStateChange || !_manualActivation) {
+      if (fromManualStateChange || _manualActivation) {
         // For manually handled gestures skip sending finalize state change event when the gesture was never begun
         return;
       }
