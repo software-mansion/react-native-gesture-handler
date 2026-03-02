@@ -1,4 +1,4 @@
-import React, { Ref, useEffect, useMemo, useRef } from 'react';
+import React, { ComponentRef, Ref, useEffect, useMemo, useRef } from 'react';
 import {
   Platform,
   Text as RNText,
@@ -8,7 +8,9 @@ import {
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
 
-type TextProps = RNTextProps & { ref?: Ref<RNText | null> };
+type TextProps = RNTextProps & {
+  ref?: Ref<ComponentRef<typeof RNText> | null>;
+};
 type RNGHTextRef = Ref<RNText | null> & { rngh?: boolean };
 
 /**
