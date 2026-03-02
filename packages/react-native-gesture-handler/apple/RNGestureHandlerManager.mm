@@ -247,13 +247,15 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 - (void)reattachHandlersIfNeeded
 {
   // Create copy to avoid mutating collection while enumerating.
-  NSArray<RNGestureHandler *> *handlers = [_registry.handlers.allValues copy];
+  NSArray<NSNumber *> *handlerTags = [_registry.handlers.allKeys copy];
 
   // Re-bind handlers to their current native views. On Fabric, when a parent view has
   // display:none and siblings change, the native UIView backing a component may be recycled
   // and replaced. maybeBindHandler is a no-op if the view is nil or unchanged. This is only
   // needed for handlers using the old api.
-  for (RNGestureHandler *handler in handlers) {
+  for (NSNumber *handlerTag in handlerTags) {
+    RNGestureHandler *handler = _registry.handlers[handlerTag];
+
     if (handler.viewTag == nil || [handler usesNativeOrVirtualDetector]) {
       continue;
     }
