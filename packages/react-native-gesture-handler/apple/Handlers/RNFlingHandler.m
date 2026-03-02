@@ -138,6 +138,11 @@
   return self;
 }
 
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
+{
+  [_gestureHandler handleGesture:self];
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
   [super mouseDown:event];
