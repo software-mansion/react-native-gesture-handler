@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Pressable } from 'react-native-gesture-handler';
+import { LegacyPressable } from 'react-native-gesture-handler';
 
 const SECTION_RADIUS = 40;
 const BASE_SIZE = 120;
@@ -33,7 +33,7 @@ export default function PressableExample() {
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <View style={styles.pressRectContainer}>
         <View style={styles.hitRectContainer}>
-          <Pressable
+          <LegacyPressable
             style={({ pressed }) =>
               pressed ? styles.highlight : styles.pressable
             }
@@ -48,7 +48,7 @@ export default function PressableExample() {
             <View style={styles.textWrapper}>
               <Text style={styles.text}>Pressable!</Text>
             </View>
-          </Pressable>
+          </LegacyPressable>
           <Text style={styles.rectText}>Hit Rect</Text>
         </View>
         <Text style={styles.rectText}>Press Rect</Text>

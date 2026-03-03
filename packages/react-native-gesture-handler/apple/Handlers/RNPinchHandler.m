@@ -109,7 +109,7 @@
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }

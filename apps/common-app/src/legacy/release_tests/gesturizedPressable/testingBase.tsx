@@ -3,26 +3,26 @@ import {
   StyleSheet,
   Text,
   View,
-  Pressable,
+  Pressable as RNPressable,
   PressableProps as RNPressableProps,
 } from 'react-native';
 import {
-  LegacyPressable as GesturizedPressable,
+  LegacyPressable as GHPressable,
   LegacyPressableProps as GHPressableProps,
 } from 'react-native-gesture-handler';
 
 const TestingBase = (props: GHPressableProps & RNPressableProps) => (
   <>
-    <GesturizedPressable {...props}>
+    <GHPressable {...props}>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Gesturized pressable!</Text>
+        <Text style={styles.text}>RNGH pressable!</Text>
       </View>
-    </GesturizedPressable>
-    <Pressable {...props}>
+    </GHPressable>
+    <RNPressable {...props}>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Legacy pressable!</Text>
+        <Text style={styles.text}>RN pressable!</Text>
       </View>
-    </Pressable>
+    </RNPressable>
   </>
 );
 
