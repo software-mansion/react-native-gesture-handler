@@ -649,12 +649,15 @@ open class GestureHandler {
       return false
     }
 
-    return if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-      (0 until event.pointerCount).any { i ->
-        isTrackingPointer(event.getPointerId(i))
+    if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      for (i in 0 until event.pointerCount) {
+        if (isTrackingPointer(event.getPointerId(i))) {
+          return true
+        }
       }
+      return false
     } else {
-      isTrackingPointer(event.getPointerId(event.actionIndex))
+      return isTrackingPointer(event.getPointerId(event.actionIndex))
     }
   }
 
