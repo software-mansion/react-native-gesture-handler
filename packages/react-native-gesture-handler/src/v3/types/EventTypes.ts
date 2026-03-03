@@ -27,13 +27,19 @@ export type GestureStateChangeEventWithHandlerData<T> =
     handlerData: HandlerData<T>;
   };
 
-export type GestureHandlerEventWithHandlerData<THandlerData> =
-  | UpdateEventWithHandlerData<THandlerData>
+export type GestureHandlerEventWithHandlerData<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> =
+  | UpdateEventWithHandlerData<TExtendedHandlerData>
   | StateChangeEventWithHandlerData<THandlerData>
   | TouchEvent;
 
-export type UnpackedGestureHandlerEventWithHandlerData<THandlerData> =
-  | GestureUpdateEventWithHandlerData<THandlerData>
+export type UnpackedGestureHandlerEventWithHandlerData<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> =
+  | GestureUpdateEventWithHandlerData<TExtendedHandlerData>
   | GestureStateChangeEventWithHandlerData<THandlerData>
   | GestureTouchEvent;
 
@@ -64,12 +70,12 @@ export type AnimatedEvent = {
   _argMapping: (Animated.Mapping | null)[];
 };
 
-export type ChangeCalculatorType<THandlerData> = (
-  current: GestureUpdateEventWithHandlerData<THandlerData>,
-  previous?: GestureUpdateEventWithHandlerData<THandlerData>
-) => GestureUpdateEventWithHandlerData<THandlerData>;
+export type ChangeCalculatorType<TExtendedHandlerData> = (
+  current: GestureUpdateEventWithHandlerData<TExtendedHandlerData>,
+  previous?: GestureUpdateEventWithHandlerData<TExtendedHandlerData>
+) => GestureUpdateEventWithHandlerData<TExtendedHandlerData>;
 
-export type DiffCalculatorType<THandlerData> = (
-  current: HandlerData<THandlerData>,
-  previous: HandlerData<THandlerData> | null
-) => Partial<HandlerData<THandlerData>>;
+export type DiffCalculatorType<TExtendedHandlerData> = (
+  current: HandlerData<TExtendedHandlerData>,
+  previous: HandlerData<TExtendedHandlerData> | null
+) => Partial<HandlerData<TExtendedHandlerData>>;

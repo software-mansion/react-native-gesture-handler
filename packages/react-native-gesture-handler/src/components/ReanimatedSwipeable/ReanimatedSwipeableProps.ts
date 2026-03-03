@@ -190,23 +190,19 @@ export interface SwipeableProps {
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  simultaneousWithExternalGesture?: AnyGesture | AnyGesture[];
+  simultaneousWith?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  requireExternalGestureToFail?: AnyGesture | AnyGesture[];
+  requireToFail?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  blocksExternalGesture?: AnyGesture | AnyGesture[];
-
-  id?: string;
-
-  cancelsTouchesInView?: boolean;
+  block?: AnyGesture | AnyGesture[];
 }
 
 export interface SwipeableMethods {

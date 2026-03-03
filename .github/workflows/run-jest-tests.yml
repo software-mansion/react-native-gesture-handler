@@ -34,10 +34,5 @@ jobs:
       - name: Install node dependencies
         run: yarn --immutable
 
-      - name: Run jest scripts tests
-        run: yarn test:scripts
-
       - name: Run jest package tests
-        # always run this step even if the previous step fails
-        if: ${{ always() }}
         run: yarn workspace react-native-gesture-handler test

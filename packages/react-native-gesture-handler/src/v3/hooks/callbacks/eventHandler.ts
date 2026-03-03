@@ -10,6 +10,7 @@ import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper'
 import {
   ChangeCalculatorType,
   GestureCallbacks,
+  GestureEvent,
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
@@ -18,11 +19,18 @@ import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
 
-function handleStateChangeEvent<THandlerData>(
-  eventWithData: GestureStateChangeEventWithHandlerData<THandlerData>,
-  callbacks: GestureCallbacks<THandlerData>,
-  context: ReanimatedContext<THandlerData>
+function handleStateChangeEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  eventWithData: GestureStateChangeEventWithHandlerData<
+    THandlerData | TExtendedHandlerData
+  >,
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  context: ReanimatedContext<TExtendedHandlerData>,
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void
 ) {
   'worklet';
   const { oldState, state } = eventWithData;
@@ -34,9 +42,11 @@ function handleStateChangeEvent<THandlerData>(
     (oldState === State.BEGAN || oldState === State.UNDETERMINED) &&
     state === State.ACTIVE
   ) {
+    fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
     runCallback(CALLBACK_TYPE.START, callbacks, event);
   } else if (oldState !== state && state === State.END) {
     if (oldState === State.ACTIVE) {
+      fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
       runCallback(CALLBACK_TYPE.END, callbacks, event, true);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
@@ -49,6 +59,7 @@ function handleStateChangeEvent<THandlerData>(
     state !== oldState
   ) {
     if (oldState === State.ACTIVE) {
+      fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
       runCallback(CALLBACK_TYPE.END, callbacks, event, false);
     }
     runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
@@ -59,11 +70,14 @@ function handleStateChangeEvent<THandlerData>(
   }
 }
 
-export function handleUpdateEvent<THandlerData>(
-  eventWithData: GestureUpdateEventWithHandlerData<THandlerData>,
-  handlers: GestureCallbacks<THandlerData>,
-  changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined,
-  context: ReanimatedContext<THandlerData>
+export function handleUpdateEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  eventWithData: GestureUpdateEventWithHandlerData<TExtendedHandlerData>,
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined,
+  context: ReanimatedContext<TExtendedHandlerData>
 ) {
   'worklet';
   const eventWithChanges = changeEventCalculator
@@ -86,9 +100,12 @@ export function handleUpdateEvent<THandlerData>(
   context.lastUpdateEvent = eventWithData;
 }
 
-export function handleTouchEvent<THandlerData>(
+export function handleTouchEvent<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   event: GestureTouchEvent,
-  handlers: GestureCallbacks<THandlerData>
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>
 ) {
   'worklet';
 
@@ -97,13 +114,20 @@ export function handleTouchEvent<THandlerData>(
   }
 }
 
-export function eventHandler<THandlerData>(
+export function eventHandler<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  sourceEvent: GestureHandlerEventWithHandlerData<THandlerData>,
-  handlers: GestureCallbacks<THandlerData>,
-  changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined,
-  jsContext: ReanimatedContext<THandlerData>,
-  dispatchesAnimatedEvents: boolean
+  sourceEvent: GestureHandlerEventWithHandlerData<
+    THandlerData,
+    TExtendedHandlerData
+  >,
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined,
+  jsContext: ReanimatedContext<TExtendedHandlerData>,
+  dispatchesAnimatedEvents: boolean,
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void
 ) {
   'worklet';
   const eventWithData = maybeExtractNativeEvent(sourceEvent);
@@ -112,11 +136,22 @@ export function eventHandler<THandlerData>(
     return;
   }
 
-  if ('oldState' in eventWithData && eventWithData.oldState !== undefined) {
-    handleStateChangeEvent(eventWithData, handlers, jsContext);
-  } else if ('allTouches' in eventWithData) {
+  if (isStateChangeEvent(eventWithData)) {
+    handleStateChangeEvent(
+      eventWithData,
+      handlers,
+      jsContext,
+      fillInDefaultValues
+    );
+    return;
+  }
+
+  if (isTouchEvent(eventWithData)) {
     handleTouchEvent(eventWithData, handlers);
-  } else if (!dispatchesAnimatedEvents) {
+    return;
+  }
+
+  if (!dispatchesAnimatedEvents) {
     handleUpdateEvent(
       eventWithData,
       handlers,

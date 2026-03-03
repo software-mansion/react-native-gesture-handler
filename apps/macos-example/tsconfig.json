@@ -19,8 +19,7 @@
       ]
     },
     "types": ["../../packages/react-native-gesture-handler/src/global.d.ts"]
-
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "index.ts"],
-  "exclude": ["metro.config.js", "macos", ".bundle", "node_modules"]
+  "exclude": ["metro.config.js", "macos", ".bundle", "node_modules", "**/Pods"]
 }

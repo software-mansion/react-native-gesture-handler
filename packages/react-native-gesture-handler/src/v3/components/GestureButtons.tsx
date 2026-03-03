@@ -9,9 +9,9 @@ import type {
 } from './GestureButtonsProps';
 
 import type { GestureEvent } from '../types';
-import type { NativeViewHandlerData } from '../hooks/gestures/native/useNativeGesture';
+import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
-type CallbackEventType = GestureEvent<NativeViewHandlerData>;
+type CallbackEventType = GestureEvent<NativeHandlerData>;
 
 export const RawButton = createNativeWrapper(GestureHandlerButton, {
   shouldCancelWhenOutside: false,

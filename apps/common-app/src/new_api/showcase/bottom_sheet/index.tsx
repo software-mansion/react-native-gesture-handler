@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {
   GestureDetector,
-  PanGestureEvent,
+  PanGestureActiveEvent,
   useSimultaneousGestures,
   usePanGesture,
   useTapGesture,
@@ -35,7 +35,7 @@ function Example() {
   const scrollOffset = useSharedValue(0);
   const bottomSheetTranslateY = useSharedValue(CLOSED_SNAP_POINT);
 
-  const onHandlerDeactivate = (e: PanGestureEvent) => {
+  const onHandlerDeactivate = (e: PanGestureActiveEvent) => {
     const dragToss = 0.01;
     const endOffsetY =
       bottomSheetTranslateY.value + translationY.value + e.velocityY * dragToss;

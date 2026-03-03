@@ -10,13 +10,17 @@ import {
 import { ReanimatedNativeDetector } from './ReanimatedNativeDetector';
 import { Platform } from 'react-native';
 
-export function NativeDetector<THandlerData, TConfig>({
+export function NativeDetector<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>({
   gesture,
   children,
   touchAction,
   userSelect,
   enableContextMenu,
-}: NativeDetectorProps<THandlerData, TConfig>) {
+}: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
     : gesture.config.shouldUseReanimatedDetector

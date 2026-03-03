@@ -33,11 +33,7 @@ export default function App() {
       offsetX.value += event.changeX;
       offsetY.value += event.changeY;
     },
-    onFinalize: (event) => {
-      isPressed.value = false;
-      colorProgress.value = withTiming(0, {
-        duration: 100,
-      });
+    onDeactivate: (event) => {
       // If we can't get view size, just ignore it. Half of the view will be
       // able to go outside the screen
       const size = measure(aref) ?? { width: 0, height: 0 };
@@ -57,6 +53,13 @@ export default function App() {
         ],
         rubberBandEffect: true,
         rubberBandFactor: 0.75,
+      });
+    },
+    onFinalize: () => {
+      isPressed.value = false;
+
+      colorProgress.value = withTiming(0, {
+        duration: 100,
       });
     },
   });

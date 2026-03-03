@@ -166,14 +166,17 @@ const handlersDefaultEvents: DefaultEventsMapping = {
 };
 
 function isGesture(
-  componentOrGesture: ReactTestInstance | GestureType | SingleGesture<any, any>
+  componentOrGesture:
+    | ReactTestInstance
+    | GestureType
+    | SingleGesture<any, any, any>
 ): componentOrGesture is GestureType {
   return componentOrGesture instanceof BaseGesture;
 }
 
 function isHookGesture(
-  componentOrGesture: ReactTestInstance | SingleGesture<any, any>
-): componentOrGesture is SingleGesture<any, any> {
+  componentOrGesture: ReactTestInstance | SingleGesture<any, any, any>
+): componentOrGesture is SingleGesture<any, any, any> {
   return 'detectorCallbacks' in componentOrGesture;
 }
 
@@ -416,7 +419,10 @@ interface HandlerData {
   enabled: boolean | undefined;
 }
 function getHandlerData(
-  componentOrGesture: ReactTestInstance | GestureType | SingleGesture<any, any>
+  componentOrGesture:
+    | ReactTestInstance
+    | GestureType
+    | SingleGesture<any, any, any>
 ): HandlerData {
   if (isGesture(componentOrGesture)) {
     const gesture = componentOrGesture;
@@ -500,7 +506,10 @@ type ExtractConfig<T> =
       : Record<string, unknown>;
 
 export function fireGestureHandler<THandler extends AllGestures | AllHandlers>(
-  componentOrGesture: ReactTestInstance | GestureType | SingleGesture<any, any>,
+  componentOrGesture:
+    | ReactTestInstance
+    | GestureType
+    | SingleGesture<any, any, any>,
   eventList: Partial<GestureHandlerTestEvent<ExtractConfig<THandler>>>[] = []
 ): void {
   const { emitEvent, handlerType, handlerTag, enabled } =
