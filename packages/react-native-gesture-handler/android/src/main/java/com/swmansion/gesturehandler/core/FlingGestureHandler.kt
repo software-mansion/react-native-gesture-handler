@@ -76,8 +76,8 @@ class FlingGestureHandler : GestureHandler() {
       false
     }
   }
-  override fun activate(force: Boolean) {
-    super.activate(force)
+  override fun activate(force: Boolean, fromManualStateChange: Boolean) {
+    super.activate(force, fromManualStateChange)
     end()
   }
 

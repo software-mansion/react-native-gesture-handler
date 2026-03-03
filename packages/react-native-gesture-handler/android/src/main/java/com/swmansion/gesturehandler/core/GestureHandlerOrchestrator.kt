@@ -141,7 +141,12 @@ class GestureHandlerOrchestrator(
   }
 
   /*package*/
-  fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
+  fun onHandlerStateChange(
+    handler: GestureHandler,
+    newState: Int,
+    prevState: Int,
+    fromManualStateChange: Boolean = false,
+  ) {
     handlingChangeSemaphore += 1
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
@@ -177,6 +182,9 @@ class GestureHandlerOrchestrator(
       }
       cleanupAwaitingHandlers()
     }
+
+    handler.isHandledManually = fromManualStateChange
+
     if (newState == GestureHandler.STATE_ACTIVE) {
       tryActivate(handler)
     } else if (prevState == GestureHandler.STATE_ACTIVE || prevState == GestureHandler.STATE_END) {
@@ -287,7 +295,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandler(handler: GestureHandler, sourceEvent: MotionEvent) {
-    if (!isViewAttachedUnderWrapper(handler.view)) {
+    if (!isViewAttachedUnderWrapper(handler.view) && !handler.isHandledManually) {
       handler.cancel()
       return
     }

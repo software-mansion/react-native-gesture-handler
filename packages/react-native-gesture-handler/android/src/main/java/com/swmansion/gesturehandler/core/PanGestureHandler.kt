@@ -236,12 +236,12 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     }
   }
 
-  override fun activate(force: Boolean) {
+  override fun activate(force: Boolean, fromManualStateChange: Boolean) {
     // reset starting point if the handler has not yet activated
     if (state != STATE_ACTIVE) {
       resetProgress()
     }
-    super.activate(force)
+    super.activate(force, fromManualStateChange)
   }
 
   override fun onCancel() {

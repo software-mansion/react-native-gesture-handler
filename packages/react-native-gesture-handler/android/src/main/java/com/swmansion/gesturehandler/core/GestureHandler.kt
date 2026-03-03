@@ -92,7 +92,8 @@ open class GestureHandler {
   var lastAbsolutePositionY = 0f
     private set
 
-  private var manualActivation = false
+  var manualActivation = false
+  var isHandledManually = false
 
   private var lastEventOffsetX = 0f
   private var lastEventOffsetY = 0f
@@ -609,7 +610,7 @@ open class GestureHandler {
     return result
   }
 
-  private fun moveToState(newState: Int) {
+  private fun moveToState(newState: Int, fromManualStateChange: Boolean = false) {
     UiThreadUtil.assertOnUiThread()
     if (state == newState) {
       return
@@ -640,7 +641,7 @@ open class GestureHandler {
       hostDetectorView?.recordHandlerIfNotPresent(this)
     }
 
-    orchestrator!!.onHandlerStateChange(this, newState, oldState)
+    orchestrator!!.onHandlerStateChange(this, newState, oldState, fromManualStateChange)
     onStateChange(newState, oldState)
   }
 
@@ -748,15 +749,15 @@ open class GestureHandler {
 
   fun activate() = activate(force = false)
 
-  open fun activate(force: Boolean) {
+  open fun activate(force: Boolean, fromManualStateChange: Boolean = false) {
     if ((!manualActivation || force) && (state == STATE_UNDETERMINED || state == STATE_BEGAN)) {
-      moveToState(STATE_ACTIVE)
+      moveToState(STATE_ACTIVE, fromManualStateChange)
     }
   }
 
-  fun begin() {
+  fun begin(fromManualStateChange: Boolean = false) {
     if (state == STATE_UNDETERMINED) {
-      moveToState(STATE_BEGAN)
+      moveToState(STATE_BEGAN, fromManualStateChange)
     }
   }
 

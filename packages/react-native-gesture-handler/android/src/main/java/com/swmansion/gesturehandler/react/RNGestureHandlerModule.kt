@@ -160,8 +160,8 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       }
 
       when (newState) {
-        GestureHandler.STATE_ACTIVE -> handler.activate(force = true)
-        GestureHandler.STATE_BEGAN -> handler.begin()
+        GestureHandler.STATE_ACTIVE -> handler.activate(force = true, fromManualStateChange = true)
+        GestureHandler.STATE_BEGAN -> handler.begin(fromManualStateChange = true)
         GestureHandler.STATE_END -> handler.end()
         GestureHandler.STATE_FAILED -> handler.fail()
         GestureHandler.STATE_CANCELLED -> handler.cancel()
