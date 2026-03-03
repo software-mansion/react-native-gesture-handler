@@ -422,6 +422,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       return;
     }
 
+    if (state == RNGestureHandlerStateEnd && _lastState == RNGestureHandlerStateUndetermined &&
+        (fromManualStateChange || _manualActivation)) {
+      _lastState = state;
+      return;
+    }
+
     if (state == RNGestureHandlerStateActive) {
       // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
       // the same coalescing-key allowing RCTEventDispatcher to coalesce RNGestureHandlerEvents when events are
@@ -429,11 +435,9 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       static uint16_t nextEventCoalescingKey = 0;
       self->_eventCoalescingKey = nextEventCoalescingKey++;
 
-    } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive) {
-      if (fromManualStateChange || _manualActivation) {
-        // For manually handled gestures skip sending finalize state change event when the gesture was never begun
-        return;
-      }
+    } else if (
+        state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !fromManualStateChange &&
+        !_manualActivation) {
       // Otherwise send activate state change event to preserve correct gesture flow
       id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                             handlerTag:_tag
