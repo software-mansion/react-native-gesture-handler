@@ -645,13 +645,17 @@ open class GestureHandler {
   }
 
   fun wantsEvent(event: MotionEvent): Boolean {
-    val isTrackingAnyPointer = (0 until event.pointerCount).any { i ->
-      isTrackingPointer(event.getPointerId(i))
+    if (!isEnabled || state == STATE_FAILED || state == STATE_CANCELLED || state == STATE_END) {
+      return false
     }
 
-    return isEnabled &&
-      state !in listOf(STATE_FAILED, STATE_CANCELLED, STATE_END) &&
-      isTrackingAnyPointer
+    return if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      (0 until event.pointerCount).any { i ->
+        isTrackingPointer(event.getPointerId(i))
+      }
+    } else {
+      isTrackingPointer(event.getPointerId(event.actionIndex))
+    }
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
