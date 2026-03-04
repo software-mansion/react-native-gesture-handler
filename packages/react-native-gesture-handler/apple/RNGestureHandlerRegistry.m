@@ -24,12 +24,16 @@
 
 - (NSDictionary<NSNumber *, RNGestureHandler *> *)handlers
 {
-  return _handlers;
+  @synchronized(_handlers) {
+    return _handlers;
+  }
 }
 
 - (RNGestureHandler *)handlerWithTag:(NSNumber *)handlerTag
 {
-  return _handlers[handlerTag];
+  @synchronized(_handlers) {
+    return _handlers[handlerTag];
+  }
 }
 
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler
@@ -44,7 +48,12 @@
               withActionType:(RNGestureHandlerActionType)actionType
             withHostDetector:(nullable RNGHUIView *)hostDetector
 {
-  RNGestureHandler *handler = _handlers[handlerTag];
+  RNGestureHandler *handler;
+
+  @synchronized(_handlers) {
+    handler = _handlers[handlerTag];
+  }
+
   RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
   [handler unbindFromView];
   handler.actionType = actionType;
@@ -57,27 +66,38 @@
 
 - (void)detachHandlerWithTag:(NSNumber *)handlerTag fromHostDetector:(RNGHUIView *)hostDetectorView
 {
-  RNGestureHandler *handler = _handlers[handlerTag];
-  if (handler.hostDetectorView != hostDetectorView)
+  RNGestureHandler *handler;
+
+  @synchronized(_handlers) {
+    handler = _handlers[handlerTag];
+  }
+
+  if (handler.hostDetectorView != hostDetectorView) {
     return;
+  }
+
   [handler unbindFromView];
 }
 
 - (void)dropHandlerWithTag:(NSNumber *)handlerTag
 {
-  RNGestureHandler *handler = _handlers[handlerTag];
-  [handler unbindFromView];
-  [_handlers removeObjectForKey:handlerTag];
+  @synchronized(_handlers) {
+    RNGestureHandler *handler = _handlers[handlerTag];
+    [handler unbindFromView];
+    [_handlers removeObjectForKey:handlerTag];
+  }
 }
 
 - (void)dropAllHandlers
 {
-  for (NSNumber *tag in _handlers) {
-    RNGestureHandler *handler = _handlers[tag];
-    [handler unbindFromView];
-  }
+  @synchronized(_handlers) {
+    for (NSNumber *tag in _handlers) {
+      RNGestureHandler *handler = _handlers[tag];
+      [handler unbindFromView];
+    }
 
-  [_handlers removeAllObjects];
+    [_handlers removeAllObjects];
+  }
 }
 
 @end
