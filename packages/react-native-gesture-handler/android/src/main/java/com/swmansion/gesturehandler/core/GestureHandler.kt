@@ -577,11 +577,22 @@ open class GestureHandler {
     onStateChange(newState, oldState)
   }
 
-  fun wantsEvent(event: MotionEvent): Boolean = isEnabled &&
-    state != STATE_FAILED &&
-    state != STATE_CANCELLED &&
-    state != STATE_END &&
-    isTrackingPointer(event.getPointerId(event.actionIndex))
+  fun wantsEvent(event: MotionEvent): Boolean {
+    if (!isEnabled || state == STATE_FAILED || state == STATE_CANCELLED || state == STATE_END) {
+      return false
+    }
+
+    if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      for (i in 0 until event.pointerCount) {
+        if (isTrackingPointer(event.getPointerId(i))) {
+          return true
+        }
+      }
+      return false
+    } else {
+      return isTrackingPointer(event.getPointerId(event.actionIndex))
+    }
+  }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
     if (handler === this) {
