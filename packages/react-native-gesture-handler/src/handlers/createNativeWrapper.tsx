@@ -20,6 +20,9 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
   'onGestureHandlerStateChange',
 ] as const;
 
+/**
+ * @deprecated `createNativeWrapper` is deprecated and will be removed in favor of using `GestureDetector` with `Native` gesture directly.
+ */
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
   config: Readonly<NativeViewGestureHandlerProps> = {}

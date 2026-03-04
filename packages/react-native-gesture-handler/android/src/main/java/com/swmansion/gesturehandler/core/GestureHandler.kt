@@ -390,19 +390,34 @@ open class GestureHandler {
     // TODO: this is likely wrong, and the transformed event itself should be
     // in the coordinate system of the child view, but I'm not sure of the
     // consequences
-    if (view is RNGestureHandlerDetectorView && (view as RNGestureHandlerDetectorView).isNotEmpty()) {
-      val detector = view as RNGestureHandlerDetectorView
+    val detectorView = hostDetectorView
+    if (detectorView != null && detectorView.isNotEmpty()) {
       val outPoint = PointF()
-      GestureHandlerOrchestrator.transformPointToChildViewCoords(
-        adaptedTransformedEvent.x,
-        adaptedTransformedEvent.y,
-        detector,
-        detector.getChildAt(0),
-        outPoint,
-      )
-      x = outPoint.x
-      y = outPoint.y
-      isWithinBounds = isWithinBounds(detector.getChildAt(0), x, y)
+      var foundChild = false
+
+      for (i in 0 until detectorView.childCount) {
+        val child = detectorView.getChildAt(i)
+        GestureHandlerOrchestrator.transformPointToChildViewCoords(
+          adaptedTransformedEvent.x,
+          adaptedTransformedEvent.y,
+          detectorView,
+          child,
+          outPoint,
+        )
+        if (isWithinBounds(child, outPoint.x, outPoint.y)) {
+          x = outPoint.x
+          y = outPoint.y
+          isWithinBounds = true
+          foundChild = true
+          break
+        }
+      }
+
+      if (!foundChild) {
+        x = adaptedTransformedEvent.x
+        y = adaptedTransformedEvent.y
+        isWithinBounds = false
+      }
     } else {
       x = adaptedTransformedEvent.x
       y = adaptedTransformedEvent.y
@@ -629,11 +644,22 @@ open class GestureHandler {
     onStateChange(newState, oldState)
   }
 
-  fun wantsEvent(event: MotionEvent): Boolean = isEnabled &&
-    state != STATE_FAILED &&
-    state != STATE_CANCELLED &&
-    state != STATE_END &&
-    isTrackingPointer(event.getPointerId(event.actionIndex))
+  fun wantsEvent(event: MotionEvent): Boolean {
+    if (!isEnabled || state == STATE_FAILED || state == STATE_CANCELLED || state == STATE_END) {
+      return false
+    }
+
+    if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      for (i in 0 until event.pointerCount) {
+        if (isTrackingPointer(event.getPointerId(i))) {
+          return true
+        }
+      }
+      return false
+    } else {
+      return isTrackingPointer(event.getPointerId(event.actionIndex))
+    }
+  }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
     if (handler === this) {
