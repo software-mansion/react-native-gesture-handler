@@ -81,22 +81,27 @@
 
 - (void)dropHandlerWithTag:(NSNumber *)handlerTag
 {
+  RNGestureHandler *handler;
+
   @synchronized(_handlers) {
-    RNGestureHandler *handler = _handlers[handlerTag];
-    [handler unbindFromView];
+    handler = _handlers[handlerTag];
     [_handlers removeObjectForKey:handlerTag];
   }
+
+  [handler unbindFromView];
 }
 
 - (void)dropAllHandlers
 {
-  @synchronized(_handlers) {
-    for (NSNumber *tag in _handlers) {
-      RNGestureHandler *handler = _handlers[tag];
-      [handler unbindFromView];
-    }
+  NSArray<RNGestureHandler *> *handlers;
 
+  @synchronized(_handlers) {
+    handlers = [_handlers allValues];
     [_handlers removeAllObjects];
+  }
+
+  for (RNGestureHandler *handler in handlers) {
+    [handler unbindFromView];
   }
 }
 
