@@ -25,7 +25,7 @@ export type InnerPressableEvent = {
   target: number;
   timestamp: number;
   touches: InnerPressableEvent[];
-  force?: number;
+  force?: number | undefined;
 };
 
 export type PressableEvent = { nativeEvent: InnerPressableEvent };
