@@ -40,7 +40,7 @@ export type VirtualChild = {
 
   // only set on web
   viewRef: unknown;
-  userSelect?: UserSelect;
-  touchAction?: TouchAction;
-  enableContextMenu?: boolean;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 };

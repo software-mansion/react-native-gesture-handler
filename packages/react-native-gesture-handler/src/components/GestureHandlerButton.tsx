@@ -19,48 +19,48 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   /**
    * Defines if buttons should respond to touches. By default set to true.
    */
-  enabled?: boolean;
+  enabled?: boolean | undefined;
 
   /**
    * Defines if more than one button could be pressed simultaneously. By default
    * set true.
    */
-  exclusive?: boolean;
+  exclusive?: boolean | undefined;
 
   /**
    * Android only.
    *
    * Defines color of native ripple animation used since API level 21.
    */
-  rippleColor?: number | ColorValue | null;
+  rippleColor?: number | ColorValue | null | undefined;
 
   /**
    * Android only.
    *
    * Defines radius of native ripple animation used since API level 21.
    */
-  rippleRadius?: number | null;
+  rippleRadius?: number | null | undefined;
 
   /**
    * Android only.
    *
    * Set this to true if you want the ripple animation to render outside the view bounds.
    */
-  borderless?: boolean;
+  borderless?: boolean | undefined;
 
   /**
    * Android only.
    *
    * Defines whether the ripple animation should be drawn on the foreground of the view.
    */
-  foreground?: boolean;
+  foreground?: boolean | undefined;
 
   /**
    * Android only.
    *
    * Set this to true if you don't want the system to play sound when the button is pressed.
    */
-  touchSoundDisabled?: boolean;
+  touchSoundDisabled?: boolean | undefined;
 
   /**
    * Style object, use it to set additional styles.
@@ -77,28 +77,28 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
    * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  testOnly_onPress?: Function | null;
+  testOnly_onPress?: Function | null | undefined;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
    * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  testOnly_onPressIn?: Function | null;
+  testOnly_onPressIn?: Function | null | undefined;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
    * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  testOnly_onPressOut?: Function | null;
+  testOnly_onPressOut?: Function | null | undefined;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
    * @deprecated test-only props are deprecated and will be removed in the future.
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  testOnly_onLongPress?: Function | null;
+  testOnly_onLongPress?: Function | null | undefined;
 }
 
 const ButtonComponent =
