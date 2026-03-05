@@ -66,6 +66,7 @@
   },
   "homepage": "https://docs.swmansion.com/react-native-gesture-handler/",
   "dependencies": {
+    "@types/react-test-renderer": "^19.1.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
@@ -77,7 +78,6 @@
     "@types/invariant": "^2.2.37",
     "@types/jest": "^27.0.3",
     "@types/react": "^19.2.0",
-    "@types/react-test-renderer": "^19.1.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "babel-plugin-module-resolver": "^5.0.2",
