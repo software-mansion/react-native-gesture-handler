@@ -147,7 +147,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public override shouldRecognizeSimultaneously(
-    handler: GestureHandler
+    handler: IGestureHandler
   ): boolean {
     if (super.shouldRecognizeSimultaneously(handler)) {
       return true;
@@ -176,7 +176,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     );
   }
 
-  public override shouldBeCancelledByOther(_handler: GestureHandler): boolean {
+  public override shouldBeCancelledByOther(_handler: IGestureHandler): boolean {
     return !this.disallowInterruption;
   }
 

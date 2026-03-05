@@ -51,13 +51,25 @@ export interface VirtualChildrenProps {
 // @ts-expect-error WithDefault adds `| null` to the type, which doesn't align with ViewProps.pointerEvents
 // Using Exclude to remove null from the type makes the error go away, but breaks codegen.
 export interface NativeProps extends ViewProps {
-  onGestureHandlerEvent?: DirectEventHandler<GestureHandlerEvent>;
-  onGestureHandlerStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
-  onGestureHandlerTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
-  onGestureHandlerReanimatedEvent?: DirectEventHandler<GestureHandlerEvent>;
-  onGestureHandlerReanimatedStateChange?: DirectEventHandler<GestureHandlerStateChangeEvent>;
-  onGestureHandlerReanimatedTouchEvent?: DirectEventHandler<GestureHandlerTouchEvent>;
-  onGestureHandlerAnimatedEvent?: DirectEventHandler<GestureHandlerEvent>;
+  onGestureHandlerEvent?: DirectEventHandler<GestureHandlerEvent> | undefined;
+  onGestureHandlerStateChange?:
+    | DirectEventHandler<GestureHandlerStateChangeEvent>
+    | undefined;
+  onGestureHandlerTouchEvent?:
+    | DirectEventHandler<GestureHandlerTouchEvent>
+    | undefined;
+  onGestureHandlerReanimatedEvent?:
+    | DirectEventHandler<GestureHandlerEvent>
+    | undefined;
+  onGestureHandlerReanimatedStateChange?:
+    | DirectEventHandler<GestureHandlerStateChangeEvent>
+    | undefined;
+  onGestureHandlerReanimatedTouchEvent?:
+    | DirectEventHandler<GestureHandlerTouchEvent>
+    | undefined;
+  onGestureHandlerAnimatedEvent?:
+    | DirectEventHandler<GestureHandlerEvent>
+    | undefined;
 
   handlerTags: Int32[];
   moduleId: Int32;

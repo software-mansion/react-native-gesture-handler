@@ -16,7 +16,7 @@ export default class PanGestureHandler extends GestureHandler {
   public velocityX = 0;
   public velocityY = 0;
 
-  private minDist?: number = undefined;
+  private minDist?: number | undefined = undefined;
   private minDistSq = DEFAULT_MIN_DIST_SQ;
 
   private activeOffsetXStart = -Number.MAX_SAFE_INTEGER;

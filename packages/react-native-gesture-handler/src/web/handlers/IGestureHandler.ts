@@ -18,7 +18,7 @@ export default interface IGestureHandler {
   activationIndex: number;
   awaiting: boolean;
   handlerTag: number;
-  readonly testID?: string;
+  readonly testID?: string | undefined;
   readonly delegate: GestureHandlerDelegate<unknown, this>;
   readonly tracker: PointerTracker;
   readonly name: SingleGestureName;
@@ -28,9 +28,9 @@ export default interface IGestureHandler {
   readonly enabled: boolean | null;
   readonly pointerType: PointerType;
   enableContextMenu: boolean;
-  readonly activeCursor?: ActiveCursor;
-  readonly touchAction?: TouchAction;
-  readonly userSelect?: UserSelect;
+  readonly activeCursor?: ActiveCursor | undefined;
+  readonly touchAction?: TouchAction | undefined;
+  readonly userSelect?: UserSelect | undefined;
 
   attachEventManager: (manager: EventManager<unknown>) => void;
 

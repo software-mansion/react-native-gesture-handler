@@ -37,7 +37,7 @@ type WithSharedValueRecursive<T extends object, P> = {
     ? Simplify<SharedValueOrT<T[K], P>>
     : // Special case for boolean as passing `boolean` as P doesn't look ok.
       boolean extends T[K]
-      ? boolean | SharedValue<boolean>
+      ? boolean | SharedValue<boolean> | Extract<T[K], undefined>
       : // Special handling for tuples [number, number].
         T[K] extends [number, number]
         ? [WithSharedValue<number, P>, WithSharedValue<number, P>]
