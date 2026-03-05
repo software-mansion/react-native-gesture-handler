@@ -12,10 +12,10 @@ import {
 
 interface State {
   extraChildStyle: null | {
-    opacity?: number;
+    opacity?: number | undefined;
   };
   extraUnderlayStyle: null | {
-    backgroundColor?: ColorValue;
+    backgroundColor?: ColorValue | undefined;
   };
 }
 

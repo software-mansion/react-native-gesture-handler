@@ -26,7 +26,7 @@ export interface GestureDetectorState {
 
 export interface WebEventHandler {
   onGestureHandlerEvent: (event: HandlerStateChangeEvent<unknown>) => void;
-  onGestureHandlerStateChange?: (
-    event: HandlerStateChangeEvent<unknown>
-  ) => void;
+  onGestureHandlerStateChange?:
+    | ((event: HandlerStateChangeEvent<unknown>) => void)
+    | undefined;
 }

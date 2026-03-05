@@ -50,7 +50,7 @@ interface CommonPanProperties {
    * enableTrackpadTwoFingerGesture swiping with two fingers will also trigger
    * the gesture.
    */
-  enableTrackpadTwoFingerGesture?: boolean;
+  enableTrackpadTwoFingerGesture?: boolean | undefined;
 
   /**
    * A number of fingers that is required to be placed before handler can

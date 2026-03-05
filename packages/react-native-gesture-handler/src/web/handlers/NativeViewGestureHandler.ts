@@ -4,6 +4,7 @@ import { DEFAULT_TOUCH_SLOP } from '../constants';
 import { AdaptedEvent, Config } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
+import IGestureHandler from './IGestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
@@ -133,7 +134,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     }
   }
 
-  public shouldRecognizeSimultaneously(handler: GestureHandler): boolean {
+  public shouldRecognizeSimultaneously(handler: IGestureHandler): boolean {
     if (super.shouldRecognizeSimultaneously(handler)) {
       return true;
     }
@@ -161,7 +162,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     );
   }
 
-  public shouldBeCancelledByOther(_handler: GestureHandler): boolean {
+  public shouldBeCancelledByOther(_handler: IGestureHandler): boolean {
     return !this.disallowInterruption;
   }
 
