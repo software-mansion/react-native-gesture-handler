@@ -1,15 +1,12 @@
 import React from 'react';
 import {
-  Pressable as LegacyPressable,
+  Pressable as RNPressable,
   PressableStateCallbackType,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import {
-  ScrollView,
-  Pressable as GesturizedPressable,
-} from 'react-native-gesture-handler';
+import { ScrollView, LegacyPressable } from 'react-native-gesture-handler';
 
 export default function Example() {
   return (
@@ -50,21 +47,21 @@ const outerStyle = ({ pressed }: PressableStateCallbackType) => [
 
 function GesturizedBoxes() {
   return (
-    <GesturizedPressable
+    <LegacyPressable
       style={outerStyle}
       testID="outer"
       onPressIn={() => console.log('[outer] onPressIn')}
       onPressOut={() => console.log('[outer] onPressOut')}
       onPress={() => console.log('[outer] onPress')}
       onLongPress={() => console.log('[outer] onLongPress')}>
-      <GesturizedPressable
+      <LegacyPressable
         style={middleStyle}
         testID="middle"
         onPressIn={() => console.log('[middle] onPressIn')}
         onPressOut={() => console.log('[middle] onPressOut')}
         onPress={() => console.log('[middle] onPress')}
         onLongPress={() => console.log('[middle] onLongPress')}>
-        <GesturizedPressable
+        <LegacyPressable
           style={innerStyle}
           testID="inner"
           onPressIn={() => console.log('[inner] onPressIn')}
@@ -72,34 +69,34 @@ function GesturizedBoxes() {
           onPress={() => console.log('[inner] onPress')}
           onLongPress={() => console.log('[inner] onLongPress')}
         />
-      </GesturizedPressable>
-    </GesturizedPressable>
+      </LegacyPressable>
+    </LegacyPressable>
   );
 }
 
 function LegacyBoxes() {
   return (
-    <LegacyPressable
+    <RNPressable
       style={outerStyle}
       onPressIn={() => console.log('[outer] onPressIn')}
       onPressOut={() => console.log('[outer] onPressOut')}
       onPress={() => console.log('[outer] onPress')}
       onLongPress={() => console.log('[outer] onLongPress')}>
-      <LegacyPressable
+      <RNPressable
         style={middleStyle}
         onPressIn={() => console.log('[middle] onPressIn')}
         onPressOut={() => console.log('[middle] onPressOut')}
         onPress={() => console.log('[middle] onPress')}
         onLongPress={() => console.log('[middle] onLongPress')}>
-        <LegacyPressable
+        <RNPressable
           style={innerStyle}
           onPressIn={() => console.log('[inner] onPressIn')}
           onPressOut={() => console.log('[inner] onPressOut')}
           onPress={() => console.log('[inner] onPress')}
           onLongPress={() => console.log('[inner] onLongPress')}
         />
-      </LegacyPressable>
-    </LegacyPressable>
+      </RNPressable>
+    </RNPressable>
   );
 }
 

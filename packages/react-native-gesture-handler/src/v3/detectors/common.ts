@@ -13,9 +13,9 @@ export enum GestureDetectorType {
 
 interface CommonGestureDetectorProps {
   children?: React.ReactNode;
-  userSelect?: UserSelect;
-  touchAction?: TouchAction;
-  enableContextMenu?: boolean;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 }
 
 export interface NativeDetectorProps<

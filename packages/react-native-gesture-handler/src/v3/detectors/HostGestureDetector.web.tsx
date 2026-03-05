@@ -11,18 +11,18 @@ export interface GestureHandlerDetectorProps extends PropsRef {
   moduleId: number;
   children?: React.ReactNode;
   virtualChildren?: Set<VirtualChildrenWeb>;
-  userSelect?: UserSelect;
-  touchAction?: TouchAction;
-  enableContextMenu?: boolean;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 }
 
 export interface VirtualChildrenWeb {
   viewTag: number;
   handlerTags: number[];
   viewRef: RefObject<Element | null>;
-  userSelect?: UserSelect;
-  touchAction?: TouchAction;
-  enableContextMenu?: boolean;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 }
 
 const EMPTY_HANDLERS = new Set<number>();
