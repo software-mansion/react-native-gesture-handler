@@ -1,6 +1,10 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, ViewProps } from 'react-native';
 
-export default React.forwardRef<React.ComponentRef<typeof View>>(
-  (props, ref) => <View ref={ref} accessibilityRole="button" {...props} />
-);
+export const ButtonComponent = (
+  props: ViewProps & { ref?: React.Ref<React.ComponentRef<typeof View>> }
+) => {
+  return <View accessibilityRole="button" {...props} />;
+};
+
+export default ButtonComponent;
