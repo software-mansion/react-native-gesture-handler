@@ -24,9 +24,7 @@
 
 - (NSDictionary<NSNumber *, RNGestureHandler *> *)handlers
 {
-  @synchronized(_handlers) {
-    return _handlers;
-  }
+  return _handlers;
 }
 
 - (RNGestureHandler *)handlerWithTag:(NSNumber *)handlerTag
