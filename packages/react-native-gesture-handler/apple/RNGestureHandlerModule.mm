@@ -227,7 +227,7 @@ RCT_EXPORT_MODULE()
     } else if (state == 4) { // ACTIVE
       if (handler.recognizer.state == UIGestureRecognizerStatePossible) {
         // Force going from UNDETERMINED to ACTIVE through BEGAN to preserve the correct state transition flow.
-        [handler handleGesture:handler.recognizer fromReset:NO];
+        [handler handleGesture:handler.recognizer fromReset:NO fromManualStateChange:YES];
       }
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
@@ -244,7 +244,7 @@ RCT_EXPORT_MODULE()
   // do not send state change event when activating because it bypasses
   // shouldRequireFailureOfGestureRecognizer
   if (state != 4) {
-    [handler handleGesture:handler.recognizer fromReset:NO];
+    [handler handleGesture:handler.recognizer fromReset:NO fromManualStateChange:YES];
   }
 }
 
