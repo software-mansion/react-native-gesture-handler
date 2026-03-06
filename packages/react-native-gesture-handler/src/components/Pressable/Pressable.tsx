@@ -19,7 +19,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import NativeButton from '../GestureHandlerButton';
+import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
 import {
   gestureToPressableEvent,
   addInsets,
