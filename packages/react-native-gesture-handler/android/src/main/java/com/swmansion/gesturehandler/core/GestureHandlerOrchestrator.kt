@@ -287,7 +287,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandler(handler: GestureHandler, sourceEvent: MotionEvent) {
-    if (!isViewAttachedUnderWrapper(handler.view)) {
+    if (!isViewAttachedUnderWrapper(handler.view ?: handler.hostDetectorView)) {
       handler.cancel()
       return
     }
