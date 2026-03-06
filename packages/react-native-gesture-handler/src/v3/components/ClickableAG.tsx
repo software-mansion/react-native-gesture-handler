@@ -54,7 +54,7 @@ const btnStyles = StyleSheet.create({
 
 export const Clickable = (props: ClickableProps) => {
   const {
-    underlayColor = 'black',
+    underlayColor,
     activeOpacity,
     feedbackTarget = 'underlay',
     feedbackType = 'opacity-increase',
@@ -71,11 +71,26 @@ export const Clickable = (props: ClickableProps) => {
 
   const hasFeedback = activeOpacity !== undefined;
 
+  const shouldUseNativeRipple = useMemo(() => {
+    return (
+      hasFeedback &&
+      Platform.OS === 'android' &&
+      feedbackTarget === 'underlay' &&
+      feedbackType === 'opacity-increase'
+    );
+  }, [hasFeedback, feedbackTarget, feedbackType]);
+
   const canAnimate = useMemo(() => {
-    return feedbackTarget === 'component'
-      ? Platform.OS === 'ios'
-      : Platform.OS !== 'android';
-  }, [feedbackTarget]);
+    if (!hasFeedback) {
+      return false;
+    }
+
+    if (shouldUseNativeRipple) {
+      return false;
+    }
+
+    return true;
+  }, [hasFeedback, shouldUseNativeRipple]);
 
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -88,37 +103,36 @@ export const Clickable = (props: ClickableProps) => {
     onLongPress?.();
   }, [onLongPress]);
 
+  const startLongPressTimer = useCallback(() => {
+    if (onLongPress && !longPressTimeout.current) {
+      longPressDetected.current = false;
+      longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
+    }
+  }, [delayLongPress, onLongPress, wrappedLongPress]);
+
   const onBegin = useCallback(
     (e: CallbackEventType) => {
       if (Platform.OS === 'android' && e.pointerInside) {
-        longPressDetected.current = false;
-        if (onLongPress) {
-          longPressTimeout.current = setTimeout(
-            wrappedLongPress,
-            delayLongPress
-          );
+        startLongPressTimer();
+
+        if (canAnimate) {
+          activeState.setValue(1);
         }
       }
     },
-    [delayLongPress, onLongPress, wrappedLongPress]
+    [startLongPressTimer, canAnimate, activeState]
   );
 
   const onActivate = useCallback(
     (e: CallbackEventType) => {
       onActiveStateChange?.(true);
 
-      if (hasFeedback && canAnimate) {
+      if (canAnimate && Platform.OS !== 'android') {
         activeState.setValue(1);
       }
 
       if (Platform.OS !== 'android' && e.pointerInside) {
-        longPressDetected.current = false;
-        if (onLongPress) {
-          longPressTimeout.current = setTimeout(
-            wrappedLongPress,
-            delayLongPress
-          );
-        }
+        startLongPressTimer();
       }
 
       if (!e.pointerInside && longPressTimeout.current !== undefined) {
@@ -126,22 +140,14 @@ export const Clickable = (props: ClickableProps) => {
         longPressTimeout.current = undefined;
       }
     },
-    [
-      hasFeedback,
-      canAnimate,
-      delayLongPress,
-      onActiveStateChange,
-      onLongPress,
-      wrappedLongPress,
-      activeState,
-    ]
+    [canAnimate, onActiveStateChange, activeState, startLongPressTimer]
   );
 
   const onDeactivate = useCallback(
     (e: CallbackEventType, success: boolean) => {
       onActiveStateChange?.(false);
 
-      if (hasFeedback && canAnimate) {
+      if (canAnimate) {
         activeState.setValue(0);
       }
 
@@ -149,7 +155,7 @@ export const Clickable = (props: ClickableProps) => {
         onPress?.(e.pointerInside);
       }
     },
-    [hasFeedback, canAnimate, onActiveStateChange, onPress, activeState]
+    [canAnimate, onActiveStateChange, onPress, activeState]
   );
 
   const onFinalize = useCallback((_e: CallbackEventType) => {
@@ -162,11 +168,7 @@ export const Clickable = (props: ClickableProps) => {
   const resolvedStyle = useMemo(() => StyleSheet.flatten(style ?? {}), [style]);
 
   const underlayAnimatedStyle = useMemo(() => {
-    if (
-      feedbackTarget !== 'underlay' ||
-      !hasFeedback ||
-      activeOpacity === undefined
-    ) {
+    if (feedbackTarget !== 'underlay' || !canAnimate) {
       return {};
     }
 
@@ -175,9 +177,9 @@ export const Clickable = (props: ClickableProps) => {
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
-        outputRange: [startOpacity, activeOpacity],
+        outputRange: [startOpacity, activeOpacity as number],
       }),
-      backgroundColor: underlayColor,
+      backgroundColor: underlayColor ?? 'black',
       borderRadius: resolvedStyle.borderRadius,
       borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
       borderTopRightRadius: resolvedStyle.borderTopRightRadius,
@@ -187,7 +189,7 @@ export const Clickable = (props: ClickableProps) => {
   }, [
     feedbackTarget,
     feedbackType,
-    hasFeedback,
+    canAnimate,
     activeOpacity,
     activeState,
     underlayColor,
@@ -195,12 +197,7 @@ export const Clickable = (props: ClickableProps) => {
   ]);
 
   const buttonAnimatedStyle = useMemo(() => {
-    if (
-      feedbackTarget !== 'component' ||
-      !hasFeedback ||
-      activeOpacity === undefined ||
-      Platform.OS !== 'ios'
-    ) {
+    if (feedbackTarget !== 'component' || !canAnimate) {
       return {};
     }
 
@@ -209,10 +206,10 @@ export const Clickable = (props: ClickableProps) => {
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
-        outputRange: [startOpacity, activeOpacity],
+        outputRange: [startOpacity, activeOpacity as number],
       }),
     };
-  }, [feedbackTarget, feedbackType, hasFeedback, activeOpacity, activeState]);
+  }, [feedbackTarget, feedbackType, canAnimate, activeOpacity, activeState]);
 
   const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
 
@@ -220,19 +217,21 @@ export const Clickable = (props: ClickableProps) => {
     <ButtonComponent
       style={[
         resolvedStyle,
-        Platform.OS === 'ios' && { cursor: undefined },
-        feedbackTarget === 'component' && hasFeedback
+        feedbackTarget === 'component' && canAnimate
           ? buttonAnimatedStyle
           : undefined,
       ]}
       borderless={borderless ?? feedbackTarget === 'component'}
+      rippleColor={
+        shouldUseNativeRipple ? (underlayColor as any) : 'transparent'
+      }
       {...rest}
       ref={ref ?? null}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
-      {feedbackTarget === 'underlay' && hasFeedback && (
+      {feedbackTarget === 'underlay' && canAnimate && (
         <Animated.View style={[btnStyles.underlay, underlayAnimatedStyle]} />
       )}
       {children}
