@@ -25,6 +25,7 @@ export interface Spec extends TurboModule {
   dropGestureHandler: (handlerTag: Double) => void;
   flushOperations: () => void;
   setReanimatedAvailable: (isAvailable: boolean) => void;
+  isAccessibilityEnabled: () => boolean;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNGestureHandlerModule');

@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import { PressableEvent } from './PressableProps';
 import { StateDefinition } from './StateMachine';
+import RNGestureHandlerModule from '../../RNGestureHandlerModule';
 
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
@@ -21,6 +22,25 @@ function getAndroidStatesConfig(
     {
       eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
       callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.FINALIZE,
+      callback: handlePressOut,
+    },
+  ];
+}
+
+function getAndroidAccessibilityStatesConfig(
+  handlePressIn: (event: PressableEvent) => void,
+  handlePressOut: (event: PressableEvent) => void
+) {
+  return [
+    {
+      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+      callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_BEGIN,
     },
     {
       eventName: StateMachineEvent.FINALIZE,
@@ -112,6 +132,10 @@ export function getStatesConfig(
   handlePressOut: (event: PressableEvent) => void
 ): StateDefinition[] {
   if (Platform.OS === 'android') {
+    if (RNGestureHandlerModule.isAccessibilityEnabled()) {
+      console.log('accessible!!!');
+      return getAndroidAccessibilityStatesConfig(handlePressIn, handlePressOut);
+    }
     return getAndroidStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'ios') {
     return getIosStatesConfig(handlePressIn, handlePressOut);
