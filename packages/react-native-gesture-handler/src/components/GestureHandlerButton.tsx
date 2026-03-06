@@ -70,7 +70,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   /**
    * Invoked on mount and layout changes.
    */
-  onLayout?: (event: LayoutChangeEvent) => void;
+  onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
 
   /**
    * Used for testing-library compatibility, not passed to the native component.
@@ -101,7 +101,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   testOnly_onLongPress?: Function | null | undefined;
 }
 
-const ButtonComponent =
+export const ButtonComponent =
   RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
 export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
