@@ -20,10 +20,18 @@ export interface ClickableProps extends BaseButtonProps {
   activeOpacity?: number | undefined;
 
   /**
-   * If true, the whole component's opacity will be decreased when pressed.
-   * If false (default), an underlay with underlayColor will be shown.
+   * Determines what should be animated.
+   * - 'underlay' (default): an additional view rendered behind children.
+   * - 'component': the whole button.
    */
-  shouldDecreaseOpacity?: boolean | undefined;
+  feedbackTarget?: 'underlay' | 'component' | undefined;
+
+  /**
+   * Determines the direction of the animation.
+   * - 'opacity-increase' (default): opacity goes from 0 to activeOpacity.
+   * - 'opacity-decrease': opacity goes from 1 to activeOpacity.
+   */
+  feedbackType?: 'opacity-increase' | 'opacity-decrease' | undefined;
 
   /**
    * If true, the button will have a borderless ripple effect on Android.
@@ -33,6 +41,7 @@ export interface ClickableProps extends BaseButtonProps {
 }
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
+
 const btnStyles = StyleSheet.create({
   underlay: {
     position: 'absolute',
@@ -47,7 +56,8 @@ export const Clickable = (props: ClickableProps) => {
   const {
     underlayColor = 'black',
     activeOpacity,
-    shouldDecreaseOpacity = false,
+    feedbackTarget = 'underlay',
+    feedbackType = 'opacity-increase',
     delayLongPress = 600,
     onLongPress,
     onPress,
@@ -62,10 +72,10 @@ export const Clickable = (props: ClickableProps) => {
   const hasFeedback = activeOpacity !== undefined;
 
   const canAnimate = useMemo(() => {
-    return shouldDecreaseOpacity
-      ? Platform.OS === 'ios' // Borderless-like animates on iOS
-      : Platform.OS !== 'android'; // Rect-like animates everywhere except Android (ripple takes over)
-  }, [shouldDecreaseOpacity]);
+    return feedbackTarget === 'component'
+      ? Platform.OS === 'ios'
+      : Platform.OS !== 'android';
+  }, [feedbackTarget]);
 
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -152,14 +162,20 @@ export const Clickable = (props: ClickableProps) => {
   const resolvedStyle = useMemo(() => StyleSheet.flatten(style ?? {}), [style]);
 
   const underlayAnimatedStyle = useMemo(() => {
-    if (shouldDecreaseOpacity || !hasFeedback || activeOpacity === undefined) {
+    if (
+      feedbackTarget !== 'underlay' ||
+      !hasFeedback ||
+      activeOpacity === undefined
+    ) {
       return {};
     }
+
+    const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
 
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, activeOpacity],
+        outputRange: [startOpacity, activeOpacity],
       }),
       backgroundColor: underlayColor,
       borderRadius: resolvedStyle.borderRadius,
@@ -169,7 +185,8 @@ export const Clickable = (props: ClickableProps) => {
       borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
     };
   }, [
-    shouldDecreaseOpacity,
+    feedbackTarget,
+    feedbackType,
     hasFeedback,
     activeOpacity,
     activeState,
@@ -179,7 +196,7 @@ export const Clickable = (props: ClickableProps) => {
 
   const buttonAnimatedStyle = useMemo(() => {
     if (
-      !shouldDecreaseOpacity ||
+      feedbackTarget !== 'component' ||
       !hasFeedback ||
       activeOpacity === undefined ||
       Platform.OS !== 'ios'
@@ -187,13 +204,15 @@ export const Clickable = (props: ClickableProps) => {
       return {};
     }
 
+    const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
+
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, activeOpacity],
+        outputRange: [startOpacity, activeOpacity],
       }),
     };
-  }, [shouldDecreaseOpacity, hasFeedback, activeOpacity, activeState]);
+  }, [feedbackTarget, feedbackType, hasFeedback, activeOpacity, activeState]);
 
   const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
 
@@ -202,16 +221,18 @@ export const Clickable = (props: ClickableProps) => {
       style={[
         resolvedStyle,
         Platform.OS === 'ios' && { cursor: undefined },
-        hasFeedback && buttonAnimatedStyle,
+        feedbackTarget === 'component' && hasFeedback
+          ? buttonAnimatedStyle
+          : undefined,
       ]}
-      borderless={borderless ?? shouldDecreaseOpacity}
+      borderless={borderless ?? feedbackTarget === 'component'}
       {...rest}
       ref={ref ?? null}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
-      {!shouldDecreaseOpacity && hasFeedback && (
+      {feedbackTarget === 'underlay' && hasFeedback && (
         <Animated.View style={[btnStyles.underlay, underlayAnimatedStyle]} />
       )}
       {children}
