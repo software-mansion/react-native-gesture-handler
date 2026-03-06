@@ -74,7 +74,6 @@ export {
   BorderlessButton,
   Pressable,
   Clickable,
-  ClickableBehavior,
   ScrollView,
   Switch,
   TextInput,

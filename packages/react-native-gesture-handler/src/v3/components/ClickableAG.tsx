@@ -7,33 +7,32 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export enum ClickableBehavior {
-  NONE = 'none',
-  RECT = 'rect',
-  BORDERLESS = 'borderless',
-}
-
 export interface ClickableProps extends BaseButtonProps {
   /**
    * Background color that will be dimmed when button is in active state.
-   * Only applicable when behavior is RECT.
    */
   underlayColor?: string | undefined;
 
   /**
    * Opacity applied to the underlay or button when it is in an active state.
-   * Defaults to 0.105 for RECT behavior and 0.3 for BORDERLESS behavior.
+   * If not provided, no visual feedback will be applied.
    */
   activeOpacity?: number | undefined;
 
   /**
-   * Defines how the button visually reacts to being pressed.
-   * Defaults to NONE.
+   * If true, the whole component's opacity will be decreased when pressed.
+   * If false (default), an underlay with underlayColor will be shown.
    */
-  behavior?: ClickableBehavior | undefined;
+  shouldDecreaseOpacity?: boolean | undefined;
+
+  /**
+   * If true, the button will have a borderless ripple effect on Android.
+   * On iOS, this has no effect.
+   */
+  borderless?: boolean | undefined;
 }
 
-const AnimatedRawButton = Animated.createAnimatedComponent(RawButton as any);
+const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
 
 const btnStyles = StyleSheet.create({
   underlay: {
@@ -49,18 +48,18 @@ export const Clickable = (props: ClickableProps) => {
   const {
     underlayColor = 'black',
     activeOpacity,
-    behavior = ClickableBehavior.NONE,
+    shouldDecreaseOpacity = false,
     delayLongPress = 600,
     onLongPress,
     onPress,
     onActiveStateChange,
     style,
     children,
+    borderless,
     ...rest
   } = props;
 
-  const resolvedActiveOpacity =
-    activeOpacity ?? (behavior === ClickableBehavior.BORDERLESS ? 0.3 : 0.105);
+  const hasFeedback = activeOpacity !== undefined;
 
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -92,12 +91,11 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType) => {
       onActiveStateChange?.(true);
 
-      const canAnimate =
-        behavior === ClickableBehavior.BORDERLESS
-          ? Platform.OS === 'ios' // Borderless animates on iOS
-          : Platform.OS !== 'android'; // Rect animates everywhere except Android (where native ripple takes over)
+      const canAnimate = shouldDecreaseOpacity
+        ? Platform.OS === 'ios' // Borderless-like animates on iOS
+        : Platform.OS !== 'android'; // Rect-like animates everywhere except Android (ripple takes over)
 
-      if (behavior !== ClickableBehavior.NONE && canAnimate) {
+      if (hasFeedback && canAnimate) {
         activeState.setValue(1);
       }
 
@@ -117,7 +115,8 @@ export const Clickable = (props: ClickableProps) => {
       }
     },
     [
-      behavior,
+      shouldDecreaseOpacity,
+      hasFeedback,
       delayLongPress,
       onActiveStateChange,
       onLongPress,
@@ -130,12 +129,11 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType, success: boolean) => {
       onActiveStateChange?.(false);
 
-      const canAnimate =
-        behavior === ClickableBehavior.BORDERLESS
-          ? Platform.OS === 'ios'
-          : Platform.OS !== 'android';
+      const canAnimate = shouldDecreaseOpacity
+        ? Platform.OS === 'ios'
+        : Platform.OS !== 'android';
 
-      if (behavior !== ClickableBehavior.NONE && canAnimate) {
+      if (hasFeedback && canAnimate) {
         activeState.setValue(0);
       }
 
@@ -143,7 +141,13 @@ export const Clickable = (props: ClickableProps) => {
         onPress?.(e.pointerInside);
       }
     },
-    [behavior, onActiveStateChange, onPress, activeState]
+    [
+      shouldDecreaseOpacity,
+      hasFeedback,
+      onActiveStateChange,
+      onPress,
+      activeState,
+    ]
   );
 
   const onFinalize = useCallback((_e: CallbackEventType) => {
@@ -156,14 +160,14 @@ export const Clickable = (props: ClickableProps) => {
   const resolvedStyle = useMemo(() => StyleSheet.flatten(style ?? {}), [style]);
 
   const underlayAnimatedStyle = useMemo(() => {
-    if (behavior !== ClickableBehavior.RECT) {
+    if (shouldDecreaseOpacity || !hasFeedback || activeOpacity === undefined) {
       return {};
     }
 
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, resolvedActiveOpacity],
+        outputRange: [0, activeOpacity],
       }),
       backgroundColor: underlayColor,
       borderRadius: resolvedStyle.borderRadius,
@@ -173,42 +177,50 @@ export const Clickable = (props: ClickableProps) => {
       borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
     };
   }, [
-    behavior,
+    shouldDecreaseOpacity,
+    hasFeedback,
+    activeOpacity,
     activeState,
-    resolvedActiveOpacity,
     underlayColor,
     resolvedStyle,
   ]);
 
   const buttonAnimatedStyle = useMemo(() => {
-    if (behavior !== ClickableBehavior.BORDERLESS || Platform.OS !== 'ios') {
+    if (
+      !shouldDecreaseOpacity ||
+      !hasFeedback ||
+      activeOpacity === undefined ||
+      Platform.OS !== 'ios'
+    ) {
       return {};
     }
 
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, resolvedActiveOpacity],
+        outputRange: [1, activeOpacity],
       }),
     };
-  }, [behavior, activeState, resolvedActiveOpacity]);
+  }, [shouldDecreaseOpacity, hasFeedback, activeOpacity, activeState]);
 
-  const ButtonComponent =
-    behavior === ClickableBehavior.NONE ? RawButton : AnimatedRawButton;
+  const ButtonComponent = (
+    hasFeedback ? AnimatedRawButton : RawButton
+  ) as React.ElementType;
 
   return (
     <ButtonComponent
       style={[
         resolvedStyle,
         Platform.OS === 'ios' && { cursor: undefined },
-        behavior !== ClickableBehavior.NONE && buttonAnimatedStyle,
+        hasFeedback && buttonAnimatedStyle,
       ]}
+      borderless={borderless ?? shouldDecreaseOpacity}
       {...rest}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
-      {behavior === ClickableBehavior.RECT && (
+      {!shouldDecreaseOpacity && hasFeedback && (
         <Animated.View style={[btnStyles.underlay, underlayAnimatedStyle]} />
       )}
       {children}
