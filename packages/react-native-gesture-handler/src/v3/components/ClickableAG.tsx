@@ -71,26 +71,21 @@ export const Clickable = (props: ClickableProps) => {
 
   const hasFeedback = activeOpacity !== undefined;
 
-  const shouldUseNativeRipple = useMemo(() => {
-    return (
+  const shouldUseNativeRipple = useMemo(
+    () =>
       hasFeedback &&
       Platform.OS === 'android' &&
       feedbackTarget === 'underlay' &&
-      feedbackType === 'opacity-increase'
-    );
-  }, [hasFeedback, feedbackTarget, feedbackType]);
+      feedbackType === 'opacity-increase',
+    [hasFeedback, feedbackTarget, feedbackType]
+  );
 
-  const canAnimate = useMemo(() => {
-    if (!hasFeedback) {
-      return false;
-    }
+  const canAnimate = useMemo(
+    () => hasFeedback && !shouldUseNativeRipple,
+    [hasFeedback, shouldUseNativeRipple]
+  );
 
-    if (shouldUseNativeRipple) {
-      return false;
-    }
-
-    return true;
-  }, [hasFeedback, shouldUseNativeRipple]);
+  const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
 
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -114,7 +109,6 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType) => {
       if (Platform.OS === 'android' && e.pointerInside) {
         startLongPressTimer();
-
         if (canAnimate) {
           activeState.setValue(1);
         }
@@ -172,8 +166,6 @@ export const Clickable = (props: ClickableProps) => {
       return {};
     }
 
-    const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
-
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
@@ -188,10 +180,10 @@ export const Clickable = (props: ClickableProps) => {
     };
   }, [
     feedbackTarget,
-    feedbackType,
     canAnimate,
     activeOpacity,
     activeState,
+    startOpacity,
     underlayColor,
     resolvedStyle,
   ]);
@@ -201,15 +193,13 @@ export const Clickable = (props: ClickableProps) => {
       return {};
     }
 
-    const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
-
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
         outputRange: [startOpacity, activeOpacity as number],
       }),
     };
-  }, [feedbackTarget, feedbackType, canAnimate, activeOpacity, activeState]);
+  }, [feedbackTarget, canAnimate, activeOpacity, activeState, startOpacity]);
 
   const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
 
