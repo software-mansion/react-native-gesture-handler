@@ -5,6 +5,7 @@ import GestureHandlerButton from '../../components/GestureHandlerButton';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
+  RawButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
 
@@ -13,7 +14,10 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export const RawButton = createNativeWrapper(GestureHandlerButton, {
+export const RawButton = createNativeWrapper<
+  ReturnType<typeof GestureHandlerButton>,
+  RawButtonProps
+>(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
@@ -151,11 +155,12 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
     props.onActiveStateChange?.(active);
   };
 
-  const { children, style, ...rest } = props;
+  const { children, style, ref, ...rest } = props;
 
   return (
     <AnimatedBaseButton
       {...rest}
+      ref={ref ?? null}
       onActiveStateChange={onActiveStateChange}
       style={[style, Platform.OS === 'ios' && { opacity }]}>
       {children}

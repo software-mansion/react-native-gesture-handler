@@ -33,7 +33,6 @@ export interface ClickableProps extends BaseButtonProps {
 }
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
-
 const btnStyles = StyleSheet.create({
   underlay: {
     position: 'absolute',
@@ -56,10 +55,17 @@ export const Clickable = (props: ClickableProps) => {
     style,
     children,
     borderless,
+    ref,
     ...rest
   } = props;
 
   const hasFeedback = activeOpacity !== undefined;
+
+  const canAnimate = useMemo(() => {
+    return shouldDecreaseOpacity
+      ? Platform.OS === 'ios' // Borderless-like animates on iOS
+      : Platform.OS !== 'android'; // Rect-like animates everywhere except Android (ripple takes over)
+  }, [shouldDecreaseOpacity]);
 
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -91,10 +97,6 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType) => {
       onActiveStateChange?.(true);
 
-      const canAnimate = shouldDecreaseOpacity
-        ? Platform.OS === 'ios' // Borderless-like animates on iOS
-        : Platform.OS !== 'android'; // Rect-like animates everywhere except Android (ripple takes over)
-
       if (hasFeedback && canAnimate) {
         activeState.setValue(1);
       }
@@ -115,8 +117,8 @@ export const Clickable = (props: ClickableProps) => {
       }
     },
     [
-      shouldDecreaseOpacity,
       hasFeedback,
+      canAnimate,
       delayLongPress,
       onActiveStateChange,
       onLongPress,
@@ -129,10 +131,6 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType, success: boolean) => {
       onActiveStateChange?.(false);
 
-      const canAnimate = shouldDecreaseOpacity
-        ? Platform.OS === 'ios'
-        : Platform.OS !== 'android';
-
       if (hasFeedback && canAnimate) {
         activeState.setValue(0);
       }
@@ -141,13 +139,7 @@ export const Clickable = (props: ClickableProps) => {
         onPress?.(e.pointerInside);
       }
     },
-    [
-      shouldDecreaseOpacity,
-      hasFeedback,
-      onActiveStateChange,
-      onPress,
-      activeState,
-    ]
+    [hasFeedback, canAnimate, onActiveStateChange, onPress, activeState]
   );
 
   const onFinalize = useCallback((_e: CallbackEventType) => {
@@ -203,9 +195,7 @@ export const Clickable = (props: ClickableProps) => {
     };
   }, [shouldDecreaseOpacity, hasFeedback, activeOpacity, activeState]);
 
-  const ButtonComponent = (
-    hasFeedback ? AnimatedRawButton : RawButton
-  ) as React.ElementType;
+  const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
 
   return (
     <ButtonComponent
@@ -216,6 +206,7 @@ export const Clickable = (props: ClickableProps) => {
       ]}
       borderless={borderless ?? shouldDecreaseOpacity}
       {...rest}
+      ref={ref ?? null}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
