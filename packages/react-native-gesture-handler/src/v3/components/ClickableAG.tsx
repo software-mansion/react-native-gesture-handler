@@ -193,12 +193,15 @@ export const Clickable = (props: ClickableProps) => {
     };
   }, [behavior, activeState, resolvedActiveOpacity]);
 
+  const ButtonComponent =
+    behavior === ClickableBehavior.NONE ? RawButton : AnimatedRawButton;
+
   return (
-    <AnimatedRawButton
+    <ButtonComponent
       style={[
         resolvedStyle,
         Platform.OS === 'ios' && { cursor: undefined },
-        buttonAnimatedStyle,
+        behavior !== ClickableBehavior.NONE && buttonAnimatedStyle,
       ]}
       {...rest}
       onBegin={onBegin}
@@ -209,6 +212,6 @@ export const Clickable = (props: ClickableProps) => {
         <Animated.View style={[btnStyles.underlay, underlayAnimatedStyle]} />
       )}
       {children}
-    </AnimatedRawButton>
+    </ButtonComponent>
   );
 };
