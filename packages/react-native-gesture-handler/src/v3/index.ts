@@ -73,6 +73,8 @@ export {
   RectButton,
   BorderlessButton,
   Pressable,
+  Clickable,
+  ClickableBehavior,
   ScrollView,
   Switch,
   TextInput,
