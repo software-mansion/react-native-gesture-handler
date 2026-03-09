@@ -99,8 +99,8 @@ export const INT32_MAX = 2 ** 31 - 1;
 
 let isScreenReaderEnabledCache: boolean | null = null;
 
-AccessibilityInfo.addEventListener('screenReaderChanged', (enabled) => {
-  isScreenReaderEnabledCache = enabled;
+AccessibilityInfo.addEventListener('screenReaderChanged', () => {
+  isScreenReaderEnabledCache = RNGestureHandlerModule.isScreenReaderEnabled();
 });
 
 export function isScreenReaderEnabled(): boolean {
