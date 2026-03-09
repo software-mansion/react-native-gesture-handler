@@ -105,7 +105,10 @@ export const ButtonComponent =
   RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
 export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
-  const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
+  const flattenedStyle = useMemo(
+    () => StyleSheet.flatten(style) ?? {},
+    [style]
+  );
 
   const {
     // Layout properties
@@ -156,6 +159,17 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
     start,
     end,
     overflow,
+
+    // Native button visual properties
+    backgroundColor,
+    borderRadius,
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
+    borderWidth,
+    borderColor,
+    borderStyle,
 
     // Visual properties
     ...restStyle
@@ -210,7 +224,22 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
       left,
       start,
       end,
-      overflow,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [flattenedStyle]
+  );
+
+  const buttonStyle = useMemo(
+    () => ({
+      backgroundColor,
+      borderRadius,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      borderWidth,
+      borderColor,
+      borderStyle,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [flattenedStyle]
@@ -225,7 +254,7 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
           (!overflow || overflow === 'hidden') && styles.overflowHidden,
           restStyle,
         ]}>
-        <ButtonComponent {...rest} style={layoutStyle} />
+        <ButtonComponent {...rest} style={[layoutStyle, buttonStyle]} />
       </View>
     </RNGestureHandlerButtonWrapperNativeComponent>
   );
