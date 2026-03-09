@@ -93,6 +93,6 @@ export default {
     // No-op on web
   },
   isAccessibilityEnabled() {
-    // TODO
+    return false;
   },
 };
