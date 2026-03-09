@@ -39,8 +39,7 @@ import { GestureDetector } from '../detectors';
 import { PureNativeButton } from './GestureButtons';
 
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isTestEnv } from '../../utils';
-import RNGestureHandlerModule from '../../RNGestureHandlerModule';
+import { INT32_MAX, isScreenReaderEnabled, isTestEnv } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -258,10 +257,7 @@ const Pressable = (props: PressableProps) => {
       );
     },
     onTouchesUp: () => {
-      if (
-        Platform.OS === 'android' &&
-        !RNGestureHandlerModule.isScreenReaderEnabled()
-      ) {
+      if (Platform.OS === 'android' && !isScreenReaderEnabled()) {
         // Prevents potential soft-locks
         stateMachine.reset();
         handleFinalize();
