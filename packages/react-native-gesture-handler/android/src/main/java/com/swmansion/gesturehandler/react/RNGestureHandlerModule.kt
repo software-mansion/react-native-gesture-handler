@@ -137,7 +137,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
       Context.ACCESSIBILITY_SERVICE,
     ) as AccessibilityManager?
 
-    return accessibilityManager?.isEnabled ?: false
+    return accessibilityManager?.isTouchExplorationEnabled ?: false
   }
 
   @DoNotStrip
