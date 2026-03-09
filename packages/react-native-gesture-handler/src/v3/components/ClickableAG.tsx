@@ -85,7 +85,12 @@ export const Clickable = (props: ClickableProps) => {
     [hasFeedback, shouldUseNativeRipple]
   );
 
-  const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
+  const startOpacity =
+    feedbackType === 'opacity-increase'
+      ? feedbackTarget === 'component'
+        ? 0.01
+        : 0
+      : 1;
 
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -159,10 +164,81 @@ export const Clickable = (props: ClickableProps) => {
     }
   }, []);
 
-  const resolvedStyle = useMemo(() => StyleSheet.flatten(style ?? {}), [style]);
+  const { shellStyle, visualStyle } = useMemo(() => {
+    const flattened = StyleSheet.flatten(style ?? {}) as any;
+    if (feedbackTarget !== 'component') {
+      return { shellStyle: flattened, visualStyle: {} };
+    }
 
-  const underlayAnimatedStyle = useMemo(() => {
-    if (feedbackTarget !== 'underlay' || !canAnimate) {
+    const {
+      margin,
+      marginVertical,
+      marginHorizontal,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      position,
+      top,
+      bottom,
+      left,
+      right,
+      width,
+      height,
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      flex,
+      flexGrow,
+      flexShrink,
+      flexBasis,
+      alignSelf,
+      ...visuals
+    } = flattened;
+
+    return {
+      shellStyle: {
+        margin,
+        marginVertical,
+        marginHorizontal,
+        marginTop,
+        marginBottom,
+        marginLeft,
+        marginRight,
+        position,
+        top,
+        bottom,
+        left,
+        right,
+        width,
+        height,
+        minWidth,
+        maxWidth,
+        minHeight,
+        maxHeight,
+        flex,
+        flexGrow,
+        flexShrink,
+        flexBasis,
+        alignSelf,
+      },
+      visualStyle: visuals,
+    };
+  }, [style, feedbackTarget]);
+
+  const backgroundDecorationColor = useMemo(() => {
+    if (underlayColor) {
+      return underlayColor;
+    }
+    if (feedbackTarget === 'component') {
+      return (visualStyle.backgroundColor as string) ?? 'transparent';
+    }
+    return 'black';
+  }, [underlayColor, feedbackTarget, visualStyle.backgroundColor]);
+
+  const backgroundAnimatedStyle = useMemo(() => {
+    if (!canAnimate || feedbackTarget !== 'underlay') {
       return {};
     }
 
@@ -171,29 +247,30 @@ export const Clickable = (props: ClickableProps) => {
         inputRange: [0, 1],
         outputRange: [startOpacity, activeOpacity as number],
       }),
-      backgroundColor: underlayColor ?? 'black',
-      borderRadius: resolvedStyle.borderRadius,
-      borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
-      borderTopRightRadius: resolvedStyle.borderTopRightRadius,
-      borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
-      borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
+      backgroundColor: backgroundDecorationColor,
+      borderRadius: shellStyle.borderRadius,
+      borderTopLeftRadius: shellStyle.borderTopLeftRadius,
+      borderTopRightRadius: shellStyle.borderTopRightRadius,
+      borderBottomLeftRadius: shellStyle.borderBottomLeftRadius,
+      borderBottomRightRadius: shellStyle.borderBottomRightRadius,
     };
   }, [
-    feedbackTarget,
     canAnimate,
+    feedbackTarget,
     activeOpacity,
     activeState,
     startOpacity,
-    underlayColor,
-    resolvedStyle,
+    backgroundDecorationColor,
+    shellStyle,
   ]);
 
-  const buttonAnimatedStyle = useMemo(() => {
+  const componentAnimatedStyle = useMemo(() => {
     if (feedbackTarget !== 'component' || !canAnimate) {
       return {};
     }
 
     return {
+      flex: 1,
       opacity: activeState.interpolate({
         inputRange: [0, 1],
         outputRange: [startOpacity, activeOpacity as number],
@@ -205,26 +282,33 @@ export const Clickable = (props: ClickableProps) => {
 
   return (
     <ButtonComponent
+      {...rest}
       style={[
-        resolvedStyle,
-        feedbackTarget === 'component' && canAnimate
-          ? buttonAnimatedStyle
-          : undefined,
+        shellStyle,
+        feedbackTarget === 'component' &&
+          canAnimate && { backgroundColor: 'transparent' },
       ]}
       borderless={borderless ?? feedbackTarget === 'component'}
-      rippleColor={
-        shouldUseNativeRipple ? (underlayColor as any) : 'transparent'
-      }
-      {...rest}
+      rippleColor={underlayColor as any}
       ref={ref ?? null}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
-      {feedbackTarget === 'underlay' && canAnimate && (
-        <Animated.View style={[btnStyles.underlay, underlayAnimatedStyle]} />
+      {feedbackTarget === 'component' && canAnimate ? (
+        <Animated.View style={[visualStyle, componentAnimatedStyle]}>
+          {children}
+        </Animated.View>
+      ) : (
+        <>
+          {feedbackTarget === 'underlay' && canAnimate && (
+            <Animated.View
+              style={[btnStyles.underlay, backgroundAnimatedStyle]}
+            />
+          )}
+          {children}
+        </>
       )}
-      {children}
     </ButtonComponent>
   );
 };
