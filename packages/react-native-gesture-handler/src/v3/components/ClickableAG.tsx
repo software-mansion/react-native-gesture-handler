@@ -105,12 +105,12 @@ export const Clickable = (props: ClickableProps) => {
       if (Platform.OS === 'android' && e.pointerInside) {
         startLongPressTimer();
 
-        if (canAnimate || shouldAnimateOverlay) {
+        if (canAnimate) {
           activeState.setValue(1);
         }
       }
     },
-    [startLongPressTimer, canAnimate, activeState, shouldAnimateOverlay]
+    [startLongPressTimer, canAnimate, activeState]
   );
 
   const onActivate = useCallback(
@@ -137,29 +137,26 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType, success: boolean) => {
       onActiveStateChange?.(false);
 
-      if (canAnimate || shouldAnimateOverlay) {
-        activeState.setValue(0);
-      }
-
       if (success && !longPressDetected.current) {
         onPress?.(e.pointerInside);
       }
     },
-    [
-      canAnimate,
-      onActiveStateChange,
-      onPress,
-      activeState,
-      shouldAnimateOverlay,
-    ]
+    [onActiveStateChange, onPress]
   );
 
-  const onFinalize = useCallback((_e: CallbackEventType) => {
-    if (longPressTimeout.current !== undefined) {
-      clearTimeout(longPressTimeout.current);
-      longPressTimeout.current = undefined;
-    }
-  }, []);
+  const onFinalize = useCallback(
+    (_e: CallbackEventType) => {
+      if (canAnimate) {
+        activeState.setValue(0);
+      }
+
+      if (longPressTimeout.current !== undefined) {
+        clearTimeout(longPressTimeout.current);
+        longPressTimeout.current = undefined;
+      }
+    },
+    [activeState, canAnimate]
+  );
 
   const { shellStyle, visualStyle } = useMemo(() => {
     const flattened = StyleSheet.flatten(style ?? {});
