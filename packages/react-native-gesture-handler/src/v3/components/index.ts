@@ -23,5 +23,5 @@ export {
 
 export { default as Pressable } from './Pressable';
 
-export { Clickable } from './ClickableAG';
-export type { ClickableProps } from './ClickableAG';
+export { Clickable } from './Clickable';
+export type { ClickableProps } from './Clickable';
