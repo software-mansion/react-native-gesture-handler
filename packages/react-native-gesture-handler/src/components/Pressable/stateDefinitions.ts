@@ -133,7 +133,6 @@ export function getStatesConfig(
 ): StateDefinition[] {
   if (Platform.OS === 'android') {
     if (RNGestureHandlerModule.isAccessibilityEnabled()) {
-      console.log('accessible!!!');
       return getAndroidAccessibilityStatesConfig(handlePressIn, handlePressOut);
     }
     return getAndroidStatesConfig(handlePressIn, handlePressOut);
