@@ -259,7 +259,7 @@ export const Clickable = (props: ClickableProps) => {
 
   const rippleProps = shouldUseNativeRipple
     ? {
-        rippleColor: rippleColor ?? 'black',
+        rippleColor,
         rippleRadius,
         borderless,
         foreground,
