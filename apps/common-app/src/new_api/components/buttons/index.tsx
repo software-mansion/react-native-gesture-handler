@@ -29,7 +29,7 @@ function ButtonWrapper({
     <ButtonComponent
       style={[styles.button, { backgroundColor: color }]}
       onPress={() =>
-        feedback?.current?.showMessage(`[${ButtonComponent.name}] onLongPress`)
+        feedback?.current?.showMessage(`[${ButtonComponent.name}] onPress`)
       }
       onLongPress={() => {
         feedback?.current?.showMessage(`[${ButtonComponent.name}] onLongPress`);
