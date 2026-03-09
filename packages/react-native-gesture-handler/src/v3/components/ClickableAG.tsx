@@ -32,30 +32,9 @@ export interface ClickableProps extends BaseButtonProps {
    * - 'opacity-decrease': opacity goes from 1 to activeOpacity.
    */
   feedbackType?: 'opacity-increase' | 'opacity-decrease' | undefined;
-
-  /**
-   * If true, the button will have a borderless ripple effect on Android.
-   * On iOS, this has no effect.
-   */
-  borderless?: boolean | undefined;
-
-  /**
-   * If true, ripple will be enabled on Android.
-   */
-  enableRipple?: boolean | undefined;
 }
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
-
-const btnStyles = StyleSheet.create({
-  underlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    top: 0,
-  },
-});
 
 export const Clickable = (props: ClickableProps) => {
   const {
@@ -63,14 +42,16 @@ export const Clickable = (props: ClickableProps) => {
     activeOpacity,
     feedbackTarget,
     feedbackType,
-    enableRipple = false,
+    borderless,
+    foreground,
+    rippleColor,
+    rippleRadius,
     delayLongPress = 600,
     onLongPress,
     onPress,
     onActiveStateChange,
     style,
     children,
-    borderless,
     ref,
     ...rest
   } = props;
@@ -106,8 +87,13 @@ export const Clickable = (props: ClickableProps) => {
   );
 
   const shouldUseNativeRipple = useMemo(
-    () => Platform.OS === 'android' && enableRipple,
-    [enableRipple]
+    () =>
+      Platform.OS === 'android' &&
+      (borderless !== undefined ||
+        foreground !== undefined ||
+        rippleColor !== undefined ||
+        rippleRadius !== undefined),
+    [borderless, foreground, rippleColor, rippleRadius]
   );
 
   const canAnimate = shouldAnimateComponent || shouldAnimateOverlay;
@@ -274,6 +260,17 @@ export const Clickable = (props: ClickableProps) => {
     };
   }, [feedbackTarget, canAnimate, activeOpacity, activeState, startOpacity]);
 
+  const rippleProps = shouldUseNativeRipple
+    ? {
+        rippleColor: rippleColor ?? 'black',
+        rippleRadius,
+        borderless,
+        foreground,
+      }
+    : {
+        rippleColor: 'transparent',
+      };
+
   const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
 
   return (
@@ -284,8 +281,7 @@ export const Clickable = (props: ClickableProps) => {
         visualStyle,
         feedbackTarget === 'component' && canAnimate && componentAnimatedStyle,
       ]}
-      borderless={borderless ?? feedbackTarget === 'component'}
-      rippleColor={shouldUseNativeRipple ? underlayColor : 'transparent'}
+      {...rippleProps}
       ref={ref ?? null}
       onBegin={onBegin}
       onActivate={onActivate}
@@ -302,3 +298,13 @@ export const Clickable = (props: ClickableProps) => {
     </ButtonComponent>
   );
 };
+
+const btnStyles = StyleSheet.create({
+  underlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+  },
+});
