@@ -1,38 +1,12 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
-import { RawButton } from './GestureButtons';
-import type { BaseButtonProps } from './GestureButtonsProps';
-import type { GestureEvent } from '../types';
-import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
-
-type CallbackEventType = GestureEvent<NativeHandlerData>;
-
-export interface ClickableProps extends BaseButtonProps {
-  /**
-   * Background color that will be dimmed when button is in active state.
-   */
-  underlayColor?: string | undefined;
-
-  /**
-   * Opacity applied to the underlay or button when it is in an active state.
-   * If not provided, no visual feedback will be applied.
-   */
-  activeOpacity?: number | undefined;
-
-  /**
-   * Determines what should be animated.
-   * - 'underlay' (default): an additional view rendered behind children.
-   * - 'component': the whole button.
-   */
-  feedbackTarget?: 'underlay' | 'component' | undefined;
-
-  /**
-   * Determines the direction of the animation.
-   * - 'opacity-increase' (default): opacity goes from 0 to activeOpacity.
-   * - 'opacity-decrease': opacity goes from 1 to activeOpacity.
-   */
-  feedbackType?: 'opacity-increase' | 'opacity-decrease' | undefined;
-}
+import { RawButton } from '../GestureButtons';
+import {
+  CallbackEventType,
+  ClickableAnimationMode,
+  ClickableOpacityMode,
+  ClickableProps,
+} from './ClickableProps';
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
 
@@ -74,15 +48,15 @@ export const Clickable = (props: ClickableProps) => {
   }, [delayLongPress, onLongPress, wrappedLongPress]);
 
   const hasFeedback = activeOpacity !== undefined;
-  const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
+  const startOpacity = feedbackType === ClickableOpacityMode.INCREASE ? 0 : 1;
 
   const shouldAnimateOverlay = useMemo(
-    () => hasFeedback && feedbackTarget === 'underlay',
+    () => hasFeedback && feedbackTarget === ClickableAnimationMode.UNDERLAY,
     [feedbackTarget, hasFeedback]
   );
 
   const shouldAnimateComponent = useMemo(
-    () => hasFeedback && feedbackTarget === 'component',
+    () => hasFeedback && feedbackTarget === ClickableAnimationMode.COMPONENT,
     [hasFeedback, feedbackTarget]
   );
 
@@ -245,7 +219,7 @@ export const Clickable = (props: ClickableProps) => {
   ]);
 
   const componentAnimatedStyle = useMemo(() => {
-    if (feedbackTarget !== 'component' || !canAnimate) {
+    if (feedbackTarget !== ClickableAnimationMode.COMPONENT || !canAnimate) {
       return {};
     }
 
@@ -276,7 +250,9 @@ export const Clickable = (props: ClickableProps) => {
       style={[
         shellStyle,
         visualStyle,
-        feedbackTarget === 'component' && canAnimate && componentAnimatedStyle,
+        feedbackTarget === ClickableAnimationMode.COMPONENT &&
+          canAnimate &&
+          componentAnimatedStyle,
       ]}
       {...rippleProps}
       ref={ref ?? null}
@@ -285,10 +261,8 @@ export const Clickable = (props: ClickableProps) => {
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
       <>
-        {feedbackTarget === 'underlay' ? (
-          <Animated.View
-            style={[btnStyles.underlay, backgroundAnimatedStyle]}
-          />
+        {feedbackTarget === ClickableAnimationMode.UNDERLAY ? (
+          <Animated.View style={[styles.underlay, backgroundAnimatedStyle]} />
         ) : null}
         {children}
       </>
@@ -296,7 +270,7 @@ export const Clickable = (props: ClickableProps) => {
   );
 };
 
-const btnStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   underlay: {
     position: 'absolute',
     left: 0,
