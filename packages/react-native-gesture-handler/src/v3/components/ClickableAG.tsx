@@ -38,6 +38,11 @@ export interface ClickableProps extends BaseButtonProps {
    * On iOS, this has no effect.
    */
   borderless?: boolean | undefined;
+
+  /**
+   * If true, ripple will be enabled on Android.
+   */
+  enableRipple?: boolean | undefined;
 }
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
@@ -56,8 +61,9 @@ export const Clickable = (props: ClickableProps) => {
   const {
     underlayColor,
     activeOpacity,
-    feedbackTarget = 'underlay',
-    feedbackType = 'opacity-increase',
+    feedbackTarget,
+    feedbackType,
+    enableRipple = false,
     delayLongPress = 600,
     onLongPress,
     onPress,
@@ -69,34 +75,10 @@ export const Clickable = (props: ClickableProps) => {
     ...rest
   } = props;
 
-  const hasFeedback = activeOpacity !== undefined;
-
-  const shouldUseNativeRipple = useMemo(
-    () =>
-      hasFeedback &&
-      Platform.OS === 'android' &&
-      feedbackTarget === 'underlay' &&
-      feedbackType === 'opacity-increase',
-    [hasFeedback, feedbackTarget, feedbackType]
-  );
-
-  const canAnimate = useMemo(
-    () => hasFeedback && !shouldUseNativeRipple,
-    [hasFeedback, shouldUseNativeRipple]
-  );
-
-  const startOpacity =
-    feedbackType === 'opacity-increase'
-      ? feedbackTarget === 'component'
-        ? 0.01
-        : 0
-      : 1;
-
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
-  const activeState = useRef(new Animated.Value(0)).current;
 
   const wrappedLongPress = useCallback(() => {
     longPressDetected.current = true;
@@ -110,16 +92,39 @@ export const Clickable = (props: ClickableProps) => {
     }
   }, [delayLongPress, onLongPress, wrappedLongPress]);
 
+  const hasFeedback = activeOpacity !== undefined;
+  const startOpacity = feedbackType === 'opacity-increase' ? 0 : 1;
+
+  const shouldAnimateOverlay = useMemo(
+    () => hasFeedback && feedbackTarget === 'underlay',
+    [feedbackTarget, hasFeedback]
+  );
+
+  const shouldAnimateComponent = useMemo(
+    () => hasFeedback && feedbackTarget === 'component',
+    [hasFeedback, feedbackTarget]
+  );
+
+  const shouldUseNativeRipple = useMemo(
+    () => Platform.OS === 'android' && enableRipple,
+    [enableRipple]
+  );
+
+  const canAnimate = shouldAnimateComponent || shouldAnimateOverlay;
+
+  const activeState = useRef(new Animated.Value(0)).current;
+
   const onBegin = useCallback(
     (e: CallbackEventType) => {
       if (Platform.OS === 'android' && e.pointerInside) {
         startLongPressTimer();
-        if (canAnimate) {
+
+        if (canAnimate || shouldAnimateOverlay) {
           activeState.setValue(1);
         }
       }
     },
-    [startLongPressTimer, canAnimate, activeState]
+    [startLongPressTimer, canAnimate, activeState, shouldAnimateOverlay]
   );
 
   const onActivate = useCallback(
@@ -146,7 +151,7 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType, success: boolean) => {
       onActiveStateChange?.(false);
 
-      if (canAnimate) {
+      if (canAnimate || shouldAnimateOverlay) {
         activeState.setValue(0);
       }
 
@@ -154,7 +159,13 @@ export const Clickable = (props: ClickableProps) => {
         onPress?.(e.pointerInside);
       }
     },
-    [canAnimate, onActiveStateChange, onPress, activeState]
+    [
+      canAnimate,
+      onActiveStateChange,
+      onPress,
+      activeState,
+      shouldAnimateOverlay,
+    ]
   );
 
   const onFinalize = useCallback((_e: CallbackEventType) => {
@@ -165,10 +176,7 @@ export const Clickable = (props: ClickableProps) => {
   }, []);
 
   const { shellStyle, visualStyle } = useMemo(() => {
-    const flattened = StyleSheet.flatten(style ?? {}) as any;
-    if (feedbackTarget !== 'component') {
-      return { shellStyle: flattened, visualStyle: {} };
-    }
+    const flattened = StyleSheet.flatten(style ?? {});
 
     const {
       margin,
@@ -225,43 +233,32 @@ export const Clickable = (props: ClickableProps) => {
       },
       visualStyle: visuals,
     };
-  }, [style, feedbackTarget]);
+  }, [style]);
 
-  const backgroundDecorationColor = useMemo(() => {
-    if (underlayColor) {
-      return underlayColor;
-    }
-    if (feedbackTarget === 'component') {
-      return (visualStyle.backgroundColor as string) ?? 'transparent';
-    }
-    return 'black';
-  }, [underlayColor, feedbackTarget, visualStyle.backgroundColor]);
+  const backgroundDecorationColor = underlayColor ?? 'black';
 
   const backgroundAnimatedStyle = useMemo(() => {
-    if (!canAnimate || feedbackTarget !== 'underlay') {
-      return {};
-    }
-
-    return {
-      opacity: activeState.interpolate({
-        inputRange: [0, 1],
-        outputRange: [startOpacity, activeOpacity as number],
-      }),
-      backgroundColor: backgroundDecorationColor,
-      borderRadius: shellStyle.borderRadius,
-      borderTopLeftRadius: shellStyle.borderTopLeftRadius,
-      borderTopRightRadius: shellStyle.borderTopRightRadius,
-      borderBottomLeftRadius: shellStyle.borderBottomLeftRadius,
-      borderBottomRightRadius: shellStyle.borderBottomRightRadius,
-    };
+    return shouldAnimateOverlay
+      ? {
+          opacity: activeState.interpolate({
+            inputRange: [0, 1],
+            outputRange: [startOpacity, activeOpacity as number],
+          }),
+          backgroundColor: backgroundDecorationColor,
+          borderRadius: visualStyle.borderRadius,
+          borderTopLeftRadius: visualStyle.borderTopLeftRadius,
+          borderTopRightRadius: visualStyle.borderTopRightRadius,
+          borderBottomLeftRadius: visualStyle.borderBottomLeftRadius,
+          borderBottomRightRadius: visualStyle.borderBottomRightRadius,
+        }
+      : {};
   }, [
-    canAnimate,
-    feedbackTarget,
     activeOpacity,
-    activeState,
     startOpacity,
     backgroundDecorationColor,
-    shellStyle,
+    visualStyle,
+    shouldAnimateOverlay,
+    activeState,
   ]);
 
   const componentAnimatedStyle = useMemo(() => {
@@ -270,7 +267,6 @@ export const Clickable = (props: ClickableProps) => {
     }
 
     return {
-      flex: 1,
       opacity: activeState.interpolate({
         inputRange: [0, 1],
         outputRange: [startOpacity, activeOpacity as number],
@@ -285,30 +281,24 @@ export const Clickable = (props: ClickableProps) => {
       {...rest}
       style={[
         shellStyle,
-        feedbackTarget === 'component' &&
-          canAnimate && { backgroundColor: 'transparent' },
+        visualStyle,
+        feedbackTarget === 'component' && canAnimate && componentAnimatedStyle,
       ]}
       borderless={borderless ?? feedbackTarget === 'component'}
-      rippleColor={underlayColor as any}
+      rippleColor={shouldUseNativeRipple ? underlayColor : 'transparent'}
       ref={ref ?? null}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
-      {feedbackTarget === 'component' && canAnimate ? (
-        <Animated.View style={[visualStyle, componentAnimatedStyle]}>
-          {children}
-        </Animated.View>
-      ) : (
-        <>
-          {feedbackTarget === 'underlay' && canAnimate && (
-            <Animated.View
-              style={[btnStyles.underlay, backgroundAnimatedStyle]}
-            />
-          )}
-          {children}
-        </>
-      )}
+      <>
+        {feedbackTarget === 'underlay' ? (
+          <Animated.View
+            style={[btnStyles.underlay, backgroundAnimatedStyle]}
+          />
+        ) : null}
+        {children}
+      </>
     </ButtonComponent>
   );
 };
