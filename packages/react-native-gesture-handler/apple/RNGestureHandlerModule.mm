@@ -248,7 +248,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (NSNumber *)isAccessibilityEnabled
+- (NSNumber *)isScreenReaderEnabled
 {
   return @(UIAccessibilityIsVoiceOverRunning());
 }

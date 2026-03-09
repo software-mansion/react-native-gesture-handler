@@ -260,7 +260,7 @@ const Pressable = (props: PressableProps) => {
     onTouchesUp: () => {
       if (
         Platform.OS === 'android' &&
-        !RNGestureHandlerModule.isAccessibilityEnabled()
+        !RNGestureHandlerModule.isScreenReaderEnabled()
       ) {
         // Prevents potential soft-locks
         stateMachine.reset();

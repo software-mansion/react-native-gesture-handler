@@ -56,7 +56,7 @@ export default {
   flushOperations() {
     // NO-OP
   },
-  isAccessibilityEnabled() {
+  isScreenReaderEnabled() {
     // NO-OP
   },
 };

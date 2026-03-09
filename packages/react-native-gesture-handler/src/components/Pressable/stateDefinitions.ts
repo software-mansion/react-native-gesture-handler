@@ -132,7 +132,7 @@ export function getStatesConfig(
   handlePressOut: (event: PressableEvent) => void
 ): StateDefinition[] {
   if (Platform.OS === 'android') {
-    if (RNGestureHandlerModule.isAccessibilityEnabled()) {
+    if (RNGestureHandlerModule.isScreenReaderEnabled()) {
       return getAndroidAccessibilityStatesConfig(handlePressIn, handlePressOut);
     }
     return getAndroidStatesConfig(handlePressIn, handlePressOut);

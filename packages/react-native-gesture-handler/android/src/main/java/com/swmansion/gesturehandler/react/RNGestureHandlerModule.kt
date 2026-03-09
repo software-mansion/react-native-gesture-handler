@@ -132,7 +132,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun isAccessibilityEnabled(): Boolean {
+  override fun isScreenReaderEnabled(): Boolean {
     val accessibilityManager = reactApplicationContext.getSystemService(
       Context.ACCESSIBILITY_SERVICE,
     ) as AccessibilityManager?
