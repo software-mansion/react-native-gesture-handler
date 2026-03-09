@@ -28,7 +28,7 @@ import {
   isTouchWithinInset,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isTestEnv } from '../../utils';
+import { INT32_MAX, isScreenReaderEnabled, isTestEnv } from '../../utils';
 import {
   applyRelationProp,
   RelationPropName,
@@ -259,7 +259,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           );
         })
         .onTouchesUp(() => {
-          if (Platform.OS === 'android') {
+          if (Platform.OS === 'android' && !isScreenReaderEnabled()) {
             // Prevents potential soft-locks
             stateMachine.reset();
             handleFinalize();
