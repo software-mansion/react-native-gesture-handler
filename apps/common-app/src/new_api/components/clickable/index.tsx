@@ -1,73 +1,83 @@
-import React, { RefObject, useRef } from 'react';
-import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import {
   GestureHandlerRootView,
   Clickable,
-  ClickablePreset,
+  ClickableProps,
+  ClickableOpacityMode,
+  ClickableAnimationTarget,
 } from 'react-native-gesture-handler';
-import { COLORS, Feedback, FeedbackHandle } from '../../../common';
 
-type ButtonWrapperProps = {
+type ButtonWrapperProps = ClickableProps & {
   name: string;
   color: string;
-  feedback: RefObject<FeedbackHandle | null>;
   [key: string]: any;
 };
 
-function ButtonWrapper({ name, color, feedback, ...rest }: ButtonWrapperProps) {
+export const COLORS = {
+  PURPLE: '#7d63d9',
+  NAVY: '#17327a',
+  RED: '#b53645',
+  YELLOW: '#c98d1f',
+  GREEN: '#167a5f',
+  GRAY: '#7f879b',
+  KINDA_RED: '#d97973',
+  KINDA_YELLOW: '#d6b24a',
+  KINDA_GREEN: '#4f9a84',
+  KINDA_BLUE: '#5f97c8',
+};
+
+function ButtonWrapper({ name, color, ...rest }: ButtonWrapperProps) {
   return (
-    <Clickable
-      style={[styles.button, { backgroundColor: color }]}
-      onPress={() => feedback.current?.showMessage(`[${name}] onPress`)}
-      onLongPress={() => feedback.current?.showMessage(`[${name}] onLongPress`)}
-      {...rest}>
-      <Text style={styles.buttonText}>{name}</Text>
-    </Clickable>
+    <View style={styles.section}>
+      <Text style={styles.sectionHeader}>{name}</Text>
+
+      <Clickable
+        style={[styles.button, { backgroundColor: color }]}
+        onPress={() => console.log(`[${name}] onPress`)}
+        onLongPress={() => console.log(`[${name}] onLongPress`)}
+        {...rest}>
+        <Text style={styles.buttonText}>Click me!</Text>
+      </Clickable>
+    </View>
   );
 }
 
 export default function ClickableExample() {
-  const feedbackRef = useRef<FeedbackHandle>(null);
-
   return (
     <GestureHandlerRootView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>BaseButton Replacement</Text>
-          <View style={styles.row}>
-            <ButtonWrapper
-              name="Clickable (BaseButton)"
-              color={COLORS.NAVY}
-              feedback={feedbackRef}
-            />
-          </View>
-        </View>
+        <ButtonWrapper name="Clickable (BaseButton)" color={COLORS.PURPLE} />
 
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>RectButton Replacement</Text>
-          <View style={styles.row}>
-            <ButtonWrapper
-              name="Clickable (RectButton)"
-              color={COLORS.PURPLE}
-              preset={ClickablePreset.RECT}
-              feedback={feedbackRef}
-            />
-          </View>
-        </View>
+        <ButtonWrapper
+          name="Clickable (RectButton)"
+          color={COLORS.NAVY}
+          activeOpacity={0.105}
+          opacityMode={ClickableOpacityMode.INCREASE}
+          animationTarget={ClickableAnimationTarget.UNDERLAY}
+        />
 
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>BorderlessButton Replacement</Text>
-          <View style={styles.row}>
-            <ButtonWrapper
-              name="Clickable (BorderlessButton)"
-              color={COLORS.RED}
-              preset={ClickablePreset.BORDERLESS}
-              feedback={feedbackRef}
-            />
-          </View>
-        </View>
+        <ButtonWrapper
+          name="Clickable (BorderlessButton)"
+          activeOpacity={0.3}
+          opacityMode={ClickableOpacityMode.DECREASE}
+          animationTarget={ClickableAnimationTarget.COMPONENT}
+          color={COLORS.RED}
+        />
 
-        <Feedback ref={feedbackRef} />
+        <ButtonWrapper
+          name="Android ripple"
+          color={COLORS.KINDA_GREEN}
+          rippleColor={'blue'}
+          rippleRadius={100}
+        />
+
+        <ButtonWrapper
+          name="Android ripple (borderless)"
+          color={COLORS.KINDA_BLUE}
+          borderless
+          rippleColor={'blue'}
+        />
       </ScrollView>
     </GestureHandlerRootView>
   );
@@ -91,21 +101,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   button: {
     width: 200,
     height: 60,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Platform.select({
-      ios: { cursor: 'pointer' },
-      android: { elevation: 3 },
-    }),
   },
   buttonText: {
     color: 'white',

@@ -27,6 +27,5 @@ export { Clickable } from './Clickable/Clickable';
 export {
   ClickableAnimationTarget,
   ClickableOpacityMode,
-  ClickablePreset,
 } from './Clickable/ClickableProps';
 export type { ClickableProps } from './Clickable/ClickableProps';

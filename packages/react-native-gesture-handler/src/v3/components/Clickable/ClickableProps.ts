@@ -4,11 +4,6 @@ import type { NativeHandlerData } from '../../hooks/gestures/native/NativeTypes'
 
 export type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export enum ClickablePreset {
-  RECT,
-  BORDERLESS,
-}
-
 export enum ClickableOpacityMode {
   INCREASE,
   DECREASE,
@@ -43,10 +38,5 @@ export interface ClickableProps extends BaseButtonProps {
    * - 'underlay' (default): an additional view rendered behind children.
    * - 'component': the whole button.
    */
-  feedbackTarget?: ClickableAnimationTarget | undefined;
-
-  /**
-   * Determines the preset style of the button.
-   */
-  preset?: ClickablePreset | undefined;
+  animationTarget?: ClickableAnimationTarget | undefined;
 }

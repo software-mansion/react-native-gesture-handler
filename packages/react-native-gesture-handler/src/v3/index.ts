@@ -83,7 +83,6 @@ export {
   Clickable,
   ClickableAnimationTarget,
   ClickableOpacityMode,
-  ClickablePreset,
 } from './components';
 
 export type { ComposedGesture } from './types';
