@@ -9,6 +9,7 @@ import {
 } from './ClickableProps';
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
+const isAndroid = Platform.OS === 'android';
 
 export const Clickable = (props: ClickableProps) => {
   const {
@@ -109,20 +110,11 @@ export const Clickable = (props: ClickableProps) => {
   const startOpacity =
     initialOpacity ?? (opacityMode === ClickableOpacityMode.INCREASE ? 0 : 1);
 
-  const shouldAnimateUnderlay = useMemo(
-    () => hasFeedback && animationTarget === ClickableAnimationTarget.UNDERLAY,
-    [animationTarget, hasFeedback]
-  );
-
-  const shouldAnimateComponent = useMemo(
-    () => hasFeedback && animationTarget === ClickableAnimationTarget.COMPONENT,
-    [hasFeedback, animationTarget]
-  );
-
-  const shouldUseNativeRipple = useMemo(
-    () => Platform.OS === 'android' && androidRipple !== undefined,
-    [androidRipple]
-  );
+  const shouldAnimateUnderlay =
+    hasFeedback && animationTarget === ClickableAnimationTarget.UNDERLAY;
+  const shouldAnimateComponent =
+    hasFeedback && animationTarget === ClickableAnimationTarget.COMPONENT;
+  const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
   const usesJSAnimation = shouldAnimateComponent || shouldAnimateUnderlay;
 
@@ -130,7 +122,7 @@ export const Clickable = (props: ClickableProps) => {
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
-      if (Platform.OS === 'android' && e.pointerInside) {
+      if (isAndroid && e.pointerInside) {
         startLongPressTimer();
 
         if (usesJSAnimation) {
@@ -145,11 +137,11 @@ export const Clickable = (props: ClickableProps) => {
     (e: CallbackEventType) => {
       onActiveStateChange?.(true);
 
-      if (usesJSAnimation && Platform.OS !== 'android') {
+      if (usesJSAnimation && !isAndroid) {
         animatedValue.setValue(1);
       }
 
-      if (Platform.OS !== 'android' && e.pointerInside) {
+      if (!isAndroid && e.pointerInside) {
         startLongPressTimer();
       }
 
@@ -192,7 +184,7 @@ export const Clickable = (props: ClickableProps) => {
         ? {
             opacity: animatedValue.interpolate({
               inputRange: [0, 1],
-              outputRange: [startOpacity, activeOpacity as number],
+              outputRange: [startOpacity, activeOpacity],
             }),
             backgroundColor: underlayColor ?? 'black',
             borderRadius: visualStyle.borderRadius,
@@ -218,7 +210,7 @@ export const Clickable = (props: ClickableProps) => {
         ? {
             opacity: animatedValue.interpolate({
               inputRange: [0, 1],
-              outputRange: [startOpacity, activeOpacity as number],
+              outputRange: [startOpacity, activeOpacity],
             }),
           }
         : {},
@@ -231,16 +223,24 @@ export const Clickable = (props: ClickableProps) => {
     ]
   );
 
-  const rippleProps = shouldUseNativeRipple
-    ? {
-        rippleColor: androidRipple?.color,
-        rippleRadius: androidRipple?.radius,
-        borderless: androidRipple?.borderless,
-        foreground: androidRipple?.foreground,
-      }
-    : {
-        rippleColor: 'transparent',
-      };
+  const rippleProps = useMemo(
+    () =>
+      shouldUseNativeRipple
+        ? {
+            rippleColor: androidRipple?.color,
+            rippleRadius: androidRipple?.radius,
+            borderless: androidRipple?.borderless,
+            foreground: androidRipple?.foreground,
+          }
+        : { rippleColor: 'transparent' as const },
+    [
+      shouldUseNativeRipple,
+      androidRipple?.color,
+      androidRipple?.radius,
+      androidRipple?.borderless,
+      androidRipple?.foreground,
+    ]
+  );
 
   const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
 
@@ -260,12 +260,10 @@ export const Clickable = (props: ClickableProps) => {
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
-      <>
-        {animationTarget === ClickableAnimationTarget.UNDERLAY ? (
-          <Animated.View style={[styles.underlay, underlayAnimatedStyle]} />
-        ) : null}
-        {children}
-      </>
+      {shouldAnimateUnderlay ? (
+        <Animated.View style={[styles.underlay, underlayAnimatedStyle]} />
+      ) : null}
+      {children}
     </ButtonComponent>
   );
 };
