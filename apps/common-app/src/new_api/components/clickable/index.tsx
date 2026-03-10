@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import {
   GestureHandlerRootView,
   Clickable,
+  ClickablePreset,
 } from 'react-native-gesture-handler';
 import { COLORS, Feedback, FeedbackHandle } from '../../../common';
 
@@ -33,10 +34,9 @@ export default function ClickableExample() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>BaseButton Replacement</Text>
-          <Text style={styles.description}>No visual feedback by default</Text>
           <View style={styles.row}>
             <ButtonWrapper
-              name="Clickable (Base)"
+              name="Clickable (BaseButton)"
               color={COLORS.NAVY}
               feedback={feedbackRef}
             />
@@ -45,14 +45,11 @@ export default function ClickableExample() {
 
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>RectButton Replacement</Text>
-          <Text style={styles.description}>Underlay + Opacity Increase</Text>
           <View style={styles.row}>
             <ButtonWrapper
-              name="Clickable (Rect)"
+              name="Clickable (RectButton)"
               color={COLORS.PURPLE}
-              activeOpacity={0.105}
-              feedbackTarget="underlay"
-              feedbackType="opacity-increase"
+              preset={ClickablePreset.RECT}
               feedback={feedbackRef}
             />
           </View>
@@ -60,62 +57,11 @@ export default function ClickableExample() {
 
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>BorderlessButton Replacement</Text>
-          <Text style={styles.description}>Component + Opacity Decrease</Text>
           <View style={styles.row}>
             <ButtonWrapper
-              name="Clickable (Borderless)"
+              name="Clickable (BorderlessButton)"
               color={COLORS.RED}
-              activeOpacity={0.3}
-              feedbackTarget="component"
-              feedbackType="opacity-decrease"
-              borderless
-              feedback={feedbackRef}
-            />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Custom: Underlay + Decrease</Text>
-          <Text style={styles.description}>Hides background on press</Text>
-          <View style={styles.row}>
-            <ButtonWrapper
-              name="Underlay Decrease"
-              color={COLORS.GRAY}
-              activeOpacity={0}
-              feedbackTarget="underlay"
-              feedbackType="opacity-decrease"
-              feedback={feedbackRef}
-            />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Custom: Component + Increase</Text>
-          <Text style={styles.description}>
-            Hidden at rest, visible on press
-          </Text>
-          <View style={styles.row}>
-            <ButtonWrapper
-              name="Component Increase"
-              color="black"
-              activeOpacity={1}
-              feedbackTarget="component"
-              feedbackType="opacity-increase"
-              feedback={feedbackRef}
-            />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Styled Underlay</Text>
-          <View style={styles.row}>
-            <ButtonWrapper
-              name="Red Underlay"
-              color={COLORS.NAVY}
-              underlayColor="red"
-              activeOpacity={0.5}
-              feedbackTarget="underlay"
-              feedbackType="opacity-increase"
+              preset={ClickablePreset.BORDERLESS}
               feedback={feedbackRef}
             />
           </View>
@@ -144,11 +90,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
-  },
-  description: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 12,
   },
   row: {
     flexDirection: 'row',

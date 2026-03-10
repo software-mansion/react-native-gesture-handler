@@ -4,12 +4,17 @@ import type { NativeHandlerData } from '../../hooks/gestures/native/NativeTypes'
 
 export type CallbackEventType = GestureEvent<NativeHandlerData>;
 
+export enum ClickablePreset {
+  RECT,
+  BORDERLESS,
+}
+
 export enum ClickableOpacityMode {
   INCREASE,
   DECREASE,
 }
 
-export enum ClickableAnimationMode {
+export enum ClickableAnimationTarget {
   COMPONENT,
   UNDERLAY,
 }
@@ -27,16 +32,21 @@ export interface ClickableProps extends BaseButtonProps {
   activeOpacity?: number | undefined;
 
   /**
-   * Determines what should be animated.
-   * - 'underlay' (default): an additional view rendered behind children.
-   * - 'component': the whole button.
-   */
-  feedbackTarget?: ClickableAnimationMode | undefined;
-
-  /**
    * Determines the direction of the animation.
    * - 'opacity-increase' (default): opacity goes from 0 to activeOpacity.
    * - 'opacity-decrease': opacity goes from 1 to activeOpacity.
    */
-  feedbackType?: ClickableOpacityMode | undefined;
+  opacityMode?: ClickableOpacityMode | undefined;
+
+  /**
+   * Determines what should be animated.
+   * - 'underlay' (default): an additional view rendered behind children.
+   * - 'component': the whole button.
+   */
+  feedbackTarget?: ClickableAnimationTarget | undefined;
+
+  /**
+   * Determines the preset style of the button.
+   */
+  preset?: ClickablePreset | undefined;
 }

@@ -3,8 +3,9 @@ import { Animated, Platform, StyleSheet } from 'react-native';
 import { RawButton } from '../GestureButtons';
 import {
   CallbackEventType,
-  ClickableAnimationMode,
+  ClickableAnimationTarget,
   ClickableOpacityMode,
+  ClickablePreset,
   ClickableProps,
 } from './ClickableProps';
 
@@ -15,7 +16,8 @@ export const Clickable = (props: ClickableProps) => {
     underlayColor,
     activeOpacity,
     feedbackTarget,
-    feedbackType,
+    opacityMode,
+    preset,
     borderless,
     foreground,
     rippleColor,
@@ -47,17 +49,40 @@ export const Clickable = (props: ClickableProps) => {
     }
   }, [delayLongPress, onLongPress, wrappedLongPress]);
 
-  const hasFeedback = activeOpacity !== undefined;
-  const startOpacity = feedbackType === ClickableOpacityMode.INCREASE ? 0 : 1;
+  let targetComponent;
+  let targetOpacity;
+  let targetOpacityMode;
+
+  switch (preset) {
+    case ClickablePreset.RECT:
+      targetComponent = ClickableAnimationTarget.UNDERLAY;
+      targetOpacity = 0.105;
+      targetOpacityMode = ClickableOpacityMode.INCREASE;
+      break;
+    case ClickablePreset.BORDERLESS:
+      targetComponent = ClickableAnimationTarget.COMPONENT;
+      targetOpacity = 0.3;
+      targetOpacityMode = ClickableOpacityMode.DECREASE;
+      break;
+    default:
+      targetOpacity = activeOpacity;
+      targetComponent = feedbackTarget;
+      targetOpacityMode = opacityMode;
+      break;
+  }
+
+  const hasFeedback = targetOpacity !== undefined;
+  const startOpacity =
+    targetOpacityMode === ClickableOpacityMode.INCREASE ? 0 : 1;
 
   const shouldAnimateOverlay = useMemo(
-    () => hasFeedback && feedbackTarget === ClickableAnimationMode.UNDERLAY,
-    [feedbackTarget, hasFeedback]
+    () => hasFeedback && targetComponent === ClickableAnimationTarget.UNDERLAY,
+    [targetComponent, hasFeedback]
   );
 
   const shouldAnimateComponent = useMemo(
-    () => hasFeedback && feedbackTarget === ClickableAnimationMode.COMPONENT,
-    [hasFeedback, feedbackTarget]
+    () => hasFeedback && targetComponent === ClickableAnimationTarget.COMPONENT,
+    [hasFeedback, targetComponent]
   );
 
   const shouldUseNativeRipple = useMemo(
@@ -199,7 +224,7 @@ export const Clickable = (props: ClickableProps) => {
       ? {
           opacity: activeState.interpolate({
             inputRange: [0, 1],
-            outputRange: [startOpacity, activeOpacity as number],
+            outputRange: [startOpacity, targetOpacity as number],
           }),
           backgroundColor: backgroundDecorationColor,
           borderRadius: visualStyle.borderRadius,
@@ -210,7 +235,7 @@ export const Clickable = (props: ClickableProps) => {
         }
       : {};
   }, [
-    activeOpacity,
+    targetOpacity,
     startOpacity,
     backgroundDecorationColor,
     visualStyle,
@@ -219,17 +244,17 @@ export const Clickable = (props: ClickableProps) => {
   ]);
 
   const componentAnimatedStyle = useMemo(() => {
-    if (feedbackTarget !== ClickableAnimationMode.COMPONENT || !canAnimate) {
+    if (targetComponent !== ClickableAnimationTarget.COMPONENT || !canAnimate) {
       return {};
     }
 
     return {
       opacity: activeState.interpolate({
         inputRange: [0, 1],
-        outputRange: [startOpacity, activeOpacity as number],
+        outputRange: [startOpacity, targetOpacity as number],
       }),
     };
-  }, [feedbackTarget, canAnimate, activeOpacity, activeState, startOpacity]);
+  }, [targetComponent, canAnimate, targetOpacity, activeState, startOpacity]);
 
   const rippleProps = shouldUseNativeRipple
     ? {
@@ -250,7 +275,7 @@ export const Clickable = (props: ClickableProps) => {
       style={[
         shellStyle,
         visualStyle,
-        feedbackTarget === ClickableAnimationMode.COMPONENT &&
+        targetComponent === ClickableAnimationTarget.COMPONENT &&
           canAnimate &&
           componentAnimatedStyle,
       ]}
@@ -261,7 +286,7 @@ export const Clickable = (props: ClickableProps) => {
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
       <>
-        {feedbackTarget === ClickableAnimationMode.UNDERLAY ? (
+        {targetComponent === ClickableAnimationTarget.UNDERLAY ? (
           <Animated.View style={[styles.underlay, backgroundAnimatedStyle]} />
         ) : null}
         {children}

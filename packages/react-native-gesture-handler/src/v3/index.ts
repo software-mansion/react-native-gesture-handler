@@ -66,19 +66,24 @@ export type {
   BaseButtonProps,
   RectButtonProps,
   BorderlessButtonProps,
+  ClickableProps,
 } from './components';
+
 export {
   RawButton,
   BaseButton,
   RectButton,
   BorderlessButton,
   Pressable,
-  Clickable,
   ScrollView,
   Switch,
   TextInput,
   FlatList,
   RefreshControl,
+  Clickable,
+  ClickableAnimationTarget,
+  ClickableOpacityMode,
+  ClickablePreset,
 } from './components';
 
 export type { ComposedGesture } from './types';
