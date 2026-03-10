@@ -26,7 +26,7 @@ type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
 export interface ClickableProps extends Omit<BaseButtonProps, RippleProps> {
   /**
-   * Background color that will be dimmed when button is in active state.
+   * Background color of underlay. Works only when `animationTarget` is set to `UNDERLAY`.
    */
   underlayColor?: string | undefined;
 
@@ -42,21 +42,19 @@ export interface ClickableProps extends Omit<BaseButtonProps, RippleProps> {
   initialOpacity?: number | undefined;
 
   /**
-   * Determines the direction of the animation.
-   * - 'opacity-increase' (default): opacity goes from 0 to activeOpacity.
-   * - 'opacity-decrease': opacity goes from 1 to activeOpacity.
+   * Determines whether opacity should increase or decrease when the button is active.
    */
   opacityMode?: ClickableOpacityMode | undefined;
 
   /**
    * Determines what should be animated.
-   * - 'underlay' (default): an additional view rendered behind children.
+   * - 'underlay': an additional view rendered behind children.
    * - 'component': the whole button.
    */
   animationTarget?: ClickableAnimationTarget | undefined;
 
   /**
-   * Configuration for ripple effect on Android.
+   * Configuration for the ripple effect on Android.
    */
   androidRipple?: PressableAndroidRippleConfig | undefined;
 }
