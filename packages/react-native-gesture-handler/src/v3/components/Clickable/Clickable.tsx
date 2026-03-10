@@ -16,10 +16,7 @@ export const Clickable = (props: ClickableProps) => {
     activeOpacity,
     animationTarget,
     opacityMode,
-    borderless,
-    foreground,
-    rippleColor,
-    rippleRadius,
+    androidRipple,
     delayLongPress = 600,
     onLongPress,
     onPress,
@@ -121,13 +118,8 @@ export const Clickable = (props: ClickableProps) => {
   );
 
   const shouldUseNativeRipple = useMemo(
-    () =>
-      Platform.OS === 'android' &&
-      (borderless !== undefined ||
-        foreground !== undefined ||
-        rippleColor !== undefined ||
-        rippleRadius !== undefined),
-    [borderless, foreground, rippleColor, rippleRadius]
+    () => Platform.OS === 'android' && androidRipple !== undefined,
+    [androidRipple]
   );
 
   const usesJSAnimation = shouldAnimateComponent || shouldAnimateUnderlay;
@@ -239,10 +231,10 @@ export const Clickable = (props: ClickableProps) => {
 
   const rippleProps = shouldUseNativeRipple
     ? {
-        rippleColor,
-        rippleRadius,
-        borderless,
-        foreground,
+        rippleColor: androidRipple?.color,
+        rippleRadius: androidRipple?.radius,
+        borderless: androidRipple?.borderless,
+        foreground: androidRipple?.foreground,
       }
     : {
         rippleColor: 'transparent',

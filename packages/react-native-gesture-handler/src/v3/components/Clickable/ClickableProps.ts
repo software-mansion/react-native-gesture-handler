@@ -1,3 +1,4 @@
+import type { PressableAndroidRippleConfig as RNPressableAndroidRippleConfig } from 'react-native';
 import type { BaseButtonProps } from '../GestureButtonsProps';
 import type { GestureEvent } from '../../types';
 import type { NativeHandlerData } from '../../hooks/gestures/native/NativeTypes';
@@ -14,7 +15,16 @@ export enum ClickableAnimationTarget {
   UNDERLAY,
 }
 
-export interface ClickableProps extends BaseButtonProps {
+type PressableAndroidRippleConfig = {
+  [K in keyof RNPressableAndroidRippleConfig]?: Exclude<
+    RNPressableAndroidRippleConfig[K],
+    null
+  >;
+};
+
+type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
+
+export interface ClickableProps extends Omit<BaseButtonProps, RippleProps> {
   /**
    * Background color that will be dimmed when button is in active state.
    */
@@ -39,4 +49,9 @@ export interface ClickableProps extends BaseButtonProps {
    * - 'component': the whole button.
    */
   animationTarget?: ClickableAnimationTarget | undefined;
+
+  /**
+   * Configuration for ripple effect on Android.
+   */
+  androidRipple?: PressableAndroidRippleConfig | undefined;
 }

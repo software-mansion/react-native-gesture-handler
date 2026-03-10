@@ -25,6 +25,8 @@ export const COLORS = {
   KINDA_YELLOW: '#d6b24a',
   KINDA_GREEN: '#4f9a84',
   KINDA_BLUE: '#5f97c8',
+  ANDROID: '#34a853',
+  WEB: '#1067c4',
 };
 
 function ButtonWrapper({ name, color, ...rest }: ButtonWrapperProps) {
@@ -51,7 +53,7 @@ export default function ClickableExample() {
 
         <ButtonWrapper
           name="Clickable (RectButton)"
-          color={COLORS.NAVY}
+          color={COLORS.WEB}
           activeOpacity={0.105}
           opacityMode={ClickableOpacityMode.INCREASE}
           animationTarget={ClickableAnimationTarget.UNDERLAY}
@@ -67,16 +69,18 @@ export default function ClickableExample() {
 
         <ButtonWrapper
           name="Android ripple"
-          color={COLORS.KINDA_GREEN}
-          rippleColor={'blue'}
-          rippleRadius={100}
+          color={COLORS.ANDROID}
+          androidRipple={{}}
         />
 
         <ButtonWrapper
           name="Android ripple (borderless)"
-          color={COLORS.KINDA_BLUE}
-          borderless
-          rippleColor={'blue'}
+          color={COLORS.ANDROID}
+          androidRipple={{
+            color: COLORS.KINDA_BLUE,
+            borderless: true,
+            radius: 75,
+          }}
         />
       </ScrollView>
     </GestureHandlerRootView>
