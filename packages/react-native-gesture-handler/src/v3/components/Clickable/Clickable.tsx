@@ -32,6 +32,66 @@ export const Clickable = (props: ClickableProps) => {
     ...rest
   } = props;
 
+  const { layoutStyle, visualStyle } = useMemo(() => {
+    const flattened = StyleSheet.flatten(style ?? {});
+
+    const {
+      margin,
+      marginVertical,
+      marginHorizontal,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      position,
+      top,
+      bottom,
+      left,
+      right,
+      width,
+      height,
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      flex,
+      flexGrow,
+      flexShrink,
+      flexBasis,
+      alignSelf,
+      ...visuals
+    } = flattened;
+
+    return {
+      layoutStyle: {
+        margin,
+        marginVertical,
+        marginHorizontal,
+        marginTop,
+        marginBottom,
+        marginLeft,
+        marginRight,
+        position,
+        top,
+        bottom,
+        left,
+        right,
+        width,
+        height,
+        minWidth,
+        maxWidth,
+        minHeight,
+        maxHeight,
+        flex,
+        flexGrow,
+        flexShrink,
+        flexBasis,
+        alignSelf,
+      },
+      visualStyle: visuals,
+    };
+  }, [style]);
+
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -75,7 +135,7 @@ export const Clickable = (props: ClickableProps) => {
   const startOpacity =
     targetOpacityMode === ClickableOpacityMode.INCREASE ? 0 : 1;
 
-  const shouldAnimateOverlay = useMemo(
+  const shouldAnimateUnderlay = useMemo(
     () => hasFeedback && targetComponent === ClickableAnimationTarget.UNDERLAY,
     [targetComponent, hasFeedback]
   );
@@ -95,29 +155,29 @@ export const Clickable = (props: ClickableProps) => {
     [borderless, foreground, rippleColor, rippleRadius]
   );
 
-  const canAnimate = shouldAnimateComponent || shouldAnimateOverlay;
+  const usesJSAnimation = shouldAnimateComponent || shouldAnimateUnderlay;
 
-  const activeState = useRef(new Animated.Value(0)).current;
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
       if (Platform.OS === 'android' && e.pointerInside) {
         startLongPressTimer();
 
-        if (canAnimate) {
-          activeState.setValue(1);
+        if (usesJSAnimation) {
+          animatedValue.setValue(1);
         }
       }
     },
-    [startLongPressTimer, canAnimate, activeState]
+    [startLongPressTimer, usesJSAnimation, animatedValue]
   );
 
   const onActivate = useCallback(
     (e: CallbackEventType) => {
       onActiveStateChange?.(true);
 
-      if (canAnimate && Platform.OS !== 'android') {
-        activeState.setValue(1);
+      if (usesJSAnimation && Platform.OS !== 'android') {
+        animatedValue.setValue(1);
       }
 
       if (Platform.OS !== 'android' && e.pointerInside) {
@@ -129,7 +189,7 @@ export const Clickable = (props: ClickableProps) => {
         longPressTimeout.current = undefined;
       }
     },
-    [canAnimate, onActiveStateChange, activeState, startLongPressTimer]
+    [usesJSAnimation, onActiveStateChange, animatedValue, startLongPressTimer]
   );
 
   const onDeactivate = useCallback(
@@ -145,8 +205,8 @@ export const Clickable = (props: ClickableProps) => {
 
   const onFinalize = useCallback(
     (_e: CallbackEventType) => {
-      if (canAnimate) {
-        activeState.setValue(0);
+      if (usesJSAnimation) {
+        animatedValue.setValue(0);
       }
 
       if (longPressTimeout.current !== undefined) {
@@ -154,107 +214,53 @@ export const Clickable = (props: ClickableProps) => {
         longPressTimeout.current = undefined;
       }
     },
-    [activeState, canAnimate]
+    [animatedValue, usesJSAnimation]
   );
 
-  const { shellStyle, visualStyle } = useMemo(() => {
-    const flattened = StyleSheet.flatten(style ?? {});
+  const underlayAnimatedStyle = useMemo(
+    () =>
+      shouldAnimateUnderlay
+        ? {
+            opacity: animatedValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [startOpacity, targetOpacity as number],
+            }),
+            backgroundColor: underlayColor ?? 'black',
+            borderRadius: visualStyle.borderRadius,
+            borderTopLeftRadius: visualStyle.borderTopLeftRadius,
+            borderTopRightRadius: visualStyle.borderTopRightRadius,
+            borderBottomLeftRadius: visualStyle.borderBottomLeftRadius,
+            borderBottomRightRadius: visualStyle.borderBottomRightRadius,
+          }
+        : {},
+    [
+      targetOpacity,
+      startOpacity,
+      underlayColor,
+      visualStyle,
+      shouldAnimateUnderlay,
+      animatedValue,
+    ]
+  );
 
-    const {
-      margin,
-      marginVertical,
-      marginHorizontal,
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
-      position,
-      top,
-      bottom,
-      left,
-      right,
-      width,
-      height,
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight,
-      flex,
-      flexGrow,
-      flexShrink,
-      flexBasis,
-      alignSelf,
-      ...visuals
-    } = flattened;
-
-    return {
-      shellStyle: {
-        margin,
-        marginVertical,
-        marginHorizontal,
-        marginTop,
-        marginBottom,
-        marginLeft,
-        marginRight,
-        position,
-        top,
-        bottom,
-        left,
-        right,
-        width,
-        height,
-        minWidth,
-        maxWidth,
-        minHeight,
-        maxHeight,
-        flex,
-        flexGrow,
-        flexShrink,
-        flexBasis,
-        alignSelf,
-      },
-      visualStyle: visuals,
-    };
-  }, [style]);
-
-  const backgroundDecorationColor = underlayColor ?? 'black';
-
-  const backgroundAnimatedStyle = useMemo(() => {
-    return shouldAnimateOverlay
-      ? {
-          opacity: activeState.interpolate({
-            inputRange: [0, 1],
-            outputRange: [startOpacity, targetOpacity as number],
-          }),
-          backgroundColor: backgroundDecorationColor,
-          borderRadius: visualStyle.borderRadius,
-          borderTopLeftRadius: visualStyle.borderTopLeftRadius,
-          borderTopRightRadius: visualStyle.borderTopRightRadius,
-          borderBottomLeftRadius: visualStyle.borderBottomLeftRadius,
-          borderBottomRightRadius: visualStyle.borderBottomRightRadius,
-        }
-      : {};
-  }, [
-    targetOpacity,
-    startOpacity,
-    backgroundDecorationColor,
-    visualStyle,
-    shouldAnimateOverlay,
-    activeState,
-  ]);
-
-  const componentAnimatedStyle = useMemo(() => {
-    if (targetComponent !== ClickableAnimationTarget.COMPONENT || !canAnimate) {
-      return {};
-    }
-
-    return {
-      opacity: activeState.interpolate({
-        inputRange: [0, 1],
-        outputRange: [startOpacity, targetOpacity as number],
-      }),
-    };
-  }, [targetComponent, canAnimate, targetOpacity, activeState, startOpacity]);
+  const componentAnimatedStyle = useMemo(
+    () =>
+      targetComponent === ClickableAnimationTarget.COMPONENT && usesJSAnimation
+        ? {
+            opacity: animatedValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [startOpacity, targetOpacity as number],
+            }),
+          }
+        : {},
+    [
+      targetComponent,
+      usesJSAnimation,
+      targetOpacity,
+      animatedValue,
+      startOpacity,
+    ]
+  );
 
   const rippleProps = shouldUseNativeRipple
     ? {
@@ -273,10 +279,10 @@ export const Clickable = (props: ClickableProps) => {
     <ButtonComponent
       {...rest}
       style={[
-        shellStyle,
+        layoutStyle,
         visualStyle,
         targetComponent === ClickableAnimationTarget.COMPONENT &&
-          canAnimate &&
+          usesJSAnimation &&
           componentAnimatedStyle,
       ]}
       {...rippleProps}
@@ -287,7 +293,7 @@ export const Clickable = (props: ClickableProps) => {
       onFinalize={onFinalize}>
       <>
         {targetComponent === ClickableAnimationTarget.UNDERLAY ? (
-          <Animated.View style={[styles.underlay, backgroundAnimatedStyle]} />
+          <Animated.View style={[styles.underlay, underlayAnimatedStyle]} />
         ) : null}
         {children}
       </>
