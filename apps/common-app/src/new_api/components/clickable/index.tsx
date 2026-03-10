@@ -11,7 +11,6 @@ import {
 type ButtonWrapperProps = ClickableProps & {
   name: string;
   color: string;
-  [key: string]: any;
 };
 
 export const COLORS = {
@@ -29,7 +28,7 @@ export const COLORS = {
   WEB: '#1067c4',
 };
 
-function ButtonWrapper({ name, color, ...rest }: ButtonWrapperProps) {
+function ClickableWrapper({ name, color, ...rest }: ButtonWrapperProps) {
   return (
     <Clickable
       style={[styles.button, { backgroundColor: color }]}
@@ -50,9 +49,9 @@ export default function ClickableExample() {
           <Text>New component that replaces all buttons and pressables.</Text>
 
           <View style={styles.row}>
-            <ButtonWrapper name="Base" color={COLORS.PURPLE} />
+            <ClickableWrapper name="Base" color={COLORS.PURPLE} />
 
-            <ButtonWrapper
+            <ClickableWrapper
               name="Rect"
               color={COLORS.WEB}
               activeOpacity={0.105}
@@ -60,7 +59,7 @@ export default function ClickableExample() {
               animationTarget={ClickableAnimationTarget.UNDERLAY}
             />
 
-            <ButtonWrapper
+            <ClickableWrapper
               name="Borderless"
               activeOpacity={0.3}
               opacityMode={ClickableOpacityMode.DECREASE}
@@ -75,7 +74,7 @@ export default function ClickableExample() {
           <Text>Animated overlay.</Text>
 
           <View style={styles.row}>
-            <ButtonWrapper
+            <ClickableWrapper
               name="Click me!"
               color={COLORS.YELLOW}
               activeOpacity={0.3}
@@ -83,9 +82,10 @@ export default function ClickableExample() {
               animationTarget={ClickableAnimationTarget.UNDERLAY}
             />
 
-            <ButtonWrapper
+            <ClickableWrapper
               name="Click me!"
               color={COLORS.NAVY}
+              initialOpacity={0.7}
               activeOpacity={0.5}
               opacityMode={ClickableOpacityMode.DECREASE}
               animationTarget={ClickableAnimationTarget.UNDERLAY}
@@ -96,15 +96,16 @@ export default function ClickableExample() {
           <Text>Animated component.</Text>
 
           <View style={styles.row}>
-            <ButtonWrapper
+            <ClickableWrapper
               name="Click me!"
               color={COLORS.KINDA_BLUE}
-              activeOpacity={0.3}
+              initialOpacity={0.3}
+              activeOpacity={0.7}
               opacityMode={ClickableOpacityMode.INCREASE}
               animationTarget={ClickableAnimationTarget.COMPONENT}
             />
 
-            <ButtonWrapper
+            <ClickableWrapper
               name="Click me!"
               color={COLORS.KINDA_RED}
               activeOpacity={0.7}
@@ -119,13 +120,13 @@ export default function ClickableExample() {
           <Text>Configurable ripple effect on Clickable component.</Text>
 
           <View style={styles.row}>
-            <ButtonWrapper
+            <ClickableWrapper
               name="Default"
               color={COLORS.ANDROID}
               androidRipple={{}}
             />
 
-            <ButtonWrapper
+            <ClickableWrapper
               name="Borderless"
               color={COLORS.ANDROID}
               androidRipple={{
