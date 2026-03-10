@@ -37,6 +37,11 @@ export interface ClickableProps extends Omit<BaseButtonProps, RippleProps> {
   activeOpacity?: number | undefined;
 
   /**
+   * Initial opacity of the underlay or button.
+   */
+  initialOpacity?: number | undefined;
+
+  /**
    * Determines the direction of the animation.
    * - 'opacity-increase' (default): opacity goes from 0 to activeOpacity.
    * - 'opacity-decrease': opacity goes from 1 to activeOpacity.

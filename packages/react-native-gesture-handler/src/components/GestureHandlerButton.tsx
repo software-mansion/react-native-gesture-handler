@@ -170,6 +170,7 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
     borderWidth,
     borderColor,
     borderStyle,
+    opacity,
 
     // Visual properties
     ...restStyle
@@ -240,6 +241,7 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
       borderWidth,
       borderColor,
       borderStyle,
+      opacity,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [flattenedStyle]

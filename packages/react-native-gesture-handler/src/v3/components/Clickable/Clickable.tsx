@@ -13,9 +13,10 @@ const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
 export const Clickable = (props: ClickableProps) => {
   const {
     underlayColor,
+    initialOpacity,
     activeOpacity,
-    animationTarget,
     opacityMode,
+    animationTarget,
     androidRipple,
     delayLongPress = 600,
     onLongPress,
@@ -105,7 +106,8 @@ export const Clickable = (props: ClickableProps) => {
   }, [delayLongPress, onLongPress, wrappedLongPress]);
 
   const hasFeedback = activeOpacity !== undefined;
-  const startOpacity = opacityMode === ClickableOpacityMode.INCREASE ? 0 : 1;
+  const startOpacity =
+    initialOpacity ?? (opacityMode === ClickableOpacityMode.INCREASE ? 0 : 1);
 
   const shouldAnimateUnderlay = useMemo(
     () => hasFeedback && animationTarget === ClickableAnimationTarget.UNDERLAY,
