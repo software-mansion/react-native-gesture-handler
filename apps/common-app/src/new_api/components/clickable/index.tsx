@@ -31,17 +31,13 @@ export const COLORS = {
 
 function ButtonWrapper({ name, color, ...rest }: ButtonWrapperProps) {
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionHeader}>{name}</Text>
-
-      <Clickable
-        style={[styles.button, { backgroundColor: color }]}
-        onPress={() => console.log(`[${name}] onPress`)}
-        onLongPress={() => console.log(`[${name}] onLongPress`)}
-        {...rest}>
-        <Text style={styles.buttonText}>Click me!</Text>
-      </Clickable>
-    </View>
+    <Clickable
+      style={[styles.button, { backgroundColor: color }]}
+      onPress={() => console.log(`[${name}] onPress`)}
+      onLongPress={() => console.log(`[${name}] onLongPress`)}
+      {...rest}>
+      <Text style={styles.buttonText}>{name}</Text>
+    </Clickable>
   );
 }
 
@@ -49,39 +45,97 @@ export default function ClickableExample() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <ButtonWrapper name="Clickable (BaseButton)" color={COLORS.PURPLE} />
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Buttons replacements</Text>
+          <Text>New component that replaces all buttons and pressables.</Text>
 
-        <ButtonWrapper
-          name="Clickable (RectButton)"
-          color={COLORS.WEB}
-          activeOpacity={0.105}
-          opacityMode={ClickableOpacityMode.INCREASE}
-          animationTarget={ClickableAnimationTarget.UNDERLAY}
-        />
+          <View style={styles.row}>
+            <ButtonWrapper name="Base" color={COLORS.PURPLE} />
 
-        <ButtonWrapper
-          name="Clickable (BorderlessButton)"
-          activeOpacity={0.3}
-          opacityMode={ClickableOpacityMode.DECREASE}
-          animationTarget={ClickableAnimationTarget.COMPONENT}
-          color={COLORS.RED}
-        />
+            <ButtonWrapper
+              name="Rect"
+              color={COLORS.WEB}
+              activeOpacity={0.105}
+              opacityMode={ClickableOpacityMode.INCREASE}
+              animationTarget={ClickableAnimationTarget.UNDERLAY}
+            />
 
-        <ButtonWrapper
-          name="Android ripple"
-          color={COLORS.ANDROID}
-          androidRipple={{}}
-        />
+            <ButtonWrapper
+              name="Borderless"
+              activeOpacity={0.3}
+              opacityMode={ClickableOpacityMode.DECREASE}
+              animationTarget={ClickableAnimationTarget.COMPONENT}
+              color={COLORS.RED}
+            />
+          </View>
+        </View>
 
-        <ButtonWrapper
-          name="Android ripple (borderless)"
-          color={COLORS.ANDROID}
-          androidRipple={{
-            color: COLORS.KINDA_BLUE,
-            borderless: true,
-            radius: 75,
-          }}
-        />
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Custom animations</Text>
+          <Text>Animated overlay.</Text>
+
+          <View style={styles.row}>
+            <ButtonWrapper
+              name="Click me!"
+              color={COLORS.YELLOW}
+              activeOpacity={0.3}
+              opacityMode={ClickableOpacityMode.INCREASE}
+              animationTarget={ClickableAnimationTarget.UNDERLAY}
+            />
+
+            <ButtonWrapper
+              name="Click me!"
+              color={COLORS.NAVY}
+              activeOpacity={0.5}
+              opacityMode={ClickableOpacityMode.DECREASE}
+              animationTarget={ClickableAnimationTarget.UNDERLAY}
+              underlayColor="#217838"
+            />
+          </View>
+
+          <Text>Animated component.</Text>
+
+          <View style={styles.row}>
+            <ButtonWrapper
+              name="Click me!"
+              color={COLORS.KINDA_BLUE}
+              activeOpacity={0.3}
+              opacityMode={ClickableOpacityMode.INCREASE}
+              animationTarget={ClickableAnimationTarget.COMPONENT}
+            />
+
+            <ButtonWrapper
+              name="Click me!"
+              color={COLORS.KINDA_RED}
+              activeOpacity={0.7}
+              opacityMode={ClickableOpacityMode.DECREASE}
+              animationTarget={ClickableAnimationTarget.COMPONENT}
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Android ripple</Text>
+          <Text>Configurable ripple effect on Clickable component.</Text>
+
+          <View style={styles.row}>
+            <ButtonWrapper
+              name="Default"
+              color={COLORS.ANDROID}
+              androidRipple={{}}
+            />
+
+            <ButtonWrapper
+              name="Borderless"
+              color={COLORS.ANDROID}
+              androidRipple={{
+                color: COLORS.KINDA_BLUE,
+                borderless: true,
+                radius: 55,
+              }}
+            />
+          </View>
+        </View>
       </ScrollView>
     </GestureHandlerRootView>
   );
@@ -100,15 +154,22 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     alignItems: 'center',
   },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 20,
+    marginBottom: 20,
+  },
   sectionHeader: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
   },
-
   button: {
-    width: 200,
-    height: 60,
+    width: 110,
+    height: 50,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
