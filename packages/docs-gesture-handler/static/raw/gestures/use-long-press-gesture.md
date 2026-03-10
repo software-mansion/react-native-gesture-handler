@@ -1,0 +1,67 @@
+Gesture that activates when the corresponding view is pressed for a sufficiently long time.
+This gesture will deactivate immediately after the finger is released.
+The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#minduration) or if the finger is moved further than the [allowable distance](#maxdistance).
+
+## Example
+
+## Config
+
+### minDuration
+
+```ts
+minDuration: number | SharedValue<number>;
+```
+
+Minimum time, expressed in milliseconds, that a finger must remain pressed on the corresponding view. The default value is 500.
+
+### maxDistance
+
+```ts
+maxDistance: number | SharedValue<number>;
+```
+
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture. The default value is 10.
+
+## Callbacks
+
+## Event data
+
+### x
+
+```ts
+x: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+
+### duration
+
+```ts
+duration: number;
+```
+
+Duration of the long press (time since the start of the gesture), expressed in milliseconds.

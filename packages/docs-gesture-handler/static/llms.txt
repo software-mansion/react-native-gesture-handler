@@ -1,0 +1,107 @@
+# Documentation
+
+## components
+
+- [Buttons](https://docs.swmansion.com/react-native-gesture-handler/docs/components/buttons)
+- [Pressable](https://docs.swmansion.com/react-native-gesture-handler/docs/components/pressable)
+- [Reanimated Drawer Layout](https://docs.swmansion.com/react-native-gesture-handler/docs/components/reanimated-drawer-layout)
+- [Reanimated Swipeable](https://docs.swmansion.com/react-native-gesture-handler/docs/components/reanimated_swipeable)
+- [Touchables](https://docs.swmansion.com/react-native-gesture-handler/docs/components/touchables)
+
+## fundamentals
+
+- [Integration with Animated](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/animated-interactions)
+- [Gesture callbacks & events](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/callbacks-events)
+- [Gesture composition & interactions](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-composition)
+- [Gesture Detectors](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/gesture-detector)
+- [Installation](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation)
+- [Introduction](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/introduction)
+- [Integration with Reanimated](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/reanimated-interactions)
+- [GestureHandlerRootView](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/root-view)
+- [State manager](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/state-manager)
+
+## gestures/_manual_gesture_steps
+
+- [step1](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_manual_gesture_steps/step1)
+- [step2](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_manual_gesture_steps/step2)
+- [step3](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_manual_gesture_steps/step3)
+- [step4](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_manual_gesture_steps/step4)
+- [step5](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_manual_gesture_steps/step5)
+- [step6](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_manual_gesture_steps/step6)
+- [step7](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_manual_gesture_steps/step7)
+
+## gestures/_shared
+
+- [base-continuous-gesture-callbacks](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/base-continuous-gesture-callbacks)
+- [base-continuous-gesture-config](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/base-continuous-gesture-config)
+- [base-gesture-callbacks](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/base-gesture-callbacks)
+- [base-gesture-config](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/base-gesture-config)
+- [base-gesture-event-data](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/base-gesture-event-data)
+- [mouse-button](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/mouse-button)
+- [shared-value-info](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/_shared/shared-value-info)
+
+## gestures
+
+- [Fling gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-fling-gesture)
+- [Hover gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-hover-gesture)
+- [Long press gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-long-press-gesture)
+- [Manual gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-manual-gesture)
+- [Native gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-native-gesture)
+- [Pan gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-pan-gesture)
+- [Pinch gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-pinch-gesture)
+- [Rotation gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-rotation-gesture)
+- [Tap gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/gestures/use-tap-gesture)
+
+## guides/quickstart/_steps
+
+- [step1](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step1)
+- [step2](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step2)
+- [step3](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step3)
+- [step4](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step4)
+- [step5](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/_steps/step5)
+
+## guides/quickstart
+
+- [Quick start](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/quickstart/index)
+
+## guides
+
+- [Custom swipeable components inside ScrollView (web)](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/swipe-and-scroll)
+- [Testing with Jest](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/testing)
+- [Troubleshooting](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/troubleshooting)
+- [Upgrading to the new API introduced in Gesture Handler 3](https://docs.swmansion.com/react-native-gesture-handler/docs/guides/upgrading-to-3)
+
+## legacy-gestures/_shared
+
+- [base-continuous-gesture-callbacks](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/_shared/base-continuous-gesture-callbacks)
+- [base-continuous-gesture-config](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/_shared/base-continuous-gesture-config)
+- [base-gesture-callbacks](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/_shared/base-gesture-callbacks)
+- [base-gesture-config](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/_shared/base-gesture-config)
+- [base-gesture-event-data](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/_shared/base-gesture-event-data)
+- [gesture-detector-functional1](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/_shared/gesture-detector-functional1)
+- [v2-info](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/_shared/v2-info)
+
+## legacy-gestures
+
+- [Composed gestures](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/composed-gestures)
+- [Fling gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/fling-gesture)
+- [Force touch gesture (iOS only)](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/force-touch-gesture)
+- [Gesture composition & interactions](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/gesture-composition)
+- [GestureDetector](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/gesture-detector)
+- [Gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/gesture)
+- [Hover gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/hover-gesture)
+- [Long press gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/long-press-gesture)
+- [Manual gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/manual-gesture)
+- [Native gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/native-gesture)
+- [Pan gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/pan-gesture)
+- [Pinch gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/pinch-gesture)
+- [Rotation gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/rotation-gesture)
+- [Gesture state manager](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/state-manager)
+- [Tap gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/tap-gesture)
+- [Touch events](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/touch-events)
+
+## under-the-hood
+
+- [How does it work?](https://docs.swmansion.com/react-native-gesture-handler/docs/under-the-hood/how-does-it-work)
+- [Handler State](https://docs.swmansion.com/react-native-gesture-handler/docs/under-the-hood/state)
+
