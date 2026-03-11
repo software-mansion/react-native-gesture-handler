@@ -14,6 +14,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   fun dropRelationsForHandlerWithTag(handlerTag: Int) {
     waitForRelations.remove(handlerTag)
     simultaneousRelations.remove(handlerTag)
+    blockingRelations.remove(handlerTag)
   }
 
   private fun convertHandlerTagsArray(config: ReadableMap, key: String): IntArray {
