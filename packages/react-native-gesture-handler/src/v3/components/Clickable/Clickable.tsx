@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
 import { RawButton } from '../GestureButtons';
 import { CallbackEventType, ClickableProps } from './ClickableProps';
@@ -41,63 +41,80 @@ export const Clickable = (props: ClickableProps) => {
     undefined
   );
 
-  const wrappedLongPress = () => {
+  const wrappedLongPress = useCallback(() => {
     longPressDetected.current = true;
     onLongPress?.();
-  };
+  }, [onLongPress]);
 
-  const startLongPressTimer = () => {
+  const startLongPressTimer = useCallback(() => {
     if (onLongPress && !longPressTimeout.current) {
       longPressDetected.current = false;
       longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
     }
-  };
+  }, [onLongPress, delayLongPress, wrappedLongPress]);
 
-  const onBegin = (e: CallbackEventType) => {
-    if (isAndroid && e.pointerInside) {
-      startLongPressTimer();
+  const onBegin = useCallback(
+    (e: CallbackEventType) => {
+      if (isAndroid && e.pointerInside) {
+        startLongPressTimer();
 
-      if (shouldUseJSAnimation) {
+        if (shouldUseJSAnimation) {
+          animatedValue.setValue(1);
+        }
+      }
+    },
+    [startLongPressTimer, shouldUseJSAnimation, animatedValue]
+  );
+
+  const onActivate = useCallback(
+    (e: CallbackEventType) => {
+      onActiveStateChange?.(true);
+
+      if (shouldUseJSAnimation && !isAndroid) {
         animatedValue.setValue(1);
       }
-    }
-  };
 
-  const onActivate = (e: CallbackEventType) => {
-    onActiveStateChange?.(true);
+      if (!isAndroid && e.pointerInside) {
+        startLongPressTimer();
+      }
 
-    if (shouldUseJSAnimation && !isAndroid) {
-      animatedValue.setValue(1);
-    }
+      if (!e.pointerInside && longPressTimeout.current !== undefined) {
+        clearTimeout(longPressTimeout.current);
+        longPressTimeout.current = undefined;
+      }
+    },
+    [
+      onActiveStateChange,
+      shouldUseJSAnimation,
+      animatedValue,
+      startLongPressTimer,
+    ]
+  );
 
-    if (!isAndroid && e.pointerInside) {
-      startLongPressTimer();
-    }
+  const onDeactivate = useCallback(
+    (e: CallbackEventType, success: boolean) => {
+      onActiveStateChange?.(false);
 
-    if (!e.pointerInside && longPressTimeout.current !== undefined) {
-      clearTimeout(longPressTimeout.current);
-      longPressTimeout.current = undefined;
-    }
-  };
+      if (success && !longPressDetected.current) {
+        onPress?.(e.pointerInside);
+      }
+    },
+    [onActiveStateChange, onPress]
+  );
 
-  const onDeactivate = (e: CallbackEventType, success: boolean) => {
-    onActiveStateChange?.(false);
+  const onFinalize = useCallback(
+    (_e: CallbackEventType) => {
+      if (shouldUseJSAnimation) {
+        animatedValue.setValue(0);
+      }
 
-    if (success && !longPressDetected.current) {
-      onPress?.(e.pointerInside);
-    }
-  };
-
-  const onFinalize = (_e: CallbackEventType) => {
-    if (shouldUseJSAnimation) {
-      animatedValue.setValue(0);
-    }
-
-    if (longPressTimeout.current !== undefined) {
-      clearTimeout(longPressTimeout.current);
-      longPressTimeout.current = undefined;
-    }
-  };
+      if (longPressTimeout.current !== undefined) {
+        clearTimeout(longPressTimeout.current);
+        longPressTimeout.current = undefined;
+      }
+    },
+    [shouldUseJSAnimation, animatedValue]
+  );
 
   const underlayAnimatedStyle = useMemo(() => {
     if (!shouldAnimateUnderlay) {
