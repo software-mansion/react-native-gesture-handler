@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
 import { RawButton } from '../GestureButtons';
 import {
@@ -10,6 +10,7 @@ import {
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
 const isAndroid = Platform.OS === 'android';
+const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 
 export const Clickable = (props: ClickableProps) => {
   const {
@@ -29,82 +30,11 @@ export const Clickable = (props: ClickableProps) => {
     ...rest
   } = props;
 
-  const { layoutStyle, visualStyle } = useMemo(() => {
-    const flattened = StyleSheet.flatten(style ?? {});
-
-    const {
-      margin,
-      marginVertical,
-      marginHorizontal,
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
-      position,
-      top,
-      bottom,
-      left,
-      right,
-      width,
-      height,
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight,
-      flex,
-      flexGrow,
-      flexShrink,
-      flexBasis,
-      alignSelf,
-      ...visuals
-    } = flattened;
-
-    return {
-      layoutStyle: {
-        margin,
-        marginVertical,
-        marginHorizontal,
-        marginTop,
-        marginBottom,
-        marginLeft,
-        marginRight,
-        position,
-        top,
-        bottom,
-        left,
-        right,
-        width,
-        height,
-        minWidth,
-        maxWidth,
-        minHeight,
-        maxHeight,
-        flex,
-        flexGrow,
-        flexShrink,
-        flexBasis,
-        alignSelf,
-      },
-      visualStyle: visuals,
-    };
-  }, [style]);
-
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
-
-  const wrappedLongPress = useCallback(() => {
-    longPressDetected.current = true;
-    onLongPress?.();
-  }, [onLongPress]);
-
-  const startLongPressTimer = useCallback(() => {
-    if (onLongPress && !longPressTimeout.current) {
-      longPressDetected.current = false;
-      longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
-    }
-  }, [delayLongPress, onLongPress, wrappedLongPress]);
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   const hasFeedback = activeOpacity !== undefined;
   const startOpacity =
@@ -118,151 +48,127 @@ export const Clickable = (props: ClickableProps) => {
 
   const usesJSAnimation = shouldAnimateComponent || shouldAnimateUnderlay;
 
-  const animatedValue = useRef(new Animated.Value(0)).current;
+  const wrappedLongPress = () => {
+    longPressDetected.current = true;
+    onLongPress?.();
+  };
 
-  const onBegin = useCallback(
-    (e: CallbackEventType) => {
-      if (isAndroid && e.pointerInside) {
-        startLongPressTimer();
+  const startLongPressTimer = () => {
+    if (onLongPress && !longPressTimeout.current) {
+      longPressDetected.current = false;
+      longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
+    }
+  };
 
-        if (usesJSAnimation) {
-          animatedValue.setValue(1);
-        }
-      }
-    },
-    [startLongPressTimer, usesJSAnimation, animatedValue]
-  );
+  const onBegin = (e: CallbackEventType) => {
+    if (isAndroid && e.pointerInside) {
+      startLongPressTimer();
 
-  const onActivate = useCallback(
-    (e: CallbackEventType) => {
-      onActiveStateChange?.(true);
-
-      if (usesJSAnimation && !isAndroid) {
+      if (usesJSAnimation) {
         animatedValue.setValue(1);
       }
+    }
+  };
 
-      if (!isAndroid && e.pointerInside) {
-        startLongPressTimer();
-      }
+  const onActivate = (e: CallbackEventType) => {
+    onActiveStateChange?.(true);
 
-      if (!e.pointerInside && longPressTimeout.current !== undefined) {
-        clearTimeout(longPressTimeout.current);
-        longPressTimeout.current = undefined;
-      }
-    },
-    [usesJSAnimation, onActiveStateChange, animatedValue, startLongPressTimer]
-  );
+    if (usesJSAnimation && !isAndroid) {
+      animatedValue.setValue(1);
+    }
 
-  const onDeactivate = useCallback(
-    (e: CallbackEventType, success: boolean) => {
-      onActiveStateChange?.(false);
+    if (!isAndroid && e.pointerInside) {
+      startLongPressTimer();
+    }
 
-      if (success && !longPressDetected.current) {
-        onPress?.(e.pointerInside);
-      }
-    },
-    [onActiveStateChange, onPress]
-  );
+    if (!e.pointerInside && longPressTimeout.current !== undefined) {
+      clearTimeout(longPressTimeout.current);
+      longPressTimeout.current = undefined;
+    }
+  };
 
-  const onFinalize = useCallback(
-    (_e: CallbackEventType) => {
-      if (usesJSAnimation) {
-        animatedValue.setValue(0);
-      }
+  const onDeactivate = (e: CallbackEventType, success: boolean) => {
+    onActiveStateChange?.(false);
 
-      if (longPressTimeout.current !== undefined) {
-        clearTimeout(longPressTimeout.current);
-        longPressTimeout.current = undefined;
-      }
-    },
-    [animatedValue, usesJSAnimation]
-  );
+    if (success && !longPressDetected.current) {
+      onPress?.(e.pointerInside);
+    }
+  };
 
-  const underlayAnimatedStyle = useMemo(
-    () =>
-      shouldAnimateUnderlay
-        ? {
-            opacity: animatedValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [startOpacity, activeOpacity],
-            }),
-            backgroundColor: underlayColor ?? 'black',
-            borderRadius: visualStyle.borderRadius,
-            borderTopLeftRadius: visualStyle.borderTopLeftRadius,
-            borderTopRightRadius: visualStyle.borderTopRightRadius,
-            borderBottomLeftRadius: visualStyle.borderBottomLeftRadius,
-            borderBottomRightRadius: visualStyle.borderBottomRightRadius,
-          }
-        : {},
-    [
-      activeOpacity,
-      startOpacity,
-      underlayColor,
-      visualStyle,
-      shouldAnimateUnderlay,
-      animatedValue,
-    ]
-  );
+  const onFinalize = (_e: CallbackEventType) => {
+    if (usesJSAnimation) {
+      animatedValue.setValue(0);
+    }
+
+    if (longPressTimeout.current !== undefined) {
+      clearTimeout(longPressTimeout.current);
+      longPressTimeout.current = undefined;
+    }
+  };
+
+  const underlayAnimatedStyle = useMemo(() => {
+    if (!shouldAnimateUnderlay) {
+      return undefined;
+    }
+    const resolvedStyle = StyleSheet.flatten(style ?? {});
+    return {
+      opacity: animatedValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [startOpacity, activeOpacity],
+      }),
+      backgroundColor: underlayColor ?? 'black',
+      borderRadius: resolvedStyle.borderRadius,
+      borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
+      borderTopRightRadius: resolvedStyle.borderTopRightRadius,
+      borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
+      borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
+    };
+  }, [
+    shouldAnimateUnderlay,
+    style,
+    startOpacity,
+    activeOpacity,
+    underlayColor,
+    animatedValue,
+  ]);
 
   const componentAnimatedStyle = useMemo(
     () =>
-      animationTarget === ClickableAnimationTarget.COMPONENT && usesJSAnimation
+      shouldAnimateComponent
         ? {
             opacity: animatedValue.interpolate({
               inputRange: [0, 1],
               outputRange: [startOpacity, activeOpacity],
             }),
           }
-        : {},
-    [
-      animationTarget,
-      usesJSAnimation,
-      activeOpacity,
-      animatedValue,
-      startOpacity,
-    ]
+        : undefined,
+    [shouldAnimateComponent, activeOpacity, animatedValue, startOpacity]
   );
 
-  const rippleProps = useMemo(
-    () =>
-      shouldUseNativeRipple
-        ? {
-            rippleColor: androidRipple?.color,
-            rippleRadius: androidRipple?.radius,
-            borderless: androidRipple?.borderless,
-            foreground: androidRipple?.foreground,
-          }
-        : { rippleColor: 'transparent' as const },
-    [
-      shouldUseNativeRipple,
-      androidRipple?.color,
-      androidRipple?.radius,
-      androidRipple?.borderless,
-      androidRipple?.foreground,
-    ]
-  );
+  const rippleProps = shouldUseNativeRipple
+    ? {
+        rippleColor: androidRipple?.color,
+        rippleRadius: androidRipple?.radius,
+        borderless: androidRipple?.borderless,
+        foreground: androidRipple?.foreground,
+      }
+    : TRANSPARENT_RIPPLE;
 
   const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
 
   return (
     <ButtonComponent
       {...rest}
-      style={[
-        layoutStyle,
-        visualStyle,
-        animationTarget === ClickableAnimationTarget.COMPONENT &&
-          usesJSAnimation &&
-          componentAnimatedStyle,
-      ]}
+      style={[style, componentAnimatedStyle]}
       {...rippleProps}
       ref={ref ?? null}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}>
-      {shouldAnimateUnderlay ? (
+      {underlayAnimatedStyle && (
         <Animated.View style={[styles.underlay, underlayAnimatedStyle]} />
-      ) : null}
+      )}
       {children}
     </ButtonComponent>
   );
