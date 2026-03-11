@@ -24,8 +24,4 @@ export {
 export { default as Pressable } from './Pressable';
 
 export { Clickable } from './Clickable/Clickable';
-export {
-  ClickableAnimationTarget,
-  ClickableOpacityMode,
-} from './Clickable/ClickableProps';
 export type { ClickableProps } from './Clickable/ClickableProps';

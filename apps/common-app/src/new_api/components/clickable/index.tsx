@@ -4,8 +4,6 @@ import {
   GestureHandlerRootView,
   Clickable,
   ClickableProps,
-  ClickableOpacityMode,
-  ClickableAnimationTarget,
 } from 'react-native-gesture-handler';
 
 type ButtonWrapperProps = ClickableProps & {
@@ -54,16 +52,12 @@ export default function ClickableExample() {
             <ClickableWrapper
               name="Rect"
               color={COLORS.WEB}
-              activeOpacity={0.105}
-              opacityMode={ClickableOpacityMode.INCREASE}
-              animationTarget={ClickableAnimationTarget.UNDERLAY}
+              underlayActiveOpacity={0.105}
             />
 
             <ClickableWrapper
               name="Borderless"
               activeOpacity={0.3}
-              opacityMode={ClickableOpacityMode.DECREASE}
-              animationTarget={ClickableAnimationTarget.COMPONENT}
               color={COLORS.RED}
             />
           </View>
@@ -77,18 +71,14 @@ export default function ClickableExample() {
             <ClickableWrapper
               name="Click me!"
               color={COLORS.YELLOW}
-              activeOpacity={0.3}
-              opacityMode={ClickableOpacityMode.INCREASE}
-              animationTarget={ClickableAnimationTarget.UNDERLAY}
+              underlayActiveOpacity={0.3}
             />
 
             <ClickableWrapper
               name="Click me!"
               color={COLORS.NAVY}
-              initialOpacity={0.7}
-              activeOpacity={0.5}
-              opacityMode={ClickableOpacityMode.DECREASE}
-              animationTarget={ClickableAnimationTarget.UNDERLAY}
+              underlayInitialOpacity={0.7}
+              underlayActiveOpacity={0.5}
               underlayColor="#217838"
             />
           </View>
@@ -101,16 +91,13 @@ export default function ClickableExample() {
               color={COLORS.KINDA_BLUE}
               initialOpacity={0.3}
               activeOpacity={0.7}
-              opacityMode={ClickableOpacityMode.INCREASE}
-              animationTarget={ClickableAnimationTarget.COMPONENT}
             />
 
             <ClickableWrapper
               name="Click me!"
               color={COLORS.KINDA_RED}
-              activeOpacity={0.7}
-              opacityMode={ClickableOpacityMode.DECREASE}
-              animationTarget={ClickableAnimationTarget.COMPONENT}
+              initialOpacity={0.7}
+              activeOpacity={0.5}
             />
           </View>
         </View>

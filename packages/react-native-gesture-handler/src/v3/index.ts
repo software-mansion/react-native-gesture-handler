@@ -81,8 +81,6 @@ export {
   FlatList,
   RefreshControl,
   Clickable,
-  ClickableAnimationTarget,
-  ClickableOpacityMode,
 } from './components';
 
 export type { ComposedGesture } from './types';

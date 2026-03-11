@@ -1,12 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
 import { RawButton } from '../GestureButtons';
-import {
-  CallbackEventType,
-  ClickableAnimationTarget,
-  ClickableOpacityMode,
-  ClickableProps,
-} from './ClickableProps';
+import { CallbackEventType, ClickableProps } from './ClickableProps';
 
 const AnimatedRawButton = Animated.createAnimatedComponent(RawButton);
 const isAndroid = Platform.OS === 'android';
@@ -15,10 +10,10 @@ const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 export const Clickable = (props: ClickableProps) => {
   const {
     underlayColor,
+    underlayInitialOpacity,
+    underlayActiveOpacity,
     initialOpacity,
     activeOpacity,
-    opacityMode,
-    animationTarget,
     androidRipple,
     delayLongPress = 600,
     onLongPress,
@@ -30,23 +25,21 @@ export const Clickable = (props: ClickableProps) => {
     ...rest
   } = props;
 
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  const underlayStartOpacity = underlayInitialOpacity ?? 0;
+  const componentStartOpacity = initialOpacity ?? 1;
+
+  const shouldAnimateUnderlay = underlayActiveOpacity !== undefined;
+  const shouldAnimateComponent = activeOpacity !== undefined;
+
+  const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
+  const shouldUseJSAnimation = shouldAnimateComponent || shouldAnimateUnderlay;
+
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
-  const animatedValue = useRef(new Animated.Value(0)).current;
-
-  const hasFeedback = activeOpacity !== undefined;
-  const startOpacity =
-    initialOpacity ?? (opacityMode === ClickableOpacityMode.INCREASE ? 0 : 1);
-
-  const shouldAnimateUnderlay =
-    hasFeedback && animationTarget === ClickableAnimationTarget.UNDERLAY;
-  const shouldAnimateComponent =
-    hasFeedback && animationTarget === ClickableAnimationTarget.COMPONENT;
-  const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
-
-  const usesJSAnimation = shouldAnimateComponent || shouldAnimateUnderlay;
 
   const wrappedLongPress = () => {
     longPressDetected.current = true;
@@ -64,7 +57,7 @@ export const Clickable = (props: ClickableProps) => {
     if (isAndroid && e.pointerInside) {
       startLongPressTimer();
 
-      if (usesJSAnimation) {
+      if (shouldUseJSAnimation) {
         animatedValue.setValue(1);
       }
     }
@@ -73,7 +66,7 @@ export const Clickable = (props: ClickableProps) => {
   const onActivate = (e: CallbackEventType) => {
     onActiveStateChange?.(true);
 
-    if (usesJSAnimation && !isAndroid) {
+    if (shouldUseJSAnimation && !isAndroid) {
       animatedValue.setValue(1);
     }
 
@@ -96,7 +89,7 @@ export const Clickable = (props: ClickableProps) => {
   };
 
   const onFinalize = (_e: CallbackEventType) => {
-    if (usesJSAnimation) {
+    if (shouldUseJSAnimation) {
       animatedValue.setValue(0);
     }
 
@@ -114,7 +107,7 @@ export const Clickable = (props: ClickableProps) => {
     return {
       opacity: animatedValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [startOpacity, activeOpacity],
+        outputRange: [underlayStartOpacity, underlayActiveOpacity],
       }),
       backgroundColor: underlayColor ?? 'black',
       borderRadius: resolvedStyle.borderRadius,
@@ -126,8 +119,8 @@ export const Clickable = (props: ClickableProps) => {
   }, [
     shouldAnimateUnderlay,
     style,
-    startOpacity,
-    activeOpacity,
+    underlayStartOpacity,
+    underlayActiveOpacity,
     underlayColor,
     animatedValue,
   ]);
@@ -138,11 +131,16 @@ export const Clickable = (props: ClickableProps) => {
         ? {
             opacity: animatedValue.interpolate({
               inputRange: [0, 1],
-              outputRange: [startOpacity, activeOpacity],
+              outputRange: [componentStartOpacity, activeOpacity],
             }),
           }
         : undefined,
-    [shouldAnimateComponent, activeOpacity, animatedValue, startOpacity]
+    [
+      shouldAnimateComponent,
+      activeOpacity,
+      animatedValue,
+      componentStartOpacity,
+    ]
   );
 
   const rippleProps = shouldUseNativeRipple
@@ -154,7 +152,7 @@ export const Clickable = (props: ClickableProps) => {
       }
     : TRANSPARENT_RIPPLE;
 
-  const ButtonComponent = hasFeedback ? AnimatedRawButton : RawButton;
+  const ButtonComponent = shouldUseJSAnimation ? AnimatedRawButton : RawButton;
 
   return (
     <ButtonComponent

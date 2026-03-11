@@ -17,13 +17,8 @@ const COLORS = {
   BLUE: '#1067c4',
 };
 
-const CLICKABLE_MODE_INCREASE = 0;
-const CLICKABLE_MODE_DECREASE = 1;
-const CLICKABLE_TARGET_COMPONENT = 0;
-const CLICKABLE_TARGET_UNDERLAY = 1;
-
 const STRESS_ITEM_COUNT = 2000;
-const STRESS_RUN_COUNT = 12;
+const STRESS_RUN_COUNT = 20;
 const STRESS_TRIM_COUNT = 2;
 
 const STRESS_DATA = Array.from({ length: STRESS_ITEM_COUNT }, (_, index) => ({
@@ -134,9 +129,7 @@ const STRESS_SCENARIOS: StressScenario[] = [
       <Clickable
         key={key}
         style={[styles.stressButton, styles.rectButton]}
-        activeOpacity={0.105}
-        opacityMode={CLICKABLE_MODE_INCREASE}
-        animationTarget={CLICKABLE_TARGET_UNDERLAY}
+        underlayActiveOpacity={0.105}
         underlayColor="black">
         <Text style={styles.stressButtonText}>{label}</Text>
       </Clickable>
@@ -163,8 +156,6 @@ const STRESS_SCENARIOS: StressScenario[] = [
         key={key}
         style={[styles.stressButton, styles.borderlessButton]}
         activeOpacity={0.3}
-        opacityMode={CLICKABLE_MODE_DECREASE}
-        animationTarget={CLICKABLE_TARGET_COMPONENT}
         androidRipple={{ borderless: true }}>
         <Text style={styles.stressButtonText}>{label}</Text>
       </Clickable>
@@ -441,9 +432,7 @@ export default function ClickableStressExample() {
                 ]}
                 onPress={() => startScenarioBenchmark(scenario.key)}
                 enabled={activeBenchmark === null}
-                activeOpacity={0.2}
-                opacityMode={CLICKABLE_MODE_INCREASE}
-                animationTarget={CLICKABLE_TARGET_UNDERLAY}
+                underlayActiveOpacity={0.2}
                 underlayColor={COLORS.NAVY}>
                 <Text style={styles.benchmarkButtonText}>
                   {isScenarioRunning

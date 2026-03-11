@@ -5,16 +5,6 @@ import type { NativeHandlerData } from '../../hooks/gestures/native/NativeTypes'
 
 export type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export enum ClickableOpacityMode {
-  INCREASE,
-  DECREASE,
-}
-
-export enum ClickableAnimationTarget {
-  COMPONENT,
-  UNDERLAY,
-}
-
 type PressableAndroidRippleConfig = {
   [K in keyof RNPressableAndroidRippleConfig]?: Exclude<
     RNPressableAndroidRippleConfig[K],
@@ -31,27 +21,26 @@ export interface ClickableProps extends Omit<BaseButtonProps, RippleProps> {
   underlayColor?: string | undefined;
 
   /**
-   * Opacity applied to the underlay or button when it is in an active state.
+   * Opacity applied to the underlay when it is in an active state.
+   * If not provided, no visual feedback will be applied.
+   */
+  underlayActiveOpacity?: number | undefined;
+
+  /**
+   * Opacity applied to the component when it is in an active state.
    * If not provided, no visual feedback will be applied.
    */
   activeOpacity?: number | undefined;
 
   /**
-   * Initial opacity of the underlay or button.
+   * Initial opacity of the underlay.
+   */
+  underlayInitialOpacity?: number | undefined;
+
+  /**
+   * Initial opacity of the component.
    */
   initialOpacity?: number | undefined;
-
-  /**
-   * Determines whether opacity should increase or decrease when the button is active.
-   */
-  opacityMode?: ClickableOpacityMode | undefined;
-
-  /**
-   * Determines what should be animated.
-   * - 'underlay': an additional view rendered behind children.
-   * - 'component': the whole button.
-   */
-  animationTarget?: ClickableAnimationTarget | undefined;
 
   /**
    * Configuration for the ripple effect on Android.
