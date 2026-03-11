@@ -65,6 +65,7 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   fun reset() {
     waitForRelations.clear()
     simultaneousRelations.clear()
+    blockingRelations.clear()
   }
 
   companion object {
