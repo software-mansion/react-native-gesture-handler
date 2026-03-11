@@ -84,7 +84,7 @@ const config = {
         },
         items: [
           {
-            to: 'docs/',
+            to: 'docs/fundamentals/introduction',
             activeBasePath: 'docs',
             label: 'Docs',
             position: 'right',
