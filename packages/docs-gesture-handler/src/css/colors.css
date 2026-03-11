@@ -305,6 +305,13 @@
   --swm-platform-badge-color: var(--swm-off-white);
   --swm-available-from-badge-background: var(--swm-yellow-light-40);
   --swm-available-from-badge-color: var(--swm-navy-light-100);
+
+  --swm-platform-badge-android-background: var(--swm-green-dark-120);
+  --swm-platform-badge-android-color: var(--swm-off-white);
+  --swm-platform-badge-ios-background: black;
+  --swm-platform-badge-ios-color: var(--swm-off-white);
+  --swm-platform-badge-web-background: var(--swm-blue-dark-120);
+  --swm-platform-badge-web-color: var(--swm-off-white);
 }
 
 :root[data-theme='dark'] {
@@ -501,6 +508,13 @@
   --swm-platform-badge-color: var(--swm-off-white);
   --swm-available-from-badge-background: var(--swm-yellow-dark-120);
   --swm-available-from-badge-color: var(--swm-off-white);
+
+  --swm-platform-badge-android-background: var(--swm-green-dark-120);
+  --swm-platform-badge-android-color: var(--swm-off-white);
+  --swm-platform-badge-ios-background: black;
+  --swm-platform-badge-ios-color: var(--swm-off-white);
+  --swm-platform-badge-web-background: var(--swm-blue-dark-120);
+  --swm-platform-badge-web-color: var(--swm-off-white);
 }
 
 code {
