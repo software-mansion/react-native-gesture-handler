@@ -47,8 +47,9 @@ export const Clickable = (props: ClickableProps) => {
   }, [onLongPress]);
 
   const startLongPressTimer = useCallback(() => {
+    longPressDetected.current = false;
+
     if (onLongPress && !longPressTimeout.current) {
-      longPressDetected.current = false;
       longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
     }
   }, [onLongPress, delayLongPress, wrappedLongPress]);
