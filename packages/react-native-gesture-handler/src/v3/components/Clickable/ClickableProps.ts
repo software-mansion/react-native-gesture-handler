@@ -46,4 +46,14 @@ export interface ClickableProps extends Omit<BaseButtonProps, RippleProps> {
    * Configuration for the ripple effect on Android.
    */
   androidRipple?: PressableAndroidRippleConfig | undefined;
+
+  /**
+   * Called when pointer touches the component.
+   */
+  onPressIn?: ((event: CallbackEventType) => void) | undefined;
+
+  /**
+   * Called when pointer is released from the component.
+   */
+  onPressOut?: ((event: CallbackEventType) => void) | undefined;
 }
