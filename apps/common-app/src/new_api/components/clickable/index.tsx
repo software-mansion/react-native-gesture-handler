@@ -30,8 +30,10 @@ function ClickableWrapper({ name, color, ...rest }: ButtonWrapperProps) {
   return (
     <Clickable
       style={[styles.button, { backgroundColor: color }]}
+      onPressIn={() => console.log(`[${name}] onPressIn`)}
       onPress={() => console.log(`[${name}] onPress`)}
       onLongPress={() => console.log(`[${name}] onLongPress`)}
+      onPressOut={() => console.log(`[${name}] onPressOut`)}
       {...rest}>
       <Text style={styles.buttonText}>{name}</Text>
     </Clickable>

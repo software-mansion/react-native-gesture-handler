@@ -18,6 +18,8 @@ export const Clickable = (props: ClickableProps) => {
     delayLongPress = 600,
     onLongPress,
     onPress,
+    onPressIn,
+    onPressOut,
     onActiveStateChange,
     style,
     children,
@@ -56,7 +58,13 @@ export const Clickable = (props: ClickableProps) => {
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
-      if (isAndroid && e.pointerInside) {
+      if (!isAndroid) {
+        return;
+      }
+
+      onPressIn?.(e);
+
+      if (e.pointerInside) {
         startLongPressTimer();
 
         if (shouldUseJSAnimation) {
@@ -64,19 +72,23 @@ export const Clickable = (props: ClickableProps) => {
         }
       }
     },
-    [startLongPressTimer, shouldUseJSAnimation, animatedValue]
+    [startLongPressTimer, shouldUseJSAnimation, animatedValue, onPressIn]
   );
 
   const onActivate = useCallback(
     (e: CallbackEventType) => {
       onActiveStateChange?.(true);
 
-      if (shouldUseJSAnimation && !isAndroid) {
-        animatedValue.setValue(1);
-      }
+      if (!isAndroid) {
+        onPressIn?.(e);
 
-      if (!isAndroid && e.pointerInside) {
-        startLongPressTimer();
+        if (e.pointerInside) {
+          startLongPressTimer();
+
+          if (shouldUseJSAnimation) {
+            animatedValue.setValue(1);
+          }
+        }
       }
 
       if (!e.pointerInside && longPressTimeout.current !== undefined) {
@@ -89,6 +101,7 @@ export const Clickable = (props: ClickableProps) => {
       shouldUseJSAnimation,
       animatedValue,
       startLongPressTimer,
+      onPressIn,
     ]
   );
 
@@ -104,17 +117,19 @@ export const Clickable = (props: ClickableProps) => {
   );
 
   const onFinalize = useCallback(
-    (_e: CallbackEventType) => {
+    (e: CallbackEventType) => {
       if (shouldUseJSAnimation) {
         animatedValue.setValue(0);
       }
+
+      onPressOut?.(e);
 
       if (longPressTimeout.current !== undefined) {
         clearTimeout(longPressTimeout.current);
         longPressTimeout.current = undefined;
       }
     },
-    [shouldUseJSAnimation, animatedValue]
+    [shouldUseJSAnimation, animatedValue, onPressOut]
   );
 
   const underlayAnimatedStyle = useMemo(() => {
