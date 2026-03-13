@@ -155,6 +155,8 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
 
   return (
     <AnimatedBaseButton
+      borderless
+      foreground
       {...rest}
       onActiveStateChange={onActiveStateChange}
       style={[style, Platform.OS === 'ios' && { opacity }]}>
