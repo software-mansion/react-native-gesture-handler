@@ -234,13 +234,13 @@ API_AVAILABLE(ios(13.4))
 {
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
                                                        withNumberOfTouches:1
                                                            withPointerType:_pointerType]];
 
   [self sendEventsInState:RNGestureHandlerStateUndetermined
            forViewWithTag:_view.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
                                                        withNumberOfTouches:1
                                                            withPointerType:_pointerType]];
 }
