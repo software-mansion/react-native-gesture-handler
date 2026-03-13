@@ -13,7 +13,7 @@ export interface SwipeableProps {
   /**
    *
    */
-  ref?: React.RefObject<SwipeableMethods | null>;
+  ref?: React.Ref<SwipeableMethods | null>;
 
   /**
    * Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.
