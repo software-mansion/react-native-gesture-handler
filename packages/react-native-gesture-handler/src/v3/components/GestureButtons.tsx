@@ -5,6 +5,7 @@ import GestureHandlerButton from '../../components/GestureHandlerButton';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
+  RawButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
 
@@ -13,11 +14,17 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export const RawButton = createNativeWrapper(GestureHandlerButton, {
+export const RawButton = createNativeWrapper<
+  ReturnType<typeof GestureHandlerButton>,
+  RawButtonProps
+>(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
 
+/**
+ * @deprecated `BaseButton` is deprecated, use `Clickable` instead
+ */
 export const BaseButton = (props: BaseButtonProps) => {
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -97,6 +104,9 @@ const btnStyles = StyleSheet.create({
   },
 });
 
+/**
+ * @deprecated `RectButton` is deprecated, use `Clickable` with `underlayInitialOpacity={0.7}` instead
+ */
 export const RectButton = (props: RectButtonProps) => {
   const activeOpacity = props.activeOpacity ?? 0.105;
   const underlayColor = props.underlayColor ?? 'black';
@@ -139,6 +149,9 @@ export const RectButton = (props: RectButtonProps) => {
   );
 };
 
+/**
+ * @deprecated `BorderlessButton` is deprecated, use `Clickable` with `activeOpacity={0.3}` instead
+ */
 export const BorderlessButton = (props: BorderlessButtonProps) => {
   const activeOpacity = props.activeOpacity ?? 0.3;
   const opacity = useRef(new Animated.Value(1)).current;
@@ -151,11 +164,12 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
     props.onActiveStateChange?.(active);
   };
 
-  const { children, style, ...rest } = props;
+  const { children, style, ref, ...rest } = props;
 
   return (
     <AnimatedBaseButton
       {...rest}
+      ref={ref ?? null}
       onActiveStateChange={onActiveStateChange}
       style={[style, Platform.OS === 'ios' && { opacity }]}>
       {children}
