@@ -94,6 +94,7 @@
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
+
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;

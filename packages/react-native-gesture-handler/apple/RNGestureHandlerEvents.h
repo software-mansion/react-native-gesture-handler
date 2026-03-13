@@ -52,7 +52,9 @@
                                  withAllPointers:(NSArray<NSDictionary *> *)allPointers
                              withNumberOfTouches:(NSUInteger)numberOfTouches
                                  withPointerType:(NSInteger)pointerType;
-+ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside withPointerType:(NSInteger)pointerType;
++ (RNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside
+                                 withNumberOfTouches:(NSUInteger)numberOfTouches
+                                     withPointerType:(NSInteger)pointerType;
 @end
 
 @interface RNGestureHandlerEvent : NSObject <RCTEvent>
