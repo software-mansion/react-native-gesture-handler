@@ -11,6 +11,7 @@ const flushOperations = NOOP;
 const configureRelations = NOOP;
 const setReanimatedAvailable = NOOP;
 const install = NOOP;
+const isScreenReaderEnabled = NOOP;
 
 export default {
   attachGestureHandler,
@@ -22,4 +23,5 @@ export default {
   setReanimatedAvailable,
   flushOperations,
   install,
+  isScreenReaderEnabled,
 } as const;

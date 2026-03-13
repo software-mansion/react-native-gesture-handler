@@ -1,5 +1,7 @@
 package com.swmansion.gesturehandler.react
 
+import android.content.Context
+import android.view.accessibility.AccessibilityManager
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
@@ -127,6 +129,15 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun setReanimatedAvailable(isAvailable: Boolean) {
     isReanimatedAvailable = isAvailable
+  }
+
+  @ReactMethod
+  override fun isScreenReaderEnabled(): Boolean {
+    val accessibilityManager = reactApplicationContext.getSystemService(
+      Context.ACCESSIBILITY_SERVICE,
+    ) as AccessibilityManager?
+
+    return accessibilityManager?.isTouchExplorationEnabled ?: false
   }
 
   @DoNotStrip

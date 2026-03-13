@@ -1,3 +1,6 @@
+import { AccessibilityInfo } from 'react-native';
+import RNGestureHandlerModule from './RNGestureHandlerModule';
+
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -93,3 +96,16 @@ export function deepEqual(obj1: any, obj2: any) {
 }
 
 export const INT32_MAX = 2 ** 31 - 1;
+
+let isScreenReaderEnabledCache: boolean | null = null;
+
+AccessibilityInfo.addEventListener('screenReaderChanged', () => {
+  isScreenReaderEnabledCache = RNGestureHandlerModule.isScreenReaderEnabled();
+});
+
+export function isScreenReaderEnabled(): boolean {
+  if (isScreenReaderEnabledCache === null) {
+    isScreenReaderEnabledCache = RNGestureHandlerModule.isScreenReaderEnabled();
+  }
+  return isScreenReaderEnabledCache;
+}
