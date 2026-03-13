@@ -86,6 +86,7 @@
 @property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
 @property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
 @property (nonatomic, copy, nullable) NSNumber *viewTag;
+@property (nonatomic, readonly) RNGestureHandlerState lastState;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;

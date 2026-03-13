@@ -69,7 +69,6 @@ In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbac
 
 `GestureStateManager` provides methods for imperative state management:
 
-- .begin(handlerTag: number)
 - .activate(handlerTag: number)
 - .deactivate(handlerTag: number) (.end() in the old API)
 - .fail(handlerTag: number)
@@ -80,6 +79,8 @@ In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbac
 2. From the event inside callback (`event.handlerTag`)
 
 Callback definitions CANNOT reference the gesture that's being defined. In this scenario use events to get access to the handler tag.
+
+Gesture cannot be activated via the StateManager if has not begun, that is, after it has received received touch events. 
 
 ### Migrating relations
 
