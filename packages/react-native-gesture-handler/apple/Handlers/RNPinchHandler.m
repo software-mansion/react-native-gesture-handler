@@ -48,7 +48,9 @@
   [self handleGesture:recognizer fromReset:NO fromManualStateChange:NO];
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange
 {
   if (self.state == UIGestureRecognizerStateBegan) {
 #if TARGET_OS_OSX
