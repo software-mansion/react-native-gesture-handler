@@ -228,7 +228,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   public activate(force = false) {
     if (
       (this.manualActivation !== true || force) &&
-      (this.state === State.UNDETERMINED || this.state === State.BEGAN)
+      this.state === State.BEGAN
     ) {
       this.delegate.onActivate();
       this.moveToState(State.ACTIVE);
