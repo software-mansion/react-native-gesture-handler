@@ -145,17 +145,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     UiThreadUtil.assertOnUiThread()
 
     registry.getHandler(handlerTag)?.let { handler ->
-      if (newState == GestureHandler.STATE_ACTIVE || newState == GestureHandler.STATE_BEGAN) {
-        handler.recordHandlerIfNotPresent()
-      }
-
-      if (handler.state == GestureHandler.STATE_UNDETERMINED) {
-        // We don't allow activation of gestures which haven't received any touches
-        if (newState == GestureHandler.STATE_ACTIVE) {
+      if (newState == GestureHandler.STATE_ACTIVE) {
+        if (handler.state != GestureHandler.STATE_BEGAN) {
+          // We don't allow activation of gestures which haven't received any touches
           return
         }
-
-        handler.forceReinitializeDuringOnHandle = true
+        handler.recordHandlerIfNotPresent()
       }
 
       when (newState) {
