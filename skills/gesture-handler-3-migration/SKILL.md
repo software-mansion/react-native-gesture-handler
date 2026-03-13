@@ -169,7 +169,7 @@ The implementation of buttons has been updated, resolving most button-related is
 
 `PureNativeButton` has been removed. If encountered, inform the user that it has been removed and let them decide how to handle that case. They can achieve similar functionality with other buttons.
 
-When migrating buttons, you should use `Clickable` component instead. To replace `BaseButton` use `Clickable` with default props, to replace `RectButton` use `Clickable` with `underlayInitialOpacity={0.7}` and to replace `BorderlessButton` use `Clickable` with `activeOpacity={0.3}`.
+When migrating buttons, you should use `Clickable` component instead. To replace `BaseButton` use `Clickable` with default props, to replace `RectButton` use `Clickable` with `underlayActiveOpacity={0.105}` and to replace `BorderlessButton` use `Clickable` with `activeOpacity={0.3}`.
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
 
