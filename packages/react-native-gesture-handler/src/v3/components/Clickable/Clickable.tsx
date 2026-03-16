@@ -10,9 +10,9 @@ const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 export const Clickable = (props: ClickableProps) => {
   const {
     underlayColor,
-    underlayInitialOpacity,
+    underlayInitialOpacity = 0,
     underlayActiveOpacity,
-    initialOpacity,
+    initialOpacity = 1,
     activeOpacity,
     androidRipple,
     delayLongPress = 600,
@@ -28,9 +28,6 @@ export const Clickable = (props: ClickableProps) => {
   } = props;
 
   const animatedValue = useRef(new Animated.Value(0)).current;
-
-  const underlayStartOpacity = underlayInitialOpacity ?? 0;
-  const componentStartOpacity = initialOpacity ?? 1;
 
   const shouldAnimateUnderlay = underlayActiveOpacity !== undefined;
   const shouldAnimateComponent = activeOpacity !== undefined;
@@ -58,18 +55,15 @@ export const Clickable = (props: ClickableProps) => {
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
-      if (!isAndroid) {
+      if (!isAndroid || !e.pointerInside) {
         return;
       }
 
       onPressIn?.(e);
+      startLongPressTimer();
 
-      if (e.pointerInside) {
-        startLongPressTimer();
-
-        if (shouldUseJSAnimation) {
-          animatedValue.setValue(1);
-        }
+      if (shouldUseJSAnimation) {
+        animatedValue.setValue(1);
       }
     },
     [startLongPressTimer, shouldUseJSAnimation, animatedValue, onPressIn]
@@ -80,9 +74,8 @@ export const Clickable = (props: ClickableProps) => {
       onActiveStateChange?.(true);
 
       if (!isAndroid) {
-        onPressIn?.(e);
-
         if (e.pointerInside) {
+          onPressIn?.(e);
           startLongPressTimer();
 
           if (shouldUseJSAnimation) {
@@ -133,26 +126,19 @@ export const Clickable = (props: ClickableProps) => {
   );
 
   const underlayAnimatedStyle = useMemo(() => {
-    if (!shouldAnimateUnderlay) {
-      return undefined;
-    }
-    const resolvedStyle = StyleSheet.flatten(style ?? {});
-    return {
-      opacity: animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [underlayStartOpacity, underlayActiveOpacity],
-      }),
-      backgroundColor: underlayColor ?? 'black',
-      borderRadius: resolvedStyle.borderRadius,
-      borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
-      borderTopRightRadius: resolvedStyle.borderTopRightRadius,
-      borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
-      borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
-    };
+    return shouldAnimateUnderlay
+      ? {
+          opacity: animatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [underlayInitialOpacity, underlayActiveOpacity],
+          }),
+          backgroundColor: underlayColor ?? 'black',
+        }
+      : undefined;
   }, [
     shouldAnimateUnderlay,
     style,
-    underlayStartOpacity,
+    underlayInitialOpacity,
     underlayActiveOpacity,
     underlayColor,
     animatedValue,
@@ -164,16 +150,11 @@ export const Clickable = (props: ClickableProps) => {
         ? {
             opacity: animatedValue.interpolate({
               inputRange: [0, 1],
-              outputRange: [componentStartOpacity, activeOpacity],
+              outputRange: [initialOpacity, activeOpacity],
             }),
           }
         : undefined,
-    [
-      shouldAnimateComponent,
-      activeOpacity,
-      animatedValue,
-      componentStartOpacity,
-    ]
+    [shouldAnimateComponent, activeOpacity, animatedValue, initialOpacity]
   );
 
   const rippleProps = shouldUseNativeRipple

@@ -105,7 +105,7 @@ const btnStyles = StyleSheet.create({
 });
 
 /**
- * @deprecated `RectButton` is deprecated, use `Clickable` with `underlayInitialOpacity={0.7}` instead
+ * @deprecated `RectButton` is deprecated, use `Clickable` with `underlayActiveOpacity={0.7}` instead
  */
 export const RectButton = (props: RectButtonProps) => {
   const activeOpacity = props.activeOpacity ?? 0.105;

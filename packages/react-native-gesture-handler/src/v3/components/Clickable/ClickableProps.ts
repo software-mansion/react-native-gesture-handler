@@ -16,7 +16,7 @@ type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
 export interface ClickableProps extends Omit<BaseButtonProps, RippleProps> {
   /**
-   * Background color of underlay. Works only when `animationTarget` is set to `UNDERLAY`.
+   * Background color of underlay. Requires `underlayActiveOpacity` to be set.
    */
   underlayColor?: string | undefined;
 
