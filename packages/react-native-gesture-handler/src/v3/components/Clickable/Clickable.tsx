@@ -126,22 +126,15 @@ export const Clickable = (props: ClickableProps) => {
   );
 
   const underlayAnimatedStyle = useMemo(() => {
-    if (!shouldAnimateUnderlay) {
-      return undefined;
-    }
-    const resolvedStyle = StyleSheet.flatten(style ?? {});
-    return {
-      opacity: animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [underlayInitialOpacity, underlayActiveOpacity],
-      }),
-      backgroundColor: underlayColor ?? 'black',
-      borderRadius: resolvedStyle.borderRadius,
-      borderTopLeftRadius: resolvedStyle.borderTopLeftRadius,
-      borderTopRightRadius: resolvedStyle.borderTopRightRadius,
-      borderBottomLeftRadius: resolvedStyle.borderBottomLeftRadius,
-      borderBottomRightRadius: resolvedStyle.borderBottomRightRadius,
-    };
+    return shouldAnimateUnderlay
+      ? {
+          opacity: animatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [underlayInitialOpacity, underlayActiveOpacity],
+          }),
+          backgroundColor: underlayColor ?? 'black',
+        }
+      : undefined;
   }, [
     shouldAnimateUnderlay,
     style,
