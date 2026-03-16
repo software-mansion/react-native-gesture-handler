@@ -10,9 +10,9 @@ const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 export const Clickable = (props: ClickableProps) => {
   const {
     underlayColor,
-    underlayInitialOpacity,
+    underlayInitialOpacity = 0,
     underlayActiveOpacity,
-    initialOpacity,
+    initialOpacity = 1,
     activeOpacity,
     androidRipple,
     delayLongPress = 600,
@@ -28,9 +28,6 @@ export const Clickable = (props: ClickableProps) => {
   } = props;
 
   const animatedValue = useRef(new Animated.Value(0)).current;
-
-  const underlayStartOpacity = underlayInitialOpacity ?? 0;
-  const componentStartOpacity = initialOpacity ?? 1;
 
   const shouldAnimateUnderlay = underlayActiveOpacity !== undefined;
   const shouldAnimateComponent = activeOpacity !== undefined;
@@ -136,7 +133,7 @@ export const Clickable = (props: ClickableProps) => {
     return {
       opacity: animatedValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [underlayStartOpacity, underlayActiveOpacity],
+        outputRange: [underlayInitialOpacity, underlayActiveOpacity],
       }),
       backgroundColor: underlayColor ?? 'black',
       borderRadius: resolvedStyle.borderRadius,
@@ -148,7 +145,7 @@ export const Clickable = (props: ClickableProps) => {
   }, [
     shouldAnimateUnderlay,
     style,
-    underlayStartOpacity,
+    underlayInitialOpacity,
     underlayActiveOpacity,
     underlayColor,
     animatedValue,
@@ -160,16 +157,11 @@ export const Clickable = (props: ClickableProps) => {
         ? {
             opacity: animatedValue.interpolate({
               inputRange: [0, 1],
-              outputRange: [componentStartOpacity, activeOpacity],
+              outputRange: [initialOpacity, activeOpacity],
             }),
           }
         : undefined,
-    [
-      shouldAnimateComponent,
-      activeOpacity,
-      animatedValue,
-      componentStartOpacity,
-    ]
+    [shouldAnimateComponent, activeOpacity, animatedValue, initialOpacity]
   );
 
   const rippleProps = shouldUseNativeRipple
