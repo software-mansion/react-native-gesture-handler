@@ -1,4 +1,4 @@
-import { Profiler, useCallback, useRef, useState } from 'react';
+import { Profiler, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Clickable, ScrollView } from 'react-native-gesture-handler';
 
@@ -70,6 +70,7 @@ function ClickableList({ run, onMountDuration }: ClickableListProps) {
 export default function ClickableStress() {
   const [state, setState] = useState<BenchmarkState>({ phase: 'idle' });
   const resultsRef = useRef<number[]>([]);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const start = useCallback(() => {
     resultsRef.current = [];
@@ -87,9 +88,21 @@ export default function ClickableStress() {
 
     // Unmount then remount for next run
     setState({ phase: 'idle' });
-    setTimeout(() => {
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
       setState({ phase: 'running', run: currentRun + 1 });
     }, 50);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
   }, []);
 
   const isRunning = state.phase === 'running';
