@@ -58,18 +58,15 @@ export const Clickable = (props: ClickableProps) => {
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
-      if (!isAndroid) {
+      if (!isAndroid || !e.pointerInside) {
         return;
       }
 
       onPressIn?.(e);
+      startLongPressTimer();
 
-      if (e.pointerInside) {
-        startLongPressTimer();
-
-        if (shouldUseJSAnimation) {
-          animatedValue.setValue(1);
-        }
+      if (shouldUseJSAnimation) {
+        animatedValue.setValue(1);
       }
     },
     [startLongPressTimer, shouldUseJSAnimation, animatedValue, onPressIn]
@@ -80,9 +77,8 @@ export const Clickable = (props: ClickableProps) => {
       onActiveStateChange?.(true);
 
       if (!isAndroid) {
-        onPressIn?.(e);
-
         if (e.pointerInside) {
+          onPressIn?.(e);
           startLongPressTimer();
 
           if (shouldUseJSAnimation) {
