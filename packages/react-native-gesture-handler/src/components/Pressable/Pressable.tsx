@@ -28,7 +28,7 @@ import {
   isTouchWithinInset,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isScreenReaderEnabled, isTestEnv } from '../../utils';
+import { INT32_MAX, isTestEnv, useIsScreenReaderEnabled } from '../../utils';
 import {
   applyRelationProp,
   RelationPropName,
@@ -202,11 +202,16 @@ const LegacyPressable = (props: LegacyPressableProps) => {
   );
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
+  const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
   useEffect(() => {
-    const configuration = getStatesConfig(handlePressIn, handlePressOut);
+    const configuration = getStatesConfig(
+      handlePressIn,
+      handlePressOut,
+      isScreenReaderEnabled
+    );
     stateMachine.setStates(configuration);
-  }, [handlePressIn, handlePressOut, stateMachine]);
+  }, [handlePressIn, handlePressOut, stateMachine, isScreenReaderEnabled]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -259,7 +264,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           );
         })
         .onTouchesUp(() => {
-          if (Platform.OS === 'android' && !isScreenReaderEnabled()) {
+          if (Platform.OS === 'android' && !isScreenReaderEnabled) {
             // Prevents potential soft-locks
             stateMachine.reset();
             handleFinalize();

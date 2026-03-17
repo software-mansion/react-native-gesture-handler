@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
 import { PressableEvent } from './PressableProps';
 import { StateDefinition } from './StateMachine';
-import { isScreenReaderEnabled } from '../../utils';
 
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',
@@ -129,10 +128,11 @@ function getUniversalStatesConfig(
 
 export function getStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
-  handlePressOut: (event: PressableEvent) => void
+  handlePressOut: (event: PressableEvent) => void,
+  screenReaderActive: boolean
 ): StateDefinition[] {
   if (Platform.OS === 'android') {
-    if (isScreenReaderEnabled()) {
+    if (screenReaderActive) {
       return getAndroidAccessibilityStatesConfig(handlePressIn, handlePressOut);
     }
     return getAndroidStatesConfig(handlePressIn, handlePressOut);

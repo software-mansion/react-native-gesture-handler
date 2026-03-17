@@ -39,7 +39,7 @@ import { GestureDetector } from '../detectors';
 import { PureNativeButton } from './GestureButtons';
 
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isScreenReaderEnabled, isTestEnv } from '../../utils';
+import { INT32_MAX, isTestEnv, useIsScreenReaderEnabled } from '../../utils';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -199,11 +199,16 @@ const Pressable = (props: PressableProps) => {
   );
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
+  const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
   useEffect(() => {
-    const configuration = getStatesConfig(handlePressIn, handlePressOut);
+    const configuration = getStatesConfig(
+      handlePressIn,
+      handlePressOut,
+      isScreenReaderEnabled
+    );
     stateMachine.setStates(configuration);
-  }, [handlePressIn, handlePressOut, stateMachine]);
+  }, [handlePressIn, handlePressOut, stateMachine, isScreenReaderEnabled]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -257,7 +262,7 @@ const Pressable = (props: PressableProps) => {
       );
     },
     onTouchesUp: () => {
-      if (Platform.OS === 'android' && !isScreenReaderEnabled()) {
+      if (Platform.OS === 'android' && !isScreenReaderEnabled) {
         // Prevents potential soft-locks
         stateMachine.reset();
         handleFinalize();
