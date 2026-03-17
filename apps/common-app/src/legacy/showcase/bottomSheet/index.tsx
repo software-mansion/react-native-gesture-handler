@@ -133,7 +133,7 @@ export class BottomSheet extends Component<
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
           <Animated.View
             style={[
-              StyleSheet.absoluteFillObject,
+              StyleSheet.absoluteFill,
               {
                 transform: [{ translateY: this.translateY }],
               },
