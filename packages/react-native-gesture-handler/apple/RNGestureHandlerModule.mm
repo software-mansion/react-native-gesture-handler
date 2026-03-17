@@ -248,11 +248,6 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (NSNumber *)isScreenReaderEnabled
-{
-  return @(UIAccessibilityIsVoiceOverRunning());
-}
-
 #pragma mark-- Batch handling
 
 - (void)addOperationBlock:(GestureHandlerOperation)operation

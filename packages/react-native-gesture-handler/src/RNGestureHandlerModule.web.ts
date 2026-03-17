@@ -92,7 +92,4 @@ export default {
   setReanimatedAvailable(_isAvailable: boolean) {
     // No-op on web
   },
-  isScreenReaderEnabled() {
-    return false;
-  },
 };
