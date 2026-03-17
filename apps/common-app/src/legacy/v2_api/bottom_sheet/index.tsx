@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'coral',
   },
   bottomSheet: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#ff9f7A',
   },
 });
