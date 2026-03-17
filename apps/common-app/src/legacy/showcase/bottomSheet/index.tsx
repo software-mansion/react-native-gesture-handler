@@ -130,7 +130,7 @@ export class BottomSheet extends Component<
         maxDurationMs={100000}
         ref={this.masterdrawer}
         maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
-        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
           <Animated.View
             style={[
               StyleSheet.absoluteFillObject,
