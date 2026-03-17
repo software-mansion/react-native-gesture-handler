@@ -34,10 +34,14 @@
 
 #if !TARGET_OS_OSX
 - (void)handleGesture:(UIGestureRecognizer *)recognizer;
-- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange;
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange;
 #else
 - (void)handleGesture:(NSGestureRecognizer *)recognizer;
-- (void)handleGesture:(NSGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange;
+- (void)handleGesture:(NSGestureRecognizer *)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange;
 #endif
 
 @end
@@ -60,7 +64,9 @@
   [self handleGesture:recognizer fromReset:NO fromManualStateChange:NO];
 }
 
-- (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange
 {
   previousTime = CACurrentMediaTime();
   [_gestureHandler handleGesture:recognizer fromReset:fromReset fromManualStateChange:fromManualStateChange];
