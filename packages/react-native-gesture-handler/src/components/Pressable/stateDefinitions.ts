@@ -132,10 +132,9 @@ export function getStatesConfig(
   screenReaderActive: boolean
 ): StateDefinition[] {
   if (Platform.OS === 'android') {
-    if (screenReaderActive) {
-      return getAndroidAccessibilityStatesConfig(handlePressIn, handlePressOut);
-    }
-    return getAndroidStatesConfig(handlePressIn, handlePressOut);
+    return screenReaderActive
+      ? getAndroidAccessibilityStatesConfig(handlePressIn, handlePressOut)
+      : getAndroidStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'ios') {
     return getIosStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'web') {
