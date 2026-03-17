@@ -80,7 +80,7 @@ In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbac
 
 Callback definitions CANNOT reference the gesture that's being defined. In this scenario use events to get access to the handler tag.
 
-Gesture cannot be activated via the StateManager if has not begun, that is, after it has received received touch events. 
+Remove GestureStateManager.begin() as gestures must now automatically enter the BEGAN state via touch events before they can be activated through the GestureStateManager.
 
 ### Migrating relations
 
