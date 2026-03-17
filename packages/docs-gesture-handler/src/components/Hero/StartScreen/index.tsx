@@ -19,7 +19,7 @@ const StartScreen = () => {
         <div className={styles.lowerHeading}>
           <div className={styles.buttonContainer}>
             <HomepageButton
-              href="/react-native-gesture-handler/docs/"
+              href="/react-native-gesture-handler/docs/fundamentals/introduction"
               title="Get started"
             />
           </div>
