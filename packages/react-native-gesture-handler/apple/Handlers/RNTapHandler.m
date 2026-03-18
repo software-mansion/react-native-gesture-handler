@@ -143,6 +143,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
+
+  [self triggerAction];
 }
 
 #if TARGET_OS_OSX
