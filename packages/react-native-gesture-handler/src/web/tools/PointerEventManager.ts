@@ -65,7 +65,10 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.UP);
     const target = event.target as HTMLElement;
 
-    if (!POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName)) {
+    if (
+      !POINTER_CAPTURE_EXCLUDE_LIST.has(target.tagName) &&
+      this.view.getAttribute('role') !== 'button'
+    ) {
       target.releasePointerCapture(adaptedEvent.pointerId);
     }
 
