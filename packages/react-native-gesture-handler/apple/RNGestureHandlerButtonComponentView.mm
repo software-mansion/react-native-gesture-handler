@@ -237,6 +237,8 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
   if (newProps.underlayColor) {
     _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
+  } else {
+    _buttonView.underlayColor = nil;
   }
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;

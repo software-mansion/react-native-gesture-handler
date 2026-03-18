@@ -55,11 +55,8 @@
   _startScale = 1.0;
   _activeUnderlayOpacity = 0.0;
   _startUnderlayOpacity = 0.0;
-
-#if !TARGET_OS_OSX
-  _underlayColor = [UIColor blackColor];
-#else
-  _underlayColor = [NSColor blackColor];
+  _underlayColor = nil;
+#if TARGET_OS_OSX
   self.wantsLayer = YES; // Crucial for macOS layer-backing
 #endif
 
