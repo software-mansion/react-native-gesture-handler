@@ -63,6 +63,46 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   touchSoundDisabled?: boolean | undefined;
 
   /**
+   * Duration of the animation when the button is pressed.
+   */
+  animationDuration?: number | undefined;
+
+  /**
+   * Opacity applied to the button when it is pressed.
+   */
+  activeOpacity?: number | undefined;
+
+  /**
+   * Scale applied to the button when it is pressed.
+   */
+  activeScale?: number | undefined;
+
+  /**
+   * Opacity applied to the underlay when the button is pressed.
+   */
+  activeUnderlayOpacity?: number | undefined;
+
+  /**
+   * Opacity applied to the button when it is not pressed.
+   */
+  startOpacity?: number | undefined;
+
+  /**
+   * Scale applied to the button when it is not pressed.
+   */
+  startScale?: number | undefined;
+
+  /**
+   * Opacity applied to the underlay when the button is not pressed.
+   */
+  startUnderlayOpacity?: number | undefined;
+
+  /**
+   * Color of the underlay.
+   */
+  underlayColor?: ColorValue | undefined;
+
+  /**
    * Style object, use it to set additional styles.
    */
   style?: StyleProp<ViewStyle>;
