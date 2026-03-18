@@ -63,6 +63,20 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   return self;
 }
 
+#if !TARGET_OS_OSX
+- (void)willMoveToSuperview:(RNGHUIView *)newSuperview
+{
+  [super willMoveToSuperview:newSuperview];
+  _buttonView.animationTarget = newSuperview;
+}
+#else
+- (void)viewWillMoveToSuperview:(RNGHUIView *)newSuperview
+{
+  [super viewWillMoveToSuperview:newSuperview];
+  _buttonView.animationTarget = newSuperview;
+}
+#endif
+
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_buttonView mountChildComponentView:childComponentView index:index];
@@ -214,6 +228,16 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
   _buttonView.userEnabled = newProps.enabled;
+  _buttonView.animationDuration = newProps.animationDuration;
+  _buttonView.activeOpacity = newProps.activeOpacity;
+  _buttonView.startOpacity = newProps.startOpacity;
+  _buttonView.activeScale = newProps.activeScale;
+  _buttonView.startScale = newProps.startScale;
+  _buttonView.startUnderlayOpacity = newProps.startUnderlayOpacity;
+  _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
+  if (newProps.underlayColor) {
+    _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
+  }
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;
   [self setAccessibilityProps:props oldProps:oldProps];
@@ -235,6 +259,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     }
   }
 
+  [_buttonView applyStartAnimationState];
   [super updateProps:props oldProps:oldProps];
 }
 

@@ -11,6 +11,7 @@
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
+#import <QuartzCore/QuartzCore.h>
 #import <React/RCTUIKit.h>
 #endif
 
@@ -38,21 +39,90 @@
  * `TapGestureHandler` instead of a button which gives much better flexibility as far as
  * controlling the touch flow.
  */
-@implementation RNGestureHandlerButton
+@implementation RNGestureHandlerButton {
+  CALayer *_underlayLayer;
+}
+
+- (void)commonInit
+{
+  _hitTestEdgeInsets = UIEdgeInsetsZero;
+  _userEnabled = YES;
+  _pointerEvents = RNGestureHandlerPointerEventsAuto;
+  _animationDuration = 100;
+  _activeOpacity = 1.0;
+  _startOpacity = 1.0;
+  _activeScale = 1.0;
+  _startScale = 1.0;
+  _activeUnderlayOpacity = 0.0;
+  _startUnderlayOpacity = 0.0;
+
+#if !TARGET_OS_OSX
+  _underlayColor = [UIColor blackColor];
+#else
+  _underlayColor = [NSColor blackColor];
+  self.wantsLayer = YES; // Crucial for macOS layer-backing
+#endif
+
+  _underlayLayer = [CALayer new];
+  _underlayLayer.opacity = 0;
+
+#if !TARGET_OS_OSX
+  _underlayLayer.backgroundColor = [UIColor blackColor].CGColor;
+#else
+  _underlayLayer.backgroundColor = [NSColor blackColor].CGColor;
+#endif
+
+  [self.layer insertSublayer:_underlayLayer atIndex:0];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  [self setExclusiveTouch:YES];
+  [self addTarget:self
+                action:@selector(handleAnimatePressIn)
+      forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
+  [self addTarget:self
+                action:@selector(handleAnimatePressOut)
+      forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
+      UIControlEventTouchCancel];
+#endif
+}
 
 - (instancetype)init
 {
   self = [super init];
   if (self) {
-    _hitTestEdgeInsets = UIEdgeInsetsZero;
-    _userEnabled = YES;
-    _pointerEvents = RNGestureHandlerPointerEventsAuto;
-#if !TARGET_OS_TV && !TARGET_OS_OSX
-    [self setExclusiveTouch:YES];
-#endif
+    [self commonInit];
   }
   return self;
 }
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  self = [super initWithFrame:frame];
+  if (self) {
+    [self commonInit];
+  }
+  return self;
+}
+
+- (void)setUnderlayColor:(RNGHColor *)underlayColor
+{
+  _underlayColor = underlayColor;
+  _underlayLayer.backgroundColor = underlayColor.CGColor;
+}
+
+#if !TARGET_OS_OSX
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  _underlayLayer.frame = self.bounds;
+}
+#else
+- (void)layout
+{
+  [super layout];
+  _underlayLayer.frame = self.bounds;
+}
+#endif
 
 - (BOOL)shouldHandleTouch:(RNGHUIView *)view
 {
@@ -77,6 +147,108 @@
   return [view isKindOfClass:[NSControl class]] || [enabledGestureRecognizers count] > 0;
 #endif
 }
+
+- (void)animateUnderlayToOpacity:(float)toOpacity
+{
+  CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
+  anim.fromValue = @([_underlayLayer.presentationLayer opacity]);
+  anim.toValue = @(toOpacity);
+  anim.duration = _animationDuration / 1000.0;
+  anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+  _underlayLayer.opacity = toOpacity;
+  [_underlayLayer addAnimation:anim forKey:@"opacity"];
+}
+
+#if TARGET_OS_OSX
+static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
+{
+  CGFloat midX = NSMidX(bounds);
+  CGFloat midY = NSMidY(bounds);
+
+  // translate to center, scale, and translate back
+  CATransform3D transform = CATransform3DIdentity;
+  transform = CATransform3DTranslate(transform, midX, midY, 0);
+  transform = CATransform3DScale(transform, scale, scale, 1.0);
+  transform = CATransform3DTranslate(transform, -midX, -midY, 0);
+
+  return transform;
+}
+#endif
+
+- (void)applyStartAnimationState
+{
+  RNGHUIView *target = self.animationTarget ?: self;
+  _underlayLayer.opacity = _startUnderlayOpacity;
+
+#if !TARGET_OS_OSX
+  target.alpha = _startOpacity;
+  target.transform = CGAffineTransformMakeScale(_startScale, _startScale);
+#else
+  target.wantsLayer = YES;
+  target.alphaValue = _startOpacity;
+  // Use the centered transform helper
+  target.layer.transform = RNGHCenterScaleTransform(target.bounds, _startScale);
+#endif
+}
+
+- (void)animateTarget:(RNGHUIView *)target toOpacity:(CGFloat)opacity scale:(CGFloat)scale
+{
+  NSTimeInterval duration = _animationDuration / 1000.0;
+
+#if !TARGET_OS_OSX
+  [UIView animateWithDuration:duration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                   animations:^{
+                     target.alpha = opacity;
+                     target.transform = CGAffineTransformMakeScale(scale, scale);
+                   }
+                   completion:nil];
+#else
+  target.wantsLayer = YES;
+  [NSAnimationContext
+      runAnimationGroup:^(NSAnimationContext *context) {
+        context.allowsImplicitAnimation = YES;
+        context.duration = duration;
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        target.animator.alphaValue = opacity;
+        target.layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
+      }
+      completionHandler:nil];
+#endif
+}
+
+- (void)handleAnimatePressIn
+{
+  RNGHUIView *target = self.animationTarget ?: self;
+  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale];
+  if (_activeUnderlayOpacity != _startUnderlayOpacity) {
+    [self animateUnderlayToOpacity:_activeUnderlayOpacity];
+  }
+}
+
+- (void)handleAnimatePressOut
+{
+  RNGHUIView *target = self.animationTarget ?: self;
+  [self animateTarget:target toOpacity:_startOpacity scale:_startScale];
+  if (_activeUnderlayOpacity != _startUnderlayOpacity) {
+    [self animateUnderlayToOpacity:_startUnderlayOpacity];
+  }
+}
+
+#if TARGET_OS_OSX
+- (void)mouseDown:(NSEvent *)event
+{
+  [super mouseDown:event];
+  [self handleAnimatePressIn];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [super mouseUp:event];
+  [self handleAnimatePressOut];
+}
+#endif
 
 #if !TARGET_OS_OSX
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
@@ -141,6 +313,7 @@
   const CGFloat scaleFactor = RCTZeroIfNaN(MIN(1, size.width / (2 * radius)));
   const CGFloat currentBorderRadius = radius * scaleFactor;
   layer.cornerRadius = currentBorderRadius;
+  _underlayLayer.cornerRadius = currentBorderRadius;
 }
 
 - (NSString *)accessibilityLabel
