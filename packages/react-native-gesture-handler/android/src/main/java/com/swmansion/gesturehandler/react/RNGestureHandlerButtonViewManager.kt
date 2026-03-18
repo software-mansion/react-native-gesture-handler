@@ -1,5 +1,8 @@
 package com.swmansion.gesturehandler.react
 
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
@@ -19,10 +22,10 @@ import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.facebook.react.R
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
@@ -133,6 +136,46 @@ class RNGestureHandlerButtonViewManager :
     view.isSoundEffectsEnabled = !touchSoundDisabled
   }
 
+  @ReactProp(name = "animationDuration")
+  override fun setAnimationDuration(view: ButtonViewGroup, animationDuration: Int) {
+    view.animationDuration = animationDuration
+  }
+
+  @ReactProp(name = "startOpacity")
+  override fun setStartOpacity(view: ButtonViewGroup, startOpacity: Float) {
+    view.startOpacity = startOpacity
+  }
+
+  @ReactProp(name = "activeOpacity")
+  override fun setActiveOpacity(view: ButtonViewGroup, targetOpacity: Float) {
+    view.activeOpacity = targetOpacity
+  }
+
+  @ReactProp(name = "startScale")
+  override fun setStartScale(view: ButtonViewGroup, startScale: Float) {
+    view.startScale = startScale
+  }
+
+  @ReactProp(name = "activeScale")
+  override fun setActiveScale(view: ButtonViewGroup, activeScale: Float) {
+    view.activeScale = activeScale
+  }
+
+  @ReactProp(name = "underlayColor")
+  override fun setUnderlayColor(view: ButtonViewGroup, underlayColor: Int?) {
+    view.underlayColor = underlayColor
+  }
+
+  @ReactProp(name = "startUnderlayOpacity")
+  override fun setStartUnderlayOpacity(view: ButtonViewGroup, startUnderlayOpacity: Float) {
+    view.startUnderlayOpacity = startUnderlayOpacity
+  }
+
+  @ReactProp(name = "activeUnderlayOpacity")
+  override fun setActiveUnderlayOpacity(view: ButtonViewGroup, activeUnderlayOpacity: Float) {
+    view.activeUnderlayOpacity = activeUnderlayOpacity
+  }
+
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   override fun setPointerEvents(view: ButtonViewGroup, pointerEvents: String?) {
     view.pointerEvents = when (pointerEvents) {
@@ -212,6 +255,17 @@ class RNGestureHandlerButtonViewManager :
         borderBottomRightRadius != 0f
 
     var exclusive = true
+    var animationDuration: Int = 100
+    var activeOpacity: Float = 1.0f
+    var startOpacity: Float = 1.0f
+    var activeScale: Float = 1.0f
+    var startScale: Float = 1.0f
+    var underlayColor: Int? = null
+      set(color) = withBackgroundUpdate {
+        field = color
+      }
+    var activeUnderlayOpacity: Float = 0f
+    var startUnderlayOpacity: Float = 0f
 
     override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
@@ -220,6 +274,8 @@ class RNGestureHandlerButtonViewManager :
     private var lastEventTime = -1L
     private var lastAction = -1
     private var receivedKeyEvent = false
+    private var currentAnimator: AnimatorSet? = null
+    private var underlayDrawable: PaintDrawable? = null
 
     var isTouched = false
 
@@ -331,7 +387,62 @@ class RNGestureHandlerButtonViewManager :
       return false
     }
 
-    private fun updateBackgroundColor(backgroundColor: Int, borderDrawable: Drawable, selectable: Drawable?) {
+    private fun applyStartAnimationState() {
+      (parent as? ViewGroup)?.let {
+        it.alpha = startOpacity
+        it.scaleX = startScale
+        it.scaleY = startScale
+      }
+      underlayDrawable?.alpha = (startUnderlayOpacity * 255).toInt()
+    }
+
+    private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float) {
+      val hasTransform = activeOpacity != startOpacity || activeScale != startScale
+      val hasUnderlay = activeUnderlayOpacity != startUnderlayOpacity && underlayDrawable != null
+      if (!hasTransform && !hasUnderlay) return
+
+      currentAnimator?.cancel()
+      val animators = ArrayList<Animator>()
+      if (hasTransform) {
+        val parent = this.parent as? ViewGroup ?: return
+        animators.add(ObjectAnimator.ofFloat(parent, "alpha", opacity))
+        animators.add(ObjectAnimator.ofFloat(parent, "scaleX", scale))
+        animators.add(ObjectAnimator.ofFloat(parent, "scaleY", scale))
+      }
+      if (hasUnderlay) {
+        animators.add(ObjectAnimator.ofInt(underlayDrawable!!, "alpha", (underlayOpacity * 255).toInt()))
+      }
+      currentAnimator = AnimatorSet().apply {
+        playTogether(animators)
+        duration = animationDuration.toLong()
+        interpolator = LinearOutSlowInInterpolator()
+        start()
+      }
+    }
+
+    private fun animatePressIn() {
+      animateTo(activeOpacity, activeScale, activeUnderlayOpacity)
+    }
+
+    private fun animatePressOut() {
+      animateTo(startOpacity, startScale, startUnderlayOpacity)
+    }
+
+    private fun createUnderlayDrawable(): PaintDrawable {
+      val drawable = PaintDrawable(underlayColor ?: Color.BLACK)
+      if (hasBorderRadii) {
+        drawable.setCornerRadii(buildBorderRadii())
+      }
+      drawable.alpha = (startUnderlayOpacity * 255).toInt()
+      return drawable
+    }
+
+    private fun updateBackgroundColor(
+      backgroundColor: Int,
+      underlay: Drawable,
+      borderDrawable: Drawable,
+      selectable: Drawable?,
+    ) {
       val colorDrawable = PaintDrawable(backgroundColor)
 
       if (hasBorderRadii) {
@@ -340,9 +451,9 @@ class RNGestureHandlerButtonViewManager :
 
       val layerDrawable = LayerDrawable(
         if (selectable != null) {
-          arrayOf(colorDrawable, selectable, borderDrawable)
+          arrayOf(colorDrawable, underlay, selectable, borderDrawable)
         } else {
-          arrayOf(colorDrawable, borderDrawable)
+          arrayOf(colorDrawable, underlay, borderDrawable)
         },
       )
       background = layerDrawable
@@ -365,6 +476,8 @@ class RNGestureHandlerButtonViewManager :
 
       val selectable = createSelectableDrawable()
       val borderDrawable = createBorderDrawable()
+      val underlay = createUnderlayDrawable()
+      underlayDrawable = underlay
 
       if (hasBorderRadii && selectable is RippleDrawable) {
         val mask = PaintDrawable(Color.WHITE)
@@ -375,13 +488,15 @@ class RNGestureHandlerButtonViewManager :
       if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         foreground = selectable
         if (buttonBackgroundColor != Color.TRANSPARENT) {
-          updateBackgroundColor(buttonBackgroundColor, borderDrawable, null)
+          updateBackgroundColor(buttonBackgroundColor, underlay, borderDrawable, null)
         }
       } else if (buttonBackgroundColor == Color.TRANSPARENT && rippleColor == null) {
-        background = LayerDrawable(arrayOf(selectable, borderDrawable))
+        background = LayerDrawable(arrayOf(underlay, selectable, borderDrawable))
       } else {
-        updateBackgroundColor(buttonBackgroundColor, borderDrawable, selectable)
+        updateBackgroundColor(buttonBackgroundColor, underlay, borderDrawable, selectable)
       }
+
+      applyStartAnimationState()
     }
 
     private fun createBorderDrawable(): Drawable {
@@ -540,6 +655,12 @@ class RNGestureHandlerButtonViewManager :
         // is null or non-exclusive, assuming it doesn't have pressed children
         isTouched = pressed
         super.setPressed(pressed)
+
+        if (pressed) {
+          animatePressIn()
+        } else {
+          animatePressOut()
+        }
       }
 
       if (!pressed && touchResponder === this) {
