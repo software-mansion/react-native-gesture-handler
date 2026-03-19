@@ -253,14 +253,14 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #if TARGET_OS_OSX
 - (void)mouseDown:(NSEvent *)event
 {
-  [super mouseDown:event];
   [self handleAnimatePressIn];
+  [super mouseDown:event];
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
-  [super mouseUp:event];
   [self handleAnimatePressOut];
+  [super mouseUp:event];
 }
 #endif
 
