@@ -8,9 +8,9 @@ type ButtonProps = ViewProps & {
   activeOpacity?: number;
   activeScale?: number;
   activeUnderlayOpacity?: number;
-  startOpacity?: number;
-  startScale?: number;
-  startUnderlayOpacity?: number;
+  defaultOpacity?: number;
+  defaultScale?: number;
+  defaultUnderlayOpacity?: number;
   underlayColor?: ColorValue;
 };
 
@@ -20,9 +20,9 @@ export const ButtonComponent = ({
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
-  startOpacity = 1,
-  startScale = 1,
-  startUnderlayOpacity = 0,
+  defaultOpacity = 1,
+  defaultScale = 1,
+  defaultUnderlayOpacity = 0,
   underlayColor,
   style,
   children,
@@ -42,12 +42,12 @@ export const ButtonComponent = ({
 
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity
-    : startUnderlayOpacity;
+    : defaultUnderlayOpacity;
   const hasUnderlay = underlayColor != null;
-  const hasOpacity = activeOpacity !== 1 || startOpacity !== 1;
-  const currentOpacity = pressed ? activeOpacity : startOpacity;
-  const hasScale = activeScale !== 1 || startScale !== 1;
-  const currentScale = pressed ? activeScale : startScale;
+  const hasOpacity = activeOpacity !== 1 || defaultOpacity !== 1;
+  const currentOpacity = pressed ? activeOpacity : defaultOpacity;
+  const hasScale = activeScale !== 1 || defaultScale !== 1;
+  const currentScale = pressed ? activeScale : defaultScale;
 
   const easing = 'cubic-bezier(0, 0, 0.2, 1)';
   const transitionProps: string[] = [];

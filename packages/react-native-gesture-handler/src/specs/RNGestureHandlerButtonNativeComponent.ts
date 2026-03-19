@@ -26,9 +26,9 @@ interface NativeProps extends ViewProps {
   activeOpacity?: WithDefault<Float, 1>;
   activeScale?: WithDefault<Float, 1>;
   activeUnderlayOpacity?: WithDefault<Float, 0>;
-  startOpacity?: WithDefault<Float, 1>;
-  startScale?: WithDefault<Float, 1>;
-  startUnderlayOpacity?: WithDefault<Float, 0>;
+  defaultOpacity?: WithDefault<Float, 1>;
+  defaultScale?: WithDefault<Float, 1>;
+  defaultUnderlayOpacity?: WithDefault<Float, 0>;
   underlayColor?: ColorValue;
 }
 

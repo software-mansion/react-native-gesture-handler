@@ -141,9 +141,9 @@ class RNGestureHandlerButtonViewManager :
     view.animationDuration = animationDuration
   }
 
-  @ReactProp(name = "startOpacity")
-  override fun setStartOpacity(view: ButtonViewGroup, startOpacity: Float) {
-    view.startOpacity = startOpacity
+  @ReactProp(name = "defaultOpacity")
+  override fun setDefaultOpacity(view: ButtonViewGroup, defaultOpacity: Float) {
+    view.defaultOpacity = defaultOpacity
   }
 
   @ReactProp(name = "activeOpacity")
@@ -151,9 +151,9 @@ class RNGestureHandlerButtonViewManager :
     view.activeOpacity = targetOpacity
   }
 
-  @ReactProp(name = "startScale")
-  override fun setStartScale(view: ButtonViewGroup, startScale: Float) {
-    view.startScale = startScale
+  @ReactProp(name = "defaultScale")
+  override fun setDefaultScale(view: ButtonViewGroup, defaultScale: Float) {
+    view.defaultScale = defaultScale
   }
 
   @ReactProp(name = "activeScale")
@@ -166,9 +166,9 @@ class RNGestureHandlerButtonViewManager :
     view.underlayColor = underlayColor
   }
 
-  @ReactProp(name = "startUnderlayOpacity")
-  override fun setStartUnderlayOpacity(view: ButtonViewGroup, startUnderlayOpacity: Float) {
-    view.startUnderlayOpacity = startUnderlayOpacity
+  @ReactProp(name = "defaultUnderlayOpacity")
+  override fun setDefaultUnderlayOpacity(view: ButtonViewGroup, defaultUnderlayOpacity: Float) {
+    view.defaultUnderlayOpacity = defaultUnderlayOpacity
   }
 
   @ReactProp(name = "activeUnderlayOpacity")
@@ -257,15 +257,15 @@ class RNGestureHandlerButtonViewManager :
     var exclusive = true
     var animationDuration: Int = 100
     var activeOpacity: Float = 1.0f
-    var startOpacity: Float = 1.0f
+    var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
-    var startScale: Float = 1.0f
+    var defaultScale: Float = 1.0f
     var underlayColor: Int? = null
       set(color) = withBackgroundUpdate {
         field = color
       }
     var activeUnderlayOpacity: Float = 0f
-    var startUnderlayOpacity: Float = 0f
+    var defaultUnderlayOpacity: Float = 0f
       set(value) = withBackgroundUpdate {
         field = value
       }
@@ -392,21 +392,21 @@ class RNGestureHandlerButtonViewManager :
 
     private fun applyStartAnimationState() {
       (parent as? ViewGroup)?.let {
-        if (activeOpacity != 1.0f || startOpacity != 1.0f) {
-          it.alpha = startOpacity
+        if (activeOpacity != 1.0f || defaultOpacity != 1.0f) {
+          it.alpha = defaultOpacity
         }
-        if (activeScale != 1.0f || startScale != 1.0f) {
-          it.scaleX = startScale
-          it.scaleY = startScale
+        if (activeScale != 1.0f || defaultScale != 1.0f) {
+          it.scaleX = defaultScale
+          it.scaleY = defaultScale
         }
       }
-      underlayDrawable?.alpha = (startUnderlayOpacity * 255).toInt()
+      underlayDrawable?.alpha = (defaultUnderlayOpacity * 255).toInt()
     }
 
     private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float) {
-      val hasOpacity = activeOpacity != 1.0f || startOpacity != 1.0f
-      val hasScale = activeScale != 1.0f || startScale != 1.0f
-      val hasUnderlay = activeUnderlayOpacity != startUnderlayOpacity && underlayDrawable != null
+      val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f
+      val hasScale = activeScale != 1.0f || defaultScale != 1.0f
+      val hasUnderlay = activeUnderlayOpacity != defaultUnderlayOpacity && underlayDrawable != null
       if (!hasOpacity && !hasScale && !hasUnderlay) return
 
       currentAnimator?.cancel()
@@ -437,7 +437,7 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun animatePressOut() {
-      animateTo(startOpacity, startScale, startUnderlayOpacity)
+      animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
     }
 
     private fun createUnderlayDrawable(): PaintDrawable {
@@ -445,7 +445,7 @@ class RNGestureHandlerButtonViewManager :
       if (hasBorderRadii) {
         drawable.setCornerRadii(buildBorderRadii())
       }
-      drawable.alpha = (startUnderlayOpacity * 255).toInt()
+      drawable.alpha = (defaultUnderlayOpacity * 255).toInt()
       return drawable
     }
 

@@ -50,11 +50,11 @@
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
   _animationDuration = 100;
   _activeOpacity = 1.0;
-  _startOpacity = 1.0;
+  _defaultOpacity = 1.0;
   _activeScale = 1.0;
-  _startScale = 1.0;
+  _defaultScale = 1.0;
   _activeUnderlayOpacity = 0.0;
-  _startUnderlayOpacity = 0.0;
+  _defaultUnderlayOpacity = 0.0;
   _underlayColor = nil;
 #if TARGET_OS_OSX
   self.wantsLayer = YES; // Crucial for macOS layer-backing
@@ -177,22 +177,22 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 - (void)applyStartAnimationState
 {
   RNGHUIView *target = self.animationTarget ?: self;
-  _underlayLayer.opacity = _startUnderlayOpacity;
+  _underlayLayer.opacity = _defaultUnderlayOpacity;
 
 #if !TARGET_OS_OSX
-  if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
-    target.alpha = _startOpacity;
+  if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+    target.alpha = _defaultOpacity;
   }
-  if (_activeScale != 1.0 || _startScale != 1.0) {
-    target.layer.transform = CATransform3DMakeScale(_startScale, _startScale, 1.0);
+  if (_activeScale != 1.0 || _defaultScale != 1.0) {
+    target.layer.transform = CATransform3DMakeScale(_defaultScale, _defaultScale, 1.0);
   }
 #else
   target.wantsLayer = YES;
-  if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
-    target.alphaValue = _startOpacity;
+  if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+    target.alphaValue = _defaultOpacity;
   }
-  if (_activeScale != 1.0 || _startScale != 1.0) {
-    target.layer.transform = RNGHCenterScaleTransform(target.bounds, _startScale);
+  if (_activeScale != 1.0 || _defaultScale != 1.0) {
+    target.layer.transform = RNGHCenterScaleTransform(target.bounds, _defaultScale);
   }
 #endif
 }
@@ -206,10 +206,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
                    animations:^{
-                     if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
+                     if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
                        target.alpha = opacity;
                      }
-                     if (_activeScale != 1.0 || _startScale != 1.0) {
+                     if (_activeScale != 1.0 || _defaultScale != 1.0) {
                        target.layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
                      }
                    }
@@ -221,10 +221,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         context.allowsImplicitAnimation = YES;
         context.duration = duration;
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
+        if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
           target.animator.alphaValue = opacity;
         }
-        if (_activeScale != 1.0 || _startScale != 1.0) {
+        if (_activeScale != 1.0 || _defaultScale != 1.0) {
           target.layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
         }
       }
@@ -236,7 +236,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   RNGHUIView *target = self.animationTarget ?: self;
   [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale];
-  if (_activeUnderlayOpacity != _startUnderlayOpacity) {
+  if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
     [self animateUnderlayToOpacity:_activeUnderlayOpacity];
   }
 }
@@ -244,9 +244,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 - (void)handleAnimatePressOut
 {
   RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_startOpacity scale:_startScale];
-  if (_activeUnderlayOpacity != _startUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_startUnderlayOpacity];
+  [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale];
+  if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+    [self animateUnderlayToOpacity:_defaultUnderlayOpacity];
   }
 }
 

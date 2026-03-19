@@ -7,9 +7,9 @@ import GestureHandlerButton, {
 export interface RawButtonProps
   extends Omit<
       ButtonProps,
-      | 'startOpacity'
-      | 'startScale'
-      | 'startUnderlayOpacity'
+      | 'defaultOpacity'
+      | 'defaultScale'
+      | 'defaultUnderlayOpacity'
       | 'activeOpacity'
       | 'activeScale'
       | 'activeUnderlayOpacity'

@@ -85,17 +85,17 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   /**
    * Opacity applied to the button when it is not pressed.
    */
-  startOpacity?: number | undefined;
+  defaultOpacity?: number | undefined;
 
   /**
    * Scale applied to the button when it is not pressed.
    */
-  startScale?: number | undefined;
+  defaultScale?: number | undefined;
 
   /**
    * Opacity applied to the underlay when the button is not pressed.
    */
-  startUnderlayOpacity?: number | undefined;
+  defaultUnderlayOpacity?: number | undefined;
 
   /**
    * Color of the underlay.
@@ -256,14 +256,15 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
     [flattenedStyle]
   );
 
-  const { startOpacity, startScale } = rest;
+  const { defaultOpacity, defaultScale } = rest;
 
   const buttonRestingStyle = useMemo(
     (): ViewStyle => ({
-      opacity: startOpacity,
-      transform: startScale !== undefined ? [{ scale: startScale }] : undefined,
+      opacity: defaultOpacity,
+      transform:
+        defaultScale !== undefined ? [{ scale: defaultScale }] : undefined,
     }),
-    [startOpacity, startScale]
+    [defaultOpacity, defaultScale]
   );
 
   return (

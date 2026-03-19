@@ -30,10 +30,10 @@
 
 @property (nonatomic, assign) NSInteger animationDuration;
 @property (nonatomic, assign) CGFloat activeOpacity;
-@property (nonatomic, assign) CGFloat startOpacity;
+@property (nonatomic, assign) CGFloat defaultOpacity;
 @property (nonatomic, assign) CGFloat activeScale;
-@property (nonatomic, assign) CGFloat startScale;
-@property (nonatomic, assign) CGFloat startUnderlayOpacity;
+@property (nonatomic, assign) CGFloat defaultScale;
+@property (nonatomic, assign) CGFloat defaultUnderlayOpacity;
 @property (nonatomic, assign) CGFloat activeUnderlayOpacity;
 @property (nonatomic, strong, nullable) RNGHColor *underlayColor;
 

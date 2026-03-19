@@ -236,10 +236,10 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   _buttonView.userEnabled = newProps.enabled;
   _buttonView.animationDuration = newProps.animationDuration;
   _buttonView.activeOpacity = newProps.activeOpacity;
-  _buttonView.startOpacity = newProps.startOpacity;
+  _buttonView.defaultOpacity = newProps.defaultOpacity;
   _buttonView.activeScale = newProps.activeScale;
-  _buttonView.startScale = newProps.startScale;
-  _buttonView.startUnderlayOpacity = newProps.startUnderlayOpacity;
+  _buttonView.defaultScale = newProps.defaultScale;
+  _buttonView.defaultUnderlayOpacity = newProps.defaultUnderlayOpacity;
   _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
   if (newProps.underlayColor) {
     _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
