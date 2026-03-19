@@ -112,12 +112,14 @@
 {
   [super layoutSubviews];
   _underlayLayer.frame = self.bounds;
+  [self.layer insertSublayer:_underlayLayer atIndex:0];
 }
 #else
 - (void)layout
 {
   [super layout];
   _underlayLayer.frame = self.bounds;
+  [self.layer insertSublayer:_underlayLayer atIndex:0];
 }
 #endif
 
