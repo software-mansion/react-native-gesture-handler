@@ -68,12 +68,18 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 {
   [super willMoveToSuperview:newSuperview];
   _buttonView.animationTarget = newSuperview;
+  if (newSuperview != nil) {
+    [_buttonView applyStartAnimationState];
+  }
 }
 #else
 - (void)viewWillMoveToSuperview:(RNGHUIView *)newSuperview
 {
   [super viewWillMoveToSuperview:newSuperview];
   _buttonView.animationTarget = newSuperview;
+  if (newSuperview != nil) {
+    [_buttonView applyStartAnimationState];
+  }
 }
 #endif
 
@@ -261,8 +267,10 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     }
   }
 
-  [_buttonView applyStartAnimationState];
   [super updateProps:props oldProps:oldProps];
+  if (_buttonView.animationTarget != nil) {
+    [_buttonView applyStartAnimationState];
+  }
 }
 
 #if !TARGET_OS_OSX
