@@ -5,6 +5,7 @@ import GestureHandlerButton from '../../components/GestureHandlerButton';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
+  RawButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
 
@@ -13,10 +14,13 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export const RawButton = createNativeWrapper(GestureHandlerButton, {
-  shouldCancelWhenOutside: false,
-  shouldActivateOnStart: false,
-});
+export const RawButton = createNativeWrapper<unknown, RawButtonProps>(
+  GestureHandlerButton,
+  {
+    shouldCancelWhenOutside: false,
+    shouldActivateOnStart: false,
+  }
+);
 
 export const BaseButton = (props: BaseButtonProps) => {
   const longPressDetected = useRef(false);
