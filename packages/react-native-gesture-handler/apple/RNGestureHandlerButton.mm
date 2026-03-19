@@ -178,13 +178,20 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   _underlayLayer.opacity = _startUnderlayOpacity;
 
 #if !TARGET_OS_OSX
-  target.alpha = _startOpacity;
-  target.layer.transform = CATransform3DMakeScale(_startScale, _startScale, 1.0);
+  if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
+    target.alpha = _startOpacity;
+  }
+  if (_activeScale != 1.0 || _startScale != 1.0) {
+    target.layer.transform = CATransform3DMakeScale(_startScale, _startScale, 1.0);
+  }
 #else
   target.wantsLayer = YES;
-  target.alphaValue = _startOpacity;
-  // Use the centered transform helper
-  target.layer.transform = RNGHCenterScaleTransform(target.bounds, _startScale);
+  if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
+    target.alphaValue = _startOpacity;
+  }
+  if (_activeScale != 1.0 || _startScale != 1.0) {
+    target.layer.transform = RNGHCenterScaleTransform(target.bounds, _startScale);
+  }
 #endif
 }
 
@@ -197,8 +204,12 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
                    animations:^{
-                     target.alpha = opacity;
-                     target.layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
+                     if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
+                       target.alpha = opacity;
+                     }
+                     if (_activeScale != 1.0 || _startScale != 1.0) {
+                       target.layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
+                     }
                    }
                    completion:nil];
 #else
@@ -208,8 +219,12 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         context.allowsImplicitAnimation = YES;
         context.duration = duration;
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        target.animator.alphaValue = opacity;
-        target.layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
+        if (_activeOpacity != 1.0 || _startOpacity != 1.0) {
+          target.animator.alphaValue = opacity;
+        }
+        if (_activeScale != 1.0 || _startScale != 1.0) {
+          target.layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
+        }
       }
       completionHandler:nil];
 #endif

@@ -40,15 +40,24 @@ export const ButtonComponent = ({
     setPressed(false);
   }, []);
 
-  const currentOpacity = pressed ? activeOpacity : startOpacity;
-  const currentScale = pressed ? activeScale : startScale;
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity
     : startUnderlayOpacity;
   const hasUnderlay = underlayColor != null;
+  const hasOpacity = activeOpacity !== 1 || startOpacity !== 1;
+  const currentOpacity = pressed ? activeOpacity : startOpacity;
+  const hasScale = activeScale !== 1 || startScale !== 1;
+  const currentScale = pressed ? activeScale : startScale;
 
   const easing = 'cubic-bezier(0, 0, 0.2, 1)';
-  const transition = `opacity ${animationDuration}ms ${easing}, transform ${animationDuration}ms ${easing}`;
+  const transitionProps: string[] = [];
+  if (hasOpacity) {
+    transitionProps.push(`opacity ${animationDuration}ms ${easing}`);
+  }
+  if (hasScale) {
+    transitionProps.push(`transform ${animationDuration}ms ${easing}`);
+  }
+  const transition = transitionProps.join(', ');
 
   return (
     <View
@@ -56,15 +65,14 @@ export const ButtonComponent = ({
       style={[
         style,
         {
-          opacity: currentOpacity,
-          transform: [{ scale: currentScale }],
+          ...(hasOpacity && { opacity: currentOpacity }),
+          ...(hasScale && { transform: [{ scale: currentScale }] }),
           // @ts-ignore - web-only CSS property
           transition,
           // Clip the underlay to the view bounds (respects borderRadius).
           ...(hasUnderlay && { overflow: 'hidden' }),
         },
       ]}
-      // @ts-ignore - web-only pointer events
       onPointerDown={pressIn}
       onPointerUp={pressOut}
       onPointerCancel={pressOut}
