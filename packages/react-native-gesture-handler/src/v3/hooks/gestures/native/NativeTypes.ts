@@ -1,5 +1,5 @@
 import {
-  BaseDiscreteGestureConfig,
+  BaseGestureConfig,
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
@@ -33,7 +33,7 @@ export type NativeHandlerData = {
 export type NativeGestureProperties =
   WithSharedValue<NativeGestureNativeProperties>;
 
-export type NativeGestureInternalConfig = BaseDiscreteGestureConfig<
+export type NativeGestureInternalConfig = BaseGestureConfig<
   NativeGestureProperties,
   NativeHandlerData
 >;
