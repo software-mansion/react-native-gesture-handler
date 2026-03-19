@@ -256,6 +256,16 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
     [flattenedStyle]
   );
 
+  const { startOpacity, startScale } = rest;
+
+  const buttonRestingStyle = useMemo(
+    (): ViewStyle => ({
+      opacity: startOpacity,
+      transform: startScale !== undefined ? [{ scale: startScale }] : undefined,
+    }),
+    [startOpacity, startScale]
+  );
+
   return (
     <RNGestureHandlerButtonWrapperNativeComponent style={styles.contents}>
       <View
@@ -263,6 +273,7 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
         style={[
           styles.contents,
           (!overflow || overflow === 'hidden') && styles.overflowHidden,
+          buttonRestingStyle,
           restStyle,
         ]}>
         <ButtonComponent {...rest} style={layoutStyle} />
