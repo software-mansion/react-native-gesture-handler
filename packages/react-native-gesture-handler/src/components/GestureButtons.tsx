@@ -256,7 +256,9 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
   };
 
   override render() {
-    const { children, style, innerRef, ...rest } = this.props;
+    // Move activeOpacity out of the rest props to avoid passing it to the native component
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { children, style, innerRef, activeOpacity, ...rest } = this.props;
 
     return (
       <AnimatedBaseButton
