@@ -151,7 +151,7 @@
   anim.fromValue = @([_underlayLayer.presentationLayer opacity]);
   anim.toValue = @(toOpacity);
   anim.duration = _animationDuration / 1000.0;
-  anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+  anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
   _underlayLayer.opacity = toOpacity;
   [_underlayLayer addAnimation:anim forKey:@"opacity"];
 }
