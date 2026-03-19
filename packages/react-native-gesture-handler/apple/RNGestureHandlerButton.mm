@@ -179,7 +179,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 #if !TARGET_OS_OSX
   target.alpha = _startOpacity;
-  target.transform = CGAffineTransformMakeScale(_startScale, _startScale);
+  target.layer.transform = CATransform3DMakeScale(_startScale, _startScale, 1.0);
 #else
   target.wantsLayer = YES;
   target.alphaValue = _startOpacity;
@@ -198,7 +198,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                       options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
                    animations:^{
                      target.alpha = opacity;
-                     target.transform = CGAffineTransformMakeScale(scale, scale);
+                     target.layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
                    }
                    completion:nil];
 #else
