@@ -266,6 +266,9 @@ class RNGestureHandlerButtonViewManager :
       }
     var activeUnderlayOpacity: Float = 0f
     var startUnderlayOpacity: Float = 0f
+      set(value) = withBackgroundUpdate {
+        field = value
+      }
 
     override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
