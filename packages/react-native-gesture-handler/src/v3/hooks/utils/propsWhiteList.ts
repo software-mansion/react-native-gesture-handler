@@ -78,6 +78,12 @@ export const PropsToFilter = new Set<
   'shouldUseReanimatedDetector',
   'useAnimated',
   'runOnJS',
+
+  // Pan offset props before remapping:
+  'activeOffsetY',
+  'failOffsetX',
+  'failOffsetY',
+  'activeOffsetX',
 ]);
 
 export const PropsWhiteLists = new Map<
