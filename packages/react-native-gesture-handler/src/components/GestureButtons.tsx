@@ -194,7 +194,9 @@ class InnerRectButton extends React.Component<RectButtonWithRefProps> {
   };
 
   override render() {
-    const { children, style, ...rest } = this.props;
+    // Move activeOpacity out of the rest props to avoid passing it to the native component
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { children, style, activeOpacity, ...rest } = this.props;
 
     const resolvedStyle = StyleSheet.flatten(style) ?? {};
 
