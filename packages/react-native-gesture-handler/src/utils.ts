@@ -1,6 +1,3 @@
-import { AccessibilityInfo } from 'react-native';
-import { useEffect, useState } from 'react';
-
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -96,32 +93,3 @@ export function deepEqual(obj1: any, obj2: any) {
 }
 
 export const INT32_MAX = 2 ** 31 - 1;
-
-export function useIsScreenReaderEnabled() {
-  const [isEnabled, setIsEnabled] = useState(false);
-
-  useEffect(() => {
-    const checkStatus = async () => {
-      try {
-        const res = await AccessibilityInfo.isScreenReaderEnabled();
-        setIsEnabled(res);
-      } catch (error) {
-        console.warn('Could not read accessibility info: defaulting to false');
-      }
-    };
-
-    checkStatus();
-
-    const listener = AccessibilityInfo.addEventListener(
-      'screenReaderChanged',
-      (enabled) => {
-        setIsEnabled(enabled);
-      }
-    );
-
-    return () => {
-      listener.remove();
-    };
-  }, []);
-  return isEnabled;
-}

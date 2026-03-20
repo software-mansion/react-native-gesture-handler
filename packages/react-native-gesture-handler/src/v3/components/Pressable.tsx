@@ -39,7 +39,8 @@ import { GestureDetector } from '../detectors';
 import { PureNativeButton } from './GestureButtons';
 
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isTestEnv, useIsScreenReaderEnabled } from '../../utils';
+import { INT32_MAX, isTestEnv } from '../../utils';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
