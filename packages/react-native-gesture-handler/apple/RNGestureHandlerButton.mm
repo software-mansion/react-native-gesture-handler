@@ -80,8 +80,7 @@
 
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
+  if (self = [super init]) {
     [self commonInit];
   }
   return self;
@@ -89,8 +88,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  self = [super initWithFrame:frame];
-  if (self) {
+  if (self = [super initWithFrame:frame]) {
     [self commonInit];
   }
   return self;
