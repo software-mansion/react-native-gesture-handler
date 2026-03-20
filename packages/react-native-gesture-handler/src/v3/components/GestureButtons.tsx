@@ -46,6 +46,8 @@ export const BaseButton = (props: BaseButtonProps) => {
       if (onLongPress) {
         longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
       }
+
+      props.onBegin?.(e);
     }
   };
 
@@ -57,27 +59,35 @@ export const BaseButton = (props: BaseButtonProps) => {
       if (onLongPress) {
         longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
       }
+
+      props.onBegin?.(e);
     }
 
     if (!e.pointerInside && longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
+
+    props.onActivate?.(e);
   };
 
-  const onDeactivate = (e: CallbackEventType, success: boolean) => {
+  const onDeactivate = (e: CallbackEventType, didSucceed: boolean) => {
     onActiveStateChange?.(false);
 
-    if (success && !longPressDetected.current) {
+    if (didSucceed && !longPressDetected.current) {
       onPress?.(e.pointerInside);
     }
+
+    props.onDeactivate?.(e, didSucceed);
   };
 
-  const onFinalize = (_e: CallbackEventType) => {
+  const onFinalize = (e: CallbackEventType, didSucceed: boolean) => {
     if (longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
+
+    props.onFinalize?.(e, didSucceed);
   };
 
   return (
