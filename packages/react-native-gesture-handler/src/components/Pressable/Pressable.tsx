@@ -286,7 +286,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
             handleFinalize();
           }
         }),
-    [stateMachine, handleFinalize, handlePressOut]
+    [stateMachine, handleFinalize, handlePressOut, isScreenReaderEnabled]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
