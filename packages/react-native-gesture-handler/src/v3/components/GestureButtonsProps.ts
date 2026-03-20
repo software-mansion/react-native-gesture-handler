@@ -5,7 +5,15 @@ import GestureHandlerButton, {
 } from '../../components/GestureHandlerButton';
 
 export interface RawButtonProps
-  extends ButtonProps,
+  extends Omit<
+      ButtonProps,
+      | 'defaultOpacity'
+      | 'defaultScale'
+      | 'defaultUnderlayOpacity'
+      | 'activeOpacity'
+      | 'activeScale'
+      | 'activeUnderlayOpacity'
+    >,
     Omit<
       NativeWrapperProperties<ReturnType<typeof GestureHandlerButton>>,
       'hitSlop' | 'enabled'

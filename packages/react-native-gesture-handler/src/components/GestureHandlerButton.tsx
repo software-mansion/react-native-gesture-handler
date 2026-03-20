@@ -63,6 +63,46 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   touchSoundDisabled?: boolean | undefined;
 
   /**
+   * Duration of the animation when the button is pressed.
+   */
+  animationDuration?: number | undefined;
+
+  /**
+   * Opacity applied to the button when it is pressed.
+   */
+  activeOpacity?: number | undefined;
+
+  /**
+   * Scale applied to the button when it is pressed.
+   */
+  activeScale?: number | undefined;
+
+  /**
+   * Opacity applied to the underlay when the button is pressed.
+   */
+  activeUnderlayOpacity?: number | undefined;
+
+  /**
+   * Opacity applied to the button when it is not pressed.
+   */
+  defaultOpacity?: number | undefined;
+
+  /**
+   * Scale applied to the button when it is not pressed.
+   */
+  defaultScale?: number | undefined;
+
+  /**
+   * Opacity applied to the underlay when the button is not pressed.
+   */
+  defaultUnderlayOpacity?: number | undefined;
+
+  /**
+   * Color of the underlay.
+   */
+  underlayColor?: ColorValue | undefined;
+
+  /**
    * Style object, use it to set additional styles.
    */
   style?: StyleProp<ViewStyle>;
@@ -216,6 +256,17 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
     [flattenedStyle]
   );
 
+  const { defaultOpacity, defaultScale } = rest;
+
+  const buttonRestingStyle = useMemo(
+    (): ViewStyle => ({
+      opacity: defaultOpacity,
+      transform:
+        defaultScale !== undefined ? [{ scale: defaultScale }] : undefined,
+    }),
+    [defaultOpacity, defaultScale]
+  );
+
   return (
     <RNGestureHandlerButtonWrapperNativeComponent style={styles.contents}>
       <View
@@ -223,6 +274,7 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
         style={[
           styles.contents,
           (!overflow || overflow === 'hidden') && styles.overflowHidden,
+          buttonRestingStyle,
           restStyle,
         ]}>
         <ButtonComponent {...rest} style={layoutStyle} />
