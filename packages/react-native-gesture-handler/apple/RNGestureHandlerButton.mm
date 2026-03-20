@@ -62,12 +62,7 @@
 
   _underlayLayer = [CALayer new];
   _underlayLayer.opacity = 0;
-
-#if !TARGET_OS_OSX
-  _underlayLayer.backgroundColor = [UIColor blackColor].CGColor;
-#else
-  _underlayLayer.backgroundColor = [NSColor blackColor].CGColor;
-#endif
+  _underlayLayer.backgroundColor = [RNGHColor blackColor].CGColor;
 
   [self.layer insertSublayer:_underlayLayer atIndex:0];
 
