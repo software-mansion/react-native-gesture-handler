@@ -68,9 +68,7 @@
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self setExclusiveTouch:YES];
-  [self addTarget:self
-                action:@selector(handleAnimatePressIn)
-      forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
+  [self addTarget:self action:@selector(handleAnimatePressIn) forControlEvents:UIControlEventTouchDown];
   [self addTarget:self
                 action:@selector(handleAnimatePressOut)
       forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
@@ -254,6 +252,16 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   [self handleAnimatePressOut];
   [super mouseUp:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  NSPoint locationInWindow = [event locationInWindow];
+  NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+
+  if (!NSPointInRect(locationInView, self.bounds)) {
+    [self handleAnimatePressOut];
+  }
 }
 #endif
 
