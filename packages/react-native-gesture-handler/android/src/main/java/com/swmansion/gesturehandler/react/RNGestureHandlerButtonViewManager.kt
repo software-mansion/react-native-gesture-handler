@@ -407,7 +407,9 @@ class RNGestureHandlerButtonViewManager :
       val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f
       val hasScale = activeScale != 1.0f || defaultScale != 1.0f
       val hasUnderlay = activeUnderlayOpacity != defaultUnderlayOpacity && underlayDrawable != null
-      if (!hasOpacity && !hasScale && !hasUnderlay) return
+      if (!hasOpacity && !hasScale && !hasUnderlay) {
+        return
+      }
 
       currentAnimator?.cancel()
       val animators = ArrayList<Animator>()
