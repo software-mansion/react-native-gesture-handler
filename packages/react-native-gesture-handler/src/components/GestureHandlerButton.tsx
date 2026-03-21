@@ -104,7 +104,11 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
 export const ButtonComponent =
   RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
-export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
+export default function GestureHandlerButton({
+  borderless,
+  style,
+  ...rest
+}: ButtonProps) {
   const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
 
   const {
@@ -222,10 +226,16 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
         collapsable={false}
         style={[
           styles.contents,
-          (!overflow || overflow === 'hidden') && styles.overflowHidden,
+          !borderless &&
+            (!overflow || overflow === 'hidden') &&
+            styles.overflowHidden,
           restStyle,
         ]}>
-        <ButtonComponent {...rest} style={layoutStyle} />
+        <ButtonComponent
+          {...rest}
+          style={layoutStyle}
+          borderless={borderless}
+        />
       </View>
     </RNGestureHandlerButtonWrapperNativeComponent>
   );
