@@ -63,6 +63,26 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   return self;
 }
 
+#if !TARGET_OS_OSX
+- (void)willMoveToSuperview:(RNGHUIView *)newSuperview
+{
+  [super willMoveToSuperview:newSuperview];
+  _buttonView.animationTarget = newSuperview;
+  if (newSuperview != nil) {
+    [_buttonView applyStartAnimationState];
+  }
+}
+#else
+- (void)viewWillMoveToSuperview:(RNGHUIView *)newSuperview
+{
+  [super viewWillMoveToSuperview:newSuperview];
+  _buttonView.animationTarget = newSuperview;
+  if (newSuperview != nil) {
+    [_buttonView applyStartAnimationState];
+  }
+}
+#endif
+
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_buttonView mountChildComponentView:childComponentView index:index];
@@ -214,6 +234,18 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
   _buttonView.userEnabled = newProps.enabled;
+  _buttonView.animationDuration = newProps.animationDuration;
+  _buttonView.activeOpacity = newProps.activeOpacity;
+  _buttonView.defaultOpacity = newProps.defaultOpacity;
+  _buttonView.activeScale = newProps.activeScale;
+  _buttonView.defaultScale = newProps.defaultScale;
+  _buttonView.defaultUnderlayOpacity = newProps.defaultUnderlayOpacity;
+  _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
+  if (newProps.underlayColor) {
+    _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
+  } else {
+    _buttonView.underlayColor = nil;
+  }
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;
   [self setAccessibilityProps:props oldProps:oldProps];
@@ -236,6 +268,9 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   [super updateProps:props oldProps:oldProps];
+  if (_buttonView.animationTarget != nil) {
+    [_buttonView applyStartAnimationState];
+  }
 }
 
 #if !TARGET_OS_OSX
