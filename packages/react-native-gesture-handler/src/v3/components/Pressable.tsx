@@ -302,8 +302,9 @@ const Pressable = (props: PressableProps) => {
       stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
     },
     onActivate: () => {
-      if (Platform.OS !== 'android') {
+      if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
         // Native.onActivate is broken with Android + hitSlop
+        // On iOS, onActivate fires on drag (not touch down), so we use onBegin + LONG_PRESS_TOUCHES_DOWN instead
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }
     },
@@ -317,9 +318,7 @@ const Pressable = (props: PressableProps) => {
         success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
       );
 
-      if (Platform.OS !== 'ios') {
-        handleFinalize();
-      }
+      handleFinalize();
     },
     enabled: disabled !== true,
     disableReanimated: true,
