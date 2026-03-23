@@ -217,22 +217,21 @@
 
 - (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event
 {
+  RNGestureHandlerState newState = RNGestureHandlerStateActive;
+
   // Pointer is moved outside of the view bounds, we cancel button when `shouldCancelWhenOutside` is set
   if (self.shouldCancelWhenOutside) {
     UIControl *control = (UIControl *)sender;
     [control cancelTrackingWithEvent:event];
-    [self sendEventsInState:RNGestureHandlerStateEnd
-             forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                         withNumberOfTouches:event.allTouches.count
-                                                             withPointerType:_pointerType]];
-  } else {
-    [self sendEventsInState:RNGestureHandlerStateActive
-             forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                         withNumberOfTouches:event.allTouches.count
-                                                             withPointerType:_pointerType]];
+
+    newState = RNGestureHandlerStateEnd;
   }
+
+  [self sendEventsInState:newState
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
