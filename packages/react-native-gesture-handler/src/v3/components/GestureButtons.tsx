@@ -34,27 +34,16 @@ export const BaseButton = (props: BaseButtonProps) => {
   };
 
   const onBegin = (e: CallbackEventType) => {
-    if (Platform.OS === 'android' && e.pointerInside) {
-      longPressDetected.current = false;
-      if (onLongPress) {
-        longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
-      }
-
-      props.onBegin?.(e);
+    longPressDetected.current = false;
+    if (onLongPress) {
+      longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
     }
+
+    props.onBegin?.(e);
   };
 
   const onActivate = (e: CallbackEventType) => {
     onActiveStateChange?.(true);
-
-    if (Platform.OS !== 'android' && e.pointerInside) {
-      longPressDetected.current = false;
-      if (onLongPress) {
-        longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
-      }
-
-      props.onBegin?.(e);
-    }
 
     if (!e.pointerInside && longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
