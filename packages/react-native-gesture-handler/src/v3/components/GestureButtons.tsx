@@ -14,13 +14,13 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export const RawButton = createNativeWrapper<unknown, RawButtonProps>(
-  GestureHandlerButton,
-  {
-    shouldCancelWhenOutside: false,
-    shouldActivateOnStart: false,
-  }
-);
+export const RawButton = createNativeWrapper<
+  React.ComponentRef<typeof GestureHandlerButton>,
+  RawButtonProps
+>(GestureHandlerButton, {
+  shouldCancelWhenOutside: false,
+  shouldActivateOnStart: false,
+});
 
 export const BaseButton = (props: BaseButtonProps) => {
   const longPressDetected = useRef(false);
@@ -158,11 +158,12 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
     props.onActiveStateChange?.(active);
   };
 
-  const { children, style, ...rest } = props;
+  const { children, style, ref, ...rest } = props;
 
   return (
     <AnimatedBaseButton
       {...rest}
+      ref={ref ?? null}
       onActiveStateChange={onActiveStateChange}
       style={[style, Platform.OS === 'ios' && { opacity }]}>
       {children}

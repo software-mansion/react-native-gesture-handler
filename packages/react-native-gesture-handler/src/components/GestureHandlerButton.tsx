@@ -13,9 +13,12 @@ import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButt
 import RNGestureHandlerButtonWrapperNativeComponent from '../specs/RNGestureHandlerButtonWrapperNativeComponent';
 import { useMemo } from 'react';
 
+export const ButtonComponent =
+  RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
+
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;
-
+  ref?: React.Ref<React.ComponentRef<typeof ButtonComponent>> | undefined;
   /**
    * Defines if buttons should respond to touches. By default set to true.
    */
@@ -140,9 +143,6 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   // eslint-disable-next-line @typescript-eslint/ban-types
   testOnly_onLongPress?: Function | null | undefined;
 }
-
-export const ButtonComponent =
-  RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
 export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
   const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);

@@ -15,7 +15,7 @@ export interface RawButtonProps
       | 'activeUnderlayOpacity'
     >,
     Omit<
-      NativeWrapperProperties<ReturnType<typeof GestureHandlerButton>>,
+      NativeWrapperProperties<React.ComponentRef<typeof GestureHandlerButton>>,
       'hitSlop' | 'enabled'
     > {}
 
