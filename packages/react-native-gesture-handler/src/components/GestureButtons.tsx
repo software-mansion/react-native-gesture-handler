@@ -62,12 +62,7 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
       this.props.onPress(pointerInside);
     }
 
-    if (
-      !this.lastActive &&
-      // NativeViewGestureHandler sends different events based on platform
-      state === (Platform.OS !== 'android' ? State.ACTIVE : State.BEGAN) &&
-      pointerInside
-    ) {
+    if (!this.lastActive && state === State.BEGAN && pointerInside) {
       this.longPressDetected = false;
       if (this.props.onLongPress) {
         this.longPressTimeout = setTimeout(
