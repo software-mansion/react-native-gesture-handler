@@ -38,6 +38,10 @@ export const BaseButton = (props: BaseButtonProps) => {
   };
 
   const onBegin = (e: CallbackEventType) => {
+    if (!e.pointerInside) {
+      return;
+    }
+
     // iOS, macOS. Web has its own implementation of button.
     if (Platform.OS !== 'android') {
       onActiveStateChange?.(true);
@@ -52,7 +56,7 @@ export const BaseButton = (props: BaseButtonProps) => {
   };
 
   const onActivate = (e: CallbackEventType) => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === 'android' && e.pointerInside) {
       onActiveStateChange?.(true);
     }
 
