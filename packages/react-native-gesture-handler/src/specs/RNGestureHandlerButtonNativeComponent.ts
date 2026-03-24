@@ -22,6 +22,14 @@ interface NativeProps extends ViewProps {
     'box-none' | 'none' | 'box-only' | 'auto',
     'auto'
   >;
+  animationDuration?: WithDefault<Int32, 100>;
+  activeOpacity?: WithDefault<Float, 1>;
+  activeScale?: WithDefault<Float, 1>;
+  activeUnderlayOpacity?: WithDefault<Float, 0>;
+  defaultOpacity?: WithDefault<Float, 1>;
+  defaultScale?: WithDefault<Float, 1>;
+  defaultUnderlayOpacity?: WithDefault<Float, 0>;
+  underlayColor?: ColorValue;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');

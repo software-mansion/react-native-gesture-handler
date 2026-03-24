@@ -15,7 +15,7 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
 export const RawButton = createNativeWrapper<
-  ReturnType<typeof GestureHandlerButton>,
+  React.ComponentRef<typeof GestureHandlerButton>,
   RawButtonProps
 >(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
@@ -118,8 +118,13 @@ const btnStyles = StyleSheet.create({
  * @deprecated `RectButton` is deprecated, use `Clickable` with `underlayActiveOpacity={0.7}` instead
  */
 export const RectButton = (props: RectButtonProps) => {
-  const activeOpacity = props.activeOpacity ?? 0.105;
-  const underlayColor = props.underlayColor ?? 'black';
+  const {
+    children,
+    style,
+    activeOpacity = 0.105,
+    underlayColor = 'black',
+    ...rest
+  } = props;
 
   const opacity = useRef(new Animated.Value(0)).current;
 
@@ -130,8 +135,6 @@ export const RectButton = (props: RectButtonProps) => {
 
     props.onActiveStateChange?.(active);
   };
-
-  const { children, style, ...rest } = props;
 
   const resolvedStyle = StyleSheet.flatten(style ?? {});
 
