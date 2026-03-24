@@ -34,21 +34,6 @@ const PROMOS: readonly Promo[] = [
       </>
     ),
   },
-  {
-    key: 'paradise',
-    href: 'https://paradise.swmansion.com?origin=swmansion_bar',
-    bg: '#FFF4C0',
-    buttonLabel: 'Learn more',
-    label: (
-      <>
-        <strong>React Native Paradise</strong>
-        <span className={styles.hiddenOnMobile}>
-          {' '}
-          - a week of advanced RN workshops in Croatia!
-        </span>
-      </>
-    ),
-  },
 ];
 
 // bump when adding promos so users who dismissed banner see the new one
@@ -72,13 +57,16 @@ export default function TopPromoRotator({ onClose }: Props) {
       'script[src*="www.googletagmanager.com/gtm.js?id=GTM-WV2G3SQL"]'
     );
 
-    if (existingScript) return;
+    if (existingScript) {
+      return;
+    }
 
     (function (w: Window, d: Document, s: string, l: string, i: string) {
       w.dataLayer = w.dataLayer || [];
+      // prettier-ignore
       w.dataLayer.push({
         'gtm.start': new Date().getTime(),
-        event: 'gtm.js',
+        'event': 'gtm.js',
       });
       const f = d.getElementsByTagName(s)[0] as HTMLScriptElement;
       const j = d.createElement(s) as HTMLScriptElement;
@@ -91,7 +79,7 @@ export default function TopPromoRotator({ onClose }: Props) {
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      setIndex(i => (i + 1) % promos.length);
+      setIndex((i) => (i + 1) % promos.length);
     }, 5_000);
 
     return () => window.clearInterval(id);
@@ -115,7 +103,7 @@ export default function TopPromoRotator({ onClose }: Props) {
           transform: translateY,
           transition: 'transform 700ms cubic-bezier(0.22, 1, 0.36, 1)',
         }}>
-        {promos.map(p => (
+        {promos.map((p) => (
           <a
             key={p.key}
             href={p.href}

@@ -5,6 +5,7 @@ import GestureHandlerButton from '../../components/GestureHandlerButton';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
+  RawButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
 
@@ -13,7 +14,10 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
-export const RawButton = createNativeWrapper(GestureHandlerButton, {
+export const RawButton = createNativeWrapper<
+  React.ComponentRef<typeof GestureHandlerButton>,
+  RawButtonProps
+>(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: false,
 });
@@ -39,6 +43,8 @@ export const BaseButton = (props: BaseButtonProps) => {
       if (onLongPress) {
         longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
       }
+
+      props.onBegin?.(e);
     }
   };
 
@@ -50,27 +56,35 @@ export const BaseButton = (props: BaseButtonProps) => {
       if (onLongPress) {
         longPressTimeout.current = setTimeout(wrappedLongPress, delayLongPress);
       }
+
+      props.onBegin?.(e);
     }
 
     if (!e.pointerInside && longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
+
+    props.onActivate?.(e);
   };
 
-  const onDeactivate = (e: CallbackEventType, success: boolean) => {
+  const onDeactivate = (e: CallbackEventType, didSucceed: boolean) => {
     onActiveStateChange?.(false);
 
-    if (success && !longPressDetected.current) {
+    if (didSucceed && !longPressDetected.current) {
       onPress?.(e.pointerInside);
     }
+
+    props.onDeactivate?.(e, didSucceed);
   };
 
-  const onFinalize = (_e: CallbackEventType) => {
+  const onFinalize = (e: CallbackEventType, didSucceed: boolean) => {
     if (longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
+
+    props.onFinalize?.(e, didSucceed);
   };
 
   return (
@@ -98,8 +112,13 @@ const btnStyles = StyleSheet.create({
 });
 
 export const RectButton = (props: RectButtonProps) => {
-  const activeOpacity = props.activeOpacity ?? 0.105;
-  const underlayColor = props.underlayColor ?? 'black';
+  const {
+    children,
+    style,
+    activeOpacity = 0.105,
+    underlayColor = 'black',
+    ...rest
+  } = props;
 
   const opacity = useRef(new Animated.Value(0)).current;
 
@@ -110,8 +129,6 @@ export const RectButton = (props: RectButtonProps) => {
 
     props.onActiveStateChange?.(active);
   };
-
-  const { children, style, ...rest } = props;
 
   const resolvedStyle = StyleSheet.flatten(style ?? {});
 
@@ -151,11 +168,12 @@ export const BorderlessButton = (props: BorderlessButtonProps) => {
     props.onActiveStateChange?.(active);
   };
 
-  const { children, style, ...rest } = props;
+  const { children, style, ref, ...rest } = props;
 
   return (
     <AnimatedBaseButton
       {...rest}
+      ref={ref ?? null}
       onActiveStateChange={onActiveStateChange}
       style={[style, Platform.OS === 'ios' && { opacity }]}>
       {children}
