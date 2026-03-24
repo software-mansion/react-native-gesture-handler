@@ -113,7 +113,7 @@ export default function ClickableStress() {
   return (
     <View style={styles.container}>
       <Clickable
-        underlayActiveOpacity={0.105}
+        activeUnderlayOpacity={0.105}
         style={[styles.startButton, isRunning && styles.startButtonBusy]}
         onPress={start}
         enabled={!isRunning}>

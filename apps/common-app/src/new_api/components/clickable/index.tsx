@@ -40,7 +40,7 @@ export default function ClickableExample() {
             <ClickableWrapper
               name="Rect"
               color={COLORS.WEB_BLUE}
-              underlayActiveOpacity={0.105}
+              activeUnderlayOpacity={0.105}
             />
 
             <ClickableWrapper
@@ -59,14 +59,14 @@ export default function ClickableExample() {
             <ClickableWrapper
               name="Click me!"
               color={COLORS.YELLOW}
-              underlayActiveOpacity={0.3}
+              activeUnderlayOpacity={0.3}
             />
 
             <ClickableWrapper
               name="Click me!"
               color={COLORS.NAVY}
-              underlayInitialOpacity={0.7}
-              underlayActiveOpacity={0.5}
+              defaultUnderlayOpacity={0.7}
+              activeUnderlayOpacity={0.5}
               underlayColor={COLORS.DARK_GREEN}
             />
           </View>
@@ -77,14 +77,14 @@ export default function ClickableExample() {
             <ClickableWrapper
               name="Click me!"
               color={COLORS.LIGHT_BLUE}
-              initialOpacity={0.3}
+              defaultOpacity={0.3}
               activeOpacity={0.7}
             />
 
             <ClickableWrapper
               name="Click me!"
               color={COLORS.DARK_SALMON}
-              initialOpacity={0.7}
+              defaultOpacity={0.7}
               activeOpacity={0.5}
             />
           </View>
