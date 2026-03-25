@@ -10,7 +10,7 @@ const ClickableButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
   ButtonProps
 >(GestureHandlerButton, {
-  shouldCancelWhenOutside: false,
+  shouldCancelWhenOutside: true,
   shouldActivateOnStart: false,
 });
 
