@@ -195,6 +195,12 @@
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
+
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event

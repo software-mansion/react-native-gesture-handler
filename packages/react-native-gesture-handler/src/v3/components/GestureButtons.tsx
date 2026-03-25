@@ -19,7 +19,7 @@ export const RawButton = createNativeWrapper<
   RawButtonProps
 >(GestureHandlerButton, {
   shouldCancelWhenOutside: false,
-  shouldActivateOnStart: false,
+  shouldActivateOnStart: true,
 });
 
 export const BaseButton = (props: BaseButtonProps) => {
