@@ -167,8 +167,14 @@
 
 - (void)unbindFromView
 {
+  UIView *view = self.recognizer.view;
+
+  if ([view isKindOfClass:[UIControl class]]) {
+    [(UIControl *)view removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
+  }
+
   // Restore the React Native's overriden behavor for not delaying content touches
-  UIScrollView *scrollView = [self retrieveScrollView:self.recognizer.view];
+  UIScrollView *scrollView = [self retrieveScrollView:view];
   scrollView.delaysContentTouches = NO;
 
   [super unbindFromView];
