@@ -56,7 +56,7 @@ function ClickableList({ run, onMountDuration }: ClickableListProps) {
           // <Clickable
           //   key={id}
           //   style={styles.button}
-          //   underlayActiveOpacity={0.105}
+          //   activeUnderlayOpacity={0.105}
           // />
 
           // <BorderlessButton key={id} style={styles.button} />

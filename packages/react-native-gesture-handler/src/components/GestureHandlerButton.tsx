@@ -199,7 +199,7 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
 
     // Visual properties
     ...restStyle
-  } = flattenedStyle;
+  } = flattenedStyle ?? {};
 
   // Layout styles for ButtonComponent
   const layoutStyle = useMemo(
