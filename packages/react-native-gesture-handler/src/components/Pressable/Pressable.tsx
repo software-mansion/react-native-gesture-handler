@@ -85,6 +85,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
   const isOnPressAllowed = useRef<boolean>(true);
   const isCurrentlyPressed = useRef<boolean>(false);
   const dimensions = useRef<PressableDimensions>({ width: 0, height: 0 });
+  const lastTouchEvent = useRef<PressableEvent | null>(null);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -259,6 +260,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
           const pressableEvent = gestureTouchToPressableEvent(event);
+          lastTouchEvent.current = pressableEvent;
           stateMachine.handleEvent(
             StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
             pressableEvent
@@ -303,7 +305,10 @@ const LegacyPressable = (props: LegacyPressableProps) => {
           }
         })
         .onBegin(() => {
-          stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
+          stateMachine.handleEvent(
+            StateMachineEvent.NATIVE_BEGIN,
+            lastTouchEvent.current ?? undefined
+          );
         })
         .onStart(() => {
           if (Platform.OS !== 'android') {

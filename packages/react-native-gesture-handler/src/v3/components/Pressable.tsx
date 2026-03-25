@@ -83,6 +83,7 @@ const Pressable = (props: PressableProps) => {
     width: 0,
     height: 0,
   });
+  const lastTouchEvent = useRef<PressableEvent | null>(null);
 
   const normalizedHitSlop: Insets = useMemo(
     () =>
@@ -257,6 +258,7 @@ const Pressable = (props: PressableProps) => {
     cancelsTouchesInView: false,
     onTouchesDown: (event) => {
       const pressableEvent = gestureTouchToPressableEvent(event);
+      lastTouchEvent.current = pressableEvent;
       stateMachine.handleEvent(
         StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
         pressableEvent
@@ -305,7 +307,10 @@ const Pressable = (props: PressableProps) => {
       }
     },
     onBegin: () => {
-      stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
+      stateMachine.handleEvent(
+        StateMachineEvent.NATIVE_BEGIN,
+        lastTouchEvent.current ?? undefined
+      );
     },
     onActivate: () => {
       if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
