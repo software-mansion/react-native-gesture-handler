@@ -42,10 +42,7 @@ export const BaseButton = (props: BaseButtonProps) => {
       return;
     }
 
-    // iOS, macOS. Web has its own implementation of button.
-    if (Platform.OS !== 'android') {
-      onActiveStateChange?.(true);
-    }
+    onActiveStateChange?.(true);
 
     longPressDetected.current = false;
     if (onLongPress) {
@@ -56,10 +53,6 @@ export const BaseButton = (props: BaseButtonProps) => {
   };
 
   const onActivate = (e: CallbackEventType) => {
-    if (Platform.OS === 'android' && e.pointerInside) {
-      onActiveStateChange?.(true);
-    }
-
     if (!e.pointerInside && longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
