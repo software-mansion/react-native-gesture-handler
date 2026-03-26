@@ -15,7 +15,7 @@ import {
 import createNativeWrapper from '../createNativeWrapper';
 
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
-import type { NativeWrapperProps } from '../hooks/utils';
+import { NativeWrapperProps } from '../hooks/utils';
 import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';

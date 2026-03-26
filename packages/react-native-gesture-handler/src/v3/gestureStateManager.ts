@@ -2,7 +2,6 @@ import { State } from '../State';
 import { tagMessage } from '../utils';
 
 export type GestureStateManagerType = {
-  begin(handlerTag: number): void;
   activate(handlerTag: number): void;
   fail(handlerTag: number): void;
   deactivate(handlerTag: number): void;
@@ -21,11 +20,6 @@ const setGestureState = (handlerTag: number, state: State) => {
 };
 
 export const GestureStateManager: GestureStateManagerType = {
-  begin(handlerTag: number) {
-    'worklet';
-    setGestureState(handlerTag, State.BEGAN);
-  },
-
   activate(handlerTag: number) {
     'worklet';
     setGestureState(handlerTag, State.ACTIVE);

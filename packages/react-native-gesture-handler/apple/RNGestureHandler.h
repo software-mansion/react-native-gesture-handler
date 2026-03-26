@@ -86,6 +86,7 @@
 @property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
 @property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
 @property (nonatomic, copy, nullable) NSNumber *viewTag;
+@property (nonatomic, readonly) RNGestureHandlerState lastState;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
@@ -97,9 +98,13 @@
 - (void)updateRelations:(nonnull NSDictionary *)relations;
 - (void)handleGesture:(nonnull id)recognizer;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
-- (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset fromManualStateChange:(BOOL)fromManualStateChange;
+- (void)handleGesture:(nonnull id)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
-- (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state fromManualStateChange:(BOOL)fromManualStateChange;
+- (void)handleGesture:(nonnull id)recognizer
+                  inState:(RNGestureHandlerState)state
+    fromManualStateChange:(BOOL)fromManualStateChange;
 - (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
@@ -112,7 +117,7 @@
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData
-               fromManualStateChange:(BOOL)fromManualStateChange;
+    fromManualStateChange:(BOOL)fromManualStateChange;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
