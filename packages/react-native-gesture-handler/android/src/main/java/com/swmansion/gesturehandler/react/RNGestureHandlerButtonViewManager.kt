@@ -391,14 +391,12 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun applyStartAnimationState() {
-      (parent as? ViewGroup)?.let {
-        if (activeOpacity != 1.0f || defaultOpacity != 1.0f) {
-          it.alpha = defaultOpacity
-        }
-        if (activeScale != 1.0f || defaultScale != 1.0f) {
-          it.scaleX = defaultScale
-          it.scaleY = defaultScale
-        }
+      if (activeOpacity != 1.0f || defaultOpacity != 1.0f) {
+        alpha = defaultOpacity
+      }
+      if (activeScale != 1.0f || defaultScale != 1.0f) {
+        scaleX = defaultScale
+        scaleY = defaultScale
       }
       underlayDrawable?.alpha = (defaultUnderlayOpacity * 255).toInt()
     }
@@ -413,15 +411,12 @@ class RNGestureHandlerButtonViewManager :
 
       currentAnimator?.cancel()
       val animators = ArrayList<Animator>()
-      if (hasOpacity || hasScale) {
-        val parent = this.parent as? ViewGroup ?: return
-        if (hasOpacity) {
-          animators.add(ObjectAnimator.ofFloat(parent, "alpha", opacity))
-        }
-        if (hasScale) {
-          animators.add(ObjectAnimator.ofFloat(parent, "scaleX", scale))
-          animators.add(ObjectAnimator.ofFloat(parent, "scaleY", scale))
-        }
+      if (hasOpacity) {
+        animators.add(ObjectAnimator.ofFloat(this, "alpha", opacity))
+      }
+      if (hasScale) {
+        animators.add(ObjectAnimator.ofFloat(this, "scaleX", scale))
+        animators.add(ObjectAnimator.ofFloat(this, "scaleY", scale))
       }
       if (hasUnderlay) {
         animators.add(ObjectAnimator.ofInt(underlayDrawable!!, "alpha", (underlayOpacity * 255).toInt()))

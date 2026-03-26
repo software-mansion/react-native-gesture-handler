@@ -19,12 +19,13 @@ import type {
   LegacyBorderlessButtonProps,
   LegacyRawButtonProps,
 } from './GestureButtonsProps';
+import type { HostComponent } from 'react-native';
 
 /**
  * @deprecated use `RawButton` instead
  */
 export const LegacyRawButton = createNativeWrapper<LegacyRawButtonProps>(
-  GestureHandlerButton,
+  GestureHandlerButton as unknown as HostComponent<LegacyRawButtonProps>,
   {
     shouldCancelWhenOutside: false,
     shouldActivateOnStart: false,

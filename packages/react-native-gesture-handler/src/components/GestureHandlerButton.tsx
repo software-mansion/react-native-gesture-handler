@@ -4,17 +4,10 @@ import {
   HostComponent,
   LayoutChangeEvent,
   StyleProp,
-  StyleSheet,
-  View,
   ViewProps,
   ViewStyle,
 } from 'react-native';
 import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
-import RNGestureHandlerButtonWrapperNativeComponent from '../specs/RNGestureHandlerButtonWrapperNativeComponent';
-import { useMemo } from 'react';
-
-export const ButtonComponent =
-  RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;
@@ -144,150 +137,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   testOnly_onLongPress?: Function | null | undefined;
 }
 
-export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
-  const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
+export const ButtonComponent =
+  RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
-  const {
-    // Layout properties
-    display,
-    width,
-    height,
-    minWidth,
-    maxWidth,
-    minHeight,
-    maxHeight,
-    flex,
-    flexGrow,
-    flexShrink,
-    flexBasis,
-    flexDirection,
-    flexWrap,
-    justifyContent,
-    alignItems,
-    alignContent,
-    alignSelf,
-    aspectRatio,
-    gap,
-    rowGap,
-    columnGap,
-    margin,
-    marginTop,
-    marginBottom,
-    marginLeft,
-    marginRight,
-    marginVertical,
-    marginHorizontal,
-    marginStart,
-    marginEnd,
-    padding,
-    paddingTop,
-    paddingBottom,
-    paddingLeft,
-    paddingRight,
-    paddingVertical,
-    paddingHorizontal,
-    paddingStart,
-    paddingEnd,
-    position,
-    top,
-    right,
-    bottom,
-    left,
-    start,
-    end,
-    overflow,
-
-    // Visual properties
-    ...restStyle
-  } = flattenedStyle;
-
-  // Layout styles for ButtonComponent
-  const layoutStyle = useMemo(
-    () => ({
-      display,
-      width,
-      height,
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight,
-      flex,
-      flexGrow,
-      flexShrink,
-      flexBasis,
-      flexDirection,
-      flexWrap,
-      justifyContent,
-      alignItems,
-      alignContent,
-      alignSelf,
-      aspectRatio,
-      gap,
-      rowGap,
-      columnGap,
-      margin,
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
-      marginVertical,
-      marginHorizontal,
-      marginStart,
-      marginEnd,
-      padding,
-      paddingTop,
-      paddingBottom,
-      paddingLeft,
-      paddingRight,
-      paddingVertical,
-      paddingHorizontal,
-      paddingStart,
-      paddingEnd,
-      position,
-      top,
-      right,
-      bottom,
-      left,
-      start,
-      end,
-      overflow,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [flattenedStyle]
-  );
-
-  const { defaultOpacity, defaultScale } = rest;
-
-  const buttonRestingStyle = useMemo(
-    (): ViewStyle => ({
-      opacity: defaultOpacity,
-      transform:
-        defaultScale !== undefined ? [{ scale: defaultScale }] : undefined,
-    }),
-    [defaultOpacity, defaultScale]
-  );
-
-  return (
-    <RNGestureHandlerButtonWrapperNativeComponent style={styles.contents}>
-      <View
-        collapsable={false}
-        style={[
-          styles.contents,
-          (!overflow || overflow === 'hidden') && styles.overflowHidden,
-          buttonRestingStyle,
-          restStyle,
-        ]}>
-        <ButtonComponent {...rest} style={layoutStyle} />
-      </View>
-    </RNGestureHandlerButtonWrapperNativeComponent>
-  );
-}
-
-const styles = StyleSheet.create({
-  contents: {
-    display: 'contents',
-  },
-  overflowHidden: {
-    overflow: 'hidden',
-  },
-});
+export default ButtonComponent;
