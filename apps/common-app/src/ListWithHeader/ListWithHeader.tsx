@@ -116,6 +116,9 @@ interface ScrollComponentWithOffsetProps extends ScrollViewProps {
 
 const ScrollComponentWithOffset = ({
   ref,
+  scrollOffset,
+  animatedScrollEnabled,
+  dragGesture,
   ...props
 }: ScrollComponentWithOffsetProps) => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -126,7 +129,7 @@ const ScrollComponentWithOffset = ({
       return scrollViewOffset.value;
     },
     (offset) => {
-      props.scrollOffset.value = offset;
+      scrollOffset.value = offset;
     }
   );
 
@@ -138,13 +141,13 @@ const ScrollComponentWithOffset = ({
 
   const scrollProps = useAnimatedProps(() => {
     return {
-      scrollEnabled: props.animatedScrollEnabled.value,
+      scrollEnabled: animatedScrollEnabled.value,
     };
   });
 
   const scrollGesture = Gesture.Native()
     .disallowInterruption(true)
-    .simultaneousWithExternalGesture(props.dragGesture);
+    .simultaneousWithExternalGesture(dragGesture);
 
   return (
     <GestureDetector gesture={scrollGesture}>
