@@ -271,12 +271,15 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 - (void)registerViewWithGestureRecognizerAttachedIfNeeded:(RNGHUIView *)childView
 {
   RNGHUIView *touchHandlerView = childView;
+  Class fullWindowOverlayContainerClass = NSClassFromString(@"RNSFullWindowOverlayContainer");
 
 #if !TARGET_OS_OSX
   if ([[childView reactViewController] isKindOfClass:[RCTFabricModalHostViewController class]]) {
     touchHandlerView = [childView reactViewController].view;
   } else {
-    while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]]) {
+    while (
+        touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]] &&
+        (fullWindowOverlayContainerClass == nil || ![touchHandlerView isKindOfClass:fullWindowOverlayContainerClass])) {
       touchHandlerView = touchHandlerView.superview;
     }
   }
