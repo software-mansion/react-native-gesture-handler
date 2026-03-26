@@ -310,7 +310,6 @@ const Pressable = (props: PressableProps) => {
     onActivate: () => {
       if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
         // Native.onActivate is broken with Android + hitSlop
-        // On iOS, onActivate fires on drag (not touch down), so we use onBegin + LONG_PRESS_TOUCHES_DOWN instead
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }
     },
