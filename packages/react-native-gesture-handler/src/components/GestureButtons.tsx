@@ -240,6 +240,7 @@ class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps
   static defaultProps = {
     activeOpacity: 0.3,
     borderless: true,
+    foreground: true,
   };
 
   private opacity: Animated.Value;
