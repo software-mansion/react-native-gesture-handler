@@ -7,11 +7,15 @@ import {
   LegacyPanGesture,
   LegacyTapGesture,
 } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  SharedValue,
+} from 'react-native-reanimated';
 
 type AnimatedPostion = {
-  x: Animated.SharedValue<number>;
-  y: Animated.SharedValue<number>;
+  x: SharedValue<number>;
+  y: SharedValue<number>;
 };
 
 interface DraggableProps {
