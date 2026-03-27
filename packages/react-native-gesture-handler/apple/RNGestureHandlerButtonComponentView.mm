@@ -7,6 +7,7 @@
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
+#import <react/renderer/components/view/BaseViewProps.h>
 #import <react/renderer/components/view/ViewProps.h>
 
 #import "RNGestureHandlerButton.h"
@@ -107,6 +108,19 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   [super updateLayoutMetrics:wrapperMetrics oldLayoutMetrics:oldWrapperMetrics];
   [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  [super finalizeUpdates:updateMask];
+
+  // Resolve per-corner border radii from props and forward to the button
+  // so its underlay CALayer gets the matching shape.
+  const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
+  [_buttonView setUnderlayCornerRadiiWithTopLeft:borderMetrics.borderRadii.topLeft.horizontal
+                                        topRight:borderMetrics.borderRadii.topRight.horizontal
+                                      bottomLeft:borderMetrics.borderRadii.bottomLeft.horizontal
+                                     bottomRight:borderMetrics.borderRadii.bottomRight.horizontal];
 }
 
 #pragma mark - RCTComponentViewProtocol

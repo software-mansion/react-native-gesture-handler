@@ -41,6 +41,7 @@
  */
 @implementation RNGestureHandlerButton {
   CALayer *_underlayLayer;
+  CGFloat _underlayCornerRadii[4]; // TL, TR, BL, BR
 }
 
 - (void)commonInit
@@ -104,6 +105,7 @@
   [super layoutSubviews];
   _underlayLayer.frame = self.bounds;
   [self.layer insertSublayer:_underlayLayer atIndex:0];
+  [self applyUnderlayCornerRadii];
 }
 #else
 - (void)layout
@@ -111,6 +113,7 @@
   [super layout];
   _underlayLayer.frame = self.bounds;
   [self.layer insertSublayer:_underlayLayer atIndex:0];
+  [self applyUnderlayCornerRadii];
 }
 #endif
 
@@ -307,28 +310,71 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   return inner;
 }
 
-- (void)setBorderRadius:(CGFloat)radius
+- (void)setUnderlayCornerRadiiWithTopLeft:(CGFloat)topLeft
+                                 topRight:(CGFloat)topRight
+                               bottomLeft:(CGFloat)bottomLeft
+                              bottomRight:(CGFloat)bottomRight
 {
-  if (_borderRadius == radius) {
-    return;
-  }
-
-  _borderRadius = radius;
-  [self.layer setNeedsDisplay];
+  _underlayCornerRadii[0] = topLeft;
+  _underlayCornerRadii[1] = topRight;
+  _underlayCornerRadii[2] = bottomLeft;
+  _underlayCornerRadii[3] = bottomRight;
+  [self applyUnderlayCornerRadii];
 }
 
-- (void)displayLayer:(CALayer *)layer
+- (void)applyUnderlayCornerRadii
 {
-  if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
+  CGFloat tl = _underlayCornerRadii[0];
+  CGFloat tr = _underlayCornerRadii[1];
+  CGFloat bl = _underlayCornerRadii[2];
+  CGFloat br = _underlayCornerRadii[3];
+
+  if (tl == 0 && tr == 0 && bl == 0 && br == 0) {
+    _underlayLayer.cornerRadius = 0;
+    _underlayLayer.mask = nil;
     return;
   }
 
-  const CGFloat radius = MAX(0, _borderRadius);
-  const CGSize size = self.bounds.size;
-  const CGFloat scaleFactor = RCTZeroIfNaN(MIN(1, size.width / (2 * radius)));
-  const CGFloat currentBorderRadius = radius * scaleFactor;
-  layer.cornerRadius = currentBorderRadius;
-  _underlayLayer.cornerRadius = currentBorderRadius;
+  if (tl == tr && tr == bl && bl == br) {
+    // Uniform — simple cornerRadius is enough
+    _underlayLayer.cornerRadius = tl;
+    _underlayLayer.mask = nil;
+    return;
+  }
+
+  // Non-uniform — build a CAShapeLayer mask
+  _underlayLayer.cornerRadius = 0;
+  CGRect rect = _underlayLayer.bounds;
+  if (CGRectIsEmpty(rect)) {
+    return;
+  }
+
+  CGFloat w = rect.size.width;
+  CGFloat h = rect.size.height;
+
+  UIBezierPath *path = [UIBezierPath new];
+  [path moveToPoint:CGPointMake(tl, 0)];
+  [path addLineToPoint:CGPointMake(w - tr, 0)];
+  if (tr > 0) {
+    [path addArcWithCenter:CGPointMake(w - tr, tr) radius:tr startAngle:-M_PI_2 endAngle:0 clockwise:YES];
+  }
+  [path addLineToPoint:CGPointMake(w, h - br)];
+  if (br > 0) {
+    [path addArcWithCenter:CGPointMake(w - br, h - br) radius:br startAngle:0 endAngle:M_PI_2 clockwise:YES];
+  }
+  [path addLineToPoint:CGPointMake(bl, h)];
+  if (bl > 0) {
+    [path addArcWithCenter:CGPointMake(bl, h - bl) radius:bl startAngle:M_PI_2 endAngle:M_PI clockwise:YES];
+  }
+  [path addLineToPoint:CGPointMake(0, tl)];
+  if (tl > 0) {
+    [path addArcWithCenter:CGPointMake(tl, tl) radius:tl startAngle:M_PI endAngle:3 * M_PI_2 clockwise:YES];
+  }
+  [path closePath];
+
+  CAShapeLayer *mask = [CAShapeLayer new];
+  mask.path = path.CGPath;
+  _underlayLayer.mask = mask;
 }
 
 - (NSString *)accessibilityLabel

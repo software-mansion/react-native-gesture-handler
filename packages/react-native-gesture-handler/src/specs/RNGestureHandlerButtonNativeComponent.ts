@@ -15,9 +15,6 @@ interface NativeProps extends ViewProps {
   rippleColor?: ColorValue;
   rippleRadius?: Int32;
   touchSoundDisabled?: WithDefault<boolean, false>;
-  borderWidth?: Float;
-  borderColor?: ColorValue;
-  borderStyle?: WithDefault<string, 'solid'>;
   pointerEvents?: WithDefault<
     'box-none' | 'none' | 'box-only' | 'auto',
     'auto'
@@ -30,6 +27,41 @@ interface NativeProps extends ViewProps {
   defaultScale?: WithDefault<Float, 1>;
   defaultUnderlayOpacity?: WithDefault<Float, 0>;
   underlayColor?: ColorValue;
+
+  // Border style
+  borderWidth?: Float;
+  borderColor?: ColorValue;
+  borderStyle?: WithDefault<string, 'solid'>;
+  overflow?: WithDefault<string, 'visible'>;
+
+  // Border width per-edge
+  borderLeftWidth?: Float;
+  borderRightWidth?: Float;
+  borderTopWidth?: Float;
+  borderBottomWidth?: Float;
+  borderStartWidth?: Float;
+  borderEndWidth?: Float;
+
+  // Border color per-edge
+  borderLeftColor?: ColorValue;
+  borderRightColor?: ColorValue;
+  borderTopColor?: ColorValue;
+  borderBottomColor?: ColorValue;
+  borderStartColor?: ColorValue;
+  borderEndColor?: ColorValue;
+  borderBlockColor?: ColorValue;
+  borderBlockEndColor?: ColorValue;
+  borderBlockStartColor?: ColorValue;
+
+  // Border radius — logical variants beyond what ViewProps provides
+  borderTopStartRadius?: Float;
+  borderTopEndRadius?: Float;
+  borderBottomStartRadius?: Float;
+  borderBottomEndRadius?: Float;
+  borderEndEndRadius?: Float;
+  borderEndStartRadius?: Float;
+  borderStartEndRadius?: Float;
+  borderStartStartRadius?: Float;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');

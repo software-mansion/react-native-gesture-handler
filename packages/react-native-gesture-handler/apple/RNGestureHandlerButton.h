@@ -24,7 +24,6 @@
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
-@property (nonatomic, assign) CGFloat borderRadius;
 @property (nonatomic) BOOL userEnabled;
 @property (nonatomic, assign) RNGestureHandlerPointerEvents pointerEvents;
 
@@ -48,6 +47,15 @@
  * Call after props are updated to ensure the idle visual state is correct.
  */
 - (void)applyStartAnimationState;
+
+/**
+ * Updates the underlay layer's corner radii. Handles both uniform
+ * (simple cornerRadius) and per-corner (CAShapeLayer mask) cases.
+ */
+- (void)setUnderlayCornerRadiiWithTopLeft:(CGFloat)topLeft
+                                 topRight:(CGFloat)topRight
+                               bottomLeft:(CGFloat)bottomLeft
+                              bottomRight:(CGFloat)bottomRight;
 
 #if TARGET_OS_OSX
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
