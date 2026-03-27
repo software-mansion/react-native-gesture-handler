@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedStyle,
   runOnJS,
   withSpring,
+  AnimatedRef,
 } from 'react-native-reanimated';
 import Header, { HEADER_HEIGHT } from './Header';
 import {
@@ -111,7 +112,7 @@ interface ScrollComponentWithOffsetProps extends ScrollViewProps {
   scrollOffset: SharedValue<number>;
   animatedScrollEnabled: SharedValue<boolean>;
   dragGesture: GestureType;
-  ref?: React.RefObject<Animated.ScrollView | null>;
+  ref?: AnimatedRef<Animated.ScrollView>;
 }
 
 const ScrollComponentWithOffset = ({
