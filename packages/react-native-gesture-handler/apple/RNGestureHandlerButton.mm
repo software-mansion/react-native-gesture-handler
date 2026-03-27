@@ -223,6 +223,37 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #endif
 }
 
+#if !TARGET_OS_OSX
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesBegan:touches withEvent:event];
+  UITouch *touch = [touches anyObject];
+  if (touch.view != self) {
+    [self sendActionsForControlEvents:UIControlEventTouchDown];
+  }
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  UITouch *touch = [touches anyObject];
+  if (touch.view != self) {
+    [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+  }
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  UITouch *touch = [touches anyObject];
+  if (touch.view != self) {
+    [self sendActionsForControlEvents:UIControlEventTouchCancel];
+  }
+}
+
+#endif
+
 - (void)handleAnimatePressIn
 {
   RNGHUIView *target = self.animationTarget ?: self;
