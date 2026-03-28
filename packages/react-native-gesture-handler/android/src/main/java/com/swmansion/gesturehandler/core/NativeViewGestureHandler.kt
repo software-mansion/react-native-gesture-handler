@@ -35,6 +35,11 @@ class NativeViewGestureHandler : GestureHandler() {
     shouldCancelWhenOutside = true
   }
 
+  // Preserve original pointer IDs when adapting events. This ensures consistency with
+  // events that flow through super.dispatchTouchEvent() before the handler activates,
+  // preventing pointer ID mismatches that cause crashes in native views.
+  override fun shouldPreserveOriginalPointerIds(): Boolean = true
+
   override fun resetConfig() {
     super.resetConfig()
     shouldActivateOnStart = DEFAULT_SHOULD_ACTIVATE_ON_START
