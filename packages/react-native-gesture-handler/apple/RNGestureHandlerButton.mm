@@ -41,7 +41,8 @@
  */
 @implementation RNGestureHandlerButton {
   CALayer *_underlayLayer;
-  CGFloat _underlayCornerRadii[4]; // TL, TR, BL, BR
+  CGFloat _underlayCornerRadii[8]; // [tlH, tlV, trH, trV, blH, blV, brH, brV] outer radii in points
+  UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
 }
 
 - (void)commonInit
@@ -103,7 +104,7 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  _underlayLayer.frame = self.bounds;
+  _underlayLayer.frame = UIEdgeInsetsInsetRect(self.bounds, _underlayBorderInsets);
   [self.layer insertSublayer:_underlayLayer atIndex:0];
   [self applyUnderlayCornerRadii];
 }
@@ -111,7 +112,12 @@
 - (void)layout
 {
   [super layout];
-  _underlayLayer.frame = self.bounds;
+  CGRect bounds = self.bounds;
+  _underlayLayer.frame = CGRectMake(
+      bounds.origin.x + _underlayBorderInsets.left,
+      bounds.origin.y + _underlayBorderInsets.top,
+      MAX(0, bounds.size.width - _underlayBorderInsets.left - _underlayBorderInsets.right),
+      MAX(0, bounds.size.height - _underlayBorderInsets.top - _underlayBorderInsets.bottom));
   [self.layer insertSublayer:_underlayLayer atIndex:0];
   [self applyUnderlayCornerRadii];
 }
@@ -310,16 +316,34 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   return inner;
 }
 
-- (void)setUnderlayCornerRadiiWithTopLeft:(CGFloat)topLeft
-                                 topRight:(CGFloat)topRight
-                               bottomLeft:(CGFloat)bottomLeft
-                              bottomRight:(CGFloat)bottomRight
+- (void)setUnderlayCornerRadiiWithTopLeftHorizontal:(CGFloat)topLeftHorizontal
+                                    topLeftVertical:(CGFloat)topLeftVertical
+                                 topRightHorizontal:(CGFloat)topRightHorizontal
+                                   topRightVertical:(CGFloat)topRightVertical
+                               bottomLeftHorizontal:(CGFloat)bottomLeftHorizontal
+                                 bottomLeftVertical:(CGFloat)bottomLeftVertical
+                              bottomRightHorizontal:(CGFloat)bottomRightHorizontal
+                                bottomRightVertical:(CGFloat)bottomRightVertical
 {
-  _underlayCornerRadii[0] = topLeft;
-  _underlayCornerRadii[1] = topRight;
-  _underlayCornerRadii[2] = bottomLeft;
-  _underlayCornerRadii[3] = bottomRight;
+  _underlayCornerRadii[0] = topLeftHorizontal;
+  _underlayCornerRadii[1] = topLeftVertical;
+  _underlayCornerRadii[2] = topRightHorizontal;
+  _underlayCornerRadii[3] = topRightVertical;
+  _underlayCornerRadii[4] = bottomLeftHorizontal;
+  _underlayCornerRadii[5] = bottomLeftVertical;
+  _underlayCornerRadii[6] = bottomRightHorizontal;
+  _underlayCornerRadii[7] = bottomRightVertical;
   [self applyUnderlayCornerRadii];
+}
+
+- (void)setUnderlayBorderInsetsWithTop:(CGFloat)top right:(CGFloat)right bottom:(CGFloat)bottom left:(CGFloat)left
+{
+  _underlayBorderInsets = UIEdgeInsetsMake(top, left, bottom, right);
+#if !TARGET_OS_OSX
+  [self setNeedsLayout];
+#else
+  [self setNeedsLayout:YES];
+#endif
 }
 
 - (void)applyUnderlayCornerRadii
@@ -328,67 +352,101 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   CGFloat w = rect.size.width;
   CGFloat h = rect.size.height;
 
-  CGFloat tl = MAX(0, _underlayCornerRadii[0]);
-  CGFloat tr = MAX(0, _underlayCornerRadii[1]);
-  CGFloat bl = MAX(0, _underlayCornerRadii[2]);
-  CGFloat br = MAX(0, _underlayCornerRadii[3]);
+  // Inner border radii: outer radius minus adjacent border width per axis, clamped to 0.
+  CGFloat topLeftHorizontal = MAX(0, _underlayCornerRadii[0] - _underlayBorderInsets.left);
+  CGFloat topLeftVertical = MAX(0, _underlayCornerRadii[1] - _underlayBorderInsets.top);
+  CGFloat topRightHorizontal = MAX(0, _underlayCornerRadii[2] - _underlayBorderInsets.right);
+  CGFloat topRightVertical = MAX(0, _underlayCornerRadii[3] - _underlayBorderInsets.top);
+  CGFloat bottomLeftHorizontal = MAX(0, _underlayCornerRadii[4] - _underlayBorderInsets.left);
+  CGFloat bottomLeftVertical = MAX(0, _underlayCornerRadii[5] - _underlayBorderInsets.bottom);
+  CGFloat bottomRightHorizontal = MAX(0, _underlayCornerRadii[6] - _underlayBorderInsets.right);
+  CGFloat bottomRightVertical = MAX(0, _underlayCornerRadii[7] - _underlayBorderInsets.bottom);
 
   // CSS border-radius proportional scaling: if adjacent radii on any edge
   // exceed that edge's length, scale all radii down by the same factor.
   CGFloat f = 1.0;
-  if (tl + tr > 0)
-    f = MIN(f, w / (tl + tr));
-  if (bl + br > 0)
-    f = MIN(f, w / (bl + br));
-  if (tl + bl > 0)
-    f = MIN(f, h / (tl + bl));
-  if (tr + br > 0)
-    f = MIN(f, h / (tr + br));
+  if (topLeftHorizontal + topRightHorizontal > 0)
+    f = MIN(f, w / (topLeftHorizontal + topRightHorizontal));
+  if (bottomLeftHorizontal + bottomRightHorizontal > 0)
+    f = MIN(f, w / (bottomLeftHorizontal + bottomRightHorizontal));
+  if (topLeftVertical + bottomLeftVertical > 0)
+    f = MIN(f, h / (topLeftVertical + bottomLeftVertical));
+  if (topRightVertical + bottomRightVertical > 0)
+    f = MIN(f, h / (topRightVertical + bottomRightVertical));
 
   if (f < 1.0) {
-    tl *= f;
-    tr *= f;
-    bl *= f;
-    br *= f;
+    topLeftHorizontal *= f;
+    topLeftVertical *= f;
+    topRightHorizontal *= f;
+    topRightVertical *= f;
+    bottomLeftHorizontal *= f;
+    bottomLeftVertical *= f;
+    bottomRightHorizontal *= f;
+    bottomRightVertical *= f;
   }
 
-  if (tl == 0 && tr == 0 && bl == 0 && br == 0) {
+  if (topLeftHorizontal == 0 && topLeftVertical == 0 && topRightHorizontal == 0 && topRightVertical == 0 &&
+      bottomLeftHorizontal == 0 && bottomLeftVertical == 0 && bottomRightHorizontal == 0 && bottomRightVertical == 0) {
     _underlayLayer.cornerRadius = 0;
     _underlayLayer.mask = nil;
     return;
   }
 
-  if (tl == tr && tr == bl && bl == br) {
-    // Uniform — simple cornerRadius is enough
-    _underlayLayer.cornerRadius = tl;
+  // Uniform circular — simple cornerRadius is enough
+  if (topLeftHorizontal == topLeftVertical && topRightHorizontal == topRightVertical &&
+      bottomLeftHorizontal == bottomLeftVertical && bottomRightHorizontal == bottomRightVertical &&
+      topLeftHorizontal == topRightHorizontal && topRightHorizontal == bottomLeftHorizontal &&
+      bottomLeftHorizontal == bottomRightHorizontal) {
+    _underlayLayer.cornerRadius = topLeftHorizontal;
     _underlayLayer.mask = nil;
     return;
   }
 
-  // Non-uniform — build a CAShapeLayer mask
+  // Non-uniform or elliptical — build a CAShapeLayer mask using cubic
+  // Bezier approximation for quarter-ellipse arcs (kappa ≈ 0.5523).
   _underlayLayer.cornerRadius = 0;
   if (CGRectIsEmpty(rect)) {
     return;
   }
 
+  const CGFloat k = 0.5522847498;
   UIBezierPath *path = [UIBezierPath new];
-  [path moveToPoint:CGPointMake(tl, 0)];
-  [path addLineToPoint:CGPointMake(w - tr, 0)];
-  if (tr > 0) {
-    [path addArcWithCenter:CGPointMake(w - tr, tr) radius:tr startAngle:-M_PI_2 endAngle:0 clockwise:YES];
+
+  // Start after top-left corner
+  [path moveToPoint:CGPointMake(topLeftHorizontal, 0)];
+
+  // Top edge -> top-right corner
+  [path addLineToPoint:CGPointMake(w - topRightHorizontal, 0)];
+  if (topRightHorizontal > 0 || topRightVertical > 0) {
+    [path addCurveToPoint:CGPointMake(w, topRightVertical)
+            controlPoint1:CGPointMake(w - topRightHorizontal + topRightHorizontal * k, 0)
+            controlPoint2:CGPointMake(w, topRightVertical - topRightVertical * k)];
   }
-  [path addLineToPoint:CGPointMake(w, h - br)];
-  if (br > 0) {
-    [path addArcWithCenter:CGPointMake(w - br, h - br) radius:br startAngle:0 endAngle:M_PI_2 clockwise:YES];
+
+  // Right edge -> bottom-right corner
+  [path addLineToPoint:CGPointMake(w, h - bottomRightVertical)];
+  if (bottomRightHorizontal > 0 || bottomRightVertical > 0) {
+    [path addCurveToPoint:CGPointMake(w - bottomRightHorizontal, h)
+            controlPoint1:CGPointMake(w, h - bottomRightVertical + bottomRightVertical * k)
+            controlPoint2:CGPointMake(w - bottomRightHorizontal + bottomRightHorizontal * k, h)];
   }
-  [path addLineToPoint:CGPointMake(bl, h)];
-  if (bl > 0) {
-    [path addArcWithCenter:CGPointMake(bl, h - bl) radius:bl startAngle:M_PI_2 endAngle:M_PI clockwise:YES];
+
+  // Bottom edge -> bottom-left corner
+  [path addLineToPoint:CGPointMake(bottomLeftHorizontal, h)];
+  if (bottomLeftHorizontal > 0 || bottomLeftVertical > 0) {
+    [path addCurveToPoint:CGPointMake(0, h - bottomLeftVertical)
+            controlPoint1:CGPointMake(bottomLeftHorizontal - bottomLeftHorizontal * k, h)
+            controlPoint2:CGPointMake(0, h - bottomLeftVertical + bottomLeftVertical * k)];
   }
-  [path addLineToPoint:CGPointMake(0, tl)];
-  if (tl > 0) {
-    [path addArcWithCenter:CGPointMake(tl, tl) radius:tl startAngle:M_PI endAngle:3 * M_PI_2 clockwise:YES];
+
+  // Left edge -> top-left corner
+  [path addLineToPoint:CGPointMake(0, topLeftVertical)];
+  if (topLeftHorizontal > 0 || topLeftVertical > 0) {
+    [path addCurveToPoint:CGPointMake(topLeftHorizontal, 0)
+            controlPoint1:CGPointMake(0, topLeftVertical - topLeftVertical * k)
+            controlPoint2:CGPointMake(topLeftHorizontal - topLeftHorizontal * k, 0)];
   }
+
   [path closePath];
 
   CAShapeLayer *mask = [CAShapeLayer new];

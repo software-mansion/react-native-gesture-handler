@@ -49,13 +49,24 @@
 - (void)applyStartAnimationState;
 
 /**
- * Updates the underlay layer's corner radii. Handles both uniform
- * (simple cornerRadius) and per-corner (CAShapeLayer mask) cases.
+ * Updates the underlay layer's corner radii with separate horizontal/vertical
+ * components per corner, supporting elliptical inner corners when border widths
+ * are uneven. Handles both uniform and per-corner (CAShapeLayer mask) cases.
  */
-- (void)setUnderlayCornerRadiiWithTopLeft:(CGFloat)topLeft
-                                 topRight:(CGFloat)topRight
-                               bottomLeft:(CGFloat)bottomLeft
-                              bottomRight:(CGFloat)bottomRight;
+- (void)setUnderlayCornerRadiiWithTopLeftHorizontal:(CGFloat)topLeftHorizontal
+                                    topLeftVertical:(CGFloat)topLeftVertical
+                                 topRightHorizontal:(CGFloat)topRightHorizontal
+                                   topRightVertical:(CGFloat)topRightVertical
+                               bottomLeftHorizontal:(CGFloat)bottomLeftHorizontal
+                                 bottomLeftVertical:(CGFloat)bottomLeftVertical
+                              bottomRightHorizontal:(CGFloat)bottomRightHorizontal
+                                bottomRightVertical:(CGFloat)bottomRightVertical;
+
+/**
+ * Sets the border insets so the underlay is clipped to the padding box
+ * (inside the border).
+ */
+- (void)setUnderlayBorderInsetsWithTop:(CGFloat)top right:(CGFloat)right bottom:(CGFloat)bottom left:(CGFloat)left;
 
 #if TARGET_OS_OSX
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;

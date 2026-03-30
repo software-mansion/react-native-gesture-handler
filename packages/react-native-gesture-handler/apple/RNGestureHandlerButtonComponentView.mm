@@ -117,10 +117,18 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   // Resolve per-corner border radii from props and forward to the button
   // so its underlay CALayer gets the matching shape.
   const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
-  [_buttonView setUnderlayCornerRadiiWithTopLeft:borderMetrics.borderRadii.topLeft.horizontal
-                                        topRight:borderMetrics.borderRadii.topRight.horizontal
-                                      bottomLeft:borderMetrics.borderRadii.bottomLeft.horizontal
-                                     bottomRight:borderMetrics.borderRadii.bottomRight.horizontal];
+  [_buttonView setUnderlayCornerRadiiWithTopLeftHorizontal:borderMetrics.borderRadii.topLeft.horizontal
+                                           topLeftVertical:borderMetrics.borderRadii.topLeft.vertical
+                                        topRightHorizontal:borderMetrics.borderRadii.topRight.horizontal
+                                          topRightVertical:borderMetrics.borderRadii.topRight.vertical
+                                      bottomLeftHorizontal:borderMetrics.borderRadii.bottomLeft.horizontal
+                                        bottomLeftVertical:borderMetrics.borderRadii.bottomLeft.vertical
+                                     bottomRightHorizontal:borderMetrics.borderRadii.bottomRight.horizontal
+                                       bottomRightVertical:borderMetrics.borderRadii.bottomRight.vertical];
+  [_buttonView setUnderlayBorderInsetsWithTop:borderMetrics.borderWidths.top
+                                        right:borderMetrics.borderWidths.right
+                                       bottom:borderMetrics.borderWidths.bottom
+                                         left:borderMetrics.borderWidths.left];
 }
 
 #pragma mark - RCTComponentViewProtocol
