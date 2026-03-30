@@ -54,14 +54,16 @@ interface NativeProps extends ViewProps {
   borderBlockStartColor?: ColorValue;
 
   // Border radius — logical variants beyond what ViewProps provides
-  borderTopStartRadius?: Float;
-  borderTopEndRadius?: Float;
-  borderBottomStartRadius?: Float;
-  borderBottomEndRadius?: Float;
-  borderEndEndRadius?: Float;
-  borderEndStartRadius?: Float;
-  borderStartEndRadius?: Float;
-  borderStartStartRadius?: Float;
+  // WithDefault -1 so the codegen sends -1 (our "unset" sentinel) instead of 0
+  // when the prop is absent, letting physical / general radii take effect.
+  borderTopStartRadius?: WithDefault<Float, -1>;
+  borderTopEndRadius?: WithDefault<Float, -1>;
+  borderBottomStartRadius?: WithDefault<Float, -1>;
+  borderBottomEndRadius?: WithDefault<Float, -1>;
+  borderEndEndRadius?: WithDefault<Float, -1>;
+  borderEndStartRadius?: WithDefault<Float, -1>;
+  borderStartEndRadius?: WithDefault<Float, -1>;
+  borderStartStartRadius?: WithDefault<Float, -1>;
 }
 
 export default codegenNativeComponent<NativeProps>('RNGestureHandlerButton');

@@ -180,77 +180,83 @@ class RNGestureHandlerButtonViewManager :
     prop: BorderRadiusProp,
     value: Float,
     cornerIndex: Int = -2,
+    logicalCorner: Int = -1,
   ) {
-    val lp = if (value.isNaN()) null else LengthPercentage(value, LengthPercentageType.POINT)
+    // NaN = unset (physical props), negative = unset (codegen default for logical props)
+    val isUnset = value.isNaN() || value < 0f
+    val lp = if (isUnset) null else LengthPercentage(value, LengthPercentageType.POINT)
     BackgroundStyleApplicator.setBorderRadius(view, prop, lp)
     if (cornerIndex >= -1) {
-      view.updateCornerRadius(cornerIndex, if (value.isNaN()) 0f else value)
+      view.updateCornerRadius(cornerIndex, if (isUnset) -1f else value)
+    }
+    if (logicalCorner >= 0) {
+      view.updateLogicalCornerRadius(logicalCorner, if (isUnset) -1f else value)
     }
   }
 
   @ReactProp(name = ViewProps.BORDER_RADIUS)
   override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, borderRadius, -1)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, borderRadius, cornerIndex = -1)
   }
 
   @ReactProp(name = "borderTopLeftRadius")
   override fun setBorderTopLeftRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, value, 0)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, value, cornerIndex = 0)
   }
 
   @ReactProp(name = "borderTopRightRadius")
   override fun setBorderTopRightRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, value, 1)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, value, cornerIndex = 1)
   }
 
   @ReactProp(name = "borderBottomRightRadius")
   override fun setBorderBottomRightRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, value, 2)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, value, cornerIndex = 2)
   }
 
   @ReactProp(name = "borderBottomLeftRadius")
   override fun setBorderBottomLeftRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, value, 3)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, value, cornerIndex = 3)
   }
 
   @ReactProp(name = "borderTopStartRadius")
   override fun setBorderTopStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_START_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_START_RADIUS, value, logicalCorner = 0)
   }
 
   @ReactProp(name = "borderTopEndRadius")
   override fun setBorderTopEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_END_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_END_RADIUS, value, logicalCorner = 1)
   }
 
   @ReactProp(name = "borderBottomStartRadius")
   override fun setBorderBottomStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_START_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_START_RADIUS, value, logicalCorner = 3)
   }
 
   @ReactProp(name = "borderBottomEndRadius")
   override fun setBorderBottomEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_END_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_END_RADIUS, value, logicalCorner = 2)
   }
 
   @ReactProp(name = "borderEndEndRadius")
   override fun setBorderEndEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_END_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_END_RADIUS, value, logicalCorner = 2)
   }
 
   @ReactProp(name = "borderEndStartRadius")
   override fun setBorderEndStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_START_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_START_RADIUS, value, logicalCorner = 3)
   }
 
   @ReactProp(name = "borderStartEndRadius")
   override fun setBorderStartEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_END_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_END_RADIUS, value, logicalCorner = 1)
   }
 
   @ReactProp(name = "borderStartStartRadius")
   override fun setBorderStartStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_START_RADIUS, value)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_START_RADIUS, value, logicalCorner = 0)
   }
 
   @ReactProp(name = "rippleColor")
@@ -375,6 +381,7 @@ class RNGestureHandlerButtonViewManager :
     // but ripple/underlay drawables need the resolved radii separately.
     private var generalBorderRadius = 0f
     private var cornerBorderRadii: FloatArray? = null // [TL, TR, BR, BL] in dp
+    private var logicalBorderRadii: FloatArray? = null // [topStart, topEnd, bottomEnd, bottomStart] in dp
 
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
@@ -416,16 +423,51 @@ class RNGestureHandlerButtonViewManager :
       needBackgroundUpdate = true
     }
 
+    fun updateLogicalCornerRadius(logicalCorner: Int, radiusDp: Float) {
+      if (logicalBorderRadii == null) {
+        logicalBorderRadii = FloatArray(4)
+        logicalBorderRadii!!.fill(-1f)
+      }
+      logicalBorderRadii!![logicalCorner] = radiusDp
+      needBackgroundUpdate = true
+    }
+
     private fun buildCornerRadii(): FloatArray? {
       val corners = cornerBorderRadii
+      val logical = logicalBorderRadii
       val general = generalBorderRadius
-      if (general == 0f && corners == null) return null
+      if (general == 0f && corners == null && logical == null) return null
 
+      val isRtl = layoutDirection == LAYOUT_DIRECTION_RTL
       val density = resources.displayMetrics.density
-      val tl = (corners?.get(0)?.takeIf { it != -1f } ?: general) * density
-      val tr = (corners?.get(1)?.takeIf { it != -1f } ?: general) * density
-      val br = (corners?.get(2)?.takeIf { it != -1f } ?: general) * density
-      val bl = (corners?.get(3)?.takeIf { it != -1f } ?: general) * density
+
+      // Resolve logical → physical based on layout direction.
+      // logical: [topStart(0), topEnd(1), bottomEnd(2), bottomStart(3)]
+      // physical: [TL(0), TR(1), BR(2), BL(3)]
+      fun resolveLogical(physicalCorner: Int): Float {
+        if (logical == null) return -1f
+        return when (physicalCorner) {
+          0 -> if (isRtl) logical[1] else logical[0]
+          1 -> if (isRtl) logical[0] else logical[1]
+          2 -> if (isRtl) logical[3] else logical[2]
+          3 -> if (isRtl) logical[2] else logical[3]
+          else -> -1f
+        }
+      }
+
+      // Priority: logical corner > physical corner > general
+      fun resolve(physicalCorner: Int): Float {
+        val logicalVal = resolveLogical(physicalCorner).takeIf { it != -1f }
+        if (logicalVal != null) return logicalVal * density
+        val physical = corners?.get(physicalCorner)?.takeIf { it != -1f }
+        if (physical != null) return physical * density
+        return general * density
+      }
+
+      val tl = resolve(0)
+      val tr = resolve(1)
+      val br = resolve(2)
+      val bl = resolve(3)
 
       if (tl == 0f && tr == 0f && br == 0f && bl == 0f) return null
 
@@ -664,6 +706,14 @@ class RNGestureHandlerButtonViewManager :
       }
 
       return drawable
+    }
+
+    override fun onRtlPropertiesChanged(layoutDirection: Int) {
+      super.onRtlPropertiesChanged(layoutDirection)
+      if (logicalBorderRadii != null) {
+        needBackgroundUpdate = true
+        updateBackground()
+      }
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
