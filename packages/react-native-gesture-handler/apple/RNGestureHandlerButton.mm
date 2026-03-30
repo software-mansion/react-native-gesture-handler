@@ -100,30 +100,28 @@
   _underlayLayer.backgroundColor = underlayColor.CGColor;
 }
 
+#if TARGET_OS_OSX
+// Flip the macOS coordinate system so y=0 is at the top, matching iOS
+// and React Native's layout expectations.
+- (BOOL)isFlipped
+{
+  return YES;
+}
+#endif
+
 #if !TARGET_OS_OSX
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  _underlayLayer.frame = UIEdgeInsetsInsetRect(self.bounds, _underlayBorderInsets);
-  [self.layer insertSublayer:_underlayLayer atIndex:0];
-  [self applyUnderlayCornerRadii];
-}
 #else
 - (void)layout
 {
   [super layout];
-  CGRect bounds = self.bounds;
-  // macOS layer coordinate system has origin at bottom-left,
-  // so the y offset uses the bottom inset, not the top.
-  _underlayLayer.frame = CGRectMake(
-      bounds.origin.x + _underlayBorderInsets.left,
-      bounds.origin.y + _underlayBorderInsets.bottom,
-      MAX(0, bounds.size.width - _underlayBorderInsets.left - _underlayBorderInsets.right),
-      MAX(0, bounds.size.height - _underlayBorderInsets.top - _underlayBorderInsets.bottom));
+#endif
+  _underlayLayer.frame = UIEdgeInsetsInsetRect(self.bounds, _underlayBorderInsets);
   [self.layer insertSublayer:_underlayLayer atIndex:0];
   [self applyUnderlayCornerRadii];
 }
-#endif
 
 - (BOOL)shouldHandleTouch:(RNGHUIView *)view
 {
@@ -258,24 +256,12 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   CGFloat w = rect.size.width;
   CGFloat h = rect.size.height;
 
-  // On macOS, CALayer origin is at the bottom-left (y increases upward), so
-  // path y=0 is the visual bottom. Swap top <-> bottom radii and border insets
-  // so the path corners map to the correct visual corners.
-#if TARGET_OS_OSX
-  const CGFloat *outerTL = &_underlayCornerRadii[4]; // path top-left = visual bottom-left
-  const CGFloat *outerTR = &_underlayCornerRadii[6]; // path top-right = visual bottom-right
-  const CGFloat *outerBL = &_underlayCornerRadii[0]; // path bottom-left = visual top-left
-  const CGFloat *outerBR = &_underlayCornerRadii[2]; // path bottom-right = visual top-right
-  CGFloat borderTop = _underlayBorderInsets.bottom;
-  CGFloat borderBottom = _underlayBorderInsets.top;
-#else
   const CGFloat *outerTL = &_underlayCornerRadii[0];
   const CGFloat *outerTR = &_underlayCornerRadii[2];
   const CGFloat *outerBL = &_underlayCornerRadii[4];
   const CGFloat *outerBR = &_underlayCornerRadii[6];
   CGFloat borderTop = _underlayBorderInsets.top;
   CGFloat borderBottom = _underlayBorderInsets.bottom;
-#endif
   CGFloat borderLeft = _underlayBorderInsets.left;
   CGFloat borderRight = _underlayBorderInsets.right;
 
