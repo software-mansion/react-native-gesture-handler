@@ -324,10 +324,33 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)applyUnderlayCornerRadii
 {
-  CGFloat tl = _underlayCornerRadii[0];
-  CGFloat tr = _underlayCornerRadii[1];
-  CGFloat bl = _underlayCornerRadii[2];
-  CGFloat br = _underlayCornerRadii[3];
+  CGRect rect = _underlayLayer.bounds;
+  CGFloat w = rect.size.width;
+  CGFloat h = rect.size.height;
+
+  CGFloat tl = MAX(0, _underlayCornerRadii[0]);
+  CGFloat tr = MAX(0, _underlayCornerRadii[1]);
+  CGFloat bl = MAX(0, _underlayCornerRadii[2]);
+  CGFloat br = MAX(0, _underlayCornerRadii[3]);
+
+  // CSS border-radius proportional scaling: if adjacent radii on any edge
+  // exceed that edge's length, scale all radii down by the same factor.
+  CGFloat f = 1.0;
+  if (tl + tr > 0)
+    f = MIN(f, w / (tl + tr));
+  if (bl + br > 0)
+    f = MIN(f, w / (bl + br));
+  if (tl + bl > 0)
+    f = MIN(f, h / (tl + bl));
+  if (tr + br > 0)
+    f = MIN(f, h / (tr + br));
+
+  if (f < 1.0) {
+    tl *= f;
+    tr *= f;
+    bl *= f;
+    br *= f;
+  }
 
   if (tl == 0 && tr == 0 && bl == 0 && br == 0) {
     _underlayLayer.cornerRadius = 0;
@@ -344,13 +367,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   // Non-uniform — build a CAShapeLayer mask
   _underlayLayer.cornerRadius = 0;
-  CGRect rect = _underlayLayer.bounds;
   if (CGRectIsEmpty(rect)) {
     return;
   }
-
-  CGFloat w = rect.size.width;
-  CGFloat h = rect.size.height;
 
   UIBezierPath *path = [UIBezierPath new];
   [path moveToPoint:CGPointMake(tl, 0)];
