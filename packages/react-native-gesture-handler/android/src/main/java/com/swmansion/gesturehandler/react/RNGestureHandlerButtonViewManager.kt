@@ -464,12 +464,30 @@ class RNGestureHandlerButtonViewManager :
         return general * density
       }
 
-      val tl = resolve(0)
-      val tr = resolve(1)
-      val br = resolve(2)
-      val bl = resolve(3)
+      var tl = resolve(0)
+      var tr = resolve(1)
+      var br = resolve(2)
+      var bl = resolve(3)
 
       if (tl == 0f && tr == 0f && br == 0f && bl == 0f) return null
+
+      // CSS border-radius proportional scaling: if adjacent radii on any edge
+      // exceed that edge's length, scale all radii down by the same factor.
+      val w = width.toFloat()
+      val h = height.toFloat()
+      if (w > 0f && h > 0f) {
+        var f = 1f
+        if (tl + tr > 0f) f = minOf(f, w / (tl + tr))
+        if (bl + br > 0f) f = minOf(f, w / (bl + br))
+        if (tl + bl > 0f) f = minOf(f, h / (tl + bl))
+        if (tr + br > 0f) f = minOf(f, h / (tr + br))
+        if (f < 1f) {
+          tl *= f
+          tr *= f
+          br *= f
+          bl *= f
+        }
+      }
 
       return floatArrayOf(tl, tl, tr, tr, br, br, bl, bl)
     }
@@ -607,9 +625,9 @@ class RNGestureHandlerButtonViewManager :
       animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
     }
 
-    private fun createUnderlayDrawable(): PaintDrawable {
+    private fun createUnderlayDrawable(radii: FloatArray?): PaintDrawable {
       val drawable = PaintDrawable(underlayColor ?: Color.BLACK)
-      buildCornerRadii()?.let { drawable.setCornerRadii(it) }
+      radii?.let { drawable.setCornerRadii(it) }
       drawable.alpha = (defaultUnderlayOpacity * 255).toInt()
       return drawable
     }
@@ -624,8 +642,10 @@ class RNGestureHandlerButtonViewManager :
         foreground = null
       }
 
-      val selectable = createSelectableDrawable()
-      val underlay = createUnderlayDrawable()
+      val radii = buildCornerRadii()
+
+      val selectable = createSelectableDrawable(radii)
+      val underlay = createUnderlayDrawable(radii)
       underlayDrawable = underlay
       // Set this view as callback so ObjectAnimator alpha changes trigger redraws.
       underlay.callback = this
@@ -645,7 +665,14 @@ class RNGestureHandlerButtonViewManager :
     }
 
     // Draw the underlay and ripple between background and children.
+    // Clip to BackgroundStyleApplicator's padding box so the overlay
+    // never extends beyond the view's resolved border-radius shape.
     override fun dispatchDraw(canvas: Canvas) {
+      val hasOverlay = underlayDrawable != null || selectableDrawable != null
+      if (hasOverlay) {
+        canvas.save()
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+      }
       underlayDrawable?.let {
         it.setBounds(0, 0, width, height)
         it.draw(canvas)
@@ -653,6 +680,9 @@ class RNGestureHandlerButtonViewManager :
       selectableDrawable?.let {
         it.setBounds(0, 0, width, height)
         it.draw(canvas)
+      }
+      if (hasOverlay) {
+        canvas.restore()
       }
       super.dispatchDraw(canvas)
     }
@@ -670,7 +700,7 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-    private fun createSelectableDrawable(): Drawable? {
+    private fun createSelectableDrawable(radii: FloatArray?): Drawable? {
       // don't create ripple drawable at all when it's not supposed to be visible
       if (rippleColor == Color.TRANSPARENT) {
         return null
@@ -698,7 +728,6 @@ class RNGestureHandlerButtonViewManager :
         drawable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
       }
 
-      val radii = buildCornerRadii()
       if (radii != null && drawable is RippleDrawable && !useBorderlessDrawable) {
         val mask = PaintDrawable(Color.WHITE)
         mask.setCornerRadii(radii)
@@ -706,6 +735,12 @@ class RNGestureHandlerButtonViewManager :
       }
 
       return drawable
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+      super.onSizeChanged(w, h, oldw, oldh)
+      needBackgroundUpdate = true
+      updateBackground()
     }
 
     override fun onRtlPropertiesChanged(layoutDirection: Int) {
