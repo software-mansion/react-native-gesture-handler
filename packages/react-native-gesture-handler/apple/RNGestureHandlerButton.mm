@@ -113,9 +113,11 @@
 {
   [super layout];
   CGRect bounds = self.bounds;
+  // macOS layer coordinate system has origin at bottom-left,
+  // so the y offset uses the bottom inset, not the top.
   _underlayLayer.frame = CGRectMake(
       bounds.origin.x + _underlayBorderInsets.left,
-      bounds.origin.y + _underlayBorderInsets.top,
+      bounds.origin.y + _underlayBorderInsets.bottom,
       MAX(0, bounds.size.width - _underlayBorderInsets.left - _underlayBorderInsets.right),
       MAX(0, bounds.size.height - _underlayBorderInsets.top - _underlayBorderInsets.bottom));
   [self.layer insertSublayer:_underlayLayer atIndex:0];
@@ -256,15 +258,36 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   CGFloat w = rect.size.width;
   CGFloat h = rect.size.height;
 
+  // On macOS, CALayer origin is at the bottom-left (y increases upward), so
+  // path y=0 is the visual bottom. Swap top <-> bottom radii and border insets
+  // so the path corners map to the correct visual corners.
+#if TARGET_OS_OSX
+  const CGFloat *outerTL = &_underlayCornerRadii[4]; // path top-left = visual bottom-left
+  const CGFloat *outerTR = &_underlayCornerRadii[6]; // path top-right = visual bottom-right
+  const CGFloat *outerBL = &_underlayCornerRadii[0]; // path bottom-left = visual top-left
+  const CGFloat *outerBR = &_underlayCornerRadii[2]; // path bottom-right = visual top-right
+  CGFloat borderTop = _underlayBorderInsets.bottom;
+  CGFloat borderBottom = _underlayBorderInsets.top;
+#else
+  const CGFloat *outerTL = &_underlayCornerRadii[0];
+  const CGFloat *outerTR = &_underlayCornerRadii[2];
+  const CGFloat *outerBL = &_underlayCornerRadii[4];
+  const CGFloat *outerBR = &_underlayCornerRadii[6];
+  CGFloat borderTop = _underlayBorderInsets.top;
+  CGFloat borderBottom = _underlayBorderInsets.bottom;
+#endif
+  CGFloat borderLeft = _underlayBorderInsets.left;
+  CGFloat borderRight = _underlayBorderInsets.right;
+
   // Inner border radii: outer radius minus adjacent border width per axis, clamped to 0.
-  CGFloat topLeftHorizontal = MAX(0, _underlayCornerRadii[0] - _underlayBorderInsets.left);
-  CGFloat topLeftVertical = MAX(0, _underlayCornerRadii[1] - _underlayBorderInsets.top);
-  CGFloat topRightHorizontal = MAX(0, _underlayCornerRadii[2] - _underlayBorderInsets.right);
-  CGFloat topRightVertical = MAX(0, _underlayCornerRadii[3] - _underlayBorderInsets.top);
-  CGFloat bottomLeftHorizontal = MAX(0, _underlayCornerRadii[4] - _underlayBorderInsets.left);
-  CGFloat bottomLeftVertical = MAX(0, _underlayCornerRadii[5] - _underlayBorderInsets.bottom);
-  CGFloat bottomRightHorizontal = MAX(0, _underlayCornerRadii[6] - _underlayBorderInsets.right);
-  CGFloat bottomRightVertical = MAX(0, _underlayCornerRadii[7] - _underlayBorderInsets.bottom);
+  CGFloat topLeftHorizontal = MAX(0, outerTL[0] - borderLeft);
+  CGFloat topLeftVertical = MAX(0, outerTL[1] - borderTop);
+  CGFloat topRightHorizontal = MAX(0, outerTR[0] - borderRight);
+  CGFloat topRightVertical = MAX(0, outerTR[1] - borderTop);
+  CGFloat bottomLeftHorizontal = MAX(0, outerBL[0] - borderLeft);
+  CGFloat bottomLeftVertical = MAX(0, outerBL[1] - borderBottom);
+  CGFloat bottomRightHorizontal = MAX(0, outerBR[0] - borderRight);
+  CGFloat bottomRightVertical = MAX(0, outerBR[1] - borderBottom);
 
   // CSS border-radius proportional scaling: if adjacent radii on any edge
   // exceed that edge's length, scale all radii down by the same factor.
@@ -288,6 +311,17 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     bottomRightHorizontal *= f;
     bottomRightVertical *= f;
   }
+
+  // Snap sub-pixel radii to 0 to avoid degenerate curves that cause
+  // anti-aliasing artifacts at what should be sharp corners.
+  if (topLeftHorizontal < 0.5) topLeftHorizontal = 0;
+  if (topLeftVertical < 0.5) topLeftVertical = 0;
+  if (topRightHorizontal < 0.5) topRightHorizontal = 0;
+  if (topRightVertical < 0.5) topRightVertical = 0;
+  if (bottomLeftHorizontal < 0.5) bottomLeftHorizontal = 0;
+  if (bottomLeftVertical < 0.5) bottomLeftVertical = 0;
+  if (bottomRightHorizontal < 0.5) bottomRightHorizontal = 0;
+  if (bottomRightVertical < 0.5) bottomRightVertical = 0;
 
   if (topLeftHorizontal == 0 && topLeftVertical == 0 && topRightHorizontal == 0 && topRightVertical == 0 &&
       bottomLeftHorizontal == 0 && bottomLeftVertical == 0 && bottomRightHorizontal == 0 && bottomRightVertical == 0) {
@@ -315,45 +349,56 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   CGMutablePathRef path = CGPathCreateMutable();
   const CGFloat k = 0.5522847498;
+  BOOL hasTL = topLeftHorizontal > 0 && topLeftVertical > 0;
+  BOOL hasTR = topRightHorizontal > 0 && topRightVertical > 0;
+  BOOL hasBR = bottomRightHorizontal > 0 && bottomRightVertical > 0;
+  BOOL hasBL = bottomLeftHorizontal > 0 && bottomLeftVertical > 0;
 
-  // Start after top-left corner
-  CGPathMoveToPoint(path, NULL, topLeftHorizontal, 0);
+  // Start at the top edge (after top-left corner if rounded)
+  CGPathMoveToPoint(path, NULL, hasTL ? topLeftHorizontal : 0, 0);
 
-  // Top edge -> top-right corner
-  CGPathAddLineToPoint(path, NULL, w - topRightHorizontal, 0);
-  if (topRightHorizontal > 0 || topRightVertical > 0) {
+  // Top edge → top-right corner
+  if (hasTR) {
+    CGPathAddLineToPoint(path, NULL, w - topRightHorizontal, 0);
     CGPathAddCurveToPoint(path, NULL,
                           w - topRightHorizontal + topRightHorizontal * k, 0,
                           w, topRightVertical - topRightVertical * k,
                           w, topRightVertical);
+  } else {
+    CGPathAddLineToPoint(path, NULL, w, 0);
   }
 
-  // Right edge -> bottom-right corner
-  CGPathAddLineToPoint(path, NULL, w, h - bottomRightVertical);
-  if (bottomRightHorizontal > 0 || bottomRightVertical > 0) {
+  // Right edge → bottom-right corner
+  if (hasBR) {
+    CGPathAddLineToPoint(path, NULL, w, h - bottomRightVertical);
     CGPathAddCurveToPoint(path, NULL,
                           w, h - bottomRightVertical + bottomRightVertical * k,
                           w - bottomRightHorizontal + bottomRightHorizontal * k, h,
                           w - bottomRightHorizontal, h);
+  } else {
+    CGPathAddLineToPoint(path, NULL, w, h);
   }
 
-  // Bottom edge -> bottom-left corner
-  CGPathAddLineToPoint(path, NULL, bottomLeftHorizontal, h);
-  if (bottomLeftHorizontal > 0 || bottomLeftVertical > 0) {
+  // Bottom edge → bottom-left corner
+  if (hasBL) {
+    CGPathAddLineToPoint(path, NULL, bottomLeftHorizontal, h);
     CGPathAddCurveToPoint(path, NULL,
                           bottomLeftHorizontal - bottomLeftHorizontal * k, h,
                           0, h - bottomLeftVertical + bottomLeftVertical * k,
                           0, h - bottomLeftVertical);
+  } else {
+    CGPathAddLineToPoint(path, NULL, 0, h);
   }
 
-  // Left edge -> top-left corner
-  CGPathAddLineToPoint(path, NULL, 0, topLeftVertical);
-  if (topLeftHorizontal > 0 || topLeftVertical > 0) {
+  // Left edge → top-left corner
+  if (hasTL) {
+    CGPathAddLineToPoint(path, NULL, 0, topLeftVertical);
     CGPathAddCurveToPoint(path, NULL,
                           0, topLeftVertical - topLeftVertical * k,
                           topLeftHorizontal - topLeftHorizontal * k, 0,
                           topLeftHorizontal, 0);
   }
+  // closePath returns to the start point — (0,0) if no TL curve
 
   CGPathCloseSubpath(path);
 
