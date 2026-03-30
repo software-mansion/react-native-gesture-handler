@@ -10,6 +10,7 @@ const UNDERLAY_PROPS = {
   underlayColor: 'red',
   activeUnderlayOpacity: 0.5,
   animationDuration: 200,
+  minimumAnimationDuration: 100,
   rippleColor: 'transparent',
 } as const;
 

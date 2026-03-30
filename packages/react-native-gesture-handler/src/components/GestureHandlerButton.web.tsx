@@ -5,6 +5,7 @@ type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
   enabled?: boolean;
   animationDuration?: number;
+  minimumAnimationDuration?: number;
   activeOpacity?: number;
   activeScale?: number;
   activeUnderlayOpacity?: number;
@@ -17,6 +18,7 @@ type ButtonProps = ViewProps & {
 export const ButtonComponent = ({
   enabled = true,
   animationDuration = 100,
+  minimumAnimationDuration = 0,
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
@@ -29,16 +31,44 @@ export const ButtonComponent = ({
   ...rest
 }: ButtonProps) => {
   const [pressed, setPressed] = React.useState(false);
+  const pressInTimestamp = React.useRef(0);
+  const pressOutTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
+  React.useEffect(() => {
+    return () => {
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+      }
+    };
+  }, []);
 
   const pressIn = React.useCallback(() => {
     if (enabled) {
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+        pressOutTimer.current = null;
+      }
+      pressInTimestamp.current = Date.now();
       setPressed(true);
     }
   }, [enabled]);
 
   const pressOut = React.useCallback(() => {
-    setPressed(false);
-  }, []);
+    const elapsed = Date.now() - pressInTimestamp.current;
+    const remaining =
+      Math.min(animationDuration, minimumAnimationDuration) - elapsed;
+
+    if (remaining > 0) {
+      pressOutTimer.current = setTimeout(() => {
+        pressOutTimer.current = null;
+        setPressed(false);
+      }, remaining);
+    } else {
+      setPressed(false);
+    }
+  }, [animationDuration, minimumAnimationDuration]);
 
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity

@@ -238,6 +238,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   _buttonView.userEnabled = newProps.enabled;
   _buttonView.animationDuration = newProps.animationDuration;
+  _buttonView.minimumAnimationDuration = newProps.minimumAnimationDuration;
   _buttonView.activeOpacity = newProps.activeOpacity;
   _buttonView.defaultOpacity = newProps.defaultOpacity;
   _buttonView.activeScale = newProps.activeScale;

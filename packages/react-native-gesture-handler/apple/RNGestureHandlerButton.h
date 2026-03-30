@@ -28,6 +28,7 @@
 @property (nonatomic, assign) RNGestureHandlerPointerEvents pointerEvents;
 
 @property (nonatomic, assign) NSInteger animationDuration;
+@property (nonatomic, assign) NSInteger minimumAnimationDuration;
 @property (nonatomic, assign) CGFloat activeOpacity;
 @property (nonatomic, assign) CGFloat defaultOpacity;
 @property (nonatomic, assign) CGFloat activeScale;

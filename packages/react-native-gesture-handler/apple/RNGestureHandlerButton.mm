@@ -43,6 +43,8 @@
   CALayer *_underlayLayer;
   CGFloat _underlayCornerRadii[8]; // [tlH, tlV, trH, trV, blH, blV, brH, brV] outer radii in points
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
+  NSTimeInterval _pressInTimestamp;
+  BOOL _pendingPressOut;
 }
 
 - (void)commonInit
@@ -57,7 +59,10 @@
   _defaultScale = 1.0;
   _activeUnderlayOpacity = 0.0;
   _defaultUnderlayOpacity = 0.0;
+  _minimumAnimationDuration = 0;
   _underlayColor = nil;
+  _pressInTimestamp = 0;
+  _pendingPressOut = NO;
 #if TARGET_OS_OSX
   self.wantsLayer = YES; // Crucial for macOS layer-backing
 #endif
@@ -234,6 +239,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)handleAnimatePressIn
 {
+  _pendingPressOut = NO;
+  _pressInTimestamp = CACurrentMediaTime();
   RNGHUIView *target = self.animationTarget ?: self;
   [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale];
   if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
@@ -243,10 +250,29 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)handleAnimatePressOut
 {
-  RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale];
-  if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_defaultUnderlayOpacity];
+  NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
+  NSTimeInterval remaining = MIN(_animationDuration, _minimumAnimationDuration) - elapsed;
+
+  if (remaining <= 0) {
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity];
+    }
+  } else {
+    _pendingPressOut = YES;
+    __weak auto weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^{
+      __strong auto strongSelf = weakSelf;
+      if (strongSelf && strongSelf->_pendingPressOut) {
+        strongSelf->_pendingPressOut = NO;
+        RNGHUIView *target = strongSelf.animationTarget ?: strongSelf;
+        [strongSelf animateTarget:target toOpacity:strongSelf->_defaultOpacity scale:strongSelf->_defaultScale];
+        if (strongSelf->_activeUnderlayOpacity != strongSelf->_defaultUnderlayOpacity) {
+          [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity];
+        }
+      }
+    });
   }
 }
 

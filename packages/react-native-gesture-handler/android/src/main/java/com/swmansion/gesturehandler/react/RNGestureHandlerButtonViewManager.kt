@@ -15,6 +15,7 @@ import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Build
+import android.os.SystemClock
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -43,6 +44,7 @@ import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
+import kotlin.math.min
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager :
@@ -271,6 +273,11 @@ class RNGestureHandlerButtonViewManager :
     view.animationDuration = animationDuration
   }
 
+  @ReactProp(name = "minimumAnimationDuration")
+  override fun setMinimumAnimationDuration(view: ButtonViewGroup, minimumAnimationDuration: Int) {
+    view.minimumAnimationDuration = minimumAnimationDuration
+  }
+
   @ReactProp(name = "defaultOpacity")
   override fun setDefaultOpacity(view: ButtonViewGroup, defaultOpacity: Float) {
     view.defaultOpacity = defaultOpacity
@@ -347,6 +354,7 @@ class RNGestureHandlerButtonViewManager :
 
     var exclusive = true
     var animationDuration: Int = 100
+    var minimumAnimationDuration: Int = 0
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
@@ -369,6 +377,8 @@ class RNGestureHandlerButtonViewManager :
     private var receivedKeyEvent = false
     private var currentAnimator: AnimatorSet? = null
     private var underlayDrawable: PaintDrawable? = null
+    private var pressInTimestamp = 0L
+    private var pendingPressOut: Runnable? = null
 
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
@@ -516,11 +526,28 @@ class RNGestureHandlerButtonViewManager :
     }
 
     private fun animatePressIn() {
+      pendingPressOut?.let {
+        handler.removeCallbacks(it)
+        pendingPressOut = null
+      }
+      pressInTimestamp = SystemClock.uptimeMillis()
       animateTo(activeOpacity, activeScale, activeUnderlayOpacity)
     }
 
     private fun animatePressOut() {
-      animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
+      val animationTime = SystemClock.uptimeMillis() - pressInTimestamp
+      val remainingAnimationTime = min(animationDuration, minimumAnimationDuration) - animationTime
+
+      if (remainingAnimationTime <= 0) {
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
+      } else {
+        val runnable = Runnable {
+          pendingPressOut = null
+          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
+        }
+        pendingPressOut = runnable
+        handler.postDelayed(runnable, remainingAnimationTime)
+      }
     }
 
     private fun createUnderlayDrawable(): PaintDrawable {
