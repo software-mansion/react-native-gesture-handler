@@ -438,7 +438,7 @@ class RNGestureHandlerButtonViewManager :
           clipChildren = true
           clipToPadding = true
         }
-        "scroll", "visible" -> {
+        else -> {
           clipChildren = false
           clipToPadding = false
         }
