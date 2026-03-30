@@ -27,6 +27,7 @@ import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
 
 import ButtonsExample from './components/buttons';
+import ButtonUnderlayExample from './components/button_underlay';
 import ReanimatedDrawerLayout from './components/drawer';
 import FlatListExample from './components/flatlist';
 import ScrollViewExample from './components/scrollview';
@@ -105,6 +106,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'FlatList example', component: FlatListExample },
       { name: 'ScrollView example', component: ScrollViewExample },
       { name: 'Buttons example', component: ButtonsExample },
+      { name: 'Button underlay example', component: ButtonUnderlayExample },
       { name: 'Switch & TextInput', component: SwitchTextInputExample },
       { name: 'Reanimated Swipeable', component: Swipeable },
       { name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout },
