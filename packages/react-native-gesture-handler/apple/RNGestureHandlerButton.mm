@@ -300,14 +300,22 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   // Snap sub-pixel radii to 0 to avoid degenerate curves that cause
   // anti-aliasing artifacts at what should be sharp corners.
-  if (topLeftHorizontal < 0.5) topLeftHorizontal = 0;
-  if (topLeftVertical < 0.5) topLeftVertical = 0;
-  if (topRightHorizontal < 0.5) topRightHorizontal = 0;
-  if (topRightVertical < 0.5) topRightVertical = 0;
-  if (bottomLeftHorizontal < 0.5) bottomLeftHorizontal = 0;
-  if (bottomLeftVertical < 0.5) bottomLeftVertical = 0;
-  if (bottomRightHorizontal < 0.5) bottomRightHorizontal = 0;
-  if (bottomRightVertical < 0.5) bottomRightVertical = 0;
+  if (topLeftHorizontal < 0.5)
+    topLeftHorizontal = 0;
+  if (topLeftVertical < 0.5)
+    topLeftVertical = 0;
+  if (topRightHorizontal < 0.5)
+    topRightHorizontal = 0;
+  if (topRightVertical < 0.5)
+    topRightVertical = 0;
+  if (bottomLeftHorizontal < 0.5)
+    bottomLeftHorizontal = 0;
+  if (bottomLeftVertical < 0.5)
+    bottomLeftVertical = 0;
+  if (bottomRightHorizontal < 0.5)
+    bottomRightHorizontal = 0;
+  if (bottomRightVertical < 0.5)
+    bottomRightVertical = 0;
 
   if (topLeftHorizontal == 0 && topLeftVertical == 0 && topRightHorizontal == 0 && topRightVertical == 0 &&
       bottomLeftHorizontal == 0 && bottomLeftVertical == 0 && bottomRightHorizontal == 0 && bottomRightVertical == 0) {
@@ -346,10 +354,15 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   // Top edge → top-right corner
   if (hasTR) {
     CGPathAddLineToPoint(path, NULL, w - topRightHorizontal, 0);
-    CGPathAddCurveToPoint(path, NULL,
-                          w - topRightHorizontal + topRightHorizontal * k, 0,
-                          w, topRightVertical - topRightVertical * k,
-                          w, topRightVertical);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        w - topRightHorizontal + topRightHorizontal * k,
+        0,
+        w,
+        topRightVertical - topRightVertical * k,
+        w,
+        topRightVertical);
   } else {
     CGPathAddLineToPoint(path, NULL, w, 0);
   }
@@ -357,10 +370,15 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   // Right edge → bottom-right corner
   if (hasBR) {
     CGPathAddLineToPoint(path, NULL, w, h - bottomRightVertical);
-    CGPathAddCurveToPoint(path, NULL,
-                          w, h - bottomRightVertical + bottomRightVertical * k,
-                          w - bottomRightHorizontal + bottomRightHorizontal * k, h,
-                          w - bottomRightHorizontal, h);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        w,
+        h - bottomRightVertical + bottomRightVertical * k,
+        w - bottomRightHorizontal + bottomRightHorizontal * k,
+        h,
+        w - bottomRightHorizontal,
+        h);
   } else {
     CGPathAddLineToPoint(path, NULL, w, h);
   }
@@ -368,10 +386,15 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   // Bottom edge → bottom-left corner
   if (hasBL) {
     CGPathAddLineToPoint(path, NULL, bottomLeftHorizontal, h);
-    CGPathAddCurveToPoint(path, NULL,
-                          bottomLeftHorizontal - bottomLeftHorizontal * k, h,
-                          0, h - bottomLeftVertical + bottomLeftVertical * k,
-                          0, h - bottomLeftVertical);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        bottomLeftHorizontal - bottomLeftHorizontal * k,
+        h,
+        0,
+        h - bottomLeftVertical + bottomLeftVertical * k,
+        0,
+        h - bottomLeftVertical);
   } else {
     CGPathAddLineToPoint(path, NULL, 0, h);
   }
@@ -379,10 +402,15 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   // Left edge → top-left corner
   if (hasTL) {
     CGPathAddLineToPoint(path, NULL, 0, topLeftVertical);
-    CGPathAddCurveToPoint(path, NULL,
-                          0, topLeftVertical - topLeftVertical * k,
-                          topLeftHorizontal - topLeftHorizontal * k, 0,
-                          topLeftHorizontal, 0);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        0,
+        topLeftVertical - topLeftVertical * k,
+        topLeftHorizontal - topLeftHorizontal * k,
+        0,
+        topLeftHorizontal,
+        0);
   }
   // closePath returns to the start point — (0,0) if no TL curve
 
