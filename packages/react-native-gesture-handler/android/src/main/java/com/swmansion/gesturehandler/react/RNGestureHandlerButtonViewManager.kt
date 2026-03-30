@@ -409,6 +409,7 @@ class RNGestureHandlerButtonViewManager :
       } else {
         if (cornerBorderRadii == null) {
           cornerBorderRadii = FloatArray(4)
+          cornerBorderRadii!!.fill(-1f)
         }
         cornerBorderRadii!![corner] = radiusDp
       }
@@ -421,10 +422,10 @@ class RNGestureHandlerButtonViewManager :
       if (general == 0f && corners == null) return null
 
       val density = resources.displayMetrics.density
-      val tl = (corners?.get(0)?.takeIf { it != 0f } ?: general) * density
-      val tr = (corners?.get(1)?.takeIf { it != 0f } ?: general) * density
-      val br = (corners?.get(2)?.takeIf { it != 0f } ?: general) * density
-      val bl = (corners?.get(3)?.takeIf { it != 0f } ?: general) * density
+      val tl = (corners?.get(0)?.takeIf { it != -1f } ?: general) * density
+      val tr = (corners?.get(1)?.takeIf { it != -1f } ?: general) * density
+      val br = (corners?.get(2)?.takeIf { it != -1f } ?: general) * density
+      val bl = (corners?.get(3)?.takeIf { it != -1f } ?: general) * density
 
       if (tl == 0f && tr == 0f && br == 0f && bl == 0f) return null
 
