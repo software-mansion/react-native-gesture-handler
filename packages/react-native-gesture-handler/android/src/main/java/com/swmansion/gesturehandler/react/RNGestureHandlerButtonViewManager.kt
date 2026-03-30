@@ -175,88 +175,75 @@ class RNGestureHandlerButtonViewManager :
     view.setOverflow(overflow)
   }
 
-  private fun setBorderRadiusInternal(
-    view: ButtonViewGroup,
-    prop: BorderRadiusProp,
-    value: Float,
-    cornerIndex: Int = -2,
-    logicalCorner: Int = -1,
-  ) {
-    // NaN = unset (physical props), negative = unset (codegen default for logical props)
+  private fun setBorderRadiusInternal(view: ButtonViewGroup, prop: BorderRadiusProp, value: Float) {
     val isUnset = value.isNaN() || value < 0f
     val lp = if (isUnset) null else LengthPercentage(value, LengthPercentageType.POINT)
     BackgroundStyleApplicator.setBorderRadius(view, prop, lp)
-    if (cornerIndex >= -1) {
-      view.updateCornerRadius(cornerIndex, if (isUnset) -1f else value)
-    }
-    if (logicalCorner >= 0) {
-      view.updateLogicalCornerRadius(logicalCorner, if (isUnset) -1f else value)
-    }
   }
 
   @ReactProp(name = ViewProps.BORDER_RADIUS)
   override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, borderRadius, cornerIndex = -1)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, borderRadius)
   }
 
   @ReactProp(name = "borderTopLeftRadius")
   override fun setBorderTopLeftRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, value, cornerIndex = 0)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopRightRadius")
   override fun setBorderTopRightRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, value, cornerIndex = 1)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomRightRadius")
   override fun setBorderBottomRightRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, value, cornerIndex = 2)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomLeftRadius")
   override fun setBorderBottomLeftRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, value, cornerIndex = 3)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopStartRadius")
   override fun setBorderTopStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_START_RADIUS, value, logicalCorner = 0)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderTopEndRadius")
   override fun setBorderTopEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_END_RADIUS, value, logicalCorner = 1)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomStartRadius")
   override fun setBorderBottomStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_START_RADIUS, value, logicalCorner = 3)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderBottomEndRadius")
   override fun setBorderBottomEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_END_RADIUS, value, logicalCorner = 2)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderEndEndRadius")
   override fun setBorderEndEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_END_RADIUS, value, logicalCorner = 2)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderEndStartRadius")
   override fun setBorderEndStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_START_RADIUS, value, logicalCorner = 3)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_START_RADIUS, value)
   }
 
   @ReactProp(name = "borderStartEndRadius")
   override fun setBorderStartEndRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_END_RADIUS, value, logicalCorner = 1)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_END_RADIUS, value)
   }
 
   @ReactProp(name = "borderStartStartRadius")
   override fun setBorderStartStartRadius(view: ButtonViewGroup, value: Float) {
-    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_START_RADIUS, value, logicalCorner = 0)
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_START_RADIUS, value)
   }
 
   @ReactProp(name = "rippleColor")
@@ -376,13 +363,6 @@ class RNGestureHandlerButtonViewManager :
 
     override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
-    // Border radii tracked for ripple mask and underlay clipping.
-    // BackgroundStyleApplicator handles the visual border rendering,
-    // but ripple/underlay drawables need the resolved radii separately.
-    private var generalBorderRadius = 0f
-    private var cornerBorderRadii: FloatArray? = null // [TL, TR, BR, BL] in dp
-    private var logicalBorderRadii: FloatArray? = null // [topStart, topEnd, bottomEnd, bottomStart] in dp
-
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
@@ -408,88 +388,6 @@ class RNGestureHandlerButtonViewManager :
     private inline fun withBackgroundUpdate(block: () -> Unit) {
       block()
       needBackgroundUpdate = true
-    }
-
-    fun updateCornerRadius(corner: Int, radiusDp: Float) {
-      if (corner == -1) {
-        generalBorderRadius = radiusDp
-      } else {
-        if (cornerBorderRadii == null) {
-          cornerBorderRadii = FloatArray(4)
-          cornerBorderRadii!!.fill(-1f)
-        }
-        cornerBorderRadii!![corner] = radiusDp
-      }
-      needBackgroundUpdate = true
-    }
-
-    fun updateLogicalCornerRadius(logicalCorner: Int, radiusDp: Float) {
-      if (logicalBorderRadii == null) {
-        logicalBorderRadii = FloatArray(4)
-        logicalBorderRadii!!.fill(-1f)
-      }
-      logicalBorderRadii!![logicalCorner] = radiusDp
-      needBackgroundUpdate = true
-    }
-
-    private fun buildCornerRadii(): FloatArray? {
-      val corners = cornerBorderRadii
-      val logical = logicalBorderRadii
-      val general = generalBorderRadius
-      if (general == 0f && corners == null && logical == null) return null
-
-      val isRtl = layoutDirection == LAYOUT_DIRECTION_RTL
-      val density = resources.displayMetrics.density
-
-      // Resolve logical → physical based on layout direction.
-      // logical: [topStart(0), topEnd(1), bottomEnd(2), bottomStart(3)]
-      // physical: [TL(0), TR(1), BR(2), BL(3)]
-      fun resolveLogical(physicalCorner: Int): Float {
-        if (logical == null) return -1f
-        return when (physicalCorner) {
-          0 -> if (isRtl) logical[1] else logical[0]
-          1 -> if (isRtl) logical[0] else logical[1]
-          2 -> if (isRtl) logical[3] else logical[2]
-          3 -> if (isRtl) logical[2] else logical[3]
-          else -> -1f
-        }
-      }
-
-      // Priority: logical corner > physical corner > general
-      fun resolve(physicalCorner: Int): Float {
-        val logicalVal = resolveLogical(physicalCorner).takeIf { it != -1f }
-        if (logicalVal != null) return logicalVal * density
-        val physical = corners?.get(physicalCorner)?.takeIf { it != -1f }
-        if (physical != null) return physical * density
-        return general * density
-      }
-
-      var tl = resolve(0)
-      var tr = resolve(1)
-      var br = resolve(2)
-      var bl = resolve(3)
-
-      if (tl == 0f && tr == 0f && br == 0f && bl == 0f) return null
-
-      // CSS border-radius proportional scaling: if adjacent radii on any edge
-      // exceed that edge's length, scale all radii down by the same factor.
-      val w = width.toFloat()
-      val h = height.toFloat()
-      if (w > 0f && h > 0f) {
-        var f = 1f
-        if (tl + tr > 0f) f = minOf(f, w / (tl + tr))
-        if (bl + br > 0f) f = minOf(f, w / (bl + br))
-        if (tl + bl > 0f) f = minOf(f, h / (tl + bl))
-        if (tr + br > 0f) f = minOf(f, h / (tr + br))
-        if (f < 1f) {
-          tl *= f
-          tr *= f
-          br *= f
-          bl *= f
-        }
-      }
-
-      return floatArrayOf(tl, tl, tr, tr, br, br, bl, bl)
     }
 
     fun setOverflow(overflow: String?) {
@@ -625,9 +523,8 @@ class RNGestureHandlerButtonViewManager :
       animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
     }
 
-    private fun createUnderlayDrawable(radii: FloatArray?): PaintDrawable {
+    private fun createUnderlayDrawable(): PaintDrawable {
       val drawable = PaintDrawable(underlayColor ?: Color.BLACK)
-      radii?.let { drawable.setCornerRadii(it) }
       drawable.alpha = (defaultUnderlayOpacity * 255).toInt()
       return drawable
     }
@@ -642,10 +539,8 @@ class RNGestureHandlerButtonViewManager :
         foreground = null
       }
 
-      val radii = buildCornerRadii()
-
-      val selectable = createSelectableDrawable(radii)
-      val underlay = createUnderlayDrawable(radii)
+      val selectable = createSelectableDrawable()
+      val underlay = createUnderlayDrawable()
       underlayDrawable = underlay
       // Set this view as callback so ObjectAnimator alpha changes trigger redraws.
       underlay.callback = this
@@ -700,7 +595,7 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
-    private fun createSelectableDrawable(radii: FloatArray?): Drawable? {
+    private fun createSelectableDrawable(): Drawable? {
       // don't create ripple drawable at all when it's not supposed to be visible
       if (rippleColor == Color.TRANSPARENT) {
         return null
@@ -728,12 +623,6 @@ class RNGestureHandlerButtonViewManager :
         drawable.radius = PixelUtil.toPixelFromDIP(rippleRadius.toFloat()).toInt()
       }
 
-      if (radii != null && drawable is RippleDrawable && !useBorderlessDrawable) {
-        val mask = PaintDrawable(Color.WHITE)
-        mask.setCornerRadii(radii)
-        drawable.setDrawableByLayerId(android.R.id.mask, mask)
-      }
-
       return drawable
     }
 
@@ -741,14 +630,6 @@ class RNGestureHandlerButtonViewManager :
       super.onSizeChanged(w, h, oldw, oldh)
       needBackgroundUpdate = true
       updateBackground()
-    }
-
-    override fun onRtlPropertiesChanged(layoutDirection: Int) {
-      super.onRtlPropertiesChanged(layoutDirection)
-      if (logicalBorderRadii != null) {
-        needBackgroundUpdate = true
-        updateBackground()
-      }
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
