@@ -75,7 +75,7 @@ export const Clickable = (props: ClickableProps) => {
         longPressTimeout.current = undefined;
       }
     },
-    [onActiveStateChange, startLongPressTimer, onPressIn]
+    [onActiveStateChange]
   );
 
   const onDeactivate = useCallback(
