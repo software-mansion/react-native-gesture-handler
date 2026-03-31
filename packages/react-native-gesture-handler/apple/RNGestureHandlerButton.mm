@@ -41,10 +41,12 @@
  */
 @implementation RNGestureHandlerButton {
   CALayer *_underlayLayer;
+  BOOL _isTouchInsideBounds;
 }
 
 - (void)commonInit
 {
+  _isTouchInsideBounds = NO;
   _hitTestEdgeInsets = UIEdgeInsetsZero;
   _userEnabled = YES;
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
@@ -273,6 +275,64 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
   return CGRectContainsPoint(hitFrame, point);
+}
+
+- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+  _isTouchInsideBounds = YES;
+  return [super beginTrackingWithTouch:touch withEvent:event];
+}
+
+- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+  // DO NOT call super. We are entirely taking over the drag event generation.
+
+  CGPoint location = [touch locationInView:self];
+  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+  BOOL currentlyInside = CGRectContainsPoint(hitFrame, location);
+
+  if (currentlyInside) {
+    if (!_isTouchInsideBounds) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragEnter];
+      _isTouchInsideBounds = YES;
+    }
+
+    // Targets may call `cancelTrackingWithEvent:` in response to DragEnter.
+    if (self.tracking) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragInside];
+    }
+  } else {
+    if (_isTouchInsideBounds) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragExit];
+      _isTouchInsideBounds = NO;
+    }
+
+    // Targets may call `cancelTrackingWithEvent:` in response to DragExit.
+    if (self.tracking) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragOutside];
+    }
+  }
+
+  // If `cancelTrackingWithEvent` was called, `self.tracking` will be NO.
+  return self.tracking;
+}
+
+- (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+  // Also bypass super here so that the final "up" event respects the
+  // strict bounds, rather than Apple's 70-point.
+
+  if (touch != nil) {
+    CGPoint location = [touch locationInView:self];
+    CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+    if (CGRectContainsPoint(hitFrame, location)) {
+      [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+    } else {
+      [self sendActionsForControlEvents:UIControlEventTouchUpOutside];
+    }
+  }
+
+  _isTouchInsideBounds = NO;
 }
 
 - (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
