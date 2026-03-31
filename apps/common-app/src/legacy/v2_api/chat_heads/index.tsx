@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, ImageStyle, LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -18,8 +19,8 @@ const CHAT_HEADS = [
 ];
 
 interface AnimatedOffset {
-  x: Animated.SharedValue<number>;
-  y: Animated.SharedValue<number>;
+  x: SharedValue<number>;
+  y: SharedValue<number>;
 }
 
 interface FollowingChatHeadProps {

@@ -13,6 +13,7 @@ import {
   LegacyScrollView,
 } from 'react-native-gesture-handler';
 import Animated, {
+  SharedValue,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -53,7 +54,7 @@ export default function CalculatorUI() {
 }
 
 interface OutputProps {
-  offset: Animated.SharedValue<number>;
+  offset: SharedValue<number>;
   expression: string;
   history: string[];
 }
@@ -172,7 +173,7 @@ interface InputProps {
   setHistory: Dispatch<SetStateAction<string[]>>;
   setExpression: Dispatch<SetStateAction<string>>;
   measure: (e: LayoutChangeEvent) => void;
-  offset: Animated.SharedValue<number>;
+  offset: SharedValue<number>;
   expression: string;
 }
 
