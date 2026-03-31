@@ -53,7 +53,7 @@ export default function ClickableExample() {
 
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Custom animations</Text>
-          <Text>Animated overlay.</Text>
+          <Text>Animated underlay.</Text>
 
           <View style={styles.row}>
             <ClickableWrapper

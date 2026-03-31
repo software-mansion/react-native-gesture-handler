@@ -56,7 +56,7 @@ export const Clickable = (props: ClickableProps) => {
 
   const onBegin = useCallback(
     (e: CallbackEventType) => {
-      if (!isAndroid || !e.pointerInside) {
+      if (!e.pointerInside) {
         return;
       }
 
@@ -69,11 +69,6 @@ export const Clickable = (props: ClickableProps) => {
   const onActivate = useCallback(
     (e: CallbackEventType) => {
       onActiveStateChange?.(true);
-
-      if (!isAndroid && e.pointerInside) {
-        onPressIn?.(e);
-        startLongPressTimer();
-      }
 
       if (!e.pointerInside && longPressTimeout.current !== undefined) {
         clearTimeout(longPressTimeout.current);

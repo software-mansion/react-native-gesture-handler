@@ -145,7 +145,10 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
 }
 
 export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
-  const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
+  const flattenedStyle = useMemo(
+    () => StyleSheet.flatten(style) ?? {},
+    [style]
+  );
 
   const {
     // Layout properties
@@ -199,7 +202,7 @@ export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
 
     // Visual properties
     ...restStyle
-  } = flattenedStyle ?? {};
+  } = flattenedStyle;
 
   // Layout styles for ButtonComponent
   const layoutStyle = useMemo(
