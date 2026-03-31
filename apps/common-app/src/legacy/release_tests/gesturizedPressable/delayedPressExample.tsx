@@ -9,12 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const signalerConfig = {
-  duration: 200,
-  dampingRatio: 1,
   stiffness: 500,
   overshootClamping: true,
-  restDisplacementThreshold: 0.01,
-  restSpeedThreshold: 2,
 };
 
 export function DelayedPressExample() {
