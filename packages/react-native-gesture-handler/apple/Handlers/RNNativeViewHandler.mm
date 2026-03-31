@@ -146,6 +146,12 @@
                   action:@selector(handleTouchUpInside:forEvent:)
         forControlEvents:UIControlEventTouchUpInside];
     [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
+    [control addTarget:self
+                  action:@selector(handleDragInside:forEvent:)
+        forControlEvents:UIControlEventTouchDragInside];
+    [control addTarget:self
+                  action:@selector(handleDragOutside:forEvent:)
+        forControlEvents:UIControlEventTouchDragOutside];
     [control addTarget:self action:@selector(handleDragEnter:forEvent:) forControlEvents:UIControlEventTouchDragEnter];
     [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
   } else {
@@ -161,8 +167,14 @@
 
 - (void)unbindFromView
 {
+  UIView *view = self.recognizer.view;
+
+  if ([view isKindOfClass:[UIControl class]]) {
+    [(UIControl *)view removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
+  }
+
   // Restore the React Native's overriden behavor for not delaying content touches
-  UIScrollView *scrollView = [self retrieveScrollView:self.recognizer.view];
+  UIScrollView *scrollView = [self retrieveScrollView:view];
   scrollView.delaysContentTouches = NO;
 
   [super unbindFromView];
@@ -183,6 +195,12 @@
       }
     }
   }
+
+  [self sendEventsInState:RNGestureHandlerStateBegan
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:sender.reactTag
@@ -211,22 +229,21 @@
 
 - (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event
 {
+  RNGestureHandlerState newState = RNGestureHandlerStateActive;
+
   // Pointer is moved outside of the view bounds, we cancel button when `shouldCancelWhenOutside` is set
   if (self.shouldCancelWhenOutside) {
     UIControl *control = (UIControl *)sender;
     [control cancelTrackingWithEvent:event];
-    [self sendEventsInState:RNGestureHandlerStateEnd
-             forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                         withNumberOfTouches:event.allTouches.count
-                                                             withPointerType:_pointerType]];
-  } else {
-    [self sendEventsInState:RNGestureHandlerStateActive
-             forViewWithTag:sender.reactTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                         withNumberOfTouches:event.allTouches.count
-                                                             withPointerType:_pointerType]];
+
+    newState = RNGestureHandlerStateEnd;
   }
+
+  [self sendEventsInState:newState
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
@@ -234,6 +251,24 @@
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
+}
+
+- (void)handleDragInside:(UIView *)sender forEvent:(UIEvent *)event
+{
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
+}
+
+- (void)handleDragOutside:(UIView *)sender forEvent:(UIEvent *)event
+{
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
 }

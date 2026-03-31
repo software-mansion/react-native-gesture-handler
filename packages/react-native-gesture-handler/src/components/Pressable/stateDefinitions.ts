@@ -57,7 +57,7 @@ function getIosStatesConfig(
       eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
     },
     {
-      eventName: StateMachineEvent.NATIVE_START,
+      eventName: StateMachineEvent.NATIVE_BEGIN,
       callback: handlePressIn,
     },
     {
