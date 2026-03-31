@@ -44,7 +44,6 @@ import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
-import kotlin.math.min
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
 class RNGestureHandlerButtonViewManager :
@@ -497,7 +496,7 @@ class RNGestureHandlerButtonViewManager :
       underlayDrawable?.alpha = (defaultUnderlayOpacity * 255).toInt()
     }
 
-    private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float) {
+    private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float, durationMs: Long) {
       val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f
       val hasScale = activeScale != 1.0f || defaultScale != 1.0f
       val hasUnderlay = activeUnderlayOpacity != defaultUnderlayOpacity && underlayDrawable != null
@@ -519,7 +518,7 @@ class RNGestureHandlerButtonViewManager :
       }
       currentAnimator = AnimatorSet().apply {
         playTogether(animators)
-        duration = animationDuration.toLong()
+        duration = durationMs
         interpolator = LinearOutSlowInInterpolator()
         start()
       }
@@ -531,22 +530,27 @@ class RNGestureHandlerButtonViewManager :
         pendingPressOut = null
       }
       pressInTimestamp = SystemClock.uptimeMillis()
-      animateTo(activeOpacity, activeScale, activeUnderlayOpacity)
+      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, animationDuration.toLong())
     }
 
     private fun animatePressOut() {
-      val animationTime = SystemClock.uptimeMillis() - pressInTimestamp
-      val remainingAnimationTime = min(animationDuration, minimumAnimationDuration) - animationTime
+      val elapsed = SystemClock.uptimeMillis() - pressInTimestamp
 
-      if (remainingAnimationTime <= 0) {
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
+      if (elapsed >= animationDuration) {
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, animationDuration.toLong())
+      } else if (elapsed * 2 >= minimumAnimationDuration) {
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
       } else {
+        val remaining = minimumAnimationDuration - elapsed
+        pendingPressOut?.let { handler.removeCallbacks(it) }
+        animateTo(activeOpacity, activeScale, activeUnderlayOpacity, remaining)
+
         val runnable = Runnable {
           pendingPressOut = null
-          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
+          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, minimumAnimationDuration.toLong())
         }
         pendingPressOut = runnable
-        handler.postDelayed(runnable, remainingAnimationTime)
+        handler.postDelayed(runnable, remaining)
       }
     }
 

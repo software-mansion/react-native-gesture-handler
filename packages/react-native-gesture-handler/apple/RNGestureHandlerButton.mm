@@ -45,7 +45,7 @@
   CGFloat _underlayCornerRadii[8]; // [tlH, tlV, trH, trV, blH, blV, brH, brV] outer radii in points
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
   NSTimeInterval _pressInTimestamp;
-  BOOL _pendingPressOut;
+  dispatch_block_t _pendingPressOutBlock;
 }
 
 - (void)commonInit
@@ -64,7 +64,7 @@
   _minimumAnimationDuration = 0;
   _underlayColor = nil;
   _pressInTimestamp = 0;
-  _pendingPressOut = NO;
+  _pendingPressOutBlock = nil;
 #if TARGET_OS_OSX
   self.wantsLayer = YES; // Crucial for macOS layer-backing
 #endif
@@ -154,12 +154,15 @@
 #endif
 }
 
-- (void)animateUnderlayToOpacity:(float)toOpacity
+- (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
+  _underlayLayer.opacity = [_underlayLayer.presentationLayer opacity];
+  [_underlayLayer removeAllAnimations];
+
   CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
-  anim.fromValue = @([_underlayLayer.presentationLayer opacity]);
+  anim.fromValue = @(_underlayLayer.opacity);
   anim.toValue = @(toOpacity);
-  anim.duration = _animationDuration / 1000.0;
+  anim.duration = durationMs / 1000.0;
   anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
   _underlayLayer.opacity = toOpacity;
   [_underlayLayer addAnimation:anim forKey:@"opacity"];
@@ -204,14 +207,21 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #endif
 }
 
-- (void)animateTarget:(RNGHUIView *)target toOpacity:(CGFloat)opacity scale:(CGFloat)scale
+- (void)animateTarget:(RNGHUIView *)target
+            toOpacity:(CGFloat)opacity
+                scale:(CGFloat)scale
+             duration:(NSTimeInterval)durationMs
 {
-  NSTimeInterval duration = _animationDuration / 1000.0;
+  target.layer.transform = target.layer.presentationLayer.transform;
+  target.alpha = target.layer.presentationLayer.opacity;
+  [target.layer removeAllAnimations];
+
+  NSTimeInterval duration = durationMs / 1000.0;
 
 #if !TARGET_OS_OSX
   [UIView animateWithDuration:duration
                         delay:0
-                      options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                      options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
                      if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
                        target.alpha = opacity;
@@ -241,40 +251,68 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)handleAnimatePressIn
 {
-  _pendingPressOut = NO;
+  if (_pendingPressOutBlock) {
+    dispatch_block_cancel(_pendingPressOutBlock);
+    _pendingPressOutBlock = nil;
+  }
   _pressInTimestamp = CACurrentMediaTime();
   RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale];
+  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:_animationDuration];
   if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_activeUnderlayOpacity];
+    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:_animationDuration];
   }
 }
 
 - (void)handleAnimatePressOut
 {
   NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
-  NSTimeInterval remaining = MIN(_animationDuration, _minimumAnimationDuration) - elapsed;
 
-  if (remaining <= 0) {
+  if (elapsed >= _animationDuration) {
+    // Press-in animation fully finished, animate out in _animationDuration
     RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale];
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:_animationDuration];
     if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity];
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:_animationDuration];
+    }
+  } else if (elapsed * 2 >= _minimumAnimationDuration) {
+    // Past minimum but press-in animation still playing, animate out in elapsed time
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:elapsed];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:elapsed];
     }
   } else {
-    _pendingPressOut = YES;
+    // Before minimum duration, finish press-in in remaining time then animate out in _minimumAnimationDuration
+    NSTimeInterval remaining = _minimumAnimationDuration - elapsed;
+    if (_pendingPressOutBlock) {
+      dispatch_block_cancel(_pendingPressOutBlock);
+    }
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:remaining];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:remaining];
+    }
+
     __weak auto weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^{
+    _pendingPressOutBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
       __strong auto strongSelf = weakSelf;
-      if (strongSelf && strongSelf->_pendingPressOut) {
-        strongSelf->_pendingPressOut = NO;
+      if (strongSelf) {
+        strongSelf->_pendingPressOutBlock = nil;
         RNGHUIView *target = strongSelf.animationTarget ?: strongSelf;
-        [strongSelf animateTarget:target toOpacity:strongSelf->_defaultOpacity scale:strongSelf->_defaultScale];
+        [strongSelf animateTarget:target
+                        toOpacity:strongSelf->_defaultOpacity
+                            scale:strongSelf->_defaultScale
+                         duration:strongSelf->_minimumAnimationDuration];
         if (strongSelf->_activeUnderlayOpacity != strongSelf->_defaultUnderlayOpacity) {
-          [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity];
+          [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity
+                                      duration:strongSelf->_minimumAnimationDuration];
         }
       }
     });
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
+        dispatch_get_main_queue(),
+        _pendingPressOutBlock);
   }
 }
 

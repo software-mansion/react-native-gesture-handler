@@ -8,7 +8,8 @@ import {
 
 const UNDERLAY_PROPS = {
   underlayColor: 'red',
-  activeUnderlayOpacity: 0.5,
+  activeUnderlayOpacity: 0.2,
+  activeScale: 0.9,
   animationDuration: 200,
   minimumAnimationDuration: 100,
   rippleColor: 'transparent',

@@ -31,6 +31,8 @@ export const ButtonComponent = ({
   ...rest
 }: ButtonProps) => {
   const [pressed, setPressed] = React.useState(false);
+  const [currentDuration, setCurrentDuration] =
+    React.useState(animationDuration);
   const pressInTimestamp = React.useRef(0);
   const pressOutTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -51,22 +53,31 @@ export const ButtonComponent = ({
         pressOutTimer.current = null;
       }
       pressInTimestamp.current = Date.now();
+      setCurrentDuration(animationDuration);
       setPressed(true);
     }
-  }, [enabled]);
+  }, [enabled, animationDuration]);
 
   const pressOut = React.useCallback(() => {
     const elapsed = Date.now() - pressInTimestamp.current;
-    const remaining =
-      Math.min(animationDuration, minimumAnimationDuration) - elapsed;
 
-    if (remaining > 0) {
+    if (elapsed >= animationDuration) {
+      setCurrentDuration(animationDuration);
+      setPressed(false);
+    } else if (elapsed * 2 >= minimumAnimationDuration) {
+      setCurrentDuration(elapsed);
+      setPressed(false);
+    } else {
+      // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time
+      const remaining = minimumAnimationDuration - elapsed;
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+      }
       pressOutTimer.current = setTimeout(() => {
         pressOutTimer.current = null;
+        setCurrentDuration(minimumAnimationDuration);
         setPressed(false);
       }, remaining);
-    } else {
-      setPressed(false);
     }
   }, [animationDuration, minimumAnimationDuration]);
 
@@ -79,13 +90,13 @@ export const ButtonComponent = ({
   const hasScale = activeScale !== 1 || defaultScale !== 1;
   const currentScale = pressed ? activeScale : defaultScale;
 
-  const easing = 'cubic-bezier(0, 0, 0.2, 1)';
+  const easing = 'cubic-bezier(0.5, 1, 0.89, 1)';
   const transitionProps: string[] = [];
   if (hasOpacity) {
-    transitionProps.push(`opacity ${animationDuration}ms ${easing}`);
+    transitionProps.push(`opacity ${currentDuration}ms ${easing}`);
   }
   if (hasScale) {
-    transitionProps.push(`transform ${animationDuration}ms ${easing}`);
+    transitionProps.push(`transform ${currentDuration}ms ${easing}`);
   }
   const transition = transitionProps.join(', ');
 
@@ -119,7 +130,7 @@ export const ButtonComponent = ({
             backgroundColor: underlayColor as string,
             opacity: currentUnderlayOpacity,
             // @ts-ignore - web-only CSS properties
-            transition: `opacity ${animationDuration}ms ${easing}`,
+            transition: `opacity ${currentDuration}ms ${easing}`,
             pointerEvents: 'none',
           }}
         />
