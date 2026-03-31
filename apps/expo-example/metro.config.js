@@ -1,7 +1,8 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-const exclusionList = require('metro-config/private/defaults/exclusionList').default;
+const exclusionList =
+  require('metro-config/private/defaults/exclusionList').default;
 const escape = require('escape-string-regexp');
 const pack = require('./package.json');
 
@@ -10,6 +11,7 @@ modulesBlacklist.push(...Object.keys(pack.devDependencies));
 
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, '../..');
+const commonAppRoot = path.resolve(monorepoRoot, 'apps/common-app');
 
 const config = getDefaultConfig(projectRoot);
 
@@ -21,9 +23,10 @@ config.resolver.nodeModulesPaths = [
 ];
 
 config.resolver.blacklistRE = exclusionList(
-  modulesBlacklist.map(
-    (m) =>
-      new RegExp(`^${escape(path.join(monorepoRoot, 'node_modules', m))}\\/.*$`)
+  [monorepoRoot, commonAppRoot].flatMap((root) =>
+    modulesBlacklist.map(
+      (m) => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
+    )
   )
 );
 
