@@ -2,17 +2,18 @@ import React from 'react';
 import { CameraView, useCameraPermissions, CameraViewProps } from 'expo-camera';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-  AnimateProps,
+  SharedValue,
   useAnimatedProps,
+  AnimatedRef,
 } from 'react-native-reanimated';
 
 const AnimatedCameraView = Animated.createAnimatedComponent(CameraView);
 
 interface CameraProps extends Omit<CameraViewProps, 'zoom'> {
-  ref?: React.RefObject<
-    React.Component<AnimateProps<CameraViewProps>, any, any>
-  >;
-  zoom: Animated.SharedValue<number>;
+  ref?:
+    | (AnimatedRef | React.Ref<CameraView> | AnimatedRef<typeof CameraView>)
+    | undefined;
+  zoom: SharedValue<number>;
 }
 
 const Camera = ({ ref, ...props }: CameraProps) => {

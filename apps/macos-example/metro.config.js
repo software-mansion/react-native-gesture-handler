@@ -15,6 +15,7 @@ modulesBlacklist.push(...Object.keys(appPackage.devDependencies));
 
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, '../..');
+const commonAppRoot = path.resolve(monorepoRoot, 'apps/common-app');
 
 const config = getDefaultConfig(__dirname);
 
@@ -26,9 +27,11 @@ config.resolver.nodeModulesPaths = [
 ];
 
 config.resolver.blacklistRE = exclusionList(
-  modulesBlacklist.map(
-    (m) =>
-      new RegExp(`^${escape(path.join(monorepoRoot, 'node_modules', m))}\\/.*$`)
+  [monorepoRoot, commonAppRoot].flatMap((root) =>
+    modulesBlacklist.map(
+      (m) =>
+        new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
+    )
   )
 );
 

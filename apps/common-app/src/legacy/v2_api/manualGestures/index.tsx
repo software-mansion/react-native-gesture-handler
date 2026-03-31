@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
+  SharedValue,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -13,8 +14,8 @@ interface Pointer {
 }
 
 function PointerElement(props: {
-  pointer: Animated.SharedValue<Pointer>;
-  active: Animated.SharedValue<boolean>;
+  pointer: SharedValue<Pointer>;
+  active: SharedValue<boolean>;
 }) {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -33,7 +34,7 @@ function PointerElement(props: {
 }
 
 export default function Example() {
-  const trackedPointers: Animated.SharedValue<Pointer>[] = [];
+  const trackedPointers: SharedValue<Pointer>[] = [];
   const active = useSharedValue(false);
 
   for (let i = 0; i < 12; i++) {
