@@ -48,7 +48,7 @@
   dispatch_block_t _pendingPressOutBlock;
 }
 
-@synthesize animationDuration = _animationDuration;
+@synthesize pressAndHoldAnimationDuration = _pressAndHoldAnimationDuration;
 
 - (void)commonInit
 {
@@ -56,8 +56,8 @@
   _hitTestEdgeInsets = UIEdgeInsetsZero;
   _userEnabled = YES;
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
-  _animationDuration = -1;
-  _minimumAnimationDuration = 100;
+  _pressAndHoldAnimationDuration = -1;
+  _tapAnimationDuration = 100;
   _activeOpacity = 1.0;
   _defaultOpacity = 1.0;
   _activeScale = 1.0;
@@ -103,9 +103,9 @@
   return self;
 }
 
-- (NSInteger)animationDuration
+- (NSInteger)pressAndHoldAnimationDuration
 {
-  return _animationDuration < 0 ? _minimumAnimationDuration : _animationDuration;
+  return _pressAndHoldAnimationDuration < 0 ? _tapAnimationDuration : _pressAndHoldAnimationDuration;
 }
 
 - (void)setUnderlayColor:(RNGHColor *)underlayColor
@@ -264,26 +264,26 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
   _pressInTimestamp = CACurrentMediaTime();
   RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:self.animationDuration];
+  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:self.pressAndHoldAnimationDuration];
   if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:self.animationDuration];
+    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:self.pressAndHoldAnimationDuration];
   }
 }
 
 - (void)handleAnimatePressOut
 {
   NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
-  NSInteger animationDuration = self.animationDuration;
+  NSInteger pressAndHoldAnimationDuration = self.pressAndHoldAnimationDuration;
 
-  if (elapsed >= animationDuration) {
-    // Press-in animation fully finished, animate out in animationDuration
+  if (elapsed >= pressAndHoldAnimationDuration) {
+    // Press-in animation fully finished, animate out in pressAndHoldAnimationDuration
     RNGHUIView *target = self.animationTarget ?: self;
-    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:animationDuration];
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:pressAndHoldAnimationDuration];
     if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:animationDuration];
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:pressAndHoldAnimationDuration];
     }
     // elapsed * 2 to ensure there is at least half of the minDuration left for the animation to play
-  } else if (elapsed * 2 >= _minimumAnimationDuration) {
+  } else if (elapsed * 2 >= _tapAnimationDuration) {
     // Past minimum but press-in animation still playing, animate out in elapsed time
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:elapsed];
@@ -292,7 +292,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     }
   } else {
     // Before minimum duration, finish press-in in remaining time then animate out in minDuration
-    NSTimeInterval remaining = _minimumAnimationDuration - elapsed;
+    NSTimeInterval remaining = _tapAnimationDuration - elapsed;
     if (_pendingPressOutBlock) {
       dispatch_block_cancel(_pendingPressOutBlock);
     }
@@ -311,10 +311,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
         [strongSelf animateTarget:target
                         toOpacity:strongSelf->_defaultOpacity
                             scale:strongSelf->_defaultScale
-                         duration:strongSelf->_minimumAnimationDuration];
+                         duration:strongSelf->_tapAnimationDuration];
         if (strongSelf->_activeUnderlayOpacity != strongSelf->_defaultUnderlayOpacity) {
           [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity
-                                      duration:strongSelf->_minimumAnimationDuration];
+                                      duration:strongSelf->_tapAnimationDuration];
         }
       }
     });

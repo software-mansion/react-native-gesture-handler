@@ -4,8 +4,8 @@ import { ColorValue, View, ViewProps } from 'react-native';
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
   enabled?: boolean;
-  animationDuration?: number;
-  minimumAnimationDuration?: number;
+  pressAndHoldAnimationDuration?: number;
+  tapAnimationDuration?: number;
   activeOpacity?: number;
   activeScale?: number;
   activeUnderlayOpacity?: number;
@@ -17,8 +17,8 @@ type ButtonProps = ViewProps & {
 
 export const ButtonComponent = ({
   enabled = true,
-  animationDuration: animationDurationProp = -1,
-  minimumAnimationDuration = 100,
+  pressAndHoldAnimationDuration: pressAndHoldAnimationDurationProp = -1,
+  tapAnimationDuration = 100,
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
@@ -30,14 +30,15 @@ export const ButtonComponent = ({
   children,
   ...rest
 }: ButtonProps) => {
-  const animationDuration =
-    animationDurationProp < 0
-      ? minimumAnimationDuration
-      : animationDurationProp;
+  const pressAndHoldAnimationDuration =
+    pressAndHoldAnimationDurationProp < 0
+      ? tapAnimationDuration
+      : pressAndHoldAnimationDurationProp;
 
   const [pressed, setPressed] = React.useState(false);
-  const [currentDuration, setCurrentDuration] =
-    React.useState(animationDuration);
+  const [currentDuration, setCurrentDuration] = React.useState(
+    pressAndHoldAnimationDuration
+  );
   const pressInTimestamp = React.useRef(0);
   const pressOutTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -58,34 +59,34 @@ export const ButtonComponent = ({
         pressOutTimer.current = null;
       }
       pressInTimestamp.current = Date.now();
-      setCurrentDuration(animationDuration);
+      setCurrentDuration(pressAndHoldAnimationDuration);
       setPressed(true);
     }
-  }, [enabled, animationDuration]);
+  }, [enabled, pressAndHoldAnimationDuration]);
 
   const pressOut = React.useCallback(() => {
     const elapsed = Date.now() - pressInTimestamp.current;
 
-    if (elapsed >= animationDuration) {
-      setCurrentDuration(animationDuration);
+    if (elapsed >= pressAndHoldAnimationDuration) {
+      setCurrentDuration(pressAndHoldAnimationDuration);
       setPressed(false);
-      // elapsed * 2 to ensure there is at least half of the minDuration left for the animation to play
-    } else if (elapsed * 2 >= minimumAnimationDuration) {
+      // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
+    } else if (elapsed * 2 >= tapAnimationDuration) {
       setCurrentDuration(elapsed);
       setPressed(false);
     } else {
       // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time
-      const remaining = minimumAnimationDuration - elapsed;
+      const remaining = tapAnimationDuration - elapsed;
       if (pressOutTimer.current != null) {
         clearTimeout(pressOutTimer.current);
       }
       pressOutTimer.current = setTimeout(() => {
         pressOutTimer.current = null;
-        setCurrentDuration(minimumAnimationDuration);
+        setCurrentDuration(tapAnimationDuration);
         setPressed(false);
       }, remaining);
     }
-  }, [animationDuration, minimumAnimationDuration]);
+  }, [pressAndHoldAnimationDuration, tapAnimationDuration]);
 
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity
