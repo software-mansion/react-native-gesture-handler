@@ -58,7 +58,7 @@ export const ButtonComponent = ({
         clearTimeout(pressOutTimer.current);
         pressOutTimer.current = null;
       }
-      pressInTimestamp.current = Date.now();
+      pressInTimestamp.current = performance.now();
       setCurrentDuration(pressAndHoldAnimationDuration);
       setPressed(true);
     }
@@ -68,7 +68,7 @@ export const ButtonComponent = ({
     if (pressOutTimer.current != null) {
       clearTimeout(pressOutTimer.current);
     }
-    const elapsed = Date.now() - pressInTimestamp.current;
+    const elapsed = performance.now() - pressInTimestamp.current;
 
     if (elapsed >= pressAndHoldAnimationDuration) {
       setCurrentDuration(pressAndHoldAnimationDuration);
