@@ -33,7 +33,7 @@ const RotationGestureHandler = View;
 const FlingGestureHandler = View;
 export const RawButton = ({ enabled, children, ...rest }: any) => (
   <TouchableNativeFeedback disabled={enabled === false} {...rest}>
-    {children}
+    {children ?? <View />}
   </TouchableNativeFeedback>
 );
 export const BaseButton = RawButton;
