@@ -220,12 +220,12 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
              duration:(NSTimeInterval)durationMs
 {
   target.layer.transform = target.layer.presentationLayer.transform;
-  target.alpha = target.layer.presentationLayer.opacity;
-  [target.layer removeAllAnimations];
-
   NSTimeInterval duration = durationMs / 1000.0;
 
 #if !TARGET_OS_OSX
+  target.alpha = target.layer.presentationLayer.opacity;
+  [target.layer removeAllAnimations];
+
   [UIView animateWithDuration:duration
                         delay:0
                       options:UIViewAnimationOptionCurveEaseInOut
@@ -240,6 +240,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                    completion:nil];
 #else
   target.wantsLayer = YES;
+  target.alphaValue = target.layer.presentationLayer.opacity;
+  [target.layer removeAllAnimations];
+
   [NSAnimationContext
       runAnimationGroup:^(NSAnimationContext *context) {
         context.allowsImplicitAnimation = YES;
