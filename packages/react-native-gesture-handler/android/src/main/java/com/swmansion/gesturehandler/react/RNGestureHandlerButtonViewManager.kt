@@ -352,8 +352,9 @@ class RNGestureHandlerButtonViewManager :
     var useBorderlessDrawable = false
 
     var exclusive = true
-    var animationDuration: Int = 100
-    var minimumAnimationDuration: Int = 0
+    var minimumAnimationDuration: Int = 100
+    var animationDuration: Int = -1
+      get() = if (field < 0) minimumAnimationDuration else field
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
@@ -538,6 +539,7 @@ class RNGestureHandlerButtonViewManager :
 
       if (elapsed >= animationDuration) {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, animationDuration.toLong())
+        // elapsed * 2 to ensure there is at least half of the minDuration left for the animation to play
       } else if (elapsed * 2 >= minimumAnimationDuration) {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
       } else {

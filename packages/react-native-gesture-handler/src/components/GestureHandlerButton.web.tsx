@@ -17,8 +17,8 @@ type ButtonProps = ViewProps & {
 
 export const ButtonComponent = ({
   enabled = true,
-  animationDuration = 100,
-  minimumAnimationDuration = 0,
+  animationDuration: animationDurationProp = -1,
+  minimumAnimationDuration = 100,
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
@@ -30,6 +30,11 @@ export const ButtonComponent = ({
   children,
   ...rest
 }: ButtonProps) => {
+  const animationDuration =
+    animationDurationProp < 0
+      ? minimumAnimationDuration
+      : animationDurationProp;
+
   const [pressed, setPressed] = React.useState(false);
   const [currentDuration, setCurrentDuration] =
     React.useState(animationDuration);
@@ -64,6 +69,7 @@ export const ButtonComponent = ({
     if (elapsed >= animationDuration) {
       setCurrentDuration(animationDuration);
       setPressed(false);
+      // elapsed * 2 to ensure there is at least half of the minDuration left for the animation to play
     } else if (elapsed * 2 >= minimumAnimationDuration) {
       setCurrentDuration(elapsed);
       setPressed(false);

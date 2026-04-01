@@ -19,8 +19,8 @@ interface NativeProps extends ViewProps {
     'box-none' | 'none' | 'box-only' | 'auto',
     'auto'
   >;
-  animationDuration?: WithDefault<Int32, 100>;
-  minimumAnimationDuration?: WithDefault<Int32, 50>;
+  animationDuration?: WithDefault<Int32, -1>;
+  minimumAnimationDuration?: WithDefault<Int32, 100>;
   activeOpacity?: WithDefault<Float, 1>;
   activeScale?: WithDefault<Float, 1>;
   activeUnderlayOpacity?: WithDefault<Float, 0>;
