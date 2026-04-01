@@ -22,3 +22,6 @@ export {
 } from './GestureComponents';
 
 export { default as Pressable } from './Pressable';
+
+export { Clickable } from './Clickable/Clickable';
+export type { ClickableProps } from './Clickable/ClickableProps';
