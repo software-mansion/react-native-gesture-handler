@@ -275,6 +275,10 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)handleAnimatePressOut
 {
+  if (_pendingPressOutBlock) {
+    dispatch_block_cancel(_pendingPressOutBlock);
+  }
+
   NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
   NSInteger pressAndHoldAnimationDuration = self.pressAndHoldAnimationDuration;
 
@@ -296,9 +300,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   } else {
     // Before minimum duration, finish press-in in remaining time then animate out in minDuration
     NSTimeInterval remaining = _tapAnimationDuration - elapsed;
-    if (_pendingPressOutBlock) {
-      dispatch_block_cancel(_pendingPressOutBlock);
-    }
+
     RNGHUIView *target = self.animationTarget ?: self;
     [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:remaining];
     if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {

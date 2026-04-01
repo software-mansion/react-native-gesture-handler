@@ -65,6 +65,9 @@ export const ButtonComponent = ({
   }, [enabled, pressAndHoldAnimationDuration]);
 
   const pressOut = React.useCallback(() => {
+    if (pressOutTimer.current != null) {
+      clearTimeout(pressOutTimer.current);
+    }
     const elapsed = Date.now() - pressInTimestamp.current;
 
     if (elapsed >= pressAndHoldAnimationDuration) {
@@ -77,9 +80,6 @@ export const ButtonComponent = ({
     } else {
       // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time
       const remaining = tapAnimationDuration - elapsed;
-      if (pressOutTimer.current != null) {
-        clearTimeout(pressOutTimer.current);
-      }
       pressOutTimer.current = setTimeout(() => {
         pressOutTimer.current = null;
         setCurrentDuration(tapAnimationDuration);
