@@ -31,9 +31,9 @@ const LongPressGestureHandler = View;
 const PinchGestureHandler = View;
 const RotationGestureHandler = View;
 const FlingGestureHandler = View;
-export const RawButton = ({ enabled, ...rest }: any) => (
+export const RawButton = ({ enabled, children, ...rest }: any) => (
   <TouchableNativeFeedback disabled={enabled === false} {...rest}>
-    <View />
+    {children ?? <View />}
   </TouchableNativeFeedback>
 );
 export const BaseButton = RawButton;
