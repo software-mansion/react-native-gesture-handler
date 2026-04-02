@@ -46,10 +46,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 #endif
 
 // Needed because of this: https://github.com/facebook/react-native/pull/37274
+#ifdef RCT_DYNAMIC_FRAMEWORKS
 + (void)load
 {
   [super load];
 }
+#endif
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -110,6 +112,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+  [_buttonView applyStartAnimationState];
+}
+
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
@@ -129,6 +137,8 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
                                         right:borderMetrics.borderWidths.right
                                        bottom:borderMetrics.borderWidths.bottom
                                          left:borderMetrics.borderWidths.left];
+
+  [_buttonView applyStartAnimationState];
 }
 
 #pragma mark - RCTComponentViewProtocol

@@ -595,22 +595,26 @@ class RNGestureHandlerButtonViewManager :
     // Draw the underlay and ripple between background and children.
     // Clip to BackgroundStyleApplicator's padding box so the overlay
     // never extends beyond the view's resolved border-radius shape.
+    // Borderless ripples are intentionally not clipped so they can
+    // extend beyond the view bounds.
     override fun dispatchDraw(canvas: Canvas) {
-      val hasOverlay = underlayDrawable != null || selectableDrawable != null
-      if (hasOverlay) {
+      underlayDrawable?.let {
         canvas.save()
         BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
-      }
-      underlayDrawable?.let {
         it.setBounds(0, 0, width, height)
         it.draw(canvas)
+        canvas.restore()
       }
       selectableDrawable?.let {
+        if (!useBorderlessDrawable) {
+          canvas.save()
+          BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+        }
         it.setBounds(0, 0, width, height)
         it.draw(canvas)
-      }
-      if (hasOverlay) {
-        canvas.restore()
+        if (!useBorderlessDrawable) {
+          canvas.restore()
+        }
       }
       super.dispatchDraw(canvas)
     }
