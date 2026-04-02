@@ -280,14 +280,18 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   // CSS border-radius proportional scaling: if adjacent radii on any edge
   // exceed that edge's length, scale all radii down by the same factor.
   CGFloat f = 1.0;
-  if (topLeftHorizontal + topRightHorizontal > 0)
+  if (topLeftHorizontal + topRightHorizontal > 0) {
     f = MIN(f, w / (topLeftHorizontal + topRightHorizontal));
-  if (bottomLeftHorizontal + bottomRightHorizontal > 0)
+  }
+  if (bottomLeftHorizontal + bottomRightHorizontal > 0) {
     f = MIN(f, w / (bottomLeftHorizontal + bottomRightHorizontal));
-  if (topLeftVertical + bottomLeftVertical > 0)
+  }
+  if (topLeftVertical + bottomLeftVertical > 0) {
     f = MIN(f, h / (topLeftVertical + bottomLeftVertical));
-  if (topRightVertical + bottomRightVertical > 0)
+  }
+  if (topRightVertical + bottomRightVertical > 0) {
     f = MIN(f, h / (topRightVertical + bottomRightVertical));
+  }
 
   if (f < 1.0) {
     topLeftHorizontal *= f;
@@ -302,22 +306,30 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   // Snap sub-pixel radii to 0 to avoid degenerate curves that cause
   // anti-aliasing artifacts at what should be sharp corners.
-  if (topLeftHorizontal < 0.5)
+  if (topLeftHorizontal < 0.5) {
     topLeftHorizontal = 0;
-  if (topLeftVertical < 0.5)
+  }
+  if (topLeftVertical < 0.5) {
     topLeftVertical = 0;
-  if (topRightHorizontal < 0.5)
+  }
+  if (topRightHorizontal < 0.5) {
     topRightHorizontal = 0;
-  if (topRightVertical < 0.5)
+  }
+  if (topRightVertical < 0.5) {
     topRightVertical = 0;
-  if (bottomLeftHorizontal < 0.5)
+  }
+  if (bottomLeftHorizontal < 0.5) {
     bottomLeftHorizontal = 0;
-  if (bottomLeftVertical < 0.5)
+  }
+  if (bottomLeftVertical < 0.5) {
     bottomLeftVertical = 0;
-  if (bottomRightHorizontal < 0.5)
+  }
+  if (bottomRightHorizontal < 0.5) {
     bottomRightHorizontal = 0;
-  if (bottomRightVertical < 0.5)
+  }
+  if (bottomRightVertical < 0.5) {
     bottomRightVertical = 0;
+  }
 
   if (topLeftHorizontal == 0 && topLeftVertical == 0 && topRightHorizontal == 0 && topRightVertical == 0 &&
       bottomLeftHorizontal == 0 && bottomLeftVertical == 0 && bottomRightHorizontal == 0 && bottomRightVertical == 0) {
