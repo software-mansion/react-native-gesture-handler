@@ -7,6 +7,7 @@
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
+#import <react/renderer/components/view/BaseViewProps.h>
 #import <react/renderer/components/view/ViewProps.h>
 
 #import "RNGestureHandlerButton.h"
@@ -58,32 +59,13 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
     static const auto defaultProps = std::make_shared<const RNGestureHandlerButtonProps>();
     _props = defaultProps;
     _buttonView = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
+    _buttonView.animationTarget = self;
 
     self.contentView = _buttonView;
   }
 
   return self;
 }
-
-#if !TARGET_OS_OSX
-- (void)willMoveToSuperview:(RNGHUIView *)newSuperview
-{
-  [super willMoveToSuperview:newSuperview];
-  _buttonView.animationTarget = newSuperview;
-  if (newSuperview != nil) {
-    [_buttonView applyStartAnimationState];
-  }
-}
-#else
-- (void)viewWillMoveToSuperview:(RNGHUIView *)newSuperview
-{
-  [super viewWillMoveToSuperview:newSuperview];
-  _buttonView.animationTarget = newSuperview;
-  if (newSuperview != nil) {
-    [_buttonView applyStartAnimationState];
-  }
-}
-#endif
 
 - (void)mountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
@@ -128,6 +110,29 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
   [super updateLayoutMetrics:wrapperMetrics oldLayoutMetrics:oldWrapperMetrics];
   [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  [super finalizeUpdates:updateMask];
+
+  // Resolve per-corner border radii from props and forward to the button
+  // so its underlay CALayer gets the matching shape.
+  const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
+  [_buttonView setUnderlayCornerRadiiWithTopLeftHorizontal:borderMetrics.borderRadii.topLeft.horizontal
+                                           topLeftVertical:borderMetrics.borderRadii.topLeft.vertical
+                                        topRightHorizontal:borderMetrics.borderRadii.topRight.horizontal
+                                          topRightVertical:borderMetrics.borderRadii.topRight.vertical
+                                      bottomLeftHorizontal:borderMetrics.borderRadii.bottomLeft.horizontal
+                                        bottomLeftVertical:borderMetrics.borderRadii.bottomLeft.vertical
+                                     bottomRightHorizontal:borderMetrics.borderRadii.bottomRight.horizontal
+                                       bottomRightVertical:borderMetrics.borderRadii.bottomRight.vertical];
+  [_buttonView setUnderlayBorderInsetsWithTop:borderMetrics.borderWidths.top
+                                        right:borderMetrics.borderWidths.right
+                                       bottom:borderMetrics.borderWidths.bottom
+                                         left:borderMetrics.borderWidths.left];
+
+  [_buttonView applyStartAnimationState];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -270,9 +275,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   [super updateProps:props oldProps:oldProps];
-  if (_buttonView.animationTarget != nil) {
-    [_buttonView applyStartAnimationState];
-  }
+  [_buttonView applyStartAnimationState];
 }
 
 #if !TARGET_OS_OSX
@@ -289,6 +292,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   CGPoint buttonPoint = [self convertPoint:point toView:_buttonView];
 
   return [_buttonView hitTest:buttonPoint withEvent:event];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+  [_buttonView applyStartAnimationState];
 }
 #endif
 
