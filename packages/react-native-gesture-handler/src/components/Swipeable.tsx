@@ -217,9 +217,9 @@ type SwipeableState = {
   dragX: Animated.Value;
   rowTranslation: Animated.Value;
   rowState: number;
-  leftWidth?: number;
-  rightOffset?: number;
-  rowWidth?: number;
+  leftWidth?: number | undefined;
+  rightOffset?: number | undefined;
+  rowWidth?: number | undefined;
 };
 
 /**

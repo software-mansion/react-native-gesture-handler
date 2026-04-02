@@ -180,6 +180,20 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   }
 
   [_attachRetryCounter removeObjectForKey:viewTag];
+  [self maybeBindHandler:handlerTag toViewWithTag:viewTag withActionType:actionType];
+}
+
+// Resolves a view tag to its native UIView (including contentView unwrapping),
+// sets reactTag, and binds the gesture handler to it. No-op if the handler is
+// already attached to the correct view.
+- (void)maybeBindHandler:(nonnull NSNumber *)handlerTag
+           toViewWithTag:(nonnull NSNumber *)viewTag
+          withActionType:(RNGestureHandlerActionType)actionType
+{
+  RNGHUIView *view = [_viewRegistry viewForReactTag:viewTag];
+  if (view == nil || view.superview == nil) {
+    return;
+  }
 
   // I think it should be moved to RNNativeViewHandler, but that would require
   // additional logic for setting contentView.reactTag, this works for now
@@ -190,13 +204,19 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     }
   }
 
+  RNGestureHandler *handler = [_registry handlerWithTag:handlerTag];
+
+  // Already attached to the correct native view, nothing to do.
+  if (handler != nil && handler.recognizer.view == view && handler.actionType == actionType) {
+    return;
+  }
+
   view.reactTag = viewTag; // necessary for RNReanimated eventHash (e.g. "42onGestureHandlerEvent"), also will be
                            // returned as event.target
 #endif // RCT_NEW_ARCH_ENABLED
 
   [_registry attachHandlerWithTag:handlerTag toView:view withActionType:actionType];
 
-  // register view if not already there
   [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
@@ -235,6 +255,23 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 {
   return [_registry handlerWithTag:handlerTag];
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)reattachHandlersIfNeeded
+{
+  // Re-bind handlers to their current native views. On Fabric, when a parent view has
+  // display:none and siblings change, the native UIView backing a component may be recycled
+  // and replaced. maybeBindHandler is a no-op if the view is nil or unchanged. This is only
+  // needed for handlers using the old api.
+  for (RNGestureHandler *handler in _registry.handlers.objectEnumerator) {
+    if (handler.viewTag == nil) {
+      continue;
+    }
+
+    [self maybeBindHandler:handler.tag toViewWithTag:handler.viewTag withActionType:handler.actionType];
+  }
+}
+#endif
 
 #pragma mark Root Views Management
 

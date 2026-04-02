@@ -9,14 +9,14 @@ import { State } from '../State';
 import { PointerType } from '../PointerType';
 
 export interface HitSlop {
-  left?: number;
-  right?: number;
-  top?: number;
-  bottom?: number;
-  horizontal?: number;
-  vertical?: number;
-  width?: number;
-  height?: number;
+  left?: number | undefined;
+  right?: number | undefined;
+  top?: number | undefined;
+  bottom?: number | undefined;
+  horizontal?: number | undefined;
+  vertical?: number | undefined;
+  width?: number | undefined;
+  height?: number | undefined;
 }
 
 export interface Handler {
@@ -37,17 +37,17 @@ type ConfigArgs =
 
 export interface Config extends Record<string, ConfigArgs> {
   enabled: boolean;
-  simultaneousHandlers?: Handler[] | null;
-  waitFor?: Handler[] | null;
-  blocksHandlers?: Handler[] | null;
-  hitSlop?: HitSlop;
-  shouldCancelWhenOutside?: boolean;
-  userSelect?: UserSelect;
-  activeCursor?: ActiveCursor;
-  mouseButton?: MouseButton;
-  enableContextMenu?: boolean;
-  touchAction?: TouchAction;
-  manualActivation?: boolean;
+  simultaneousHandlers?: Handler[] | null | undefined;
+  waitFor?: Handler[] | null | undefined;
+  blocksHandlers?: Handler[] | null | undefined;
+  hitSlop?: HitSlop | undefined;
+  shouldCancelWhenOutside?: boolean | undefined;
+  userSelect?: UserSelect | undefined;
+  activeCursor?: ActiveCursor | undefined;
+  mouseButton?: MouseButton | undefined;
+  enableContextMenu?: boolean | undefined;
+  touchAction?: TouchAction | undefined;
+  manualActivation?: boolean | undefined;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
@@ -88,7 +88,7 @@ interface NativeEvent extends Record<string, NativeEventArgs> {
   pointerInside: boolean | undefined;
   handlerTag: number;
   target: number;
-  oldState?: State;
+  oldState?: State | undefined;
   pointerType: PointerType;
 }
 
@@ -150,9 +150,9 @@ export interface AdaptedEvent {
   eventType: EventTypes;
   pointerType: PointerType;
   time: number;
-  button?: MouseButton;
-  stylusData?: StylusData;
-  wheelDeltaY?: number;
+  button?: MouseButton | undefined;
+  stylusData?: StylusData | undefined;
+  wheelDeltaY?: number | undefined;
 }
 
 export enum EventTypes {

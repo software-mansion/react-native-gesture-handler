@@ -216,7 +216,7 @@ export interface DrawerLayoutProps {
    * Sets whether the text inside both the drawer and the context window can be selected.
    * Values: 'none' | 'text' | 'auto'
    */
-  userSelect?: UserSelect;
+  userSelect?: UserSelect | undefined;
 
   /**
    * @default 'auto'

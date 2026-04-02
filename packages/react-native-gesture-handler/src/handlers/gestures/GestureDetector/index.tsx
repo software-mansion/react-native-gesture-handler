@@ -57,19 +57,19 @@ interface GestureDetectorProps {
    * This parameter allows to specify which `userSelect` property should be applied to underlying view.
    * Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
    */
-  userSelect?: UserSelect;
+  userSelect?: UserSelect | undefined;
   /**
    * #### Web only
    * Specifies whether context menu should be enabled after clicking on underlying view with right mouse button.
    * Default value is set to `false`.
    */
-  enableContextMenu?: boolean;
+  enableContextMenu?: boolean | undefined;
   /**
    * #### Web only
    * This parameter allows to specify which `touchAction` property should be applied to underlying view.
    * Supports all CSS touch-action values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
    */
-  touchAction?: TouchAction;
+  touchAction?: TouchAction | undefined;
 }
 
 /**

@@ -72,6 +72,7 @@
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
+@property (nonatomic, copy, nullable) NSNumber *viewTag;
 
 #if RCT_NEW_ARCH_ENABLED
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
@@ -81,6 +82,7 @@
 - (void)unbindFromView;
 - (void)resetConfig NS_REQUIRES_SUPER;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
+- (void)handleGesture:(nonnull id)recognizer;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
 - (BOOL)containsPointInView;
@@ -103,7 +105,8 @@
 #endif
 
 #if !TARGET_OS_OSX
-- (void)setCurrentPointerType:(nonnull UIEvent *)event;
+- (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType;
+- (void)setCurrentPointerTypeForEvent:(nonnull UIEvent *)event;
 #else
 - (void)setCurrentPointerTypeToMouse;
 #endif

@@ -16,7 +16,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _lastPoint = CGPointZero;
     _hasBegan = NO;
@@ -26,7 +26,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [_gestureHandler reset];
   [super touchesBegan:touches withEvent:event];
@@ -119,7 +119,7 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
 
     maxDuration = 1.0;
@@ -132,9 +132,9 @@
   return self;
 }
 
-- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer fromReset:(BOOL)fromReset
+- (void)handleGesture:(NSPanGestureRecognizer *)gestureRecognizer
 {
-  [_gestureHandler handleGesture:self fromReset:fromReset];
+  [_gestureHandler handleGesture:self];
 }
 
 - (void)mouseDown:(NSEvent *)event

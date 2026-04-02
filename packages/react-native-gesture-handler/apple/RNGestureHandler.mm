@@ -184,8 +184,13 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.recognizer.enabled = enabled;
 }
 
+- (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType
+{
+  _pointerType = pointerType;
+}
+
 #if !TARGET_OS_OSX
-- (void)setCurrentPointerType:(UIEvent *)event
+- (void)setCurrentPointerTypeForEvent:(UIEvent *)event
 {
   UITouch *touch = [[event allTouches] anyObject];
 
@@ -242,12 +247,15 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   [recognizerView addGestureRecognizer:self.recognizer];
   [self bindManualActivationToView:recognizerView];
+
+  self.viewTag = view.reactTag;
 }
 
 - (void)unbindFromView
 {
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
+  self.viewTag = nil;
 
   [self unbindManualActivation];
 }
@@ -278,6 +286,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 #else
   return recognizer.view;
 #endif
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  [self handleGesture:recognizer fromReset:NO];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset

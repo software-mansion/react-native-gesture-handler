@@ -47,7 +47,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _tapsSoFar = 0;
     _numberOfTaps = defaultNumberOfTaps;
@@ -143,6 +143,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
+
+  [self triggerAction];
 }
 
 #if TARGET_OS_OSX
@@ -186,7 +188,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }

@@ -33,8 +33,10 @@
 - (NSUInteger)getDuration;
 
 #if !TARGET_OS_OSX
+- (void)handleGesture:(UIGestureRecognizer *)recognizer;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset;
 #else
+- (void)handleGesture:(NSGestureRecognizer *)recognizer;
 - (void)handleGesture:(NSGestureRecognizer *)recognizer fromReset:(BOOL)fromReset;
 #endif
 
@@ -47,10 +49,16 @@
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
   }
   return self;
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  previousTime = CACurrentMediaTime();
+  [_gestureHandler handleGesture:recognizer fromReset:NO];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
@@ -79,7 +87,7 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
