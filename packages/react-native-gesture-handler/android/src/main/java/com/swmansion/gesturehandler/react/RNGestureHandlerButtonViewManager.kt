@@ -384,6 +384,10 @@ class RNGestureHandlerButtonViewManager :
     // When null the ripple lives on the foreground drawable instead.
     private var selectableDrawable: Drawable? = null
 
+    // When non-null the ripple is drawn in dispatchDraw (above background, below children).
+    // When null the ripple lives on the foreground drawable instead.
+    private var selectableDrawable: Drawable? = null
+
     var isTouched = false
 
     init {
