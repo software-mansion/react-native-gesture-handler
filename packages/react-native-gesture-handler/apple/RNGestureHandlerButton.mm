@@ -183,7 +183,8 @@
 
 - (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
-  _underlayLayer.opacity = [_underlayLayer.presentationLayer opacity];
+  _underlayLayer.opacity =
+      _underlayLayer.presentationLayer ? [_underlayLayer.presentationLayer opacity] : _underlayLayer.opacity;
   [_underlayLayer removeAllAnimations];
 
   CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
@@ -239,11 +240,12 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                 scale:(CGFloat)scale
              duration:(NSTimeInterval)durationMs
 {
-  target.layer.transform = target.layer.presentationLayer.transform;
+  target.layer.transform =
+      target.layer.presentationLayer ? target.layer.presentationLayer.transform : target.layer.transform;
   NSTimeInterval duration = durationMs / 1000.0;
 
 #if !TARGET_OS_OSX
-  target.alpha = target.layer.presentationLayer.opacity;
+  target.alpha = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alpha;
   [target.layer removeAllAnimations];
 
   [UIView animateWithDuration:duration
@@ -260,7 +262,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                    completion:nil];
 #else
   target.wantsLayer = YES;
-  target.alphaValue = target.layer.presentationLayer.opacity;
+  target.alphaValue = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alphaValue;
   [target.layer removeAllAnimations];
 
   [NSAnimationContext
