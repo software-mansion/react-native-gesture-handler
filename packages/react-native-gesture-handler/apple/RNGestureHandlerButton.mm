@@ -103,9 +103,15 @@
   return self;
 }
 
+#if TARGET_OS_OSX
+- (void)viewWillMoveToWindow:(RNGHWindow *)newWindow
+{
+  [super viewWillMoveToWindow:newWindow];
+#else
 - (void)willMoveToWindow:(RNGHWindow *)newWindow
 {
   [super willMoveToWindow:newWindow];
+#endif
   if (newWindow == nil) {
     if (_pendingPressOutBlock) {
       dispatch_block_cancel(_pendingPressOutBlock);
