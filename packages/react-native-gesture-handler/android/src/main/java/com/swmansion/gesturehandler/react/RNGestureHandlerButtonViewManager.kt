@@ -665,6 +665,14 @@ class RNGestureHandlerButtonViewManager :
       return drawable
     }
 
+    override fun onDetachedFromWindow() {
+      super.onDetachedFromWindow()
+      pendingPressOut?.let { handler.removeCallbacks(it) }
+      pendingPressOut = null
+      currentAnimator?.cancel()
+      currentAnimator = null
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
       super.onSizeChanged(w, h, oldw, oldh)
       needBackgroundUpdate = true

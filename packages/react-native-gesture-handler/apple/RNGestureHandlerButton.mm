@@ -103,6 +103,20 @@
   return self;
 }
 
+- (void)willMoveToWindow:(RNGHWindow *)newWindow
+{
+  [super willMoveToWindow:newWindow];
+  if (newWindow == nil) {
+    if (_pendingPressOutBlock) {
+      dispatch_block_cancel(_pendingPressOutBlock);
+      _pendingPressOutBlock = nil;
+    }
+    RNGHUIView *target = self.animationTarget ?: self;
+    [target.layer removeAllAnimations];
+    [_underlayLayer removeAllAnimations];
+  }
+}
+
 - (NSInteger)pressAndHoldAnimationDuration
 {
   return _pressAndHoldAnimationDuration < 0 ? _tapAnimationDuration : _pressAndHoldAnimationDuration;
