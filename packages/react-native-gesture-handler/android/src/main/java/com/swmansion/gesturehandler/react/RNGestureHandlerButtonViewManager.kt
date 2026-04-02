@@ -536,20 +536,22 @@ class RNGestureHandlerButtonViewManager :
 
     private fun animatePressOut() {
       pendingPressOut?.let { handler.removeCallbacks(it) }
+      val pressAndHoldMs = pressAndHoldAnimationDuration.toLong()
+      val tapMs = tapAnimationDuration.toLong()
       val elapsed = SystemClock.uptimeMillis() - pressInTimestamp
 
-      if (elapsed >= pressAndHoldAnimationDuration) {
-        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, pressAndHoldAnimationDuration.toLong())
+      if (elapsed >= pressAndHoldMs) {
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, pressAndHoldMs)
         // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
-      } else if (elapsed * 2 >= tapAnimationDuration) {
+      } else if (elapsed * 2 >= tapMs) {
         animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
       } else {
-        val remaining = tapAnimationDuration - elapsed
+        val remaining = tapMs - elapsed
         animateTo(activeOpacity, activeScale, activeUnderlayOpacity, remaining)
 
         val runnable = Runnable {
           pendingPressOut = null
-          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapAnimationDuration.toLong())
+          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapMs)
         }
         pendingPressOut = runnable
         handler.postDelayed(runnable, remaining)
