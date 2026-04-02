@@ -274,7 +274,7 @@ class RNGestureHandlerButtonViewManager :
 
   @ReactProp(name = "tapAnimationDuration")
   override fun setTapAnimationDuration(view: ButtonViewGroup, tapAnimationDuration: Int) {
-    view.tapAnimationDuration = tapAnimationDuration
+    view.tapAnimationDuration = if (tapAnimationDuration > 0) tapAnimationDuration else 0
   }
 
   @ReactProp(name = "defaultOpacity")
