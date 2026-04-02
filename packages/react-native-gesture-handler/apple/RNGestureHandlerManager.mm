@@ -256,6 +256,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   return [_registry handlerWithTag:handlerTag];
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
 - (void)reattachHandlersIfNeeded
 {
   // Re-bind handlers to their current native views. On Fabric, when a parent view has
@@ -270,6 +271,7 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
     [self maybeBindHandler:handler.tag toViewWithTag:handler.viewTag withActionType:handler.actionType];
   }
 }
+#endif
 
 #pragma mark Root Views Management
 
