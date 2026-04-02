@@ -18,7 +18,7 @@ type ButtonProps = ViewProps & {
 export const ButtonComponent = ({
   enabled = true,
   pressAndHoldAnimationDuration: pressAndHoldAnimationDurationProp = -1,
-  tapAnimationDuration = 100,
+  tapAnimationDuration: tapAnimationDurationProp = 100,
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
@@ -30,6 +30,8 @@ export const ButtonComponent = ({
   children,
   ...rest
 }: ButtonProps) => {
+  const tapAnimationDuration =
+    tapAnimationDurationProp < 0 ? 0 : tapAnimationDurationProp;
   const pressAndHoldAnimationDuration =
     pressAndHoldAnimationDurationProp < 0
       ? tapAnimationDuration
@@ -67,6 +69,7 @@ export const ButtonComponent = ({
   const pressOut = React.useCallback(() => {
     if (pressOutTimer.current != null) {
       clearTimeout(pressOutTimer.current);
+      pressOutTimer.current = null;
     }
     const elapsed = performance.now() - pressInTimestamp.current;
 
