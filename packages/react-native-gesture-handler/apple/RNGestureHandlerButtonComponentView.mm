@@ -43,12 +43,6 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 {
   return NO;
 }
-
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
-{
-  [super traitCollectionDidChange:previousTraitCollection];
-  [_buttonView applyStartAnimationState];
-}
 #endif
 
 // Needed because of this: https://github.com/facebook/react-native/pull/37274
@@ -298,6 +292,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   CGPoint buttonPoint = [self convertPoint:point toView:_buttonView];
 
   return [_buttonView hitTest:buttonPoint withEvent:event];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+  [_buttonView applyStartAnimationState];
 }
 #endif
 
