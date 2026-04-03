@@ -12,11 +12,11 @@ With `Clickable`, you have more control over animations. It is possible to choos
 
 ## Replacing old buttons
 
-If you were using `RectButton`, or `BorderlessButton` in your app, you can easily replace them with `Clickable`. Check out full code in [example](#example) section below.
+If you were using `RectButton` or `BorderlessButton` in your app, you can easily replace them with `Clickable`. Check out full code in [example](#example) section below.
 
 ### RectButton
 
-To replace `RectButton` with `Clickable`, simply add `activeUnderlayOpacity={0.105}` to your `Clickable` component. This will animate the underlay when the button is pressed.
+To replace `RectButton` with `Clickable`, simply add `activeUnderlayOpacity={0.105}` to your `Clickable`. This will animate the underlay when the button is pressed.
 
 ```tsx
 <Clickable
@@ -26,7 +26,7 @@ To replace `RectButton` with `Clickable`, simply add `activeUnderlayOpacity={0.1
 
 ### BorderlessButton
 
-Replacing `BorderlessButton` with `Clickable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Clickable` component. This will animate the whole component when the button is pressed.
+Replacing `BorderlessButton` with `Clickable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Clickable`. This will animate the whole component when the button is pressed.
 
 ```tsx
 <Clickable
@@ -107,6 +107,46 @@ const styles = StyleSheet.create({
 
 
 ## Properties
+
+### activeOpacity
+
+```ts
+activeOpacity?: number;
+```
+
+Defines the opacity of the whole component when the button is active.
+
+### defaultOpacity
+
+```ts
+defaultOpacity?: number;
+```
+
+Defines the initial opacity of the whole component when the button is inactive. By default set to `1`
+
+### activeUnderlayOpacity
+
+```ts
+activeUnderlayOpacity?: number;
+```
+
+Defines the opacity of underlay when the button is active. If not set, underlay won't be rendered.
+
+### defaultUnderlayOpacity
+
+```ts
+defaultUnderlayOpacity?: number;
+```
+
+Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
+
+### underlayColor
+
+```ts
+underlayColor?: string;
+```
+
+Background color of underlay. This only takes effect when `activeUnderlayOpacity` is set.
 
 ### exclusive
 
@@ -213,45 +253,6 @@ delayLongPress?: number;
 
 Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
 
-### underlayColor
-
-```ts
-underlayColor?: string;
-```
-
-Background color of underlay. This only takes effect when `activeUnderlayOpacity` is set.
-
-### activeUnderlayOpacity
-
-```ts
-activeUnderlayOpacity?: number;
-```
-
-Defines the opacity of underlay when the button is active. If not set, underlay won't be rendered.
-
-### activeOpacity
-
-```ts
-activeOpacity?: number;
-```
-
-Defines the opacity of the whole component when the button is active.
-
-### defaultUnderlayOpacity
-
-```ts
-defaultUnderlayOpacity?: number;
-```
-
-Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
-
-### defaultOpacity
-
-```ts
-defaultOpacity?: number;
-```
-
-Defines the initial opacity of the whole component when the button is inactive. By default set to `1`
 
 <HeaderWithBadges platforms={['android']}>
 ### androidRipple
