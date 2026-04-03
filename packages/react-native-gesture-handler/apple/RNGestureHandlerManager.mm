@@ -250,15 +250,19 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   // display:none and siblings change, the native UIView backing a component may be recycled
   // and replaced. maybeBindHandler is a no-op if the view is nil or unchanged. This is only
   // needed for handlers using the old api.
-  for (RNGestureHandler *handler in _registry.handlers.objectEnumerator) {
-    if (handler.viewTag == nil || [handler usesNativeOrVirtualDetector]) {
-      continue;
-    }
+  NSDictionary *handlers = _registry.handlers;
 
-    [self maybeBindHandler:handler.tag
-             toViewWithTag:handler.viewTag
-            withActionType:handler.actionType
-          withHostDetector:nil];
+  @synchronized(handlers) {
+    for (RNGestureHandler *handler in handlers.objectEnumerator) {
+      if (handler.viewTag == nil || [handler usesNativeOrVirtualDetector]) {
+        continue;
+      }
+
+      [self maybeBindHandler:handler.tag
+               toViewWithTag:handler.viewTag
+              withActionType:handler.actionType
+            withHostDetector:nil];
+    }
   }
 }
 
@@ -269,10 +273,14 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   RNGHUIView *touchHandlerView = childView;
 
 #if !TARGET_OS_OSX
+  Class fullWindowOverlayContainerClass = NSClassFromString(@"RNSFullWindowOverlayContainer");
+
   if ([[childView reactViewController] isKindOfClass:[RCTFabricModalHostViewController class]]) {
     touchHandlerView = [childView reactViewController].view;
   } else {
-    while (touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]]) {
+    while (
+        touchHandlerView != nil && ![touchHandlerView isKindOfClass:[RCTSurfaceView class]] &&
+        (fullWindowOverlayContainerClass == nil || ![touchHandlerView isKindOfClass:fullWindowOverlayContainerClass])) {
       touchHandlerView = touchHandlerView.superview;
     }
   }

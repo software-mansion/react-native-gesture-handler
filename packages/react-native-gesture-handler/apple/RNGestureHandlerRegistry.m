@@ -29,12 +29,16 @@
 
 - (RNGestureHandler *)handlerWithTag:(NSNumber *)handlerTag
 {
-  return _handlers[handlerTag];
+  @synchronized(_handlers) {
+    return _handlers[handlerTag];
+  }
 }
 
 - (void)registerGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  _handlers[gestureHandler.tag] = gestureHandler;
+  @synchronized(_handlers) {
+    _handlers[gestureHandler.tag] = gestureHandler;
+  }
 }
 
 - (void)attachHandlerWithTag:(NSNumber *)handlerTag
@@ -42,7 +46,12 @@
               withActionType:(RNGestureHandlerActionType)actionType
             withHostDetector:(nullable RNGHUIView *)hostDetector
 {
-  RNGestureHandler *handler = _handlers[handlerTag];
+  RNGestureHandler *handler;
+
+  @synchronized(_handlers) {
+    handler = _handlers[handlerTag];
+  }
+
   RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
   [handler unbindFromView];
   handler.actionType = actionType;
@@ -55,27 +64,43 @@
 
 - (void)detachHandlerWithTag:(NSNumber *)handlerTag fromHostDetector:(RNGHUIView *)hostDetectorView
 {
-  RNGestureHandler *handler = _handlers[handlerTag];
-  if (handler.hostDetectorView != hostDetectorView)
+  RNGestureHandler *handler;
+
+  @synchronized(_handlers) {
+    handler = _handlers[handlerTag];
+  }
+
+  if (handler.hostDetectorView != hostDetectorView) {
     return;
+  }
+
   [handler unbindFromView];
 }
 
 - (void)dropHandlerWithTag:(NSNumber *)handlerTag
 {
-  RNGestureHandler *handler = _handlers[handlerTag];
+  RNGestureHandler *handler;
+
+  @synchronized(_handlers) {
+    handler = _handlers[handlerTag];
+    [_handlers removeObjectForKey:handlerTag];
+  }
+
   [handler unbindFromView];
-  [_handlers removeObjectForKey:handlerTag];
 }
 
 - (void)dropAllHandlers
 {
-  for (NSNumber *tag in _handlers) {
-    RNGestureHandler *handler = _handlers[tag];
-    [handler unbindFromView];
+  NSArray<RNGestureHandler *> *handlers;
+
+  @synchronized(_handlers) {
+    handlers = [_handlers allValues];
+    [_handlers removeAllObjects];
   }
 
-  [_handlers removeAllObjects];
+  for (RNGestureHandler *handler in handlers) {
+    [handler unbindFromView];
+  }
 }
 
 @end

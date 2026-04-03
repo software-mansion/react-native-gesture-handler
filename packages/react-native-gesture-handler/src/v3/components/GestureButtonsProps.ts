@@ -5,9 +5,17 @@ import GestureHandlerButton, {
 } from '../../components/GestureHandlerButton';
 
 export interface RawButtonProps
-  extends ButtonProps,
+  extends Omit<
+      ButtonProps,
+      | 'defaultOpacity'
+      | 'defaultScale'
+      | 'defaultUnderlayOpacity'
+      | 'activeOpacity'
+      | 'activeScale'
+      | 'activeUnderlayOpacity'
+    >,
     Omit<
-      NativeWrapperProperties<ReturnType<typeof GestureHandlerButton>>,
+      NativeWrapperProperties<React.ComponentRef<typeof GestureHandlerButton>>,
       'hitSlop' | 'enabled'
     > {}
 
@@ -16,41 +24,41 @@ export interface BaseButtonProps extends RawButtonProps {
    * Called when the button gets pressed (analogous to `onPress` in
    * `TouchableHighlight` from RN core).
    */
-  onPress?: (pointerInside: boolean) => void;
+  onPress?: ((pointerInside: boolean) => void) | undefined;
 
   /**
    * Called when the button gets pressed and is held for `delayLongPress`
    * milliseconds.
    */
-  onLongPress?: () => void;
+  onLongPress?: (() => void) | undefined;
 
   /**
    * Called when button changes from inactive to active and vice versa. It
    * passes active state as a boolean variable as a first parameter for that
    * method.
    */
-  onActiveStateChange?: (active: boolean) => void;
+  onActiveStateChange?: ((active: boolean) => void) | undefined;
   style?: StyleProp<ViewStyle>;
 
   /**
    * Delay, in milliseconds, after which the `onLongPress` callback gets called.
    * Defaults to 600.
    */
-  delayLongPress?: number;
+  delayLongPress?: number | undefined;
 }
 
 export interface RectButtonProps extends BaseButtonProps {
   /**
    * Background color that will be dimmed when button is in active state.
    */
-  underlayColor?: string;
+  underlayColor?: string | undefined;
 
   /**
    * iOS only.
    *
    * Opacity applied to the underlay when button is in active state.
    */
-  activeOpacity?: number;
+  activeOpacity?: number | undefined;
 }
 
 export interface BorderlessButtonProps extends BaseButtonProps {
@@ -59,5 +67,5 @@ export interface BorderlessButtonProps extends BaseButtonProps {
    *
    * Opacity applied to the button when it is in an active state.
    */
-  activeOpacity?: number;
+  activeOpacity?: number | undefined;
 }

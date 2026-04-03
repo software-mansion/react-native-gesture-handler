@@ -1,15 +1,15 @@
 package com.swmansion.gesturehandler.react
 
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.DashPathEffect
-import android.graphics.Paint
-import android.graphics.PathEffect
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.PaintDrawable
 import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.ShapeDrawable
@@ -19,12 +19,15 @@ import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.children
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.facebook.react.R
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.BackgroundStyleApplicator
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
@@ -33,6 +36,9 @@ import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.facebook.react.uimanager.style.BorderRadiusProp
+import com.facebook.react.uimanager.style.BorderStyle
+import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
@@ -60,7 +66,7 @@ class RNGestureHandlerButtonViewManager :
 
   @ReactProp(name = "backgroundColor")
   override fun setBackgroundColor(view: ButtonViewGroup, backgroundColor: Int) {
-    view.setBackgroundColor(backgroundColor)
+    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor)
   }
 
   @ReactProp(name = "borderless")
@@ -73,44 +79,171 @@ class RNGestureHandlerButtonViewManager :
     view.isEnabled = enabled
   }
 
-  @ReactProp(name = ViewProps.BORDER_RADIUS)
-  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
-    view.borderRadius = borderRadius
-  }
-
-  @ReactProp(name = "borderTopLeftRadius")
-  override fun setBorderTopLeftRadius(view: ButtonViewGroup, borderTopLeftRadius: Float) {
-    view.borderTopLeftRadius = borderTopLeftRadius
-  }
-
-  @ReactProp(name = "borderTopRightRadius")
-  override fun setBorderTopRightRadius(view: ButtonViewGroup, borderTopRightRadius: Float) {
-    view.borderTopRightRadius = borderTopRightRadius
-  }
-
-  @ReactProp(name = "borderBottomLeftRadius")
-  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, borderBottomLeftRadius: Float) {
-    view.borderBottomLeftRadius = borderBottomLeftRadius
-  }
-
-  @ReactProp(name = "borderBottomRightRadius")
-  override fun setBorderBottomRightRadius(view: ButtonViewGroup, borderBottomRightRadius: Float) {
-    view.borderBottomRightRadius = borderBottomRightRadius
-  }
-
   @ReactProp(name = "borderWidth")
   override fun setBorderWidth(view: ButtonViewGroup, borderWidth: Float) {
-    view.borderWidth = borderWidth
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.ALL, borderWidth)
+  }
+
+  @ReactProp(name = "borderLeftWidth")
+  override fun setBorderLeftWidth(view: ButtonViewGroup, value: Float) {
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.LEFT, value)
+  }
+
+  @ReactProp(name = "borderRightWidth")
+  override fun setBorderRightWidth(view: ButtonViewGroup, value: Float) {
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.RIGHT, value)
+  }
+
+  @ReactProp(name = "borderTopWidth")
+  override fun setBorderTopWidth(view: ButtonViewGroup, value: Float) {
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.TOP, value)
+  }
+
+  @ReactProp(name = "borderBottomWidth")
+  override fun setBorderBottomWidth(view: ButtonViewGroup, value: Float) {
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.BOTTOM, value)
+  }
+
+  @ReactProp(name = "borderStartWidth")
+  override fun setBorderStartWidth(view: ButtonViewGroup, value: Float) {
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.START, value)
+  }
+
+  @ReactProp(name = "borderEndWidth")
+  override fun setBorderEndWidth(view: ButtonViewGroup, value: Float) {
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.END, value)
   }
 
   @ReactProp(name = "borderColor")
   override fun setBorderColor(view: ButtonViewGroup, borderColor: Int?) {
-    view.borderColor = borderColor
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, borderColor)
+  }
+
+  @ReactProp(name = "borderLeftColor")
+  override fun setBorderLeftColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.LEFT, value)
+  }
+
+  @ReactProp(name = "borderRightColor")
+  override fun setBorderRightColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.RIGHT, value)
+  }
+
+  @ReactProp(name = "borderTopColor")
+  override fun setBorderTopColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.TOP, value)
+  }
+
+  @ReactProp(name = "borderBottomColor")
+  override fun setBorderBottomColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.BOTTOM, value)
+  }
+
+  @ReactProp(name = "borderStartColor")
+  override fun setBorderStartColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.START, value)
+  }
+
+  @ReactProp(name = "borderEndColor")
+  override fun setBorderEndColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.END, value)
+  }
+
+  @ReactProp(name = "borderBlockColor")
+  override fun setBorderBlockColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.BLOCK, value)
+  }
+
+  @ReactProp(name = "borderBlockEndColor")
+  override fun setBorderBlockEndColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.BLOCK_END, value)
+  }
+
+  @ReactProp(name = "borderBlockStartColor")
+  override fun setBorderBlockStartColor(view: ButtonViewGroup, value: Int?) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.BLOCK_START, value)
   }
 
   @ReactProp(name = "borderStyle")
   override fun setBorderStyle(view: ButtonViewGroup, borderStyle: String?) {
-    view.borderStyle = borderStyle
+    val parsed = if (borderStyle == null) null else BorderStyle.fromString(borderStyle)
+    BackgroundStyleApplicator.setBorderStyle(view, parsed)
+  }
+
+  @ReactProp(name = ViewProps.OVERFLOW)
+  override fun setOverflow(view: ButtonViewGroup, overflow: String?) {
+    view.setOverflow(overflow)
+  }
+
+  private fun setBorderRadiusInternal(view: ButtonViewGroup, prop: BorderRadiusProp, value: Float) {
+    val isUnset = value.isNaN() || value < 0f
+    val lp = if (isUnset) null else LengthPercentage(value, LengthPercentageType.POINT)
+    BackgroundStyleApplicator.setBorderRadius(view, prop, lp)
+  }
+
+  @ReactProp(name = ViewProps.BORDER_RADIUS)
+  override fun setBorderRadius(view: ButtonViewGroup, borderRadius: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_RADIUS, borderRadius)
+  }
+
+  @ReactProp(name = "borderTopLeftRadius")
+  override fun setBorderTopLeftRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_LEFT_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderTopRightRadius")
+  override fun setBorderTopRightRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderBottomRightRadius")
+  override fun setBorderBottomRightRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderBottomLeftRadius")
+  override fun setBorderBottomLeftRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderTopStartRadius")
+  override fun setBorderTopStartRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_START_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderTopEndRadius")
+  override fun setBorderTopEndRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_TOP_END_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderBottomStartRadius")
+  override fun setBorderBottomStartRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_START_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderBottomEndRadius")
+  override fun setBorderBottomEndRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_BOTTOM_END_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderEndEndRadius")
+  override fun setBorderEndEndRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_END_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderEndStartRadius")
+  override fun setBorderEndStartRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_END_START_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderStartEndRadius")
+  override fun setBorderStartEndRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_END_RADIUS, value)
+  }
+
+  @ReactProp(name = "borderStartStartRadius")
+  override fun setBorderStartStartRadius(view: ButtonViewGroup, value: Float) {
+    setBorderRadiusInternal(view, BorderRadiusProp.BORDER_START_START_RADIUS, value)
   }
 
   @ReactProp(name = "rippleColor")
@@ -131,6 +264,46 @@ class RNGestureHandlerButtonViewManager :
   @ReactProp(name = "touchSoundDisabled")
   override fun setTouchSoundDisabled(view: ButtonViewGroup, touchSoundDisabled: Boolean) {
     view.isSoundEffectsEnabled = !touchSoundDisabled
+  }
+
+  @ReactProp(name = "animationDuration")
+  override fun setAnimationDuration(view: ButtonViewGroup, animationDuration: Int) {
+    view.animationDuration = animationDuration
+  }
+
+  @ReactProp(name = "defaultOpacity")
+  override fun setDefaultOpacity(view: ButtonViewGroup, defaultOpacity: Float) {
+    view.defaultOpacity = defaultOpacity
+  }
+
+  @ReactProp(name = "activeOpacity")
+  override fun setActiveOpacity(view: ButtonViewGroup, targetOpacity: Float) {
+    view.activeOpacity = targetOpacity
+  }
+
+  @ReactProp(name = "defaultScale")
+  override fun setDefaultScale(view: ButtonViewGroup, defaultScale: Float) {
+    view.defaultScale = defaultScale
+  }
+
+  @ReactProp(name = "activeScale")
+  override fun setActiveScale(view: ButtonViewGroup, activeScale: Float) {
+    view.activeScale = activeScale
+  }
+
+  @ReactProp(name = "underlayColor")
+  override fun setUnderlayColor(view: ButtonViewGroup, underlayColor: Int?) {
+    view.underlayColor = underlayColor
+  }
+
+  @ReactProp(name = "defaultUnderlayOpacity")
+  override fun setDefaultUnderlayOpacity(view: ButtonViewGroup, defaultUnderlayOpacity: Float) {
+    view.defaultUnderlayOpacity = defaultUnderlayOpacity
+  }
+
+  @ReactProp(name = "activeUnderlayOpacity")
+  override fun setActiveUnderlayOpacity(view: ButtonViewGroup, activeUnderlayOpacity: Float) {
+    view.activeUnderlayOpacity = activeUnderlayOpacity
   }
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
@@ -171,55 +344,35 @@ class RNGestureHandlerButtonViewManager :
         field = useForeground
       }
     var useBorderlessDrawable = false
-    var borderRadius = 0f
-      set(radius) = withBackgroundUpdate {
-        field = radius * resources.displayMetrics.density
-      }
-    var borderTopLeftRadius = 0f
-      set(radius) = withBackgroundUpdate {
-        field = radius * resources.displayMetrics.density
-      }
-    var borderTopRightRadius = 0f
-      set(radius) = withBackgroundUpdate {
-        field = radius * resources.displayMetrics.density
-      }
-    var borderBottomLeftRadius = 0f
-      set(radius) = withBackgroundUpdate {
-        field = radius * resources.displayMetrics.density
-      }
-    var borderBottomRightRadius = 0f
-      set(radius) = withBackgroundUpdate {
-        field = radius * resources.displayMetrics.density
-      }
-    var borderWidth = 0f
-      set(width) = withBackgroundUpdate {
-        field = width * resources.displayMetrics.density
-      }
-    var borderColor: Int? = null
+
+    var exclusive = true
+    var animationDuration: Int = 100
+    var activeOpacity: Float = 1.0f
+    var defaultOpacity: Float = 1.0f
+    var activeScale: Float = 1.0f
+    var defaultScale: Float = 1.0f
+    var underlayColor: Int? = null
       set(color) = withBackgroundUpdate {
         field = color
       }
-    var borderStyle: String? = "solid"
-      set(style) = withBackgroundUpdate {
-        field = style
+    var activeUnderlayOpacity: Float = 0f
+    var defaultUnderlayOpacity: Float = 0f
+      set(value) = withBackgroundUpdate {
+        field = value
       }
-
-    private val hasBorderRadii: Boolean
-      get() = borderRadius != 0f ||
-        borderTopLeftRadius != 0f ||
-        borderTopRightRadius != 0f ||
-        borderBottomLeftRadius != 0f ||
-        borderBottomRightRadius != 0f
-
-    var exclusive = true
 
     override var pointerEvents: PointerEvents = PointerEvents.AUTO
 
-    private var buttonBackgroundColor = Color.TRANSPARENT
     private var needBackgroundUpdate = false
     private var lastEventTime = -1L
     private var lastAction = -1
     private var receivedKeyEvent = false
+    private var currentAnimator: AnimatorSet? = null
+    private var underlayDrawable: PaintDrawable? = null
+
+    // When non-null the ripple is drawn in dispatchDraw (above background, below children).
+    // When null the ripple lives on the foreground drawable instead.
+    private var selectableDrawable: Drawable? = null
 
     var isTouched = false
 
@@ -237,30 +390,22 @@ class RNGestureHandlerButtonViewManager :
       needBackgroundUpdate = true
     }
 
-    private fun buildBorderRadii(): FloatArray {
-      // duplicate radius for each corner, as setCornerRadii expects X radius and Y radius for each
-      return floatArrayOf(
-        borderTopLeftRadius,
-        borderTopLeftRadius,
-        borderTopRightRadius,
-        borderTopRightRadius,
-        borderBottomRightRadius,
-        borderBottomRightRadius,
-        borderBottomLeftRadius,
-        borderBottomLeftRadius,
-      )
-        .map { if (it != 0f) it else borderRadius }
-        .toFloatArray()
+    fun setOverflow(overflow: String?) {
+      when (overflow) {
+        "hidden" -> {
+          clipChildren = true
+          clipToPadding = true
+        }
+        else -> {
+          clipChildren = false
+          clipToPadding = false
+        }
+      }
+      invalidate()
     }
 
-    private fun buildBorderStyle(): PathEffect? = when (borderStyle) {
-      "dotted" -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0f)
-      "dashed" -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0f)
-      else -> null
-    }
-
-    override fun setBackgroundColor(color: Int) = withBackgroundUpdate {
-      buttonBackgroundColor = color
+    override fun setBackgroundColor(color: Int) {
+      BackgroundStyleApplicator.setBackgroundColor(this, color)
     }
 
     override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
@@ -331,21 +476,57 @@ class RNGestureHandlerButtonViewManager :
       return false
     }
 
-    private fun updateBackgroundColor(backgroundColor: Int, borderDrawable: Drawable, selectable: Drawable?) {
-      val colorDrawable = PaintDrawable(backgroundColor)
+    private fun applyStartAnimationState() {
+      if (activeOpacity != 1.0f || defaultOpacity != 1.0f) {
+        alpha = defaultOpacity
+      }
+      if (activeScale != 1.0f || defaultScale != 1.0f) {
+        scaleX = defaultScale
+        scaleY = defaultScale
+      }
+      underlayDrawable?.alpha = (defaultUnderlayOpacity * 255).toInt()
+    }
 
-      if (hasBorderRadii) {
-        colorDrawable.setCornerRadii(buildBorderRadii())
+    private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float) {
+      val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f
+      val hasScale = activeScale != 1.0f || defaultScale != 1.0f
+      val hasUnderlay = activeUnderlayOpacity != defaultUnderlayOpacity && underlayDrawable != null
+      if (!hasOpacity && !hasScale && !hasUnderlay) {
+        return
       }
 
-      val layerDrawable = LayerDrawable(
-        if (selectable != null) {
-          arrayOf(colorDrawable, selectable, borderDrawable)
-        } else {
-          arrayOf(colorDrawable, borderDrawable)
-        },
-      )
-      background = layerDrawable
+      currentAnimator?.cancel()
+      val animators = ArrayList<Animator>()
+      if (hasOpacity) {
+        animators.add(ObjectAnimator.ofFloat(this, "alpha", opacity))
+      }
+      if (hasScale) {
+        animators.add(ObjectAnimator.ofFloat(this, "scaleX", scale))
+        animators.add(ObjectAnimator.ofFloat(this, "scaleY", scale))
+      }
+      if (hasUnderlay) {
+        animators.add(ObjectAnimator.ofInt(underlayDrawable!!, "alpha", (underlayOpacity * 255).toInt()))
+      }
+      currentAnimator = AnimatorSet().apply {
+        playTogether(animators)
+        duration = animationDuration.toLong()
+        interpolator = LinearOutSlowInInterpolator()
+        start()
+      }
+    }
+
+    private fun animatePressIn() {
+      animateTo(activeOpacity, activeScale, activeUnderlayOpacity)
+    }
+
+    private fun animatePressOut() {
+      animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
+    }
+
+    private fun createUnderlayDrawable(): PaintDrawable {
+      val drawable = PaintDrawable(underlayColor ?: Color.BLACK)
+      drawable.alpha = (defaultUnderlayOpacity * 255).toInt()
+      return drawable
     }
 
     fun updateBackground() {
@@ -354,53 +535,68 @@ class RNGestureHandlerButtonViewManager :
       }
       needBackgroundUpdate = false
 
-      if (buttonBackgroundColor == Color.TRANSPARENT) {
-        // reset background
-        background = null
-      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        // reset foreground
         foreground = null
       }
 
       val selectable = createSelectableDrawable()
-      val borderDrawable = createBorderDrawable()
+      val underlay = createUnderlayDrawable()
+      underlayDrawable = underlay
+      // Set this view as callback so ObjectAnimator alpha changes trigger redraws.
+      underlay.callback = this
 
-      if (hasBorderRadii && selectable is RippleDrawable) {
-        val mask = PaintDrawable(Color.WHITE)
-        mask.setCornerRadii(buildBorderRadii())
-        selectable.setDrawableByLayerId(android.R.id.mask, mask)
-      }
-
-      if (useDrawableOnForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (useDrawableOnForeground && selectable != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        // Explicit foreground mode — View natively forwards state/hotspot.
         foreground = selectable
-        if (buttonBackgroundColor != Color.TRANSPARENT) {
-          updateBackgroundColor(buttonBackgroundColor, borderDrawable, null)
-        }
-      } else if (buttonBackgroundColor == Color.TRANSPARENT && rippleColor == null) {
-        background = LayerDrawable(arrayOf(selectable, borderDrawable))
+        selectableDrawable = null
       } else {
-        updateBackgroundColor(buttonBackgroundColor, borderDrawable, selectable)
+        // Default — draw ripple in dispatchDraw above background, below children.
+        // State and hotspot are forwarded manually.
+        selectableDrawable = selectable
+        selectable?.callback = this
       }
+
+      applyStartAnimationState()
     }
 
-    private fun createBorderDrawable(): Drawable {
-      val borderDrawable = PaintDrawable(Color.TRANSPARENT)
-
-      if (hasBorderRadii) {
-        borderDrawable.setCornerRadii(buildBorderRadii())
+    // Draw the underlay and ripple between background and children.
+    // Clip to BackgroundStyleApplicator's padding box so the overlay
+    // never extends beyond the view's resolved border-radius shape.
+    // Borderless ripples are intentionally not clipped so they can
+    // extend beyond the view bounds.
+    override fun dispatchDraw(canvas: Canvas) {
+      underlayDrawable?.let {
+        canvas.save()
+        BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+        it.setBounds(0, 0, width, height)
+        it.draw(canvas)
+        canvas.restore()
       }
-
-      if (borderWidth > 0f) {
-        borderDrawable.paint.apply {
-          style = Paint.Style.STROKE
-          strokeWidth = borderWidth
-          color = borderColor ?: Color.BLACK
-          pathEffect = buildBorderStyle()
+      selectableDrawable?.let {
+        if (!useBorderlessDrawable) {
+          canvas.save()
+          BackgroundStyleApplicator.clipToPaddingBox(this, canvas)
+        }
+        it.setBounds(0, 0, width, height)
+        it.draw(canvas)
+        if (!useBorderlessDrawable) {
+          canvas.restore()
         }
       }
+      super.dispatchDraw(canvas)
+    }
 
-      return borderDrawable
+    override fun verifyDrawable(who: Drawable): Boolean =
+      super.verifyDrawable(who) || who == underlayDrawable || who == selectableDrawable
+
+    override fun drawableStateChanged() {
+      super.drawableStateChanged()
+      // Forward pressed/enabled state to the ripple when it's drawn manually.
+      selectableDrawable?.let {
+        if (it.isStateful) {
+          it.setState(drawableState)
+        }
+      }
     }
 
     private fun createSelectableDrawable(): Drawable? {
@@ -434,6 +630,12 @@ class RNGestureHandlerButtonViewManager :
       return drawable
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+      super.onSizeChanged(w, h, oldw, oldh)
+      needBackgroundUpdate = true
+      updateBackground()
+    }
+
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
       // No-op
     }
@@ -441,6 +643,8 @@ class RNGestureHandlerButtonViewManager :
     override fun drawableHotspotChanged(x: Float, y: Float) {
       if (touchResponder == null || touchResponder === this) {
         super.drawableHotspotChanged(x, y)
+        // Forward hotspot to the ripple when it's drawn manually.
+        selectableDrawable?.setHotspot(x, y)
       }
     }
 
@@ -540,6 +744,12 @@ class RNGestureHandlerButtonViewManager :
         // is null or non-exclusive, assuming it doesn't have pressed children
         isTouched = pressed
         super.setPressed(pressed)
+
+        if (pressed) {
+          animatePressIn()
+        } else {
+          animatePressOut()
+        }
       }
 
       if (!pressed && touchResponder === this) {

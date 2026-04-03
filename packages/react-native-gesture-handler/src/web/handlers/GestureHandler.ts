@@ -48,18 +48,18 @@ export default abstract class GestureHandler implements IGestureHandler {
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
-  private _testID?: string = undefined;
+  private _testID?: string | undefined = undefined;
 
-  private hitSlop?: HitSlop = undefined;
+  private hitSlop?: HitSlop | undefined = undefined;
   private manualActivation: boolean = false;
-  private mouseButton?: MouseButton = undefined;
+  private mouseButton?: MouseButton | undefined = undefined;
   private needsPointerData: boolean = false;
   private _tracker: PointerTracker = new PointerTracker();
 
   private _enableContextMenu: boolean = false;
-  private _activeCursor?: ActiveCursor = undefined;
-  private _touchAction?: TouchAction = undefined;
-  private _userSelect?: UserSelect = undefined;
+  private _activeCursor?: ActiveCursor | undefined = undefined;
+  private _touchAction?: TouchAction | undefined = undefined;
+  private _userSelect?: UserSelect | undefined = undefined;
 
   // Orchestrator properties
   private _activationIndex = 0;
@@ -228,7 +228,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   public activate(force = false) {
     if (
       (this.manualActivation !== true || force) &&
-      (this.state === State.UNDETERMINED || this.state === State.BEGAN)
+      this.state === State.BEGAN
     ) {
       this.delegate.onActivate();
       this.moveToState(State.ACTIVE);
