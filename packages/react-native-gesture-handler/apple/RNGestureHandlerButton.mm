@@ -44,7 +44,11 @@
   CALayer *_underlayLayer;
   CGFloat _underlayCornerRadii[8]; // [tlH, tlV, trH, trV, blH, blV, brH, brV] outer radii in points
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
+  NSTimeInterval _pressInTimestamp;
+  dispatch_block_t _pendingPressOutBlock;
 }
+
+@synthesize pressAndHoldAnimationDuration = _pressAndHoldAnimationDuration;
 
 - (void)commonInit
 {
@@ -52,7 +56,8 @@
   _hitTestEdgeInsets = UIEdgeInsetsZero;
   _userEnabled = YES;
   _pointerEvents = RNGestureHandlerPointerEventsAuto;
-  _animationDuration = 100;
+  _pressAndHoldAnimationDuration = -1;
+  _tapAnimationDuration = 100;
   _activeOpacity = 1.0;
   _defaultOpacity = 1.0;
   _activeScale = 1.0;
@@ -60,6 +65,8 @@
   _activeUnderlayOpacity = 0.0;
   _defaultUnderlayOpacity = 0.0;
   _underlayColor = nil;
+  _pressInTimestamp = 0;
+  _pendingPressOutBlock = nil;
 #if TARGET_OS_OSX
   self.wantsLayer = YES; // Crucial for macOS layer-backing
 #endif
@@ -94,6 +101,40 @@
     [self commonInit];
   }
   return self;
+}
+
+- (void)cancelPendingPressOutAnimation
+{
+  if (_pendingPressOutBlock) {
+    dispatch_block_cancel(_pendingPressOutBlock);
+    _pendingPressOutBlock = nil;
+  }
+  RNGHUIView *target = self.animationTarget ?: self;
+  [target.layer removeAllAnimations];
+  [_underlayLayer removeAllAnimations];
+}
+
+#if TARGET_OS_OSX
+- (void)viewWillMoveToWindow:(RNGHWindow *)newWindow
+{
+  [super viewWillMoveToWindow:newWindow];
+  if (newWindow == nil) {
+    [self cancelPendingPressOutAnimation];
+  }
+}
+#else
+- (void)willMoveToWindow:(RNGHWindow *)newWindow
+{
+  [super willMoveToWindow:newWindow];
+  if (newWindow == nil) {
+    [self cancelPendingPressOutAnimation];
+  }
+}
+#endif
+
+- (NSInteger)pressAndHoldAnimationDuration
+{
+  return _pressAndHoldAnimationDuration < 0 ? _tapAnimationDuration : _pressAndHoldAnimationDuration;
 }
 
 - (void)setUnderlayColor:(RNGHColor *)underlayColor
@@ -149,12 +190,16 @@
 #endif
 }
 
-- (void)animateUnderlayToOpacity:(float)toOpacity
+- (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
+  _underlayLayer.opacity =
+      _underlayLayer.presentationLayer ? [_underlayLayer.presentationLayer opacity] : _underlayLayer.opacity;
+  [_underlayLayer removeAllAnimations];
+
   CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
-  anim.fromValue = @([_underlayLayer.presentationLayer opacity]);
+  anim.fromValue = @(_underlayLayer.opacity);
   anim.toValue = @(toOpacity);
-  anim.duration = _animationDuration / 1000.0;
+  anim.duration = durationMs / 1000.0;
   anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
   _underlayLayer.opacity = toOpacity;
   [_underlayLayer addAnimation:anim forKey:@"opacity"];
@@ -199,14 +244,22 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #endif
 }
 
-- (void)animateTarget:(RNGHUIView *)target toOpacity:(CGFloat)opacity scale:(CGFloat)scale
+- (void)animateTarget:(RNGHUIView *)target
+            toOpacity:(CGFloat)opacity
+                scale:(CGFloat)scale
+             duration:(NSTimeInterval)durationMs
 {
-  NSTimeInterval duration = _animationDuration / 1000.0;
+  target.layer.transform =
+      target.layer.presentationLayer ? target.layer.presentationLayer.transform : target.layer.transform;
+  NSTimeInterval duration = durationMs / 1000.0;
 
 #if !TARGET_OS_OSX
+  target.alpha = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alpha;
+  [target.layer removeAllAnimations];
+
   [UIView animateWithDuration:duration
                         delay:0
-                      options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                      options:UIViewAnimationOptionCurveEaseInOut
                    animations:^{
                      if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
                        target.alpha = opacity;
@@ -218,6 +271,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
                    completion:nil];
 #else
   target.wantsLayer = YES;
+  target.alphaValue = target.layer.presentationLayer ? target.layer.presentationLayer.opacity : target.alphaValue;
+  [target.layer removeAllAnimations];
+
   [NSAnimationContext
       runAnimationGroup:^(NSAnimationContext *context) {
         context.allowsImplicitAnimation = YES;
@@ -236,19 +292,72 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)handleAnimatePressIn
 {
+  if (_pendingPressOutBlock) {
+    dispatch_block_cancel(_pendingPressOutBlock);
+    _pendingPressOutBlock = nil;
+  }
+  _pressInTimestamp = CACurrentMediaTime();
   RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale];
+  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:self.pressAndHoldAnimationDuration];
   if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_activeUnderlayOpacity];
+    [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:self.pressAndHoldAnimationDuration];
   }
 }
 
 - (void)handleAnimatePressOut
 {
-  RNGHUIView *target = self.animationTarget ?: self;
-  [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale];
-  if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
-    [self animateUnderlayToOpacity:_defaultUnderlayOpacity];
+  if (_pendingPressOutBlock) {
+    dispatch_block_cancel(_pendingPressOutBlock);
+  }
+
+  NSTimeInterval elapsed = (CACurrentMediaTime() - _pressInTimestamp) * 1000.0;
+  NSInteger pressAndHoldAnimationDuration = self.pressAndHoldAnimationDuration;
+
+  if (elapsed >= pressAndHoldAnimationDuration) {
+    // Press-in animation fully finished, animate out in pressAndHoldAnimationDuration
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:pressAndHoldAnimationDuration];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:pressAndHoldAnimationDuration];
+    }
+    // elapsed * 2 to ensure there is at least half of the minDuration left for the animation to play
+  } else if (elapsed * 2 >= _tapAnimationDuration) {
+    // Past minimum but press-in animation still playing, animate out in elapsed time
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale duration:elapsed];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_defaultUnderlayOpacity duration:elapsed];
+    }
+  } else {
+    // Before minimum duration, finish press-in in remaining time then animate out in minDuration
+    NSTimeInterval remaining = _tapAnimationDuration - elapsed;
+
+    RNGHUIView *target = self.animationTarget ?: self;
+    [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale duration:remaining];
+    if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+      [self animateUnderlayToOpacity:_activeUnderlayOpacity duration:remaining];
+    }
+
+    __weak auto weakSelf = self;
+    _pendingPressOutBlock = dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
+      __strong auto strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf->_pendingPressOutBlock = nil;
+        RNGHUIView *target = strongSelf.animationTarget ?: strongSelf;
+        [strongSelf animateTarget:target
+                        toOpacity:strongSelf->_defaultOpacity
+                            scale:strongSelf->_defaultScale
+                         duration:strongSelf->_tapAnimationDuration];
+        if (strongSelf->_activeUnderlayOpacity != strongSelf->_defaultUnderlayOpacity) {
+          [strongSelf animateUnderlayToOpacity:strongSelf->_defaultUnderlayOpacity
+                                      duration:strongSelf->_tapAnimationDuration];
+        }
+      }
+    });
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(remaining * NSEC_PER_MSEC)),
+        dispatch_get_main_queue(),
+        _pendingPressOutBlock);
   }
 }
 
