@@ -11,7 +11,7 @@ import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
 ## Automatic [workletization](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary/#to-workletize) of gesture callbacks
 
-[Worklets' Babel plugin](https://docs.swmansion.com/react-native-worklets/docs/worklets-babel-plugin/about) is setup in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that you don't need to add a `'worklet';` directive at the beginning of the functions. Here is an example that will be automatically workletized:
+[Worklets' Babel plugin](https://docs.swmansion.com/react-native-worklets/docs/worklets-babel-plugin/about) is set up in a way that automatically marks callbacks passed to gestures in the configuration chain as worklets. This means that you don't need to add a `'worklet';` directive at the beginning of the functions. Here is an example that will be automatically workletized:
 
 ```jsx
 const gesture = useTapGesture({
@@ -33,7 +33,7 @@ const gesture = useTapGesture({
 });
 ```
 
-It also won't work when wrapped with hooks like `useCallback` or `useMemo`, e.g:
+It also won't work when wrapped with hooks like `useCallback` or `useMemo`, e.g.:
 
 ```jsx
 const callback = useCallback(() => {
@@ -73,7 +73,7 @@ const gesture = useTapGesture({
 
 ## Using SharedValue in gesture config
 
-RNGH3 allows to pass [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) to gestures' configurations. This allows to react to configuration changes without unnecessary rerenders.
+RNGH3 allows passing [`SharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) to gestures' configurations. This allows reacting to configuration changes without unnecessary rerenders.
 
 <CollapsibleCode 
 label="Show full example"

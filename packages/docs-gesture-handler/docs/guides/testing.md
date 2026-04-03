@@ -6,7 +6,7 @@ sidebar_position: 4
 
 ## Mocking native modules
 
-In order to load mocks provided by RNGH add following to your jest config in `package.json`:
+In order to load mocks provided by RNGH, add the following to your jest config in `package.json`:
 
 ```json
 "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
