@@ -113,7 +113,7 @@ fling.direction(Directions.DOWN);
 
 ### `numberOfPointers(value: number)`
 
-Determines the exact number of points required to handle the fling gesture.
+Determines the exact number of pointers required to handle the fling gesture.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 

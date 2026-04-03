@@ -121,7 +121,7 @@ The scale factor relative to the points of the two touches in screen coordinates
 
 ### `velocity`
 
-Velocity of the pan gesture at the current moment. The value is expressed in scale factor per second.
+Velocity of the pinch gesture at the current moment. The value is expressed in scale factor per second.
 
 ### `focalX`
 

@@ -30,7 +30,7 @@ direction={Directions.DOWN}
 
 ### `numberOfPointers`
 
-Determines the exact number of points required to handle the fling gesture.
+Determines the exact number of pointers required to handle the fling gesture.
 
 ## Event data
 
