@@ -1,0 +1,276 @@
+---
+id: clickable
+title: Clickable
+sidebar_label: Clickable
+---
+
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
+
+`Clickable` is a versatile new component introduced in Gesture Handler 3 to succeed previous button implementations. Designed for maximum flexibility, it provides a highly customizable interface for native touch handling while ensuring consistent behavior across platforms.
+
+With `Clickable`, you have more control over animations. It is possible to choose between animating the entire component or just the underlay, along with specifying desired `opacity` values. This allows you to effortlessly replicate both `RectButton` and `BorderlessButton` effects using a single unified component. Furthermore, it resolves many legacy issues found in earlier versions. On Android, you can opt for the native ripple effect or leverage JS-based animations via the [Animated API](https://reactnative.dev/docs/animated).
+
+## Replacing old buttons
+
+If you were using `RectButton` or `BorderlessButton` in your app, you can easily replace them with `Clickable`. Check out the full code in the [example](#example) section below.
+
+### RectButton
+
+To replace `RectButton` with `Clickable`, simply add `activeUnderlayOpacity={0.105}` to your `Clickable`. This will animate the underlay when the button is pressed.
+
+```tsx
+<Clickable
+  ...
+  activeUnderlayOpacity={0.105}/>
+```
+
+### BorderlessButton
+
+Replacing `BorderlessButton` with `Clickable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Clickable`. This will animate the whole component when the button is pressed.
+
+```tsx
+<Clickable
+  ...
+  activeOpacity={0.3}/>
+```
+
+## Example 
+
+In this example we will demonstrate how to recreate `RectButton` and `BorderlessButton` effects using the `Clickable` component.
+
+<CollapsibleCode 
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[7, 40]}
+src={`
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import {
+  GestureHandlerRootView,
+  Clickable,
+} from 'react-native-gesture-handler';
+
+export default function ClickableExample() {
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <Clickable
+        onPress={() => {
+          console.log('BaseButton built with Clickable');
+        }}
+        style={[styles.button, { backgroundColor: '#7d63d9' }]}>
+        <Text style={styles.buttonText}>BaseButton</Text>
+      </Clickable>
+
+      <Clickable
+        onPress={() => {
+          console.log('RectButton built with Clickable');
+        }}
+        style={[styles.button, { backgroundColor: '#4f9a84' }]}
+        activeUnderlayOpacity={0.105}>
+        <Text style={styles.buttonText}>RectButton</Text>
+      </Clickable>
+
+      <Clickable
+        onPress={() => {
+          console.log('BorderlessButton built with Clickable');
+        }}
+        style={[styles.button, { backgroundColor: '#5f97c8' }]}
+        activeOpacity={0.3}>
+        <Text style={styles.buttonText}>BorderlessButton</Text>
+      </Clickable>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    gap: 20,
+  },
+  button: {
+    width: 200,
+    height: 70,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});
+`}/>
+
+
+## Properties
+
+### activeOpacity
+
+```ts
+activeOpacity?: number;
+```
+
+Defines the opacity of the whole component when the button is active.
+
+### defaultOpacity
+
+```ts
+defaultOpacity?: number;
+```
+
+Defines the initial opacity of the whole component when the button is inactive. By default set to `1`.
+
+### activeUnderlayOpacity
+
+```ts
+activeUnderlayOpacity?: number;
+```
+
+Defines the opacity of the underlay when the button is active. If not set, the underlay won't be rendered.
+
+### defaultUnderlayOpacity
+
+```ts
+defaultUnderlayOpacity?: number;
+```
+
+Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
+
+### underlayColor
+
+```ts
+underlayColor?: string;
+```
+
+Background color of underlay. This only takes effect when `activeUnderlayOpacity` is set.
+
+### exclusive
+
+```ts
+exclusive?: boolean;
+```
+
+Defines if more than one button could be pressed simultaneously. By default set to `true`.
+
+<HeaderWithBadges platforms={['android']}>
+### touchSoundDisabled
+</HeaderWithBadges>
+
+```ts
+touchSoundDisabled?: boolean;
+```
+
+If set to `true`, the system will not play a sound when the button is pressed.
+
+### onPressIn
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onPressIn?: (e: GestureEvent<NativeHandlerData>) => void;
+
+type GestureEvent<NativeHandlerData> = {
+    handlerTag: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+    pointerInside: boolean;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when the button gets pressed (analogous to `onPressIn` in `TouchableHighlight` from RN core).
+
+### onPressOut
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onPressOut?: (e: GestureEvent<NativeHandlerData>) => void;
+
+type GestureEvent<NativeHandlerData> = {
+    handlerTag: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+    pointerInside: boolean;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
+
+Triggered when the button gets released (analogous to `onPressOut` in `TouchableHighlight` from RN core).
+
+### onPress
+
+```ts
+onPress?: (pointerInside: boolean) => void;
+```
+
+Triggered when the button gets pressed (analogous to `onPress` in `TouchableHighlight` from RN core).
+
+### onLongPress
+
+```ts
+onLongPress?: () => void;
+```
+
+Triggered when the button gets pressed for at least [`delayLongPress`](#delaylongpress) milliseconds.
+
+
+### onActiveStateChange
+
+```ts
+onActiveStateChange?: (active: boolean) => void;
+```
+
+Triggered when the button transitions between active and inactive states. It passes the current active state as a boolean variable to the method as the first parameter.
+
+### delayLongPress
+
+```ts
+delayLongPress?: number;
+```
+
+Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
+
+
+<HeaderWithBadges platforms={['android']}>
+### androidRipple
+</HeaderWithBadges>
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+androidRipple?: PressableAndroidRippleConfig;
+
+type PressableAndroidRippleConfig = {
+    color?: (string | OpaqueColorValue);
+    borderless?: boolean;
+    radius?: number;
+    foreground?: boolean;
+}
+`}/>
+
+Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
