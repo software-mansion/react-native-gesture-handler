@@ -61,7 +61,7 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   /**
    * Duration of the press-in animation when the button is held down, in
    * milliseconds. Defaults to `tapAnimationDuration` when not set (or set
-   * to -1).
+   * to any negative value).
    */
   pressAndHoldAnimationDuration?: number | undefined;
 
