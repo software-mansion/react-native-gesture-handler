@@ -750,6 +750,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   if ([self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
     viewToHitTest = _recognizer.view.subviews[0];
+    point = [_recognizer.view convertPoint:point toView:viewToHitTest];
   }
 
   if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
