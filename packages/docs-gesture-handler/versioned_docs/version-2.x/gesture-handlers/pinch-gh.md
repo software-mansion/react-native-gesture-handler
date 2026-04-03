@@ -34,15 +34,15 @@ The scale factor relative to the points of the two touches in screen coordinates
 
 ### `velocity`
 
-Velocity of the pan gesture the current moment. The value is expressed in scale factor per second.
+Velocity of the pan gesture at the current moment. The value is expressed in scale factor per second.
 
 ### `focalX`
 
-Position expressed in points along X axis of center anchor point of gesture
+Position expressed in points along X axis of center anchor point of the gesture.
 
 ### `focalY`
 
-Position expressed in points along Y axis of center anchor point of gesture
+Position expressed in points along Y axis of center anchor point of the gesture.
 
 ## Example
 

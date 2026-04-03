@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
 ### `direction(value: Directions)`
 
-Expressed allowed direction of movement. Expected values are exported as constants in the `Directions` object. It's possible to pass one or many directions in one parameter:
+Expresses the allowed direction of movement. Expected values are exported as constants in the `Directions` object. It's possible to pass one or many directions in one parameter:
 
 ```js
 import { Directions } from 'react-native-gesture-handler';
@@ -109,7 +109,7 @@ fling.direction(Directions.DOWN);
 
 ### `numberOfPointers(value: number)`
 
-Determine exact number of points required to handle the fling gesture.
+Determines the exact number of points required to handle the fling gesture.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 

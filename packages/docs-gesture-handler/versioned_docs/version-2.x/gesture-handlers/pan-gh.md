@@ -30,11 +30,11 @@ In such a case, if we move a finger along the X-axis by 20 points and along the 
 
 ## Multi touch pan handling
 
-If your app relies on multi touch pan handling this section provides some information how the default behavior differs between the platform and how (if necessary) it can be unified.
+If your app relies on multi touch pan handling this section provides some information about how the default behavior differs between platforms and how (if necessary) it can be unified.
 
-The difference in multi touch pan handling lies in the way how translation properties during the event are being calculated.
+The difference in multi touch pan handling lies in the way translation properties during the event are being calculated.
 On iOS the default behavior when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
-This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example UIScrollView component.
+This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions, like for example the UIScrollView component.
 
 The default behavior for native components like scroll view, pager views or drawers is different and hence gesture handler defaults to that when it comes to pan handling.
 The difference is that instead of treating the center of mass of all the fingers placed as a leading pointer it takes the latest placed finger as such.
@@ -54,34 +54,34 @@ Minimum distance the finger (or multiple finger) need to travel before the handl
 
 ### `minPointers`
 
-A number of fingers that is required to be placed before handler can [activate](/docs/2.x/under-the-hood/state#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before the handler can [activate](/docs/2.x/under-the-hood/state#active). Should be a higher or equal to 0 integer.
 
 ### `maxPointers`
 
-When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/2.x/under-the-hood/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and the handler hasn't yet [activated](/docs/2.x/under-the-hood/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
 
 ### `activeOffsetX`
 
 Range along X axis (in points) where fingers travels without activation of handler. Moving outside of this range implies activation of handler. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `activeOffsetY`
 
 Range along Y axis (in points) where fingers travels without activation of handler. Moving outside of this range implies activation of handler. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetY`
 
 When the finger moves outside this range (in points) along Y axis and handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetX`
 
 When the finger moves outside this range (in points) along X axis and handler hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `maxDeltaX`

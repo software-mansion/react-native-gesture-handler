@@ -6,7 +6,7 @@ sidebar_position: 4
 
 ## Mocking native modules
 
-In order to load mocks provided by RNGH add following to your jest config in `package.json`:
+In order to load mocks provided by RNGH add the following to your jest config in `package.json`:
 
 ```json
 "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
@@ -54,7 +54,7 @@ data is missing using these rules:
    defaults.
 4. Missing `BEGIN` and `END` events are added with data copied from first and last
    passed event, respectively.
-5. If first event don't have `state` field, the `ACTIVE` state is assumed.
+5. If the first event doesn't have a `state` field, the `ACTIVE` state is assumed.
 
 Some examples:
 

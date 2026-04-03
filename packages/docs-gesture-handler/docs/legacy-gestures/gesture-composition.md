@@ -13,10 +13,10 @@ Composing gestures is much simpler in RNGH2, you don't need to create a ref for 
 
 ## Race
 
-Only one of the provided gestures can become active at the same time. The first gesture to become active will cancel the rest of the gestures. It accepts variable number of arguments.
+Only one of the provided gestures can become active at the same time. The first gesture to become active will cancel the rest of the gestures. It accepts a variable number of arguments.
 It is the equivalent to having more than one gesture handler without defining `simultaneousHandlers` and `waitFor` props.
 
-For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `Race`:
+For example, let's say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `Race`:
 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
@@ -93,7 +93,7 @@ function App() {
 All of the provided gestures can activate at the same time. Activation of one will not cancel the other.
 It is the equivalent to having some gesture handlers, each with `simultaneousHandlers` prop set to the other handlers.
 
-For example, if you want to make a gallery app, you might want user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
+For example, if you want to make a gallery app, you might want the user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
@@ -210,7 +210,7 @@ You may have noticed that gesture composition described above requires you to mo
 
 ## requireExternalGestureToFail
 
-`requireExternalGestureToFail` allows to delay activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
+`requireExternalGestureToFail` allows delaying activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
 
 For example, you may want to have two nested components, both of them can be tapped by the user to trigger different actions: outer view requires one tap, but the inner one requires 2 taps. If you don't want the first tap on the inner view to activate the outer handler, you must make the outer gesture wait until the inner one fails:
 
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
 
 ## blocksExternalGesture
 
-`blocksExternalGesture` works similarly to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
+`blocksExternalGesture` works similarly to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
 
 ```jsx
 import React, { useRef } from 'react';

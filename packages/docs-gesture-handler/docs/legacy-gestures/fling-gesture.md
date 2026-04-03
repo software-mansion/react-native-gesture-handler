@@ -34,8 +34,8 @@ import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 
 A discrete gesture that activates when the movement is sufficiently long and fast.
-Gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
-When gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when finger is released.
+The gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
+When the gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when the finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
 
 ### `direction(value: Directions)`
 
-Expressed allowed direction of movement. Expected values are exported as constants in the `Directions` object. It's possible to pass one or many directions in one parameter:
+Expresses the allowed direction of movement. Expected values are exported as constants in the `Directions` object. It's possible to pass one or many directions in one parameter:
 
 ```js
 import { Directions } from 'react-native-gesture-handler';
@@ -113,7 +113,7 @@ fling.direction(Directions.DOWN);
 
 ### `numberOfPointers(value: number)`
 
-Determine exact number of points required to handle the fling gesture.
+Determines the exact number of points required to handle the fling gesture.
 
 ### `mouseButton(value: MouseButton)` (Web & Android only)
 
