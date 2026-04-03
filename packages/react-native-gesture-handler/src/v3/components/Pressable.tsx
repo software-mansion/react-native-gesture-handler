@@ -40,6 +40,7 @@ import { PureNativeButton } from './GestureButtons';
 
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
 import { INT32_MAX, isTestEnv } from '../../utils';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -199,11 +200,16 @@ const Pressable = (props: PressableProps) => {
   );
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
+  const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
   useEffect(() => {
-    const configuration = getStatesConfig(handlePressIn, handlePressOut);
+    const configuration = getStatesConfig(
+      handlePressIn,
+      handlePressOut,
+      isScreenReaderEnabled
+    );
     stateMachine.setStates(configuration);
-  }, [handlePressIn, handlePressOut, stateMachine]);
+  }, [handlePressIn, handlePressOut, stateMachine, isScreenReaderEnabled]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -257,7 +263,7 @@ const Pressable = (props: PressableProps) => {
       );
     },
     onTouchesUp: () => {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === 'android' && !isScreenReaderEnabled) {
         // Prevents potential soft-locks
         stateMachine.reset();
         handleFinalize();
@@ -302,7 +308,7 @@ const Pressable = (props: PressableProps) => {
       stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
     },
     onActivate: () => {
-      if (Platform.OS !== 'android') {
+      if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
         // Native.onActivate is broken with Android + hitSlop
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }
@@ -317,9 +323,7 @@ const Pressable = (props: PressableProps) => {
         success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
       );
 
-      if (Platform.OS !== 'ios') {
-        handleFinalize();
-      }
+      handleFinalize();
     },
     enabled: disabled !== true,
     disableReanimated: true,

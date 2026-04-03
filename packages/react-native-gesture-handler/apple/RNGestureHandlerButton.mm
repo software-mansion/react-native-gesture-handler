@@ -11,6 +11,7 @@
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
+#import <QuartzCore/QuartzCore.h>
 #import <React/RCTUIKit.h>
 #endif
 
@@ -38,20 +39,90 @@
  * `TapGestureHandler` instead of a button which gives much better flexibility as far as
  * controlling the touch flow.
  */
-@implementation RNGestureHandlerButton
+@implementation RNGestureHandlerButton {
+  BOOL _isTouchInsideBounds;
+  CALayer *_underlayLayer;
+  CGFloat _underlayCornerRadii[8]; // [tlH, tlV, trH, trV, blH, blV, brH, brV] outer radii in points
+  UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
+}
+
+- (void)commonInit
+{
+  _isTouchInsideBounds = NO;
+  _hitTestEdgeInsets = UIEdgeInsetsZero;
+  _userEnabled = YES;
+  _pointerEvents = RNGestureHandlerPointerEventsAuto;
+  _animationDuration = 100;
+  _activeOpacity = 1.0;
+  _defaultOpacity = 1.0;
+  _activeScale = 1.0;
+  _defaultScale = 1.0;
+  _activeUnderlayOpacity = 0.0;
+  _defaultUnderlayOpacity = 0.0;
+  _underlayColor = nil;
+#if TARGET_OS_OSX
+  self.wantsLayer = YES; // Crucial for macOS layer-backing
+#endif
+
+  _underlayLayer = [CALayer new];
+  _underlayLayer.opacity = 0;
+  _underlayLayer.backgroundColor = [RNGHColor blackColor].CGColor;
+
+  [self.layer insertSublayer:_underlayLayer atIndex:0];
+
+#if !TARGET_OS_TV && !TARGET_OS_OSX
+  [self setExclusiveTouch:YES];
+  [self addTarget:self action:@selector(handleAnimatePressIn) forControlEvents:UIControlEventTouchDown];
+  [self addTarget:self
+                action:@selector(handleAnimatePressOut)
+      forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
+      UIControlEventTouchCancel];
+#endif
+}
 
 - (instancetype)init
 {
-  self = [super init];
-  if (self) {
-    _hitTestEdgeInsets = UIEdgeInsetsZero;
-    _userEnabled = YES;
-    _pointerEvents = RNGestureHandlerPointerEventsAuto;
-#if !TARGET_OS_TV && !TARGET_OS_OSX
-    [self setExclusiveTouch:YES];
-#endif
+  if (self = [super init]) {
+    [self commonInit];
   }
   return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    [self commonInit];
+  }
+  return self;
+}
+
+- (void)setUnderlayColor:(RNGHColor *)underlayColor
+{
+  _underlayColor = underlayColor;
+  _underlayLayer.backgroundColor = underlayColor.CGColor;
+}
+
+#if TARGET_OS_OSX
+// Flip the macOS coordinate system so y=0 is at the top, matching iOS
+// and React Native's layout expectations.
+- (BOOL)isFlipped
+{
+  return YES;
+}
+#endif
+
+#if !TARGET_OS_OSX
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+#else
+- (void)layout
+{
+  [super layout];
+#endif
+  _underlayLayer.frame = UIEdgeInsetsInsetRect(self.bounds, _underlayBorderInsets);
+  [self.layer insertSublayer:_underlayLayer atIndex:0];
+  [self applyUnderlayCornerRadii];
 }
 
 - (BOOL)shouldHandleTouch:(RNGHUIView *)view
@@ -78,6 +149,347 @@
 #endif
 }
 
+- (void)animateUnderlayToOpacity:(float)toOpacity
+{
+  CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
+  anim.fromValue = @([_underlayLayer.presentationLayer opacity]);
+  anim.toValue = @(toOpacity);
+  anim.duration = _animationDuration / 1000.0;
+  anim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+  _underlayLayer.opacity = toOpacity;
+  [_underlayLayer addAnimation:anim forKey:@"opacity"];
+}
+
+#if TARGET_OS_OSX
+static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
+{
+  CGFloat midX = NSMidX(bounds);
+  CGFloat midY = NSMidY(bounds);
+
+  // translate to center, scale, and translate back
+  CATransform3D transform = CATransform3DIdentity;
+  transform = CATransform3DTranslate(transform, midX, midY, 0);
+  transform = CATransform3DScale(transform, scale, scale, 1.0);
+  transform = CATransform3DTranslate(transform, -midX, -midY, 0);
+
+  return transform;
+}
+#endif
+
+- (void)applyStartAnimationState
+{
+  RNGHUIView *target = self.animationTarget ?: self;
+  _underlayLayer.opacity = _defaultUnderlayOpacity;
+
+#if !TARGET_OS_OSX
+  if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+    target.alpha = _defaultOpacity;
+  }
+  if (_activeScale != 1.0 || _defaultScale != 1.0) {
+    target.layer.transform = CATransform3DMakeScale(_defaultScale, _defaultScale, 1.0);
+  }
+#else
+  target.wantsLayer = YES;
+  if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+    target.alphaValue = _defaultOpacity;
+  }
+  if (_activeScale != 1.0 || _defaultScale != 1.0) {
+    target.layer.transform = RNGHCenterScaleTransform(target.bounds, _defaultScale);
+  }
+#endif
+}
+
+- (void)animateTarget:(RNGHUIView *)target toOpacity:(CGFloat)opacity scale:(CGFloat)scale
+{
+  NSTimeInterval duration = _animationDuration / 1000.0;
+
+#if !TARGET_OS_OSX
+  [UIView animateWithDuration:duration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                   animations:^{
+                     if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+                       target.alpha = opacity;
+                     }
+                     if (_activeScale != 1.0 || _defaultScale != 1.0) {
+                       target.layer.transform = CATransform3DMakeScale(scale, scale, 1.0);
+                     }
+                   }
+                   completion:nil];
+#else
+  target.wantsLayer = YES;
+  [NSAnimationContext
+      runAnimationGroup:^(NSAnimationContext *context) {
+        context.allowsImplicitAnimation = YES;
+        context.duration = duration;
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        if (_activeOpacity != 1.0 || _defaultOpacity != 1.0) {
+          target.animator.alphaValue = opacity;
+        }
+        if (_activeScale != 1.0 || _defaultScale != 1.0) {
+          target.layer.transform = RNGHCenterScaleTransform(target.bounds, scale);
+        }
+      }
+      completionHandler:nil];
+#endif
+}
+
+- (void)handleAnimatePressIn
+{
+  RNGHUIView *target = self.animationTarget ?: self;
+  [self animateTarget:target toOpacity:_activeOpacity scale:_activeScale];
+  if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+    [self animateUnderlayToOpacity:_activeUnderlayOpacity];
+  }
+}
+
+- (void)handleAnimatePressOut
+{
+  RNGHUIView *target = self.animationTarget ?: self;
+  [self animateTarget:target toOpacity:_defaultOpacity scale:_defaultScale];
+  if (_activeUnderlayOpacity != _defaultUnderlayOpacity) {
+    [self animateUnderlayToOpacity:_defaultUnderlayOpacity];
+  }
+}
+
+- (void)applyUnderlayCornerRadii
+{
+  CGRect rect = _underlayLayer.bounds;
+  CGFloat w = rect.size.width;
+  CGFloat h = rect.size.height;
+
+  const CGFloat *outerTL = &_underlayCornerRadii[0];
+  const CGFloat *outerTR = &_underlayCornerRadii[2];
+  const CGFloat *outerBL = &_underlayCornerRadii[4];
+  const CGFloat *outerBR = &_underlayCornerRadii[6];
+  CGFloat borderTop = _underlayBorderInsets.top;
+  CGFloat borderBottom = _underlayBorderInsets.bottom;
+  CGFloat borderLeft = _underlayBorderInsets.left;
+  CGFloat borderRight = _underlayBorderInsets.right;
+
+  // Inner border radii: outer radius minus adjacent border width per axis, clamped to 0.
+  CGFloat topLeftHorizontal = MAX(0, outerTL[0] - borderLeft);
+  CGFloat topLeftVertical = MAX(0, outerTL[1] - borderTop);
+  CGFloat topRightHorizontal = MAX(0, outerTR[0] - borderRight);
+  CGFloat topRightVertical = MAX(0, outerTR[1] - borderTop);
+  CGFloat bottomLeftHorizontal = MAX(0, outerBL[0] - borderLeft);
+  CGFloat bottomLeftVertical = MAX(0, outerBL[1] - borderBottom);
+  CGFloat bottomRightHorizontal = MAX(0, outerBR[0] - borderRight);
+  CGFloat bottomRightVertical = MAX(0, outerBR[1] - borderBottom);
+
+  // CSS border-radius proportional scaling: if adjacent radii on any edge
+  // exceed that edge's length, scale all radii down by the same factor.
+  CGFloat f = 1.0;
+  if (topLeftHorizontal + topRightHorizontal > 0) {
+    f = MIN(f, w / (topLeftHorizontal + topRightHorizontal));
+  }
+  if (bottomLeftHorizontal + bottomRightHorizontal > 0) {
+    f = MIN(f, w / (bottomLeftHorizontal + bottomRightHorizontal));
+  }
+  if (topLeftVertical + bottomLeftVertical > 0) {
+    f = MIN(f, h / (topLeftVertical + bottomLeftVertical));
+  }
+  if (topRightVertical + bottomRightVertical > 0) {
+    f = MIN(f, h / (topRightVertical + bottomRightVertical));
+  }
+
+  if (f < 1.0) {
+    topLeftHorizontal *= f;
+    topLeftVertical *= f;
+    topRightHorizontal *= f;
+    topRightVertical *= f;
+    bottomLeftHorizontal *= f;
+    bottomLeftVertical *= f;
+    bottomRightHorizontal *= f;
+    bottomRightVertical *= f;
+  }
+
+  // Snap sub-pixel radii to 0 to avoid degenerate curves that cause
+  // anti-aliasing artifacts at what should be sharp corners.
+  if (topLeftHorizontal < 0.5) {
+    topLeftHorizontal = 0;
+  }
+  if (topLeftVertical < 0.5) {
+    topLeftVertical = 0;
+  }
+  if (topRightHorizontal < 0.5) {
+    topRightHorizontal = 0;
+  }
+  if (topRightVertical < 0.5) {
+    topRightVertical = 0;
+  }
+  if (bottomLeftHorizontal < 0.5) {
+    bottomLeftHorizontal = 0;
+  }
+  if (bottomLeftVertical < 0.5) {
+    bottomLeftVertical = 0;
+  }
+  if (bottomRightHorizontal < 0.5) {
+    bottomRightHorizontal = 0;
+  }
+  if (bottomRightVertical < 0.5) {
+    bottomRightVertical = 0;
+  }
+
+  if (topLeftHorizontal == 0 && topLeftVertical == 0 && topRightHorizontal == 0 && topRightVertical == 0 &&
+      bottomLeftHorizontal == 0 && bottomLeftVertical == 0 && bottomRightHorizontal == 0 && bottomRightVertical == 0) {
+    _underlayLayer.cornerRadius = 0;
+    _underlayLayer.mask = nil;
+    return;
+  }
+
+  // Uniform circular — simple cornerRadius is enough
+  if (topLeftHorizontal == topLeftVertical && topRightHorizontal == topRightVertical &&
+      bottomLeftHorizontal == bottomLeftVertical && bottomRightHorizontal == bottomRightVertical &&
+      topLeftHorizontal == topRightHorizontal && topRightHorizontal == bottomLeftHorizontal &&
+      bottomLeftHorizontal == bottomRightHorizontal) {
+    _underlayLayer.cornerRadius = topLeftHorizontal;
+    _underlayLayer.mask = nil;
+    return;
+  }
+
+  // Non-uniform or elliptical — build a CAShapeLayer mask using cubic
+  // Bezier approximation for quarter-ellipse arcs (kappa ≈ 0.5523).
+  _underlayLayer.cornerRadius = 0;
+  if (CGRectIsEmpty(rect)) {
+    return;
+  }
+
+  CGMutablePathRef path = CGPathCreateMutable();
+  const CGFloat k = 0.5522847498;
+  BOOL hasTL = topLeftHorizontal > 0 && topLeftVertical > 0;
+  BOOL hasTR = topRightHorizontal > 0 && topRightVertical > 0;
+  BOOL hasBR = bottomRightHorizontal > 0 && bottomRightVertical > 0;
+  BOOL hasBL = bottomLeftHorizontal > 0 && bottomLeftVertical > 0;
+
+  // Start at the top edge (after top-left corner if rounded)
+  CGPathMoveToPoint(path, NULL, hasTL ? topLeftHorizontal : 0, 0);
+
+  // Top edge → top-right corner
+  if (hasTR) {
+    CGPathAddLineToPoint(path, NULL, w - topRightHorizontal, 0);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        w - topRightHorizontal + topRightHorizontal * k,
+        0,
+        w,
+        topRightVertical - topRightVertical * k,
+        w,
+        topRightVertical);
+  } else {
+    CGPathAddLineToPoint(path, NULL, w, 0);
+  }
+
+  // Right edge → bottom-right corner
+  if (hasBR) {
+    CGPathAddLineToPoint(path, NULL, w, h - bottomRightVertical);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        w,
+        h - bottomRightVertical + bottomRightVertical * k,
+        w - bottomRightHorizontal + bottomRightHorizontal * k,
+        h,
+        w - bottomRightHorizontal,
+        h);
+  } else {
+    CGPathAddLineToPoint(path, NULL, w, h);
+  }
+
+  // Bottom edge → bottom-left corner
+  if (hasBL) {
+    CGPathAddLineToPoint(path, NULL, bottomLeftHorizontal, h);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        bottomLeftHorizontal - bottomLeftHorizontal * k,
+        h,
+        0,
+        h - bottomLeftVertical + bottomLeftVertical * k,
+        0,
+        h - bottomLeftVertical);
+  } else {
+    CGPathAddLineToPoint(path, NULL, 0, h);
+  }
+
+  // Left edge → top-left corner
+  if (hasTL) {
+    CGPathAddLineToPoint(path, NULL, 0, topLeftVertical);
+    CGPathAddCurveToPoint(
+        path,
+        NULL,
+        0,
+        topLeftVertical - topLeftVertical * k,
+        topLeftHorizontal - topLeftHorizontal * k,
+        0,
+        topLeftHorizontal,
+        0);
+  }
+  // closePath returns to the start point — (0,0) if no TL curve
+
+  CGPathCloseSubpath(path);
+
+  CAShapeLayer *mask = [CAShapeLayer new];
+  mask.path = path;
+  CGPathRelease(path);
+  _underlayLayer.mask = mask;
+}
+
+- (void)setUnderlayCornerRadiiWithTopLeftHorizontal:(CGFloat)topLeftHorizontal
+                                    topLeftVertical:(CGFloat)topLeftVertical
+                                 topRightHorizontal:(CGFloat)topRightHorizontal
+                                   topRightVertical:(CGFloat)topRightVertical
+                               bottomLeftHorizontal:(CGFloat)bottomLeftHorizontal
+                                 bottomLeftVertical:(CGFloat)bottomLeftVertical
+                              bottomRightHorizontal:(CGFloat)bottomRightHorizontal
+                                bottomRightVertical:(CGFloat)bottomRightVertical
+{
+  _underlayCornerRadii[0] = topLeftHorizontal;
+  _underlayCornerRadii[1] = topLeftVertical;
+  _underlayCornerRadii[2] = topRightHorizontal;
+  _underlayCornerRadii[3] = topRightVertical;
+  _underlayCornerRadii[4] = bottomLeftHorizontal;
+  _underlayCornerRadii[5] = bottomLeftVertical;
+  _underlayCornerRadii[6] = bottomRightHorizontal;
+  _underlayCornerRadii[7] = bottomRightVertical;
+  [self applyUnderlayCornerRadii];
+}
+
+- (void)setUnderlayBorderInsetsWithTop:(CGFloat)top right:(CGFloat)right bottom:(CGFloat)bottom left:(CGFloat)left
+{
+  _underlayBorderInsets = UIEdgeInsetsMake(top, left, bottom, right);
+#if !TARGET_OS_OSX
+  [self setNeedsLayout];
+#else
+  [self setNeedsLayout:YES];
+#endif
+}
+
+#if TARGET_OS_OSX
+- (void)mouseDown:(NSEvent *)event
+{
+  [self handleAnimatePressIn];
+  [super mouseDown:event];
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  [self handleAnimatePressOut];
+  [super mouseUp:event];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+  NSPoint locationInWindow = [event locationInWindow];
+  NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+
+  if (!NSPointInRect(locationInView, self.bounds)) {
+    [self handleAnimatePressOut];
+  }
+}
+#endif
+
 #if !TARGET_OS_OSX
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
@@ -86,6 +498,64 @@
   }
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
   return CGRectContainsPoint(hitFrame, point);
+}
+
+- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+  _isTouchInsideBounds = YES;
+  return [super beginTrackingWithTouch:touch withEvent:event];
+}
+
+- (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+  // DO NOT call super. We are entirely taking over the drag event generation.
+
+  CGPoint location = [touch locationInView:self];
+  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+  BOOL currentlyInside = CGRectContainsPoint(hitFrame, location);
+
+  if (currentlyInside) {
+    if (!_isTouchInsideBounds) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragEnter];
+      _isTouchInsideBounds = YES;
+    }
+
+    // Targets may call `cancelTrackingWithEvent:` in response to DragEnter.
+    if (self.tracking) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragInside];
+    }
+  } else {
+    if (_isTouchInsideBounds) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragExit];
+      _isTouchInsideBounds = NO;
+    }
+
+    // Targets may call `cancelTrackingWithEvent:` in response to DragExit.
+    if (self.tracking) {
+      [self sendActionsForControlEvents:UIControlEventTouchDragOutside];
+    }
+  }
+
+  // If `cancelTrackingWithEvent` was called, `self.tracking` will be NO.
+  return self.tracking;
+}
+
+- (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+{
+  // Also bypass super here so that the final "up" event respects the
+  // strict bounds, rather than Apple's 70-point.
+
+  if (touch != nil) {
+    CGPoint location = [touch locationInView:self];
+    CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+    if (CGRectContainsPoint(hitFrame, location)) {
+      [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+    } else {
+      [self sendActionsForControlEvents:UIControlEventTouchUpOutside];
+    }
+  }
+
+  _isTouchInsideBounds = NO;
 }
 
 - (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -118,29 +588,6 @@
     inner = inner.superview;
   }
   return inner;
-}
-
-- (void)setBorderRadius:(CGFloat)radius
-{
-  if (_borderRadius == radius) {
-    return;
-  }
-
-  _borderRadius = radius;
-  [self.layer setNeedsDisplay];
-}
-
-- (void)displayLayer:(CALayer *)layer
-{
-  if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
-    return;
-  }
-
-  const CGFloat radius = MAX(0, _borderRadius);
-  const CGSize size = self.bounds.size;
-  const CGFloat scaleFactor = RCTZeroIfNaN(MIN(1, size.width / (2 * radius)));
-  const CGFloat currentBorderRadius = radius * scaleFactor;
-  layer.cornerRadius = currentBorderRadius;
 }
 
 - (NSString *)accessibilityLabel

@@ -4,18 +4,14 @@ import {
   HostComponent,
   LayoutChangeEvent,
   StyleProp,
-  StyleSheet,
-  View,
   ViewProps,
   ViewStyle,
 } from 'react-native';
 import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
-import RNGestureHandlerButtonWrapperNativeComponent from '../specs/RNGestureHandlerButtonWrapperNativeComponent';
-import { useMemo } from 'react';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {
   children?: React.ReactNode;
-
+  ref?: React.Ref<React.ComponentRef<typeof ButtonComponent>> | undefined;
   /**
    * Defines if buttons should respond to touches. By default set to true.
    */
@@ -63,6 +59,46 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
   touchSoundDisabled?: boolean | undefined;
 
   /**
+   * Duration of the animation when the button is pressed.
+   */
+  animationDuration?: number | undefined;
+
+  /**
+   * Opacity applied to the button when it is pressed.
+   */
+  activeOpacity?: number | undefined;
+
+  /**
+   * Scale applied to the button when it is pressed.
+   */
+  activeScale?: number | undefined;
+
+  /**
+   * Opacity applied to the underlay when the button is pressed.
+   */
+  activeUnderlayOpacity?: number | undefined;
+
+  /**
+   * Opacity applied to the button when it is not pressed.
+   */
+  defaultOpacity?: number | undefined;
+
+  /**
+   * Scale applied to the button when it is not pressed.
+   */
+  defaultScale?: number | undefined;
+
+  /**
+   * Opacity applied to the underlay when the button is not pressed.
+   */
+  defaultUnderlayOpacity?: number | undefined;
+
+  /**
+   * Color of the underlay.
+   */
+  underlayColor?: ColorValue | undefined;
+
+  /**
    * Style object, use it to set additional styles.
    */
   style?: StyleProp<ViewStyle>;
@@ -104,138 +140,4 @@ export interface ButtonProps extends ViewProps, AccessibilityProps {
 export const ButtonComponent =
   RNGestureHandlerButtonNativeComponent as HostComponent<ButtonProps>;
 
-export default function GestureHandlerButton({ style, ...rest }: ButtonProps) {
-  const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
-
-  const {
-    // Layout properties
-    display,
-    width,
-    height,
-    minWidth,
-    maxWidth,
-    minHeight,
-    maxHeight,
-    flex,
-    flexGrow,
-    flexShrink,
-    flexBasis,
-    flexDirection,
-    flexWrap,
-    justifyContent,
-    alignItems,
-    alignContent,
-    alignSelf,
-    aspectRatio,
-    gap,
-    rowGap,
-    columnGap,
-    margin,
-    marginTop,
-    marginBottom,
-    marginLeft,
-    marginRight,
-    marginVertical,
-    marginHorizontal,
-    marginStart,
-    marginEnd,
-    padding,
-    paddingTop,
-    paddingBottom,
-    paddingLeft,
-    paddingRight,
-    paddingVertical,
-    paddingHorizontal,
-    paddingStart,
-    paddingEnd,
-    position,
-    top,
-    right,
-    bottom,
-    left,
-    start,
-    end,
-    overflow,
-
-    // Visual properties
-    ...restStyle
-  } = flattenedStyle;
-
-  // Layout styles for ButtonComponent
-  const layoutStyle = useMemo(
-    () => ({
-      display,
-      width,
-      height,
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight,
-      flex,
-      flexGrow,
-      flexShrink,
-      flexBasis,
-      flexDirection,
-      flexWrap,
-      justifyContent,
-      alignItems,
-      alignContent,
-      alignSelf,
-      aspectRatio,
-      gap,
-      rowGap,
-      columnGap,
-      margin,
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
-      marginVertical,
-      marginHorizontal,
-      marginStart,
-      marginEnd,
-      padding,
-      paddingTop,
-      paddingBottom,
-      paddingLeft,
-      paddingRight,
-      paddingVertical,
-      paddingHorizontal,
-      paddingStart,
-      paddingEnd,
-      position,
-      top,
-      right,
-      bottom,
-      left,
-      start,
-      end,
-      overflow,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [flattenedStyle]
-  );
-
-  return (
-    <RNGestureHandlerButtonWrapperNativeComponent style={styles.contents}>
-      <View
-        collapsable={false}
-        style={[
-          styles.contents,
-          (!overflow || overflow === 'hidden') && styles.overflowHidden,
-          restStyle,
-        ]}>
-        <ButtonComponent {...rest} style={layoutStyle} />
-      </View>
-    </RNGestureHandlerButtonWrapperNativeComponent>
-  );
-}
-
-const styles = StyleSheet.create({
-  contents: {
-    display: 'contents',
-  },
-  overflowHidden: {
-    overflow: 'hidden',
-  },
-});
+export default ButtonComponent;

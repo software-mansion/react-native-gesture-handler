@@ -96,7 +96,8 @@
     "react": "19.2.3",
     "react-native": "0.84.0",
     "react-native-builder-bob": "^0.40.13",
-    "react-native-reanimated": "^3.18.0",
+    "react-native-reanimated": "^4.3.0",
+    "react-native-worklets": "^0.8.1",
     "react-test-renderer": "19.2.3",
     "typescript": "~5.8.3"
   },
@@ -128,8 +129,7 @@
     "ios": {
       "componentProvider": {
         "RNGestureHandlerButton": "RNGestureHandlerButtonComponentView",
-        "RNGestureHandlerDetector": "RNGestureHandlerDetector",
-        "RNGestureHandlerButtonWrapper": "RNGestureHandlerButtonWrapper"
+        "RNGestureHandlerDetector": "RNGestureHandlerDetector"
       }
     }
   },

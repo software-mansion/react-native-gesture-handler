@@ -123,6 +123,10 @@ class NativeViewGestureHandler : GestureHandler() {
 
       hook.afterGestureEnd(event)
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
+      if (state != STATE_BEGAN && hook.canBegin(event)) {
+        begin()
+      }
+
       when {
         shouldActivateOnStart -> {
           tryIntercept(view, event)
@@ -137,12 +141,6 @@ class NativeViewGestureHandler : GestureHandler() {
 
         hook.wantsToHandleEventBeforeActivation() -> {
           hook.handleEventBeforeActivation(event)
-        }
-
-        state != STATE_BEGAN -> {
-          if (hook.canBegin(event)) {
-            begin()
-          }
         }
       }
     } else if (state == STATE_ACTIVE) {

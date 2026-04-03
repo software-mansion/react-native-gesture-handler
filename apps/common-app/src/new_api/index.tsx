@@ -27,6 +27,7 @@ import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
 
 import ButtonsExample from './components/buttons';
+import ButtonUnderlayExample from './components/button_underlay';
 import ClickableExample from './components/clickable';
 import ClickableStressExample from './components/clickable_stress';
 import ReanimatedDrawerLayout from './components/drawer';
@@ -107,6 +108,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'FlatList example', component: FlatListExample },
       { name: 'ScrollView example', component: ScrollViewExample },
       { name: 'Buttons example', component: ButtonsExample },
+      { name: 'Button underlay example', component: ButtonUnderlayExample },
       { name: 'Clickable example', component: ClickableExample },
       { name: 'Clickable stress test', component: ClickableStressExample },
       { name: 'Switch & TextInput', component: SwitchTextInputExample },
