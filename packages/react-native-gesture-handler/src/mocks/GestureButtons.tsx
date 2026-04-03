@@ -1,8 +1,8 @@
 import React from 'react';
 import { TouchableNativeFeedback, View } from 'react-native';
-export const RawButton = ({ enabled, ...rest }: any) => (
+export const RawButton = ({ enabled, children, ...rest }: any) => (
   <TouchableNativeFeedback disabled={enabled === false} {...rest}>
-    <View />
+    {children ?? <View />}
   </TouchableNativeFeedback>
 );
 export const BaseButton = RawButton;
