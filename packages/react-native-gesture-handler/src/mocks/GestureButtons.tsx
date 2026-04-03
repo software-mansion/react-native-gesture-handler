@@ -8,3 +8,4 @@ export const RawButton = ({ enabled, children, ...rest }: any) => (
 export const BaseButton = RawButton;
 export const RectButton = RawButton;
 export const BorderlessButton = TouchableNativeFeedback;
+export const Clickable = RawButton;
