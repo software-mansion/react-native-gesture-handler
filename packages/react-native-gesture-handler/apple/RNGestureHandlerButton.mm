@@ -103,25 +103,34 @@
   return self;
 }
 
+- (void)cancelPendingPressOutAnimation
+{
+  if (_pendingPressOutBlock) {
+    dispatch_block_cancel(_pendingPressOutBlock);
+    _pendingPressOutBlock = nil;
+  }
+  RNGHUIView *target = self.animationTarget ?: self;
+  [target.layer removeAllAnimations];
+  [_underlayLayer removeAllAnimations];
+}
+
 #if TARGET_OS_OSX
 - (void)viewWillMoveToWindow:(RNGHWindow *)newWindow
 {
   [super viewWillMoveToWindow:newWindow];
+  if (newWindow == nil) {
+    [self cancelPendingPressOutAnimation];
+  }
+}
 #else
 - (void)willMoveToWindow:(RNGHWindow *)newWindow
 {
   [super willMoveToWindow:newWindow];
-#endif
   if (newWindow == nil) {
-    if (_pendingPressOutBlock) {
-      dispatch_block_cancel(_pendingPressOutBlock);
-      _pendingPressOutBlock = nil;
-    }
-    RNGHUIView *target = self.animationTarget ?: self;
-    [target.layer removeAllAnimations];
-    [_underlayLayer removeAllAnimations];
+    [self cancelPendingPressOutAnimation];
   }
 }
+#endif
 
 - (NSInteger)pressAndHoldAnimationDuration
 {
