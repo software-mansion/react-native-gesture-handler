@@ -744,6 +744,33 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return CGRectContainsPoint(hitFrame, location);
 }
 
+- (BOOL)wantsToHandleEventsAtPoint:(CGPoint)point
+{
+  RNGHUIView *viewToHitTest = _recognizer.view;
+
+  if ([self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
+    viewToHitTest = _recognizer.view.subviews[0];
+    point = [_recognizer.view convertPoint:point toView:viewToHitTest];
+  }
+
+  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+    // In this case, logic detector is attached to the DetectorView, which has a single subview representing
+    // the actual target view in the RN hierarchy
+    if ([viewToHitTest respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      // If the view has touchEventEmitterAtPoint: method, it can be used to determine the viewtag
+      // of the view under the touch point
+      facebook::react::SharedTouchEventEmitter eventEmitter =
+          [(id<RCTTouchableComponentViewProtocol>)viewToHitTest touchEventEmitterAtPoint:point];
+      auto viewUnderTouch = eventEmitter->getEventTarget()->getTag();
+
+      return viewUnderTouch == [_virtualViewTag intValue];
+    }
+  }
+
+  CGRect hitFrame = RNGHHitSlopInsetRect(viewToHitTest.bounds, _hitSlop);
+  return CGRectContainsPoint(hitFrame, point);
+}
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
   if ([_handlersToWaitFor count]) {
