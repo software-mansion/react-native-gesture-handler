@@ -16,12 +16,12 @@ If you were using `RectButton`, or `BorderlessButton` in your app, you can easil
 
 ### RectButton
 
-To replace `RectButton` with `Clickable`, simply add `underlayActiveOpacity={0.105}` to your `Clickable` component. This will animate the underlay when the button is pressed.
+To replace `RectButton` with `Clickable`, simply add `activeUnderlayOpacity={0.105}` to your `Clickable` component. This will animate the underlay when the button is pressed.
 
 ```tsx
 <Clickable
   ...
-  underlayActiveOpacity={0.105}/>
+  activeUnderlayOpacity={0.105}/>
 ```
 
 ### BorderlessButton
@@ -66,7 +66,7 @@ export default function ClickableExample() {
           console.log('RectButton built with Clickable');
         }}
         style={[styles.button, { backgroundColor: '#4f9a84' }]}
-        underlayActiveOpacity={0.105}>
+        activeUnderlayOpacity={0.105}>
         <Text style={styles.buttonText}>RectButton</Text>
       </Clickable>
 
@@ -219,12 +219,12 @@ Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress
 underlayColor?: string;
 ```
 
-Background color of underlay. This only takes effect when `underlayActiveOpacity` is set.
+Background color of underlay. This only takes effect when `activeUnderlayOpacity` is set.
 
-### underlayActiveOpacity
+### activeUnderlayOpacity
 
 ```ts
-underlayActiveOpacity?: number;
+activeUnderlayOpacity?: number;
 ```
 
 Defines the opacity of underlay when the button is active. If not set, underlay won't be rendered.
@@ -237,18 +237,18 @@ activeOpacity?: number;
 
 Defines the opacity of the whole component when the button is active.
 
-### underlayInitialOpacity
+### defaultUnderlayOpacity
 
 ```ts
-underlayInitialOpacity?: number;
+defaultUnderlayOpacity?: number;
 ```
 
 Defines the initial opacity of underlay when the button is inactive. By default set to `0`.
 
-### initialOpacity
+### defaultOpacity
 
 ```ts
-initialOpacity?: number;
+defaultOpacity?: number;
 ```
 
 Defines the initial opacity of the whole component when the button is inactive. By default set to `1`
