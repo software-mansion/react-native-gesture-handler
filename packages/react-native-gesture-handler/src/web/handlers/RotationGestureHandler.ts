@@ -66,10 +66,12 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent() {
+    const rect = this.delegate.measureView();
+
     return {
       rotation: this.rotation ? this.rotation : 0,
-      anchorX: this.getAnchorX(),
-      anchorY: this.getAnchorY(),
+      anchorX: this.getAnchorX() - rect.pageX,
+      anchorY: this.getAnchorY() - rect.pageY,
       velocity: this.velocity ? this.velocity : 0,
     };
   }
