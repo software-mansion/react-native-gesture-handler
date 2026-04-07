@@ -14,7 +14,7 @@ If the provided animations are not sufficient, it's possible to use `Clickable` 
 
 ## Replacing old buttons
 
-If you were using `RectButton` or `BorderlessButton` in your app, you can easily replace them with `Clickable`. Check out the full code in the [example](#example) section below.
+If you were using `RectButton` or `BorderlessButton` in your app, you should replace them with `Clickable`. Check out the full code in the [example](#example) section below.
 
 ### RectButton
 
@@ -124,7 +124,7 @@ Defines the opacity of the whole component when the button is active.
 defaultOpacity?: number;
 ```
 
-Defines the initial opacity of the whole component when the button is inactive. By default set to `1`.
+Defines the opacity of the whole component when the button is active. By default set to `1`.
 
 ### activeUnderlayOpacity
 
@@ -132,7 +132,7 @@ Defines the initial opacity of the whole component when the button is inactive. 
 activeUnderlayOpacity?: number;
 ```
 
-Defines the opacity of the underlay when the button is active. If not set, the underlay won't be rendered.
+Defines the opacity of the underlay when the button is active. By default set to `0`.
 
 ### defaultUnderlayOpacity
 
@@ -148,7 +148,7 @@ Defines the initial opacity of underlay when the button is inactive. By default 
 underlayColor?: string;
 ```
 
-Background color of underlay. This only takes effect when `activeUnderlayOpacity` is set.
+Background color of the underlay. This only takes effect when `activeUnderlayOpacity` or `defaultUnderlayOpacity` is set.
 
 ### exclusive
 
