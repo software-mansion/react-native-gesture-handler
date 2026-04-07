@@ -36,6 +36,50 @@ Replacing `BorderlessButton` with `Clickable` is as easy as replacing `RectButto
   activeOpacity={0.3}/>
 ```
 
+## Replacing deprecated Touchables
+
+If you were using the deprecated [`Touchable`](/docs/components/touchables) components, you can replace them with `Clickable` as well.
+
+### TouchableOpacity
+
+To replace `TouchableOpacity` with `Clickable`, add `activeOpacity={0.2}`.
+
+```tsx
+<Clickable
+  ...
+  activeOpacity={0.2}/>
+```
+
+### TouchableHighlight
+
+To replace `TouchableHighlight` with `Clickable`, add `activeUnderlayOpacity={1}`.
+
+```tsx
+<Clickable
+  ...
+  activeUnderlayOpacity={1}/>
+```
+
+### TouchableWithoutFeedback
+
+To replace `TouchableWithoutFeedback`, use a plain `Clickable`.
+
+```tsx
+<Clickable ... />
+```
+
+### TouchableNativeFeedback
+
+To replace `TouchableNativeFeedback`, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
+
+```tsx
+<Clickable
+  ...
+  androidRipple={{
+    foreground: true,
+  }}/>
+```
+
 ## Example 
 
 In this example we will demonstrate how to recreate `RectButton` and `BorderlessButton` effects using the `Clickable` component.
