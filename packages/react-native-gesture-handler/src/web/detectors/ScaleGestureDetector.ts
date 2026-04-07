@@ -79,8 +79,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
-    const coordsSum = tracker.getAbsoluteCoordsSum();
-    const relativeCoordsSum = tracker.getRelativeCoordsSum();
+    const coordsSum = tracker.getAbsoluteCoordsSum(ignoredPointer);
+    const relativeCoordsSum = tracker.getRelativeCoordsSum(ignoredPointer);
 
     const focusX = coordsSum.x / div;
     const focusY = coordsSum.y / div;

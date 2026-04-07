@@ -77,13 +77,13 @@ export default class RotationGestureHandler extends GestureHandler {
   public getAnchorX(): number {
     const anchorX = this.rotationGestureDetector.relativeAnchorX;
 
-    return anchorX !== undefined ? anchorX : this.cachedAnchorX;
+    return Number.isFinite(anchorX) ? anchorX : this.cachedAnchorX;
   }
 
   public getAnchorY(): number {
     const anchorY = this.rotationGestureDetector.relativeAnchorY;
 
-    return anchorY !== undefined ? anchorY : this.cachedAnchorY;
+    return Number.isFinite(anchorY) ? anchorY : this.cachedAnchorY;
   }
 
   protected override onPointerDown(event: AdaptedEvent): void {
@@ -107,10 +107,10 @@ export default class RotationGestureHandler extends GestureHandler {
     const anchorX = this.getAnchorX();
     const anchorY = this.getAnchorY();
 
-    if (anchorX !== undefined) {
+    if (Number.isFinite(anchorX)) {
       this.cachedAnchorX = anchorX;
     }
-    if (anchorY !== undefined) {
+    if (Number.isFinite(anchorY)) {
       this.cachedAnchorY = anchorY;
     }
 
@@ -129,10 +129,10 @@ export default class RotationGestureHandler extends GestureHandler {
     const anchorX = this.getAnchorX();
     const anchorY = this.getAnchorY();
 
-    if (anchorX !== undefined) {
+    if (Number.isFinite(anchorX)) {
       this.cachedAnchorX = anchorX;
     }
-    if (anchorY !== undefined) {
+    if (Number.isFinite(anchorY)) {
       this.cachedAnchorY = anchorY;
     }
 
