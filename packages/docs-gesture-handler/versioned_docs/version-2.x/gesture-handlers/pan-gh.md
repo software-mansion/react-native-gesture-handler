@@ -54,11 +54,11 @@ Minimum distance the finger (or multiple finger) need to travel before the handl
 
 ### `minPointers`
 
-A number of fingers that is required to be placed before handler can [activate](/docs/2.x/under-the-hood/state#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before handler can [activate](/docs/2.x/under-the-hood/state#active). Should be an integer greater than or equal to 0.
 
 ### `maxPointers`
 
-When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/2.x/under-the-hood/state#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and handler hasn't yet [activated](/docs/2.x/under-the-hood/state#active) it will fail recognizing the gesture. Should be an integer greater than or equal to 0.
 
 ### `activeOffsetX`
 
