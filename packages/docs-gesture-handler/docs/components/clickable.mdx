@@ -8,7 +8,9 @@ import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 `Clickable` is a versatile new component introduced in Gesture Handler 3 to supersede previous button implementations. Designed for maximum flexibility, it provides a highly customizable interface for native touch handling while ensuring consistent behavior across platforms.
 
-With `Clickable`, you have more control over animations. It is possible to choose between animating the entire component or just the underlay, along with specifying desired `opacity` values. This allows you to effortlessly replicate both `RectButton` and `BorderlessButton` effects using a single unified component. Furthermore, it resolves many legacy issues found in earlier versions. On Android, you can opt for the native ripple effect or leverage JS-based animations via the [Animated API](https://reactnative.dev/docs/animated).
+`Clickable` provides a simple interface for the common animations like opacity, underlay, and scale, implemented entirely on the platform. On Android, it also exposes the native ripple effect on press (turned off by default).
+
+If the provided animations are not sufficient, it's possible to use `Clickable` to create fully custom interactions using either [Reanimated](https://docs.swmansion.com/react-native-reanimated/) or [Animated API](https://reactnative.dev/docs/animated).
 
 ## Replacing old buttons
 
