@@ -66,26 +66,24 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent() {
-    const rect = this.delegate.measureView();
-
     return {
       rotation: this.rotation ? this.rotation : 0,
-      anchorX: this.getAnchorX() - rect.pageX,
-      anchorY: this.getAnchorY() - rect.pageY,
+      anchorX: this.getAnchorX(),
+      anchorY: this.getAnchorY(),
       velocity: this.velocity ? this.velocity : 0,
     };
   }
 
   public getAnchorX(): number {
-    const anchorX = this.rotationGestureDetector.anchorX;
+    const anchorX = this.rotationGestureDetector.relativeAnchorX;
 
-    return anchorX ? anchorX : this.cachedAnchorX;
+    return anchorX !== undefined ? anchorX : this.cachedAnchorX;
   }
 
   public getAnchorY(): number {
-    const anchorY = this.rotationGestureDetector.anchorY;
+    const anchorY = this.rotationGestureDetector.relativeAnchorY;
 
-    return anchorY ? anchorY : this.cachedAnchorY;
+    return anchorY !== undefined ? anchorY : this.cachedAnchorY;
   }
 
   protected override onPointerDown(event: AdaptedEvent): void {
@@ -106,11 +104,14 @@ export default class RotationGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.getAnchorX()) {
-      this.cachedAnchorX = this.getAnchorX();
+    const anchorX = this.getAnchorX();
+    const anchorY = this.getAnchorY();
+
+    if (anchorX !== undefined) {
+      this.cachedAnchorX = anchorX;
     }
-    if (this.getAnchorY()) {
-      this.cachedAnchorY = this.getAnchorY();
+    if (anchorY !== undefined) {
+      this.cachedAnchorY = anchorY;
     }
 
     this.tracker.track(event);
@@ -125,11 +126,14 @@ export default class RotationGestureHandler extends GestureHandler {
       return;
     }
 
-    if (this.getAnchorX()) {
-      this.cachedAnchorX = this.getAnchorX();
+    const anchorX = this.getAnchorX();
+    const anchorY = this.getAnchorY();
+
+    if (anchorX !== undefined) {
+      this.cachedAnchorX = anchorX;
     }
-    if (this.getAnchorY()) {
-      this.cachedAnchorY = this.getAnchorY();
+    if (anchorY !== undefined) {
+      this.cachedAnchorY = anchorY;
     }
 
     this.tracker.track(event);

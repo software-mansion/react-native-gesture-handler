@@ -70,11 +70,9 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent() {
-    const rect = this.delegate.measureView();
-
     return {
-      focalX: this.scaleGestureDetector.focusX - rect.pageX,
-      focalY: this.scaleGestureDetector.focusY - rect.pageY,
+      focalX: this.scaleGestureDetector.relativeFocusX,
+      focalY: this.scaleGestureDetector.relativeFocusY,
       velocity: this.velocity,
       scale: this.scale,
     };

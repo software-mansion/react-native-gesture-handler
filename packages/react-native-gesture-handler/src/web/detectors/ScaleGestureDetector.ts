@@ -17,6 +17,9 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
   private _focusX!: number;
   private _focusY!: number;
 
+  private _relativeFocusX!: number;
+  private _relativeFocusY!: number;
+
   private _currentSpan!: number;
   private prevSpan!: number;
   private initialSpan!: number;
@@ -77,9 +80,13 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
     const coordsSum = tracker.getAbsoluteCoordsSum();
+    const relativeCoordsSum = tracker.getRelativeCoordsSum();
 
     const focusX = coordsSum.x / div;
     const focusY = coordsSum.y / div;
+
+    const relativeFocusX = relativeCoordsSum.x / div;
+    const relativeFocusY = relativeCoordsSum.y / div;
 
     // Determine average deviation from focal point
 
@@ -107,6 +114,8 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
     const wasInProgress: boolean = this.inProgress;
     this._focusX = focusX;
     this._focusY = focusY;
+    this._relativeFocusX = relativeFocusX;
+    this._relativeFocusY = relativeFocusY;
 
     if (this.inProgress && (span < this.minSpan || configChanged)) {
       this.onScaleEnd(this);
@@ -163,6 +172,14 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
   public get focusY() {
     return this._focusY;
+  }
+
+  public get relativeFocusX() {
+    return this._relativeFocusX;
+  }
+
+  public get relativeFocusY() {
+    return this._relativeFocusY;
   }
 
   public get timeDelta() {
