@@ -43,7 +43,3 @@ jest.mock('./lib/module/components/GestureComponents', () =>
 jest.mock('./lib/module/v3/detectors/HostGestureDetector', () =>
   require('./lib/module/mocks/hostDetector')
 );
-
-jest.mock('react-native-worklets', () =>
-  require('react-native-worklets/src/mock')
-);

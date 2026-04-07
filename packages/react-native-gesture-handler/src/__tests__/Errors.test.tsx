@@ -10,6 +10,10 @@ import {
 import { findNodeHandle, View } from 'react-native';
 import { VirtualDetector } from '../v3/detectors/VirtualDetector/VirtualDetector';
 
+jest.mock('react-native-worklets', () =>
+  require('react-native-worklets/src/mock')
+);
+
 beforeEach(() => cleanup());
 jest.mock('react-native/Libraries/ReactNative/RendererProxy', () => ({
   findNodeHandle: jest.fn(),
