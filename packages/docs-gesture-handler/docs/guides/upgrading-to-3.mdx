@@ -250,7 +250,10 @@ RNGH3 introduces the [`Clickable`](/docs/components/clickable) component — a f
 
 To help you migrate, here is the current state of our button components:
 
-- [`Clickable`](/docs/components/clickable) - The recommended component.
+- [`Clickable`](/docs/components/clickable) - The recommended component. Can be used to replicate both `RectButton` and `BorderlessButton` effects by adjusting the `activeOpacity` and `activeUnderlayOpacity` props.
+  - To replace `RectButton`, add `activeUnderlayOpacity={0.105}`.
+  - To replace `BorderlessButton`, add `activeOpacity={0.3}`.
+  
 
 - Standard Buttons (Deprecated) - `BaseButton`, `RectButton` and `BorderlessButton` are still available but are now deprecated. They have been internally rewritten using the new Hooks API to resolve long-standing issues.
 
