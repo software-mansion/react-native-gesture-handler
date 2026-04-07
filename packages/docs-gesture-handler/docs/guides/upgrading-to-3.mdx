@@ -8,7 +8,7 @@ title: Upgrading to the new API introduced in Gesture Handler 3
 
 import CodeComparison from '@site/src/components/CodeComparison';
 
-The most important change brought by the Gesture Handler 3 is the new hook API. Migration is pretty straightforward. Instead of calling builder methods, everything is passed as a configuration object.
+The most important change brought by Gesture Handler 3 is the new hook API. Migration is pretty straightforward. Instead of calling builder methods, everything is passed as a configuration object.
 
 <CodeComparison
 label1={"RNGH 2"}
@@ -60,7 +60,7 @@ In Gesture Handler 3 some of the callbacks were renamed, namely:
 | `onEnd`   | `onDeactivate` |
 | `onTouchesCancelled`   | `onTouchesCancel` |
 
-Here is comparison of the two APIs:
+Here is a comparison of the two APIs:
 
 <CodeComparison
 label1={"RNGH 2"}
@@ -215,7 +215,7 @@ Certain components, such as `SVG`, depend on the view hierarchy to function corr
 
 ### Migrating SVG
 
-In Gesture Handler 2 it was possible to use `GestureDetector` directly on `SVG`. In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`.
+In Gesture Handler 2, it was possible to use `GestureDetector` directly on `SVG`. In Gesture Handler 3, the correct way to interact with `SVG` is to use `InterceptingGestureDetector` and `VirtualGestureDetector`.
 
 <CodeComparison
 label1={"RNGH 2"}

@@ -108,9 +108,9 @@ const styles = StyleSheet.create({
 
 ## Multi touch pan handling
 
-If your app relies on multi touch pan handling this section provides some information how the default behavior differs between the platform and how (if necessary) it can be unified.
+If your app relies on multi touch pan handling this section provides some information on how the default behavior differs between platforms and how (if necessary) it can be unified.
 
-The difference in multi touch pan handling lies in the way how translation properties during the event are being calculated.
+The difference in multi touch pan handling lies in the way translation properties during the event are being calculated.
 On iOS the default behavior when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
 This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example UIScrollView component.
 
@@ -128,42 +128,42 @@ If you wish to track the "center of mass" virtual pointer and account for its ch
 
 ### `minDistance(value: number)`
 
-Minimum distance the finger (or multiple finger) need to travel before the gesture [activates](/docs/2.x/fundamentals/states-events#active). Expressed in points.
+Minimum distance the finger (or multiple fingers) need to travel before the gesture [activates](/docs/2.x/fundamentals/states-events#active). Expressed in points.
 
 ### `minPointers(value: number)`
 
-A number of fingers that is required to be placed before gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before the gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be an integer greater than or equal to 0.
 
 ### `maxPointers(value: number)`
 
-When the given number of fingers is placed on the screen and gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active) it will fail recognizing the gesture. Should be an integer greater than or equal to 0.
 
 ### `activateAfterLongPress(duration: number)`
 
-Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](/docs/2.x/fundamentals/states-events#active). If the finger is moved during that period, the gesture will [fail](/docs/2.x/fundamentals/states-events#failed). Should be a higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to [activate](/docs/2.x/fundamentals/states-events#active) the `Pan`.
+Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](/docs/2.x/fundamentals/states-events#active). If the finger is moved during that period, the gesture will [fail](/docs/2.x/fundamentals/states-events#failed). Should be an integer greater than or equal to 0. Default value is 0, meaning no `LongPress` is required to [activate](/docs/2.x/fundamentals/states-events#active) the `Pan`.
 
 ### `activeOffsetX(value: number | number[])`
 
-Range along X axis (in points) where fingers travels without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+Range along X axis (in points) where fingers travel without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `activeOffsetY(value: number | number[])`
 
-Range along Y axis (in points) where fingers travels without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+Range along Y axis (in points) where fingers travel without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetY(value: number | number[])`
 
 When the finger moves outside this range (in points) along Y axis and gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetX(value: number | number[])`
 
 When the finger moves outside this range (in points) along X axis and gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, a the second one higher or equal to 0.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `averageTouches(value: boolean)` (Android only)

@@ -92,7 +92,7 @@ export enum DrawerKeyboardDismissMode {
 }
 `}/>
 
-Determines if system keyboard should be closed upon dragging the drawer.
+Determines if the system keyboard should be closed upon dragging the drawer.
 
 ### animationSpeed
 
@@ -250,7 +250,7 @@ Either a component rendered in the content view or a function. If `children` is 
 enableContextMenu: boolean;
 ```
 
-Specifies whether context menu should be enabled after clicking on underlying view with right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton-web--android-only) is specified.
+Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false` if [`MouseButton.RIGHT`](#mousebutton-web--android-only) is specified.
 
 <HeaderWithBadges platforms={['web']}>
 ### userSelect
@@ -260,7 +260,7 @@ Specifies whether context menu should be enabled after clicking on underlying vi
 userSelect: 'none' | 'auto' | 'text';
 ```
 
-This parameter allows to specify which `userSelect` property should be applied to underlying view. Default value is set to `"none"`.
+This parameter allows specifying which `userSelect` property should be applied to the underlying view. Default value is set to `"none"`.
 
 <HeaderWithBadges platforms={['web']}>
 ### activeCursor
@@ -270,7 +270,7 @@ This parameter allows to specify which `userSelect` property should be applied t
 activeCursor: ActiveCursor;
 ```
 
-This parameter allows to specify which cursor should be used when gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
+This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
 
 ## Drawer ref methods
 
@@ -295,7 +295,7 @@ export type DrawerMovementOption = {
 openDrawer: (options?: DrawerMovementOption) => void;
 ```
 
-Allows to manually open the drawer.
+Allows manually opening the drawer.
 
 ### closeDrawer
 
@@ -303,7 +303,7 @@ Allows to manually open the drawer.
 closeDrawer: (options?: DrawerMovementOption) => void;
 ```
 
-Allows to manually close the drawer.
+Allows manually closing the drawer.
 
 ## Example
 

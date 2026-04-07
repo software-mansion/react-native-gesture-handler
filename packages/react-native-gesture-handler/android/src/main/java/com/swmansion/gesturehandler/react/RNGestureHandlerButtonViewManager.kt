@@ -15,6 +15,7 @@ import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Build
+import android.os.SystemClock
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -266,9 +267,14 @@ class RNGestureHandlerButtonViewManager :
     view.isSoundEffectsEnabled = !touchSoundDisabled
   }
 
-  @ReactProp(name = "animationDuration")
-  override fun setAnimationDuration(view: ButtonViewGroup, animationDuration: Int) {
-    view.animationDuration = animationDuration
+  @ReactProp(name = "pressAndHoldAnimationDuration")
+  override fun setPressAndHoldAnimationDuration(view: ButtonViewGroup, pressAndHoldAnimationDuration: Int) {
+    view.pressAndHoldAnimationDuration = pressAndHoldAnimationDuration
+  }
+
+  @ReactProp(name = "tapAnimationDuration")
+  override fun setTapAnimationDuration(view: ButtonViewGroup, tapAnimationDuration: Int) {
+    view.tapAnimationDuration = if (tapAnimationDuration > 0) tapAnimationDuration else 0
   }
 
   @ReactProp(name = "defaultOpacity")
@@ -346,7 +352,9 @@ class RNGestureHandlerButtonViewManager :
     var useBorderlessDrawable = false
 
     var exclusive = true
-    var animationDuration: Int = 100
+    var tapAnimationDuration: Int = 100
+    var pressAndHoldAnimationDuration: Int = -1
+      get() = if (field < 0) tapAnimationDuration else field
     var activeOpacity: Float = 1.0f
     var defaultOpacity: Float = 1.0f
     var activeScale: Float = 1.0f
@@ -369,6 +377,8 @@ class RNGestureHandlerButtonViewManager :
     private var receivedKeyEvent = false
     private var currentAnimator: AnimatorSet? = null
     private var underlayDrawable: PaintDrawable? = null
+    private var pressInTimestamp = 0L
+    private var pendingPressOut: Runnable? = null
 
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
@@ -487,7 +497,7 @@ class RNGestureHandlerButtonViewManager :
       underlayDrawable?.alpha = (defaultUnderlayOpacity * 255).toInt()
     }
 
-    private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float) {
+    private fun animateTo(opacity: Float, scale: Float, underlayOpacity: Float, durationMs: Long) {
       val hasOpacity = activeOpacity != 1.0f || defaultOpacity != 1.0f
       val hasScale = activeScale != 1.0f || defaultScale != 1.0f
       val hasUnderlay = activeUnderlayOpacity != defaultUnderlayOpacity && underlayDrawable != null
@@ -509,18 +519,43 @@ class RNGestureHandlerButtonViewManager :
       }
       currentAnimator = AnimatorSet().apply {
         playTogether(animators)
-        duration = animationDuration.toLong()
+        duration = durationMs
         interpolator = LinearOutSlowInInterpolator()
         start()
       }
     }
 
     private fun animatePressIn() {
-      animateTo(activeOpacity, activeScale, activeUnderlayOpacity)
+      pendingPressOut?.let {
+        handler.removeCallbacks(it)
+        pendingPressOut = null
+      }
+      pressInTimestamp = SystemClock.uptimeMillis()
+      animateTo(activeOpacity, activeScale, activeUnderlayOpacity, pressAndHoldAnimationDuration.toLong())
     }
 
     private fun animatePressOut() {
-      animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity)
+      pendingPressOut?.let { handler.removeCallbacks(it) }
+      val pressAndHoldMs = pressAndHoldAnimationDuration.toLong()
+      val tapMs = tapAnimationDuration.toLong()
+      val elapsed = SystemClock.uptimeMillis() - pressInTimestamp
+
+      if (elapsed >= pressAndHoldMs) {
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, pressAndHoldMs)
+        // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
+      } else if (elapsed * 2 >= tapMs) {
+        animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, elapsed)
+      } else {
+        val remaining = tapMs - elapsed
+        animateTo(activeOpacity, activeScale, activeUnderlayOpacity, remaining)
+
+        val runnable = Runnable {
+          pendingPressOut = null
+          animateTo(defaultOpacity, defaultScale, defaultUnderlayOpacity, tapMs)
+        }
+        pendingPressOut = runnable
+        handler.postDelayed(runnable, remaining)
+      }
     }
 
     private fun createUnderlayDrawable(): PaintDrawable {
@@ -628,6 +663,14 @@ class RNGestureHandlerButtonViewManager :
       }
 
       return drawable
+    }
+
+    override fun onDetachedFromWindow() {
+      super.onDetachedFromWindow()
+      pendingPressOut?.let { handler.removeCallbacks(it) }
+      pendingPressOut = null
+      currentAnimator?.cancel()
+      currentAnimator = null
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
