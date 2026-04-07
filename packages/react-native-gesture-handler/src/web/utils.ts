@@ -1,13 +1,35 @@
 import { PointerType } from '../PointerType';
-import type {
-  GestureHandlerRef,
-  Point,
-  StylusData,
-  SVGRef,
-} from './interfaces';
+import type { GestureHandlerRef, Point, SVGRef } from './interfaces';
+import { StylusData } from '../handlers/gestureHandlerCommon';
+
+// For display: contents elements (like the gesture detector wrapper), getBoundingClientRect
+// returns all zeros since the element has no box. Compute the bounding box from children instead.
+export function getEffectiveBoundingRect(view: HTMLElement): DOMRect {
+  if (view.style.display === 'contents' && view.children.length > 0) {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < view.children.length; i++) {
+      const childRect = (
+        view.children[i] as HTMLElement
+      ).getBoundingClientRect();
+      minX = Math.min(minX, childRect.left);
+      minY = Math.min(minY, childRect.top);
+      maxX = Math.max(maxX, childRect.right);
+      maxY = Math.max(maxY, childRect.bottom);
+    }
+
+    return new DOMRect(minX, minY, maxX - minX, maxY - minY);
+  }
+
+  return view.getBoundingClientRect();
+}
 
 export function isPointerInBounds(view: HTMLElement, { x, y }: Point): boolean {
-  const rect: DOMRect = view.getBoundingClientRect();
+  const rect = getEffectiveBoundingRect(view);
 
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
@@ -282,7 +304,7 @@ export function isRNSVGElement(viewRef: SVGRef | GestureHandlerRef) {
 export function isRNSVGNode(node: any) {
   // If `ref` has `rngh` field, it means that component comes from Gesture Handler. This is a special case for
   // `Text` component, which is present in `RNSVGElements` set, yet we don't want to treat it as SVG.
-  if (node.ref?.rngh) {
+  if (node.props.ref?.rngh) {
     return false;
   }
 

@@ -1,0 +1,38 @@
+name: Test Gesture Handler 3 API
+
+on:
+  pull_request:
+    paths:
+      - packages/react-native-gesture-handler/src/v3/**
+      - packages/react-native-gesture-handler/src/__tests__/RelationsTraversal.test.tsx
+      - packages/react-native-gesture-handler/src/__tests__/API_V3.test.tsx
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  check:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+
+    runs-on: ubuntu-latest
+    concurrency:
+      group: rngh-api-v3-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Install node dependencies
+        run: yarn --immutable
+
+      - name: Run tests
+        working-directory: packages/react-native-gesture-handler
+        run: yarn test RelationsTraversal API_V3

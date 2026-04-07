@@ -8,7 +8,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
-import com.swmansion.gesturehandler.react.eventbuilders.TapGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.TapGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class TapGestureHandler : GestureHandler() {
@@ -81,18 +81,27 @@ class TapGestureHandler : GestureHandler() {
     return maxDist != MAX_VALUE_IGNORE && dist > maxDist * maxDist
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    offsetX = 0f
+    offsetY = 0f
+    startX = getLastPointerX(sourceEvent, true)
+    startY = getLastPointerY(sourceEvent, true)
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
     }
 
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
+    }
+
     val state = state
     val action = sourceEvent.actionMasked
     if (state == STATE_UNDETERMINED) {
-      offsetX = 0f
-      offsetY = 0f
-      startX = getLastPointerX(sourceEvent, true)
-      startY = getLastPointerY(sourceEvent, true)
+      initialize(event, sourceEvent)
     }
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       offsetX += lastX - startX
@@ -145,8 +154,8 @@ class TapGestureHandler : GestureHandler() {
 
     override fun create(context: Context?): TapGestureHandler = TapGestureHandler()
 
-    override fun setConfig(handler: TapGestureHandler, config: ReadableMap) {
-      super.setConfig(handler, config)
+    override fun updateConfig(handler: TapGestureHandler, config: ReadableMap) {
+      super.updateConfig(handler, config)
       if (config.hasKey(KEY_NUMBER_OF_TAPS)) {
         handler.numberOfTaps = config.getInt(KEY_NUMBER_OF_TAPS)
       }

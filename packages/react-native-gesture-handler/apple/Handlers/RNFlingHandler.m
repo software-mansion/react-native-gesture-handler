@@ -26,10 +26,16 @@
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [_gestureHandler reset];
   [super touchesBegan:touches withEvent:event];
+
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   // self.numberOfTouches doesn't work for this because in case than one finger is required,
@@ -53,8 +59,6 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-
-  [self triggerAction];
 }
 
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -62,20 +66,22 @@
   _lastPoint = [[[touches allObjects] objectAtIndex:0] locationInView:_gestureHandler.recognizer.view];
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-
-  [self triggerAction];
 }
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO fromManualStateChange:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES fromManualStateChange:NO];
 }
 
 - (void)reset
 {
-  // TODO: On iOS 26 swiping in "wrong" direction doesn't send `onFinalize` callback. This is because now in `reset`
-  // default state is `UIGestureRecognizerStatePossible`
-  [self triggerAction]; // Keeping it will not break old iOS because we check if we do not send the same state twice.
+  [self triggerActionFromReset]; // Keeping it will not break old iOS because we check if we do not send the same state
+                                 // twice.
   [_gestureHandler.pointerTracker reset];
   _hasBegan = NO;
   [super reset];
@@ -175,7 +181,8 @@
 
   double timeDelta = currentTime - startTime;
 
-  Vector *velocityVector = [Vector fromVelocityX:(distance.x / timeDelta) withVelocityY:(distance.y / timeDelta)];
+  RNGHVector *velocityVector = [RNGHVector fromVelocityX:(distance.x / timeDelta)
+                                           withVelocityY:(distance.y / timeDelta)];
 
   [self tryActivate:velocityVector];
 }
@@ -190,7 +197,7 @@
       self.state == NSGestureRecognizerStateChanged ? NSGestureRecognizerStateEnded : NSGestureRecognizerStateFailed;
 }
 
-- (void)tryActivate:(Vector *)velocityVector
+- (void)tryActivate:(RNGHVector *)velocityVector
 {
   bool isAligned = NO;
 
@@ -223,9 +230,9 @@
 
 - (BOOL)getAlignment:(RNGestureHandlerDirection)direction
     withMinimalAlignmentCosine:(double)minimalAlignmentCosine
-            withVelocityVector:(Vector *)velocityVector
+            withVelocityVector:(RNGHVector *)velocityVector
 {
-  Vector *directionVector = [Vector fromDirection:direction];
+  RNGHVector *directionVector = [RNGHVector fromDirection:direction];
   return ((self.direction & direction) == direction) &&
       [velocityVector isSimilar:directionVector withThreshold:minimalAlignmentCosine];
 }
@@ -260,9 +267,9 @@
 #endif
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   RNBetterSwipeGestureRecognizer *recognizer = (RNBetterSwipeGestureRecognizer *)_recognizer;
 
   id prop = config[@"direction"];

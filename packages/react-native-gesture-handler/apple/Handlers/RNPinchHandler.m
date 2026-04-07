@@ -45,6 +45,13 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
+  [self handleGesture:recognizer fromReset:NO fromManualStateChange:NO];
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange
+{
   if (self.state == UIGestureRecognizerStateBegan) {
 #if TARGET_OS_OSX
     self.magnification = 1;
@@ -52,11 +59,16 @@
     self.scale = 1;
 #endif
   }
-  [_gestureHandler handleGesture:recognizer];
+  [_gestureHandler handleGesture:recognizer fromReset:fromReset fromManualStateChange:fromManualStateChange];
 }
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -103,7 +115,7 @@
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }
@@ -163,21 +175,28 @@
 #else
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
 {
-  CGPoint accumulatedPoint = CGPointZero;
+  CGPoint focalPoint;
+  NSUInteger numberOfTouches = recognizer.numberOfTouches;
 
-  for (int i = 0; i < recognizer.numberOfTouches; i++) {
-    CGPoint location = [recognizer locationOfTouch:i inView:recognizer.view];
-    accumulatedPoint.x += location.x;
-    accumulatedPoint.y += location.y;
+  if (numberOfTouches > 0) {
+    CGPoint accumulatedPoint = CGPointZero;
+
+    for (int i = 0; i < numberOfTouches; i++) {
+      CGPoint location = [recognizer locationOfTouch:i inView:recognizer.view];
+      accumulatedPoint.x += location.x;
+      accumulatedPoint.y += location.y;
+    }
+
+    focalPoint = CGPointMake(accumulatedPoint.x / numberOfTouches, accumulatedPoint.y / numberOfTouches);
+  } else {
+    // Trackpad pinch gestures may report 0 touches - use the recognizer's location instead
+    focalPoint = [recognizer locationInView:recognizer.view];
   }
-
-  CGPoint focalPoint =
-      CGPointMake(accumulatedPoint.x / recognizer.numberOfTouches, accumulatedPoint.y / recognizer.numberOfTouches);
 
   return [RNGestureHandlerEventExtraData forPinch:recognizer.scale
                                    withFocalPoint:focalPoint
                                      withVelocity:recognizer.velocity
-                              withNumberOfTouches:recognizer.numberOfTouches
+                              withNumberOfTouches:numberOfTouches
                                   withPointerType:_pointerType];
 }
 #endif

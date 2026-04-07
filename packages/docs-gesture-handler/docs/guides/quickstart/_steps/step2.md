@@ -1,12 +1,25 @@
 ```jsx
-import { GestureDetector } from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
-function Ball() {
-  return (
-    <GestureDetector>
-      <Animated.View style={[styles.ball]} />
-    </GestureDetector>
-  );
+export default function Ball() {
+  const isPressed = useSharedValue(false);
+  const offset = useSharedValue({ x: 0, y: 0 });
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: offset.value.x },
+        { translateY: offset.value.y },
+        { scale: withSpring(isPressed.value ? 1.2 : 1) },
+      ],
+      backgroundColor: isPressed.value ? 'yellow' : 'blue',
+    };
+  });
+
+  // ...
 }
 ```

@@ -26,10 +26,15 @@
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   if (_shouldSendBeginEvent) {
-    [_gestureHandler handleGesture:self];
+    [_gestureHandler handleGesture:self fromReset:NO];
 #if TARGET_OS_OSX
     self.state = NSGestureRecognizerStateBegan;
 #endif
@@ -40,7 +45,7 @@
 - (void)interactionsMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
 
   if ([self shouldFail]) {
     self.state = (self.state == UIGestureRecognizerStatePossible) ? UIGestureRecognizerStateFailed
@@ -53,13 +58,13 @@
 - (void)interactionsEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO];
 }
 
 #if !TARGET_OS_OSX
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [super touchesBegan:touches withEvent:event];
 
   [self interactionsBegan:touches withEvent:event];

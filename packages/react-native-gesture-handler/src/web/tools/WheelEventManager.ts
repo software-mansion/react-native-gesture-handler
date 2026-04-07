@@ -42,7 +42,7 @@ export default class WheelEventManager extends EventManager<HTMLElement> {
     };
   }
 
-  public resetManager(): void {
+  public override resetManager(): void {
     super.resetManager();
   }
 }

@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { Animated, Platform } from 'react-native';
 
 import { State } from '../../State';
-import { BaseButton } from '../GestureButtons';
+import { LegacyBaseButton } from '../GestureButtons';
 
 import {
   GestureEvent,
@@ -115,7 +115,7 @@ export default class GenericTouchable extends Component<
     }
   }
 
-  componentDidMount() {
+  override componentDidMount() {
     this.reset();
   }
   // Reset timeout to prevent memory leaks.
@@ -204,7 +204,7 @@ export default class GenericTouchable extends Component<
     this.props.onLongPress?.();
   };
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     // To prevent memory leaks
     this.reset();
   }
@@ -225,7 +225,7 @@ export default class GenericTouchable extends Component<
     }
   }
 
-  render() {
+  override render() {
     const hitSlop =
       (typeof this.props.hitSlop === 'number'
         ? {
@@ -251,7 +251,7 @@ export default class GenericTouchable extends Component<
     };
 
     return (
-      <BaseButton
+      <LegacyBaseButton
         style={this.props.containerStyle}
         onHandlerStateChange={
           // TODO: not sure if it can be undefined instead of null
@@ -269,7 +269,7 @@ export default class GenericTouchable extends Component<
         <Animated.View {...coreProps} style={this.props.style}>
           {this.props.children}
         </Animated.View>
-      </BaseButton>
+      </LegacyBaseButton>
     );
   }
 }

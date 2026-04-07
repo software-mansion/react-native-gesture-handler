@@ -10,32 +10,54 @@ import {
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
-export const ScrollView = createNativeWrapper(RNScrollView, {
+/**
+ * @deprecated use `ScrollView` instead
+ */
+export const LegacyScrollView = createNativeWrapper(RNScrollView, {
   disallowInterruption: false,
 });
 
-export const Switch = createNativeWrapper(RNSwitch, {
+/**
+ * @deprecated use `Switch` instead
+ */
+export const LegacySwitch = createNativeWrapper(RNSwitch, {
   shouldCancelWhenOutside: false,
   shouldActivateOnStart: true,
   disallowInterruption: true,
 });
-export const TextInput = createNativeWrapper(RNTextInput);
-export const DrawerLayoutAndroid = () => {
+
+/**
+ * @deprecated use `TextInput` instead
+ */
+export const LegacyTextInput = createNativeWrapper(RNTextInput);
+
+/**
+ * @deprecated use `DrawerLayoutAndroid` instead
+ */
+export const LegacyDrawerLayoutAndroid = () => {
   console.warn('DrawerLayoutAndroid is not supported on web!');
   return <View />;
 };
 
+/**
+ * @deprecated use `RefreshControl` instead
+ */
 // RefreshControl is implemented as a functional component, rendering a View
 // NativeViewGestureHandler needs to set a ref on its child, which cannot be done
 // on functional components
-export const RefreshControl = createNativeWrapper(View);
+export const LegacyRefreshControl = createNativeWrapper(View);
 
-export const FlatList = React.forwardRef(
+/**
+ * @deprecated use `FlatList` instead
+ */
+export const LegacyFlatList = React.forwardRef(
   <ItemT,>(props: FlatListProps<ItemT>, ref: any) => (
     <RNFlatList
       ref={ref}
       {...props}
-      renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
+      renderScrollComponent={(scrollProps) => (
+        <LegacyScrollView {...scrollProps} />
+      )}
     />
   )
 );

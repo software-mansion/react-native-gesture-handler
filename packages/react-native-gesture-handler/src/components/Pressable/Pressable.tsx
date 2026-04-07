@@ -9,8 +9,8 @@ import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObject
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import {
   PressableEvent,
-  PressableProps,
   PressableDimensions,
+  LegacyPressableProps,
 } from './PressableProps';
 import {
   Insets,
@@ -18,9 +18,8 @@ import {
   Platform,
   StyleProp,
   ViewStyle,
-  processColor,
 } from 'react-native';
-import NativeButton from '../GestureHandlerButton';
+import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
 import {
   gestureToPressableEvent,
   addInsets,
@@ -29,7 +28,7 @@ import {
   isTouchWithinInset,
 } from './utils';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isFabric, isTestEnv } from '../../utils';
+import { INT32_MAX, isTestEnv } from '../../utils';
 import {
   applyRelationProp,
   RelationPropName,
@@ -37,13 +36,15 @@ import {
 } from '../utils';
 import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
 import { PressableStateMachine } from './StateMachine';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
-let IS_FABRIC: null | boolean = null;
-
-const Pressable = (props: PressableProps) => {
+/**
+ * @deprecated `LegacyPressable` is deprecated, use `Pressable` instead.
+ */
+const LegacyPressable = (props: LegacyPressableProps) => {
   const {
     testOnly_pressed,
     hitSlop,
@@ -202,11 +203,16 @@ const Pressable = (props: PressableProps) => {
   );
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
+  const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
   useEffect(() => {
-    const configuration = getStatesConfig(handlePressIn, handlePressOut);
+    const configuration = getStatesConfig(
+      handlePressIn,
+      handlePressOut,
+      isScreenReaderEnabled
+    );
     stateMachine.setStates(configuration);
-  }, [handlePressIn, handlePressOut, stateMachine]);
+  }, [handlePressIn, handlePressOut, stateMachine, isScreenReaderEnabled]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -248,7 +254,7 @@ const Pressable = (props: PressableProps) => {
   const pressAndTouchGesture = useMemo(
     () =>
       Gesture.LongPress()
-        .minDuration(INT32_MAX) // Stops long press from blocking Gesture.Native()
+        .minDuration(Platform.OS === 'web' ? 0 : INT32_MAX) // Long press handles finalize on web, thus it must activate right away
         .maxDistance(INT32_MAX) // Stops long press from cancelling on touch move
         .cancelsTouchesInView(false)
         .onTouchesDown((event) => {
@@ -259,7 +265,7 @@ const Pressable = (props: PressableProps) => {
           );
         })
         .onTouchesUp(() => {
-          if (Platform.OS === 'android') {
+          if (Platform.OS === 'android' && !isScreenReaderEnabled) {
             // Prevents potential soft-locks
             stateMachine.reset();
             handleFinalize();
@@ -280,7 +286,7 @@ const Pressable = (props: PressableProps) => {
             handleFinalize();
           }
         }),
-    [stateMachine, handleFinalize, handlePressOut]
+    [stateMachine, handleFinalize, handlePressOut, isScreenReaderEnabled]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
@@ -314,7 +320,10 @@ const Pressable = (props: PressableProps) => {
             } else {
               stateMachine.handleEvent(StateMachineEvent.CANCEL);
             }
-            handleFinalize();
+
+            if (Platform.OS !== 'ios') {
+              handleFinalize();
+            }
           }
         }),
     [stateMachine, handlePressOut, handleFinalize]
@@ -328,7 +337,6 @@ const Pressable = (props: PressableProps) => {
     gesture.enabled(isPressableEnabled);
     gesture.runOnJS(true);
     gesture.hitSlop(appliedHitSlop);
-    gesture.shouldCancelWhenOutside(Platform.OS !== 'web');
 
     Object.entries(relationProps).forEach(([relationName, relation]) => {
       applyRelationProp(
@@ -354,15 +362,8 @@ const Pressable = (props: PressableProps) => {
       : children;
 
   const rippleColor = useMemo(() => {
-    if (IS_FABRIC === null) {
-      IS_FABRIC = isFabric();
-    }
-
     const defaultRippleColor = android_ripple ? undefined : 'transparent';
-    const unprocessedRippleColor = android_ripple?.color ?? defaultRippleColor;
-    return IS_FABRIC
-      ? unprocessedRippleColor
-      : processColor(unprocessedRippleColor);
+    return android_ripple?.color ?? defaultRippleColor;
   }, [android_ripple]);
 
   const setDimensions = useCallback(
@@ -398,4 +399,4 @@ const Pressable = (props: PressableProps) => {
   );
 };
 
-export default Pressable;
+export default LegacyPressable;

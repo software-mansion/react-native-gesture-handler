@@ -1,0 +1,30 @@
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+### numberOfPointers
+
+```ts
+numberOfPointers: number;
+```
+
+Represents the number of pointers (fingers) currently placed on the screen.
+
+### pointerType
+
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+collapsed={false}
+src={`
+pointerType: PointerType;
+
+enum PointerType {
+  TOUCH,
+  STYLUS,
+  MOUSE,
+  KEY,
+  OTHER,
+}
+`}/>
+
+Indicates the type of pointer device in use.
