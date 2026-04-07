@@ -12,8 +12,8 @@ Represents the number of pointers (fingers) currently placed on the screen.
 
 Indicates the type of pointer device in use. This value is represented by the `PointerType` enum, which includes the following fields:
 
-- `TOUCH` - represents finger
-- `STYLUS` - represents stylus or digital pen
-- `MOUSE` - represents computer mouse
-- `KEY` - represents keyboard
-- `OTHER` - represents unknown device type that is not relevant
+- `TOUCH` - represents a finger
+- `STYLUS` - represents a stylus or digital pen
+- `MOUSE` - represents a computer mouse
+- `KEY` - represents a keyboard
+- `OTHER` - represents an unknown device type that is not relevant

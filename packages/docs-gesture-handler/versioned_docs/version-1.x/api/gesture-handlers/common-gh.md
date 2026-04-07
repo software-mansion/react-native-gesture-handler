@@ -21,7 +21,7 @@ This section describes properties that can be used with all gesture handler comp
 Accepts a boolean value.
 Indicates whether the given handler should be analyzing stream of touch events or not.
 When set to `false` we can be sure that the handler's state will **never** become [`ACTIVE`](/docs/1.x/state#active).
-If the value gets updated while the handler already started recognizing a gesture, then the handler's state it will immediately change to [`FAILED`](/docs/1.x/state#failed) or [`CANCELLED`](/docs/1.x/state#cancelled) (depending on its current state).
+If the value gets updated while the handler has already started recognizing a gesture, then the handler's state will immediately change to [`FAILED`](/docs/1.x/state#failed) or [`CANCELLED`](/docs/1.x/state#cancelled) (depending on its current state).
 Default value is `true`.
 
 ### `shouldCancelWhenOutside`
@@ -47,9 +47,9 @@ When a negative number is provided the bounds of the view will reduce the area b
 Instead you can pass an object to specify how each boundary side should be reduced by providing different number of points for `left`, `right`, `top` or `bottom` sides.
 You can alternatively provide `horizontal` or `vertical` instead of specifying directly `left`, `right` or `top` and `bottom`.
 Finally, the object can also take `width` and `height` attributes.
-When `width` is set it is only allow to specify one of the sides `right` or `left`.
+When `width` is set it is only allowed to specify one of the sides `right` or `left`.
 Similarly when `height` is provided only `top` or `bottom` can be set.
-Specifying `width` or `height` is useful if we only want the gesture to activate on the edge of the view. In which case for example we can set `left: 0` and `width: 20` which would make it possible for the gesture to be recognize when started no more than 20 points from the left edge.
+Specifying `width` or `height` is useful if we only want the gesture to activate on the edge of the view. In which case for example we can set `left: 0` and `width: 20` which would make it possible for the gesture to be recognized when started no more than 20 points from the left edge.
 
 **IMPORTANT:** Note that this parameter is primarily designed to reduce the area where gesture can activate. Hence it is only supported for all the values (except `width` and `height`) to be non positive (0 or lower). Although on Android it is supported for the values to also be positive and therefore allow to expand beyond view bounds but not further than the parent view bounds. To achieve this effect on both platforms you can use React Native's View [hitSlop](https://reactnative.dev/docs/view.html#hitslop) property.
 

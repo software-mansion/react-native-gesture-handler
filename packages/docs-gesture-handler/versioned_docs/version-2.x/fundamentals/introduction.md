@@ -18,7 +18,7 @@ The main benefits of using React Native Gesture Handler are:
 - Ability to include any native component into the Gesture Handler's touch system, making it work alongside your gestures.
 
 :::info
-We recommended to use Reanimated to implement gesture-driven animations with Gesture Handler. Its more advanced features rely heavily on worklets and the UI runtime provided by Reanimated.
+We recommend using Reanimated to implement gesture-driven animations with Gesture Handler. Its more advanced features rely heavily on worklets and the UI runtime provided by Reanimated.
 :::
 
 ## Learning resources
@@ -52,7 +52,7 @@ Code is only one way how you can contribute. You may want to consider [replying 
 
 ## Community
 
-We are very proud of the community that has been build around this package. We really appreciate all your help regardless of it is a pull request, issue report, helping others by commenting on existing issues or posting some demo or video tutorial on social media.
+We are very proud of the community that has been build around this package. We really appreciate all your help regardless of whether it is a pull request, issue report, helping others by commenting on existing issues or posting some demo or video tutorial on social media.
 If you've build something with this library you'd like to share, please contact us as we'd love to help share it with others.
 
 ### Gesture Handler Team 🚀

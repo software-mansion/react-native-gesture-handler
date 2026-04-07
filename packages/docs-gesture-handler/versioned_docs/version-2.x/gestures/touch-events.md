@@ -31,7 +31,7 @@ Don't rely on the order of items in the `touches` as it may change during the ge
 
 ### `id`
 
-A number representing id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
+A number representing the id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
 ### `x`
 
