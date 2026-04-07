@@ -11,7 +11,7 @@ import OldAPIInfo from './\_shared/v2-info.md'
 
 import FunctionalComponents from './\_shared/gesture-detector-functional1.md';
 
-`GestureDetector` is the main component of the RNGH2. It is responsible for creating and updating native gesture handlers based on the config of provided gesture. The most significant difference between it and old gesture handlers is that the `GestureDetector` can recognize more than one gesture at a time thanks to gesture composition. Keep in mind that `GestureDetector` is not compatible with the [Animated API](https://reactnative.dev/docs/animated), nor with [Reanimated 1](https://docs.swmansion.com/react-native-reanimated/docs/1.x/).
+`GestureDetector` is the main component of the RNGH2. It is responsible for creating and updating native gesture handlers based on the config of the provided gesture. The most significant difference between it and old gesture handlers is that the `GestureDetector` can recognize more than one gesture at a time thanks to gesture composition. Keep in mind that `GestureDetector` is not compatible with the [Animated API](https://reactnative.dev/docs/animated), nor with [Reanimated 1](https://docs.swmansion.com/react-native-reanimated/docs/1.x/).
 
 ## Reference
 

@@ -136,15 +136,15 @@ Minimum distance the finger (or multiple fingers) need to travel before the gest
 
 ### `minPointers(value: number)`
 
-A number of fingers that is required to be placed before the gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a higher or equal to 0 integer.
+A number of fingers that is required to be placed before the gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be an integer greater than or equal to 0.
 
 ### `maxPointers(value: number)`
 
-When the given number of fingers is placed on the screen and the gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active) it will fail recognizing the gesture. Should be a higher or equal to 0 integer.
+When the given number of fingers is placed on the screen and gesture hasn't yet [activated](/docs/2.x/fundamentals/states-events#active) it will fail recognizing the gesture. Should be an integer greater than or equal to 0.
 
 ### `activateAfterLongPress(duration: number)`
 
-Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](/docs/2.x/fundamentals/states-events#active). If the finger is moved during that period, the gesture will [fail](/docs/2.x/fundamentals/states-events#failed). Should be a higher or equal to 0 integer. Default value is 0, meaning no `LongPress` is required to [activate](/docs/2.x/fundamentals/states-events#active) the `Pan`.
+Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [activate](/docs/2.x/fundamentals/states-events#active). If the finger is moved during that period, the gesture will [fail](/docs/2.x/fundamentals/states-events#failed). Should be an integer greater than or equal to 0. Default value is 0, meaning no `LongPress` is required to [activate](/docs/2.x/fundamentals/states-events#active) the `Pan`.
 
 ### `activeOffsetX(value: number | number[])`
 
