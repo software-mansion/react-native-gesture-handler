@@ -17,8 +17,8 @@ Thanks for giving this library a try! We are sorry that you might have encounter
 ## Reporting issues
 
 This library is maintained by a very small team.
-Please be mindful of that when reporting issue and when it happens that we can't get back to you as soon as you might expect.
-We would love to fix all the problems as soon as possible, but often our time is constraint with other issues/features or projects.
+Please be mindful of that when reporting an issue and when it happens that we can't get back to you as soon as you might expect.
+We would love to fix all the problems as soon as possible, but often our time is constrained by other issues/features or projects.
 To make it easier for us to understand your issue and to be able to approach it sooner you can help by:
 
 - Making sure the issue description is complete. Please include all the details about your environment (library version, RN version, device OS etc).
@@ -62,7 +62,7 @@ If you use `npm` you should add [`overrides` property](https://docs.npmjs.com/cl
 }
 ```
 
-After that you need to run your package manager again
+After that you need to run your package manager again.
 
 ```bash
 yarn

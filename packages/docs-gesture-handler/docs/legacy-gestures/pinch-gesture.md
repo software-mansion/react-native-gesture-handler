@@ -35,7 +35,7 @@ import BaseContinuousEventConfig from './\_shared/base-continuous-gesture-config
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-callbacks.md';
 
-A continuous gesture that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
+A continuous gesture that recognizes a pinch gesture. It allows for tracking the distance between two fingers and using that information to scale or zoom your content.
 The gesture [activates](/docs/2.x/fundamentals/states-events#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
 
@@ -121,14 +121,14 @@ The scale factor relative to the points of the two touches in screen coordinates
 
 ### `velocity`
 
-Velocity of the pan gesture the current moment. The value is expressed in scale factor per second.
+Velocity of the pinch gesture at the current moment. The value is expressed in scale factor per second.
 
 ### `focalX`
 
-Position expressed in points along X axis of center anchor point of gesture
+Position expressed in points along the X axis of the center anchor point of the gesture.
 
 ### `focalY`
 
-Position expressed in points along Y axis of center anchor point of gesture
+Position expressed in points along the Y axis of the center anchor point of the gesture.
 
 <BaseEventData />

@@ -4,7 +4,7 @@ title: PinchGestureHandler
 sidebar_label: Pinch
 ---
 
-A continuous gesture handler that recognizes pinch gesture. It allows for tracking the distance between two fingers and use that information to scale or zoom your content.
+A continuous gesture handler that recognizes a pinch gesture. It allows for tracking the distance between two fingers and using that information to scale or zoom your content.
 The handler [activates](/docs/1.x/state#active) when fingers are placed on the screen and change their position.
 Gesture callback can be used for continuous tracking of the pinch gesture. It provides information about velocity, anchor (focal) point of gesture and scale.
 
@@ -17,7 +17,7 @@ The handler is implemented using [UIPinchGestureRecognizer](https://developer.ap
 
 ## Properties
 
-Properties provided to `PinchGestureHandler` do not extend [common set of properties from base handler class](common-gh#properties).
+Properties provided to `PinchGestureHandler` do not extend the [common set of properties from base handler class](common-gh#properties).
 
 ## Event data
 
@@ -29,15 +29,15 @@ The scale factor relative to the points of the two touches in screen coordinates
 
 ### `velocity`
 
-Velocity of the pan gesture the current moment. The value is expressed in point units per second.
+Velocity of the pinch gesture at the current moment. The value is expressed in point units per second.
 
 ### `focalX`
 
-Position expressed in points along X axis of center anchor point of gesture
+Position expressed in points along the X axis of the center anchor point of the gesture.
 
 ### `focalY`
 
-Position expressed in points along Y axis of center anchor point of gesture
+Position expressed in points along the Y axis of the center anchor point of the gesture.
 
 ## Example
 

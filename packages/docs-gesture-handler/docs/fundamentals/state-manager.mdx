@@ -7,7 +7,7 @@ sidebar_position: 7
 
 import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
-RNGH3 allows to manually control [gestures lifecycle](/docs/under-the-hood/state) by using [`GestureStateManager`](#gesturestatemanager).
+RNGH3 allows manually controlling the [gestures' lifecycle](/docs/under-the-hood/state) by using [`GestureStateManager`](#gesturestatemanager).
 
 ## State management
 
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
 If you want to control gesture lifecycle outside of it, you can use `handlerTag` from created gesture object.
 
 :::note 
-The gestures can only be activated after it has begun, that is, after it has received received touch events.
+The gestures can only be activated after they have begun, that is, after they have received touch events.
 :::
 
 <CollapsibleCode
@@ -189,7 +189,7 @@ const styles = {
 activate: (handlerTag: number) => void;
 ```
 
-Triggers [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) callback on gesture with specified `handlerTag`.
+Triggers [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) callback on the gesture with the specified `handlerTag`.
 
 ### deactivate
 
@@ -197,7 +197,7 @@ Triggers [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) callback
 deactivate: (handlerTag: number) => void;
 ```
 
-If the gesture had activated, it triggers the [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback. It also triggers the [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on gesture with the specified `handlerTag`.
+If the gesture had activated, it triggers the [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback. It also triggers the [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on the gesture with the specified `handlerTag`.
 
 ### fail
 
@@ -205,4 +205,4 @@ If the gesture had activated, it triggers the [`onDeactivate`](/docs/fundamental
 fail: (handlerTag: number) => void;
 ```
 
-Triggers [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on gesture with specified `handlerTag`. If gesture had activated, it will also trigger [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback.
+Triggers [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) callback on the gesture with the specified `handlerTag`. If the gesture had activated, it will also trigger [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) callback.

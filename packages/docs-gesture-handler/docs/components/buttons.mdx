@@ -138,7 +138,7 @@ This type of button component is ideal for use with rectangular elements or cont
 underlayColor?: string;
 ```
 
-Background color that will be dimmed when button is in active state.
+Background color that will be dimmed when the button is in an active state.
 
 <HeaderWithBadges platforms={['iOS']}>
 ### activeOpacity
@@ -148,7 +148,7 @@ Background color that will be dimmed when button is in active state.
 activeOpacity?: number;
 ```
 
-Opacity applied to the underlay when button is in active state.
+Opacity applied to the underlay when the button is in an active state.
 
 ## BorderlessButton
 
@@ -188,27 +188,27 @@ const AccessibleButton = () => (
 
 ## Design patterns
 
-Components listed here were not designed to behave and look in the same way on both platforms but rather to be used for handling similar behaviour on iOS and Android taking into consideration their design concepts.
+Components listed here were not designed to behave and look in the same way on both platforms, but rather to be used for handling similar behaviour on iOS and Android taking into consideration their design concepts.
 
 If you wish to get specific information about platforms design patterns, visit [official Apple docs](https://developer.apple.com/design/human-interface-guidelines/components/menus-and-actions/buttons) and [Material.io guideline](https://material.io/components/buttons#text-button), which widely describe how to implement coherent design.
 
-This library allows to use native components with native feedback in adequate situations.
+This library allows the use of native components with native feedback in adequate situations.
 
-If you do not wish to implement custom design approach, [`RectButton`](#rectbutton) and [`BorderlessButton`](#borderlessbutton) seem to be absolutely enough and there's no need to use anything else. In all the remaining cases you can always rely on [`BaseButton`](#basebutton) which is a superclass for the other button classes and can be used as a generic `Touchable` replacement that can be customized to your needs.
+If you do not wish to implement a custom design approach, [`RectButton`](#rectbutton) and [`BorderlessButton`](#borderlessbutton) seem to be absolutely enough and there's no need to use anything else. In all the remaining cases, you can always rely on [`BaseButton`](#basebutton) which is a superclass for the other button classes and can be used as a generic `Touchable` replacement that can be customized to your needs.
 
 Below we list some of the common usecases for button components to be used along with the type of button that should be used according to the platform specific design guidelines.
 
 ### Lists and action buttons
 
-If you have a list with clickable items or have an action button that need to display as a separate UI block (vs being inlined in a text) you should use [`RectButton`](#rectbutton). It changes opacity on click and additionally supports a [ripple effect](#ripplecolor-android-only) on Android.
+If you have a list with clickable items or have an action button that needs to display as a separate UI block (vs being inlined in a text) you should use [`RectButton`](#rectbutton). It changes opacity on click and additionally supports a [ripple effect](#ripplecolor-android-only) on Android.
 
 <GifGallery>
   <img src={useBaseUrl('gifs/androidsettings.gif')} width="280" />
   <img src={useBaseUrl('gifs/iossettings.gif')} width="280" />
 </GifGallery>
 
-To determine emphasis of button it's vital to use fill color or leave it transparent especially on Android.
-For medium emphasis you may consider outlined buttons which are used for lower impact than fill buttons.
+To determine the emphasis of a button, it's vital to use a fill color or leave it transparent, especially on Android.
+For medium emphasis, you may consider outlined buttons which are used for lower impact than fill buttons.
 
 <GifGallery>
   <img src={useBaseUrl('gifs/androidbutton.gif')} width="280" />

@@ -30,7 +30,7 @@ In a nutshell, the library provides:
 It may be possible to use newer versions of react-native-gesture-handler on React Native with version &lt;= 0.59 by reverse Jetifying.
 Read more on that here https://github.com/mikehardy/jetifier#to-reverse-jetify--convert-node_modules-dependencies-to-support-libraries
 
-Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](interactions.md) you need to use v16.3 of [React](https://reactjs.org/)
+Note that if you wish to use [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) support for [interactions](interactions.md) you need to use v16.3 of [React](https://reactjs.org/).
 
 ### Expo
 

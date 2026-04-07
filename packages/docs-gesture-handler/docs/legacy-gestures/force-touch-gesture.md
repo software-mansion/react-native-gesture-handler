@@ -51,11 +51,11 @@ function App() {
 
 ### `minForce(value: number)`
 
-A minimal pressure that is required before gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
+A minimal pressure that is required before the gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
 
 ### `maxForce(value: number)`
 
-A maximal pressure that could be applied for gesture. If the pressure is greater, gesture [fails](/docs/2.x/fundamentals/states-events#failed). Should be a value from range `[0.0, 1.0]`.
+A maximal pressure that could be applied for the gesture. If the pressure is greater, the gesture [fails](/docs/2.x/fundamentals/states-events#failed). Should be a value from range `[0.0, 1.0]`.
 
 ### `feedbackOnActivation(value: boolean)`
 
