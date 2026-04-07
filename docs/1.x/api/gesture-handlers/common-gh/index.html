@@ -17,7 +17,7 @@
 
 
 <script src="/react-native-gesture-handler/js/snack-helpers.js" async></script><link rel="stylesheet" href="/react-native-gesture-handler/assets/css/styles.832e3c39.css">
-<script src="/react-native-gesture-handler/assets/js/runtime~main.d44e6697.js" defer="defer"></script>
+<script src="/react-native-gesture-handler/assets/js/runtime~main.f4b626ca.js" defer="defer"></script>
 <script src="/react-native-gesture-handler/assets/js/main.cafec0a6.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -35,7 +35,7 @@ They do not map directly to physical pixels but instead to <a href="https://deve
 <p>Accepts a boolean value.
 Indicates whether the given handler should be analyzing stream of touch events or not.
 When set to <code>false</code> we can be sure that the handler&#x27;s state will <strong>never</strong> become <a href="/react-native-gesture-handler/docs/1.x/state#active"><code>ACTIVE</code></a>.
-If the value gets updated while the handler already started recognizing a gesture, then the handler&#x27;s state it will immediately change to <a href="/react-native-gesture-handler/docs/1.x/state#failed"><code>FAILED</code></a> or <a href="/react-native-gesture-handler/docs/1.x/state#cancelled"><code>CANCELLED</code></a> (depending on its current state).
+If the value gets updated while the handler has already started recognizing a gesture, then the handler&#x27;s state will immediately change to <a href="/react-native-gesture-handler/docs/1.x/state#failed"><code>FAILED</code></a> or <a href="/react-native-gesture-handler/docs/1.x/state#cancelled"><code>CANCELLED</code></a> (depending on its current state).
 Default value is <code>true</code>.</p>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="shouldcancelwhenoutside"><code>shouldCancelWhenOutside</code><a href="#shouldcancelwhenoutside" class="hash-link" aria-label="Direct link to shouldcancelwhenoutside" title="Direct link to shouldcancelwhenoutside">​</a></h3>
 <p>Accepts a boolean value.
@@ -52,9 +52,9 @@ When a negative number is provided the bounds of the view will reduce the area b
 <p>Instead you can pass an object to specify how each boundary side should be reduced by providing different number of points for <code>left</code>, <code>right</code>, <code>top</code> or <code>bottom</code> sides.
 You can alternatively provide <code>horizontal</code> or <code>vertical</code> instead of specifying directly <code>left</code>, <code>right</code> or <code>top</code> and <code>bottom</code>.
 Finally, the object can also take <code>width</code> and <code>height</code> attributes.
-When <code>width</code> is set it is only allow to specify one of the sides <code>right</code> or <code>left</code>.
+When <code>width</code> is set it is only allowed to specify one of the sides <code>right</code> or <code>left</code>.
 Similarly when <code>height</code> is provided only <code>top</code> or <code>bottom</code> can be set.
-Specifying <code>width</code> or <code>height</code> is useful if we only want the gesture to activate on the edge of the view. In which case for example we can set <code>left: 0</code> and <code>width: 20</code> which would make it possible for the gesture to be recognize when started no more than 20 points from the left edge.</p>
+Specifying <code>width</code> or <code>height</code> is useful if we only want the gesture to activate on the edge of the view. In which case for example we can set <code>left: 0</code> and <code>width: 20</code> which would make it possible for the gesture to be recognized when started no more than 20 points from the left edge.</p>
 <p><strong>IMPORTANT:</strong> Note that this parameter is primarily designed to reduce the area where gesture can activate. Hence it is only supported for all the values (except <code>width</code> and <code>height</code>) to be non positive (0 or lower). Although on Android it is supported for the values to also be positive and therefore allow to expand beyond view bounds but not further than the parent view bounds. To achieve this effect on both platforms you can use React Native&#x27;s View <a href="https://reactnative.dev/docs/view.html#hitslop" target="_blank" rel="noopener noreferrer">hitSlop</a> property.</p>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="ongestureevent"><code>onGestureEvent</code><a href="#ongestureevent" class="hash-link" aria-label="Direct link to ongestureevent" title="Direct link to ongestureevent">​</a></h3>
 <p>Takes a callback that is going to be triggered for each subsequent touch event while the handler is in an <a href="/react-native-gesture-handler/docs/1.x/state#active">ACTIVE</a> state. Event payload depends on the particular handler type. Common set of event data attributes is documented <a href="#event-data">below</a> and handler specific attributes are documented on the corresponding handler pages. E.g. event payload for <a href="/react-native-gesture-handler/docs/1.x/api/gesture-handlers/rotation-gh#event-data"><code>PinchGestureHandler</code></a> contains <code>scale</code> attribute that represents how the distance between fingers changed since when the gesture started.</p>

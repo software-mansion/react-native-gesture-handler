@@ -17,7 +17,7 @@
 
 
 <script src="/react-native-gesture-handler/js/snack-helpers.js" async></script><link rel="stylesheet" href="/react-native-gesture-handler/assets/css/styles.832e3c39.css">
-<script src="/react-native-gesture-handler/assets/js/runtime~main.d44e6697.js" defer="defer"></script>
+<script src="/react-native-gesture-handler/assets/js/runtime~main.f4b626ca.js" defer="defer"></script>
 <script src="/react-native-gesture-handler/assets/js/main.cafec0a6.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -47,7 +47,7 @@
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="overlaycolor"><code>overlayColor</code><a href="#overlaycolor" class="hash-link" aria-label="Direct link to overlaycolor" title="Direct link to overlaycolor">​</a></h3>
 <p>color (default to <code>&quot;black&quot;</code>) of a semi-transparent overlay to be displayed on top of the content view when drawer gets open. A solid color should be used as the opacity is added by the Drawer itself and the opacity of the overlay is animated (from 0% to 70%).</p>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="rendernavigationview"><code>renderNavigationView</code><a href="#rendernavigationview" class="hash-link" aria-label="Direct link to rendernavigationview" title="Direct link to rendernavigationview">​</a></h3>
-<p>function. This attribute is present in the standard implementation already and is one of the required params. Gesture handler version of DrawerLayout make it possible for the function passed as <code>renderNavigationView</code> to take an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.</p>
+<p>function. This attribute is present in the standard implementation already and is one of the required params. The gesture handler version of DrawerLayout makes it possible for the function passed as <code>renderNavigationView</code> to take an Animated value as a parameter that indicates the progress of the drawer opening/closing animation (progress value is 0 when closed and 1 when opened). This can be used by the drawer component to animated its children while the drawer is opening or closing.</p>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="ondrawerclose"><code>onDrawerClose</code><a href="#ondrawerclose" class="hash-link" aria-label="Direct link to ondrawerclose" title="Direct link to ondrawerclose">​</a></h3>
 <p>function. This function is called when the drawer is closed.</p>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="ondraweropen"><code>onDrawerOpen</code><a href="#ondraweropen" class="hash-link" aria-label="Direct link to ondraweropen" title="Direct link to ondraweropen">​</a></h3>
@@ -59,7 +59,7 @@
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="enabletrackpadtwofingergesture-ios-only"><code>enableTrackpadTwoFingerGesture</code> (iOS only)<a href="#enabletrackpadtwofingergesture-ios-only" class="hash-link" aria-label="Direct link to enabletrackpadtwofingergesture-ios-only" title="Direct link to enabletrackpadtwofingergesture-ios-only">​</a></h3>
 <p>Enables two-finger gestures on supported devices, for example iPads with trackpads. If not enabled the gesture will require click + drag, with enableTrackpadTwoFingerGesture swiping with two fingers will also trigger the gesture.</p>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="children"><code>children</code><a href="#children" class="hash-link" aria-label="Direct link to children" title="Direct link to children">​</a></h3>
-<p>component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could be also a render function which takes an Animated value as a parameter that indicates the progress of drawer opening/closing animation (progress value is 0 when closed and 1 when opened) is the same way like <code>renderNavigationView</code> prop.</p>
+<p>component or function. Children is a component which is rendered by default and is wrapped by drawer. However, it could also be a render function which takes an Animated value as a parameter that indicates the progress of the drawer opening/closing animation (progress value is 0 when closed and 1 when opened) in the same way as the <code>renderNavigationView</code> prop.</p>
 <h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="methods">Methods<a href="#methods" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h2>
 <h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="opendraweroptions"><code>openDrawer(options)</code><a href="#opendraweroptions" class="hash-link" aria-label="Direct link to opendraweroptions" title="Direct link to opendraweroptions">​</a></h3>
 <p><code>openDrawer</code> can take an optional <code>options</code> parameter which is an object, enabling further customization of the open animation.</p>

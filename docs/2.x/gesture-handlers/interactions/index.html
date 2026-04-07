@@ -17,7 +17,7 @@
 
 
 <script src="/react-native-gesture-handler/js/snack-helpers.js" async></script><link rel="stylesheet" href="/react-native-gesture-handler/assets/css/styles.832e3c39.css">
-<script src="/react-native-gesture-handler/assets/js/runtime~main.d44e6697.js" defer="defer"></script>
+<script src="/react-native-gesture-handler/assets/js/runtime~main.f4b626ca.js" defer="defer"></script>
 <script src="/react-native-gesture-handler/assets/js/main.cafec0a6.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -28,7 +28,7 @@
 <p>Gesture handlers can &quot;communicate&quot; with each other to support complex gestures and control how they <em><a href="/react-native-gesture-handler/docs/2.x/under-the-hood/state#active">activate</a></em> in certain scenarios.</p>
 <p>There are two means of achieving that described in the sections below.
 In each case, it is necessary to provide a reference of one handler as a property to the other.
-Gesture handler relies on ref objects created using <a href="https://reactjs.org/docs/refs-and-the-dom.html" target="_blank" rel="noopener noreferrer"><code>React.createRef()</code></a> and introduced in <a href="https://reactjs.org/blog/2018/03/29/react-v-16-3.html#createref-api" target="_blank" rel="noopener noreferrer">React 16.3</a>.</p>
+Gesture handler relies on ref objects created using <a href="https://reactjs.org/docs/refs-and-the-dom.html" target="_blank" rel="noopener noreferrer"><code>React.createRef()</code></a>, introduced in <a href="https://reactjs.org/blog/2018/03/29/react-v-16-3.html#createref-api" target="_blank" rel="noopener noreferrer">React 16.3</a>.</p>
 <h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="simultaneous-recognition">Simultaneous recognition<a href="#simultaneous-recognition" class="hash-link" aria-label="Direct link to Simultaneous recognition" title="Direct link to Simultaneous recognition">​</a></h2>
 <p>By default, only one gesture handler is allowed to be in the <a href="/react-native-gesture-handler/docs/2.x/under-the-hood/state#active"><code>ACTIVE</code></a> state.
 So when a gesture handler recognizes a gesture it <a href="/react-native-gesture-handler/docs/2.x/under-the-hood/state#cancelled">cancels</a> all other handlers in the <a href="/react-native-gesture-handler/docs/2.x/under-the-hood/state#began"><code>BEGAN</code></a> state and prevents any new handlers from receiving a stream of touch events as long as it remains <a href="/react-native-gesture-handler/docs/2.x/under-the-hood/state#active"><code>ACTIVE</code></a>.</p>
