@@ -172,6 +172,8 @@ The implementation of buttons has been updated, resolving most button-related is
 
 When migrating buttons, you should use `Clickable` component instead. To replace `BaseButton` use `Clickable` with default props, to replace `RectButton` use `Clickable` with `activeUnderlayOpacity={0.105}` and to replace `BorderlessButton` use `Clickable` with `activeOpacity={0.3}`.
 
+Touchables from Gesture Handler are also deprecated and should be replaced with `Clickable`. To replace `TouchableOpacity` use `Clickable` with `activeOpacity={0.2}` and to replace `TouchableHighlight` use `Clickable` with `activeUnderlayOpacity={1}`. To replace `TouchableWithoutFeedback` use a plain `Clickable`. `TouchableNativeFeedback` can be replaced with `Clickable` by setting `androidRipple` property. At minimum, it should be set to `{foregroud: true}`, to mimic `TouchableNativeFeedback` ripple effect.
+
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
 
 Rename all instances of createNativeWrapper to legacy_createNativeWrapper. This includes both the import statements and the function calls.
