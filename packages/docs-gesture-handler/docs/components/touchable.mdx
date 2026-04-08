@@ -40,13 +40,13 @@ Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButto
   activeOpacity={0.3}/>
 ```
 
-## Replacing deprecated Touchables
+## Migrating from legacy Touchable variants
 
-If you were using the deprecated [`Touchables`](/docs/components/legacy-touchables), you can replace them with new `Touchable` as well.
+If you were using the specialized touchable components (`TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`, or `TouchableNativeFeedback`), you can replicate their behavior with the unified `Touchable` component.
 
 ### TouchableOpacity
 
-To replace `TouchableOpacity` with `Touchable`, add `activeOpacity={0.2}`.
+To replace `TouchableOpacity`, add `activeOpacity={0.2}`.
 
 ```tsx
 <Touchable
@@ -56,7 +56,7 @@ To replace `TouchableOpacity` with `Touchable`, add `activeOpacity={0.2}`.
 
 ### TouchableHighlight
 
-To replace `TouchableHighlight` with `Touchable`, add `activeUnderlayOpacity={1}`.
+To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
 
 ```tsx
 <Touchable
@@ -74,7 +74,7 @@ To replace `TouchableWithoutFeedback`, use a plain `Touchable`.
 
 ### TouchableNativeFeedback
 
-To replace `TouchableNativeFeedback`, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
+To replicate `TouchableNativeFeedback` behavior, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
 
 ```tsx
 <Touchable
