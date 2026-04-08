@@ -166,30 +166,6 @@
   [self applyUnderlayCornerRadii];
 }
 
-- (BOOL)shouldHandleTouch:(RNGHUIView *)view
-{
-  if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
-    RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
-    return button.userEnabled;
-  }
-
-  // Certain subviews such as RCTViewComponentView have been observed to have disabled
-  // accessibility gesture recognizers such as _UIAccessibilityHUDGateGestureRecognizer,
-  // ostensibly set by iOS. Such gesture recognizers cause this function to return YES
-  // even when the passed view is static text and does not respond to touches. This in
-  // turn prevents the button from receiving touches, breaking functionality. To handle
-  // such case, we can count only the enabled gesture recognizers when determining
-  // whether a view should receive touches.
-  NSPredicate *isEnabledPredicate = [NSPredicate predicateWithFormat:@"isEnabled == YES"];
-  NSArray *enabledGestureRecognizers = [view.gestureRecognizers filteredArrayUsingPredicate:isEnabledPredicate];
-
-#if !TARGET_OS_OSX
-  return [view isKindOfClass:[UIControl class]] || [enabledGestureRecognizers count] > 0;
-#else
-  return [view isKindOfClass:[NSControl class]] || [enabledGestureRecognizers count] > 0;
-#endif
-}
-
 - (void)animateUnderlayToOpacity:(float)toOpacity duration:(NSTimeInterval)durationMs
 {
   _underlayLayer.opacity =
@@ -667,6 +643,44 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   _isTouchInsideBounds = NO;
 }
 
+- (BOOL)shouldHandleTouch:(RNGHUIView *)view atPoint:(CGPoint)point
+{
+  if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
+    RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
+    return button.userEnabled;
+  }
+
+  // Certain subviews such as RCTViewComponentView have been observed to have disabled
+  // accessibility gesture recognizers such as _UIAccessibilityHUDGateGestureRecognizer,
+  // ostensibly set by iOS. Such gesture recognizers cause this function to return YES
+  // even when the passed view is static text and does not respond to touches. This in
+  // turn prevents the button from receiving touches, breaking functionality. To handle
+  // such case, we can count only the enabled gesture recognizers when determining
+  // whether a view should receive touches.
+  NSPredicate *isEnabledPredicate = [NSPredicate predicateWithFormat:@"isEnabled == YES"];
+  NSArray *enabledGestureRecognizers = [view.gestureRecognizers filteredArrayUsingPredicate:isEnabledPredicate];
+
+  BOOL gestureRecognizerWantsEvent = NO;
+  for (UIGestureRecognizer *recognizer in enabledGestureRecognizers) {
+    RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:recognizer];
+    if (handler != nil) {
+      CGPoint pointInView = [self convertPoint:point toView:view];
+      gestureRecognizerWantsEvent = [handler wantsToHandleEventsAtPoint:pointInView];
+    } else {
+      gestureRecognizerWantsEvent = YES;
+    }
+    if (gestureRecognizerWantsEvent) {
+      break;
+    }
+  }
+
+#if !TARGET_OS_OSX
+  return [view isKindOfClass:[UIControl class]] || gestureRecognizerWantsEvent;
+#else
+  return [view isKindOfClass:[NSControl class]] || [enabledGestureRecognizers count] > 0;
+#endif
+}
+
 - (RNGHUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   RNGestureHandlerPointerEvents pointerEvents = _pointerEvents;
@@ -680,7 +694,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
       if (!subview.isHidden && subview.alpha > 0) {
         CGPoint convertedPoint = [subview convertPoint:point fromView:self];
         UIView *hitView = [subview hitTest:convertedPoint withEvent:event];
-        if (hitView != nil && [self shouldHandleTouch:hitView]) {
+        if (hitView != nil && [self shouldHandleTouch:hitView atPoint:point]) {
           return hitView;
         }
       }
@@ -693,7 +707,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   }
 
   RNGHUIView *inner = [super hitTest:point withEvent:event];
-  while (inner && ![self shouldHandleTouch:inner]) {
+  while (inner && ![self shouldHandleTouch:inner atPoint:point]) {
     inner = inner.superview;
   }
   return inner;
