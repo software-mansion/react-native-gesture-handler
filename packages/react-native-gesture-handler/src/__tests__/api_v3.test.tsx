@@ -65,12 +65,12 @@ describe('[API v3] Components', () => {
 
       const Example = () => (
         <GestureHandlerRootView>
-          <Touchable testID="Touchable" onPress={pressFn} />
+          <Touchable testID="touchable" onPress={pressFn} />
         </GestureHandlerRootView>
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('Touchable');
+      const gesture = getByGestureTestId('touchable');
 
       act(() => {
         fireGestureHandler(gesture, [
@@ -88,12 +88,12 @@ describe('[API v3] Components', () => {
 
       const Example = () => (
         <GestureHandlerRootView>
-          <Touchable testID="Touchable" onPress={pressFn} />
+          <Touchable testID="touchable" onPress={pressFn} />
         </GestureHandlerRootView>
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('Touchable');
+      const gesture = getByGestureTestId('touchable');
 
       act(() => {
         fireGestureHandler(gesture, [
@@ -111,12 +111,12 @@ describe('[API v3] Components', () => {
 
       const Example = () => (
         <GestureHandlerRootView>
-          <Touchable testID="Touchable" onActiveStateChange={activeStateFn} />
+          <Touchable testID="touchable" onActiveStateChange={activeStateFn} />
         </GestureHandlerRootView>
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('Touchable');
+      const gesture = getByGestureTestId('touchable');
 
       act(() => {
         fireGestureHandler(gesture, [
@@ -141,7 +141,7 @@ describe('[API v3] Components', () => {
       const Example = () => (
         <GestureHandlerRootView>
           <Touchable
-            testID="Touchable"
+            testID="touchable"
             onPress={pressFn}
             onLongPress={longPressFn}
             delayLongPress={DELAY}
@@ -151,7 +151,7 @@ describe('[API v3] Components', () => {
 
       render(<Example />);
 
-      const gesture = getByGestureTestId('Touchable') as SingleGesture<
+      const gesture = getByGestureTestId('touchable') as SingleGesture<
         any,
         any,
         any
