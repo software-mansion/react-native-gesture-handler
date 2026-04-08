@@ -74,7 +74,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
 - (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_buttonView unmountChildComponentView:childComponentView index:index];
+  [childComponentView removeFromSuperview];
 }
 
 - (LayoutMetrics)buildWrapperMetrics:(const LayoutMetrics &)metrics
