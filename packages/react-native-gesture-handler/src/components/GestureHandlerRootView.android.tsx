@@ -6,12 +6,17 @@ import type { RootViewNativeProps } from '../specs/RNGestureHandlerRootViewNativ
 import GestureHandlerRootViewNativeComponent from '../specs/RNGestureHandlerRootViewNativeComponent';
 
 export interface GestureHandlerRootViewProps
-  extends PropsWithChildren<RootViewNativeProps> {}
+  extends PropsWithChildren<RootViewNativeProps> {
+  preventRecognizers?: boolean;
+}
 
 export default function GestureHandlerRootView({
   style,
+  preventRecognizers,
   ...rest
 }: GestureHandlerRootViewProps) {
+  void preventRecognizers;
+
   return (
     <GestureHandlerRootViewContext value>
       <GestureHandlerRootViewNativeComponent

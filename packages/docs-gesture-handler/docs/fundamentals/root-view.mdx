@@ -33,11 +33,11 @@ If you're using Gesture Handler in your component library, you may want to wrap 
 
 `GestureHandlerRootView` can be thought of as a regular `View` component, therefore it accepts all the same props, including [`style`](https://reactnative.dev/docs/0.81/view-style-props).
 
-If you don't provide anything to the `style` prop, it will default to `{ flex: 1 }`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything. 
+If you don't provide anything to the `style` prop, it will default to `{ flex: 1 }`. If you want to customize the styling of the root view, don't forget to also include `flex: 1` in the custom style, otherwise your app won't render anything.
 
 ## Nesting root views
 
-In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones. If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway. 
+In case of nested root views, Gesture Handler will only use the top-most one and ignore the nested ones. If you're unsure if one of your dependencies already renders `GestureHandlerRootView` on its own, don't worry and add one at the root anyway.
 
 ## unstable_forceActive
 
@@ -46,3 +46,16 @@ unstable_forceActive?: boolean;
 ```
 
 If you're having trouble with gestures not working when inside a component provided by a third-party library, even though you've wrapped the entry point with `<GestureHandlerRootView>`, you can try adding another `<GestureHandlerRootView unstable_forceActive>` closer to the place the gestures are defined. This way, you can prevent Android from canceling relevant gestures when one of the native views tries to grab lock for delivering touch events.
+
+## preventRecognizers
+
+```ts
+preventRecognizers?: boolean;
+```
+
+This flag controls whether Gesture Handler cancels React Native JS responders when one of Gesture Handler recognizers activates.
+
+- `true` (default): keeps the current behavior where RN touch handlers are cancelled after Gesture Handler activates.
+- `false`: disables this cancellation, so Gesture Handler callbacks and RN responder callbacks can run at the same time.
+
+This option is currently available only on iOS.

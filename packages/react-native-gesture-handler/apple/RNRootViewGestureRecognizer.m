@@ -26,9 +26,11 @@
   if (self = [super init]) {
     self.delaysTouchesEnded = NO;
     self.delaysTouchesBegan = NO;
+    self.preventRecognizers = YES;
   }
 #else
   self = [super init];
+  self.preventRecognizers = YES;
 #endif
   return self;
 }
@@ -56,7 +58,7 @@
   // to send an info to JS so that it cancells all JS responders, as long as the preventing
   // recognizer is from Gesture Handler, otherwise we might break some interactions
   RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:preventingGestureRecognizer];
-  if (handler != nil) {
+  if (self.preventRecognizers && handler != nil) {
     [self.delegate gestureRecognizer:preventingGestureRecognizer didActivateInViewWithTouchHandler:self.view];
   }
 

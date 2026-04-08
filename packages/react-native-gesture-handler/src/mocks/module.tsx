@@ -10,6 +10,7 @@ const updateGestureHandlerConfig = NOOP;
 const flushOperations = NOOP;
 const configureRelations = NOOP;
 const setReanimatedAvailable = NOOP;
+const setShouldPreventRecognizers = NOOP;
 const install = NOOP;
 
 export default {
@@ -20,6 +21,7 @@ export default {
   updateGestureHandlerConfig,
   configureRelations,
   setReanimatedAvailable,
+  setShouldPreventRecognizers,
   flushOperations,
   install,
 } as const;

@@ -129,6 +129,9 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     isReanimatedAvailable = isAvailable
   }
 
+  @ReactMethod
+  override fun setShouldPreventRecognizers(shouldPreventRecognizers: Boolean) = Unit
+
   @DoNotStrip
   @Suppress("unused")
   fun setGestureHandlerState(handlerTag: Int, newState: Int) {
