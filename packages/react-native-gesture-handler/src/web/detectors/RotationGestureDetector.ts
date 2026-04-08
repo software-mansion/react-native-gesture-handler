@@ -41,6 +41,7 @@ export default class RotationGestureDetector
 
     const firstPointerCoords = tracker.getLastAbsoluteCoords(firstPointerID);
     const secondPointerCoords = tracker.getLastAbsoluteCoords(secondPointerID);
+
     if (!firstPointerCoords || !secondPointerCoords) {
       return;
     }
