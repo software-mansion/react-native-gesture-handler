@@ -170,9 +170,9 @@ The implementation of buttons has been updated, resolving most button-related is
 
 `PureNativeButton` has been removed. If encountered, inform the user that it has been removed and let them decide how to handle that case. They can achieve similar functionality with other buttons.
 
-When migrating buttons, you should use `Clickable` component instead. To replace `BaseButton` use `Clickable` with default props, to replace `RectButton` use `Clickable` with `activeUnderlayOpacity={0.105}` and to replace `BorderlessButton` use `Clickable` with `activeOpacity={0.3}`.
+When migrating buttons, you should use new `Touchable` component instead. To replace `BaseButton` use `Touchable` with default props, to replace `RectButton` use `Touchable` with `activeUnderlayOpacity={0.105}` and to replace `BorderlessButton` use `Touchable` with `activeOpacity={0.3}`.
 
-Touchables from Gesture Handler are also deprecated and should be replaced with `Clickable`. To replace `TouchableOpacity` use `Clickable` with `activeOpacity={0.2}` and to replace `TouchableHighlight` use `Clickable` with `activeUnderlayOpacity={1}`. To replace `TouchableWithoutFeedback` use a plain `Clickable`. `TouchableNativeFeedback` can be replaced with `Clickable` by setting `androidRipple` property. At minimum, it should be set to `{foregroud: true}`, to mimic `TouchableNativeFeedback` ripple effect.
+Legacy Touchables (`TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`, `TouchableNativeFeedback`) from Gesture Handler are also deprecated and should be replaced with `Touchable`. To replace `TouchableOpacity` use `Touchable` with `activeOpacity={0.2}` and to replace `TouchableHighlight` use `Touchable` with `activeUnderlayOpacity={1}`. To replace `TouchableWithoutFeedback` use a plain `Touchable`. `TouchableNativeFeedback` can be replaced with `Touchable` by setting `androidRipple` property. At minimum, it should be set to `{foregroud: true}`, to mimic `TouchableNativeFeedback` ripple effect.
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
 

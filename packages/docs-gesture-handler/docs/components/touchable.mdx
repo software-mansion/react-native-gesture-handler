@@ -1,71 +1,75 @@
 ---
-id: clickable
-title: Clickable
-sidebar_label: Clickable
+id: touchable
+title: Touchable
+sidebar_label: Touchable
 ---
 
 import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
-`Clickable` is a versatile new component introduced in Gesture Handler 3 to supersede previous button implementations. Designed for maximum flexibility, it provides a highly customizable interface for native touch handling while ensuring consistent behavior across platforms.
+:::note
+This section refers to new `Touchable` component, meant to replace both buttons and touchables. If you are looking for documentation for the deprecated touchable components, check out the [Legacy Touchables](/docs/components/legacy-touchables) section.
+:::
 
-`Clickable` provides a simple interface for the common animations like opacity, underlay, and scale, implemented entirely on the platform. On Android, it also exposes the native ripple effect on press (turned off by default).
+`Touchable` is a versatile new component introduced in Gesture Handler 3 to supersede previous button implementations. Designed for maximum flexibility, it provides a highly customizable interface for native touch handling while ensuring consistent behavior across platforms.
 
-If the provided animations are not sufficient, it's possible to use `Clickable` to create fully custom interactions using either [Reanimated](https://docs.swmansion.com/react-native-reanimated/) or [Animated API](https://reactnative.dev/docs/animated).
+`Touchable` provides a simple interface for the common animations like opacity, underlay, and scale, implemented entirely on the platform. On Android, it also exposes the native ripple effect on press (turned off by default).
+
+If the provided animations are not sufficient, it's possible to use `Touchable` to create fully custom interactions using either [Reanimated](https://docs.swmansion.com/react-native-reanimated/) or [Animated API](https://reactnative.dev/docs/animated).
 
 ## Replacing old buttons
 
-If you were using `RectButton` or `BorderlessButton` in your app, you should replace them with `Clickable`. Check out the full code in the [example](#example) section below.
+If you were using `RectButton` or `BorderlessButton` in your app, you should replace them with `Touchable`. Check out the full code in the [example](#example) section below.
 
 ### RectButton
 
-To replace `RectButton` with `Clickable`, simply add `activeUnderlayOpacity={0.105}` to your `Clickable`. This will animate the underlay when the button is pressed.
+To replace `RectButton` with `Touchable`, simply add `activeUnderlayOpacity={0.105}` to your `Touchable`. This will animate the underlay when the button is pressed.
 
 ```tsx
-<Clickable
+<Touchable
   ...
   activeUnderlayOpacity={0.105}/>
 ```
 
 ### BorderlessButton
 
-Replacing `BorderlessButton` with `Clickable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Clickable`. This will animate the whole component when the button is pressed.
+Replacing `BorderlessButton` with `Touchable` is as easy as replacing `RectButton`. Just add `activeOpacity={0.3}` to your `Touchable`. This will animate the whole component when the button is pressed.
 
 ```tsx
-<Clickable
+<Touchable
   ...
   activeOpacity={0.3}/>
 ```
 
 ## Replacing deprecated Touchables
 
-If you were using the deprecated [`Touchable`](/docs/components/touchables) components, you can replace them with `Clickable` as well.
+If you were using the deprecated [`Touchables`](/docs/components/touchables), you can replace them with new `Touchable` as well.
 
 ### TouchableOpacity
 
-To replace `TouchableOpacity` with `Clickable`, add `activeOpacity={0.2}`.
+To replace `TouchableOpacity` with `Touchable`, add `activeOpacity={0.2}`.
 
 ```tsx
-<Clickable
+<Touchable
   ...
   activeOpacity={0.2}/>
 ```
 
 ### TouchableHighlight
 
-To replace `TouchableHighlight` with `Clickable`, add `activeUnderlayOpacity={1}`.
+To replace `TouchableHighlight` with `Touchable`, add `activeUnderlayOpacity={1}`.
 
 ```tsx
-<Clickable
+<Touchable
   ...
   activeUnderlayOpacity={1}/>
 ```
 
 ### TouchableWithoutFeedback
 
-To replace `TouchableWithoutFeedback`, use a plain `Clickable`.
+To replace `TouchableWithoutFeedback`, use a plain `Touchable`.
 
 ```tsx
-<Clickable ... />
+<Touchable ... />
 ```
 
 ### TouchableNativeFeedback
@@ -73,7 +77,7 @@ To replace `TouchableWithoutFeedback`, use a plain `Clickable`.
 To replace `TouchableNativeFeedback`, use the [`androidRipple`](#androidripple) prop. Make sure to set `foreground={true}`.
 
 ```tsx
-<Clickable
+<Touchable
   ...
   androidRipple={{
     foreground: true,
@@ -82,7 +86,7 @@ To replace `TouchableNativeFeedback`, use the [`androidRipple`](#androidripple) 
 
 ## Example 
 
-In this example we will demonstrate how to recreate `RectButton` and `BorderlessButton` effects using the `Clickable` component.
+In this example we will demonstrate how to recreate `RectButton` and `BorderlessButton` effects using the `Touchable` component.
 
 <CollapsibleCode 
 label="Show full example"
@@ -93,37 +97,37 @@ import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import {
   GestureHandlerRootView,
-  Clickable,
+  Touchable,
 } from 'react-native-gesture-handler';
 
-export default function ClickableExample() {
+export default function TouchableExample() {
   return (
     <GestureHandlerRootView style={styles.container}>
-      <Clickable
+      <Touchable
         onPress={() => {
-          console.log('BaseButton built with Clickable');
+          console.log('BaseButton built with Touchable');
         }}
         style={[styles.button, { backgroundColor: '#7d63d9' }]}>
         <Text style={styles.buttonText}>BaseButton</Text>
-      </Clickable>
+      </Touchable>
 
-      <Clickable
+      <Touchable
         onPress={() => {
-          console.log('RectButton built with Clickable');
+          console.log('RectButton built with Touchable');
         }}
         style={[styles.button, { backgroundColor: '#4f9a84' }]}
         activeUnderlayOpacity={0.105}>
         <Text style={styles.buttonText}>RectButton</Text>
-      </Clickable>
+      </Touchable>
 
-      <Clickable
+      <Touchable
         onPress={() => {
-          console.log('BorderlessButton built with Clickable');
+          console.log('BorderlessButton built with Touchable');
         }}
         style={[styles.button, { backgroundColor: '#5f97c8' }]}
         activeOpacity={0.3}>
         <Text style={styles.buttonText}>BorderlessButton</Text>
-      </Clickable>
+      </Touchable>
     </GestureHandlerRootView>
   );
 }
