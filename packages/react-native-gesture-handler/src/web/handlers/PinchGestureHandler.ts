@@ -70,9 +70,14 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent() {
+    const focal = this.delegate.absoluteToLocal(
+      this.scaleGestureDetector.focusX,
+      this.scaleGestureDetector.focusY
+    );
+
     return {
-      focalX: this.scaleGestureDetector.relativeFocusX,
-      focalY: this.scaleGestureDetector.relativeFocusY,
+      focalX: focal.x,
+      focalY: focal.y,
       velocity: this.velocity,
       scale: this.scale,
     };

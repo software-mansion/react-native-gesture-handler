@@ -23,9 +23,6 @@ export default class RotationGestureDetector
   private _anchorX = 0;
   private _anchorY = 0;
 
-  private _relativeAnchorX = 0;
-  private _relativeAnchorY = 0;
-
   private isInProgress = false;
 
   private keyPointers: number[] = [NaN, NaN];
@@ -44,10 +41,6 @@ export default class RotationGestureDetector
 
     const firstPointerCoords = tracker.getLastAbsoluteCoords(firstPointerID);
     const secondPointerCoords = tracker.getLastAbsoluteCoords(secondPointerID);
-    const firstPointerRelative = tracker.getLastRelativeCoords(firstPointerID);
-    const secondPointerRelative =
-      tracker.getLastRelativeCoords(secondPointerID);
-
     if (!firstPointerCoords || !secondPointerCoords) {
       return;
     }
@@ -57,13 +50,6 @@ export default class RotationGestureDetector
 
     this._anchorX = (firstPointerCoords.x + secondPointerCoords.x) / 2;
     this._anchorY = (firstPointerCoords.y + secondPointerCoords.y) / 2;
-
-    if (firstPointerRelative && secondPointerRelative) {
-      this._relativeAnchorX =
-        (firstPointerRelative.x + secondPointerRelative.x) / 2;
-      this._relativeAnchorY =
-        (firstPointerRelative.y + secondPointerRelative.y) / 2;
-    }
 
     // Angle diff should be positive when rotating in clockwise direction
     const angle: number = -Math.atan2(vectorY, vectorX);
@@ -171,14 +157,6 @@ export default class RotationGestureDetector
 
   public get anchorY() {
     return this._anchorY;
-  }
-
-  public get relativeAnchorX() {
-    return this._relativeAnchorX;
-  }
-
-  public get relativeAnchorY() {
-    return this._relativeAnchorY;
   }
 
   public get rotation() {
