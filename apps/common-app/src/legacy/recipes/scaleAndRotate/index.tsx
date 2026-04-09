@@ -155,7 +155,7 @@ export default PinchableBox;
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'black',
     overflow: 'hidden',
     alignItems: 'center',
