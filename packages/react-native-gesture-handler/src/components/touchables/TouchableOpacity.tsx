@@ -59,7 +59,7 @@ export default class TouchableOpacity extends Component<TouchableOpacityProps> {
     }
   };
 
-  render() {
+  override render() {
     const { style = {}, ...rest } = this.props;
     return (
       <GenericTouchable

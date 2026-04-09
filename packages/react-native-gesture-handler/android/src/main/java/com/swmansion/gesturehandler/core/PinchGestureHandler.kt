@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.ViewConfiguration
-import com.swmansion.gesturehandler.react.eventbuilders.PinchGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.PinchGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class PinchGestureHandler : GestureHandler() {
@@ -49,18 +49,26 @@ class PinchGestureHandler : GestureHandler() {
     }
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    val context = view!!.context
+    resetProgress()
+    scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
+    val configuration = ViewConfiguration.get(context)
+    spanSlop = configuration.scaledTouchSlop.toFloat()
+
+    // set the focal point to the position of the first pointer as NaN causes the event not to arrive
+    this.focalPointX = event.x
+    this.focalPointY = event.y
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
+    }
+
     if (state == STATE_UNDETERMINED) {
-      val context = view!!.context
-      resetProgress()
-      scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
-      val configuration = ViewConfiguration.get(context)
-      spanSlop = configuration.scaledTouchSlop.toFloat()
-
-      // set the focal point to the position of the first pointer as NaN causes the event not to arrive
-      this.focalPointX = event.x
-      this.focalPointY = event.y
-
+      initialize(event, sourceEvent)
       begin()
     }
     scaleGestureDetector?.onTouchEvent(sourceEvent)

@@ -3,20 +3,16 @@
 // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/56937
 import React from 'react';
 import { render, cleanup } from '@testing-library/react-native';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import {
   GestureHandlerRootView,
   PanGestureHandler,
-  LongPressGestureHandler,
-  LongPressGestureHandlerGestureEvent,
-  RotationGestureHandler,
   Gesture,
   GestureDetector,
   State,
-  PanGesture,
-  TapGesture,
+  LegacyPanGesture,
+  LegacyTapGesture,
 } from '../index';
-import { useAnimatedGestureHandler } from 'react-native-reanimated';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 
 beforeEach(cleanup);
@@ -32,215 +28,6 @@ const mockedEventHandlers = () => {
     finish: jest.fn(),
   };
 };
-
-interface EventHandlersProps {
-  eventHandlers: ReturnType<typeof mockedEventHandlers>;
-}
-
-describe('Using RNGH v1 base API', () => {
-  function SingleHandler({ eventHandlers }: EventHandlersProps) {
-    const handlers = {
-      onBegan: eventHandlers.begin,
-      onActivated: eventHandlers.active,
-      onEnded: eventHandlers.end,
-      onCancelled: eventHandlers.cancel,
-      onFailed: eventHandlers.fail,
-      onGestureEvent: eventHandlers.active,
-    };
-
-    return (
-      <GestureHandlerRootView>
-        <PanGestureHandler testID="pan" {...handlers}>
-          <Text>Pan handler</Text>
-        </PanGestureHandler>
-      </GestureHandlerRootView>
-    );
-  }
-
-  function NestedHandlers({ eventHandlers }: EventHandlersProps) {
-    const handlers = {
-      onBegan: eventHandlers.begin,
-      onActivated: eventHandlers.active,
-      onEnded: eventHandlers.end,
-      onCancelled: eventHandlers.cancel,
-      onFailed: eventHandlers.fail,
-      onGestureEvent: eventHandlers.active,
-    };
-    return (
-      <GestureHandlerRootView>
-        <PanGestureHandler testID="pan" {...handlers}>
-          <View>
-            <Text>Pan handler</Text>
-            <RotationGestureHandler testID="rotation" {...handlers}>
-              <Text>Rotation handler</Text>
-            </RotationGestureHandler>
-          </View>
-        </PanGestureHandler>
-      </GestureHandlerRootView>
-    );
-  }
-
-  test('receives events', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandler<PanGestureHandler>(getByTestId('pan'), [
-      { oldState: State.UNDETERMINED, state: State.BEGAN },
-      { oldState: State.BEGAN, state: State.ACTIVE },
-      { oldState: State.ACTIVE, state: State.ACTIVE },
-      { oldState: State.ACTIVE, state: State.END },
-    ]);
-    expect(handlers.begin).toHaveBeenCalled();
-    expect(handlers.active).toHaveBeenCalled();
-    expect(handlers.end).toHaveBeenCalled();
-    expect(handlers.cancel).not.toHaveBeenCalled();
-    expect(handlers.fail).not.toHaveBeenCalled();
-  });
-
-  test('receives events correct number of times', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    fireGestureHandler<PanGestureHandler>(getByTestId('pan'), [
-      { oldState: State.UNDETERMINED, state: State.BEGAN },
-      { oldState: State.BEGAN, state: State.ACTIVE },
-      { oldState: State.ACTIVE, state: State.ACTIVE }, // gesture event
-      { oldState: State.ACTIVE, state: State.END },
-    ]);
-    expect(handlers.begin).toHaveBeenCalledTimes(1);
-    expect(handlers.active).toHaveBeenCalledTimes(2);
-    expect(handlers.end).toHaveBeenCalledTimes(1);
-    expect(handlers.cancel).not.toHaveBeenCalled();
-    expect(handlers.fail).not.toHaveBeenCalled();
-  });
-
-  test('receives events with correct base fields (state, oldState, numberOfPointers, handlerTag)', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(<SingleHandler eventHandlers={handlers} />);
-    const component = getByTestId('pan');
-
-    const COMMON_EVENT_DATA = {
-      numberOfPointers: 3,
-      handlerTag: component.props.handlerTag as number,
-    };
-    fireGestureHandler<PanGestureHandler>(component, [
-      {
-        ...COMMON_EVENT_DATA,
-        oldState: State.UNDETERMINED,
-        state: State.BEGAN,
-      }, // BEGIN - state change
-      { ...COMMON_EVENT_DATA, oldState: State.BEGAN, state: State.ACTIVE },
-      { ...COMMON_EVENT_DATA, state: State.ACTIVE }, // gesture event
-    ]);
-
-    // gesture state change
-    expect(handlers.begin).toHaveBeenLastCalledWith({
-      nativeEvent: expect.objectContaining({
-        ...COMMON_EVENT_DATA,
-        oldState: State.UNDETERMINED,
-        state: State.BEGAN,
-      }),
-    });
-
-    // last ACTIVE gesture event, without `oldState`
-    expect(handlers.active).toHaveBeenLastCalledWith({
-      nativeEvent: expect.objectContaining({
-        ...COMMON_EVENT_DATA,
-        state: State.ACTIVE,
-      }),
-    });
-    expect(handlers.active).toHaveBeenLastCalledWith({
-      nativeEvent: expect.not.objectContaining({
-        oldState: expect.any(Number),
-      }),
-    });
-  });
-
-  test.each([
-    [
-      'pan',
-      {
-        translationY: 800,
-        velocityY: 2,
-      },
-      {
-        translationX: 100,
-      },
-    ],
-    [
-      'rotation',
-      {
-        anchorY: 0,
-        rotation: 3.14,
-      },
-      { numberOfPointers: 2 },
-    ],
-  ])(
-    'receives additional properties depending on handler type ("%s")',
-    (
-      handlerName: string,
-      additionalEventData: Record<string, unknown>,
-      defaultEventData: Record<string, unknown>
-    ) => {
-      const handlers = mockedEventHandlers();
-      const { getByTestId } = render(
-        <NestedHandlers eventHandlers={handlers} />
-      );
-
-      fireGestureHandler(getByTestId(handlerName), [
-        {
-          ...additionalEventData,
-          oldState: State.UNDETERMINED,
-          state: State.BEGAN,
-        },
-        {
-          ...additionalEventData,
-          oldState: State.BEGAN,
-          state: State.ACTIVE,
-        },
-      ]);
-
-      expect(handlers.begin).toHaveBeenLastCalledWith({
-        nativeEvent: expect.objectContaining({
-          ...additionalEventData,
-          ...defaultEventData,
-        }),
-      });
-    }
-  );
-});
-
-describe('Using Reanimated 2 useAnimatedGestureHandler hook', () => {
-  function UseAnimatedGestureHandler({ eventHandlers }: EventHandlersProps) {
-    const eventHandler =
-      useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>({
-        onStart: eventHandlers.begin,
-      });
-    return (
-      <LongPressGestureHandler
-        testID="longPress"
-        onHandlerStateChange={eventHandler}>
-        <Text>Long press handler</Text>
-      </LongPressGestureHandler>
-    );
-  }
-
-  test('calls callback with (event data, context)', () => {
-    const handlers = mockedEventHandlers();
-    const { getByTestId } = render(
-      <UseAnimatedGestureHandler eventHandlers={handlers} />
-    );
-
-    fireGestureHandler<LongPressGestureHandler>(getByTestId('longPress'), [
-      { state: State.BEGAN },
-      { state: State.ACTIVE },
-      { state: State.END },
-    ]);
-
-    expect(handlers.begin).toHaveBeenCalledWith(
-      expect.objectContaining({ state: State.BEGAN }),
-      expect.any(Object)
-    );
-  });
-});
 
 describe('Using RNGH v2 gesture API', () => {
   interface SingleHandlerProps {
@@ -300,7 +87,7 @@ describe('Using RNGH v2 gesture API', () => {
       <RacingHandlers tapHandlers={tapHandlers} panHandlers={panHandlers} />
     );
 
-    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
+    fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
       { state: State.BEGAN },
       { state: State.ACTIVE },
       { state: State.END },
@@ -315,7 +102,7 @@ describe('Using RNGH v2 gesture API', () => {
   test('sends events with additional data to handlers', () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
+    fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
       { state: State.BEGAN, translationX: 0 },
       { state: State.ACTIVE, translationX: 10 },
       { translationX: 20 },
@@ -358,7 +145,7 @@ describe('Event list validation', () => {
     const panHandlers = mockedEventHandlers();
     render(<SingleHandler handlers={panHandlers} />);
     expect(() => {
-      fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
+      fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
         { oldState: State.UNDETERMINED, state: State.BEGAN, x: 0, y: 10 },
         { oldState: State.UNDETERMINED, state: State.ACTIVE, x: 1, y: 11 },
       ]);
@@ -372,7 +159,7 @@ describe('Event list validation', () => {
     (lastState) => {
       const panHandlers = mockedEventHandlers();
       render(<SingleHandler handlers={panHandlers} />);
-      fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
+      fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
         { state: State.BEGAN },
         { state: State.ACTIVE },
         { state: lastState },
@@ -452,7 +239,7 @@ describe('Filling event list with defaults', () => {
   test('fills missing ACTIVE states', () => {
     const panHandlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={panHandlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
+    fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
       { state: State.BEGAN, x: 0, y: 10 },
       { state: State.ACTIVE, x: 1, y: 11 },
       { x: 2, y: 12 },
@@ -469,7 +256,7 @@ describe('Filling event list with defaults', () => {
   test('fills BEGIN and END events for discrete handlers', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureTestId('tap'), [{ x: 5 }]);
+    fireGestureHandler<LegacyTapGesture>(getByGestureTestId('tap'), [{ x: 5 }]);
     expect(handlers.begin).toHaveBeenCalledTimes(1);
     expect(handlers.end).toHaveBeenCalledTimes(1);
   });
@@ -477,7 +264,7 @@ describe('Filling event list with defaults', () => {
   test('with FAILED event, fills BEGIN event for discrete handlers', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureTestId('tap'), [
+    fireGestureHandler<LegacyTapGesture>(getByGestureTestId('tap'), [
       { state: State.FAILED },
     ]);
     expect(handlers.begin).toHaveBeenCalledTimes(1);
@@ -488,7 +275,9 @@ describe('Filling event list with defaults', () => {
   test('uses event data from first event in filled BEGIN, ACTIVE events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [{ x: 120 }]);
+    fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
+      { x: 120 },
+    ]);
     expect(handlers.begin).toHaveBeenCalledWith(
       expect.objectContaining({ x: 120 })
     );
@@ -501,7 +290,7 @@ describe('Filling event list with defaults', () => {
   test('uses event data from last event in filled END events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
+    fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
       { x: 120, state: State.FAILED },
     ]);
     expect(handlers.begin).toHaveBeenCalledTimes(1);
@@ -515,7 +304,7 @@ describe('Filling event list with defaults', () => {
   test('uses event data filled events', () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureTestId('pan'), [
+    fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'), [
       { x: 5, y: 15 },
       { x: 6, y: 16 },
       { x: 7, y: 17 },
@@ -533,7 +322,7 @@ describe('Filling event list with defaults', () => {
   test("fills BEGIN and END events when they're not present, for discrete handlers", () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<TapGesture>(getByGestureTestId('tap'));
+    fireGestureHandler<LegacyTapGesture>(getByGestureTestId('tap'));
     expect(handlers.begin).toHaveBeenCalledTimes(1);
     expect(handlers.end).toHaveBeenCalledTimes(1);
   });
@@ -541,7 +330,7 @@ describe('Filling event list with defaults', () => {
   test("fills BEGIN, ACTIVE and END events when they're not present, for continuous handlers", () => {
     const handlers = mockedEventHandlers();
     render(<RacingTapAndPan handlers={handlers} treatStartAsUpdate />);
-    fireGestureHandler<PanGesture>(getByGestureTestId('pan'));
+    fireGestureHandler<LegacyPanGesture>(getByGestureTestId('pan'));
     expect(handlers.begin).toHaveBeenCalledTimes(1);
     expect(handlers.active).toHaveBeenCalledTimes(1);
     expect(handlers.end).toHaveBeenCalledTimes(1);

@@ -1763,6 +1763,21 @@
     react-helmet-async "npm:@slorber/react-helmet-async@*"
     react-loadable "npm:@docusaurus/react-loadable@6.0.0"
 
+"@docusaurus/plugin-client-redirects@3.7.0":
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/@docusaurus/plugin-client-redirects/-/plugin-client-redirects-3.7.0.tgz#b5cf92529768c457c01ad350bfc50862c6149463"
+  integrity sha512-6B4XAtE5ZVKOyhPgpgMkb7LwCkN+Hgd4vOnlbwR8nCdTQhLjz8MHbGlwwvZ/cay2SPNRX5KssqKAlcHVZP2m8g==
+  dependencies:
+    "@docusaurus/core" "3.7.0"
+    "@docusaurus/logger" "3.7.0"
+    "@docusaurus/utils" "3.7.0"
+    "@docusaurus/utils-common" "3.7.0"
+    "@docusaurus/utils-validation" "3.7.0"
+    eta "^2.2.0"
+    fs-extra "^11.1.1"
+    lodash "^4.17.21"
+    tslib "^2.6.0"
+
 "@docusaurus/plugin-content-blog@3.7.0":
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/@docusaurus/plugin-content-blog/-/plugin-content-blog-3.7.0.tgz#7bd69de87a1f3adb652e1473ef5b7ccc9468f47e"
@@ -4738,9 +4753,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001702, caniuse-lite@^1.0.30001716:
-  version "1.0.30001718"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001718.tgz#dae13a9c80d517c30c6197515a96131c194d8f82"
-  integrity sha512-AflseV1ahcSunK53NfEs9gFWgOEmzr0f+kaMFA4xiLZlr9Hzt7HxcSpIFcnNCUkz6R6dWKa54rUz3HUmI3nVcw==
+  version "1.0.30001774"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001774.tgz"
+  integrity sha512-DDdwPGz99nmIEv216hKSgLD+D4ikHQHjBC/seF98N9CPqRX4M5mSxT9eTV6oyisnJcuzxtZy4n17yKKQYmYQOA==
 
 ccount@^2.0.0:
   version "2.0.1"
@@ -13167,6 +13182,11 @@ vfile@^6.0.0, vfile@^6.0.1:
   dependencies:
     "@types/unist" "^3.0.0"
     vfile-message "^4.0.0"
+
+vis-network@^10.0.2:
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/vis-network/-/vis-network-10.0.2.tgz#cf8ea2c6a06d32612d90c1aac14def1432112484"
+  integrity sha512-qPl8GLYBeHEFqiTqp4VBbYQIJ2EA8KLr7TstA2E8nJxfEHaKCU81hQLz7hhq11NUpHbMaRzBjW5uZpVKJ45/wA==
 
 vlq@^1.0.0:
   version "1.0.1"

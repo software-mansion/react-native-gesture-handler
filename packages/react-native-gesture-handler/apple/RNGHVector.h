@@ -10,7 +10,7 @@
 #ifndef RNGHVector_h
 #define RNGHVector_h
 
-@interface Vector : NSObject
+@interface RNGHVector : NSObject
 
 @property (atomic, readonly, assign) double x;
 @property (atomic, readonly, assign) double y;
@@ -18,11 +18,11 @@
 @property (atomic, readonly, assign) double unitY;
 @property (atomic, readonly, assign) double magnitude;
 
-+ (Vector *_Nonnull)fromDirection:(RNGestureHandlerDirection)direction;
-+ (Vector *_Nonnull)fromVelocityX:(double)vx withVelocityY:(double)vy;
++ (RNGHVector *_Nonnull)fromDirection:(RNGestureHandlerDirection)direction;
++ (RNGHVector *_Nonnull)fromVelocityX:(double)vx withVelocityY:(double)vy;
 - (nonnull instancetype)initWithX:(double)x withY:(double)y;
-- (double)computeSimilarity:(Vector *_Nonnull)other;
-- (BOOL)isSimilar:(Vector *_Nonnull)other withThreshold:(double)threshold;
+- (double)computeSimilarity:(RNGHVector *_Nonnull)other;
+- (BOOL)isSimilar:(RNGHVector *_Nonnull)other withThreshold:(double)threshold;
 
 @end
 

@@ -1,5 +1,3 @@
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #import "RNGestureHandlerButtonComponentView.h"
 
 #import <React/RCTConversions.h>
@@ -9,10 +7,27 @@
 #import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
+#import <react/renderer/components/view/BaseViewProps.h>
+#import <react/renderer/components/view/ViewProps.h>
 
 #import "RNGestureHandlerButton.h"
 
 using namespace facebook::react;
+
+static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::PointerEventsMode pointerEvents)
+{
+  switch (pointerEvents) {
+    case facebook::react::PointerEventsMode::None:
+      return RNGestureHandlerPointerEventsNone;
+    case facebook::react::PointerEventsMode::BoxNone:
+      return RNGestureHandlerPointerEventsBoxNone;
+    case facebook::react::PointerEventsMode::BoxOnly:
+      return RNGestureHandlerPointerEventsBoxOnly;
+    case facebook::react::PointerEventsMode::Auto:
+    default:
+      return RNGestureHandlerPointerEventsAuto;
+  }
+}
 
 @interface RNGestureHandlerButtonComponentView () <RCTRNGestureHandlerButtonViewProtocol>
 @end
@@ -31,10 +46,12 @@ using namespace facebook::react;
 #endif
 
 // Needed because of this: https://github.com/facebook/react-native/pull/37274
+#ifdef RCT_DYNAMIC_FRAMEWORKS
 + (void)load
 {
   [super load];
 }
+#endif
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -42,6 +59,7 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const RNGestureHandlerButtonProps>();
     _props = defaultProps;
     _buttonView = [[RNGestureHandlerButton alloc] initWithFrame:self.bounds];
+    _buttonView.animationTarget = self;
 
     self.contentView = _buttonView;
   }
@@ -54,9 +72,12 @@ using namespace facebook::react;
   [_buttonView mountChildComponentView:childComponentView index:index];
 }
 
-- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView
+                            index:(NSInteger)__unused index
 {
-  [_buttonView unmountChildComponentView:childComponentView index:index];
+  if (childComponentView.superview == _buttonView) {
+    [childComponentView removeFromSuperview];
+  }
 }
 
 - (LayoutMetrics)buildWrapperMetrics:(const LayoutMetrics &)metrics
@@ -92,6 +113,29 @@ using namespace facebook::react;
 
   [super updateLayoutMetrics:wrapperMetrics oldLayoutMetrics:oldWrapperMetrics];
   [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  [super finalizeUpdates:updateMask];
+
+  // Resolve per-corner border radii from props and forward to the button
+  // so its underlay CALayer gets the matching shape.
+  const auto borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
+  [_buttonView setUnderlayCornerRadiiWithTopLeftHorizontal:borderMetrics.borderRadii.topLeft.horizontal
+                                           topLeftVertical:borderMetrics.borderRadii.topLeft.vertical
+                                        topRightHorizontal:borderMetrics.borderRadii.topRight.horizontal
+                                          topRightVertical:borderMetrics.borderRadii.topRight.vertical
+                                      bottomLeftHorizontal:borderMetrics.borderRadii.bottomLeft.horizontal
+                                        bottomLeftVertical:borderMetrics.borderRadii.bottomLeft.vertical
+                                     bottomRightHorizontal:borderMetrics.borderRadii.bottomRight.horizontal
+                                       bottomRightVertical:borderMetrics.borderRadii.bottomRight.vertical];
+  [_buttonView setUnderlayBorderInsetsWithTop:borderMetrics.borderWidths.top
+                                        right:borderMetrics.borderWidths.right
+                                       bottom:borderMetrics.borderWidths.bottom
+                                         left:borderMetrics.borderWidths.left];
+
+  [_buttonView applyStartAnimationState];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -200,6 +244,19 @@ using namespace facebook::react;
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
   _buttonView.userEnabled = newProps.enabled;
+  _buttonView.pressAndHoldAnimationDuration = newProps.pressAndHoldAnimationDuration;
+  _buttonView.tapAnimationDuration = newProps.tapAnimationDuration > 0 ? newProps.tapAnimationDuration : 0;
+  _buttonView.activeOpacity = newProps.activeOpacity;
+  _buttonView.defaultOpacity = newProps.defaultOpacity;
+  _buttonView.activeScale = newProps.activeScale;
+  _buttonView.defaultScale = newProps.defaultScale;
+  _buttonView.defaultUnderlayOpacity = newProps.defaultUnderlayOpacity;
+  _buttonView.activeUnderlayOpacity = newProps.activeUnderlayOpacity;
+  if (newProps.underlayColor) {
+    _buttonView.underlayColor = RCTUIColorFromSharedColor(newProps.underlayColor);
+  } else {
+    _buttonView.underlayColor = nil;
+  }
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   _buttonView.exclusiveTouch = newProps.exclusive;
   [self setAccessibilityProps:props oldProps:oldProps];
@@ -207,13 +264,50 @@ using namespace facebook::react;
   _buttonView.hitTestEdgeInsets = UIEdgeInsetsMake(
       -newProps.hitSlop.top, -newProps.hitSlop.left, -newProps.hitSlop.bottom, -newProps.hitSlop.right);
 
+  // We need to cast to ViewProps to access the pointerEvents property with the correct type.
+  // This is necessary because pointerEvents is redefined in the spec,
+  // which shadows the base property with a different, incompatible type.
+  const auto &newViewProps = static_cast<const ViewProps &>(newProps);
+  if (!oldProps) {
+    _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
+  } else {
+    const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
+    const auto &oldViewProps = static_cast<const ViewProps &>(oldButtonProps);
+    if (oldViewProps.pointerEvents != newViewProps.pointerEvents) {
+      _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
+    }
+  }
+
   [super updateProps:props oldProps:oldProps];
+  [_buttonView applyStartAnimationState];
 }
+
+#if !TARGET_OS_OSX
+// Override hitTest to forward touches to _buttonView
+// This is necessary because RCTViewComponentView's hitTest might handle pointerEvents
+// from ViewProps and prevent touches from reaching _buttonView (which is the contentView).
+// Since _buttonView has its own pointerEvents handling, we always forward to it.
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (![self pointInside:point withEvent:event]) {
+    return nil;
+  }
+
+  CGPoint buttonPoint = [self convertPoint:point toView:_buttonView];
+
+  return [_buttonView hitTest:buttonPoint withEvent:event];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+  [_buttonView applyStartAnimationState];
+}
+#endif
+
 @end
 
 Class<RCTComponentViewProtocol> RNGestureHandlerButtonCls(void)
 {
   return RNGestureHandlerButtonComponentView.class;
 }
-
-#endif // RCT_NEW_ARCH_ENABLED

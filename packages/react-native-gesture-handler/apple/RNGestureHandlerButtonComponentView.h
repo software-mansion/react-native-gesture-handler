@@ -1,5 +1,3 @@
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
@@ -18,5 +16,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-
-#endif // RCT_NEW_ARCH_ENABLED

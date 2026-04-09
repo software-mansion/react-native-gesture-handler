@@ -17,14 +17,14 @@ export const forceTouchGestureHandlerProps = [
 // implicit `children` prop has been removed in @types/react^18.0.0
 class ForceTouchFallback extends React.Component<PropsWithChildren<unknown>> {
   static forceTouchAvailable = false;
-  componentDidMount() {
+  override componentDidMount() {
     console.warn(
       tagMessage(
         'ForceTouchGestureHandler is not available on this platform. Please use ForceTouchGestureHandler.forceTouchAvailable to conditionally render other components that would provide a fallback behavior specific to your usecase'
       )
     );
   }
-  render() {
+  override render() {
     return this.props.children;
   }
 }

@@ -1,0 +1,130 @@
+---
+id: use-long-press-gesture
+title: Long press gesture
+sidebar_label: Long press gesture
+sidebar_position: 3
+---
+
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
+import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
+
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
+
+import MouseButtonProp from './\_shared/mouse-button.mdx';
+
+<div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+  </div>
+  <InteractiveExample
+    component={<LongPressGestureBasic/>}
+    src={LongPressGestureBasicSrc}
+    disableMarginBottom={true}
+  />
+</div>
+
+import BaseEventData from './\_shared/base-gesture-event-data.mdx';
+import BaseGestureConfig from './\_shared/base-gesture-config.mdx';
+import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
+import SharedValueInfo from './\_shared/shared-value-info.md';
+
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
+
+import LongPressExample from '!!raw-loader!./_examples/LongPressExample';
+
+Gesture that activates when the corresponding view is pressed for a sufficiently long time.
+This gesture will deactivate immediately after the finger is released.
+The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](#minduration) or if the finger is moved further than the [allowable distance](#maxdistance).
+
+<div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
+    </video>
+</div>
+
+## Example
+
+<CollapsibleCode
+label="Show full example"
+expandedLabel="Hide full example"
+lineBounds={[7, 23]}
+src={LongPressExample}/>
+
+
+## Config
+
+<SharedValueInfo />
+
+### minDuration
+
+```ts
+minDuration: number | SharedValue<number>;
+```
+
+Minimum time, expressed in milliseconds, that a finger must remain pressed on the corresponding view. The default value is 500.
+
+### maxDistance
+
+```ts
+maxDistance: number | SharedValue<number>;
+```
+
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a long press gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture. The default value is 10.
+
+<MouseButtonProp />
+
+<BaseGestureConfig />
+
+## Callbacks
+
+<BaseGestureCallbacks gesture={"LongPress"}/>
+
+## Event data
+
+### x
+
+```ts
+x: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+
+### duration
+
+```ts
+duration: number;
+```
+
+Duration of the long press (time since the start of the gesture), expressed in milliseconds.
+
+<BaseEventData />

@@ -44,7 +44,7 @@ export class HoverGesture extends ContinousBaseGesture<
   HoverGestureHandlerEventPayload,
   HoverGestureChangeEventPayload
 > {
-  public config: BaseGestureConfig & HoverGestureConfig = {};
+  public override config: BaseGestureConfig & HoverGestureConfig = {};
 
   constructor() {
     super();
@@ -61,7 +61,7 @@ export class HoverGesture extends ContinousBaseGesture<
     return this;
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         HoverGestureHandlerEventPayload & HoverGestureChangeEventPayload

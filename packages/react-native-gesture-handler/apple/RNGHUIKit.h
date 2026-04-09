@@ -3,8 +3,11 @@
 #import <UIKit/UIKit.h>
 
 typedef UIView RNGHUIView;
+typedef UIWindow RNGHWindow;
+typedef UIScrollView RNGHScrollView;
 typedef UITouch RNGHUITouch;
 typedef UIScrollView RNGHUIScrollView;
+typedef UIColor RNGHColor;
 
 #define RNGHGestureRecognizerStateFailed UIGestureRecognizerStateFailed;
 #define RNGHGestureRecognizerStatePossible UIGestureRecognizerStatePossible;
@@ -17,8 +20,11 @@ typedef UIScrollView RNGHUIScrollView;
 #import <React/RCTUIKit.h>
 
 typedef RCTUIView RNGHUIView;
+typedef NSWindow RNGHWindow;
+typedef NSScrollView RNGHScrollView;
 typedef RCTUITouch RNGHUITouch;
 typedef NSScrollView RNGHUIScrollView;
+typedef NSColor RNGHColor;
 
 #define RNGHGestureRecognizerStateFailed NSGestureRecognizerStateFailed;
 #define RNGHGestureRecognizerStatePossible NSGestureRecognizerStatePossible;

@@ -10,7 +10,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
 import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
-import com.swmansion.gesturehandler.react.eventbuilders.PanGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.PanGestureHandlerEventDataBuilder
 
 class PanGestureHandler(context: Context?) : GestureHandler() {
   var velocityX = 0f
@@ -148,9 +148,23 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
     return failOffsetYEnd != MIN_VALUE_IGNORE && dy > failOffsetYEnd
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    resetProgress()
+    offsetX = 0f
+    offsetY = 0f
+    velocityX = 0f
+    velocityY = 0f
+    velocityTracker = VelocityTracker.obtain()
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (!shouldActivateWithMouse(sourceEvent)) {
       return
+    }
+
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
     }
 
     if (event.getToolType(0) == MotionEvent.TOOL_TYPE_STYLUS) {
@@ -174,12 +188,7 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
       lastY = getLastPointerY(sourceEvent, averageTouches)
     }
     if (state == STATE_UNDETERMINED && sourceEvent.pointerCount >= minPointers) {
-      resetProgress()
-      offsetX = 0f
-      offsetY = 0f
-      velocityX = 0f
-      velocityY = 0f
-      velocityTracker = VelocityTracker.obtain()
+      initialize(event, sourceEvent)
       addVelocityMovement(velocityTracker, sourceEvent)
       begin()
 
@@ -260,8 +269,8 @@ class PanGestureHandler(context: Context?) : GestureHandler() {
 
     override fun create(context: Context?): PanGestureHandler = PanGestureHandler(context)
 
-    override fun setConfig(handler: PanGestureHandler, config: ReadableMap) {
-      super.setConfig(handler, config)
+    override fun updateConfig(handler: PanGestureHandler, config: ReadableMap) {
+      super.updateConfig(handler, config)
       var hasCustomActivationCriteria = false
       if (config.hasKey(KEY_ACTIVE_OFFSET_X_START)) {
         handler.activeOffsetXStart =
