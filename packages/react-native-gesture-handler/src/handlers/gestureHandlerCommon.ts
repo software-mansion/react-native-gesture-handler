@@ -63,7 +63,7 @@ export type HitSlop =
   | Partial<
       Record<
         'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
-        number
+        number | undefined
       >
     >
   | Record<'width' | 'left', number>
@@ -165,6 +165,14 @@ export type GestureTouchEvent = {
   pointerType: PointerType;
 };
 
+export interface StylusData {
+  tiltX: number;
+  tiltY: number;
+  azimuthAngle: number;
+  altitudeAngle: number;
+  pressure: number;
+}
+
 export type GestureUpdateEvent<GestureEventPayloadT = Record<string, unknown>> =
   GestureEventPayload & GestureEventPayloadT;
 
@@ -173,14 +181,14 @@ export type GestureStateChangeEvent<
 > = HandlerStateChangeEventPayload & GestureStateChangeEventPayloadT;
 
 export type CommonGestureConfig = {
-  enabled?: boolean;
-  shouldCancelWhenOutside?: boolean;
-  hitSlop?: HitSlop;
-  userSelect?: UserSelect;
-  activeCursor?: ActiveCursor;
-  mouseButton?: MouseButton;
-  enableContextMenu?: boolean;
-  touchAction?: TouchAction;
+  enabled?: boolean | undefined;
+  shouldCancelWhenOutside?: boolean | undefined;
+  hitSlop?: HitSlop | undefined;
+  userSelect?: UserSelect | undefined;
+  activeCursor?: ActiveCursor | undefined;
+  mouseButton?: MouseButton | undefined;
+  enableContextMenu?: boolean | undefined;
+  touchAction?: TouchAction | undefined;
 };
 
 // Events payloads are types instead of interfaces due to TS limitation.
@@ -188,24 +196,26 @@ export type CommonGestureConfig = {
 export type BaseGestureHandlerProps<
   ExtraEventPayloadT extends Record<string, unknown> = Record<string, unknown>,
 > = CommonGestureConfig & {
-  id?: string;
-  waitFor?: React.Ref<unknown> | React.Ref<unknown>[];
-  simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
-  blocksHandlers?: React.Ref<unknown> | React.Ref<unknown>[];
-  testID?: string;
-  cancelsTouchesInView?: boolean;
+  id?: string | undefined;
+  waitFor?: React.Ref<unknown> | React.Ref<unknown>[] | undefined;
+  simultaneousHandlers?: React.Ref<unknown> | React.Ref<unknown>[] | undefined;
+  blocksHandlers?: React.Ref<unknown> | React.Ref<unknown>[] | undefined;
+  testID?: string | undefined;
+  cancelsTouchesInView?: boolean | undefined;
   // TODO(TS) - fix event types
-  onBegan?: (event: HandlerStateChangeEvent) => void;
-  onFailed?: (event: HandlerStateChangeEvent) => void;
-  onCancelled?: (event: HandlerStateChangeEvent) => void;
-  onActivated?: (event: HandlerStateChangeEvent) => void;
-  onEnded?: (event: HandlerStateChangeEvent) => void;
+  onBegan?: ((event: HandlerStateChangeEvent) => void) | undefined;
+  onFailed?: ((event: HandlerStateChangeEvent) => void) | undefined;
+  onCancelled?: ((event: HandlerStateChangeEvent) => void) | undefined;
+  onActivated?: ((event: HandlerStateChangeEvent) => void) | undefined;
+  onEnded?: ((event: HandlerStateChangeEvent) => void) | undefined;
 
   // TODO(TS) consider using NativeSyntheticEvent
-  onGestureEvent?: (event: GestureEvent<ExtraEventPayloadT>) => void;
-  onHandlerStateChange?: (
-    event: HandlerStateChangeEvent<ExtraEventPayloadT>
-  ) => void;
+  onGestureEvent?:
+    | ((event: GestureEvent<ExtraEventPayloadT>) => void)
+    | undefined;
+  onHandlerStateChange?:
+    | ((event: HandlerStateChangeEvent<ExtraEventPayloadT>) => void)
+    | undefined;
   // Implicit `children` prop has been removed in @types/react^18.0.0
   children?: React.ReactNode;
 };

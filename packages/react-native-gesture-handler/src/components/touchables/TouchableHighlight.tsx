@@ -12,10 +12,10 @@ import {
 
 interface State {
   extraChildStyle: null | {
-    opacity?: number;
+    opacity?: number | undefined;
   };
   extraUnderlayStyle: null | {
-    backgroundColor?: ColorValue;
+    backgroundColor?: ColorValue | undefined;
   };
 }
 
@@ -103,7 +103,7 @@ export default class TouchableHighlight extends Component<
     }
   };
 
-  render() {
+  override render() {
     const { style = {}, ...rest } = this.props;
     const { extraUnderlayStyle } = this.state;
     return (

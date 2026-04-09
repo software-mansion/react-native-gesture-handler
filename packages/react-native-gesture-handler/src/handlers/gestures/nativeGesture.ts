@@ -3,7 +3,7 @@ import { NativeViewGestureConfig } from '../NativeViewGestureHandler';
 import type { NativeViewGestureHandlerPayload } from '../GestureHandlerEventPayload';
 
 export class NativeGesture extends BaseGesture<NativeViewGestureHandlerPayload> {
-  public config: BaseGestureConfig & NativeViewGestureConfig = {};
+  public override config: BaseGestureConfig & NativeViewGestureConfig = {};
 
   constructor() {
     super();

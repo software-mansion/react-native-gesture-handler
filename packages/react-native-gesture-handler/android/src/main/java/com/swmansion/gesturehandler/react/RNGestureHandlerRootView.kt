@@ -5,13 +5,16 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
 import com.facebook.react.views.view.ReactViewGroup
+import com.swmansion.gesturehandler.core.GestureHandler
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
+  private var moduleId: Int = -1
   private var rootViewEnabled = false
   private var unstableForceActive = false
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
@@ -26,12 +29,20 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
       )
     }
     if (rootViewEnabled && rootHelper == null) {
-      rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this)
+      rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this, moduleId)
     }
+  }
+
+  fun setModuleId(id: Int) {
+    this.moduleId = id
   }
 
   fun tearDown() {
     rootHelper?.tearDown()
+  }
+
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    rootHelper?.recordHandlerIfNotPresent(handler)
   }
 
   override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
@@ -70,20 +81,31 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
       var parent = viewGroup.parent
       while (parent != null) {
-        // our own deprecated root view
-        @Suppress("DEPRECATION")
-        if (parent is RNGestureHandlerEnabledRootView || parent is RNGestureHandlerRootView) {
+        if (parent is RNGestureHandlerRootView) {
           return true
         }
         // Checks other roots views but it's mainly for ReactModalHostView.DialogRootViewGroup
         // since modals are outside RN hierachy and we have to initialize GH's root view for it
-        // Note that RNGestureHandlerEnabledRootView implements RootView - that's why this check has to be below
         if (parent is RootView) {
           return false
         }
         parent = parent.parent
       }
       return false
+    }
+
+    fun findGestureHandlerRootView(viewGroup: ViewGroup): RNGestureHandlerRootView? {
+      var parent: ViewParent? = viewGroup.parent
+      var gestureHandlerRootView: RNGestureHandlerRootView? = null
+
+      while (parent != null) {
+        if (parent is RNGestureHandlerRootView) {
+          gestureHandlerRootView = parent
+        }
+        parent = parent.parent
+      }
+
+      return gestureHandlerRootView
     }
   }
 }

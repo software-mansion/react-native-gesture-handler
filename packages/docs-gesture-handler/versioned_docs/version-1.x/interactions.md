@@ -8,7 +8,7 @@ Gesture handlers can "communicate" with each other to support complex gestures a
 
 There are two means of achieving that described in the sections below.
 In each case, it is necessary to provide a reference of one handler as a property to the other.
-Gesture handler relies on ref objects created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html) and introduced in [React 16.3](https://reactjs.org/blog/2018/03/29/react-v-16-3.html#createref-api).
+Gesture handler relies on ref objects created using [`React.createRef()`](https://reactjs.org/docs/refs-and-the-dom.html), introduced in [React 16.3](https://reactjs.org/blog/2018/03/29/react-v-16-3.html#createref-api).
 
 ## Simultaneous recognition
 

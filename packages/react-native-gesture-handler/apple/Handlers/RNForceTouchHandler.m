@@ -40,7 +40,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   if (_firstTouch) {
     // ignore rest of fingers
     return;
@@ -153,9 +153,9 @@ static const BOOL defaultFeedbackOnActivation = NO;
   recognizer.minForce = defaultMinForce;
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
 
   APPLY_FLOAT_PROP(maxForce);

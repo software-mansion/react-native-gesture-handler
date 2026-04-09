@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedStyle,
   runOnJS,
   withSpring,
+  AnimatedRef,
 } from 'react-native-reanimated';
 import Header, { HEADER_HEIGHT } from './Header';
 import {
@@ -111,11 +112,14 @@ interface ScrollComponentWithOffsetProps extends ScrollViewProps {
   scrollOffset: SharedValue<number>;
   animatedScrollEnabled: SharedValue<boolean>;
   dragGesture: GestureType;
-  ref?: React.RefObject<Animated.ScrollView | null>;
+  ref?: AnimatedRef<Animated.ScrollView>;
 }
 
 const ScrollComponentWithOffset = ({
   ref,
+  scrollOffset,
+  animatedScrollEnabled,
+  dragGesture,
   ...props
 }: ScrollComponentWithOffsetProps) => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -126,7 +130,7 @@ const ScrollComponentWithOffset = ({
       return scrollViewOffset.value;
     },
     (offset) => {
-      props.scrollOffset.value = offset;
+      scrollOffset.value = offset;
     }
   );
 
@@ -138,13 +142,13 @@ const ScrollComponentWithOffset = ({
 
   const scrollProps = useAnimatedProps(() => {
     return {
-      scrollEnabled: props.animatedScrollEnabled.value,
+      scrollEnabled: animatedScrollEnabled.value,
     };
   });
 
   const scrollGesture = Gesture.Native()
     .disallowInterruption(true)
-    .simultaneousWithExternalGesture(props.dragGesture);
+    .simultaneousWithExternalGesture(dragGesture);
 
   return (
     <GestureDetector gesture={scrollGesture}>

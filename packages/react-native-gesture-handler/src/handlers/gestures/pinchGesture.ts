@@ -35,7 +35,7 @@ export class PinchGesture extends ContinousBaseGesture<
     this.handlerName = 'PinchGestureHandler';
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         PinchGestureHandlerEventPayload & PinchGestureChangeEventPayload

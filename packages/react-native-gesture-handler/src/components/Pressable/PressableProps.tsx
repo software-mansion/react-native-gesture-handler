@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { RelationPropType } from '../utils';
+import { AnyGesture } from '../../v3/types';
 
 export type PressableDimensions = { width: number; height: number };
 
@@ -25,21 +26,61 @@ export type InnerPressableEvent = {
   target: number;
   timestamp: number;
   touches: InnerPressableEvent[];
-  force?: number;
+  force?: number | undefined;
 };
 
 export type PressableEvent = { nativeEvent: InnerPressableEvent };
 
-export interface PressableProps
+export interface LegacyPressableProps extends CommonPressableProps {
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  simultaneousWithExternalGesture?: RelationPropType;
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  requireExternalGestureToFail?: RelationPropType;
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  blocksExternalGesture?: RelationPropType;
+}
+
+export interface PressableProps extends CommonPressableProps {
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  simultaneousWith?: AnyGesture;
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  requireToFail?: AnyGesture;
+
+  /**
+   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
+   * used with the Pressable's gesture handlers.
+   */
+  block?: AnyGesture;
+}
+
+interface CommonPressableProps
   extends AccessibilityProps,
     Omit<ViewProps, 'children' | 'style' | 'hitSlop'> {
   /**
-   * Called when the hover is activated to provide visual feedback.
+   * Called when pointer is hovering over the element.
    */
   onHoverIn?: null | ((event: PressableEvent) => void);
 
   /**
-   * Called when the hover is deactivated to undo visual feedback.
+   * Called when pointer stops hovering over the element.
    */
   onHoverOut?: null | ((event: PressableEvent) => void);
 
@@ -59,7 +100,7 @@ export interface PressableProps
   onPressOut?: null | ((event: PressableEvent) => void);
 
   /**
-   * Called when a long-tap gesture is detected.
+   * Called immediately after pointer has been down for at least `delayLongPress` milliseconds (`500` ms by default).
    */
   onLongPress?: null | ((event: PressableEvent) => void);
 
@@ -99,7 +140,7 @@ export interface PressableProps
   delayHoverOut?: number | null;
 
   /**
-   * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
+   * Duration (in milliseconds) from `onPressIn` before `onLongPress` is called. Default value is `500` ms.
    */
   delayLongPress?: null | number;
 
@@ -148,24 +189,6 @@ export interface PressableProps
    * Duration (in milliseconds) to wait after press down before calling onPressIn.
    */
   unstable_pressDelay?: number;
-
-  /**
-   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
-   * used with the Pressable's gesture handlers.
-   */
-  simultaneousWithExternalGesture?: RelationPropType;
-
-  /**
-   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
-   * used with the Pressable's gesture handlers.
-   */
-  requireExternalGestureToFail?: RelationPropType;
-
-  /**
-   * A gesture object or an array of gesture objects containing the configuration and callbacks to be
-   * used with the Pressable's gesture handlers.
-   */
-  blocksExternalGesture?: RelationPropType;
 
   /**
    * @deprecated This property is no longer used, and will be removed in the future.

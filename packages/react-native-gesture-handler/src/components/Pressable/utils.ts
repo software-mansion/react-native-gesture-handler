@@ -1,18 +1,20 @@
 import { Insets } from 'react-native';
-import {
+import type {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
 } from '../../handlers/GestureHandlerEventPayload';
-import {
+import type {
   TouchData,
   GestureStateChangeEvent,
   GestureTouchEvent,
 } from '../../handlers/gestureHandlerCommon';
-import {
+import type {
   PressableDimensions,
   InnerPressableEvent,
   PressableEvent,
 } from './PressableProps';
+import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
+import type { HoverGestureActiveEvent } from '../../v3/hooks';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
@@ -45,9 +47,13 @@ const touchDataToPressEvent = (
 });
 
 const gestureToPressEvent = (
-  event: GestureStateChangeEvent<
-    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-  >,
+  event:
+    | GestureStateChangeEvent<
+        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+      >
+    | HoverGestureEvent
+    | HoverGestureActiveEvent
+    | LongPressGestureEvent,
   timestamp: number,
   targetId: number
 ): InnerPressableEvent => ({
@@ -73,9 +79,13 @@ const isTouchWithinInset = (
   (touch?.locationY ?? 0) > -(inset.top ?? 0);
 
 const gestureToPressableEvent = (
-  event: GestureStateChangeEvent<
-    HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
-  >
+  event:
+    | GestureStateChangeEvent<
+        HoverGestureHandlerEventPayload | LongPressGestureHandlerEventPayload
+      >
+    | HoverGestureEvent
+    | HoverGestureActiveEvent
+    | LongPressGestureEvent
 ): PressableEvent => {
   const timestamp = Date.now();
 
