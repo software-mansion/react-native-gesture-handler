@@ -711,16 +711,16 @@ export default DrawerLayout;
 
 const styles = StyleSheet.create({
   drawerContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1001,
     flexDirection: 'row',
   },
   containerInFront: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1002,
   },
   containerOnBack: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   main: {
     flex: 1,
@@ -728,7 +728,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1000,
   },
 });
