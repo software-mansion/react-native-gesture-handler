@@ -31,8 +31,6 @@ interface InternalProps {
   onStateChange?: (oldState: TouchableState, newState: TouchableState) => void;
 }
 
-// TODO: maybe can be better
-// TODO: all clearTimeout have ! added, maybe they shouldn't ?
 type Timeout = ReturnType<typeof setTimeout> | undefined;
 
 /**
