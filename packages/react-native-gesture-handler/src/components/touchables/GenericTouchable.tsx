@@ -98,7 +98,7 @@ export default class GenericTouchable extends Component<
 
   // handleGoToUndetermined transits to UNDETERMINED state with proper delay
   handleGoToUndetermined() {
-    clearTimeout(this.pressOutTimeout!); // TODO: maybe it can be undefined
+    clearTimeout(this.pressOutTimeout);
     if (this.props.delayPressOut) {
       this.pressOutTimeout = setTimeout(() => {
         if (this.STATE === TOUCHABLE_STATE.UNDETERMINED) {
@@ -122,9 +122,9 @@ export default class GenericTouchable extends Component<
   reset() {
     this.longPressDetected = false;
     this.pointerInside = true;
-    clearTimeout(this.pressInTimeout!);
-    clearTimeout(this.pressOutTimeout!);
-    clearTimeout(this.longPressTimeout!);
+    clearTimeout(this.pressInTimeout);
+    clearTimeout(this.pressOutTimeout);
+    clearTimeout(this.longPressTimeout);
     this.pressOutTimeout = null;
     this.longPressTimeout = null;
     this.pressInTimeout = null;
@@ -218,7 +218,7 @@ export default class GenericTouchable extends Component<
 
   onMoveOut() {
     // Long press should no longer be detected
-    clearTimeout(this.longPressTimeout!);
+    clearTimeout(this.longPressTimeout);
     this.longPressTimeout = null;
     if (this.STATE === TOUCHABLE_STATE.BEGAN) {
       this.handleMoveOutside();

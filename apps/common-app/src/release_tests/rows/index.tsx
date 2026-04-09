@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   rowAction: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
   },

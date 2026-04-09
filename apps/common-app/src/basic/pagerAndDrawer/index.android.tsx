@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   page: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
   },
