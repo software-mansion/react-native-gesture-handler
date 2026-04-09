@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   page: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     paddingTop: 40,
     backgroundColor: 'gray',

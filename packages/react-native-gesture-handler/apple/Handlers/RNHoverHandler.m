@@ -166,11 +166,13 @@ API_AVAILABLE(ios(13.4))
 {
   _pointerType = pointerType;
 
+#if CHECK_TARGET(16_1)
   if (@available(iOS 16.1, *)) {
     if (((UIHoverGestureRecognizer *)self.recognizer).zOffset > 0.0) {
       _pointerType = RNGestureHandlerStylus;
     }
   }
+#endif
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer

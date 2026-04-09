@@ -605,12 +605,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   leftActions: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     overflow: 'hidden',
   },
   rightActions: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
     overflow: 'hidden',
   },
