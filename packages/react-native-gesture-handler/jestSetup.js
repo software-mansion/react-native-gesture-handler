@@ -12,22 +12,6 @@ jest.mock('./src/v3/detectors/HostGestureDetector', () =>
   require('./src/mocks/hostDetector')
 );
 
-jest.mock('./lib/commonjs/RNGestureHandlerModule', () =>
-  require('./lib/commonjs/mocks/module')
-);
-jest.mock('./lib/commonjs/components/GestureButtons', () =>
-  require('./lib/commonjs/mocks/GestureButtons')
-);
-jest.mock('./lib/commonjs/components/Pressable', () =>
-  require('./lib/commonjs/mocks/Pressable')
-);
-jest.mock('./lib/commonjs/components/GestureComponents', () =>
-  require('./lib/commonjs/mocks/gestureComponents')
-);
-jest.mock('./lib/commonjs/v3/detectors/HostGestureDetector', () =>
-  require('./lib/commonjs/mocks/hostDetector')
-);
-
 jest.mock('./lib/module/RNGestureHandlerModule', () =>
   require('./lib/module/mocks/module')
 );
