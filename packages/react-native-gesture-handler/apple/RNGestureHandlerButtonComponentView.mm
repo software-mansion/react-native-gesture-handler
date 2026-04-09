@@ -72,9 +72,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   [_buttonView mountChildComponentView:childComponentView index:index];
 }
 
-- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView
+                            index:(NSInteger)__unused index
 {
-  [_buttonView unmountChildComponentView:childComponentView index:index];
+  if (childComponentView.superview == _buttonView) {
+    [childComponentView removeFromSuperview];
+  }
 }
 
 - (LayoutMetrics)buildWrapperMetrics:(const LayoutMetrics &)metrics
