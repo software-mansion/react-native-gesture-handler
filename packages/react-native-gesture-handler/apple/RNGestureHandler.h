@@ -106,6 +106,7 @@
                   inState:(RNGestureHandlerState)state
     fromManualStateChange:(BOOL)fromManualStateChange;
 - (BOOL)containsPointInView;
+- (BOOL)wantsToHandleEventsAtPoint:(CGPoint)point;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 
