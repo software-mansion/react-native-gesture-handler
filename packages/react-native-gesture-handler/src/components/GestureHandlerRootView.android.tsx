@@ -2,8 +2,13 @@ import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { StyleSheet } from 'react-native';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type { RootViewNativeProps } from '../specs/RNGestureHandlerRootViewNativeComponent';
 import GestureHandlerRootViewNativeComponent from '../specs/RNGestureHandlerRootViewNativeComponent';
+
+type RootViewConfigModule = {
+  setShouldPreventRecognizers?: (shouldPreventRecognizers: boolean) => void;
+};
 
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<RootViewNativeProps> {
@@ -12,10 +17,14 @@ export interface GestureHandlerRootViewProps
 
 export default function GestureHandlerRootView({
   style,
-  preventRecognizers,
+  preventRecognizers = true,
   ...rest
 }: GestureHandlerRootViewProps) {
-  void preventRecognizers;
+  React.useEffect(() => {
+    (
+      RNGestureHandlerModule as RootViewConfigModule
+    ).setShouldPreventRecognizers?.(preventRecognizers);
+  }, [preventRecognizers]);
 
   return (
     <GestureHandlerRootViewContext value>

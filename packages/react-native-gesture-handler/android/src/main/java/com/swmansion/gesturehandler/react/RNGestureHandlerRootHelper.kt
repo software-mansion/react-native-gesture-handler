@@ -20,6 +20,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
   val rootView: ViewGroup
   private var shouldIntercept = false
   private var passingTouch = false
+  private var shouldPreventRecognizers = true
 
   init {
     val registry =
@@ -94,6 +95,11 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) = handleEvent(event)
 
     override fun onCancel() {
+      if (!shouldPreventRecognizers) {
+        shouldIntercept = false
+        return
+      }
+
       shouldIntercept = true
       val time = SystemClock.uptimeMillis()
       val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
@@ -103,6 +109,13 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         rootView.onChildStartedNativeGesture(rootView, event)
       }
       event.recycle()
+    }
+  }
+
+  fun setShouldPreventRecognizers(shouldPreventRecognizers: Boolean) {
+    this.shouldPreventRecognizers = shouldPreventRecognizers
+    if (!shouldPreventRecognizers) {
+      shouldIntercept = false
     }
   }
 
