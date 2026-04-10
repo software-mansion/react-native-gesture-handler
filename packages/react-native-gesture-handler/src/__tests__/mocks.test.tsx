@@ -16,6 +16,10 @@ import {
   LegacySwitch,
   LegacyTextInput,
   LegacyRefreshControl,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from '../mocks/gestureComponents';
 
 import LegacyPressable from '../mocks/Pressable';
@@ -69,6 +73,46 @@ describe('Jest mocks – legacy components render without crashing', () => {
   test('LegacyRefreshControl', () => {
     expect(() =>
       render(<LegacyRefreshControl refreshing={false} />)
+    ).not.toThrow();
+  });
+
+  test('TouchableHighlight', () => {
+    expect(() =>
+      render(
+        <TouchableHighlight>
+          <Text>Test</Text>
+        </TouchableHighlight>
+      )
+    ).not.toThrow();
+  });
+
+  test('TouchableNativeFeedback', () => {
+    expect(() =>
+      render(
+        <TouchableNativeFeedback>
+          <Text>Test</Text>
+        </TouchableNativeFeedback>
+      )
+    ).not.toThrow();
+  });
+
+  test('TouchableOpacity', () => {
+    expect(() =>
+      render(
+        <TouchableOpacity>
+          <Text>Test</Text>
+        </TouchableOpacity>
+      )
+    ).not.toThrow();
+  });
+
+  test('TouchableWithoutFeedback', () => {
+    expect(() =>
+      render(
+        <TouchableWithoutFeedback>
+          <Text>Test</Text>
+        </TouchableWithoutFeedback>
+      )
     ).not.toThrow();
   });
 });
