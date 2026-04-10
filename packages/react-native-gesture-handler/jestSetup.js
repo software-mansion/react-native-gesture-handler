@@ -8,6 +8,9 @@ jest.mock('./src/components/Pressable/Pressable', () =>
 jest.mock('./src/components/GestureComponents', () =>
   require('./src/mocks/gestureComponents')
 );
+jest.mock('./src/components/touchables', () =>
+  require('./src/mocks/Touchables')
+);
 jest.mock('./src/v3/detectors/HostGestureDetector', () =>
   require('./src/mocks/hostDetector')
 );
@@ -18,6 +21,9 @@ jest.mock('./lib/module/RNGestureHandlerModule', () =>
 jest.mock('./lib/module/components/GestureButtons', () =>
   require('./lib/module/mocks/GestureButtons')
 );
+jest.mock('./lib/module/components/touchables', () =>
+  require('./lib/module/mocks/Touchables')
+);
 jest.mock('./lib/module/components/Pressable', () =>
   require('./lib/module/mocks/Pressable')
 );
@@ -26,8 +32,4 @@ jest.mock('./lib/module/components/GestureComponents', () =>
 );
 jest.mock('./lib/module/v3/detectors/HostGestureDetector', () =>
   require('./lib/module/mocks/hostDetector')
-);
-
-jest.mock('react-native-worklets', () =>
-  require('react-native-worklets/src/mock')
 );
