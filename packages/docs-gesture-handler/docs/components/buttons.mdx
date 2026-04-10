@@ -9,6 +9,10 @@ import GifGallery from '@site/components/GifGallery';
 
 import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
+:::danger
+Button components described in this section are deprecated and will be removed in the future. Please use [`Touchable`](/docs/components/touchable) instead.
+:::
+
 <GifGallery>
   <img src={useBaseUrl('gifs/samplebutton.gif')} width="280" />
 </GifGallery>
@@ -37,7 +41,7 @@ The most basic button component does not provide any feedback and lacks props su
 exclusive?: boolean;
 ```
 
-Defines if more than one button could be pressed simultaneously. By default set to `true`.
+Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
 <HeaderWithBadges platforms={['android']}>
 ### rippleColor
@@ -194,7 +198,7 @@ If you wish to get specific information about platforms design patterns, visit [
 
 This library allows the use of native components with native feedback in adequate situations.
 
-If you do not wish to implement a custom design approach, [`RectButton`](#rectbutton) and [`BorderlessButton`](#borderlessbutton) seem to be absolutely enough and there's no need to use anything else. In all the remaining cases, you can always rely on [`BaseButton`](#basebutton) which is a superclass for the other button classes and can be used as a generic `Touchable` replacement that can be customized to your needs.
+If you do not wish to implement a custom design approach, [`RectButton`](#rectbutton) and [`BorderlessButton`](#borderlessbutton) seem to be absolutely enough and there's no need to use anything else. In all the remaining cases, you can always rely on [`BaseButton`](#basebutton) which is a superclass for the other button classes and can be used as a generic React Native `Touchable` replacement that can be customized to your needs.
 
 Below we list some of the common usecases for button components to be used along with the type of button that should be used according to the platform specific design guidelines.
 

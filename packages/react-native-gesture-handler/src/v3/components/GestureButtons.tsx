@@ -14,6 +14,9 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
+/**
+ * @deprecated `RawButton` is deprecated, use `Clickable` instead
+ */
 export const RawButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
   RawButtonProps

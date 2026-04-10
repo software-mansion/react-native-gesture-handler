@@ -246,7 +246,17 @@ code2={
 
 ### Buttons
 
-The implementation of buttons has been updated, resolving most button-related issues. They have also been internally rewritten to utilize the new hook API. The original button components are still accessible but have been renamed with the prefix `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`.
+RNGH3 introduces the [`Touchable`](/docs/components/touchable) component — a flexible, unified replacement for all previous button types. While `Touchable` shares most of the logic with our standard buttons, it offers a more customizable API.
+
+To help you migrate, here is the current state of our button components:
+
+- [`Touchable`](/docs/components/touchable) - The recommended component. Can be used to replicate both `RectButton` and `BorderlessButton` effects by adjusting the `activeOpacity` and `activeUnderlayOpacity` props.
+  - To replace `RectButton`, add `activeUnderlayOpacity={0.105}`.
+  - To replace `BorderlessButton`, add `activeOpacity={0.3}`.
+
+- Standard Buttons (Deprecated) - `BaseButton`, `RectButton` and `BorderlessButton` are still available but are now deprecated. They have been internally rewritten using the new Hooks API to resolve long-standing issues.
+
+- Legacy Buttons (Deprecated): The original, pre-rewrite versions are still accessible, but have been renamed with a `Legacy` prefix (e.g., `LegacyRectButton`).
 
 Although the legacy JS implementation of the buttons is still available, they also use the new host component internally. Because of that, `PureNativeButton` is no longer available in Gesture Handler 3.
 
@@ -262,6 +272,14 @@ Although the legacy JS implementation of the buttons is still available, they al
 | `PureNativeButton`    | *Not available in Gesture Handler 3*    |
 
 </details>
+
+### Touchables
+
+[`Touchable`](/docs/components/touchable) can also be used as a substitute for old, deprecated `Touchables`.
+  - To replace `TouchableOpacity`, add `activeOpacity={0.2}`.
+  - To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
+  - To replace `TouchableNativeFeedback`, add `androidRipple` property with `foreground: true`.
+  - `TouchableWithoutFeedback` can be replaced with a plain `Touchable`.
 
 ### Other components
 
