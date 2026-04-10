@@ -28,6 +28,8 @@ RNGH provides APIs, specifically [`fireGestureHandler`](#firegesturehandler) and
 ### fireGestureHandler
 
 ```ts
+import { fireGestureHandler } from 'react-native-gesture-handler/jest-utils';
+
 fireGestureHandler: (componentOrGesture, eventList) => void;
 ```
 
@@ -80,6 +82,8 @@ const allImplicits = []; // 3 events, one BEGIN, one ACTIVE, one END with defaul
 ### getByGestureTestId
 
 ```tsx
+import { getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
+
 getByGestureTestId: (testID: string) => Gesture;
 ```
 

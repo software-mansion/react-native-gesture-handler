@@ -3,7 +3,7 @@ import { render, renderHook } from '@testing-library/react-native';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
 import GestureHandlerRootView from '../components/GestureHandlerRootView';
-import { RectButton, Clickable } from '../v3/components';
+import { RectButton, Touchable } from '../v3/components';
 import { act } from 'react';
 import type { SingleGesture } from '../v3/types';
 
@@ -59,18 +59,18 @@ describe('[API v3] Components', () => {
     expect(pressFn).toHaveBeenCalledTimes(1);
   });
 
-  describe('Clickable', () => {
+  describe('Touchable', () => {
     test('calls onPress on successful press', () => {
       const pressFn = jest.fn();
 
       const Example = () => (
         <GestureHandlerRootView>
-          <Clickable testID="clickable" onPress={pressFn} />
+          <Touchable testID="touchable" onPress={pressFn} />
         </GestureHandlerRootView>
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('clickable');
+      const gesture = getByGestureTestId('touchable');
 
       act(() => {
         fireGestureHandler(gesture, [
@@ -88,12 +88,12 @@ describe('[API v3] Components', () => {
 
       const Example = () => (
         <GestureHandlerRootView>
-          <Clickable testID="clickable" onPress={pressFn} />
+          <Touchable testID="touchable" onPress={pressFn} />
         </GestureHandlerRootView>
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('clickable');
+      const gesture = getByGestureTestId('touchable');
 
       act(() => {
         fireGestureHandler(gesture, [
@@ -111,12 +111,12 @@ describe('[API v3] Components', () => {
 
       const Example = () => (
         <GestureHandlerRootView>
-          <Clickable testID="clickable" onActiveStateChange={activeStateFn} />
+          <Touchable testID="touchable" onActiveStateChange={activeStateFn} />
         </GestureHandlerRootView>
       );
 
       render(<Example />);
-      const gesture = getByGestureTestId('clickable');
+      const gesture = getByGestureTestId('touchable');
 
       act(() => {
         fireGestureHandler(gesture, [
@@ -140,8 +140,8 @@ describe('[API v3] Components', () => {
 
       const Example = () => (
         <GestureHandlerRootView>
-          <Clickable
-            testID="clickable"
+          <Touchable
+            testID="touchable"
             onPress={pressFn}
             onLongPress={longPressFn}
             delayLongPress={DELAY}
@@ -151,7 +151,7 @@ describe('[API v3] Components', () => {
 
       render(<Example />);
 
-      const gesture = getByGestureTestId('clickable') as SingleGesture<
+      const gesture = getByGestureTestId('touchable') as SingleGesture<
         any,
         any,
         any

@@ -14,6 +14,9 @@ import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 
+/**
+ * @deprecated `RawButton` is deprecated, use `Clickable` instead
+ */
 export const RawButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
   RawButtonProps
@@ -23,7 +26,7 @@ export const RawButton = createNativeWrapper<
 });
 
 /**
- * @deprecated `BaseButton` is deprecated, use `Clickable` instead
+ * @deprecated `BaseButton` is deprecated, use `Touchable` instead
  */
 export const BaseButton = (props: BaseButtonProps) => {
   const longPressDetected = useRef(false);
@@ -108,7 +111,7 @@ const btnStyles = StyleSheet.create({
 });
 
 /**
- * @deprecated `RectButton` is deprecated, use `Clickable` with `underlayActiveOpacity={0.7}` instead
+ * @deprecated `RectButton` is deprecated, use `Touchable` with `activeUnderlayOpacity={0.7}` instead
  */
 export const RectButton = (props: RectButtonProps) => {
   const {
@@ -156,7 +159,7 @@ export const RectButton = (props: RectButtonProps) => {
 };
 
 /**
- * @deprecated `BorderlessButton` is deprecated, use `Clickable` with `activeOpacity={0.3}` instead
+ * @deprecated `BorderlessButton` is deprecated, use `Touchable` with `activeOpacity={0.3}` instead
  */
 export const BorderlessButton = (props: BorderlessButtonProps) => {
   const activeOpacity = props.activeOpacity ?? 0.3;
