@@ -98,12 +98,10 @@ export default class PinchGestureHandler extends GestureHandler {
   protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
-    if (this.state !== State.ACTIVE) {
-      return;
-    }
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
     if (this.state === State.ACTIVE) {
+      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+
       this.end();
     } else {
       this.fail();
