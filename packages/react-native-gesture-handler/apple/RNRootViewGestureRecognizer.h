@@ -11,7 +11,6 @@
 @interface RNRootViewGestureRecognizer : UIGestureRecognizer
 
 @property (nullable, nonatomic, weak) id<RNRootViewGestureRecognizerDelegate> delegate;
-@property (nonatomic) BOOL preventRecognizers;
 
 - (void)blockOtherRecognizers;
 

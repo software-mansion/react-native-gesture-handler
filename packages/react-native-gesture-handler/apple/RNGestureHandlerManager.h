@@ -44,6 +44,4 @@
 - (nullable RNGHUIView *)viewForReactTag:(nonnull NSNumber *)reactTag;
 
 - (void)reattachHandlersIfNeeded;
-
-- (void)setShouldPreventRecognizers:(BOOL)shouldPreventRecognizers;
 @end

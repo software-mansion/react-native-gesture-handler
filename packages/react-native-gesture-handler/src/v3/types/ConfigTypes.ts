@@ -79,6 +79,7 @@ export type CommonGestureConfig = {
     activeCursor?: ActiveCursor | undefined;
     mouseButton?: MouseButton | undefined;
     cancelsTouchesInView?: boolean | undefined;
+    preventRecognizers?: boolean | undefined;
     manualActivation?: boolean | undefined;
   },
   ActiveCursor | MouseButton

@@ -92,7 +92,4 @@ export default {
   setReanimatedAvailable(_isAvailable: boolean) {
     // No-op on web
   },
-  setShouldPreventRecognizers(_shouldPreventRecognizers: boolean) {
-    // No-op on web
-  },
 };

@@ -49,7 +49,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   NSHashTable<RNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
   NSMutableDictionary<NSNumber *, NSNumber *> *_attachRetryCounter;
   NSMutableSet *_droppedHandlers;
-  BOOL _shouldPreventRecognizers;
   RCTModuleRegistry *_moduleRegistry;
   RCTViewRegistry *_viewRegistry;
   id<RCTEventDispatcherProtocol> _eventDispatcher;
@@ -78,7 +77,6 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
   _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
   _attachRetryCounter = [[NSMutableDictionary alloc] init];
   _droppedHandlers = [NSMutableSet set];
-  _shouldPreventRecognizers = YES;
 }
 
 - (void)createGestureHandler:(NSString *)handlerName tag:(NSNumber *)handlerTag config:(NSDictionary *)config
@@ -306,21 +304,12 @@ constexpr int NEW_ARCH_NUMBER_OF_ATTACH_RETRIES = 25;
 
   RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for view %@", touchHandlerView);
   RNRootViewGestureRecognizer *recognizer = [RNRootViewGestureRecognizer new];
-  recognizer.preventRecognizers = _shouldPreventRecognizers;
   recognizer.delegate = self;
 #if !TARGET_OS_OSX
   touchHandlerView.userInteractionEnabled = YES;
 #endif
   [touchHandlerView addGestureRecognizer:recognizer];
   [_rootViewGestureRecognizers addObject:recognizer];
-}
-
-- (void)setShouldPreventRecognizers:(BOOL)shouldPreventRecognizers
-{
-  _shouldPreventRecognizers = shouldPreventRecognizers;
-  for (RNRootViewGestureRecognizer *recognizer in _rootViewGestureRecognizers) {
-    recognizer.preventRecognizers = shouldPreventRecognizers;
-  }
 }
 
 - (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer

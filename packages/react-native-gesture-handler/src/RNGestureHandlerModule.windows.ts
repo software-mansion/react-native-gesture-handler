@@ -56,7 +56,4 @@ export default {
   flushOperations() {
     // NO-OP
   },
-  setShouldPreventRecognizers(_shouldPreventRecognizers: boolean) {
-    // NO-OP
-  },
 };

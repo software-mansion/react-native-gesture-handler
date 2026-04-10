@@ -194,12 +194,6 @@ RCT_EXPORT_MODULE()
   _isReanimatedAvailable = isAvailable;
 }
 
-- (void)setShouldPreventRecognizers:(BOOL)shouldPreventRecognizers
-{
-  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  [manager setShouldPreventRecognizers:shouldPreventRecognizers];
-}
-
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
 {
   if (RCTIsMainQueue()) {

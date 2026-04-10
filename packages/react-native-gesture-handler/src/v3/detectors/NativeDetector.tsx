@@ -20,6 +20,7 @@ export function NativeDetector<
   touchAction,
   userSelect,
   enableContextMenu,
+  preventRecognizers = true,
 }: NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
   const NativeDetectorComponent = gesture.config.dispatchesAnimatedEvents
     ? AnimatedNativeDetector
@@ -28,6 +29,14 @@ export function NativeDetector<
       : HostGestureDetector;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
+
+  if (
+    (Platform.OS === 'ios' || Platform.OS === 'android') &&
+    !isComposedGesture(gesture)
+  ) {
+    gesture.config.preventRecognizers = preventRecognizers;
+  }
+
   configureRelations(gesture);
 
   const handlerTags = useMemo(() => {

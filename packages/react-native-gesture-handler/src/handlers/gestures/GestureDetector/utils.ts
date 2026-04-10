@@ -26,6 +26,7 @@ import {
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
+  'preventRecognizers',
   ...tapGestureHandlerProps,
   ...panGestureHandlerProps,
   ...panGestureHandlerCustomNativeProps,

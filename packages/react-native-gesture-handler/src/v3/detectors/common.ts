@@ -16,6 +16,7 @@ interface CommonGestureDetectorProps {
   userSelect?: UserSelect | undefined;
   touchAction?: TouchAction | undefined;
   enableContextMenu?: boolean | undefined;
+  preventRecognizers?: boolean | undefined;
 }
 
 export interface NativeDetectorProps<

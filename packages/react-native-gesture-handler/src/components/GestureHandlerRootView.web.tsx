@@ -4,17 +4,12 @@ import { View, ViewProps, StyleSheet } from 'react-native';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 
 export interface GestureHandlerRootViewProps
-  extends PropsWithChildren<ViewProps> {
-  preventRecognizers?: boolean;
-}
+  extends PropsWithChildren<ViewProps> {}
 
 export default function GestureHandlerRootView({
   style,
-  preventRecognizers,
   ...rest
 }: GestureHandlerRootViewProps) {
-  void preventRecognizers;
-
   return (
     <GestureHandlerRootViewContext.Provider value>
       <View style={style ?? styles.container} {...rest} />

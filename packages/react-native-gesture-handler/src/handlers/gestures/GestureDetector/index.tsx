@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 import React, { useEffect, useMemo, useRef } from 'react';
+import { Platform } from 'react-native';
 import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
@@ -39,6 +40,20 @@ function propagateDetectorConfig(
   }
 }
 
+function propagatePreventRecognizersConfig(
+  preventRecognizers: boolean,
+  gesture: ComposedGesture | GestureType
+) {
+  if (Platform.OS !== 'ios') {
+    return;
+  }
+
+  for (const g of gesture.toGestureArray()) {
+    const config = g.config as { [key: string]: unknown };
+    config.preventRecognizers = preventRecognizers;
+  }
+}
+
 export interface GestureDetectorProps {
   children?: React.ReactNode;
   /**
@@ -66,6 +81,11 @@ export interface GestureDetectorProps {
    * Supports all CSS touch-action values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
    */
   touchAction?: TouchAction;
+  /**
+   * Controls whether activating a Gesture Handler recognizer should cancel RN JS responders.
+   * Default is `true`.
+   */
+  preventRecognizers?: boolean;
 }
 
 /**
@@ -91,6 +111,10 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   // Gesture config should be wrapped with useMemo to prevent unnecessary re-renders
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
+  propagatePreventRecognizersConfig(
+    props.preventRecognizers ?? true,
+    gestureConfig
+  );
 
   const gesturesToAttach = useMemo(
     () => gestureConfig.toGestureArray(),

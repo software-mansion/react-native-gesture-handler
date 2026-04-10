@@ -1,10 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   COLORS,
   Feedback,
@@ -44,22 +40,22 @@ export default function RNResponderCancellationExample() {
   );
 
   return (
-    <GestureHandlerRootView
-      style={styles.container}
-      preventRecognizers={preventRecognizers}>
+    <View style={styles.container}>
       <Text style={commonStyles.header}>RN responder cancellation</Text>
       <Text style={commonStyles.instructions}>
         Toggle preventRecognizers and drag inside the box to compare behavior.
       </Text>
-      <View style={styles.row}>
-        <Text style={styles.rowLabel}>preventRecognizers</Text>
+      <View style={styles.settingsRow}>
+        <Text style={styles.settingsLabel}>preventRecognizers</Text>
         <Switch
           value={preventRecognizers}
           onValueChange={setPreventRecognizers}
         />
       </View>
 
-      <GestureDetector gesture={panGesture}>
+      <GestureDetector
+        gesture={panGesture}
+        preventRecognizers={preventRecognizers}>
         <View
           style={styles.touchArea}
           onStartShouldSetResponder={() => {
@@ -98,7 +94,7 @@ export default function RNResponderCancellationExample() {
           </Text>
         ))}
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
@@ -122,22 +118,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  row: {
-    width: '100%',
-    maxWidth: 340,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rowLabel: {
-    color: COLORS.NAVY,
-    fontSize: 14,
-    fontWeight: '600',
-  },
   touchAreaLabel: {
     color: COLORS.NAVY,
     fontWeight: '700',
     fontSize: 18,
+  },
+  settingsRow: {
+    width: '100%',
+    maxWidth: 340,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  settingsLabel: {
+    color: COLORS.NAVY,
+    fontSize: 14,
+    fontWeight: '600',
   },
   logContainer: {
     width: '100%',
