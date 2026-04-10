@@ -2,19 +2,19 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import {
   GestureHandlerRootView,
-  Clickable,
-  ClickableProps,
+  Touchable,
+  TouchableProps,
 } from 'react-native-gesture-handler';
 import { COLORS } from '../../../common';
 
-type ButtonWrapperProps = ClickableProps & {
+type ButtonWrapperProps = TouchableProps & {
   name: string;
   color: string;
 };
 
-function ClickableWrapper({ name, color, ...rest }: ButtonWrapperProps) {
+function TouchableWrapper({ name, color, ...rest }: ButtonWrapperProps) {
   return (
-    <Clickable
+    <Touchable
       style={[styles.button, { backgroundColor: color }]}
       onPressIn={() => console.log(`[${name}] onPressIn`)}
       onPress={() => console.log(`[${name}] onPress`)}
@@ -22,11 +22,11 @@ function ClickableWrapper({ name, color, ...rest }: ButtonWrapperProps) {
       onPressOut={() => console.log(`[${name}] onPressOut`)}
       {...rest}>
       <Text style={styles.buttonText}>{name}</Text>
-    </Clickable>
+    </Touchable>
   );
 }
 
-export default function ClickableExample() {
+export default function TouchableExample() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -35,15 +35,15 @@ export default function ClickableExample() {
           <Text>New component that replaces all buttons and pressables.</Text>
 
           <View style={styles.row}>
-            <ClickableWrapper name="Base" color={COLORS.DARK_PURPLE} />
+            <TouchableWrapper name="Base" color={COLORS.DARK_PURPLE} />
 
-            <ClickableWrapper
+            <TouchableWrapper
               name="Rect"
               color={COLORS.WEB_BLUE}
               activeUnderlayOpacity={0.105}
             />
 
-            <ClickableWrapper
+            <TouchableWrapper
               name="Borderless"
               activeOpacity={0.3}
               color={COLORS.RED}
@@ -56,13 +56,13 @@ export default function ClickableExample() {
           <Text>Animated underlay.</Text>
 
           <View style={styles.row}>
-            <ClickableWrapper
+            <TouchableWrapper
               name="Click me!"
               color={COLORS.YELLOW}
               activeUnderlayOpacity={0.3}
             />
 
-            <ClickableWrapper
+            <TouchableWrapper
               name="Click me!"
               color={COLORS.NAVY}
               defaultUnderlayOpacity={0.7}
@@ -74,14 +74,14 @@ export default function ClickableExample() {
           <Text>Animated component.</Text>
 
           <View style={styles.row}>
-            <ClickableWrapper
+            <TouchableWrapper
               name="Click me!"
               color={COLORS.LIGHT_BLUE}
               defaultOpacity={0.3}
               activeOpacity={0.7}
             />
 
-            <ClickableWrapper
+            <TouchableWrapper
               name="Click me!"
               color={COLORS.DARK_SALMON}
               defaultOpacity={0.7}
@@ -92,16 +92,16 @@ export default function ClickableExample() {
 
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Android ripple</Text>
-          <Text>Configurable ripple effect on Clickable component.</Text>
+          <Text>Configurable ripple effect on Touchable component.</Text>
 
           <View style={styles.row}>
-            <ClickableWrapper
+            <TouchableWrapper
               name="Default"
               color={COLORS.ANDROID}
               androidRipple={{}}
             />
 
-            <ClickableWrapper
+            <TouchableWrapper
               name="Borderless"
               color={COLORS.ANDROID}
               androidRipple={{
