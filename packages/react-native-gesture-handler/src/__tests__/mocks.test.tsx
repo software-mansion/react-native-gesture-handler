@@ -16,11 +16,14 @@ import {
   LegacySwitch,
   LegacyTextInput,
   LegacyRefreshControl,
+} from '../mocks/gestureComponents';
+
+import {
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
-} from '../mocks/gestureComponents';
+} from '../mocks/Touchables';
 
 import LegacyPressable from '../mocks/Pressable';
 
