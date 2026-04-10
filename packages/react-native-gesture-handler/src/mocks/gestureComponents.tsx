@@ -11,16 +11,15 @@ import {
   RefreshControl,
 } from 'react-native';
 
-export const LegacyScrollView = ScrollView;
-export const LegacyFlatList = FlatList;
-export const LegacySwitch = Switch;
-export const LegacyTextInput = TextInput;
-export const LegacyDrawerLayoutAndroid = DrawerLayoutAndroid;
-export const LegacyRefreshControl = RefreshControl;
-
 export {
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ScrollView as LegacyScrollView,
+  FlatList as LegacyFlatList,
+  Switch as LegacySwitch,
+  TextInput as LegacyTextInput,
+  DrawerLayoutAndroid as LegacyDrawerLayoutAndroid,
+  RefreshControl as LegacyRefreshControl,
 };
