@@ -112,9 +112,9 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     }
   }
 
-  fun setShouldPreventRecognizers(shouldPreventRecognizers: Boolean) {
-    this.shouldPreventRecognizers = shouldPreventRecognizers
-    if (!shouldPreventRecognizers) {
+  fun setPreventRecognizers(preventRecognizers: Boolean) {
+    shouldPreventRecognizers = preventRecognizers
+    if (!preventRecognizers) {
       shouldIntercept = false
     }
   }

@@ -17,6 +17,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
   private var moduleId: Int = -1
   private var rootViewEnabled = false
   private var unstableForceActive = false
+  private var preventRecognizers = true
   private var rootHelper: RNGestureHandlerRootHelper? = null // TODO: resettable lateinit
 
   override fun onAttachedToWindow() {
@@ -30,6 +31,7 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     }
     if (rootViewEnabled && rootHelper == null) {
       rootHelper = RNGestureHandlerRootHelper(context as ReactContext, this, moduleId)
+      rootHelper?.setPreventRecognizers(preventRecognizers)
     }
   }
 
@@ -73,6 +75,11 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
   fun setUnstableForceActive(active: Boolean) {
     this.unstableForceActive = active
+  }
+
+  fun setPreventRecognizers(preventRecognizers: Boolean) {
+    this.preventRecognizers = preventRecognizers
+    rootHelper?.setPreventRecognizers(preventRecognizers)
   }
 
   companion object {

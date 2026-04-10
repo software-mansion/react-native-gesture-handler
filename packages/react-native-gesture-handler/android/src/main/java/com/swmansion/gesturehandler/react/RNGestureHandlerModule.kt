@@ -30,7 +30,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   private var mHybridData: HybridData = initHybrid()
   private var isReanimatedAvailable = false
   private var uiRuntimeDecorated = false
-  private var shouldPreventRecognizers = true
   private val registry: RNGestureHandlerRegistry
     get() = registries[moduleId]!!
 
@@ -131,24 +130,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun setShouldPreventRecognizers(shouldPreventRecognizers: Boolean) {
-    if (UiThreadUtil.isOnUiThread()) {
-      setShouldPreventRecognizersSync(shouldPreventRecognizers)
-    } else {
-      UiThreadUtil.runOnUiThread {
-        setShouldPreventRecognizersSync(shouldPreventRecognizers)
-      }
-    }
-  }
-
-  private fun setShouldPreventRecognizersSync(shouldPreventRecognizers: Boolean) {
-    this.shouldPreventRecognizers = shouldPreventRecognizers
-    synchronized(roots) {
-      roots.forEach { root ->
-        root.setShouldPreventRecognizers(shouldPreventRecognizers)
-      }
-    }
-  }
+  override fun setShouldPreventRecognizers(shouldPreventRecognizers: Boolean) = Unit
 
   @DoNotStrip
   @Suppress("unused")
@@ -214,7 +196,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     synchronized(roots) {
       assert(root !in roots) { "Root helper$root already registered" }
       roots.add(root)
-      root.setShouldPreventRecognizers(shouldPreventRecognizers)
     }
   }
 
