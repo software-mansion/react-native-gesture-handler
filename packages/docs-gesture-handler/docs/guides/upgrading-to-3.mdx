@@ -273,6 +273,14 @@ Although the legacy JS implementation of the buttons is still available, they al
 
 </details>
 
+### Touchables
+
+[`Touchable`](/docs/components/touchable) can also be used as a substitute for old, deprecated `Touchables`.
+  - To replace `TouchableOpacity`, add `activeOpacity={0.2}`.
+  - To replace `TouchableHighlight`, add `activeUnderlayOpacity={1}`.
+  - To replace `TouchableNativeFeedback`, add `androidRipple` property with `foreground: true`.
+  - `TouchableWithoutFeedback` can be replaced with a plain `Touchable`.
+
 ### Other components
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the old components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
