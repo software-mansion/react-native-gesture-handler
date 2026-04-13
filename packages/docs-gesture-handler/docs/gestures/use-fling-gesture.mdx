@@ -34,8 +34,8 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
 The gesture that tracks quick, sufficiently long movement in specified [direction](#direction).
-When gesture gets activated it will end when finger is released.
-The gesture will fail if the finger is lifted before gesture could activate.
+When the gesture gets activated it will end when the finger is released.
+The gesture will fail if the finger is lifted before the gesture could activate.
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -123,7 +123,7 @@ export const Directions = {
 } as const;
 `}/>
 
-Expressed allowed direction of movement. Expected values are exported as constants in the `Directions` object. It's possible to combine directions using `|` operator.
+Expresses the allowed direction of movement. Expected values are exported as constants in the `Directions` object. It's possible to combine directions using `|` operator.
 
 ```js
 import { Directions } from 'react-native-gesture-handler';
@@ -141,7 +141,7 @@ const fling = useFlingGesture({ direction: Directions.RIGHT | Directions.LEFT })
 numberOfPointers: number | SharedValue<number>;
 ```
 
-Determine exact number of points required to handle the fling gesture.
+Determines the exact number of pointers required to handle the fling gesture.
 
 <MouseButtonProp />
 

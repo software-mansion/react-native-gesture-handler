@@ -16,7 +16,7 @@ See [set of properties inherited from base handler class](common-gh#properties).
 
 ### `direction`
 
-Expressed allowed direction of movement. It's possible to pass one or many directions in one parameter:
+Expresses the allowed direction of movement. It's possible to pass one or many directions in one parameter:
 
 ```js
 direction={Directions.RIGHT | Directions.LEFT}
@@ -30,7 +30,7 @@ direction={Directions.DOWN}
 
 ### `numberOfPointers`
 
-Determine exact number of points required to handle the fling gesture.
+Determines the exact number of pointers required to handle the fling gesture.
 
 ## Event data
 

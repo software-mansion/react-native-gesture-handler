@@ -11,7 +11,7 @@ import OldAPIInfo from './\_shared/v2-info.md'
 
 import FunctionalComponents from './\_shared/gesture-detector-functional1.md';
 
-`GestureDetector` is the main component of the RNGH2. It is responsible for creating and updating native gesture handlers based on the config of provided gesture. The most significant difference between it and old gesture handlers is that the `GestureDetector` can recognize more than one gesture at the time thanks to gesture composition. Keep in mind that `GestureDetector` is not compatible with the [Animated API](https://reactnative.dev/docs/animated), nor with [Reanimated 1](https://docs.swmansion.com/react-native-reanimated/docs/1.x/).
+`GestureDetector` is the main component of the RNGH2. It is responsible for creating and updating native gesture handlers based on the config of the provided gesture. The most significant difference between it and old gesture handlers is that the `GestureDetector` can recognize more than one gesture at a time thanks to gesture composition. Keep in mind that `GestureDetector` is not compatible with the [Animated API](https://reactnative.dev/docs/animated), nor with [Reanimated 1](https://docs.swmansion.com/react-native-reanimated/docs/1.x/).
 
 ## Reference
 
@@ -37,18 +37,18 @@ function App() {
 A gesture object containing the configuration and callbacks. Can be any of the base gestures (`Tap`, `Pan`, `LongPress`, `Fling`, `Pinch`, `Rotation`, `ForceTouch`) or any [`ComposedGesture`](./composed-gestures.md) (`Race`, `Simultaneous`, `Exclusive`).
 
 :::info
-GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by the Reanimated will be utilized bringing ability to handle gestures synchronously.
+GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by the Reanimated will be utilized bringing the ability to handle gestures synchronously.
 
 Starting with Reanimated 2.3.0 Gesture Handler will provide a [StateManager](/docs/2.x/gestures/state-manager) in the [touch events](/docs/2.x/gestures/touch-events) that allows for managing the state of the gesture.
 :::
 
 ### `userSelect` (Web only)
 
-This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
+This parameter allows specifying which `userSelect` property should be applied to the underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
 
 ### `touchAction` (Web only)
 
-This parameter allows to specify which `touchAction` property should be applied to underlying view. Supports all CSS `touch-action` values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
+This parameter allows specifying which `touchAction` property should be applied to the underlying view. Supports all CSS `touch-action` values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
 
 ### `enableContextMenu(value: boolean)` (Web only)
 
@@ -82,4 +82,4 @@ Specifies whether context menu should be enabled after clicking on underlying vi
   }
   ```
 
-  This example will throw an error, becuse we try to use the same instance of `Pan` in two different Gesture Detectors.
+  This example will throw an error, because we try to use the same instance of `Pan` in two different Gesture Detectors.

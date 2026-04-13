@@ -70,9 +70,14 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent() {
+    const focal = this.delegate.absoluteToLocal(
+      this.scaleGestureDetector.focusX,
+      this.scaleGestureDetector.focusY
+    );
+
     return {
-      focalX: this.scaleGestureDetector.focusX,
-      focalY: this.scaleGestureDetector.focusY,
+      focalX: focal.x,
+      focalY: focal.y,
       velocity: this.velocity,
       scale: this.scale,
     };
@@ -93,12 +98,11 @@ export default class PinchGestureHandler extends GestureHandler {
   protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
-    if (this.state !== State.ACTIVE) {
-      return;
-    }
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
     if (this.state === State.ACTIVE) {
+      // We don't have to call it in the else branch as it would simply return `true`.
+      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+
       this.end();
     } else {
       this.fail();

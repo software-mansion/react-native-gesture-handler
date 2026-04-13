@@ -1,4 +1,3 @@
-import { State } from '../State';
 import { tagMessage } from '../utils';
 import IGestureHandler from '../web/handlers/IGestureHandler';
 import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
@@ -16,24 +15,10 @@ function ensureHandlerAttached(handler: IGestureHandler) {
 }
 
 export const GestureStateManager: GestureStateManagerType = {
-  begin(handlerTag: number): void {
-    'worklet';
-    const handler = NodeManager.getHandler(handlerTag);
-    ensureHandlerAttached(handler);
-
-    GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
-    handler.begin();
-  },
-
   activate(handlerTag: number): void {
     'worklet';
     const handler = NodeManager.getHandler(handlerTag);
     ensureHandlerAttached(handler);
-    // Force going from UNDETERMINED to ACTIVE through BEGAN to preserve
-    // the correct state transition flow.
-    if (handler.state === State.UNDETERMINED) {
-      handler.begin();
-    }
 
     GestureHandlerOrchestrator.instance.recordHandlerIfNotPresent(handler);
     handler.activate(true);

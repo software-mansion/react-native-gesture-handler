@@ -4,7 +4,6 @@ module.exports = {
       android: {
         componentDescriptors: [
           'RNGestureHandlerDetectorComponentDescriptor',
-          'RNGestureHandlerButtonWrapperComponentDescriptor',
         ],
         cmakeListsPath: './CMakeLists.txt',
       },

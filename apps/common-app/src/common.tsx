@@ -36,15 +36,21 @@ export const COLORS = {
   offWhite: '#f8f9ff',
   headerSeparator: '#eef0ff',
   PURPLE: '#b58df1',
+  DARK_PURPLE: '#7d63d9',
   NAVY: '#001A72',
   RED: '#A41623',
   YELLOW: '#F2AF29',
   GREEN: '#0F956F',
+  DARK_GREEN: '#217838',
   GRAY: '#ADB1C2',
   KINDA_RED: '#FFB2AD',
+  DARK_SALMON: '#d97973',
   KINDA_YELLOW: '#FFF096',
   KINDA_GREEN: '#C4E7DB',
   KINDA_BLUE: '#A0D5EF',
+  LIGHT_BLUE: '#5f97c8',
+  WEB_BLUE: '#1067c4',
+  ANDROID: '#34a853',
 };
 
 /* eslint-disable react-native/no-unused-styles */

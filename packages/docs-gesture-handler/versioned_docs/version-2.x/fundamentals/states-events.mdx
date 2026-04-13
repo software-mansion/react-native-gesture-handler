@@ -16,7 +16,7 @@ A gesture can be in one of the six possible states:
 
 - #### FAILED
 
-  A gesture recognizer received some touches but for some reason didn't recognize them. For example, if a finger travels more distance than a defined `maxDist` property allows, then the gesture won't become active but will fail instead. Afterwards, it's state will be reset to `UNDETERMINED`.
+  A gesture recognizer received some touches but for some reason didn't recognize them. For example, if a finger travels more distance than a defined `maxDist` property allows, then the gesture won't become active but will fail instead. Afterwards, its state will be reset to `UNDETERMINED`.
 
 - #### BEGAN
 
@@ -50,7 +50,7 @@ import GestureStateFlowExample from '@site/src/examples/GestureStateFlowExample'
 
 ## Events
 
-There are three types of events in RNGH2: `StateChangeEvent`, `GestureEvent` and `PointerEvent`. The `StateChangeEvent` is send every time a gesture moves to a different state, while `GestureEvent` is send every time a gesture is updated. The first two carry a gesture-specific data and a `state` property, indicating the current state of the gesture. `StateChangeEvent` also carries a `oldState` property indicating the previous state of the gesture. `PointerEvent` carries information about raw touch events, like touching the screen or moving the finger. These events are handled internally before they are passed along to the correct callbacks:
+There are three types of events in RNGH2: `StateChangeEvent`, `GestureEvent` and `PointerEvent`. The `StateChangeEvent` is sent every time a gesture moves to a different state, while `GestureEvent` is sent every time a gesture is updated. The first two carry a gesture-specific data and a `state` property, indicating the current state of the gesture. `StateChangeEvent` also carries a `oldState` property indicating the previous state of the gesture. `PointerEvent` carries information about raw touch events, like touching the screen or moving the finger. These events are handled internally before they are passed along to the correct callbacks:
 
 ### `onBegin`
 

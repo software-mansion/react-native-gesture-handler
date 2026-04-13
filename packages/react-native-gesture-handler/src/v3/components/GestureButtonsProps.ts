@@ -4,13 +4,27 @@ import GestureHandlerButton, {
   ButtonProps,
 } from '../../components/GestureHandlerButton';
 
+/**
+ * @deprecated `RawButtonProps` is deprecated, use `ClickableProps` instead
+ */
 export interface RawButtonProps
-  extends ButtonProps,
+  extends Omit<
+      ButtonProps,
+      | 'defaultOpacity'
+      | 'defaultScale'
+      | 'defaultUnderlayOpacity'
+      | 'activeOpacity'
+      | 'activeScale'
+      | 'activeUnderlayOpacity'
+    >,
     Omit<
-      NativeWrapperProperties<ReturnType<typeof GestureHandlerButton>>,
+      NativeWrapperProperties<React.ComponentRef<typeof GestureHandlerButton>>,
       'hitSlop' | 'enabled'
     > {}
 
+/**
+ * @deprecated `BaseButtonProps` is deprecated, use `ClickableProps` instead
+ */
 export interface BaseButtonProps extends RawButtonProps {
   /**
    * Called when the button gets pressed (analogous to `onPress` in
@@ -39,6 +53,9 @@ export interface BaseButtonProps extends RawButtonProps {
   delayLongPress?: number | undefined;
 }
 
+/**
+ * @deprecated `RectButtonProps` is deprecated, use `ClickableProps` instead
+ */
 export interface RectButtonProps extends BaseButtonProps {
   /**
    * Background color that will be dimmed when button is in active state.
@@ -53,6 +70,9 @@ export interface RectButtonProps extends BaseButtonProps {
   activeOpacity?: number | undefined;
 }
 
+/**
+ * @deprecated `BorderlessButtonProps` is deprecated, use `ClickableProps` instead
+ */
 export interface BorderlessButtonProps extends BaseButtonProps {
   /**
    * iOS only.

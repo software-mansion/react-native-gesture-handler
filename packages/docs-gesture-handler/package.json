@@ -65,7 +65,7 @@
     "eslint-plugin-mdx": "^2.2.0",
     "prettier": "^3.3.3",
     "typescript": "~5.2.2",
-    "webpack-cli": "^5.0.1"
+    "webpack-cli": "^7.0.2"
   },
   "browserslist": {
     "production": [
@@ -81,6 +81,9 @@
   },
   "engines": {
     "node": ">=18.0"
+  },
+  "resolutions": {
+    "webpackbar": "^7.0.0"
   },
   "packageManager": "yarn@1.22.22"
 }

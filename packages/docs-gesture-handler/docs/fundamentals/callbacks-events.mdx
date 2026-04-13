@@ -42,7 +42,7 @@ Called when a handler begins to recognize gestures. If `onBegin` was called, it 
 onActivate: (event: GestureEvent<HandlerData>) => void
 ```
  
-Called when activation criteria for handler are met. If `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
+Called when activation criteria for the handler are met. If `onActivate` was called, it is guaranteed that `onDeactivate` will be called later.
 
 ### onUpdate
 
@@ -58,7 +58,7 @@ Called each time a pointer tracked by the gesture changes state, typically due t
 onDeactivate: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
 ```
 
-Called after when handler stops recognizing gestures, but only if handler activated. It is called before `onFinalize`. If the handler was interrupted, the `didSucceed` argument is set to `false`. Otherwise it is set to `true`.
+Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. If the handler was interrupted, the `didSucceed` argument is set to `false`. Otherwise it is set to `true`.
 
 ### onFinalize
 
@@ -66,7 +66,7 @@ Called after when handler stops recognizing gestures, but only if handler activa
 onFinalize: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
 ```
 
-Called when handler stops recognizing gestures. If handler managed to activate, the `didSucceed` argument is set to `true` and `onFinalize` will be called right after `onDeactivate`. Otherwise it is set to `false`.
+Called when handler stops recognizing gestures. If the handler managed to activate, the `didSucceed` argument is set to `true` and `onFinalize` will be called right after `onDeactivate`. Otherwise it is set to `false`.
 
 ### onTouchesDown
 
@@ -189,7 +189,7 @@ export type TouchData = {
 
 `TouchData` contains information about a single touch. 
 
-- `id` - A number representing id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
+- `id` - A number representing the id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
 - `x` - X coordinate of the current position of the touch relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector). Expressed in point units.
 

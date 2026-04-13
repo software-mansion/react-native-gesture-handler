@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.NAVY,
   },
   bottomSheet: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: COLORS.KINDA_BLUE,
   },
 });

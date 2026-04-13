@@ -25,7 +25,7 @@ RNGH3 simplifies gesture interaction through dedicated composition hooks and con
 
 Only one of the provided gestures can become active at the same time. The first gesture to become active will cancel the rest of the gestures. It accepts variable number of arguments.
 
-For example, lets say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `useCompetingGestures`:
+For example, let's say that you have a component that you want to make draggable but you also want to show additional options on long press. Presumably you would not want the component to move after the long press activates. You can accomplish this using `useCompetingGestures`:
 
 <CollapsibleCode 
 label="Show full example"
@@ -37,7 +37,7 @@ src={Competing}/>
 
 All of the provided gestures can activate at the same time. Activation of one will not cancel the other.
 
-For example, if you want to make a gallery app, you might want user to be able to zoom, rotate and pan around photos. You can do it with `useSimultaneousGestures`:
+For example, if you want to make a gallery app, you might want the user to be able to zoom, rotate and pan around photos. You can do it with `useSimultaneousGestures`:
 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
@@ -49,7 +49,7 @@ src={Simultaneous}/>
 
 ### useExclusiveGestures
 
-Only one of the provided gestures can become active. Priority is determined by the order of the aguments, where the first gesture has the highest priority, and the last has the lowest. A gesture can activate only after all higher-priority gestures before it have failed.
+Only one of the provided gestures can become active. Priority is determined by the order of the arguments, where the first gesture has the highest priority, and the last has the lowest. A gesture can activate only after all higher-priority gestures before it have failed.
 
 For example, if you want to make a component that responds to single tap as well as to a double tap, you can accomplish that using `useExclusiveGestures`:
 
@@ -64,7 +64,7 @@ src={Exclusive}/>
 
 ### requireToFail
 
-`requireToFail` allows to delay activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
+`requireToFail` allows delaying activation of the handler until all handlers passed as arguments to this method fail (or don't begin at all).
 
 For example, you may want to have two nested components, both of them can be tapped by the user to trigger different actions: outer view requires one tap, but the inner one requires 2 taps. If you don't want the first tap on the inner view to activate the outer handler, you must make the outer gesture wait until the inner one fails:
 
@@ -76,7 +76,7 @@ src={RequireToFail}/>
 
 ### block
 
-`block` works similarly to `requireToFail` but the direction of the relation is reversed - instead of being one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
+`block` works similarly to `requireToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
 
 <CollapsibleCode 
 label="Show full example"

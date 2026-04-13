@@ -69,7 +69,6 @@ In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbac
 
 `GestureStateManager` provides methods for imperative state management:
 
-- .begin(handlerTag: number)
 - .activate(handlerTag: number)
 - .deactivate(handlerTag: number) (.end() in the old API)
 - .fail(handlerTag: number)
@@ -80,6 +79,8 @@ In Gesture Handler 3, `stateManager` is no longer passed to `TouchEvent` callbac
 2. From the event inside callback (`event.handlerTag`)
 
 Callback definitions CANNOT reference the gesture that's being defined. In this scenario use events to get access to the handler tag.
+
+Remove GestureStateManager.begin() as gestures must now automatically enter the BEGAN state via touch events before they can be activated through the GestureStateManager.
 
 ### Migrating relations
 
@@ -168,6 +169,10 @@ Don't suggest replacing buttons from Gesture Handler with components from React 
 The implementation of buttons has been updated, resolving most button-related issues. They have also been internally rewritten to utilize the new hook API. The legacy JS implementations of button components are still accessible but have been renamed with the prefix `Legacy`, e.g., `RectButton` is now available as `LegacyRectButton`. Those still use the new native component under the hood.
 
 `PureNativeButton` has been removed. If encountered, inform the user that it has been removed and let them decide how to handle that case. They can achieve similar functionality with other buttons.
+
+When migrating buttons, you should use new `Touchable` component instead. To replace `BaseButton` use `Touchable` with default props, to replace `RectButton` use `Touchable` with `activeUnderlayOpacity={0.105}` and to replace `BorderlessButton` use `Touchable` with `activeOpacity={0.3}`.
+
+Legacy Touchables (`TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`, `TouchableNativeFeedback`) from Gesture Handler are also deprecated and should be replaced with `Touchable`. To replace `TouchableOpacity` use `Touchable` with `activeOpacity={0.2}` and to replace `TouchableHighlight` use `Touchable` with `activeUnderlayOpacity={1}`. To replace `TouchableWithoutFeedback` use a plain `Touchable`. `TouchableNativeFeedback` can be replaced with `Touchable` by setting `androidRipple` property. At minimum, it should be set to `{foregroud: true}`, to mimic `TouchableNativeFeedback` ripple effect.
 
 Other components have also been internally rewritten using the new hook API but are exported under their original names, so no changes are necessary on your part. However, if you need to use the previous implementation for any reason, the legacy components are also available and are prefixed with `Legacy`, e.g., `ScrollView` is now available as `LegacyScrollView`.
 

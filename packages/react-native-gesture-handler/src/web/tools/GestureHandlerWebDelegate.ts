@@ -123,6 +123,46 @@ export class GestureHandlerWebDelegate
     };
   }
 
+  absoluteToLocal(
+    absoluteX: number,
+    absoluteY: number
+  ): { x: number; y: number } {
+    if (!this.view) {
+      throw new Error(tagMessage('Cannot convert coords on a null view'));
+    }
+
+    const rect = getEffectiveBoundingRect(this.view);
+    const transform = getComputedStyle(this.view).transform;
+    const matrix =
+      transform && transform !== 'none'
+        ? new DOMMatrix(transform)
+        : new DOMMatrix();
+
+    // Zero out translation — it's already reflected in the bounding rect
+    // center, so we only need to invert the rotation+scale part.
+    matrix.e = 0;
+    matrix.f = 0;
+    const inverse = matrix.inverse();
+
+    // Offset from the visual center of the bounding rect
+    const rectCenterX = rect.left + rect.width / 2;
+    const rectCenterY = rect.top + rect.height / 2;
+    const dx = absoluteX - rectCenterX;
+    const dy = absoluteY - rectCenterY;
+
+    // Apply inverse rotation+scale to get local-space offset from center
+    const localOffset = inverse.transformPoint(new DOMPoint(dx, dy));
+
+    // Add back the local center (untransformed dimensions)
+    const localCenterX = this.view.offsetWidth / 2;
+    const localCenterY = this.view.offsetHeight / 2;
+
+    return {
+      x: localCenterX + localOffset.x,
+      y: localCenterY + localOffset.y,
+    };
+  }
+
   reset(): void {
     this.eventManagers.forEach((manager: EventManager<unknown>) =>
       manager.resetManager()

@@ -8,24 +8,11 @@ jest.mock('./src/components/Pressable/Pressable', () =>
 jest.mock('./src/components/GestureComponents', () =>
   require('./src/mocks/gestureComponents')
 );
+jest.mock('./src/components/touchables', () =>
+  require('./src/mocks/Touchables')
+);
 jest.mock('./src/v3/detectors/HostGestureDetector', () =>
   require('./src/mocks/hostDetector')
-);
-
-jest.mock('./lib/commonjs/RNGestureHandlerModule', () =>
-  require('./lib/commonjs/mocks/module')
-);
-jest.mock('./lib/commonjs/components/GestureButtons', () =>
-  require('./lib/commonjs/mocks/GestureButtons')
-);
-jest.mock('./lib/commonjs/components/Pressable', () =>
-  require('./lib/commonjs/mocks/Pressable')
-);
-jest.mock('./lib/commonjs/components/GestureComponents', () =>
-  require('./lib/commonjs/mocks/gestureComponents')
-);
-jest.mock('./lib/commonjs/v3/detectors/HostGestureDetector', () =>
-  require('./lib/commonjs/mocks/hostDetector')
 );
 
 jest.mock('./lib/module/RNGestureHandlerModule', () =>
@@ -33,6 +20,9 @@ jest.mock('./lib/module/RNGestureHandlerModule', () =>
 );
 jest.mock('./lib/module/components/GestureButtons', () =>
   require('./lib/module/mocks/GestureButtons')
+);
+jest.mock('./lib/module/components/touchables', () =>
+  require('./lib/module/mocks/Touchables')
 );
 jest.mock('./lib/module/components/Pressable', () =>
   require('./lib/module/mocks/Pressable')
