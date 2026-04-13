@@ -30,6 +30,7 @@ export const Touchable = (props: TouchableProps) => {
     onPressOut,
     onActiveStateChange,
     children,
+    disabled = false,
     ref,
     ...rest
   } = props;
@@ -115,6 +116,7 @@ export const Touchable = (props: TouchableProps) => {
       {...rest}
       {...rippleProps}
       ref={ref ?? null}
+      enabled={!disabled}
       onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}

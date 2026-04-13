@@ -15,7 +15,7 @@ type PressableAndroidRippleConfig = {
 
 type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
-export type TouchableProps = Omit<ButtonProps, RippleProps> &
+export type TouchableProps = Omit<ButtonProps, RippleProps | 'enabled'> &
   Omit<BaseButtonProps, keyof RawButtonProps> & {
     /**
      * Configuration for the ripple effect on Android.
@@ -31,4 +31,9 @@ export type TouchableProps = Omit<ButtonProps, RippleProps> &
      * Called when pointer is released from the component.
      */
     onPressOut?: ((event: CallbackEventType) => void) | undefined;
+
+    /**
+     * Whether the component should ignore touches. By default set to false.
+     */
+    disabled?: boolean | undefined;
   };
