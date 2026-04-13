@@ -116,7 +116,7 @@ export default function TouchableStress() {
         activeUnderlayOpacity={0.105}
         style={[styles.startButton, isRunning && styles.startButtonBusy]}
         onPress={start}
-        enabled={!isRunning}>
+        disabled={isRunning}>
         <Text style={styles.startButtonText}>
           {isRunning ? `Running ${currentRun}/${N}...` : 'Start test'}
         </Text>
