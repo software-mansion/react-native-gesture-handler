@@ -61,6 +61,7 @@ const config = {
         },
       }),
     ],
+    require.resolve('@swmansion/t-rex-ui/preset')
   ],
 
   themeConfig:
@@ -83,7 +84,7 @@ const config = {
         },
         items: [
           {
-            to: 'docs/',
+            to: 'docs/fundamentals/introduction',
             activeBasePath: 'docs',
             label: 'Docs',
             position: 'right',
@@ -168,6 +169,10 @@ const config = {
                 },
                 {
                   test: /\.tsx?$/,
+                  use: 'babel-loader',
+                },
+                {
+                  test: /\.js$/,
                   use: 'babel-loader',
                 },
               ],
