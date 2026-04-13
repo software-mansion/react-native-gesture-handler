@@ -14,7 +14,7 @@ In order to use functions provided by Gesture Handler, add `react-native-gesture
 module.exports = {
   preset: '@react-native/jest-preset',
   transformIgnorePatterns: [
-    //highlight-next-line
+    // highlight-next-line
     'node_modules/(?!((jest-)?react-native|react-native-gesture-handler)/)',
   ],
   ...
