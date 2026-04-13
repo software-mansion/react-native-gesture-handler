@@ -675,6 +675,7 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (this.actionType !== ActionType.NATIVE_DETECTOR) {
       onGestureHandlerEvent?.(cancelEvent);
+      return;
     }
 
     if (this.forReanimated) {
