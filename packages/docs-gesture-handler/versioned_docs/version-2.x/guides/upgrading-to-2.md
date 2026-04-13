@@ -5,11 +5,11 @@ title: Upgrading to the new API introduced in Gesture Handler 2
 
 ## Make sure to migrate off the `RNGestureHandlerEnabledRootView` (Android only)
 
-Gesture Handler 1 required you to override `createRootView` to return an instance of `RNGestureHandlerEnabledRootView`. This class has been the cause of many hard to debug and fix crashed and was deprecated in version 2.0, and subsequently removed in version 2.4. If you are still using it, check out [migrating off RNGHEnabledRootView guide](/docs/2.x/guides/migrating-off-rnghenabledroot).
+Gesture Handler 1 required you to override `createRootView` to return an instance of `RNGestureHandlerEnabledRootView`. This class has been the cause of many hard-to-debug and hard-to-fix crashes and was deprecated in version 2.0, and subsequently removed in version 2.4. If you are still using it, check out [migrating off RNGHEnabledRootView guide](/docs/2.x/guides/migrating-off-rnghenabledroot).
 
 ## Upgrading to the new API
 
-The most important change brought by the Gesture Handler 2 is the new Gesture API, along with the `GestureDetector` component. It makes declaring gesture easier, as it handles much of the work under the hood and reduces the amount of necessary boilerplate code. Instead of a separate component for every type of gesture, the `GestureDetector` component is used to attach gestures to the underlying view based on the configuration object passed to it. The configuration objects are created using the `Gesture` object, here is a simple example:
+The most important change brought by the Gesture Handler 2 is the new Gesture API, along with the `GestureDetector` component. It makes declaring gestures easier, as it handles much of the work under the hood and reduces the amount of necessary boilerplate code. Instead of a separate component for every type of gesture, the `GestureDetector` component is used to attach gestures to the underlying view based on the configuration object passed to it. The configuration objects are created using the `Gesture` object, here is a simple example:
 
 ```jsx
 const tapGesture = Gesture.Tap().onStart(() => {
@@ -30,7 +30,7 @@ As you can see, there are no `onGestureEvent` and `onHandlerStateChange` callbac
 - `onUpdate` - replaces `onGestureEvent`, called every time the gesture sends a new event while it's in the `ACTIVE` state
 - `onChange` - if defined, called just after `onUpdate`, the events passed to it are the same as the ones passed to `onUpdate` but they also contain `change` values which hold the change in value they represent since the last event (i.e. in case of the `Pan` gesture, the event will also contain `changeX` and `changeY` properties)
 - `onEnd` - called when the gesture transitions from the `ACTIVE` state to either of `END`, `FAILED` or `CANCELLED` - you can tell whether the gesture finished due to user interaction or because of other reason (like getting cancelled by the system, or failure criteria) using the second value passed to the `onEnd` callback alongside the event
-- `onFinalize` called when the gesture transitions into either of `END`, `FAILED` or `CANCELLED` state, if the gesture was `ACTIVE`, `onEnd` will be called first (similarly to `onEnd` you can determine the reason for finishing using the second argument)
+- `onFinalize` - called when the gesture transitions into either of `END`, `FAILED` or `CANCELLED` state, if the gesture was `ACTIVE`, `onEnd` will be called first (similarly to `onEnd` you can determine the reason for finishing using the second argument)
 
 The difference between `onEnd` and `onFinalize` is that the `onEnd` will be called only if the gesture was `ACTIVE`, while `onFinalize` will be called if the gesture has `BEGAN`. This means that you can use `onEnd` to clean up after `onStart`, and `onFinalize` to clean up after `onBegin` (or both `onBegin` and `onStart`).
 

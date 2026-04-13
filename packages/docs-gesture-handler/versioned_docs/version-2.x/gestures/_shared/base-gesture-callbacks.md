@@ -2,7 +2,7 @@
 
 ### `onBegin(callback)`
 
-Set the callback that is being called when given gesture handler starts receiving touches. At the moment of this callback the handler is not yet in an active state and we don't know yet if it will recognize the gesture at all.
+Set the callback that is being called when the given gesture handler starts receiving touches. At the moment of this callback the handler is not yet in an active state and we don't know yet if it will recognize the gesture at all.
 
 ### `onStart(callback)`
 
@@ -14,7 +14,7 @@ Set the callback that is being called when the gesture that was recognized by th
 
 ### `onFinalize(callback)`
 
-Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
+Set the callback that is being called when the handler finalizes handling the gesture - the gesture was recognized and has finished or it failed to recognize.
 
 ### `onTouchesDown(callback)`
 

@@ -72,9 +72,12 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   [_buttonView mountChildComponentView:childComponentView index:index];
 }
 
-- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(RNGHUIView<RCTComponentViewProtocol> *)childComponentView
+                            index:(NSInteger)__unused index
 {
-  [_buttonView unmountChildComponentView:childComponentView index:index];
+  if (childComponentView.superview == _buttonView) {
+    [childComponentView removeFromSuperview];
+  }
 }
 
 - (LayoutMetrics)buildWrapperMetrics:(const LayoutMetrics &)metrics
@@ -241,7 +244,8 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
   _buttonView.userEnabled = newProps.enabled;
-  _buttonView.animationDuration = newProps.animationDuration;
+  _buttonView.pressAndHoldAnimationDuration = newProps.pressAndHoldAnimationDuration;
+  _buttonView.tapAnimationDuration = newProps.tapAnimationDuration > 0 ? newProps.tapAnimationDuration : 0;
   _buttonView.activeOpacity = newProps.activeOpacity;
   _buttonView.defaultOpacity = newProps.defaultOpacity;
   _buttonView.activeScale = newProps.activeScale;

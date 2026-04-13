@@ -8,8 +8,10 @@ import {
 
 const UNDERLAY_PROPS = {
   underlayColor: 'red',
-  activeUnderlayOpacity: 0.5,
-  animationDuration: 200,
+  activeUnderlayOpacity: 0.2,
+  activeScale: 0.9,
+  pressAndHoldAnimationDuration: 200,
+  tapAnimationDuration: 100,
   rippleColor: 'transparent',
 } as const;
 

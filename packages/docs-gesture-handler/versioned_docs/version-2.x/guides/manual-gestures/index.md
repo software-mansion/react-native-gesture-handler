@@ -28,12 +28,12 @@ RNGH2 finally brings one of the most requested features: manual gestures and tou
 </Step>
 
 <Step title="Step 3">
-    Now we have to make a component that will handle the gesture and draw all the pointer indicators. We will store data about pointers in an array of size 12 as that is the maximum number of touches that RNGH will track, and render them inside an Animated.View.
+    Now we have to make a component that will handle the gesture and draw all the pointer indicators. We will store data about pointers in an array of size 12, as that is the maximum number of touches that RNGH will track, and render them inside an Animated.View.
     <Step3 />
 </Step>
 
 <Step title="Step 4">
-    We have our components set up and we can finally get to making the gesture! We will start with onTouchesDown where we need to set position of the pointers and make them visible. We can get this information from the touches property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
+    We have our components set up and we can finally get to making the gesture! We will start with onTouchesDown where we need to set the position of the pointers and make them visible. We can get this information from the touches property of the event. In this case we will also check how many pointers are on the screen and activate the gesture if there are at least two.
     <Step4 />
 </Step>
 

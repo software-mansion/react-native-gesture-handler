@@ -1,6 +1,6 @@
 import { Profiler, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Clickable, ScrollView } from 'react-native-gesture-handler';
+import { Touchable, ScrollView } from 'react-native-gesture-handler';
 
 const CLICK_COUNT = 2000;
 const N = 25;
@@ -27,12 +27,12 @@ function getTrimmedAverage(results: number[], dropout: number): number {
   return trimmed.reduce((sum, v) => sum + v, 0) / trimmed.length;
 }
 
-type ClickableListProps = {
+type TouchableListProps = {
   run: number;
   onMountDuration: (duration: number) => void;
 };
 
-function ClickableList({ run, onMountDuration }: ClickableListProps) {
+function TouchableList({ run, onMountDuration }: TouchableListProps) {
   const reportedRef = useRef(-1);
 
   const handleRender = useCallback(
@@ -46,28 +46,28 @@ function ClickableList({ run, onMountDuration }: ClickableListProps) {
   );
 
   return (
-    <Profiler id="ClickableList" onRender={handleRender}>
+    <Profiler id="TouchableList" onRender={handleRender}>
       <ScrollView style={{ flex: 1 }}>
         {STRESS_DATA.map((id) => (
           // <BaseButton key={id} style={styles.button} />
-          <Clickable key={id} style={styles.button} />
+          <Touchable key={id} style={styles.button} />
 
           // <RectButton key={id} style={styles.button} />
-          // <Clickable
+          // <Touchable
           //   key={id}
           //   style={styles.button}
           //   activeUnderlayOpacity={0.105}
           // />
 
           // <BorderlessButton key={id} style={styles.button} />
-          // <Clickable key={id} style={styles.button} activeOpacity={0.3} />
+          // <Touchable key={id} style={styles.button} activeOpacity={0.3} />
         ))}
       </ScrollView>
     </Profiler>
   );
 }
 
-export default function ClickableStress() {
+export default function TouchableStress() {
   const [state, setState] = useState<BenchmarkState>({ phase: 'idle' });
   const resultsRef = useRef<number[]>([]);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -112,7 +112,7 @@ export default function ClickableStress() {
 
   return (
     <View style={styles.container}>
-      <Clickable
+      <Touchable
         activeUnderlayOpacity={0.105}
         style={[styles.startButton, isRunning && styles.startButtonBusy]}
         onPress={start}
@@ -120,7 +120,7 @@ export default function ClickableStress() {
         <Text style={styles.startButtonText}>
           {isRunning ? `Running ${currentRun}/${N}...` : 'Start test'}
         </Text>
-      </Clickable>
+      </Touchable>
 
       {results && (
         <View style={styles.results}>
@@ -143,7 +143,7 @@ export default function ClickableStress() {
       )}
 
       {isRunning && (
-        <ClickableList run={currentRun} onMountDuration={handleMountDuration} />
+        <TouchableList run={currentRun} onMountDuration={handleMountDuration} />
       )}
     </View>
   );

@@ -22,7 +22,7 @@ Gesture callback can be used for continuous tracking of the touch pressure. It p
 At the beginning of the gesture, the pressure factor is 0.0. As the pressure increases, the pressure factor increases proportionally. The maximum pressure is 1.0.
 
 There's no implementation provided on Android and it simply renders children without any wrappers.
-Since this behaviour is only provided on some iOS devices, this gesture should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features to be accessed without this gesture as well.
+Since this behavior is only provided on some iOS devices, this gesture should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features accessible without this gesture as well.
 
 ## Reference
 

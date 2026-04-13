@@ -3,10 +3,10 @@ import { Platform } from 'react-native';
 import GestureHandlerButton, {
   ButtonProps,
 } from '../../../components/GestureHandlerButton';
-import { CallbackEventType, ClickableProps } from './ClickableProps';
+import { CallbackEventType, TouchableProps } from './TouchableProps';
 import createNativeWrapper from '../../createNativeWrapper';
 
-const ClickableButton = createNativeWrapper<
+const TouchableButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
   ButtonProps
 >(GestureHandlerButton, {
@@ -17,7 +17,7 @@ const ClickableButton = createNativeWrapper<
 const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 
-export const Clickable = (props: ClickableProps) => {
+export const Touchable = (props: TouchableProps) => {
   const {
     underlayColor = 'black',
     defaultUnderlayOpacity = 0,
@@ -112,7 +112,7 @@ export const Clickable = (props: ClickableProps) => {
     : TRANSPARENT_RIPPLE;
 
   return (
-    <ClickableButton
+    <TouchableButton
       {...rest}
       {...rippleProps}
       ref={ref ?? null}
@@ -125,6 +125,6 @@ export const Clickable = (props: ClickableProps) => {
       defaultUnderlayOpacity={defaultUnderlayOpacity}
       underlayColor={underlayColor}>
       {children}
-    </ClickableButton>
+    </TouchableButton>
   );
 };

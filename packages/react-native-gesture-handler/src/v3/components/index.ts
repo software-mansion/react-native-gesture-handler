@@ -23,5 +23,5 @@ export {
 
 export { default as Pressable } from './Pressable';
 
-export { Clickable } from './Clickable/Clickable';
-export type { ClickableProps } from './Clickable/ClickableProps';
+export { Touchable } from './Touchable/Touchable';
+export type { TouchableProps } from './Touchable/TouchableProps';
