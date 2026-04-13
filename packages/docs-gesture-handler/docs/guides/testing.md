@@ -4,7 +4,29 @@ title: Testing with Jest
 sidebar_position: 4
 ---
 
-## Mocking native modules
+## Setup
+
+### Jest configuration
+
+In order to use functions provided by Gesture Handler, add `react-native-gesture-handler` to `transformIgnorePatterns` in `jest.config.js`, e.g.:
+
+```js
+module.exports = {
+  preset: '@react-native/jest-preset',
+  transformIgnorePatterns: [
+    //highlight-next-line
+    'node_modules/(?!((jest-)?react-native|react-native-gesture-handler)/)',
+  ],
+  ...
+};
+
+```
+
+:::note
+Remember not to split `transformIgnorePatterns` into multiple patterns. For more information check out [Jest documentation](https://jestjs.io/docs/tutorial-react-native#transformignorepatterns-customization).
+:::
+
+### Mocking native modules
 
 In order to load mocks provided by RNGH, add the following to your jest config in `package.json`:
 
