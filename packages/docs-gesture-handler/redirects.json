@@ -1,6 +1,10 @@
 {
   "redirects": [
     {
+      "to": "/docs/fundamentals/introduction",
+      "from": "/docs/"
+    },
+    {
       "to": "/docs/legacy-gestures/pan-gesture",
       "from": "/docs/gestures/pan-gesture"
     },
