@@ -100,6 +100,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.state === State.ACTIVE) {
+      // We don't have to call it in the else branch as it would simply return `true`.
       this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
       this.end();
