@@ -20,7 +20,7 @@ transformIgnorePatterns: [
 ```
 
 :::note
-Remember not to split `transformIgnorePatterns` into multiple patterns. For more information check out [Jest documentation](https://jestjs.io/docs/tutorial-react-native#transformignorepatterns-customization).
+Be careful when adding multiple entries to `transformIgnorePatterns`. Since `Jest` ignores a file if it matches any pattern in the list, splitting negative lookaheads into separate strings often causes them to override each other. It is safer to combine your exceptions into a single regex using the `|` operator. See the [Jest documentation](https://jestjs.io/docs/tutorial-react-native#transformignorepatterns-customization) for an example.
 :::
 
 ### Mocking native modules
