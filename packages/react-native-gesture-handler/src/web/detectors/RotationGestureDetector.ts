@@ -75,12 +75,11 @@ export default class RotationGestureDetector
   }
 
   private finish(): void {
-    if (!this.isInProgress) {
-      return;
+    if (this.isInProgress) {
+      this.isInProgress = false;
+      this.keyPointers = [NaN, NaN];
     }
 
-    this.isInProgress = false;
-    this.keyPointers = [NaN, NaN];
     this.onRotationEnd(this);
   }
 
@@ -138,9 +137,8 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.UP:
-        if (this.isInProgress) {
-          this.finish();
-        }
+        this.finish();
+
         break;
     }
 
