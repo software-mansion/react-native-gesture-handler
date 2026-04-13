@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkreact_native_gesture_handler_docs=globalThis.webpackChunkreact_native_gesture_handler_docs||[]).push([[5742],{7093(e){e.exports=JSON.parse('{"name":"docusaurus-plugin-content-docs","id":"default"}')}}]);

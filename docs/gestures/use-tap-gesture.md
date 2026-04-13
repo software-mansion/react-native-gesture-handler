@@ -1,0 +1,104 @@
+A discrete gesture that recognizes taps.
+
+Tap gestures detect one or more fingers briefly touching the screen.
+The pointers involved in these gestures must not move significantly from their initial touch positions. This can be changed via configuration.
+The required number of taps and allowed distance from initial position may be configured.
+For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
+
+In order for a gesture to activate, the specified gesture requirements such as [`minPointers`](#minpointers), [`numberOfTaps`](#numberoftaps), [`maxDistance`](#maxdistance), [`maxDuration`](#maxduration), and [`maxDelay`](#maxdelay) must be met.
+
+## Example
+
+## Config
+
+### minPointers
+
+```ts
+minPointers: number | SharedValue<number>;
+```
+
+Minimum number of pointers (fingers) required to be placed before the gesture activates. Should be a positive integer. The default value is 1.
+
+### maxDuration
+
+```ts
+maxDuration: number | SharedValue<number>;
+```
+
+Maximum time, expressed in milliseconds, that defines how fast a finger must be released after a touch. The default value is 500.
+
+### maxDelay
+
+```ts
+maxDelay: number | SharedValue<number>;
+```
+
+Maximum time, expressed in milliseconds, that can pass before the next tap — if many taps are required. The default value is 500.
+
+### numberOfTaps
+
+```ts
+numberOfTaps: number | SharedValue<number>;
+```
+
+Number of tap gestures required to activate the gesture. The default value is 1.
+
+### maxDeltaX
+
+```ts
+maxDeltaX: number | SharedValue<number>;
+```
+
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the X axis during a tap gesture. If the finger travels further than the defined distance along the X axis and the gesture hasn't yet activated, it will fail to recognize the gesture.
+
+### maxDeltaY
+
+```ts
+maxDeltaY: number | SharedValue<number>;
+```
+
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel along the Y axis during a tap gesture. If the finger travels further than the defined distance along the Y axis and the gesture hasn't yet activated, it will fail to recognize the gesture.
+
+### maxDistance
+
+```ts
+maxDistance: number | SharedValue<number>;
+```
+
+Maximum distance, expressed in points, that defines how far the finger is allowed to travel during a tap gesture. If the finger travels further than the defined distance and the gesture hasn't yet activated, it will fail to recognize the gesture.
+
+## Callbacks
+
+## Event data
+
+### x
+
+```ts
+x: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### y
+
+```ts
+y: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
+
+### absoluteX
+
+```ts
+absoluteX: number;
+```
+
+X coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteX` instead of [`x`](#x) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.
+
+### absoluteY
+
+```ts
+absoluteY: number;
+```
+
+Y coordinate, expressed in points, of the current position of the pointer (finger or a leading pointer when there are multiple fingers placed) relative to the window. It is recommended to use `absoluteY` instead of [`y`](#y) in cases when the view attached to the [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector) can be transformed as an effect of the gesture.

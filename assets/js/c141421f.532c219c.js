@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkreact_native_gesture_handler_docs=globalThis.webpackChunkreact_native_gesture_handler_docs||[]).push([[957],{936(e){e.exports=JSON.parse('{"name":"docusaurus-theme-search-algolia","id":"default"}')}}]);
