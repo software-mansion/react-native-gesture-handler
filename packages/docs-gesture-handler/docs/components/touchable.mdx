@@ -4,8 +4,6 @@ title: Touchable
 sidebar_label: Touchable
 ---
 
-import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
-
 :::note
 This section refers to new `Touchable` component, meant to replace both buttons and touchables. If you are looking for documentation for the deprecated touchable components, check out the [Legacy Touchables](/docs/components/legacy-touchables) section.
 :::
@@ -206,9 +204,9 @@ exclusive?: boolean;
 
 Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
 
-<HeaderWithBadges platforms={['android']}>
+<Badges platforms={['android']}>
 ### touchSoundDisabled
-</HeaderWithBadges>
+</Badges>
 
 ```ts
 touchSoundDisabled?: boolean;
@@ -304,9 +302,9 @@ delayLongPress?: number;
 Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress) callback gets called. By default set to `600`.
 
 
-<HeaderWithBadges platforms={['android']}>
+<Badges platforms={['android']}>
 ### androidRipple
-</HeaderWithBadges>
+</Badges>
 
 <CollapsibleCode 
 label="Show composed types definitions"
