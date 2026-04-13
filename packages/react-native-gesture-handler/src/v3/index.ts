@@ -66,7 +66,7 @@ export type {
   BaseButtonProps,
   RectButtonProps,
   BorderlessButtonProps,
-  ClickableProps,
+  TouchableProps,
 } from './components';
 
 export {
@@ -80,7 +80,7 @@ export {
   TextInput,
   FlatList,
   RefreshControl,
-  Clickable,
+  Touchable,
 } from './components';
 
 export type { ComposedGesture } from './types';

@@ -13,6 +13,10 @@ export interface GestureHandlerDelegate<TComponent, THandler> {
   updateDOM(): void;
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean;
   measureView(): MeasureResult;
+  absoluteToLocal(
+    absoluteX: number,
+    absoluteY: number
+  ): { x: number; y: number };
   reset(): void;
 
   onBegin(): void;

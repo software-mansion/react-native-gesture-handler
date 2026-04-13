@@ -4,22 +4,61 @@ title: Testing with Jest
 sidebar_position: 4
 ---
 
-## Mocking native modules
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-In order to load mocks provided by RNGH, add the following to your jest config in `package.json`:
+## Setup
+
+### Jest configuration
+
+In order to use functions provided by Gesture Handler, add `react-native-gesture-handler` to `transformIgnorePatterns` in jest config.
+
+```js
+transformIgnorePatterns: [
+  'node_modules/(?!((jest-)?react-native|react-native-gesture-handler)/)',
+],
+```
+
+:::note
+Be careful when adding multiple entries to `transformIgnorePatterns`. Since `Jest` ignores a file if it matches any pattern in the list, splitting negative lookaheads into separate strings often causes them to override each other. It is safer to combine your exceptions into a single regex using the `|` operator. See the [Jest documentation](https://jestjs.io/docs/tutorial-react-native#transformignorepatterns-customization) for an example.
+:::
+
+### Mocking native modules
+
+In order to load mocks provided by RNGH, add the following to your jest config:
 
 ```json
 "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
 ```
 
-Example:
+### Example jest config
 
-```json
-"jest": {
-  "preset": "react-native",
-  "setupFiles": ["./node_modules/react-native-gesture-handler/jestSetup.js"]
-}
-```
+<Tabs groupId="package-managers">
+  <TabItem value="js" label="jest.config.js" default>
+    ```js
+    module.exports = {
+      preset: '@react-native/jest-preset',
+      transformIgnorePatterns: [
+        'node_modules/(?!((jest-)?react-native|react-native-gesture-handler)/)',
+      ],
+      setupFiles: ['react-native-gesture-handler/jestSetup.js'],
+    };
+    ```
+  </TabItem>
+  <TabItem value="json" label="package.json">
+    ```json
+    "jest": {
+      "preset": "@react-native/jest-preset",
+      "transformIgnorePatterns": [
+        "node_modules/(?!((jest-)?react-native|react-native-gesture-handler)/)"
+      ],
+      "setupFiles": [
+        "react-native-gesture-handler/jestSetup.js"
+      ]
+    }
+    ```
+  </TabItem>
+</Tabs>
 
 ## Testing Gestures' and Gesture handlers' callbacks
 
@@ -28,6 +67,8 @@ RNGH provides APIs, specifically [`fireGestureHandler`](#firegesturehandler) and
 ### fireGestureHandler
 
 ```ts
+import { fireGestureHandler } from 'react-native-gesture-handler/jest-utils';
+
 fireGestureHandler: (componentOrGesture, eventList) => void;
 ```
 
@@ -80,6 +121,8 @@ const allImplicits = []; // 3 events, one BEGIN, one ACTIVE, one END with defaul
 ### getByGestureTestId
 
 ```tsx
+import { getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
+
 getByGestureTestId: (testID: string) => Gesture;
 ```
 
