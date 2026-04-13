@@ -19,7 +19,7 @@ This project has monorepo structure.
 
 - To check Android build go to `apps/basic-example` and run `yarn android` command.
 - To check iOS build, go to `apps/basic-example` and run `yarn ios`. If necessary, use `bundle install && bundle exec pod install` in `apps/basic-example/ios` directory to install pods.
-- After any Android/iOS build or test run, kill Metro server with `lsof -ti :8081 | xargs kill -9` (pkill -f "metro" is not sufficient)
+- After any Android/iOS build or test run, on macOS/Linux stop the Metro server with `pids=$(lsof -ti :8081); if [ -n "$pids" ]; then kill $pids; fi` (this no-ops cleanly when nothing is listening on port 8081; `pkill -f "metro"` is not sufficient)
 
 ## JavaScript checks
 
