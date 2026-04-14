@@ -1,15 +1,16 @@
-import { COLORS, commonStyles, Feedback } from '../../../common';
-import React, { RefObject, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { COLORS, Feedback, commonStyles } from '../../../common';
 import {
   GestureDetector,
   HoverEffect,
   useHoverGesture,
 } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import React, { useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type { RefObject } from 'react';
 
 function useColoredHover(
   color: string,

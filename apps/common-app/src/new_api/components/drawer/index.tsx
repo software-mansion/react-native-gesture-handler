@@ -1,15 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { SharedValue } from 'react-native-reanimated';
-
-import ReanimatedDrawerLayout, {
-  DrawerType,
-  DrawerPosition,
-  DrawerLayoutMethods,
-  DrawerLockMode,
-} from 'react-native-gesture-handler/ReanimatedDrawerLayout';
 import { COLORS, LoremIpsum } from '../../../common';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React, { useRef, useState } from 'react';
+import ReanimatedDrawerLayout, {
+  DrawerLockMode,
+  DrawerPosition,
+  DrawerType,
+} from 'react-native-gesture-handler/ReanimatedDrawerLayout';
+import { StyleSheet, Text, View } from 'react-native';
+import type { DrawerLayoutMethods } from 'react-native-gesture-handler/ReanimatedDrawerLayout';
+import type { SharedValue } from 'react-native-reanimated';
 
 const DrawerPage = ({ progress }: { progress?: SharedValue }) => {
   progress && console.log('Drawer opening progress:', progress);

@@ -1,6 +1,3 @@
-import { RefObject, useRef } from 'react';
-import { COLORS, Feedback, FeedbackHandle } from '../../../common';
-import { StyleSheet, Text, View } from 'react-native';
 import {
   BaseButton,
   BorderlessButton,
@@ -8,6 +5,11 @@ import {
   Pressable,
   RectButton,
 } from 'react-native-gesture-handler';
+import { COLORS, Feedback } from '../../../common';
+import { StyleSheet, Text, View } from 'react-native';
+import type { FeedbackHandle } from '../../../common';
+import type { RefObject } from 'react';
+import { useRef } from 'react';
 
 type ButtonWrapperProps = {
   ButtonComponent:

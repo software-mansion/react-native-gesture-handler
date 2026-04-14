@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { StyleSheet, ImageStyle, LayoutChangeEvent } from 'react-native';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
-  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import type { ImageStyle, LayoutChangeEvent } from 'react-native';
+import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { SharedValue } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
 
 const CHAT_HEADS = [

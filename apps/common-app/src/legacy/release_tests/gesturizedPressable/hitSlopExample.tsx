@@ -1,5 +1,5 @@
-import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import TestingBase from './testingBase';
 
 const HIT_SLOP = 40;

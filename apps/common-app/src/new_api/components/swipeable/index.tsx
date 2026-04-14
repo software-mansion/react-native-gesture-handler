@@ -1,19 +1,12 @@
-import React, { useRef } from 'react';
-import { StyleSheet, Text, View, I18nManager } from 'react-native';
-
 import { FlatList, Pressable, RectButton } from 'react-native-gesture-handler';
-
-import Reanimated, {
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-
+import { I18nManager, StyleSheet, Text, View } from 'react-native';
+import React, { useRef } from 'react';
+import Reanimated, { useAnimatedStyle } from 'react-native-reanimated';
 import AppleStyleSwipeableRow from './AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GmailStyleSwipeableRow';
-
-import ReanimatedSwipeable, {
-  SwipeableMethods,
-} from 'react-native-gesture-handler/ReanimatedSwipeable';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SharedValue } from 'react-native-reanimated';
+import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 //  To toggle LTR/RTL change to `true`
 I18nManager.allowRTL(false);

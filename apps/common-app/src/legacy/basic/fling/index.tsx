@@ -1,16 +1,16 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import {
   Directions,
   Gesture,
   GestureDetector,
 } from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
+import React from 'react';
 
 export default function Example() {
   const position = useSharedValue(0);

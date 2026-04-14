@@ -1,5 +1,4 @@
 import {
-  BackgroundPropType,
   FlatList,
   TouchableHighlight as RNTouchableHighlight,
   TouchableNativeFeedback as RNTouchableNativeFeedback,
@@ -18,8 +17,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
-
-import { StackScreenProps } from '@react-navigation/stack';
+import type { BackgroundPropType } from 'react-native';
+import type { StackScreenProps } from '@react-navigation/stack';
 
 const BOX_SIZE = 80;
 

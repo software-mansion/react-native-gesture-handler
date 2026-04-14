@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 
 interface Pointer {
   visible: boolean;

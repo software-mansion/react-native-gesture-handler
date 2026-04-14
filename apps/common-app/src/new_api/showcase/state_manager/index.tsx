@@ -1,18 +1,18 @@
-import { COLORS, commonStyles } from '../../../common';
-import React from 'react';
-import { View } from 'react-native';
-import {
-  GestureHandlerRootView,
-  GestureDetector,
-  useLongPressGesture,
-  GestureStateManager,
-  LongPressGesture,
-} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { COLORS, commonStyles } from '../../../common';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  GestureStateManager,
+  useLongPressGesture,
+} from 'react-native-gesture-handler';
+import type { LongPressGesture } from 'react-native-gesture-handler';
+import React from 'react';
+import { View } from 'react-native';
 
 export default function TwoPressables() {
   const isActivated = [

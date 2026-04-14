@@ -1,7 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
-
 import { RectButton } from 'react-native-gesture-handler';
+import { View } from 'react-native';
 
 export default function Example() {
   return (
