@@ -1,0 +1,77 @@
+name: Publish release to npm
+on:
+  # For nightly releases
+  schedule:
+    - cron: '27 23 * * *' # at 23:27 every day
+  # For manual releases
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: Type of release to publish.
+        type: choice
+        options:
+          - stable
+          - nightly
+          - beta
+          - rc
+        default: stable
+      version:
+        description: Specific version to publish (usually inferred from x.y-stable branch name).
+        type: string
+        required: false
+        default: ''
+      dry-run:
+        description: Whether to perform a dry run of the publish.
+        type: boolean
+        default: true
+
+jobs:
+  npm-build:
+    if: github.repository == 'software-mansion/react-native-gesture-handler'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write # for OIDC
+
+    concurrency:
+      group: publish-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        shell: bash
+        run: |
+          echo "YARN_ENABLE_HARDENED_MODE=0" >> $GITHUB_ENV
+  
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'yarn'
+          registry-url: https://registry.npmjs.org/
+
+      - name: Publish manual release
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: software-mansion/npm-package-publish@273bbdd5df5d28ae2de6c3ecd4a6f8067e4ff370
+        with:
+          package-name: 'react-native-gesture-handler'
+          package-json-path: 'packages/react-native-gesture-handler/package.json'
+          install-dependencies-command: 'yarn install --immutable'
+          release-type: ${{ inputs.release-type }}
+          version: ${{ inputs.version }}
+          dry-run: ${{ inputs.dry-run }}
+
+      - name: Publish automatic nightly release
+        if: ${{ github.event_name == 'schedule' }}
+        uses: software-mansion/npm-package-publish@273bbdd5df5d28ae2de6c3ecd4a6f8067e4ff370
+        with:
+          package-name: 'react-native-gesture-handler'
+          package-json-path: 'packages/react-native-gesture-handler/package.json'
+          install-dependencies-command: 'yarn install --immutable'
+          release-type: 'nightly'
+          version: "3.0.0"
+          dry-run: false

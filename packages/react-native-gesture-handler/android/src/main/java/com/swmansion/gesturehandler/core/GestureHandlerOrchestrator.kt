@@ -6,13 +6,19 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import com.facebook.react.uimanager.ReactCompoundView
+import com.facebook.react.uimanager.RootView
+import com.swmansion.gesturehandler.react.RNGestureHandlerDetectorView
 import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
+import com.swmansion.gesturehandler.react.isHoverAction
 import java.util.*
 
 class GestureHandlerOrchestrator(
   private val wrapperView: ViewGroup,
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
+  private val rootView: ViewGroup,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -54,6 +60,14 @@ class GestureHandlerOrchestrator(
     isHandlingTouch = false
     if (finishedHandlersCleanupScheduled && handlingChangeSemaphore == 0) {
       cleanupFinishedHandlers()
+    }
+    if (action == MotionEvent.ACTION_UP ||
+      action == MotionEvent.ACTION_CANCEL ||
+      action == MotionEvent.ACTION_HOVER_EXIT
+    ) {
+      if (gestureHandlers.isEmpty() && rootView is RootView) {
+        rootView.onChildEndedNativeGesture(rootView, event)
+      }
     }
     return true
   }
@@ -273,7 +287,7 @@ class GestureHandlerOrchestrator(
   }
 
   private fun deliverEventToGestureHandler(handler: GestureHandler, sourceEvent: MotionEvent) {
-    if (!isViewAttachedUnderWrapper(handler.view)) {
+    if (!isViewAttachedUnderWrapper(handler.view ?: handler.hostDetectorView)) {
       handler.cancel()
       return
     }
@@ -285,15 +299,7 @@ class GestureHandlerOrchestrator(
     val action = sourceEvent.actionMasked
     val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
 
-    // Touch events are sent before the handler itself has a chance to process them,
-    // mainly because `onTouchesUp` should be send before gesture finishes. This means that
-    // the first `onTouchesDown` event is sent before a gesture begins, activation in
-    // callback for this event causes problems because the handler doesn't have a chance
-    // to initialize itself with starting values of pointer (in pan this causes translation
-    // to be equal to the coordinates of the pointer). The simplest solution is to send
-    // the first `onTouchesDown` event after the handler processes it and changes state
-    // to `BEGAN`.
-    if (handler.needsPointerData && handler.state != 0) {
+    if (handler.needsPointerData) {
       handler.updatePointerData(event, sourceEvent)
     }
 
@@ -313,10 +319,6 @@ class GestureHandlerOrchestrator(
           handler.resetProgress()
         }
         handler.dispatchHandlerUpdate(event)
-      }
-
-      if (handler.needsPointerData && isFirstEvent) {
-        handler.updatePointerData(event, sourceEvent)
       }
 
       // if event was of type UP or POINTER_UP we request handler to stop tracking now that
@@ -441,7 +443,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun recordHandlerIfNotPresent(handler: GestureHandler, view: View) {
+  fun recordHandlerIfNotPresent(handler: GestureHandler, view: View?) {
     if (gestureHandlers.contains(handler)) {
       return
     }
@@ -475,6 +477,12 @@ class GestureHandlerOrchestrator(
 
     while (parent != null) {
       if (parent is ViewGroup) {
+        // Stop traversing the hierarchy when encountering another active root view to prevent
+        // gestures from being extracted multiple times by different orchestrators.
+        if (parent is RNGestureHandlerRootView && parent.isRootViewEnabled()) {
+          break
+        }
+
         val parentViewGroup: ViewGroup = parent
 
         handlerRegistry.getHandlersForView(parent)?.let {
@@ -500,18 +508,12 @@ class GestureHandlerOrchestrator(
   // There's only one exception - RootViewGestureHandler. TalkBack uses hover events,
   // so we need to pass them into RootViewGestureHandler, otherwise press and hold
   // gesture stops working correctly (see https://github.com/software-mansion/react-native-gesture-handler/issues/3407)
-  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, action: Int): Boolean {
+  private fun shouldHandlerSkipHoverEvents(handler: GestureHandler, event: MotionEvent): Boolean {
     val shouldSkipHoverEvents =
       handler !is HoverGestureHandler &&
         handler !is RNGestureHandlerRootHelper.RootViewGestureHandler
 
-    return shouldSkipHoverEvents &&
-      action in
-      listOf(
-        MotionEvent.ACTION_HOVER_EXIT,
-        MotionEvent.ACTION_HOVER_ENTER,
-        MotionEvent.ACTION_HOVER_MOVE,
-      )
+    return shouldSkipHoverEvents && event.isHoverAction()
   }
 
   private fun recordViewHandlersForPointer(
@@ -529,7 +531,7 @@ class GestureHandlerOrchestrator(
             continue
           }
 
-          if (shouldHandlerSkipHoverEvents(handler, event.action)) {
+          if (shouldHandlerSkipHoverEvents(handler, event)) {
             continue
           }
 
@@ -550,6 +552,26 @@ class GestureHandlerOrchestrator(
       found = true
     }
 
+    if (view is ReactCompoundView) {
+      val tagForCoords = view.reactTagForTouch(coords[0], coords[1])
+
+      if (tagForCoords != view.id) {
+        handlerRegistry.getHandlersForViewWithTag(tagForCoords)?.let {
+          synchronized(it) {
+            for (handler in it) {
+              if (shouldHandlerSkipHoverEvents(handler, event)) {
+                continue
+              }
+
+              recordHandlerIfNotPresent(handler, view)
+              handler.startTrackingPointer(pointerId)
+              found = true
+            }
+          }
+        }
+      }
+    }
+
     return found
   }
 
@@ -562,12 +584,26 @@ class GestureHandlerOrchestrator(
     extractGestureHandlers(wrapperView, tempCoords, pointerId, event)
   }
 
+  private fun shouldIgnoreSubtreeIfGestureHandlerRootView(view: View) =
+    view is RNGestureHandlerRootView && view != wrapperView && view.isRootViewEnabled()
+
   private fun extractGestureHandlers(
     viewGroup: ViewGroup,
     coords: FloatArray,
     pointerId: Int,
     event: MotionEvent,
   ): Boolean {
+    if (shouldIgnoreSubtreeIfGestureHandlerRootView(viewGroup)) {
+      // When we encounter another active root view while traversing the view hierarchy, we want
+      // to stop there so that it can handle the gesture attached under it itself.
+      // This helps in cases where a view may call `requestDisallowInterceptTouchEvent` (which would
+      // cancel all gestures handled by its parent root view) but there may be some gestures attached
+      // to views under it which should work. Adding another root view under that particular view
+      // would allow the gesture to be recognized even though the parent root view cancelled its gestures.
+      // We want to stop here so the gesture receives event only once.
+      return false
+    }
+
     val childrenCount = viewGroup.childCount
     for (i in childrenCount - 1 downTo 0) {
       val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
@@ -595,52 +631,63 @@ class GestureHandlerOrchestrator(
   }
 
   private fun traverseWithPointerEvents(view: View, coords: FloatArray, pointerId: Int, event: MotionEvent): Boolean =
-    when (viewConfigHelper.getPointerEventsConfigForView(view)) {
-      PointerEventsConfig.NONE -> {
-        // This view and its children can't be the target
-        false
-      }
-      PointerEventsConfig.BOX_ONLY -> {
-        // This view is the target, its children don't matter
-        (
-          recordViewHandlersForPointer(view, coords, pointerId, event) ||
-            shouldHandlerlessViewBecomeTouchTarget(view, coords)
-          )
-      }
-      PointerEventsConfig.BOX_NONE -> {
-        // This view can't be the target, but its children might
-        when (view) {
-          is ViewGroup -> {
-            extractGestureHandlers(view, coords, pointerId, event).also { found ->
-              // A child view is handling touch, also extract handlers attached to this view
-              if (found) {
-                recordViewHandlersForPointer(view, coords, pointerId, event)
-              }
-            }
-          }
-          // When <TextInput> has editable set to `false` getPointerEventsConfigForView returns
-          // `BOX_NONE` as it's `isEnabled` property is false. In this case we still want to extract
-          // handlers attached to the text input, as it makes sense that gestures would work on a
-          // non-editable TextInput.
-          is EditText -> {
-            recordViewHandlersForPointer(view, coords, pointerId, event)
-          }
-          else -> false
-        }
-      }
-      PointerEventsConfig.AUTO -> {
-        // Either this view or one of its children is the target
-        val found = if (view is ViewGroup) {
-          extractGestureHandlers(view, coords, pointerId, event)
-        } else {
+    if (shouldIgnoreSubtreeIfGestureHandlerRootView(view)) {
+      // When we encounter another active root view while traversing the view hierarchy, we want
+      // to stop there so that it can handle the gesture attached under it itself.
+      // This helps in cases where a view may call `requestDisallowInterceptTouchEvent` (which would
+      // cancel all gestures handled by its parent root view) but there may be some gestures attached
+      // to views under it which should work. Adding another root view under that particular view
+      // would allow the gesture to be recognized even though the parent root view cancelled its gestures.
+      // We want to stop here so the gesture receives event only once.
+      false
+    } else {
+      when (viewConfigHelper.getPointerEventsConfigForView(view)) {
+        PointerEventsConfig.NONE -> {
+          // This view and its children can't be the target
           false
         }
+        PointerEventsConfig.BOX_ONLY -> {
+          // This view is the target, its children don't matter
+          (
+            recordViewHandlersForPointer(view, coords, pointerId, event) ||
+              shouldHandlerlessViewBecomeTouchTarget(view, coords)
+            )
+        }
+        PointerEventsConfig.BOX_NONE -> {
+          // This view can't be the target, but its children might
+          when (view) {
+            is ViewGroup -> {
+              extractGestureHandlers(view, coords, pointerId, event).also { found ->
+                // A child view is handling touch, also extract handlers attached to this view
+                if (found) {
+                  recordViewHandlersForPointer(view, coords, pointerId, event)
+                }
+              }
+            }
+            // When <TextInput> has editable set to `false` getPointerEventsConfigForView returns
+            // `BOX_NONE` as it's `isEnabled` property is false. In this case we still want to extract
+            // handlers attached to the text input, as it makes sense that gestures would work on a
+            // non-editable TextInput.
+            is EditText -> {
+              recordViewHandlersForPointer(view, coords, pointerId, event)
+            }
+            else -> false
+          }
+        }
+        PointerEventsConfig.AUTO -> {
+          // Either this view or one of its children is the target
+          val found = if (view is ViewGroup) {
+            extractGestureHandlers(view, coords, pointerId, event)
+          } else {
+            false
+          }
 
-        (
-          recordViewHandlersForPointer(view, coords, pointerId, event) ||
-            found ||
-            shouldHandlerlessViewBecomeTouchTarget(view, coords)
-          )
+          (
+            recordViewHandlersForPointer(view, coords, pointerId, event) ||
+              found ||
+              shouldHandlerlessViewBecomeTouchTarget(view, coords)
+            )
+        }
       }
     }
 
@@ -699,18 +746,15 @@ class GestureHandlerOrchestrator(
 
       // TODO: this is not an ideal solution as we only consider ViewGroups that has no background set
       // TODO: ideally we should determine the pixel color under the given coordinates and return
-      // false if the color is transparent
-      val isLeafOrTransparent = view !is ViewGroup || view.getBackground() != null
-      return isLeafOrTransparent && isTransformedTouchPointInView(coords[0], coords[1], view)
+      val isLeaf = view !is ViewGroup
+      val isNotTransparent = view.getBackground() != null
+      val isDirectDetectorChild = view.parent is RNGestureHandlerDetectorView
+      val isPointInView = isTransformedTouchPointInView(coords[0], coords[1], view)
+
+      return (isLeaf || isNotTransparent || isDirectDetectorChild) && isPointInView
     }
 
-    private fun transformPointToChildViewCoords(
-      x: Float,
-      y: Float,
-      parent: ViewGroup,
-      child: View,
-      outLocalPoint: PointF,
-    ) {
+    fun transformPointToChildViewCoords(x: Float, y: Float, parent: ViewGroup, child: View, outLocalPoint: PointF) {
       var localX = x + parent.scrollX - child.left
       var localY = y + parent.scrollY - child.top
       val matrix = child.matrix

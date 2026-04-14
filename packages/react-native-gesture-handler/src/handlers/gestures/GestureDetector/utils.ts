@@ -13,16 +13,16 @@ import {
 import { tapGestureHandlerProps } from '../../TapGestureHandler';
 import { hoverGestureHandlerProps } from '../hoverGesture';
 import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import {
-  HandlerStateChangeEvent,
-  baseGestureHandlerWithDetectorProps,
-} from '../../gestureHandlerCommon';
-import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
+import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
 import { RNRenderer } from '../../../RNRenderer';
 import { useCallback, useRef, useState } from 'react';
 import { Reanimated } from '../reanimatedWrapper';
 import { onGestureHandlerEvent } from '../eventReceiver';
-import { WebEventHandler } from './types';
+import {
+  GestureHandlerNativeEvent,
+  PropsRef,
+  ResultEvent,
+} from '../../../web/interfaces';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -49,22 +49,28 @@ function convertToHandlerTag(ref: GestureRef): number {
 }
 
 function extractValidHandlerTags(interactionGroup: GestureRef[] | undefined) {
-  return (
-    interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
+  return Array.from(
+    new Set(
+      interactionGroup?.map(convertToHandlerTag)?.filter((tag) => tag > 0) ?? []
+    )
   );
 }
 
 export function extractGestureRelations(gesture: GestureType) {
-  const requireToFail = extractValidHandlerTags(gesture.config.requireToFail);
-  const simultaneousWith = extractValidHandlerTags(
+  gesture.config.requireToFail = extractValidHandlerTags(
+    gesture.config.requireToFail
+  );
+  gesture.config.simultaneousWith = extractValidHandlerTags(
     gesture.config.simultaneousWith
   );
-  const blocksHandlers = extractValidHandlerTags(gesture.config.blocksHandlers);
+  gesture.config.blocksHandlers = extractValidHandlerTags(
+    gesture.config.blocksHandlers
+  );
 
   return {
-    waitFor: requireToFail,
-    simultaneousHandlers: simultaneousWith,
-    blocksHandlers: blocksHandlers,
+    waitFor: gesture.config.requireToFail,
+    simultaneousHandlers: gesture.config.simultaneousWith,
+    blocksHandlers: gesture.config.blocksHandlers,
   };
 }
 
@@ -168,14 +174,15 @@ export function useForceRender() {
 }
 
 export function useWebEventHandlers() {
-  return useRef<WebEventHandler>({
-    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
-      onGestureHandlerEvent(e.nativeEvent);
+  return useRef<PropsRef>({
+    onGestureHandlerEvent: (e: ResultEvent) => {
+      onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
     },
-    onGestureHandlerStateChange: isNewWebImplementationEnabled()
-      ? (e: HandlerStateChangeEvent<unknown>) => {
-          onGestureHandlerEvent(e.nativeEvent);
-        }
-      : undefined,
+    onGestureHandlerStateChange: (e: ResultEvent) => {
+      onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
+    },
+    onGestureHandlerTouchEvent: () => {
+      // no-op
+    },
   });
 }

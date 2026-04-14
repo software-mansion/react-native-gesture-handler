@@ -1,11 +1,15 @@
 import { State } from '../../State';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent } from '../interfaces';
+import { AdaptedEvent, PropsRef } from '../interfaces';
 
 import GestureHandler from './GestureHandler';
 import ScaleGestureDetector, {
   ScaleGestureListener,
 } from '../detectors/ScaleGestureDetector';
+import { ActionType } from '../../ActionType';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
+import { SingleGestureName } from '../../v3/types';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;
@@ -48,51 +52,64 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleDetectorListener
   );
 
-  public init(ref: number, propsRef: React.RefObject<unknown>) {
-    super.init(ref, propsRef);
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
+    this.name = SingleGestureName.Pinch;
+  }
+
+  public override init(
+    ref: number,
+    propsRef: React.RefObject<PropsRef>,
+    actionType: ActionType
+  ) {
+    super.init(ref, propsRef, actionType);
 
     this.shouldCancelWhenOutside = false;
   }
 
-  protected transformNativeEvent() {
+  protected override transformNativeEvent() {
+    const focal = this.delegate.absoluteToLocal(
+      this.scaleGestureDetector.focusX,
+      this.scaleGestureDetector.focusY
+    );
+
     return {
-      focalX: this.scaleGestureDetector.focusX,
-      focalY: this.scaleGestureDetector.focusY,
+      focalX: focal.x,
+      focalY: focal.y,
       velocity: this.velocity,
       scale: this.scale,
     };
   }
 
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerDown(event);
-
-    this.tryToSendTouchEvent(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
     this.tryBegin();
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
-    if (this.state !== State.ACTIVE) {
-      return;
-    }
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
     if (this.state === State.ACTIVE) {
+      // We don't have to call it in the else branch as it would simply return `true`.
+      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+
       this.end();
     } else {
       this.fail();
     }
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     this.tracker.removeFromTracker(event.pointerId);
@@ -102,7 +119,7 @@ export default class PinchGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
@@ -111,7 +128,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.scaleGestureDetector.onTouchEvent(event, this.tracker);
     super.onPointerMove(event);
   }
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected override onPointerOutOfBounds(event: AdaptedEvent): void {
     if (this.tracker.trackedPointersCount < 2) {
       return;
     }
@@ -130,7 +147,7 @@ export default class PinchGestureHandler extends GestureHandler {
     this.begin();
   }
 
-  public activate(force?: boolean): void {
+  public override activate(force?: boolean): void {
     if (this.state !== State.ACTIVE) {
       this.resetProgress();
     }
@@ -138,11 +155,11 @@ export default class PinchGestureHandler extends GestureHandler {
     super.activate(force);
   }
 
-  protected onReset(): void {
+  protected override onReset(): void {
     this.resetProgress();
   }
 
-  protected resetProgress(): void {
+  protected override resetProgress(): void {
     if (this.state === State.ACTIVE) {
       return;
     }

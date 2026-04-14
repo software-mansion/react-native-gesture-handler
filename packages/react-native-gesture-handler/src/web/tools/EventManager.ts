@@ -94,6 +94,15 @@ export default abstract class EventManager<T> {
     this.pointersInBounds.splice(index, 1);
   }
 
+  public setEnabled(value: boolean | null) {
+    if (value) {
+      this.registerListeners();
+    } else {
+      this.resetManager();
+      this.unregisterListeners();
+    }
+  }
+
   public resetManager(): void {
     // Reseting activePointersCounter is necessary to make gestures such as pinch work properly
     // There are gestures that end when there is still one active pointer (like pinch/rotation)

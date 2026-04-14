@@ -35,7 +35,7 @@ export class RotationGesture extends ContinousBaseGesture<
     this.handlerName = 'RotationGestureHandler';
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         RotationGestureHandlerEventPayload & RotationGestureChangeEventPayload

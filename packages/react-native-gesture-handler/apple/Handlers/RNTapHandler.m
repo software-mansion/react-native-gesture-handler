@@ -63,7 +63,12 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)triggerAction
 {
-  [_gestureHandler handleGesture:self];
+  [_gestureHandler handleGesture:self fromReset:NO fromManualStateChange:NO];
+}
+
+- (void)triggerActionFromReset
+{
+  [_gestureHandler handleGesture:self fromReset:YES fromManualStateChange:NO];
 }
 
 - (void)cancel
@@ -73,6 +78,11 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   if (_tapsSoFar == 0) {
@@ -116,7 +126,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
-    [self reset];
     return;
   }
 
@@ -130,7 +139,6 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
-    [self reset];
   } else {
     [self performSelector:@selector(cancel) withObject:nil afterDelay:_maxDelay];
   }
@@ -141,7 +149,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
   self.state = UIGestureRecognizerStateCancelled;
 
-  [self reset];
+  [self triggerAction];
 }
 
 #if TARGET_OS_OSX
@@ -185,7 +193,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }
@@ -243,9 +251,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (void)reset
 {
-  if (self.state == UIGestureRecognizerStateFailed) {
-    [self triggerAction];
-  }
+  [self triggerActionFromReset];
 
   [_gestureHandler.pointerTracker reset];
 
@@ -285,9 +291,9 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   recognizer.maxDistSq = NAN;
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)updateConfig:(NSDictionary *)config
 {
-  [super configure:config];
+  [super updateConfig:config];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
 
   APPLY_INT_PROP(numberOfTaps);

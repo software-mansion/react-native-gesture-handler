@@ -19,7 +19,7 @@ export class ManualGesture extends ContinousBaseGesture<
     this.handlerName = 'ManualGestureHandler';
   }
 
-  onChange(
+  override onChange(
     callback: (event: GestureUpdateEvent<Record<string, never>>) => void
   ) {
     // @ts-ignore TS being overprotective, Record<string, never> is Record

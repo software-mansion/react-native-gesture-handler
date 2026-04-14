@@ -43,14 +43,26 @@
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
+  [self handleGesture:recognizer fromReset:NO fromManualStateChange:NO];
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange
+{
   if (self.state == UIGestureRecognizerStateBegan) {
     self.rotation = 0;
   }
-  [_gestureHandler handleGesture:recognizer];
+  [_gestureHandler handleGesture:recognizer fromReset:fromReset fromManualStateChange:fromManualStateChange];
 }
 
 - (void)interactionsBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  if (self.state == UIGestureRecognizerStatePossible && ![self.delegate gestureRecognizerShouldBegin:self]) {
+    self.state = UIGestureRecognizerStateFailed;
+    return;
+  }
+
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -97,7 +109,7 @@
 #else
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   [super touchesBegan:touches withEvent:event];
   [self interactionsBegan:touches withEvent:event];
 }

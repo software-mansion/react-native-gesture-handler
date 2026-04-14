@@ -29,6 +29,25 @@ function getAndroidStatesConfig(
   ];
 }
 
+function getAndroidAccessibilityStatesConfig(
+  handlePressIn: (event: PressableEvent) => void,
+  handlePressOut: (event: PressableEvent) => void
+) {
+  return [
+    {
+      eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
+      callback: handlePressIn,
+    },
+    {
+      eventName: StateMachineEvent.NATIVE_BEGIN,
+    },
+    {
+      eventName: StateMachineEvent.FINALIZE,
+      callback: handlePressOut,
+    },
+  ];
+}
+
 function getIosStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
   handlePressOut: (event: PressableEvent) => void
@@ -38,7 +57,7 @@ function getIosStatesConfig(
       eventName: StateMachineEvent.LONG_PRESS_TOUCHES_DOWN,
     },
     {
-      eventName: StateMachineEvent.NATIVE_START,
+      eventName: StateMachineEvent.NATIVE_BEGIN,
       callback: handlePressIn,
     },
     {
@@ -109,10 +128,13 @@ function getUniversalStatesConfig(
 
 export function getStatesConfig(
   handlePressIn: (event: PressableEvent) => void,
-  handlePressOut: (event: PressableEvent) => void
+  handlePressOut: (event: PressableEvent) => void,
+  screenReaderActive: boolean
 ): StateDefinition[] {
   if (Platform.OS === 'android') {
-    return getAndroidStatesConfig(handlePressIn, handlePressOut);
+    return screenReaderActive
+      ? getAndroidAccessibilityStatesConfig(handlePressIn, handlePressOut)
+      : getAndroidStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'ios') {
     return getIosStatesConfig(handlePressIn, handlePressOut);
   } else if (Platform.OS === 'web') {
