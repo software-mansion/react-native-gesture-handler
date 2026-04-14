@@ -1,7 +1,7 @@
 import type { LegacyRef, PropsWithChildren } from 'react';
 import React, { forwardRef } from 'react';
 import { isRNSVGNode } from '../../../web/utils';
-import { tagMessage } from 'packages/react-native-gesture-handler/src/utils';
+import { tagMessage } from '../../../utils';
 
 export const Wrap = forwardRef<HTMLDivElement, PropsWithChildren<{}>>(
   ({ children }, ref) => {
