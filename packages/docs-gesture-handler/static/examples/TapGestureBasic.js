@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
-  Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -17,13 +17,16 @@ const COLORS = ['#b58df1', '#fa7f7c', '#ffe780', '#82cab2'];
 export default function App() {
   const colorIndex = useSharedValue(1);
 
-  const tap = Gesture.Tap().onEnd(() => {
-    if (colorIndex.value > COLORS.length) {
-      colorIndex.value = colorIndex.value % 1 === 0 ? 1 : colorIndex.value % 1;
-    }
+  const tap = useTapGesture({
+    onActivate: () => {
+      if (colorIndex.value > COLORS.length) {
+        colorIndex.value =
+          colorIndex.value % 1 === 0 ? 1 : colorIndex.value % 1;
+      }
 
-    const nextIndex = Math.ceil(colorIndex.value + 1);
-    colorIndex.value = withTiming(nextIndex, { duration: 250 });
+      const nextIndex = Math.ceil(colorIndex.value + 1);
+      colorIndex.value = withTiming(nextIndex, { duration: 250 });
+    },
   });
 
   const animatedStyle = useAnimatedStyle(() => ({

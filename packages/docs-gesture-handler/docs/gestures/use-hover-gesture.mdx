@@ -5,19 +5,12 @@ sidebar_label: Hover gesture
 sidebar_position: 7
 ---
 
-import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
-
-import useBaseUrl from '@docusaurus/useBaseUrl';
+import { webContainer } from '@site/src/utils/getGestureStyles';
 
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
 <div className={webContainer}>
-  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
-    </video>
-  </div>
   <InteractiveExample
     component={<HoverGestureBasic/>}
     src={HoverGestureBasicSrc}
@@ -34,12 +27,6 @@ import SharedValueInfo from './\_shared/shared-value-info.md';
 Gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional [visual effects](#effect-ios-only) may be configured.
-
-  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
-    </video>
-  </div>
 
 :::note
 Don't rely on `Hover` gesture to continue after the mouse button is clicked or the stylus touches the screen. If you want to handle both cases, [compose](/docs/fundamentals/gesture-composition) it with [`Pan`](/docs/gestures/use-pan-gesture) gesture.

@@ -15,11 +15,6 @@ import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBas
 import MouseButtonProp from './\_shared/mouse-button.mdx';
 
 <div className={webContainer}>
-  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
-    </video>
-  </div>
   <InteractiveExample
     component={<TapGestureBasic/>}
     src={TapGestureBasicSrc}
@@ -40,12 +35,6 @@ The required number of taps and allowed distance from initial position may be co
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
 In order for a gesture to activate, the specified gesture requirements such as [`minPointers`](#minpointers), [`numberOfTaps`](#numberoftaps), [`maxDistance`](#maxdistance), [`maxDuration`](#maxduration), and [`maxDelay`](#maxdelay) must be met.
-
-  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
-    </video>
-  </div>
 
 ## Example
 

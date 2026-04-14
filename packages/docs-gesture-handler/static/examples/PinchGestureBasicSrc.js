@@ -1,9 +1,9 @@
 import React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import {
-  Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  usePinchGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -20,18 +20,19 @@ export default function App() {
   const scale = useSharedValue(1);
   const startScale = useSharedValue(0);
 
-  const pinch = Gesture.Pinch()
-    .onStart(() => {
+  const pinch = usePinchGesture({
+    onActivate: () => {
       startScale.value = scale.value;
-    })
-    .onUpdate((event) => {
+    },
+    onUpdate: (event) => {
       scale.value = clamp(
         startScale.value * event.scale,
         0.5,
         Math.min(width / 100, height / 100)
       );
-    })
-    .runOnJS(true);
+    },
+    runOnJS: true,
+  });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
