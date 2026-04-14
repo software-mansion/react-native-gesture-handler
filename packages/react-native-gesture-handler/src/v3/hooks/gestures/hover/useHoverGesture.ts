@@ -1,63 +1,22 @@
-import { StylusData } from '../../../../handlers/gestureHandlerCommon';
-import { HoverEffect } from '../../../../handlers/gestures/hoverGesture';
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  HandlerData,
-  SingleGestureName,
-  WithSharedValue,
-  GestureEvent,
-} from '../../../types';
+import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   useClonedAndRemappedConfig,
   getChangeEventCalculator,
 } from '../../utils';
 import {
-  HoverGestureExternalProperties,
-  HoverGestureNativeProperties,
-} from './HoverProperties';
-
-type HoverHandlerData = {
-  x: number;
-  y: number;
-  absoluteX: number;
-  absoluteY: number;
-  stylusData: StylusData;
-  changeX: number;
-  changeY: number;
-};
-
-type HoverGestureProperties = WithSharedValue<
-  HoverGestureExternalProperties,
-  HoverEffect
->;
-
-type HoverGestureInternalProperties = WithSharedValue<
-  HoverGestureNativeProperties,
-  HoverEffect
->;
-
-export type HoverGestureConfig = ExcludeInternalConfigProps<
-  BaseGestureConfig<HoverHandlerData, HoverGestureProperties>
->;
-
-type HoverGestureInternalConfig = BaseGestureConfig<
+  HoverExtendedHandlerData,
+  HoverGesture,
+  HoverGestureConfig,
+  HoverGestureInternalConfig,
+  HoverGestureInternalProperties,
+  HoverGestureProperties,
   HoverHandlerData,
-  HoverGestureInternalProperties
->;
-
-export type HoverGestureEvent = GestureEvent<HoverHandlerData>;
-
-export type HoverGesture = SingleGesture<
-  HoverHandlerData,
-  HoverGestureInternalProperties
->;
+} from './HoverTypes';
 
 function diffCalculator(
-  current: HandlerData<HoverHandlerData>,
-  previous: HandlerData<HoverHandlerData> | null
+  current: HandlerData<HoverExtendedHandlerData>,
+  previous: HandlerData<HoverExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -66,10 +25,18 @@ function diffCalculator(
   };
 }
 
+function fillInDefaultValues(event: GestureEvent<HoverExtendedHandlerData>) {
+  'worklet';
+
+  event.changeX = 0;
+  event.changeY = 0;
+}
+
 function transformHoverProps(
   config: HoverGestureConfig & HoverGestureInternalConfig
 ) {
   config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
 
   return config;
 }
@@ -78,9 +45,10 @@ const HoverPropsMapping = new Map<string, string>([['effect', 'hoverEffect']]);
 
 export function useHoverGesture(config: HoverGestureConfig): HoverGesture {
   const hoverConfig = useClonedAndRemappedConfig<
-    HoverHandlerData,
     HoverGestureProperties,
-    HoverGestureInternalProperties
+    HoverHandlerData,
+    HoverGestureInternalProperties,
+    HoverExtendedHandlerData
   >(config, HoverPropsMapping, transformHoverProps);
 
   return useGesture(SingleGestureName.Hover, hoverConfig);

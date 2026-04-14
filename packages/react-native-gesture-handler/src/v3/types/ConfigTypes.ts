@@ -24,16 +24,22 @@ export type GestureEndEventCallback<THandlerData> = (
 
 export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
 
-export type GestureCallbacks<THandlerData> = {
-  onBegin?: GestureEventCallback<THandlerData>;
-  onActivate?: GestureEventCallback<THandlerData>;
-  onDeactivate?: GestureEndEventCallback<THandlerData>;
-  onFinalize?: GestureEndEventCallback<THandlerData>;
-  onUpdate?: GestureEventCallback<THandlerData> | AnimatedEvent;
-  onTouchesDown?: GestureTouchEventCallback;
-  onTouchesMove?: GestureTouchEventCallback;
-  onTouchesUp?: GestureTouchEventCallback;
-  onTouchesCancel?: GestureTouchEventCallback;
+export type GestureCallbacks<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+> = {
+  onBegin?: GestureEventCallback<THandlerData> | undefined;
+  onActivate?: GestureEventCallback<TExtendedHandlerData> | undefined;
+  onUpdate?:
+    | GestureEventCallback<TExtendedHandlerData>
+    | AnimatedEvent
+    | undefined;
+  onDeactivate?: GestureEndEventCallback<TExtendedHandlerData> | undefined;
+  onFinalize?: GestureEndEventCallback<THandlerData> | undefined;
+  onTouchesDown?: GestureTouchEventCallback | undefined;
+  onTouchesMove?: GestureTouchEventCallback | undefined;
+  onTouchesUp?: GestureTouchEventCallback | undefined;
+  onTouchesCancel?: GestureTouchEventCallback | undefined;
 };
 
 export type GestureRelations = {
@@ -42,32 +48,38 @@ export type GestureRelations = {
   blocksHandlers: number[];
 };
 
-export type InternalConfigProps<THandlerData> = {
-  shouldUseReanimatedDetector?: boolean;
-  dispatchesReanimatedEvents?: boolean;
-  dispatchesAnimatedEvents?: boolean;
-  needsPointerData?: boolean;
-  userSelect?: UserSelect;
-  touchAction?: TouchAction;
-  enableContextMenu?: boolean;
-  changeEventCalculator?: ChangeCalculatorType<THandlerData>;
+export type InternalConfigProps<TExtendedHandlerData> = {
+  shouldUseReanimatedDetector?: boolean | undefined;
+  dispatchesReanimatedEvents?: boolean | undefined;
+  dispatchesAnimatedEvents?: boolean | undefined;
+  needsPointerData?: boolean | undefined;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
+  changeEventCalculator?:
+    | ChangeCalculatorType<TExtendedHandlerData>
+    | undefined;
+  fillInDefaultValues?:
+    | ((event: GestureEvent<TExtendedHandlerData>) => void)
+    | undefined;
 };
 
 export type CommonGestureConfig = {
-  disableReanimated?: boolean;
-  useAnimated?: boolean;
-  testID?: string;
+  disableReanimated?: boolean | undefined;
+  useAnimated?: boolean | undefined;
+  testID?: string | undefined;
 } & WithSharedValue<
   {
-    runOnJS?: boolean;
-    enabled?: boolean;
-    shouldCancelWhenOutside?: boolean;
-    hitSlop?: HitSlop;
-    activeCursor?: ActiveCursor;
-    mouseButton?: MouseButton;
-    cancelsTouchesInView?: boolean;
+    runOnJS?: boolean | undefined;
+    enabled?: boolean | undefined;
+    shouldCancelWhenOutside?: boolean | undefined;
+    hitSlop?: HitSlop | undefined;
+    activeCursor?: ActiveCursor | undefined;
+    mouseButton?: MouseButton | undefined;
+    cancelsTouchesInView?: boolean | undefined;
+    manualActivation?: boolean | undefined;
   },
-  HitSlop | ActiveCursor | MouseButton
+  ActiveCursor | MouseButton
 >;
 
 export type ComposedGestureConfig = {

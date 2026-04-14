@@ -42,7 +42,6 @@ typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
   jsi::Runtime *_rnRuntime;
   int _moduleId;
 
-  bool _checkedIfReanimatedIsAvailable;
   bool _isReanimatedAvailable;
   bool _uiRuntimeDecorated;
 }
@@ -121,10 +120,6 @@ RCT_EXPORT_MODULE()
 
 - (NSNumber *)createGestureHandler:(NSString *)handlerName handlerTag:(double)handlerTag config:(NSDictionary *)config
 {
-  if (!_checkedIfReanimatedIsAvailable) {
-    _isReanimatedAvailable = [self.moduleRegistry moduleForName:"ReanimatedModule"] != nil;
-  }
-
   if (_isReanimatedAvailable && !_uiRuntimeDecorated) {
     _uiRuntimeDecorated = [self installUIRuntimeBindings];
   }
@@ -176,19 +171,27 @@ RCT_EXPORT_MODULE()
 {
   // On the new arch we rely on `flushOperations` for scheduling the operations on the UI thread.
   // On the old arch we rely on `uiManagerWillPerformMounting`
-  if (_operations.count == 0) {
-    return;
+  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
+
+  if (_operations.count > 0) {
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
+      for (GestureHandlerOperation operation in operations) {
+        operation(manager);
+      }
+    }];
   }
 
-  RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  NSArray<GestureHandlerOperation> *operations = _operations;
-  _operations = [NSMutableArray new];
-
   [self.viewRegistry_DEPRECATED addUIBlock:^(RCTViewRegistry *viewRegistry) {
-    for (GestureHandlerOperation operation in operations) {
-      operation(manager);
-    }
+    [manager reattachHandlersIfNeeded];
   }];
+}
+
+- (void)setReanimatedAvailable:(BOOL)isAvailable
+{
+  _isReanimatedAvailable = isAvailable;
 }
 
 - (void)setGestureState:(int)state forHandler:(int)handlerTag
@@ -208,6 +211,12 @@ RCT_EXPORT_MODULE()
   RNGestureHandlerManager *manager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
   RNGestureHandler *handler = [manager handlerWithTag:@(handlerTag)];
 
+  if (handler.hostDetectorView == nil && [handler usesNativeOrVirtualDetector]) {
+    @throw [NSException exceptionWithName:@"HandlerNotAttached"
+                                   reason:@"Manually handled gesture had not been assigned to any detector"
+                                 userInfo:nil];
+  }
+
   if (handler != nil) {
     if (state == 1) { // FAILED
       handler.recognizer.state = RNGHGestureRecognizerStateFailed;
@@ -216,6 +225,10 @@ RCT_EXPORT_MODULE()
     } else if (state == 3) { // CANCELLED
       handler.recognizer.state = RNGHGestureRecognizerStateCancelled;
     } else if (state == 4) { // ACTIVE
+      // We don't allow activation of gestures which haven't received any touches
+      if (handler.lastState == RNGestureHandlerStateUndetermined) {
+        return;
+      }
       [handler stopActivationBlocker];
       handler.recognizer.state = RNGHGestureRecognizerStateBegan;
     } else if (state == 5) { // ENDED
@@ -231,7 +244,7 @@ RCT_EXPORT_MODULE()
   // do not send state change event when activating because it bypasses
   // shouldRequireFailureOfGestureRecognizer
   if (state != 4) {
-    [handler handleGesture:handler.recognizer fromReset:NO];
+    [handler handleGesture:handler.recognizer fromReset:NO fromManualStateChange:YES];
   }
 }
 

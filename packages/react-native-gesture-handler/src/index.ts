@@ -15,10 +15,13 @@ export type {
   HandlerStateChangeEventPayload,
   // Pointer events
   GestureTouchEvent,
+  GestureTouchEvent as SingleGestureTouchEvent,
   TouchData,
   // New api event types
   GestureUpdateEvent,
   GestureStateChangeEvent,
+  // Config types
+  ActiveCursor,
 } from './handlers/gestureHandlerCommon';
 export { MouseButton } from './handlers/gestureHandlerCommon';
 export type { GestureType } from './handlers/gestures/gesture';
@@ -49,9 +52,8 @@ export { PanGestureHandler } from './handlers/PanGestureHandler';
 export { PinchGestureHandler } from './handlers/PinchGestureHandler';
 export { RotationGestureHandler } from './handlers/RotationGestureHandler';
 export { FlingGestureHandler } from './handlers/FlingGestureHandler';
-export { default as createNativeWrapper } from './handlers/createNativeWrapper';
+export { default as legacy_createNativeWrapper } from './handlers/createNativeWrapper';
 export type { NativeViewGestureHandlerProps } from './handlers/NativeViewGestureHandler';
-export { GestureDetector as LegacyGestureDetector } from './handlers/gestures/GestureDetector';
 export { GestureObjects as Gesture } from './handlers/gestures/gestureObjects';
 export type { TapGestureType as LegacyTapGesture } from './handlers/gestures/tapGesture';
 export type { PanGestureType as LegacyPanGesture } from './handlers/gestures/panGesture';
@@ -68,7 +70,7 @@ export type {
   SimultaneousGestureType as LegacySimultaneousGesture,
   ExclusiveGestureType as LegacyExclusiveGesture,
 } from './handlers/gestures/gestureComposition';
-export type { GestureStateManagerType as GestureStateManager } from './handlers/gestures/gestureStateManager';
+export type { GestureStateManagerType as LegacyGestureStateManager } from './handlers/gestures/gestureStateManager';
 export { NativeViewGestureHandler } from './handlers/NativeViewGestureHandler';
 export type {
   LegacyRawButtonProps,
@@ -82,7 +84,6 @@ export {
   LegacyBaseButton,
   LegacyRectButton,
   LegacyBorderlessButton,
-  LegacyPureNativeButton,
 } from './components/GestureButtons';
 
 export type {
@@ -105,7 +106,7 @@ export {
   LegacyRefreshControl,
 } from './components/GestureComponents';
 
-export { Text } from './components/Text';
+export { LegacyText } from './components/Text';
 export { HoverEffect } from './handlers/gestures/hoverGesture';
 export type {
   // Events
@@ -148,11 +149,10 @@ export type {
 
 export type {
   PressableProps,
+  LegacyPressableProps,
   PressableStateCallbackType,
 } from './components/Pressable';
-export { default as Pressable } from './components/Pressable';
-
-export type { GestureTouchEvent as SingleGestureTouchEvent } from './handlers/gestureHandlerCommon';
+export { default as LegacyPressable } from './components/Pressable';
 
 export * from './v3';
 

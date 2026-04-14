@@ -1,4 +1,5 @@
 #import "RNGestureHandlerDetector.h"
+#import "RNGestureHandlerButtonComponentView.h"
 #import "RNGestureHandlerDetectorComponentDescriptor.h"
 #import "RNGestureHandlerModule.h"
 
@@ -9,6 +10,7 @@
 #import <react/renderer/components/rngesturehandler_codegen/Props.h>
 #import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
 
+#import <React/RCTScrollViewComponentView.h>
 #include <unordered_map>
 
 @interface RNGestureHandlerDetector () <RCTRNGestureHandlerDetectorViewProtocol>
@@ -45,16 +47,17 @@
 {
   if (newWindow == nil) {
     RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-    react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
-        const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
+    react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
+
+    const auto &props = *std::static_pointer_cast<const RNGestureHandlerDetectorProps>(_props);
 
     for (const auto handler : props.handlerTags) {
       NSNumber *handlerTag = [NSNumber numberWithInt:handler];
-      [handlerManager.registry detachHandlerWithTag:handlerTag];
+      [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
     }
     for (const auto &child : _attachedVirtualHandlers) {
       for (id handlerTag : child.second) {
-        [handlerManager.registry detachHandlerWithTag:handlerTag];
+        [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
       }
     }
     _attachedVirtualHandlers.clear();
@@ -155,6 +158,12 @@
 {
   [super didAddSubview:view];
 
+  if (_nativeHandlers.count > 0) {
+    react_native_assert(
+        self.subviews.count == 1 &&
+        "Cannot have more than one child view when native gesture handlers are attached to the detector");
+  }
+
   [self tryAttachNativeHandlersToChildView];
 }
 
@@ -188,9 +197,9 @@
       attachedHandlers:(NSMutableSet *)attachedHandlers
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
 
-      NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
+  NSMutableSet *handlersToDetach = [attachedHandlers mutableCopy];
 
   for (const int tag : handlerTags) {
     [handlersToDetach removeObject:@(tag)];
@@ -198,6 +207,9 @@
       if ([self shouldAttachGestureToSubview:@(tag)] && actionType == RNGestureHandlerActionTypeNativeDetector) {
         // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that
         // case we cannot attach `NativeViewGestureHandlers` here and we have to do it in `didAddSubview` method.
+        react_native_assert(
+            self.subviews.count <= 1 &&
+            "Cannot attach native gesture handlers when the detector has multiple children");
         [_nativeHandlers addObject:@(tag)];
       } else {
         if (actionType == RNGestureHandlerActionTypeVirtualDetector) {
@@ -229,7 +241,7 @@
   }
 
   for (const id tag : handlersToDetach) {
-    [handlerManager.registry detachHandlerWithTag:tag];
+    [handlerManager.registry detachHandlerWithTag:tag fromHostDetector:self];
     [attachedHandlers removeObject:tag];
     [_nativeHandlers removeObject:tag];
   }
@@ -260,9 +272,9 @@
 - (void)updateVirtualChildren:(const std::vector<RNGestureHandlerDetectorVirtualChildrenStruct> &)virtualChildren
 {
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
-  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager")
+  react_native_assert(handlerManager != nullptr && "Tried to access a non-existent handler manager");
 
-      NSMutableSet *virtualChildrenToDetach = [NSMutableSet set];
+  NSMutableSet *virtualChildrenToDetach = [NSMutableSet set];
   for (const auto &child : _attachedVirtualHandlers) {
     [virtualChildrenToDetach addObject:@(child.first)];
   }
@@ -273,7 +285,7 @@
 
   for (const NSNumber *tag : virtualChildrenToDetach) {
     for (id handlerTag : _attachedVirtualHandlers[tag.intValue]) {
-      [handlerManager.registry detachHandlerWithTag:handlerTag];
+      [handlerManager.registry detachHandlerWithTag:handlerTag fromHostDetector:self];
     }
     _attachedVirtualHandlers.erase(tag.intValue);
   }
@@ -291,14 +303,28 @@
 
 - (void)tryAttachNativeHandlersToChildView
 {
+  if (_nativeHandlers.count == 0) {
+    return;
+  }
+
+  react_native_assert(
+      self.subviews.count == 1 &&
+      "Cannot have more than one child view when native gesture handlers are attached to the detector");
+
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   RNGHUIView *view = self.subviews[0];
 
+  // TODO: figure out how to do it correctly
   if ([view isKindOfClass:[RCTViewComponentView class]]) {
     RCTViewComponentView *componentView = (RCTViewComponentView *)view;
     if (componentView.contentView != nil) {
       view = componentView.contentView;
+    } else {
+      auto buttonView = [self tryFindGestureHandlerButton:view];
+      if (buttonView != nil) {
+        view = buttonView;
+      }
     }
   }
 
@@ -317,9 +343,28 @@
   RNGestureHandlerManager *handlerManager = [RNGestureHandlerModule handlerManagerForModuleId:_moduleId];
 
   for (NSNumber *handlerTag in _nativeHandlers) {
-    [[handlerManager registry] detachHandlerWithTag:handlerTag];
+    [[handlerManager registry] detachHandlerWithTag:handlerTag fromHostDetector:self];
     [_attachedHandlers removeObject:handlerTag];
   }
+}
+
+- (RNGHUIView *)tryFindGestureHandlerButton:(RNGHUIView *)inView
+{
+  if (inView.subviews.count == 0) {
+    return nil;
+  }
+
+  auto view = inView.subviews[0];
+
+  if ([view isKindOfClass:[RNGestureHandlerButtonComponentView class]]) {
+    RCTViewComponentView *componentView = (RCTViewComponentView *)view;
+
+    if (componentView.contentView != nil) {
+      return componentView.contentView;
+    }
+  }
+
+  return nil;
 }
 
 @end

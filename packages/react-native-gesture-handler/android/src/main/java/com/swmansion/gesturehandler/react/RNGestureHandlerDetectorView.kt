@@ -2,6 +2,8 @@ package com.swmansion.gesturehandler.react
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -9,6 +11,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootView
 
 class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   private val reactContext: ThemedReactContext
@@ -32,6 +35,43 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
 
     attachHandlers(newHandlers)
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+
+    if (moduleId != -1) {
+      handlersToAttach?.let {
+        attachHandlers(it)
+      }
+
+      virtualChildrenToAttach?.let {
+        attachVirtualChildren(it)
+      }
+
+      handlersToAttach = null
+      virtualChildrenToAttach = null
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    if (attachedHandlers.isNotEmpty()) {
+      handlersToAttach = attachedHandlers.toMutableList().also {
+        it.addAll(handlersToAttach ?: emptyList())
+      }
+    }
+
+    if (attachedVirtualHandlers.isNotEmpty()) {
+      virtualChildrenToAttach = attachedVirtualHandlers.map {
+        VirtualChildren(it.value.toList(), it.key)
+      }.toMutableList().also {
+        it.addAll(virtualChildrenToAttach ?: emptyList())
+      }
+    }
+
+    detachAllHandlers()
+
+    super.onDetachedFromWindow()
   }
 
   fun setModuleId(id: Int) {
@@ -68,6 +108,12 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   override fun addView(child: View, index: Int, params: LayoutParams?) {
     super.addView(child, index, params)
 
+    if (nativeHandlers.isNotEmpty()) {
+      assert(childCount == 1) {
+        "Cannot have more than one child view when native gesture handlers are attached to the detector"
+      }
+    }
+
     tryAttachNativeHandlersToChildView(child)
   }
 
@@ -94,6 +140,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
         if (shouldAttachGestureToChildView(tag) && actionType == GestureHandler.ACTION_TYPE_NATIVE_DETECTOR) {
           // It might happen that `attachHandlers` will be called before children are added into view hierarchy. In that case we cannot
           // attach `NativeViewGestureHandlers` here and we have to do it in `addView` method.
+          assert(childCount <= 1) {
+            "Cannot attach native gesture handlers when the detector has multiple children"
+          }
           nativeHandlers.add(tag)
         } else {
           registry.attachHandlerToView(tag, viewTag, actionType, this)
@@ -106,7 +155,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     }
 
     for (tag in handlersToDetach) {
-      registry.detachHandler(tag)
+      registry.detachHandlerFromHostDetector(tag, this)
       nativeHandlers.remove(tag)
       attachedHandlers.remove(tag)
     }
@@ -131,7 +180,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
 
     for (child in virtualChildrenToDetach) {
       for (tag in attachedVirtualHandlers[child]!!) {
-        registry.detachHandler(tag)
+        registry.detachHandlerFromHostDetector(tag, this)
       }
       attachedVirtualHandlers.remove(tag)
     }
@@ -151,6 +200,14 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }
 
   private fun tryAttachNativeHandlersToChildView(child: View) {
+    if (nativeHandlers.isEmpty()) {
+      return
+    }
+
+    assert(childCount == 1) {
+      "Cannot have more than one child view when native gesture handlers are attached to the detector"
+    }
+
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
@@ -160,6 +217,9 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     // Note: RefreshControl is wrapped with a VirtualDetector, and native gestures for it are attached in `attachVirtualChildren`.
     val id = if (child is ReactSwipeRefreshLayout) {
       child.getChildAt(0).id
+      // TODO: figure out how to do it correctly
+    } else if (child is ViewGroup && child.isNotEmpty()) {
+      child.tryFindGestureHandlerButton()?.id ?: child.id
     } else {
       child.id
     }
@@ -176,7 +236,7 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in nativeHandlers) {
-      registry.detachHandler(tag)
+      registry.detachHandlerFromHostDetector(tag, this)
       attachedHandlers.remove(tag)
     }
   }
@@ -186,21 +246,25 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
     eventDispatcher?.dispatchEvent(event)
   }
 
-  fun onViewDrop() {
+  fun detachAllHandlers() {
     val registry = RNGestureHandlerModule.registries[moduleId]
       ?: throw Exception("Tried to access a non-existent registry")
 
     for (tag in attachedHandlers.toMutableSet()) {
-      registry.detachHandler(tag)
+      registry.detachHandlerFromHostDetector(tag, this)
       attachedHandlers.remove(tag)
     }
 
     for (child in attachedVirtualHandlers) {
       for (tag in child.value) {
-        registry.detachHandler(tag)
+        registry.detachHandlerFromHostDetector(tag, this)
       }
       child.value.clear()
     }
+  }
+
+  fun recordHandlerIfNotPresent(handler: GestureHandler) {
+    RNGestureHandlerRootView.findGestureHandlerRootView(this)?.recordHandlerIfNotPresent(handler)
   }
 
   private fun ReadableArray.mapVirtualChildren(): List<VirtualChildren> = List(size()) { i ->
@@ -212,4 +276,15 @@ class RNGestureHandlerDetectorView(context: Context) : ReactViewGroup(context) {
   }.filterNotNull()
 
   private fun ReadableArray.toIntList(): List<Int> = List(size()) { getInt(it) }
+
+  private fun ViewGroup.tryFindGestureHandlerButton(): RNGestureHandlerButtonViewManager.ButtonViewGroup? {
+    if (isNotEmpty()) {
+      val child = getChildAt(0)
+      if (child is RNGestureHandlerButtonViewManager.ButtonViewGroup) {
+        return child
+      }
+    }
+
+    return null
+  }
 }

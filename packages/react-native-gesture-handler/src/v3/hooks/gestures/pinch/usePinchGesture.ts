@@ -1,46 +1,21 @@
-import {
-  BaseGestureConfig,
-  ExcludeInternalConfigProps,
-  SingleGesture,
-  HandlerData,
-  SingleGestureName,
-  GestureEvent,
-} from '../../../types';
+import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   useClonedAndRemappedConfig,
   getChangeEventCalculator,
 } from '../../utils';
-import { PinchGestureNativeProperties } from './PinchProperties';
-
-type PinchHandlerData = {
-  scale: number;
-  focalX: number;
-  focalY: number;
-  velocity: number;
-  scaleChange: number;
-};
-
-type PinchGestureProperties = PinchGestureNativeProperties;
-
-type PinchGestureInternalConfig = BaseGestureConfig<
+import {
+  PinchExtendedHandlerData,
+  PinchGesture,
+  PinchGestureConfig,
+  PinchGestureInternalConfig,
+  PinchGestureProperties,
   PinchHandlerData,
-  PinchGestureProperties
->;
-
-export type PinchGestureConfig =
-  ExcludeInternalConfigProps<PinchGestureInternalConfig>;
-
-export type PinchGestureEvent = GestureEvent<PinchHandlerData>;
-
-export type PinchGesture = SingleGesture<
-  PinchHandlerData,
-  PinchGestureProperties
->;
+} from './PinchTypes';
 
 function diffCalculator(
-  current: HandlerData<PinchHandlerData>,
-  previous: HandlerData<PinchHandlerData> | null
+  current: HandlerData<PinchExtendedHandlerData>,
+  previous: HandlerData<PinchExtendedHandlerData> | null
 ) {
   'worklet';
   return {
@@ -48,10 +23,16 @@ function diffCalculator(
   };
 }
 
+function fillInDefaultValues(event: GestureEvent<PinchExtendedHandlerData>) {
+  'worklet';
+  event.scaleChange = 1;
+}
+
 function transformPinchProps(
   config: PinchGestureConfig & PinchGestureInternalConfig
 ) {
   config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
 
   return config;
 }
@@ -60,13 +41,12 @@ const PinchPropsMapping = new Map<string, string>();
 
 export function usePinchGesture(config: PinchGestureConfig): PinchGesture {
   const pinchConfig = useClonedAndRemappedConfig<
-    PinchHandlerData,
     PinchGestureProperties,
+    PinchHandlerData,
     // no internal props, pass record as PinchGestureProperties maps everything to never
-    Record<string, unknown>
+    Record<string, unknown>,
+    PinchExtendedHandlerData
   >(config, PinchPropsMapping, transformPinchProps);
-
-  pinchConfig.changeEventCalculator = getChangeEventCalculator(diffCalculator);
 
   return useGesture(SingleGestureName.Pinch, pinchConfig);
 }

@@ -11,22 +11,48 @@ export enum GestureDetectorType {
   Intercepting,
 }
 
-export interface NativeDetectorProps<THandlerData, TConfig> {
+interface CommonGestureDetectorProps {
   children?: React.ReactNode;
-  gesture: Gesture<THandlerData, TConfig>;
-  userSelect?: UserSelect;
-  touchAction?: TouchAction;
-  enableContextMenu?: boolean;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 }
 
-export interface InterceptingGestureDetectorProps<THandlerData, TConfig> {
-  children?: React.ReactNode;
-  gesture?: Gesture<THandlerData, TConfig>;
+export interface NativeDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> extends CommonGestureDetectorProps {
+  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
 }
 
-export type GestureDetectorProps<THandlerData, TConfig> =
-  | NativeDetectorProps<THandlerData, TConfig>
-  | InterceptingGestureDetectorProps<THandlerData, TConfig>
+export interface InterceptingGestureDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> extends CommonGestureDetectorProps {
+  gesture?: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
+}
+
+export interface VirtualDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> extends CommonGestureDetectorProps {
+  gesture: Gesture<TConfig, THandlerData, TExtendedHandlerData>;
+}
+
+export type GestureDetectorProps<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+> =
+  | NativeDetectorProps<TConfig, THandlerData, TExtendedHandlerData>
+  | InterceptingGestureDetectorProps<
+      TConfig,
+      THandlerData,
+      TExtendedHandlerData
+    >
   | LegacyDetectorProps;
 
 export const AnimatedNativeDetector =

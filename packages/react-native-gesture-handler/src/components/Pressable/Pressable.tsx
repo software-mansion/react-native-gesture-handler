@@ -9,8 +9,8 @@ import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObject
 import { GestureDetector } from '../../handlers/gestures/GestureDetector';
 import {
   PressableEvent,
-  PressableProps,
   PressableDimensions,
+  LegacyPressableProps,
 } from './PressableProps';
 import {
   Insets,
@@ -19,7 +19,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import NativeButton from '../GestureHandlerButton';
+import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
 import {
   gestureToPressableEvent,
   addInsets,
@@ -36,11 +36,15 @@ import {
 } from '../utils';
 import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
 import { PressableStateMachine } from './StateMachine';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
 
-const Pressable = (props: PressableProps) => {
+/**
+ * @deprecated `LegacyPressable` is deprecated, use `Pressable` instead.
+ */
+const LegacyPressable = (props: LegacyPressableProps) => {
   const {
     testOnly_pressed,
     hitSlop,
@@ -199,11 +203,16 @@ const Pressable = (props: PressableProps) => {
   );
 
   const stateMachine = useMemo(() => new PressableStateMachine(), []);
+  const isScreenReaderEnabled = useIsScreenReaderEnabled();
 
   useEffect(() => {
-    const configuration = getStatesConfig(handlePressIn, handlePressOut);
+    const configuration = getStatesConfig(
+      handlePressIn,
+      handlePressOut,
+      isScreenReaderEnabled
+    );
     stateMachine.setStates(configuration);
-  }, [handlePressIn, handlePressOut, stateMachine]);
+  }, [handlePressIn, handlePressOut, stateMachine, isScreenReaderEnabled]);
 
   const hoverInTimeout = useRef<number | null>(null);
   const hoverOutTimeout = useRef<number | null>(null);
@@ -256,7 +265,7 @@ const Pressable = (props: PressableProps) => {
           );
         })
         .onTouchesUp(() => {
-          if (Platform.OS === 'android') {
+          if (Platform.OS === 'android' && !isScreenReaderEnabled) {
             // Prevents potential soft-locks
             stateMachine.reset();
             handleFinalize();
@@ -277,7 +286,7 @@ const Pressable = (props: PressableProps) => {
             handleFinalize();
           }
         }),
-    [stateMachine, handleFinalize, handlePressOut]
+    [stateMachine, handleFinalize, handlePressOut, isScreenReaderEnabled]
   );
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
@@ -390,4 +399,4 @@ const Pressable = (props: PressableProps) => {
   );
 };
 
-export default Pressable;
+export default LegacyPressable;

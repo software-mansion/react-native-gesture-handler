@@ -20,3 +20,8 @@ export {
   FlatList,
   RefreshControl,
 } from './GestureComponents';
+
+export { default as Pressable } from './Pressable';
+
+export { Touchable } from './Touchable/Touchable';
+export type { TouchableProps } from './Touchable/TouchableProps';

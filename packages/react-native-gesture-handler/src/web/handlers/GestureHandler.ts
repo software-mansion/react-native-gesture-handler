@@ -48,23 +48,25 @@ export default abstract class GestureHandler implements IGestureHandler {
   private forAnimated: boolean = false;
   private forReanimated: boolean = false;
   private _handlerTag!: number;
+  private _testID?: string | undefined = undefined;
 
-  private hitSlop?: HitSlop = undefined;
+  private hitSlop?: HitSlop | undefined = undefined;
   private manualActivation: boolean = false;
-  private mouseButton?: MouseButton = undefined;
+  private mouseButton?: MouseButton | undefined = undefined;
   private needsPointerData: boolean = false;
   private _tracker: PointerTracker = new PointerTracker();
 
   private _enableContextMenu: boolean = false;
-  private _activeCursor?: ActiveCursor = undefined;
-  private _touchAction?: TouchAction = undefined;
-  private _userSelect?: UserSelect = undefined;
+  private _activeCursor?: ActiveCursor | undefined = undefined;
+  private _touchAction?: TouchAction | undefined = undefined;
+  private _userSelect?: UserSelect | undefined = undefined;
 
   // Orchestrator properties
   private _activationIndex = 0;
 
   private _awaiting = false;
   private _active = false;
+  private _attached = false;
 
   private _shouldResetProgress = false;
   private _pointerType: PointerType = PointerType.MOUSE;
@@ -85,6 +87,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     propsRef: React.RefObject<PropsRef>,
     actionType: ActionType
   ) {
+    this.attached = true;
     this.propsRef = propsRef;
     this.viewRef = viewRef;
     this.actionType = actionType;
@@ -105,6 +108,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     this.state = State.UNDETERMINED;
     this.forAnimated = false;
     this.forReanimated = false;
+    this.attached = false;
 
     this.delegate.detach();
   }
@@ -224,7 +228,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   public activate(force = false) {
     if (
       (this.manualActivation !== true || force) &&
-      (this.state === State.UNDETERMINED || this.state === State.BEGAN)
+      this.state === State.BEGAN
     ) {
       this.delegate.onActivate();
       this.moveToState(State.ACTIVE);
@@ -400,15 +404,15 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (usesNativeOrVirtualDetector(this.actionType)) {
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedTouchEvent
-          : onGestureHandlerTouchEvent,
-        touchEvent
-      );
+    if (!usesNativeOrVirtualDetector(this.actionType)) {
+      onGestureHandlerEvent?.(touchEvent);
+      return;
+    }
+
+    if (this.forReanimated) {
+      onGestureHandlerReanimatedTouchEvent?.(touchEvent);
     } else {
-      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+      onGestureHandlerTouchEvent?.(touchEvent);
     }
   }
 
@@ -439,25 +443,26 @@ export default abstract class GestureHandler implements IGestureHandler {
     // However, this may cause trouble in the future (but for now we don't know that)
     if (this.lastSentState !== newState) {
       this.lastSentState = newState;
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedStateChange
-          : onGestureHandlerStateChange,
-        resultEvent
-      );
-    }
-    if (this.state === State.ACTIVE) {
-      (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
-        undefined;
 
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedEvent
-          : this.forAnimated
-            ? onGestureHandlerAnimatedEvent
-            : onGestureHandlerEvent,
-        resultEvent
-      );
+      if (this.forReanimated) {
+        onGestureHandlerReanimatedStateChange?.(resultEvent);
+      } else {
+        onGestureHandlerStateChange?.(resultEvent);
+      }
+    }
+
+    if (this.state !== State.ACTIVE) {
+      return;
+    }
+
+    (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState = undefined;
+
+    if (this.forReanimated) {
+      onGestureHandlerReanimatedEvent?.(resultEvent);
+    } else if (this.forAnimated) {
+      onGestureHandlerAnimatedEvent?.(resultEvent);
+    } else {
+      onGestureHandlerEvent?.(resultEvent);
     }
   };
 
@@ -668,15 +673,15 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerTouchEvent,
     }: PropsRef = this.propsRef!.current;
 
-    if (this.actionType === ActionType.NATIVE_DETECTOR) {
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedTouchEvent
-          : onGestureHandlerTouchEvent,
-        cancelEvent
-      );
+    if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+      onGestureHandlerEvent?.(cancelEvent);
+      return;
+    }
+
+    if (this.forReanimated) {
+      onGestureHandlerReanimatedTouchEvent?.(cancelEvent);
     } else {
-      invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
+      onGestureHandlerTouchEvent?.(cancelEvent);
     }
   }
 
@@ -714,7 +719,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   // Helper function to correctly set enabled property
   private maybeUpdateEnabled(enabled: boolean | undefined): boolean {
     if (enabled === undefined) {
-      if (this._enabled !== undefined) {
+      if (this._enabled !== null) {
         return false;
       }
 
@@ -741,6 +746,10 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.hitSlop = config.hitSlop;
       this.hitSlop = config.hitSlop;
       this.validateHitSlops();
+    }
+
+    if (config.testID !== undefined) {
+      this._testID = config.testID;
     }
 
     if (config.dispatchesAnimatedEvents !== undefined) {
@@ -936,6 +945,7 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
 
   protected resetConfig(): void {
+    this._testID = undefined;
     this.manualActivation = false;
     this.shouldCancelWhenOutside = false;
     this.mouseButton = undefined;
@@ -963,6 +973,10 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   public set handlerTag(value: number) {
     this._handlerTag = value;
+  }
+
+  public get testID() {
+    return this._testID;
   }
 
   public get delegate() {
@@ -1007,6 +1021,13 @@ export default abstract class GestureHandler implements IGestureHandler {
   }
   protected set awaiting(value) {
     this._awaiting = value;
+  }
+
+  public get attached() {
+    return this._attached;
+  }
+  protected set attached(value) {
+    this._attached = value;
   }
 
   public get activationIndex() {
@@ -1061,59 +1082,4 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.state === State.CANCELLED
     );
   }
-}
-
-function invokeNullableMethod(
-  method:
-    | ((event: ResultEvent) => void)
-    | { __getHandler: () => (event: ResultEvent) => void }
-    | { __nodeConfig: { argMapping: unknown[] } }
-    | null
-    | undefined,
-  event: ResultEvent
-): void {
-  if (!method) {
-    return;
-  }
-
-  if (typeof method === 'function') {
-    method(event);
-    return;
-  }
-
-  if ('__getHandler' in method && typeof method.__getHandler === 'function') {
-    const handler = method.__getHandler();
-    invokeNullableMethod(handler, event);
-    return;
-  }
-
-  if (!('__nodeConfig' in method)) {
-    return;
-  }
-
-  const { argMapping }: { argMapping: unknown } = method.__nodeConfig;
-  if (!Array.isArray(argMapping)) {
-    return;
-  }
-
-  for (const [index, [key, value]] of argMapping.entries()) {
-    if (!(key in event.nativeEvent)) {
-      continue;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const nativeValue = (event.nativeEvent as any)[key];
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (value?.setValue) {
-      // Reanimated API
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      value.setValue(nativeValue);
-    } else {
-      // RN Animated API
-      method.__nodeConfig.argMapping[index] = [key, nativeValue];
-    }
-  }
-
-  return;
 }

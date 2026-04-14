@@ -5,18 +5,18 @@ sidebar_label: About Gesture Handlers
 ---
 
 Gesture handlers are the core building blocks of this library.
-We use this term to describe elements of the native touch system that the library allows us to instantiate and control from Javascript using [React's Component](https://reactjs.org/docs/react-component.html) interface.
+We use this term to describe elements of the native touch system that the library allows us to instantiate and control from JavaScript using [React's Component](https://reactjs.org/docs/react-component.html) interface.
 
 Each handler type is capable of recognizing one type of gesture (pan, pinch, etc.) and provides gesture-specific information via events (translation, scale, etc.).
 
-Handlers analyze touch stream synchronously in the UI thread. This allows for uninterrupted interactions even when the Javascript thread is blocked.
+Handlers analyze touch stream synchronously in the UI thread. This allows for uninterrupted interactions even when the JavaScript thread is blocked.
 
 Each handler works as an isolated state machine. It takes touch stream as an input and based on it, it can flip between [states](state.md).
 When a gesture starts, based on the position where the finger was placed, a set of handlers that may be interested in recognizing the gesture is selected.
 All the touch events (touch down, move, up, or when other fingers are placed or lifted) are delivered to all of the handlers selected initially.
 When one gesture becomes [active](state.md#active), it cancels all the other gestures (read more about how to influence this process in ["Cross handler interactions"](interactions.md) section).
 
-Gesture handler components do not instantiate a native view in the view hierarchy. Instead, they are kept in library's own registry and are only connected to native views. When using any of the gesture handler components, it is important for it to have a native view rendered as a child.
+Gesture handler components do not instantiate a native view in the view hierarchy. Instead, they are kept in the library's own registry and are only connected to native views. When using any of the gesture handler components, it is important for it to have a native view rendered as a child.
 Since handler components don't have corresponding views in the hierarchy, the events registered with them are actually hooked into the underlying view.
 
 ### Available gesture handlers
@@ -81,7 +81,7 @@ Here is a list of exposed components:
 - `TextInput`
 - `DrawerLayoutAndroid` (**Android only**)
 
-If you want to use other handlers or [buttons](api/components/buttons.mdx) nested in a `ScrollView`, use the [`waitFor`](api/gesture-handlers/common-gh#waitfor) property to define interaction between a handler and `ScrollView`
+If you want to use other handlers or [buttons](api/components/buttons.mdx) nested in a `ScrollView`, use the [`waitFor`](api/gesture-handlers/common-gh#waitfor) property to define the interaction between a handler and `ScrollView`.
 
 ### Events with `useNativeDriver`
 

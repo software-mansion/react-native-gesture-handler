@@ -6,7 +6,7 @@ import {
   useInterceptingDetectorContext,
 } from './useInterceptingDetectorContext';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
-import { NativeDetectorProps } from '../common';
+import { VirtualDetectorProps } from '../common';
 import { configureRelations } from '../utils';
 import { tagMessage } from '../../../utils';
 import { DetectorCallbacks, VirtualChild } from '../../types';
@@ -23,9 +23,11 @@ function useRequiredInterceptingDetectorContext() {
   return context;
 }
 
-export function VirtualDetector<THandlerData, TConfig>(
-  props: NativeDetectorProps<THandlerData, TConfig>
-) {
+export function VirtualDetector<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(props: VirtualDetectorProps<TConfig, THandlerData, TExtendedHandlerData>) {
   // Don't memoize virtual detectors to be able to listen to changes in children
   // TODO: replace with MutationObserver when it rolls out in React Native
   'use no memo';
@@ -57,8 +59,8 @@ export function VirtualDetector<THandlerData, TConfig>(
     }
 
     const handlerTags = isComposedGesture(props.gesture)
-      ? props.gesture.tags
-      : [props.gesture.tag];
+      ? props.gesture.handlerTags
+      : [props.gesture.handlerTag];
 
     if (props.gesture.config.dispatchesAnimatedEvents) {
       throw new Error(
@@ -73,17 +75,30 @@ export function VirtualDetector<THandlerData, TConfig>(
     const virtualChild: VirtualChild = {
       viewTag,
       handlerTags,
-      methods: props.gesture.detectorCallbacks as DetectorCallbacks<unknown>,
+      methods: props.gesture.detectorCallbacks as DetectorCallbacks<
+        unknown,
+        unknown
+      >,
       // used by HostGestureDetector on web
       viewRef: Platform.OS === 'web' ? viewRef : undefined,
+      userSelect: props.userSelect,
+      touchAction: props.touchAction,
+      enableContextMenu: props.enableContextMenu,
     };
-
     register(virtualChild);
-
     return () => {
       unregister(virtualChild);
     };
-  }, [viewTag, props.gesture, register, unregister, setMode]);
+  }, [
+    viewTag,
+    props.gesture,
+    props.userSelect,
+    props.touchAction,
+    props.enableContextMenu,
+    register,
+    unregister,
+    setMode,
+  ]);
 
   configureRelations(props.gesture);
 

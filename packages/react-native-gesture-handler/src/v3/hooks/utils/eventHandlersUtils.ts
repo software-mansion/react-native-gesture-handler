@@ -9,9 +9,12 @@ import {
 } from '../../types';
 import { GestureEndEventCallback } from '../../types/ConfigTypes';
 
-export function useMemoizedGestureCallbacks<THandlerData>(
-  callbacks: GestureCallbacks<THandlerData>
-): GestureCallbacks<THandlerData> {
+export function useMemoizedGestureCallbacks<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
+): GestureCallbacks<THandlerData, TExtendedHandlerData> {
   return useMemo(
     () => ({
       ...(callbacks.onBegin ? { onBegin: callbacks.onBegin } : {}),
@@ -46,12 +49,14 @@ export function useMemoizedGestureCallbacks<THandlerData>(
   );
 }
 
-function getHandler<THandlerData>(
+function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<THandlerData>
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>
 ):
   | GestureEventCallback<THandlerData>
+  | GestureEventCallback<TExtendedHandlerData>
   | GestureEndEventCallback<THandlerData>
+  | GestureEndEventCallback<TExtendedHandlerData>
   | GestureTouchEventCallback
   | undefined {
   'worklet';
@@ -61,7 +66,7 @@ function getHandler<THandlerData>(
     case CALLBACK_TYPE.START:
       return callbacks.onActivate;
     case CALLBACK_TYPE.UPDATE:
-      return callbacks.onUpdate as GestureEventCallback<THandlerData>; // Animated event is handled in different place.
+      return callbacks.onUpdate as GestureEventCallback<TExtendedHandlerData>; // Animated event is handled in different place.
     case CALLBACK_TYPE.END:
       return callbacks.onDeactivate;
     case CALLBACK_TYPE.FINALIZE:
@@ -96,9 +101,12 @@ export function touchEventTypeToCallbackType(
 
 type SingleParameterCallback<T> = (event: T) => void;
 
-export function runCallback<THandlerData>(
+export function runCallback<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   type: CALLBACK_TYPE,
-  callbacks: GestureCallbacks<THandlerData>,
+  callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
   event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';

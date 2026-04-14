@@ -6,6 +6,7 @@ import {
 import {
   ChangeCalculatorType,
   GestureCallbacks,
+  GestureEvent,
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
 import { eventHandler } from './eventHandler';
@@ -15,11 +16,15 @@ const workletNOOP = () => {
   // no-op
 };
 
-export function useReanimatedEventHandler<THandlerData>(
+export function useReanimatedEventHandler<
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  handlers: GestureCallbacks<THandlerData>,
-  reanimatedHandler: ReanimatedHandler<THandlerData> | undefined,
-  changeEventCalculator: ChangeCalculatorType<THandlerData> | undefined
+  handlers: GestureCallbacks<THandlerData, TExtendedHandlerData>,
+  reanimatedHandler: ReanimatedHandler<TExtendedHandlerData> | undefined,
+  changeEventCalculator: ChangeCalculatorType<TExtendedHandlerData> | undefined,
+  fillInDefaultValues?: (event: GestureEvent<TExtendedHandlerData>) => void
 ) {
   const workletizedHandlers = useMemo(() => {
     // We don't want to call hooks conditionally, `useEvent` will be always called.
@@ -37,7 +42,10 @@ export function useReanimatedEventHandler<THandlerData>(
   }, [handlers]);
 
   const callback = (
-    event: UnpackedGestureHandlerEventWithHandlerData<THandlerData>
+    event: UnpackedGestureHandlerEventWithHandlerData<
+      THandlerData,
+      TExtendedHandlerData
+    >
   ) => {
     'worklet';
     eventHandler(
@@ -47,7 +55,8 @@ export function useReanimatedEventHandler<THandlerData>(
       changeEventCalculator,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
       reanimatedHandler?.context!,
-      false
+      false,
+      fillInDefaultValues
     );
   };
 

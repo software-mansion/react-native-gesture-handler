@@ -17,7 +17,7 @@ jobs:
 
     runs-on: ubuntu-latest
     concurrency:
-      group: jest-${{ github.ref }}
+      group: rngh-api-v3-${{ github.ref }}
       cancel-in-progress: true
 
     steps:

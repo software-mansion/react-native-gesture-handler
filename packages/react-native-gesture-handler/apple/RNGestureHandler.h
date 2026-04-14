@@ -3,6 +3,7 @@
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEventHandlerType.h"
 #import "RNGestureHandlerEvents.h"
+#import "RNGestureHandlerPointerEvents.h"
 #import "RNGestureHandlerPointerTracker.h"
 #import "RNGestureHandlerPointerType.h"
 #import "RNGestureHandlerState.h"
@@ -74,6 +75,7 @@
 @property (nonatomic, weak, nullable) id<RNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
+@property (nonatomic, nullable) NSString *testID;
 @property (nonatomic) BOOL enabled;
 @property (nonatomic) RNGestureHandlerActionType actionType;
 @property (nonatomic) BOOL shouldCancelWhenOutside;
@@ -83,6 +85,8 @@
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
 @property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;
 @property (nonatomic, nullable, assign) NSNumber *virtualViewTag;
+@property (nonatomic, copy, nullable) NSNumber *viewTag;
+@property (nonatomic, readonly) RNGestureHandlerState lastState;
 
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
@@ -92,9 +96,17 @@
 - (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateRelations:(nonnull NSDictionary *)relations;
+- (void)handleGesture:(nonnull id)recognizer;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
+- (void)handleGesture:(nonnull id)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange;
 - (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
+- (void)handleGesture:(nonnull id)recognizer
+                  inState:(RNGestureHandlerState)state
+    fromManualStateChange:(BOOL)fromManualStateChange;
 - (BOOL)containsPointInView;
+- (BOOL)wantsToHandleEventsAtPoint:(CGPoint)point;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 
@@ -103,6 +115,10 @@
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
+- (void)sendEventsInState:(RNGestureHandlerState)state
+           forViewWithTag:(nonnull NSNumber *)reactTag
+            withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData
+    fromManualStateChange:(BOOL)fromManualStateChange;
 - (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(nonnull NSNumber *)reactTag;
 - (nullable RNGHUIScrollView *)retrieveScrollView:(nonnull RNGHUIView *)view;
@@ -117,7 +133,8 @@
 #endif
 
 #if !TARGET_OS_OSX
-- (void)setCurrentPointerType:(nonnull UIEvent *)event;
+- (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType;
+- (void)setCurrentPointerTypeForEvent:(nonnull UIEvent *)event;
 #else
 - (void)setCurrentPointerTypeToMouse;
 #endif

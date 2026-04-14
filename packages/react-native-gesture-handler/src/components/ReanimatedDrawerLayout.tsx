@@ -43,7 +43,7 @@ import {
   HitSlop,
 } from '../handlers/gestureHandlerCommon';
 import {
-  PanGestureEvent,
+  PanGestureActiveEvent,
   usePanGesture,
   useTapGesture,
 } from '../v3/hooks/gestures';
@@ -434,7 +434,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const handleRelease = useCallback(
-      (event: PanGestureEvent) => {
+      (event: PanGestureActiveEvent) => {
         'worklet';
         let { translationX: dragX, velocityX, x: touchX } = event;
 
@@ -670,7 +670,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         userSelect={userSelect}
         enableContextMenu={enableContextMenu}>
         <Animated.View style={styles.main} onLayout={handleContainerLayout}>
-          <GestureDetector gesture={overlayDismissGesture}>
+          <GestureDetector
+            gesture={overlayDismissGesture}
+            userSelect={userSelect}>
             <Animated.View
               style={[
                 drawerType === DrawerType.FRONT
@@ -709,16 +711,16 @@ export default DrawerLayout;
 
 const styles = StyleSheet.create({
   drawerContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1001,
     flexDirection: 'row',
   },
   containerInFront: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1002,
   },
   containerOnBack: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   main: {
     flex: 1,
@@ -726,7 +728,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1000,
   },
 });

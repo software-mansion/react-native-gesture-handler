@@ -1,4 +1,4 @@
-import React, { Ref, RefObject, useEffect, useRef } from 'react';
+import React, { Ref, RefObject, useEffect, useMemo, useRef } from 'react';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
 import { ActionType } from '../../ActionType';
 import { PropsRef } from '../../web/interfaces';
@@ -11,21 +11,26 @@ export interface GestureHandlerDetectorProps extends PropsRef {
   moduleId: number;
   children?: React.ReactNode;
   virtualChildren?: Set<VirtualChildrenWeb>;
-  userSelect?: UserSelect;
-  touchAction?: TouchAction;
-  enableContextMenu?: boolean;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 }
 
 export interface VirtualChildrenWeb {
   viewTag: number;
   handlerTags: number[];
   viewRef: RefObject<Element | null>;
+  userSelect?: UserSelect | undefined;
+  touchAction?: TouchAction | undefined;
+  enableContextMenu?: boolean | undefined;
 }
 
 const EMPTY_HANDLERS = new Set<number>();
 
 const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   const { handlerTags, children } = props;
+
+  const handlerTagsSet = useMemo(() => new Set(handlerTags), [...handlerTags]);
 
   const viewRef = useRef<Element>(null);
   const propsRef = useRef<GestureHandlerDetectorProps>(props);
@@ -60,6 +65,14 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         ).shouldAttachGestureToChildView() &&
         actionType === ActionType.NATIVE_DETECTOR
       ) {
+        if (viewRef.current!.childElementCount > 1) {
+          throw new Error(
+            tagMessage(
+              'Cannot have more than one child view when native gesture handlers are attached to the detector'
+            )
+          );
+        }
+
         RNGestureHandlerModule.attachGestureHandler(
           tag,
           viewRef.current!.firstChild,
@@ -105,30 +118,22 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
   }, [props]);
 
   useEffect(() => {
-    if (React.Children.count(children) !== 1) {
-      throw new Error(
-        tagMessage('Detector expected to have exactly one child element')
-      );
-    }
-
-    const currentHandlerTags = new Set(handlerTags);
-    detachHandlers(currentHandlerTags, attachedHandlers.current);
+    detachHandlers(handlerTagsSet, attachedHandlers.current);
 
     attachHandlers(
       viewRef,
       propsRef,
-      currentHandlerTags,
+      handlerTagsSet,
       attachedHandlers.current,
       ActionType.NATIVE_DETECTOR
     );
-
     return () => {
       detachHandlers(EMPTY_HANDLERS, attachedHandlers.current);
       attachedVirtualHandlers?.current.forEach((childHandlerTags) => {
         detachHandlers(EMPTY_HANDLERS, childHandlerTags);
       });
     };
-  }, [handlerTags, children]);
+  }, [handlerTagsSet, viewRef]);
 
   useEffect(() => {
     const virtualChildrenToDetach: Set<number> = new Set(
@@ -166,6 +171,14 @@ const HostGestureDetector = (props: GestureHandlerDetectorProps) => {
         attachedVirtualHandlers.current.get(child.viewTag)!,
         ActionType.VIRTUAL_DETECTOR
       );
+
+      currentHandlerTags.forEach((tag) => {
+        RNGestureHandlerModule.updateGestureHandlerConfig(tag, {
+          userSelect: child.userSelect,
+          touchAction: child.touchAction,
+          enableContextMenu: child.enableContextMenu,
+        });
+      });
     });
   }, [props.virtualChildren]);
 

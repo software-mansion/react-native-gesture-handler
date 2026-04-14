@@ -36,34 +36,35 @@ function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   };
 }
 
-export function useGestureCallbacks<THandlerData, TConfig>(
+export function useGestureCallbacks<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData,
+>(
   handlerTag: number,
-  config: BaseGestureConfig<THandlerData, TConfig>
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
 ) {
   const callbacks = useMemoizedGestureCallbacks(config);
 
-  const onGestureHandlerEvent = useGestureEventHandler(
-    handlerTag,
-    callbacks,
-    config
-  );
+  const jsEventHandler = useGestureEventHandler(handlerTag, callbacks, config);
 
-  let onReanimatedEvent;
+  let reanimatedEventHandler;
 
   if (!config.disableReanimated) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const reanimatedHandler = Reanimated?.useHandler(callbacks);
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    onReanimatedEvent = useReanimatedEventHandler(
+    reanimatedEventHandler = useReanimatedEventHandler(
       handlerTag,
       callbacks,
       reanimatedHandler,
-      config.changeEventCalculator
+      config.changeEventCalculator,
+      config.fillInDefaultValues
     );
   }
 
-  let onGestureHandlerAnimatedEvent:
-    | ((event: GestureUpdateEventWithHandlerData<THandlerData>) => void)
+  let animatedEventHandler:
+    | ((event: GestureUpdateEventWithHandlerData<TExtendedHandlerData>) => void)
     | AnimatedEvent
     | undefined;
   if (config.dispatchesAnimatedEvents) {
@@ -73,16 +74,16 @@ export function useGestureCallbacks<THandlerData, TConfig>(
 
     if (__DEV__ && !isNativeAnimatedEvent(config.onUpdate)) {
       // @ts-expect-error At this point we know it's not a native animated event, so it's callable
-      onGestureHandlerAnimatedEvent = guardJSAnimatedEvent(config.onUpdate);
+      animatedEventHandler = guardJSAnimatedEvent(config.onUpdate);
     } else {
       // @ts-expect-error The structure of an AnimatedEvent differs from other event types
-      onGestureHandlerAnimatedEvent = config.onUpdate;
+      animatedEventHandler = config.onUpdate;
     }
   }
 
   return {
-    onGestureHandlerEvent,
-    onReanimatedEvent,
-    onGestureHandlerAnimatedEvent,
+    jsEventHandler,
+    reanimatedEventHandler,
+    animatedEventHandler,
   };
 }

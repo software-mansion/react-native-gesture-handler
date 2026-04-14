@@ -12,7 +12,6 @@ import com.facebook.react.turbomodule.core.interfaces.BindingsInstallerHolder
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleWithJSIBindings
 import com.facebook.soloader.SoLoader
 import com.swmansion.gesturehandler.NativeRNGestureHandlerModuleSpec
-import com.swmansion.gesturehandler.ReanimatedProxy
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.react.events.RNGestureHandlerEventDispatcher
 
@@ -29,6 +28,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @DoNotStrip
   @Suppress("unused")
   private var mHybridData: HybridData = initHybrid()
+  private var isReanimatedAvailable = false
   private var uiRuntimeDecorated = false
   private val registry: RNGestureHandlerRegistry
     get() = registries[moduleId]!!
@@ -62,7 +62,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
 
   @ReactMethod
   override fun createGestureHandler(handlerName: String, handlerTagDouble: Double, config: ReadableMap): Boolean {
-    if (ReanimatedProxy.REANIMATED_INSTALLED && !uiRuntimeDecorated) {
+    if (isReanimatedAvailable && !uiRuntimeDecorated) {
       uiRuntimeDecorated = decorateUIRuntime()
     }
 
@@ -124,6 +124,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   override fun flushOperations() = Unit
 
+  @ReactMethod
+  override fun setReanimatedAvailable(isAvailable: Boolean) {
+    isReanimatedAvailable = isAvailable
+  }
+
   @DoNotStrip
   @Suppress("unused")
   fun setGestureHandlerState(handlerTag: Int, newState: Int) {
@@ -140,14 +145,12 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
     UiThreadUtil.assertOnUiThread()
 
     registry.getHandler(handlerTag)?.let { handler ->
-      if (handler.state == GestureHandler.STATE_UNDETERMINED) {
-        handler.forceReinitializeDuringOnHandle = true
-
-        // When going from UNDETERMINED to ACTIVE, force going through BEGAN to preserve
-        // the correct state flow
-        if (newState == GestureHandler.STATE_ACTIVE) {
-          handler.begin()
+      if (newState == GestureHandler.STATE_ACTIVE) {
+        if (handler.state != GestureHandler.STATE_BEGAN) {
+          // We don't allow activation of gestures which haven't received any touches
+          return
         }
+        handler.recordHandlerIfNotPresent()
       }
 
       when (newState) {

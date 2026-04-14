@@ -28,7 +28,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _force = defaultForce;
     _minForce = defaultMinForce;
@@ -40,7 +40,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [_gestureHandler setCurrentPointerType:event];
+  [_gestureHandler setCurrentPointerTypeForEvent:event];
   if (_firstTouch) {
     // ignore rest of fingers
     return;

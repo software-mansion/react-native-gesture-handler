@@ -4,33 +4,44 @@ import styles from './styles.module.css';
 
 import CollapseButton from '@site/src/components/CollapseButton';
 
+import useFormattedCode from '@site/src/hooks/useFormattedCode';
 interface Props {
   src: string;
+  label: string;
+  expandedLabel: string;
   lineBounds: number[];
+  collapsed?: boolean;
 }
 
-export default function CollapsibleCode({ src, lineBounds }: Props) {
-  const [collapsed, setCollapsed] = useState(true);
+export default function CollapsibleCode({
+  src,
+  label,
+  expandedLabel,
+  lineBounds,
+  collapsed = true,
+}: Props) {
+  const [isCollapsed, setIsCollapsed] = useState(collapsed);
+  const code = useFormattedCode(src);
 
   if (!lineBounds) {
-    return <CodeBlock language="jsx">{src}</CodeBlock>;
+    return <CodeBlock language="tsx">{code}</CodeBlock>;
   }
 
   const [start, end] = lineBounds;
 
-  const codeLines = src.split('\n');
+  const codeLines = code.split('\n');
   const linesToShow = codeLines.slice(start, end + 1).join('\n');
 
   return (
     <div className={styles.container}>
       <CollapseButton
-        label="Collapse the full code"
-        labelCollapsed="Expand the full code"
-        collapsed={collapsed}
-        onCollapse={() => setCollapsed(!collapsed)}
+        label={label}
+        expandedLabel={expandedLabel}
+        collapsed={isCollapsed}
+        onCollapse={() => setIsCollapsed(!isCollapsed)}
         className={styles.collapseButton}
       />
-      <CodeBlock language="jsx">{collapsed ? linesToShow : src}</CodeBlock>
+      <CodeBlock language="tsx">{isCollapsed ? linesToShow : code}</CodeBlock>
     </div>
   );
 }

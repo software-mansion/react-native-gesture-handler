@@ -8,12 +8,12 @@ import {
   SingleGestureName,
 } from '../../types';
 import { NativeWrapperProperties } from '../../types/NativeWrapperType';
-import { FlingNativeProperties } from '../gestures/fling/FlingProperties';
-import { HoverNativeProperties } from '../gestures/hover/HoverProperties';
-import { LongPressNativeProperties } from '../gestures/longPress/LongPressProperties';
-import { NativeHandlerNativeProperties } from '../gestures/native/NativeProperties';
-import { PanNativeProperties } from '../gestures/pan/PanProperties';
-import { TapNativeProperties } from '../gestures/tap/TapProperties';
+import { FlingNativeProperties } from '../gestures/fling/FlingTypes';
+import { HoverNativeProperties } from '../gestures/hover/HoverTypes';
+import { LongPressNativeProperties } from '../gestures/longPress/LongPressTypes';
+import { NativeHandlerNativeProperties } from '../gestures/native/NativeTypes';
+import { PanNativeProperties } from '../gestures/pan/PanTypes';
+import { TapNativeProperties } from '../gestures/tap/TapTypes';
 
 const CommonConfig = new Set<keyof CommonGestureConfig>([
   'enabled',
@@ -22,6 +22,8 @@ const CommonConfig = new Set<keyof CommonGestureConfig>([
   'activeCursor',
   'mouseButton',
   'testID',
+  'cancelsTouchesInView',
+  'manualActivation',
 ]);
 
 const ExternalRelationsConfig = new Set<keyof ExternalRelations>([
@@ -44,8 +46,13 @@ export const allowedNativeProps = new Set<
   'needsPointerData',
 ]);
 
+// Don't pass testID to the native side in production
+if (!__DEV__) {
+  allowedNativeProps.delete('testID');
+}
+
 export const HandlerCallbacks = new Set<
-  keyof Required<GestureCallbacks<unknown>>
+  keyof Required<GestureCallbacks<unknown, unknown>>
 >([
   'onBegin',
   'onActivate',
@@ -58,16 +65,25 @@ export const HandlerCallbacks = new Set<
   'onTouchesCancel',
 ]);
 
-export const PropsToFilter = new Set<BaseGestureConfig<unknown, unknown>>([
+export const PropsToFilter = new Set<
+  BaseGestureConfig<unknown, unknown, unknown>
+>([
   ...HandlerCallbacks,
   ...ExternalRelationsConfig,
 
   // Config props
+  'fillInDefaultValues',
   'changeEventCalculator',
   'disableReanimated',
   'shouldUseReanimatedDetector',
   'useAnimated',
   'runOnJS',
+
+  // Pan offset props before remapping:
+  'activeOffsetY',
+  'failOffsetX',
+  'failOffsetY',
+  'activeOffsetX',
 ]);
 
 export const PropsWhiteLists = new Map<
@@ -84,7 +100,9 @@ export const PropsWhiteLists = new Map<
 
 export const EMPTY_WHITE_LIST = new Set<string>();
 
-export const NativeWrapperProps = new Set<keyof NativeWrapperProperties>([
+export const NativeWrapperProps = new Set<
+  keyof NativeWrapperProperties<unknown>
+>([
   ...CommonConfig,
   ...HandlerCallbacks,
   ...NativeHandlerNativeProperties,

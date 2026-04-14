@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -30,6 +31,7 @@ open class GestureHandler {
   private var trackedPointersIDsCount = 0
   private val windowOffset = IntArray(2) { 0 }
   var tag = 0
+  var testID: String? = null
   var view: View? = null
     private set
 
@@ -126,6 +128,7 @@ open class GestureHandler {
   }
 
   open fun resetConfig() {
+    testID = null
     needsPointerData = DEFAULT_NEEDS_POINTER_DATA
     manualActivation = DEFAULT_MANUAL_ACTIVATION
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
@@ -382,18 +385,52 @@ open class GestureHandler {
       }
     }
 
-    x = adaptedTransformedEvent.x
-    y = adaptedTransformedEvent.y
     numberOfPointers = adaptedTransformedEvent.pointerCount
-    isWithinBounds = isWithinBounds(view, x, y)
-    if (shouldCancelWhenOutside && !isWithinBounds) {
-      if (state == STATE_ACTIVE) {
-        cancel()
-      } else if (state == STATE_BEGAN) {
-        fail()
+
+    // TODO: this is likely wrong, and the transformed event itself should be
+    // in the coordinate system of the child view, but I'm not sure of the
+    // consequences
+    val detectorView = hostDetectorView
+    if (detectorView != null && detectorView.isNotEmpty()) {
+      val outPoint = PointF()
+      var foundChild = false
+
+      for (i in 0 until detectorView.childCount) {
+        val child = detectorView.getChildAt(i)
+        GestureHandlerOrchestrator.transformPointToChildViewCoords(
+          adaptedTransformedEvent.x,
+          adaptedTransformedEvent.y,
+          detectorView,
+          child,
+          outPoint,
+        )
+        if (isWithinBounds(child, outPoint.x, outPoint.y)) {
+          x = outPoint.x
+          y = outPoint.y
+          isWithinBounds = true
+          foundChild = true
+          break
+        }
       }
-      return
+
+      if (!foundChild) {
+        x = adaptedTransformedEvent.x
+        y = adaptedTransformedEvent.y
+        isWithinBounds = false
+      }
+    } else {
+      x = adaptedTransformedEvent.x
+      y = adaptedTransformedEvent.y
+      isWithinBounds = isWithinBounds(view, x, y)
     }
+
+    if (shouldCancelWhenOutside) {
+      if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
+        fail()
+        return
+      }
+    }
+
     lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
     lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
     lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
@@ -593,15 +630,36 @@ open class GestureHandler {
       // generated faster than they can be treated by JS thread
       eventCoalescingKey = nextEventCoalescingKey++
     }
+
+    check(hostDetectorView != null || orchestrator != null) {
+      "Manually handled gesture had not been assigned to any detector"
+    }
+
+    if (orchestrator == null) {
+      // If the state is set manually, the handler may not have been fully recorded by the orchestrator.
+      hostDetectorView?.recordHandlerIfNotPresent(this)
+    }
+
     orchestrator!!.onHandlerStateChange(this, newState, oldState)
     onStateChange(newState, oldState)
   }
 
-  fun wantsEvent(event: MotionEvent): Boolean = isEnabled &&
-    state != STATE_FAILED &&
-    state != STATE_CANCELLED &&
-    state != STATE_END &&
-    isTrackingPointer(event.getPointerId(event.actionIndex))
+  fun wantsEvent(event: MotionEvent): Boolean {
+    if (!isEnabled || state == STATE_FAILED || state == STATE_CANCELLED || state == STATE_END) {
+      return false
+    }
+
+    if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+      for (i in 0 until event.pointerCount) {
+        if (isTrackingPointer(event.getPointerId(i))) {
+          return true
+        }
+      }
+      return false
+    } else {
+      return isTrackingPointer(event.getPointerId(event.actionIndex))
+    }
+  }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler): Boolean {
     if (handler === this) {
@@ -751,6 +809,10 @@ open class GestureHandler {
   protected open fun onCancel() {}
   protected open fun onFail() {}
 
+  fun recordHandlerIfNotPresent() {
+    hostDetectorView?.recordHandlerIfNotPresent(this)
+  }
+
   private fun isButtonInConfig(clickedButton: Int): Boolean {
     if (mouseButton == 0) {
       return clickedButton == MotionEvent.BUTTON_PRIMARY
@@ -844,7 +906,7 @@ open class GestureHandler {
   open fun wantsToAttachDirectlyToView() = false
 
   override fun toString(): String {
-    val viewString = if (view == null) null else view!!.javaClass.simpleName
+    val viewString = testID ?: view?.javaClass?.simpleName
     return this.javaClass.simpleName + "@[" + tag + "]:" + viewString
   }
 
@@ -896,6 +958,9 @@ open class GestureHandler {
       if (config.hasKey(KEY_MOUSE_BUTTON)) {
         handler.mouseButton = config.getInt(KEY_MOUSE_BUTTON)
       }
+      if (config.hasKey(KEY_TEST_ID)) {
+        handler.testID = config.getString(KEY_TEST_ID)
+      }
     }
 
     abstract fun createEventBuilder(handler: T): GestureHandlerEventDataBuilder<T>
@@ -917,6 +982,7 @@ open class GestureHandler {
       private const val KEY_HIT_SLOP_HORIZONTAL = "horizontal"
       private const val KEY_HIT_SLOP_WIDTH = "width"
       private const val KEY_HIT_SLOP_HEIGHT = "height"
+      private const val KEY_TEST_ID = "testID"
 
       private fun handleHitSlopProperty(handler: GestureHandler, config: ReadableMap) {
         if (config.getType(KEY_HIT_SLOP) == ReadableType.Number) {
@@ -1008,7 +1074,7 @@ open class GestureHandler {
     const val POINTER_TYPE_STYLUS = 1
     const val POINTER_TYPE_MOUSE = 2
     const val POINTER_TYPE_OTHER = 3
-    private const val MAX_POINTERS_COUNT = 12
+    private const val MAX_POINTERS_COUNT = 17
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>
     private fun initPointerProps(size: Int) {
