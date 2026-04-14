@@ -4,13 +4,14 @@
 // For `waitFor` we need array as order of the gestures matters.
 // For `simultaneousHandlers` we use Set as the order doesn't matter.
 
-import { tagMessage } from '../../utils';
 import {
   isComposedGesture,
   prepareRelations,
 } from '../hooks/utils/relationUtils';
+import { ComposedGestureName } from '../types';
+import type { Gesture } from '../types';
 import { NativeProxy } from '../NativeProxy';
-import { ComposedGestureName, Gesture } from '../types';
+import { tagMessage } from '../../utils';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseAndConfigureRelations = (

@@ -1,12 +1,11 @@
-import React, { PropsWithChildren } from 'react';
-import { tagMessage } from '../utils';
-import PlatformConstants from '../PlatformConstants';
-import createHandler from './createHandler';
-import {
-  BaseGestureHandlerProps,
-  baseGestureHandlerProps,
-} from './gestureHandlerCommon';
+import type { BaseGestureHandlerProps } from './gestureHandlerCommon';
 import type { ForceTouchGestureHandlerEventPayload } from './GestureHandlerEventPayload';
+import PlatformConstants from '../PlatformConstants';
+import type { PropsWithChildren } from 'react';
+import React from 'react';
+import { baseGestureHandlerProps } from './gestureHandlerCommon';
+import createHandler from './createHandler';
+import { tagMessage } from '../utils';
 
 export const forceTouchGestureHandlerProps = [
   'minForce',

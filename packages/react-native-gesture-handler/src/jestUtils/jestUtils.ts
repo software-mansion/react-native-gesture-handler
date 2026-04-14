@@ -1,33 +1,8 @@
-import invariant from 'invariant';
-import { DeviceEventEmitter } from 'react-native';
-import { ReactTestInstance } from 'react-test-renderer';
-import {
-  FlingGestureHandler,
-  flingHandlerName,
-} from '../handlers/FlingGestureHandler';
-import {
-  ForceTouchGestureHandler,
-  forceTouchHandlerName,
-} from '../handlers/ForceTouchGestureHandler';
-import {
+import type {
   BaseGestureHandlerProps,
   GestureEvent,
   HandlerStateChangeEvent,
 } from '../handlers/gestureHandlerCommon';
-import { FlingGesture } from '../handlers/gestures/flingGesture';
-import { ForceTouchGesture } from '../handlers/gestures/forceTouchGesture';
-import { BaseGesture, GestureType } from '../handlers/gestures/gesture';
-import { LongPressGesture } from '../handlers/gestures/longPressGesture';
-import { NativeGesture } from '../handlers/gestures/nativeGesture';
-import { PanGesture } from '../handlers/gestures/panGesture';
-import { PinchGesture } from '../handlers/gestures/pinchGesture';
-import { RotationGesture } from '../handlers/gestures/rotationGesture';
-import { TapGesture } from '../handlers/gestures/tapGesture';
-import { findHandlerByTestID } from '../handlers/handlersRegistry';
-import {
-  LongPressGestureHandler,
-  longPressHandlerName,
-} from '../handlers/LongPressGestureHandler';
 import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
@@ -38,30 +13,40 @@ import type {
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
 } from '../handlers/GestureHandlerEventPayload';
-import {
-  NativeViewGestureHandler,
-  nativeViewHandlerName,
-} from '../handlers/NativeViewGestureHandler';
-import {
-  PanGestureHandler,
-  panHandlerName,
-} from '../handlers/PanGestureHandler';
-import {
-  PinchGestureHandler,
-  pinchHandlerName,
-} from '../handlers/PinchGestureHandler';
-import {
-  RotationGestureHandler,
-  rotationHandlerName,
-} from '../handlers/RotationGestureHandler';
-import {
-  TapGestureHandler,
-  tapHandlerName,
-} from '../handlers/TapGestureHandler';
-import { State } from '../State';
 import { hasProperty, withPrevAndCurrent } from '../utils';
+import { BaseGesture } from '../handlers/gestures/gesture';
+import { DeviceEventEmitter } from 'react-native';
+import type { FlingGesture } from '../handlers/gestures/flingGesture';
+import type { FlingGestureHandler } from '../handlers/FlingGestureHandler';
+import type { ForceTouchGesture } from '../handlers/gestures/forceTouchGesture';
+import type { ForceTouchGestureHandler } from '../handlers/ForceTouchGestureHandler';
+import type { GestureType } from '../handlers/gestures/gesture';
+import type { LongPressGesture } from '../handlers/gestures/longPressGesture';
+import type { LongPressGestureHandler } from '../handlers/LongPressGestureHandler';
+import type { NativeGesture } from '../handlers/gestures/nativeGesture';
+import type { NativeViewGestureHandler } from '../handlers/NativeViewGestureHandler';
+import type { PanGesture } from '../handlers/gestures/panGesture';
+import type { PanGestureHandler } from '../handlers/PanGestureHandler';
+import type { PinchGesture } from '../handlers/gestures/pinchGesture';
+import type { PinchGestureHandler } from '../handlers/PinchGestureHandler';
+import type { ReactTestInstance } from 'react-test-renderer';
+import type { RotationGesture } from '../handlers/gestures/rotationGesture';
+import type { RotationGestureHandler } from '../handlers/RotationGestureHandler';
 import type { SingleGesture } from '../v3/types';
+import { State } from '../State';
+import type { TapGesture } from '../handlers/gestures/tapGesture';
+import type { TapGestureHandler } from '../handlers/TapGestureHandler';
+import { findHandlerByTestID } from '../handlers/handlersRegistry';
+import { flingHandlerName } from '../handlers/FlingGestureHandler';
+import { forceTouchHandlerName } from '../handlers/ForceTouchGestureHandler';
+import invariant from 'invariant';
+import { longPressHandlerName } from '../handlers/LongPressGestureHandler';
 import { maybeUnpackValue } from '../v3/hooks/utils';
+import { nativeViewHandlerName } from '../handlers/NativeViewGestureHandler';
+import { panHandlerName } from '../handlers/PanGestureHandler';
+import { pinchHandlerName } from '../handlers/PinchGestureHandler';
+import { rotationHandlerName } from '../handlers/RotationGestureHandler';
+import { tapHandlerName } from '../handlers/TapGestureHandler';
 
 // Load fireEvent conditionally, so RNGH may be used in setups without testing-library
 let fireEvent = (

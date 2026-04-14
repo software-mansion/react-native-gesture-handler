@@ -1,9 +1,9 @@
-import { tagMessage } from '../../../utils';
-import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
-
-import { GestureDetectorState } from './types';
-import React, { useCallback } from 'react';
+import type { GestureDetectorState } from './types';
+import type React from 'react';
 import findNodeHandle from '../../../findNodeHandle';
+import { getShadowNodeFromRef } from '../../../getShadowNodeFromRef';
+import { tagMessage } from '../../../utils';
+import { useCallback } from 'react';
 
 declare const global: {
   _isViewFlatteningDisabled: (node: unknown) => boolean | null; // JSI function

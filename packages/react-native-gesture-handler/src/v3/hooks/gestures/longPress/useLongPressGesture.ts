@@ -1,7 +1,4 @@
-import { SingleGestureName } from '../../../types';
-import { useGesture } from '../../useGesture';
-import { useClonedAndRemappedConfig } from '../../utils';
-import {
+import type {
   LongPressGesture,
   LongPressGestureConfig,
   LongPressGestureInternalConfig,
@@ -9,6 +6,9 @@ import {
   LongPressGestureProperties,
   LongPressHandlerData,
 } from './LongPressTypes';
+import { SingleGestureName } from '../../../types';
+import { useClonedAndRemappedConfig } from '../../utils';
+import { useGesture } from '../../useGesture';
 
 const LongPressPropsMapping = new Map<
   keyof LongPressGestureProperties,

@@ -2,31 +2,13 @@
 // It's cross-compatible with all platforms despite
 // `DrawerLayoutAndroid` only being available on android
 
-import React, {
-  ReactNode,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from 'react';
-
-import {
-  StyleSheet,
-  Keyboard,
-  StatusBar,
-  I18nManager,
-  StatusBarAnimation,
-  StyleProp,
-  ViewStyle,
-  LayoutChangeEvent,
-  Platform,
-} from 'react-native';
-
+import type {
+  ActiveCursor,
+  HitSlop,
+  UserSelect,
+} from '../handlers/gestureHandlerCommon';
 import Animated, {
   Extrapolation,
-  SharedValue,
   interpolate,
   runOnJS,
   useAnimatedProps,
@@ -35,19 +17,33 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-
 import {
-  UserSelect,
-  ActiveCursor,
-  MouseButton,
-  HitSlop,
-} from '../handlers/gestureHandlerCommon';
-import {
-  PanGestureActiveEvent,
-  usePanGesture,
-  useTapGesture,
-} from '../v3/hooks/gestures';
+  I18nManager,
+  Keyboard,
+  Platform,
+  StatusBar,
+  StyleSheet,
+} from 'react-native';
+import type {
+  LayoutChangeEvent,
+  StatusBarAnimation,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
+import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
 import { GestureDetector } from '../v3/detectors';
+import { MouseButton } from '../handlers/gestureHandlerCommon';
+import type { PanGestureActiveEvent } from '../v3/hooks/gestures';
+import type { ReactNode } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 
 const DRAG_TOSS = 0.05;
 

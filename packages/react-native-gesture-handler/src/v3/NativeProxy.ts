@@ -1,10 +1,10 @@
-import { scheduleOperationToBeFlushed } from '../handlers/utils';
-import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import {
+import type {
   BaseGestureConfig,
   GestureRelations,
   SingleGestureName,
 } from './types';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
+import { scheduleOperationToBeFlushed } from '../handlers/utils';
 
 // Destructure functions that can be called on the UI thread to have
 // a raw HostFunction reference

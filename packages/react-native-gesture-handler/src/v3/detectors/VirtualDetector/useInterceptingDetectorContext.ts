@@ -1,5 +1,5 @@
 import { createContext, use } from 'react';
-import { VirtualChild } from '../../types';
+import type { VirtualChild } from '../../types';
 
 export enum InterceptingDetectorMode {
   DEFAULT,

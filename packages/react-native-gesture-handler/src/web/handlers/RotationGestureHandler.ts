@@ -1,14 +1,12 @@
-import { State } from '../../State';
-import { AdaptedEvent, PropsRef } from '../interfaces';
-
+import type { AdaptedEvent, PropsRef } from '../interfaces';
+import type { ActionType } from '../../ActionType';
 import GestureHandler from './GestureHandler';
-import RotationGestureDetector, {
-  RotationGestureListener,
-} from '../detectors/RotationGestureDetector';
-import { ActionType } from '../../ActionType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import IGestureHandler from './IGestureHandler';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type IGestureHandler from './IGestureHandler';
+import RotationGestureDetector from '../detectors/RotationGestureDetector';
+import type { RotationGestureListener } from '../detectors/RotationGestureDetector';
 import { SingleGestureName } from '../../v3/types';
+import { State } from '../../State';
 
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 

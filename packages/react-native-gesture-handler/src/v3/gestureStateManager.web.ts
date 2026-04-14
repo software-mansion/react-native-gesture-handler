@@ -1,8 +1,8 @@
-import { tagMessage } from '../utils';
-import IGestureHandler from '../web/handlers/IGestureHandler';
 import GestureHandlerOrchestrator from '../web/tools/GestureHandlerOrchestrator';
+import type { GestureStateManagerType } from './gestureStateManager';
+import type IGestureHandler from '../web/handlers/IGestureHandler';
 import NodeManager from '../web/tools/NodeManager';
-import { GestureStateManagerType } from './gestureStateManager';
+import { tagMessage } from '../utils';
 
 function ensureHandlerAttached(handler: IGestureHandler) {
   if (!handler.attached) {

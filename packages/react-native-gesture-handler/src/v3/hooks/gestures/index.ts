@@ -1,56 +1,56 @@
 import type {
-  FlingGestureEvent,
-  FlingGestureActiveEvent,
   FlingGesture,
+  FlingGestureActiveEvent,
   FlingGestureConfig,
+  FlingGestureEvent,
 } from './fling/FlingTypes';
 import type {
-  HoverGestureEvent,
   HoverGesture,
   HoverGestureActiveEvent,
   HoverGestureConfig,
+  HoverGestureEvent,
 } from './hover/HoverTypes';
 import type {
-  LongPressGestureEvent,
-  LongPressGestureActiveEvent,
   LongPressGesture,
+  LongPressGestureActiveEvent,
   LongPressGestureConfig,
+  LongPressGestureEvent,
 } from './longPress/LongPressTypes';
 import type {
-  ManualGestureEvent,
-  ManualGestureActiveEvent,
   ManualGesture,
+  ManualGestureActiveEvent,
   ManualGestureConfig,
+  ManualGestureEvent,
 } from './manual/ManualTypes';
 import type {
-  NativeGestureEvent,
-  NativeGestureActiveEvent,
   NativeGesture,
+  NativeGestureActiveEvent,
   NativeGestureConfig,
+  NativeGestureEvent,
 } from './native/NativeTypes';
 import type {
-  PanGestureEvent,
   PanGesture,
   PanGestureActiveEvent,
   PanGestureConfig,
+  PanGestureEvent,
 } from './pan/PanTypes';
 import type {
-  PinchGestureEvent,
   PinchGesture,
   PinchGestureActiveEvent,
   PinchGestureConfig,
+  PinchGestureEvent,
 } from './pinch/PinchTypes';
 import type {
-  RotationGestureEvent,
-  RotationGestureActiveEvent,
   RotationGesture,
+  RotationGestureActiveEvent,
   RotationGestureConfig,
+  RotationGestureEvent,
 } from './rotation/RotationTypes';
 import type {
-  TapGestureEvent,
   TapGesture,
   TapGestureActiveEvent,
   TapGestureConfig,
+  TapGestureEvent,
 } from './tap/TapTypes';
 
 export type {

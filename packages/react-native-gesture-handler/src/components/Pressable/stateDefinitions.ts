@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
-import { PressableEvent } from './PressableProps';
-import { StateDefinition } from './StateMachine';
+import type { PressableEvent } from './PressableProps';
+import type { StateDefinition } from './StateMachine';
 
 export enum StateMachineEvent {
   NATIVE_BEGIN = 'nativeBegin',

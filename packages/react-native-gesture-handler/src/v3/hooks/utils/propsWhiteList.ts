@@ -1,18 +1,18 @@
-import {
+import type {
   BaseGestureConfig,
   CommonGestureConfig,
   ExternalRelations,
   GestureCallbacks,
   HandlersPropsWhiteList,
   InternalConfigProps,
-  SingleGestureName,
 } from '../../types';
-import { NativeWrapperProperties } from '../../types/NativeWrapperType';
 import { FlingNativeProperties } from '../gestures/fling/FlingTypes';
 import { HoverNativeProperties } from '../gestures/hover/HoverTypes';
 import { LongPressNativeProperties } from '../gestures/longPress/LongPressTypes';
 import { NativeHandlerNativeProperties } from '../gestures/native/NativeTypes';
+import type { NativeWrapperProperties } from '../../types/NativeWrapperType';
 import { PanNativeProperties } from '../gestures/pan/PanTypes';
+import { SingleGestureName } from '../../types';
 import { TapNativeProperties } from '../gestures/tap/TapTypes';
 
 const CommonConfig = new Set<keyof CommonGestureConfig>([

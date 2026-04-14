@@ -1,23 +1,24 @@
-import React, { PropsWithChildren, ReactElement, useState } from 'react';
+import type { PropsWithChildren, ReactElement } from 'react';
 import {
-  ScrollView as RNScrollView,
-  ScrollViewProps as RNScrollViewProps,
-  Switch as RNSwitch,
-  SwitchProps as RNSwitchProps,
-  TextInput as RNTextInput,
-  TextInputProps as RNTextInputProps,
   FlatList as RNFlatList,
-  FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
-  RefreshControlProps as RNRefreshControlProps,
+  ScrollView as RNScrollView,
+  Switch as RNSwitch,
+  TextInput as RNTextInput,
 } from 'react-native';
-
-import createNativeWrapper from '../createNativeWrapper';
-
-import type { NativeWrapperProperties } from '../types/NativeWrapperType';
-import { NativeWrapperProps } from '../hooks/utils';
+import type {
+  FlatListProps as RNFlatListProps,
+  RefreshControlProps as RNRefreshControlProps,
+  ScrollViewProps as RNScrollViewProps,
+  SwitchProps as RNSwitchProps,
+  TextInputProps as RNTextInputProps,
+} from 'react-native';
+import React, { useState } from 'react';
 import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
+import type { NativeWrapperProperties } from '../types/NativeWrapperType';
+import { NativeWrapperProps } from '../hooks/utils';
+import createNativeWrapper from '../createNativeWrapper';
 import { ghQueueMicrotask } from '../../ghQueueMicrotask';
 
 export const RefreshControl = createNativeWrapper<
