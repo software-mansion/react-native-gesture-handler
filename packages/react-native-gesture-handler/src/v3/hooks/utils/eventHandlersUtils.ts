@@ -7,7 +7,7 @@ import {
   GestureTouchEventCallback,
   UnpackedGestureHandlerEvent,
 } from '../../types';
-import { GestureEndEventCallback } from '../../types/ConfigTypes';
+import type { GestureEndEventCallback } from '../../types/ConfigTypes';
 
 export function useMemoizedGestureCallbacks<
   THandlerData,

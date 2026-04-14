@@ -56,7 +56,7 @@ function handleStateChangeEvent<
     };
 
     if (oldState === State.ACTIVE) {
-      fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
+      fillInDefaultValues?.(endEvent as GestureEndEvent<TExtendedHandlerData>);
       runCallback<THandlerData, TExtendedHandlerData>(
         CALLBACK_TYPE.END,
         callbacks,
