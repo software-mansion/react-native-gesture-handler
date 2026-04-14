@@ -1,6 +1,6 @@
-import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { LegacyPressable } from 'react-native-gesture-handler';
+import React from 'react';
 
 const SECTION_RADIUS = 40;
 const BASE_SIZE = 120;

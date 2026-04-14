@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
-
-import { LoremIpsum } from '../../../common';
 import { DraggableBox } from '../../basic/draggable/index';
+import { LoremIpsum } from '../../../common';
 
 export default class Example extends Component {
   render() {

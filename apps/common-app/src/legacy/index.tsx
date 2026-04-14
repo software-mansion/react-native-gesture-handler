@@ -1,60 +1,53 @@
-import OverflowParent from './release_tests/overflowParent';
-import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
-import DoubleDraggable from './release_tests/doubleDraggable';
-import GesturizedPressable from './release_tests/gesturizedPressable';
-import { ComboWithGHScroll } from './release_tests/combo';
-import { TouchablesIndex } from './release_tests/touchables';
-import NestedFling from './release_tests/nestedFling';
-import MouseButtons from './release_tests/mouseButtons';
-import ContextMenu from './release_tests/contextMenu';
-import NestedTouchables from './release_tests/nestedTouchables';
-import NestedPressables from './release_tests/nestedPressables';
-import NestedButtons from './release_tests/nestedButtons';
-import PointerType from './release_tests/pointerType';
-import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
-import TwoFingerPan from './release_tests/twoFingerPan';
-import SvgCompatibility from './release_tests/svg';
-import NestedText from './release_tests/nestedText';
-
-import { PinchableBox } from './recipes/scaleAndRotate';
-import PanAndScroll from './recipes/panAndScroll';
-
 import { BottomSheet } from './showcase/bottomSheet';
-import ChatHeads from './showcase/chatHeads';
-
-import Draggable from './basic/draggable';
-import MultiTap from './basic/multitap';
-import BouncingBox from './basic/bouncing';
-import PanResponder from './basic/panResponder';
-import PagerAndDrawer from './basic/pagerAndDrawer';
-import ForceTouch from './basic/forcetouch';
-import Fling from './basic/fling';
-import WebStylesResetExample from './release_tests/webStylesReset';
-import StylusData from './release_tests/StylusData';
-
-import Camera from './v2_api/camera';
-import Transformations from './v2_api/transformations';
-import Overlap from './v2_api/overlap';
-import Calculator from './v2_api/calculator';
 import BottomSheetNewApi from './v2_api/bottom_sheet';
+import BouncingBox from './basic/bouncing';
+import Calculator from './v2_api/calculator';
+import Camera from './v2_api/camera';
+import ChatHeads from './showcase/chatHeads';
 import ChatHeadsNewApi from './v2_api/chat_heads';
+import { ComboWithGHScroll } from './release_tests/combo';
+import ContextMenu from './release_tests/contextMenu';
+import DoubleDraggable from './release_tests/doubleDraggable';
+import DoublePinchRotate from './release_tests/doubleScalePinchAndRotate';
 import DragNDrop from './v2_api/drag_n_drop';
-import ManualGestures from './v2_api/manualGestures/index';
+import Draggable from './basic/draggable';
+import EmptyExample from '../empty';
+import type { ExamplesSection } from '../common';
+import Fling from './basic/fling';
+import ForceTouch from './basic/forcetouch';
+import GesturizedPressable from './release_tests/gesturizedPressable';
 import Hover from './v2_api/hover';
 import HoverableIcons from './v2_api/hoverable_icons';
-import VelocityTest from './v2_api/velocityTest';
-import Pressable from './v2_api/pressable';
-
-import RectButtonBorders from './release_tests/rectButton';
-
-import MacosDraggable from './simple/draggable';
-import Tap from './simple/tap';
 import LongPressExample from './simple/longPress';
+import MacosDraggable from './simple/draggable';
 import ManualExample from './simple/manual';
+import ManualGestures from './v2_api/manualGestures/index';
+import MouseButtons from './release_tests/mouseButtons';
+import MultiTap from './basic/multitap';
+import NestedButtons from './release_tests/nestedButtons';
+import NestedFling from './release_tests/nestedFling';
+import NestedGestureHandlerRootViewWithModal from './release_tests/nestedGHRootViewWithModal';
+import NestedPressables from './release_tests/nestedPressables';
+import NestedText from './release_tests/nestedText';
+import NestedTouchables from './release_tests/nestedTouchables';
+import OverflowParent from './release_tests/overflowParent';
+import Overlap from './v2_api/overlap';
+import PagerAndDrawer from './basic/pagerAndDrawer';
+import PanAndScroll from './recipes/panAndScroll';
+import PanResponder from './basic/panResponder';
+import { PinchableBox } from './recipes/scaleAndRotate';
+import PointerType from './release_tests/pointerType';
+import Pressable from './v2_api/pressable';
+import RectButtonBorders from './release_tests/rectButton';
 import SimpleFling from './simple/fling';
-
-import { ExamplesSection } from '../common';
-import EmptyExample from '../empty';
+import StylusData from './release_tests/StylusData';
+import SvgCompatibility from './release_tests/svg';
+import Tap from './simple/tap';
+import { TouchablesIndex } from './release_tests/touchables';
+import Transformations from './v2_api/transformations';
+import TwoFingerPan from './release_tests/twoFingerPan';
+import VelocityTest from './v2_api/velocityTest';
+import WebStylesResetExample from './release_tests/webStylesReset';
 export const OLD_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',

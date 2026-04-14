@@ -1,6 +1,8 @@
+import type { ColorTile } from './Tile';
+import DragAndDrop from './DragAndDrop';
+import type { DraggableItemData } from './DragAndDrop';
 import React from 'react';
-import DragAndDrop, { DraggableItemData } from './DragAndDrop';
-import Tile, { ColorTile } from './Tile';
+import Tile from './Tile';
 
 const COLORS = [
   '#F94144',

@@ -1,7 +1,7 @@
-import { COLORS } from '../../../common';
 import React, { useRef, useState } from 'react';
-import { Text, StyleSheet, View } from 'react-native';
-import { ScrollView, RefreshControl } from 'react-native-gesture-handler';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
+import { COLORS } from '../../../common';
 
 const DATA = Array.from({ length: 20 }, (_, i) => ({
   id: i.toString(),

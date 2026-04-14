@@ -1,25 +1,19 @@
-import React, {
-  RefObject,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Text,
-  StyleSheet,
-  ViewStyle,
-  StyleProp,
-  View,
-  Platform,
-} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import type { Platform, StyleProp, ViewStyle } from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type { RefObject } from 'react';
 
 export interface Example {
   name: string;

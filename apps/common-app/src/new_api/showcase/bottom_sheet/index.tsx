@@ -1,26 +1,21 @@
-import React, { useState } from 'react';
-import {
-  Dimensions,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {
-  GestureDetector,
-  PanGestureActiveEvent,
-  useSimultaneousGestures,
-  usePanGesture,
-  useTapGesture,
-  useNativeGesture,
-} from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { COLORS, commonStyles, LoremIpsum } from '../../../common';
+import { COLORS, LoremIpsum, commonStyles } from '../../../common';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import {
+  GestureDetector,
+  useNativeGesture,
+  usePanGesture,
+  useSimultaneousGestures,
+  useTapGesture,
+} from 'react-native-gesture-handler';
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import React, { useState } from 'react';
+import type { PanGestureActiveEvent } from 'react-native-gesture-handler';
 
 const HEADER_HEIGTH = 50;
 const windowHeight = Dimensions.get('window').height;

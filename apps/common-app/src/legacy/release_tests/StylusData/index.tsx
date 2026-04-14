@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Image, StyleSheet, View } from 'react-native';
+import React from 'react';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const GH = require('../../../common_assets/hoverable_icons/gh.png');

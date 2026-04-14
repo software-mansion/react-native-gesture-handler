@@ -1,16 +1,16 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import {
-  Directions,
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import {
+  Directions,
+  Gesture,
+  GestureDetector,
+} from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import React from 'react';
 
 const AnimationDuration = 100;
 
