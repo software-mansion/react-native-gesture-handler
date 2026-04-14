@@ -1,10 +1,5 @@
-import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
-import { useGesture } from '../../useGesture';
-import {
-  useClonedAndRemappedConfig,
-  getChangeEventCalculator,
-} from '../../utils';
-import {
+import type { GestureEvent, HandlerData } from '../../../types';
+import type {
   HoverExtendedHandlerData,
   HoverGesture,
   HoverGestureConfig,
@@ -13,6 +8,12 @@ import {
   HoverGestureProperties,
   HoverHandlerData,
 } from './HoverTypes';
+import {
+  getChangeEventCalculator,
+  useClonedAndRemappedConfig,
+} from '../../utils';
+import { SingleGestureName } from '../../../types';
+import { useGesture } from '../../useGesture';
 
 function diffCalculator(
   current: HandlerData<HoverExtendedHandlerData>,

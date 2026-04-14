@@ -1,7 +1,7 @@
-import { Animated, NativeSyntheticEvent } from 'react-native';
-import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { PointerType } from '../../PointerType';
-import { State } from '../../State';
+import type { Animated, NativeSyntheticEvent } from 'react-native';
+import type { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
+import type { PointerType } from '../../PointerType';
+import type { State } from '../../State';
 
 type EventPayload = {
   handlerTag: number;

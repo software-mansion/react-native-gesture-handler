@@ -1,7 +1,4 @@
-import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { State } from '../../../State';
-import {
+import type {
   GestureCallbacks,
   GestureStateChangeEventWithHandlerData,
   StateChangeEventWithHandlerData,
@@ -12,6 +9,9 @@ import {
   maybeExtractNativeEvent,
   runCallback,
 } from '../utils';
+import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
+import { State } from '../../../State';
 
 export function getStateChangeHandler<
   THandlerData,

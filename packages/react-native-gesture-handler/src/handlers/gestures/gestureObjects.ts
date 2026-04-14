@@ -1,19 +1,19 @@
-import { FlingGesture } from './flingGesture';
-import { ForceTouchGesture } from './forceTouchGesture';
-import { Gesture } from './gesture';
 import {
   ComposedGesture,
   ExclusiveGesture,
   SimultaneousGesture,
 } from './gestureComposition';
+import { FlingGesture } from './flingGesture';
+import { ForceTouchGesture } from './forceTouchGesture';
+import type { Gesture } from './gesture';
+import { HoverGesture } from './hoverGesture';
 import { LongPressGesture } from './longPressGesture';
+import { ManualGesture } from './manualGesture';
+import { NativeGesture } from './nativeGesture';
 import { PanGesture } from './panGesture';
 import { PinchGesture } from './pinchGesture';
 import { RotationGesture } from './rotationGesture';
 import { TapGesture } from './tapGesture';
-import { NativeGesture } from './nativeGesture';
-import { ManualGesture } from './manualGesture';
-import { HoverGesture } from './hoverGesture';
 
 /**
  * `Gesture` is the object that allows you to create and compose gestures.

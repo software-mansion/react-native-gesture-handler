@@ -1,5 +1,6 @@
-import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { BaseGestureConfig } from './gesture';
+import { ContinousBaseGesture } from './gesture';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { HoverGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export type HoverGestureChangeEventPayload = {

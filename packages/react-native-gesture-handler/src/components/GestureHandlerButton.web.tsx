@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { ColorValue, View, ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
+import { View } from 'react-native';
 
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;

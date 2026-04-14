@@ -1,11 +1,11 @@
-import { usePanGesture } from '../v3/hooks/gestures';
-import { render, renderHook } from '@testing-library/react-native';
-import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
-import { State } from '../State';
-import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { RectButton, Touchable } from '../v3/components';
-import { act } from 'react';
+import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
+import { render, renderHook } from '@testing-library/react-native';
+import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import type { SingleGesture } from '../v3/types';
+import { State } from '../State';
+import { act } from 'react';
+import { usePanGesture } from '../v3/hooks/gestures';
 
 describe('[API v3] Hooks', () => {
   test('Pan gesture', () => {

@@ -1,9 +1,13 @@
-import { CommonGestureConfig, ExternalRelations, GestureCallbacks } from '.';
+import type {
+  CommonGestureConfig,
+  ExternalRelations,
+  GestureCallbacks,
+} from '.';
 
-import {
+import type {
+  NativeGesture,
   NativeGestureNativeProperties,
   NativeHandlerData,
-  NativeGesture,
 } from '../hooks/gestures/native/NativeTypes';
 
 export type WrapperSpecificProperties<T = unknown> = {

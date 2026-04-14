@@ -1,12 +1,12 @@
-import { GestureCallbacks, TouchEvent } from '../../types';
+import type { GestureCallbacks, TouchEvent } from '../../types';
 import {
   isEventForHandlerWithTag,
   maybeExtractNativeEvent,
   runCallback,
   touchEventTypeToCallbackType,
 } from '../utils';
+import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { TouchEventType } from '../../../TouchEventType';
-import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 
 export function getTouchEventHandler<
   THandlerData,
