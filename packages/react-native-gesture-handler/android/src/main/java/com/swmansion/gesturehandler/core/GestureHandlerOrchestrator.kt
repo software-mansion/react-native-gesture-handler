@@ -42,8 +42,8 @@ class GestureHandlerOrchestrator(
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
 
-  var onGestureActivated: ((GestureHandler) -> Unit)? = null
-  var onGestureDeactivated: ((GestureHandler) -> Unit)? = null
+  var onPreventRecognizersRequested: ((GestureHandler) -> Unit)? = null
+  var onPreventRecognizersReleased: ((GestureHandler) -> Unit)? = null
 
   /**
    * Should be called from the view wrapper
@@ -150,7 +150,7 @@ class GestureHandlerOrchestrator(
     if (isFinished(newState) && handler.isActive && handler.preventRecognizers) {
       // Check if there are any other active handlers that are preventing recognizers.
       if (gestureHandlers.none { it !== handler && it.isActive && it.preventRecognizers }) {
-        onGestureDeactivated?.invoke(handler)
+        onPreventRecognizersReleased?.invoke(handler)
       }
     }
 
@@ -240,7 +240,7 @@ class GestureHandlerOrchestrator(
     cleanupAwaitingHandlers()
 
     if (handler.preventRecognizers) {
-      onGestureActivated?.invoke(handler)
+      onPreventRecognizersRequested?.invoke(handler)
     }
 
     // At this point the waiting handler is allowed to activate, so we need to send BEGAN -> ACTIVE event
