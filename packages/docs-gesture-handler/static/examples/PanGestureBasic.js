@@ -4,9 +4,9 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import {
-  Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  usePanGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 
@@ -38,7 +38,7 @@ export default function App() {
 
     containerRef.current.measureInWindow((x, y, width, height) => {
       maxTranslateX.value = width / 2 - 50;
-      maxTranslateY.value = height / 2 - 50;
+      maxTranslateY.value = height / 2;
     });
   };
 
@@ -56,14 +56,14 @@ export default function App() {
     };
   }, []);
 
-  const pan = Gesture.Pan()
-    .minDistance(1)
-    .onBegin(() => {
+  const pan = usePanGesture({
+    minDistance: 1,
+    onBegin: () => {
       grabbing.value = true;
       prevTranslationX.value = translationX.value;
       prevTranslationY.value = translationY.value;
-    })
-    .onUpdate((event) => {
+    },
+    onUpdate: (event) => {
       translationX.value = clamp(
         prevTranslationX.value + event.translationX,
         -maxTranslateX.value,
@@ -74,10 +74,11 @@ export default function App() {
         -maxTranslateY.value,
         maxTranslateY.value
       );
-    })
-    .onFinalize(() => {
+    },
+    onFinalize: () => {
       grabbing.value = false;
-    });
+    },
+  });
 
   return (
     <GestureHandlerRootView>
