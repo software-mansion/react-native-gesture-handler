@@ -38,8 +38,8 @@ export default function LongPressExample() {
         duration: 100,
       });
     },
-    onFinalize: (_, success) => {
-      finalise_color.value = success ? COLORS.GREEN : COLORS.RED;
+    onFinalize: (e) => {
+      finalise_color.value = e.canceled ? COLORS.RED : COLORS.GREEN;
       colorProgress.value = 1;
       colorProgress.value = withTiming(
         0,

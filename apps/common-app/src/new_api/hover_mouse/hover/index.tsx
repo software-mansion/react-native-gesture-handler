@@ -29,8 +29,8 @@ function useColoredHover(
     onActivate: () => {
       console.log('hover start', color);
     },
-    onDeactivate: (_, success) => {
-      console.log('hover end', color, 'failed', !success);
+    onDeactivate: (e) => {
+      console.log('hover end', color, 'failed', e.canceled);
     },
     onFinalize: () => {
       hovered.value = false;
