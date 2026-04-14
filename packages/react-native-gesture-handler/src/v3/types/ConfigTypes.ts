@@ -1,4 +1,4 @@
-import {
+import type {
   ActiveCursor,
   GestureTouchEvent,
   HitSlop,
@@ -6,12 +6,12 @@ import {
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
-import {
+import type {
   AnimatedEvent,
   ChangeCalculatorType,
   GestureEvent,
 } from './EventTypes';
-import { WithSharedValue } from './ReanimatedTypes';
+import type { WithSharedValue } from './ReanimatedTypes';
 
 export type GestureEventCallback<THandlerData> = (
   event: GestureEvent<THandlerData>

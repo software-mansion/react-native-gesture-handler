@@ -1,18 +1,18 @@
-import findNodeHandle from '../../findNodeHandle';
-import type IGestureHandler from '../handlers/IGestureHandler';
-import {
+import type {
   GestureHandlerDelegate,
   MeasureResult,
 } from './GestureHandlerDelegate';
-import PointerEventManager from './PointerEventManager';
-import { State } from '../../State';
-import { isPointerInBounds, getEffectiveBoundingRect } from '../utils';
-import EventManager from './EventManager';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import { getEffectiveBoundingRect, isPointerInBounds } from '../utils';
+import type EventManager from './EventManager';
+import type IGestureHandler from '../handlers/IGestureHandler';
 import KeyboardEventManager from './KeyboardEventManager';
-import WheelEventManager from './WheelEventManager';
-import { tagMessage } from '../../utils';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import PointerEventManager from './PointerEventManager';
 import { SingleGestureName } from '../../v3/types';
+import { State } from '../../State';
+import WheelEventManager from './WheelEventManager';
+import findNodeHandle from '../../findNodeHandle';
+import { tagMessage } from '../../utils';
 
 interface DefaultViewStyles {
   userSelect: string;

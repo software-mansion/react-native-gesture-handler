@@ -1,11 +1,11 @@
-import { ComponentClass } from 'react';
-import { tagMessage } from '../../utils';
-import {
+import type {
   GestureCallbacks,
   GestureUpdateEventWithHandlerData,
   SharedValue,
 } from '../../v3/types';
+import type { ComponentClass } from 'react';
 import { NativeProxy } from '../../v3/NativeProxy';
+import { tagMessage } from '../../utils';
 
 export type ReanimatedContext<THandlerData> = {
   lastUpdateEvent: GestureUpdateEventWithHandlerData<THandlerData> | undefined;

@@ -1,12 +1,9 @@
-import React, { ComponentRef, Ref, useEffect, useMemo, useRef } from 'react';
-import {
-  Platform,
-  Text as RNText,
-  TextProps as RNTextProps,
-} from 'react-native';
-
+import type { ComponentRef, Ref } from 'react';
+import { Platform, Text as RNText } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
 import { GestureDetector } from '../handlers/gestures/GestureDetector';
+import type { TextProps as RNTextProps } from 'react-native';
 
 type TextProps = RNTextProps & {
   ref?: Ref<ComponentRef<typeof RNText> | null>;

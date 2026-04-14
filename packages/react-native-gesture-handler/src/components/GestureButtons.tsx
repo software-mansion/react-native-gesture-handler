@@ -1,25 +1,23 @@
 import * as React from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
-
-import createNativeWrapper from '../handlers/createNativeWrapper';
-import GestureHandlerButton from './GestureHandlerButton';
-import { State } from '../State';
-
-import {
+import type {
+  BaseButtonWithRefProps,
+  BorderlessButtonWithRefProps,
+  LegacyBaseButtonProps,
+  LegacyBorderlessButtonProps,
+  LegacyRawButtonProps,
+  LegacyRectButtonProps,
+  RectButtonWithRefProps,
+} from './GestureButtonsProps';
+import type {
   GestureEvent,
   HandlerStateChangeEvent,
 } from '../handlers/gestureHandlerCommon';
-import type { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
-import type {
-  BaseButtonWithRefProps,
-  LegacyBaseButtonProps,
-  RectButtonWithRefProps,
-  LegacyRectButtonProps,
-  BorderlessButtonWithRefProps,
-  LegacyBorderlessButtonProps,
-  LegacyRawButtonProps,
-} from './GestureButtonsProps';
+import GestureHandlerButton from './GestureHandlerButton';
 import type { HostComponent } from 'react-native';
+import type { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
+import { State } from '../State';
+import createNativeWrapper from '../handlers/createNativeWrapper';
 
 /**
  * @deprecated use `RawButton` instead

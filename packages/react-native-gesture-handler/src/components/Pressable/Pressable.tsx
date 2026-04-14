@@ -1,3 +1,15 @@
+import { INT32_MAX, isTestEnv } from '../../utils';
+import type {
+  Insets,
+  LayoutChangeEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import type {
+  LegacyPressableProps,
+  PressableDimensions,
+  PressableEvent,
+} from './PressableProps';
 import React, {
   useCallback,
   useEffect,
@@ -5,37 +17,22 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
-import { GestureDetector } from '../../handlers/gestures/GestureDetector';
+import type { RelationPropName, RelationPropType } from '../utils';
+import { StateMachineEvent, getStatesConfig } from './stateDefinitions';
 import {
-  PressableEvent,
-  PressableDimensions,
-  LegacyPressableProps,
-} from './PressableProps';
-import {
-  Insets,
-  LayoutChangeEvent,
-  Platform,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
-import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
-import {
-  gestureToPressableEvent,
   addInsets,
-  numberAsInset,
+  gestureToPressableEvent,
   gestureTouchToPressableEvent,
   isTouchWithinInset,
+  numberAsInset,
 } from './utils';
+import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../../handlers/gestures/GestureDetector';
+import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
+import { Platform } from 'react-native';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isTestEnv } from '../../utils';
-import {
-  applyRelationProp,
-  RelationPropName,
-  RelationPropType,
-} from '../utils';
-import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
 import { PressableStateMachine } from './StateMachine';
+import { applyRelationProp } from '../utils';
 import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;

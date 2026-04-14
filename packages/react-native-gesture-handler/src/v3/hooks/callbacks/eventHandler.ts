@@ -1,13 +1,4 @@
-import {
-  flattenAndFilterEvent,
-  isEventForHandlerWithTag,
-  maybeExtractNativeEvent,
-  runCallback,
-  touchEventTypeToCallbackType,
-} from '../utils';
-import { tagMessage } from '../../../utils';
-import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
-import {
+import type {
   ChangeCalculatorType,
   GestureCallbacks,
   GestureEvent,
@@ -15,11 +6,20 @@ import {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
 } from '../../types';
+import {
+  flattenAndFilterEvent,
+  isEventForHandlerWithTag,
+  maybeExtractNativeEvent,
+  runCallback,
+  touchEventTypeToCallbackType,
+} from '../utils';
+import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
-import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
+import { tagMessage } from '../../../utils';
 
 function handleStateChangeEvent<
   THandlerData,

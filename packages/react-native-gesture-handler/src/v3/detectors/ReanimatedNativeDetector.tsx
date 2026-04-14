@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useRef } from 'react';
-import {
-  NativeEventsManager,
-  Reanimated,
-} from '../../handlers/gestures/reanimatedWrapper';
 import HostGestureDetector, {
   type RNGestureHandlerDetectorNativeComponentProps,
 } from './HostGestureDetector';
+import { useEffect, useMemo, useRef } from 'react';
+import type { NativeEventsManager } from '../../handlers/gestures/reanimatedWrapper';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 import { findNodeHandle } from 'react-native';
 
 let NativeEventsManagerImpl = Reanimated?.NativeEventsManager;

@@ -1,5 +1,5 @@
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
 import { ContinousBaseGesture } from './gesture';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 
 function changeEventCalculator(
   current: GestureUpdateEvent<Record<string, never>>,

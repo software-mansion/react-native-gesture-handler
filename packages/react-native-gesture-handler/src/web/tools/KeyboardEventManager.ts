@@ -1,5 +1,6 @@
-import { AdaptedEvent, EventTypes } from '../interfaces';
+import type { AdaptedEvent } from '../interfaces';
 import EventManager from './EventManager';
+import { EventTypes } from '../interfaces';
 import { PointerType } from '../../PointerType';
 
 export default class KeyboardEventManager extends EventManager<HTMLElement> {
