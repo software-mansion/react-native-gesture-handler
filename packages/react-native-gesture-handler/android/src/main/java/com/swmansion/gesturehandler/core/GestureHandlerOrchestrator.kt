@@ -42,6 +42,9 @@ class GestureHandlerOrchestrator(
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
 
+  var onGestureActivated: ((GestureHandler) -> Unit)? = null
+  var onGestureDeactivated: ((GestureHandler) -> Unit)? = null
+
   /**
    * Should be called from the view wrapper
    */
@@ -143,6 +146,14 @@ class GestureHandlerOrchestrator(
   /*package*/
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
+
+    if (isFinished(newState) && handler.isActive && handler.preventRecognizers) {
+      // Check if there are any other active handlers that are preventing recognizers.
+      if (gestureHandlers.none { it !== handler && it.isActive && it.preventRecognizers }) {
+        onGestureDeactivated?.invoke(handler)
+      }
+    }
+
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
@@ -227,6 +238,10 @@ class GestureHandlerOrchestrator(
       }
     }
     cleanupAwaitingHandlers()
+
+    if (handler.preventRecognizers) {
+      onGestureActivated?.invoke(handler)
+    }
 
     // At this point the waiting handler is allowed to activate, so we need to send BEGAN -> ACTIVE event
     // as it wasn't sent before. If handler has finished recognizing the gesture before it was allowed to

@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unused-prop-types */
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Platform } from 'react-native';
 import findNodeHandle from '../../../findNodeHandle';
 import { GestureType } from '../gesture';
 import { UserSelect, TouchAction } from '../../gestureHandlerCommon';
@@ -44,10 +43,6 @@ function propagatePreventRecognizersConfig(
   preventRecognizers: boolean,
   gesture: ComposedGesture | GestureType
 ) {
-  if (Platform.OS !== 'ios') {
-    return;
-  }
-
   for (const g of gesture.toGestureArray()) {
     const config = g.config as { [key: string]: unknown };
     config.preventRecognizers = preventRecognizers;

@@ -44,11 +44,6 @@ class RNGestureHandlerRootViewManager :
     view.setUnstableForceActive(active)
   }
 
-  @ReactProp(name = "preventRecognizers")
-  override fun setPreventRecognizers(view: RNGestureHandlerRootView, preventRecognizers: Boolean) {
-    view.setPreventRecognizers(preventRecognizers)
-  }
-
   /**
    * The following event configuration is necessary even if you are not using
    * GestureHandlerRootView component directly.

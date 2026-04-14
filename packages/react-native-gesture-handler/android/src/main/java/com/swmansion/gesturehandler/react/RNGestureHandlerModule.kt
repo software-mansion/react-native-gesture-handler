@@ -130,8 +130,6 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  override fun setShouldPreventRecognizers(shouldPreventRecognizers: Boolean) = Unit
-
   @DoNotStrip
   @Suppress("unused")
   fun setGestureHandlerState(handlerTag: Int, newState: Int) {
