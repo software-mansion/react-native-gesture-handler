@@ -1,12 +1,11 @@
-import React, { useRef } from 'react';
-
-import { StyleSheet, Animated, View, Text } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import {
   PanGestureHandler,
-  PanGestureHandlerStateChangeEvent,
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
+import React, { useRef } from 'react';
+import type { PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { USE_NATIVE_DRIVER } from '../../../config';
 
 export default function Example() {

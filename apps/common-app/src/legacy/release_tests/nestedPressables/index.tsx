@@ -1,12 +1,7 @@
+import { LegacyPressable, ScrollView } from 'react-native-gesture-handler';
+import { Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
+import type { PressableStateCallbackType } from 'react-native';
 import React from 'react';
-import {
-  Pressable as RNPressable,
-  PressableStateCallbackType,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { ScrollView, LegacyPressable } from 'react-native-gesture-handler';
 
 export default function Example() {
   return (

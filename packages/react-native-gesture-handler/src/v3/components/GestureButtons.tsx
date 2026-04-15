@@ -1,16 +1,15 @@
-import React, { useRef } from 'react';
-import { Platform, StyleSheet, Animated } from 'react-native';
-import createNativeWrapper from '../createNativeWrapper';
-import GestureHandlerButton from '../../components/GestureHandlerButton';
+import { Animated, Platform, StyleSheet } from 'react-native';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
   RawButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
-
-import type { GestureEvent, GestureEndEvent } from '../types';
+import type { GestureEndEvent, GestureEvent } from '../types';
+import React, { useRef } from 'react';
+import GestureHandlerButton from '../../components/GestureHandlerButton';
 import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
+import createNativeWrapper from '../createNativeWrapper';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
 type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;

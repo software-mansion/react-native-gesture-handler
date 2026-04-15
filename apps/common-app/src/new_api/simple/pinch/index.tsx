@@ -1,13 +1,13 @@
-import { commonStyles, COLORS } from '../../../common';
-import React from 'react';
-import { View } from 'react-native';
-import { GestureDetector, usePinchGesture } from 'react-native-gesture-handler';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
   interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { COLORS, commonStyles } from '../../../common';
+import { GestureDetector, usePinchGesture } from 'react-native-gesture-handler';
+import React from 'react';
+import { View } from 'react-native';
 
 export default function PinchExample() {
   const scale = useSharedValue(1);

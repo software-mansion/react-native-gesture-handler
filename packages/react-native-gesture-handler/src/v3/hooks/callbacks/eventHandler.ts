@@ -1,3 +1,12 @@
+import type {
+  ChangeCalculatorType,
+  GestureCallbacks,
+  GestureEndEvent,
+  GestureEvent,
+  GestureHandlerEventWithHandlerData,
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
+} from '../../types';
 import {
   flattenAndFilterEvent,
   isEventForHandlerWithTag,
@@ -5,22 +14,13 @@ import {
   runCallback,
   touchEventTypeToCallbackType,
 } from '../utils';
-import { tagMessage } from '../../../utils';
-import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
-import {
-  ChangeCalculatorType,
-  GestureCallbacks,
-  GestureEvent,
-  GestureEndEvent,
-  GestureHandlerEventWithHandlerData,
-  GestureStateChangeEventWithHandlerData,
-  GestureUpdateEventWithHandlerData,
-} from '../../types';
+import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
-import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
+import { tagMessage } from '../../../utils';
 
 function handleStateChangeEvent<
   THandlerData,

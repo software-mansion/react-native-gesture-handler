@@ -1,15 +1,8 @@
+import { Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
+import { LegacyPressable as GHPressable } from 'react-native-gesture-handler';
+import type { LegacyPressableProps as GHPressableProps } from 'react-native-gesture-handler';
+import type { PressableProps as RNPressableProps } from 'react-native';
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Pressable as RNPressable,
-  PressableProps as RNPressableProps,
-} from 'react-native';
-import {
-  LegacyPressable as GHPressable,
-  LegacyPressableProps as GHPressableProps,
-} from 'react-native-gesture-handler';
 
 const TestingBase = (props: GHPressableProps & RNPressableProps) => (
   <>

@@ -1,13 +1,13 @@
-import { useMemo } from 'react';
-import { TouchEventType } from '../../../TouchEventType';
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import {
+import type {
   GestureCallbacks,
   GestureEventCallback,
   GestureTouchEventCallback,
   UnpackedGestureHandlerEvent,
 } from '../../types';
+import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
 import type { GestureEndEventCallback } from '../../types/ConfigTypes';
+import { TouchEventType } from '../../../TouchEventType';
+import { useMemo } from 'react';
 
 export function useMemoizedGestureCallbacks<
   THandlerData,

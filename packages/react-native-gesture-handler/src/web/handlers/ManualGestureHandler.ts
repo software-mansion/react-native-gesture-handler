@@ -1,8 +1,8 @@
-import { SingleGestureName } from '../../v3/types';
-import { AdaptedEvent } from '../interfaces';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type { AdaptedEvent } from '../interfaces';
 import GestureHandler from './GestureHandler';
-import IGestureHandler from './IGestureHandler';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type IGestureHandler from './IGestureHandler';
+import { SingleGestureName } from '../../v3/types';
 
 export default class ManualGestureHandler extends GestureHandler {
   public constructor(

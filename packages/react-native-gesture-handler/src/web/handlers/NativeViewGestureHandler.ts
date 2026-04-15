@@ -1,13 +1,12 @@
-import { Platform } from 'react-native';
-import { State } from '../../State';
+import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import type { ActionType } from '../../ActionType';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config, PropsRef } from '../interfaces';
-
 import GestureHandler from './GestureHandler';
-import { ActionType } from '../../ActionType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import IGestureHandler from './IGestureHandler';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type IGestureHandler from './IGestureHandler';
+import { Platform } from 'react-native';
 import { SingleGestureName } from '../../v3/types';
+import { State } from '../../State';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 

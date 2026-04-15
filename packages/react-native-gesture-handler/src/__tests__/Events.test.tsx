@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Disabling lint for assymetric matchers, check proposal below
 // https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/56937
-import React from 'react';
-import { render, cleanup } from '@testing-library/react-native';
-import { Text } from 'react-native';
 import {
-  GestureHandlerRootView,
-  PanGestureHandler,
   Gesture,
   GestureDetector,
+  GestureHandlerRootView,
   State,
+} from '../index';
+import type {
   LegacyPanGesture,
   LegacyTapGesture,
+  PanGestureHandler,
 } from '../index';
+import { cleanup, render } from '@testing-library/react-native';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
+import React from 'react';
+import { Text } from 'react-native';
 
 beforeEach(cleanup);
 

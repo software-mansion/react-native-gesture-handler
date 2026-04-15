@@ -1,37 +1,38 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { State } from '../../State';
-import {
-  Config,
-  AdaptedEvent,
-  PropsRef,
-  ResultEvent,
-  PointerData,
-  EventTypes,
-  HitSlop,
-  GestureHandlerNativeEvent,
-} from '../interfaces';
-import EventManager from '../tools/EventManager';
-import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
-import InteractionManager from '../tools/InteractionManager';
-import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
-import IGestureHandler from './IGestureHandler';
-import {
+import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
+import type {
   ActiveCursor,
+  GestureTouchEvent,
   TouchAction,
   UserSelect,
-  GestureTouchEvent,
-  MouseButton,
 } from '../../handlers/gestureHandlerCommon';
-import { PointerType } from '../../PointerType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
-import { tagMessage } from '../../utils';
-import {
+import type {
+  AdaptedEvent,
+  Config,
+  GestureHandlerNativeEvent,
+  HitSlop,
+  PointerData,
+  PropsRef,
+  ResultEvent,
+} from '../interfaces';
+import type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
   SingleGestureName,
 } from '../../v3/types';
+import type EventManager from '../tools/EventManager';
+import { EventTypes } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
+import type IGestureHandler from './IGestureHandler';
+import InteractionManager from '../tools/InteractionManager';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import PointerTracker from '../tools/PointerTracker';
+import { PointerType } from '../../PointerType';
+import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
+import type { TrackerElement } from '../tools/PointerTracker';
+import { tagMessage } from '../../utils';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private _name!: SingleGestureName;

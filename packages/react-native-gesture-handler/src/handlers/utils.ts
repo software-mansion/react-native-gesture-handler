@@ -1,9 +1,9 @@
-import * as React from 'react';
+import type * as React from 'react';
 import { Platform, findNodeHandle as findNodeHandleRN } from 'react-native';
-import { handlerIDToTag } from './handlersRegistry';
-import { toArray } from '../utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { handlerIDToTag } from './handlersRegistry';
+import { toArray } from '../utils';
 
 function isConfigParam(param: unknown, name: string) {
   // param !== Object(param) returns false if `param` is a function

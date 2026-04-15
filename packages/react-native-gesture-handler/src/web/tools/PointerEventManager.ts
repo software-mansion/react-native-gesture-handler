@@ -1,12 +1,13 @@
-import EventManager from './EventManager';
-import { AdaptedEvent, EventTypes, Point } from '../interfaces';
+import type { AdaptedEvent, Point } from '../interfaces';
 import {
   PointerTypeMapping,
   calculateViewScale,
-  tryExtractStylusData,
-  isPointerInBounds,
   getEffectiveBoundingRect,
+  isPointerInBounds,
+  tryExtractStylusData,
 } from '../utils';
+import EventManager from './EventManager';
+import { EventTypes } from '../interfaces';
 import { PointerType } from '../../PointerType';
 
 const POINTER_CAPTURE_EXCLUDE_LIST = new Set<string>(['SELECT', 'INPUT']);

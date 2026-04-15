@@ -1,13 +1,13 @@
-import { SingleGestureName } from '../../../types';
-import { useGesture } from '../../useGesture';
-import { useClonedAndRemappedConfig } from '../../utils';
-import {
-  TapGestureProperties,
-  TapGestureInternalProperties,
-  TapHandlerData,
-  TapGestureConfig,
+import type {
   TapGesture,
+  TapGestureConfig,
+  TapGestureInternalProperties,
+  TapGestureProperties,
+  TapHandlerData,
 } from './TapTypes';
+import { SingleGestureName } from '../../../types';
+import { useClonedAndRemappedConfig } from '../../utils';
+import { useGesture } from '../../useGesture';
 
 const TapPropsMapping = new Map<
   keyof TapGestureProperties,

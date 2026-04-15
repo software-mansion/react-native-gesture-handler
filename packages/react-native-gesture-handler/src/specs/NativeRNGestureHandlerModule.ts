@@ -1,5 +1,6 @@
-import { TurboModuleRegistry, TurboModule } from 'react-native';
-import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import type { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import type { TurboModule } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 
 export interface Spec extends TurboModule {
   // This method returns a boolean only to force the codegen to generate

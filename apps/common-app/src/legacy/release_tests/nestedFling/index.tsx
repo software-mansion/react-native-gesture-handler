@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 import {
-  FlingGestureHandler,
   Directions,
+  FlingGestureHandler,
   State,
-  FlingGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-
+import React, { Component } from 'react';
+import type { FlingGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { USE_NATIVE_DRIVER } from '../../../config';
 
 const windowWidth = Dimensions.get('window').width;

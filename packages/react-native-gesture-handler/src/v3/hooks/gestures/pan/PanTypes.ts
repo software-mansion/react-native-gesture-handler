@@ -1,11 +1,11 @@
-import { StylusData } from '../../../../handlers/gestureHandlerCommon';
-import {
+import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   GestureEvent,
   SingleGesture,
   WithSharedValue,
 } from '../../../types';
+import type { StylusData } from '../../../../handlers/gestureHandlerCommon';
 
 type CommonPanGestureProperties = {
   /**

@@ -1,28 +1,27 @@
-import { Platform } from 'react-native';
-
-import { isTestEnv, tagMessage } from '../../../utils';
-import { GestureRef, BaseGesture, GestureType } from '../gesture';
-
-import { flingGestureHandlerProps } from '../../FlingGestureHandler';
-import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
-import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
-import {
-  panGestureHandlerProps,
-  panGestureHandlerCustomNativeProps,
-} from '../../PanGestureHandler';
-import { tapGestureHandlerProps } from '../../TapGestureHandler';
-import { hoverGestureHandlerProps } from '../hoverGesture';
-import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
-import { RNRenderer } from '../../../RNRenderer';
-import { useCallback, useRef, useState } from 'react';
-import { Reanimated } from '../reanimatedWrapper';
-import { onGestureHandlerEvent } from '../eventReceiver';
-import {
+import type {
   GestureHandlerNativeEvent,
   PropsRef,
   ResultEvent,
 } from '../../../web/interfaces';
+import type { GestureRef, GestureType } from '../gesture';
+import { isTestEnv, tagMessage } from '../../../utils';
+import {
+  panGestureHandlerCustomNativeProps,
+  panGestureHandlerProps,
+} from '../../PanGestureHandler';
+import { useCallback, useRef, useState } from 'react';
+import { BaseGesture } from '../gesture';
+import { Platform } from 'react-native';
+import { RNRenderer } from '../../../RNRenderer';
+import { Reanimated } from '../reanimatedWrapper';
+import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
+import { flingGestureHandlerProps } from '../../FlingGestureHandler';
+import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
+import { hoverGestureHandlerProps } from '../hoverGesture';
+import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
+import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
+import { onGestureHandlerEvent } from '../eventReceiver';
+import { tapGestureHandlerProps } from '../../TapGestureHandler';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,

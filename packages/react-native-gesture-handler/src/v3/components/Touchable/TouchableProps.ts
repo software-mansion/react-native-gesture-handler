@@ -1,8 +1,8 @@
-import type { PressableAndroidRippleConfig as RNPressableAndroidRippleConfig } from 'react-native';
-import type { ButtonProps } from '../../../components/GestureHandlerButton';
+import type { BaseButtonProps, RawButtonProps } from '../GestureButtonsProps';
 import type { GestureEndEvent, GestureEvent } from '../../types';
+import type { ButtonProps } from '../../../components/GestureHandlerButton';
 import type { NativeHandlerData } from '../../hooks/gestures/native/NativeTypes';
-import { BaseButtonProps, RawButtonProps } from '../GestureButtonsProps';
+import type { PressableAndroidRippleConfig as RNPressableAndroidRippleConfig } from 'react-native';
 
 export type CallbackEventType = GestureEvent<NativeHandlerData>;
 export type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
