@@ -1,6 +1,6 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import { COLORS, commonStyles } from '../../../common';
 
 const MAX_EVENTS = 5;
@@ -20,19 +20,16 @@ function EventPanel({ title, preventRecognizers }: PanelProps) {
     setEvents((prev) => [event, ...prev].slice(0, MAX_EVENTS));
   };
 
-  const panGesture = useMemo(
-    () =>
-      Gesture.Pan()
-        .minDistance(12)
-        .runOnJS(true)
-        .onStart(() => {
-          pushEvent('GH pan ACTIVE');
-        })
-        .onFinalize(() => {
-          pushEvent('GH pan finalize');
-        }),
-    []
-  );
+  const panGesture = usePanGesture({
+    minDistance: 12,
+    runOnJS: true,
+    onFinalize: () => {
+      pushEvent('GH pan finalize');
+    },
+    onActivate: () => {
+      pushEvent('GH pan ACTIVE');
+    },
+  });
 
   return (
     <View style={styles.panelContainer}>

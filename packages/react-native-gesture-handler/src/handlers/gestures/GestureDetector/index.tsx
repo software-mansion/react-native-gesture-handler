@@ -39,16 +39,6 @@ function propagateDetectorConfig(
   }
 }
 
-function propagatePreventRecognizersConfig(
-  preventRecognizers: boolean,
-  gesture: ComposedGesture | GestureType
-) {
-  for (const g of gesture.toGestureArray()) {
-    const config = g.config as { [key: string]: unknown };
-    config.preventRecognizers = preventRecognizers;
-  }
-}
-
 export interface GestureDetectorProps {
   children?: React.ReactNode;
   /**
@@ -106,10 +96,6 @@ export const GestureDetector = (props: GestureDetectorProps) => {
   // Gesture config should be wrapped with useMemo to prevent unnecessary re-renders
   const gestureConfig = props.gesture;
   propagateDetectorConfig(props, gestureConfig);
-  propagatePreventRecognizersConfig(
-    props.preventRecognizers ?? true,
-    gestureConfig
-  );
 
   const gesturesToAttach = useMemo(
     () => gestureConfig.toGestureArray(),
