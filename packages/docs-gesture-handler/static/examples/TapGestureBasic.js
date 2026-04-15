@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: 100,
-    height: 100,
+    aspectRatio: 1,
     borderRadius: 20,
     cursor: 'pointer',
   },
