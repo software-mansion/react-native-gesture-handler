@@ -10,7 +10,7 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import PinchGestureBasic from '@site/static/examples/PinchGestureBasic';
-import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestureBasicSrc';
+import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestureBasic';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>

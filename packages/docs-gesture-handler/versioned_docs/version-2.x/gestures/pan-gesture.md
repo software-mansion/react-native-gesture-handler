@@ -10,7 +10,7 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import PanGestureBasic from '@site/static/examples/PanGestureBasic';
-import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasicSrc';
+import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasic';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
