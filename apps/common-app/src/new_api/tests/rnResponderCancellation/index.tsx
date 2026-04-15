@@ -28,6 +28,7 @@ export default function RNResponderCancellationExample() {
   const panGesture = usePanGesture({
     minDistance: 12,
     runOnJS: true,
+    preventRecognizers,
     onActivate: () => {
       pushEvent('GH pan ACTIVE');
     },
@@ -50,9 +51,7 @@ export default function RNResponderCancellationExample() {
         />
       </View>
 
-      <GestureDetector
-        gesture={panGesture}
-        preventRecognizers={preventRecognizers}>
+      <GestureDetector gesture={panGesture}>
         <View
           style={styles.touchArea}
           onStartShouldSetResponder={() => {

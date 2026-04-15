@@ -66,11 +66,6 @@ export interface GestureDetectorProps {
    * Supports all CSS touch-action values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
    */
   touchAction?: TouchAction;
-  /**
-   * Controls whether activating a Gesture Handler recognizer should cancel RN JS responders.
-   * Default is `true`.
-   */
-  preventRecognizers?: boolean;
 }
 
 /**
