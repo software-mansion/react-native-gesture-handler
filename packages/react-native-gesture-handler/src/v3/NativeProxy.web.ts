@@ -1,9 +1,9 @@
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
 import type {
   BaseGestureConfig,
   GestureRelations,
   SingleGestureName,
 } from './types';
-import RNGestureHandlerModule from '../RNGestureHandlerModule';
 
 export const NativeProxy = {
   createGestureHandler: <T extends Record<string, unknown>>(

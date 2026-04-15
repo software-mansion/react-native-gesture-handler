@@ -1,7 +1,7 @@
-import { BaseGesture } from './gesture';
-import type { BaseGestureConfig } from './gesture';
-import type { LongPressGestureConfig } from '../LongPressGestureHandler';
 import type { LongPressGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
+import type { LongPressGestureConfig } from '../LongPressGestureHandler';
+import type { BaseGestureConfig } from './gesture';
+import { BaseGesture } from './gesture';
 
 export class LongPressGesture extends BaseGesture<LongPressGestureHandlerEventPayload> {
   public override config: BaseGestureConfig & LongPressGestureConfig = {};

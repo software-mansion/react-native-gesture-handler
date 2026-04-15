@@ -3,6 +3,13 @@ import type {
   HandlerData,
   WithSharedValue,
 } from '../../../types';
+import { SingleGestureName } from '../../../types';
+import { useGesture } from '../../useGesture';
+import {
+  getChangeEventCalculator,
+  maybeUnpackValue,
+  useClonedAndRemappedConfig,
+} from '../../utils';
 import type {
   OffsetProps,
   PanExtendedHandlerData,
@@ -13,13 +20,6 @@ import type {
   PanGestureProperties,
   PanHandlerData,
 } from './PanTypes';
-import {
-  getChangeEventCalculator,
-  maybeUnpackValue,
-  useClonedAndRemappedConfig,
-} from '../../utils';
-import { SingleGestureName } from '../../../types';
-import { useGesture } from '../../useGesture';
 
 const PanPropsMapping = new Map<
   keyof PanGestureProperties,

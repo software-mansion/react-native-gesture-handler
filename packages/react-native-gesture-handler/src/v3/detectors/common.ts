@@ -1,12 +1,13 @@
+import type React from 'react';
 import { Animated, StyleSheet } from 'react-native';
+
 import type {
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
+import type { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
 import type { Gesture } from '../types';
 import HostGestureDetector from './HostGestureDetector';
-import type { GestureDetectorProps as LegacyDetectorProps } from '../../handlers/gestures/GestureDetector';
-import type React from 'react';
 
 export enum GestureDetectorType {
   Native,

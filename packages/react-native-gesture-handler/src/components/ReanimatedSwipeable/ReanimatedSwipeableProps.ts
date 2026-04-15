@@ -1,8 +1,9 @@
-import type { StyleProp, ViewStyle } from 'react-native';
-import type { AnyGesture } from '../../v3/types';
-import type { HitSlop } from '../../handlers/gestureHandlerCommon';
 import type React from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
+
+import type { HitSlop } from '../../handlers/gestureHandlerCommon';
+import type { AnyGesture } from '../../v3/types';
 
 export enum SwipeDirection {
   LEFT = 'left',

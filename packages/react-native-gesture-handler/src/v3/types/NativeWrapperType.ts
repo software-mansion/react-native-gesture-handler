@@ -1,14 +1,13 @@
 import type {
-  CommonGestureConfig,
-  ExternalRelations,
-  GestureCallbacks,
-} from '.';
-
-import type {
   NativeGesture,
   NativeGestureNativeProperties,
   NativeHandlerData,
 } from '../hooks/gestures/native/NativeTypes';
+import type {
+  CommonGestureConfig,
+  ExternalRelations,
+  GestureCallbacks,
+} from '.';
 
 export type WrapperSpecificProperties<T = unknown> = {
   ref?: React.Ref<T> | undefined;

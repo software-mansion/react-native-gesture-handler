@@ -1,10 +1,11 @@
 import * as React from 'react';
+import { useImperativeHandle, useRef } from 'react';
+
+import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 import {
   NativeViewGestureHandler,
   nativeViewProps,
 } from './NativeViewGestureHandler';
-import { useImperativeHandle, useRef } from 'react';
-import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 
 /*
  * This array should consist of:

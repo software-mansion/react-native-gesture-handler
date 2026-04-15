@@ -1,6 +1,7 @@
 import type { StyleProp, ViewStyle } from 'react-native';
-import type { ButtonProps } from '../../components/GestureHandlerButton';
+
 import type GestureHandlerButton from '../../components/GestureHandlerButton';
+import type { ButtonProps } from '../../components/GestureHandlerButton';
 import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 
 /**

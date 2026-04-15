@@ -6,6 +6,16 @@ import type {
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
+import { PointerType } from '../../PointerType';
+import { State } from '../../State';
+import { TouchEventType } from '../../TouchEventType';
+import { tagMessage } from '../../utils';
+import type {
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
+  SingleGestureName,
+} from '../../v3/types';
 import type {
   AdaptedEvent,
   Config,
@@ -15,24 +25,14 @@ import type {
   PropsRef,
   ResultEvent,
 } from '../interfaces';
-import type {
-  GestureStateChangeEventWithHandlerData,
-  GestureUpdateEventWithHandlerData,
-  SingleGestureName,
-} from '../../v3/types';
-import type EventManager from '../tools/EventManager';
 import { EventTypes } from '../interfaces';
+import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
-import type IGestureHandler from './IGestureHandler';
 import InteractionManager from '../tools/InteractionManager';
-import { MouseButton } from '../../handlers/gestureHandlerCommon';
-import PointerTracker from '../tools/PointerTracker';
-import { PointerType } from '../../PointerType';
-import { State } from '../../State';
-import { TouchEventType } from '../../TouchEventType';
 import type { TrackerElement } from '../tools/PointerTracker';
-import { tagMessage } from '../../utils';
+import PointerTracker from '../tools/PointerTracker';
+import type IGestureHandler from './IGestureHandler';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private _name!: SingleGestureName;

@@ -1,8 +1,8 @@
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { PanGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
+import type { PanGestureConfig } from '../PanGestureHandler';
 import type { BaseGestureConfig } from './gesture';
 import { ContinousBaseGesture } from './gesture';
-import type { GestureUpdateEvent } from '../gestureHandlerCommon';
-import type { PanGestureConfig } from '../PanGestureHandler';
-import type { PanGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export type PanGestureChangeEventPayload = {
   changeX: number;

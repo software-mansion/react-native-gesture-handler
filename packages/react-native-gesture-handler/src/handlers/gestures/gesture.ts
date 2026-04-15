@@ -1,3 +1,4 @@
+import { isRemoteDebuggingEnabled } from '../../utils';
 import type {
   ActiveCursor,
   CommonGestureConfig,
@@ -18,9 +19,8 @@ import type {
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
 } from '../GestureHandlerEventPayload';
-import type { GestureStateManagerType } from './gestureStateManager';
 import { getNextHandlerTag } from '../getNextHandlerTag';
-import { isRemoteDebuggingEnabled } from '../../utils';
+import type { GestureStateManagerType } from './gestureStateManager';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>

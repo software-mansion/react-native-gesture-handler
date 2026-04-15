@@ -1,11 +1,11 @@
+import { FlingGesture } from './flingGesture';
+import { ForceTouchGesture } from './forceTouchGesture';
+import type { Gesture } from './gesture';
 import {
   ComposedGesture,
   ExclusiveGesture,
   SimultaneousGesture,
 } from './gestureComposition';
-import { FlingGesture } from './flingGesture';
-import { ForceTouchGesture } from './forceTouchGesture';
-import type { Gesture } from './gesture';
 import { HoverGesture } from './hoverGesture';
 import { LongPressGesture } from './longPressGesture';
 import { ManualGesture } from './manualGesture';

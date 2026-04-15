@@ -1,4 +1,5 @@
 import type { Animated, NativeSyntheticEvent } from 'react-native';
+
 import type { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
 import type { PointerType } from '../../PointerType';
 import type { State } from '../../State';

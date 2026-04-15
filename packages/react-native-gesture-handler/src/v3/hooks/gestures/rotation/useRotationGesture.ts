@@ -1,4 +1,10 @@
 import type { GestureEvent, HandlerData } from '../../../types';
+import { SingleGestureName } from '../../../types';
+import { useGesture } from '../../useGesture';
+import {
+  getChangeEventCalculator,
+  useClonedAndRemappedConfig,
+} from '../../utils';
 import type {
   RotationExtendedHandlerData,
   RotationGesture,
@@ -7,12 +13,6 @@ import type {
   RotationGestureProperties,
   RotationHandlerData,
 } from './RotationTypes';
-import {
-  getChangeEventCalculator,
-  useClonedAndRemappedConfig,
-} from '../../utils';
-import { SingleGestureName } from '../../../types';
-import { useGesture } from '../../useGesture';
 
 function diffCalculator(
   current: HandlerData<RotationExtendedHandlerData>,

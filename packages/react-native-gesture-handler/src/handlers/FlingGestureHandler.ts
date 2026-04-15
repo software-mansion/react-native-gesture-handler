@@ -1,7 +1,7 @@
-import type { BaseGestureHandlerProps } from './gestureHandlerCommon';
-import type { FlingGestureHandlerEventPayload } from './GestureHandlerEventPayload';
-import { baseGestureHandlerProps } from './gestureHandlerCommon';
 import createHandler from './createHandler';
+import type { BaseGestureHandlerProps } from './gestureHandlerCommon';
+import { baseGestureHandlerProps } from './gestureHandlerCommon';
+import type { FlingGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 
 export const flingGestureHandlerProps = [
   'numberOfPointers',

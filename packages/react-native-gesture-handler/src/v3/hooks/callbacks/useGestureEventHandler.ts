@@ -1,11 +1,12 @@
+import { useMemo } from 'react';
+
+import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import type {
   BaseGestureConfig,
   GestureCallbacks,
   GestureHandlerEventWithHandlerData,
 } from '../../types';
-import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
 import { eventHandler } from './eventHandler';
-import { useMemo } from 'react';
 
 export function useGestureEventHandler<
   TConfig,

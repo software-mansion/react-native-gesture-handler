@@ -1,28 +1,29 @@
-import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
+
+import type {
+  TouchAction,
+  UserSelect,
+} from '../../../handlers/gestureHandlerCommon';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../../utils';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type {
   DetectorCallbacks,
   GestureHandlerEventWithHandlerData,
   VirtualChild,
 } from '../../types';
+import type { InterceptingGestureDetectorProps } from '../common';
+import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
+import HostGestureDetector from '../HostGestureDetector';
+import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
+import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
+import { configureRelations, ensureNativeDetectorComponent } from '../utils';
+import type { InterceptingDetectorContextValue } from './useInterceptingDetectorContext';
 import {
   InterceptingDetectorContext,
   InterceptingDetectorMode,
 } from './useInterceptingDetectorContext';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import type {
-  TouchAction,
-  UserSelect,
-} from '../../../handlers/gestureHandlerCommon';
-import { configureRelations, ensureNativeDetectorComponent } from '../utils';
-import HostGestureDetector from '../HostGestureDetector';
-import type { InterceptingDetectorContextValue } from './useInterceptingDetectorContext';
-import type { InterceptingGestureDetectorProps } from '../common';
-import { Platform } from 'react-native';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
-import { isComposedGesture } from '../../hooks/utils/relationUtils';
-import { tagMessage } from '../../../utils';
-import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 
 interface StrippedVirtualChildren {
   viewTag: number;

@@ -7,6 +7,7 @@ import type {
   ViewProps,
   ViewStyle,
 } from 'react-native';
+
 import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {

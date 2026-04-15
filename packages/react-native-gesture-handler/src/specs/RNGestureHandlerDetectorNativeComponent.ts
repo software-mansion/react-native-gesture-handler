@@ -1,3 +1,4 @@
+import type { ViewProps } from 'react-native';
 import type {
   DirectEventHandler,
   Double,
@@ -5,7 +6,6 @@ import type {
   UnsafeMixed,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import type { ViewProps } from 'react-native';
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 type GestureHandlerEvent = Readonly<{

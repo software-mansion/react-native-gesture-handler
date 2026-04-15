@@ -1,5 +1,5 @@
-import type { AdaptedEvent } from '../interfaces';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
+import type { AdaptedEvent } from '../interfaces';
 import { EventTypes } from '../interfaces';
 import type PointerTracker from '../tools/PointerTracker';
 

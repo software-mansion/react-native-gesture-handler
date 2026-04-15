@@ -1,19 +1,20 @@
+import { useMemo } from 'react';
+
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../../utils';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   SingleGestureName,
 } from '../../types';
+import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
 import {
+  allowedNativeProps,
   EMPTY_WHITE_LIST,
   PropsToFilter,
   PropsWhiteLists,
-  allowedNativeProps,
 } from './propsWhiteList';
 import { hasWorkletEventHandlers, maybeUnpackValue } from './reanimatedUtils';
-import { isNativeAnimatedEvent, shouldHandleTouchEvents } from './eventUtils';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../../utils';
-import { useMemo } from 'react';
 
 export function prepareConfig<
   TConfig extends object,

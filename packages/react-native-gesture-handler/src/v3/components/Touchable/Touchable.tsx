@@ -1,9 +1,10 @@
-import type { CallbackEventType, TouchableProps } from './TouchableProps';
 import React, { useCallback, useRef } from 'react';
+import { Platform } from 'react-native';
+
 import type { ButtonProps } from '../../../components/GestureHandlerButton';
 import GestureHandlerButton from '../../../components/GestureHandlerButton';
-import { Platform } from 'react-native';
 import createNativeWrapper from '../../createNativeWrapper';
+import type { CallbackEventType, TouchableProps } from './TouchableProps';
 
 const TouchableButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,

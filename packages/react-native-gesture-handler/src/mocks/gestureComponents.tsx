@@ -1,8 +1,8 @@
 export {
-  ScrollView as LegacyScrollView,
+  DrawerLayoutAndroid as LegacyDrawerLayoutAndroid,
   FlatList as LegacyFlatList,
+  RefreshControl as LegacyRefreshControl,
+  ScrollView as LegacyScrollView,
   Switch as LegacySwitch,
   TextInput as LegacyTextInput,
-  DrawerLayoutAndroid as LegacyDrawerLayoutAndroid,
-  RefreshControl as LegacyRefreshControl,
 } from 'react-native';

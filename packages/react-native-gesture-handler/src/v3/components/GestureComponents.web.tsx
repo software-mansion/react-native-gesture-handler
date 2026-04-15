@@ -1,4 +1,5 @@
 import * as React from 'react';
+import type { FlatListProps } from 'react-native';
 import {
   FlatList as RNFlatList,
   ScrollView as RNScrollView,
@@ -6,7 +7,7 @@ import {
   TextInput as RNTextInput,
   View,
 } from 'react-native';
-import type { FlatListProps } from 'react-native';
+
 import createNativeWrapper from '../createNativeWrapper';
 
 export const ScrollView = createNativeWrapper(RNScrollView, {

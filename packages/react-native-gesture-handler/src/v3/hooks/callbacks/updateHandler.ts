@@ -1,3 +1,6 @@
+import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../../utils';
 import type {
   ChangeCalculatorType,
   GestureCallbacks,
@@ -10,9 +13,6 @@ import {
   maybeExtractNativeEvent,
   runCallback,
 } from '../utils';
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../../utils';
 
 export function getUpdateHandler<
   THandlerData,

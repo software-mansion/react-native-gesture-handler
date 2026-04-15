@@ -1,10 +1,17 @@
-import * as React from 'react';
 import type {
   ForwardedRef,
   PropsWithChildren,
   ReactElement,
   RefAttributes,
 } from 'react';
+import * as React from 'react';
+import type {
+  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
+  FlatListProps as RNFlatListProps,
+  ScrollViewProps as RNScrollViewProps,
+  SwitchProps as RNSwitchProps,
+  TextInputProps as RNTextInputProps,
+} from 'react-native';
 import {
   DrawerLayoutAndroid as RNDrawerLayoutAndroid,
   FlatList as RNFlatList,
@@ -13,15 +20,9 @@ import {
   Switch as RNSwitch,
   TextInput as RNTextInput,
 } from 'react-native';
-import type {
-  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
-  FlatListProps as RNFlatListProps,
-  ScrollViewProps as RNScrollViewProps,
-  SwitchProps as RNSwitchProps,
-  TextInputProps as RNTextInputProps,
-} from 'react-native';
-import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
+
 import createNativeWrapper from '../handlers/createNativeWrapper';
+import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 import { nativeViewProps } from '../handlers/NativeViewGestureHandler';
 import { toArray } from '../utils';
 

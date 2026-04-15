@@ -1,7 +1,7 @@
-import { BaseGesture } from './gesture';
-import type { BaseGestureConfig } from './gesture';
 import type { FlingGestureConfig } from '../FlingGestureHandler';
 import type { FlingGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
+import type { BaseGestureConfig } from './gesture';
+import { BaseGesture } from './gesture';
 
 export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
   public override config: BaseGestureConfig & FlingGestureConfig = {};
