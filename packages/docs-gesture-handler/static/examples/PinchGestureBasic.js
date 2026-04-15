@@ -13,7 +13,6 @@ import Animated, {
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
-//FIXME: doesnt handle resizing
 export default function App() {
   const boxWidth = useSharedValue(100);
   const distanceDifference = useSharedValue(0);
@@ -21,6 +20,7 @@ export default function App() {
   const centerX = useSharedValue(0);
   const centerY = useSharedValue(0);
   const maxBoxSize = useSharedValue(0);
+  const minBoxSize = 20;
 
   const pointerPositionX = useSharedValue(0);
   const pointerPositionY = useSharedValue(0);
@@ -76,7 +76,11 @@ export default function App() {
     onUpdate: (event) => {
       const distanceX = Math.abs(event.absoluteX - centerX.value);
       const distanceY = Math.abs(event.absoluteY - centerY.value);
-      boxWidth.value = clamp(Math.max(distanceX, distanceY) * 2 + distanceDifference.value, 0, maxBoxSize.value);
+      boxWidth.value = clamp(
+        Math.max(distanceX, distanceY) * 2 + distanceDifference.value,
+        minBoxSize,
+        maxBoxSize.value
+      );
 
       pointerPositionX.value = event.absoluteX - centerX.value - 12;
       pointerPositionY.value = event.absoluteY - centerY.value - 12;
