@@ -1,3 +1,9 @@
+import React, { useEffect } from 'react';
+import type { ScrollViewProps, SectionListProps } from 'react-native';
+import { Platform, SectionList, StyleSheet } from 'react-native';
+import type { GestureType } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import type { AnimatedRef, SharedValue } from 'react-native-reanimated';
 import Animated, {
   runOnJS,
   useAnimatedProps,
@@ -8,13 +14,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import type { AnimatedRef, SharedValue } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
 import Header, { HEADER_HEIGHT } from './Header';
-import { Platform, SectionList, StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
-import type { ScrollViewProps, SectionListProps } from 'react-native';
-import type { GestureType } from 'react-native-gesture-handler';
 
 const IS_ANDROID = Platform.OS === 'android';
 

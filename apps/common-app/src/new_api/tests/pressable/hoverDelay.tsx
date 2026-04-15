@@ -1,8 +1,9 @@
-import { COLORS, Feedback, commonStyles } from '../../../common';
 import React, { useRef } from 'react';
-import type { FeedbackHandle } from '../../../common';
-import TestingBase from './testingBase';
 import { View } from 'react-native';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
+import TestingBase from './testingBase';
 
 export function DelayHoverExample() {
   const feedbackRef = useRef<FeedbackHandle>(null);

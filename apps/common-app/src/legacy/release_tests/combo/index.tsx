@@ -1,3 +1,5 @@
+import React, { Component } from 'react';
+import type { TouchableHighlightProps as RNTouchableHighlightProps } from 'react-native';
 import {
   Alert,
   ScrollView as RNScroll,
@@ -6,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import {
   LegacyScrollView as GHScroll,
   NativeViewGestureHandler,
@@ -14,15 +17,13 @@ import {
   TapGestureHandler,
   TextInput,
 } from 'react-native-gesture-handler';
-import React, { Component } from 'react';
-import { DraggableBox } from '../../basic/draggable';
-import { InfoButton } from './InfoButton';
-import { LoremIpsum } from '../../../common';
-import { PinchableBox } from '../../recipes/scaleAndRotate';
-import { PressBox } from '../../basic/multitap';
-import type { TouchableHighlightProps as RNTouchableHighlightProps } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+
+import { LoremIpsum } from '../../../common';
+import { DraggableBox } from '../../basic/draggable';
+import { PressBox } from '../../basic/multitap';
+import { PinchableBox } from '../../recipes/scaleAndRotate';
+import { InfoButton } from './InfoButton';
 
 type TouchableHighlightProps = RNTouchableHighlightProps & {
   onClick: () => void;

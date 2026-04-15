@@ -1,3 +1,5 @@
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet } from 'react-native';
 import Animated, {
   Easing,
   interpolate,
@@ -6,8 +8,6 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet } from 'react-native';
 
 export interface ColorTile {
   id: string;

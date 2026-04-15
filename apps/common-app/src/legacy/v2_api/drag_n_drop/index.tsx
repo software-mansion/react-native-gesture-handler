@@ -1,7 +1,8 @@
-import type { ColorTile } from './Tile';
-import DragAndDrop from './DragAndDrop';
-import type { DraggableItemData } from './DragAndDrop';
 import React from 'react';
+
+import type { DraggableItemData } from './DragAndDrop';
+import DragAndDrop from './DragAndDrop';
+import type { ColorTile } from './Tile';
 import Tile from './Tile';
 
 const COLORS = [

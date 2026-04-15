@@ -1,10 +1,11 @@
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   FlatList,
   GestureHandlerRootView,
   RefreshControl,
 } from 'react-native-gesture-handler';
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
 import { COLORS } from '../../../common';
 
 const DATA = Array.from({ length: 20 }, (_, i) => ({

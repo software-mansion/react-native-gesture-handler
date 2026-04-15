@@ -1,15 +1,16 @@
+import React, { Component } from 'react';
 import { Animated, Dimensions, StyleSheet } from 'react-native';
+import type {
+  PanGestureHandlerGestureEvent,
+  TapGestureHandlerStateChangeEvent,
+} from 'react-native-gesture-handler';
 import {
   LegacyScrollView,
   PanGestureHandler,
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import type {
-  PanGestureHandlerGestureEvent,
-  TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
-import React, { Component } from 'react';
+
 import { LoremIpsum } from '../../../common';
 import { USE_NATIVE_DRIVER } from '../../../config';
 

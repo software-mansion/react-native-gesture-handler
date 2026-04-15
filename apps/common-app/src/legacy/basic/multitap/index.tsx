@@ -1,15 +1,16 @@
+import React, { Component } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type {
+  LongPressGestureHandlerStateChangeEvent,
+  TapGestureHandlerStateChangeEvent,
+} from 'react-native-gesture-handler';
 import {
   LongPressGestureHandler,
   ScrollView,
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import type {
-  LongPressGestureHandlerStateChangeEvent,
-  TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
-import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
 import { LoremIpsum } from '../../../common';
 
 interface PressBoxProps {

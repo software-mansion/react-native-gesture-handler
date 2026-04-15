@@ -1,18 +1,19 @@
+import React, { useRef } from 'react';
+import { View } from 'react-native';
+import {
+  GestureDetector,
+  PointerType,
+  useLongPressGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { COLORS, Feedback, commonStyles } from '../../../common';
-import {
-  GestureDetector,
-  PointerType,
-  useLongPressGesture,
-} from 'react-native-gesture-handler';
-import React, { useRef } from 'react';
+
 import type { FeedbackHandle } from '../../../common';
-import { View } from 'react-native';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 const Colors = {
   Default: COLORS.NAVY,

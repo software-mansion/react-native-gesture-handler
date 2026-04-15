@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { COLORS, Feedback, commonStyles } from '../../../common';
+import { Text, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
   InterceptingGestureDetector,
-  VirtualGestureDetector,
   useTapGesture,
+  VirtualGestureDetector,
 } from 'react-native-gesture-handler';
-import { Text, View } from 'react-native';
+
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 function NativeDetectorExample() {
   const feedbackRef = React.useRef<{ showMessage: (msg: string) => void }>(

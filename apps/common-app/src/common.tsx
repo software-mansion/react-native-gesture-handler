@@ -1,10 +1,4 @@
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import type { Platform, StyleProp, ViewStyle } from 'react-native';
+import type { RefObject } from 'react';
 import React, {
   useCallback,
   useEffect,
@@ -12,8 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import type { Platform, StyleProp, ViewStyle } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
-import type { RefObject } from 'react';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 export interface Example {
   name: string;

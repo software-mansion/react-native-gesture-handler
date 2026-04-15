@@ -1,17 +1,18 @@
+import type { PropsWithChildren } from 'react';
+import React, { Component } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import {
-  PanGestureHandler,
-  RotationGestureHandler,
-  State,
-} from 'react-native-gesture-handler';
 import type {
   PanGestureHandlerGestureEvent,
   PanGestureHandlerStateChangeEvent,
   RotationGestureHandlerGestureEvent,
   RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-import React, { Component } from 'react';
-import type { PropsWithChildren } from 'react';
+import {
+  PanGestureHandler,
+  RotationGestureHandler,
+  State,
+} from 'react-native-gesture-handler';
+
 import { USE_NATIVE_DRIVER } from '../../../config';
 
 class Snappable extends Component<PropsWithChildren<Record<string, unknown>>> {

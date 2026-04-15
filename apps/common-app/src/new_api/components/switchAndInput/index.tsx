@@ -1,12 +1,12 @@
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type { NativeGestureEvent } from 'react-native-gesture-handler';
 import {
   LegacySwitch,
   LegacyTextInput,
   Switch,
   TextInput,
 } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { NativeGestureEvent } from 'react-native-gesture-handler';
 
 export default function SwitchTextInputExample() {
   const [switchOn, setSwitchOn] = useState(false);

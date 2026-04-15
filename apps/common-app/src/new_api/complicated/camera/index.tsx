@@ -1,4 +1,5 @@
-import { FilterCarousel, FilterOverlay } from './filters';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
   GestureDetector,
   useCompetingGestures,
@@ -9,12 +10,12 @@ import {
   useSimultaneousGestures,
   useTapGesture,
 } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { runOnJS, useSharedValue, withTiming } from 'react-native-reanimated';
-import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
+
 import { COLORS } from '../../../common';
+import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
 import { CaptureButton } from './capture';
+import { FilterCarousel, FilterOverlay } from './filters';
 
 const FILTERS = [
   COLORS.RED,
