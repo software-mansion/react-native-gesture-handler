@@ -1,31 +1,28 @@
 import * as React from 'react';
-import {
-  PropsWithChildren,
+import type {
   ForwardedRef,
-  RefAttributes,
+  PropsWithChildren,
   ReactElement,
+  RefAttributes,
 } from 'react';
 import {
-  ScrollView as RNScrollView,
-  ScrollViewProps as RNScrollViewProps,
-  Switch as RNSwitch,
-  SwitchProps as RNSwitchProps,
-  TextInput as RNTextInput,
-  TextInputProps as RNTextInputProps,
   DrawerLayoutAndroid as RNDrawerLayoutAndroid,
-  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
   FlatList as RNFlatList,
-  FlatListProps as RNFlatListProps,
   RefreshControl as RNRefreshControl,
+  ScrollView as RNScrollView,
+  Switch as RNSwitch,
+  TextInput as RNTextInput,
 } from 'react-native';
-
+import type {
+  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
+  FlatListProps as RNFlatListProps,
+  ScrollViewProps as RNScrollViewProps,
+  SwitchProps as RNSwitchProps,
+  TextInputProps as RNTextInputProps,
+} from 'react-native';
+import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 import createNativeWrapper from '../handlers/createNativeWrapper';
-
-import {
-  NativeViewGestureHandlerProps,
-  nativeViewProps,
-} from '../handlers/NativeViewGestureHandler';
-
+import { nativeViewProps } from '../handlers/NativeViewGestureHandler';
 import { toArray } from '../utils';
 
 /**

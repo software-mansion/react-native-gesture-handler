@@ -1,6 +1,6 @@
-import { PointerType } from '../PointerType';
 import type { GestureHandlerRef, Point, SVGRef } from './interfaces';
-import { StylusData } from '../handlers/gestureHandlerCommon';
+import { PointerType } from '../PointerType';
+import type { StylusData } from '../handlers/gestureHandlerCommon';
 
 // For display: contents elements (like the gesture detector wrapper), getBoundingClientRect
 // returns all zeros since the element has no box. Compute the bounding box from children instead.

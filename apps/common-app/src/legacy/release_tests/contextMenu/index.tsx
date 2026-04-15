@@ -1,10 +1,10 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
   MouseButton,
 } from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import React from 'react';
 
 export default function ContextMenuExample() {
   const p1 = Gesture.Pan().mouseButton(MouseButton.RIGHT);

@@ -1,17 +1,13 @@
+import { COLORS, Feedback, commonStyles } from '../../../common';
 import React, { useRef } from 'react';
-import { View } from 'react-native';
-import TestingBase from './testingBase';
 import {
   useSharedValue,
   withSequence,
   withSpring,
 } from 'react-native-reanimated';
-import {
-  COLORS,
-  commonStyles,
-  Feedback,
-  FeedbackHandle,
-} from '../../../common';
+import type { FeedbackHandle } from '../../../common';
+import TestingBase from './testingBase';
+import { View } from 'react-native';
 
 const signalerConfig = {
   stiffness: 500,

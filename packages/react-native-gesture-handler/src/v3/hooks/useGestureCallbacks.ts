@@ -1,5 +1,4 @@
-import { useGestureEventHandler } from './callbacks/useGestureEventHandler';
-import {
+import type {
   AnimatedEvent,
   BaseGestureConfig,
   GestureUpdateEventWithHandlerData,
@@ -9,9 +8,10 @@ import {
   isNativeAnimatedEvent,
   useMemoizedGestureCallbacks,
 } from './utils';
-import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
-import { tagMessage } from '../../utils';
 import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../utils';
+import { useGestureEventHandler } from './callbacks/useGestureEventHandler';
+import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {

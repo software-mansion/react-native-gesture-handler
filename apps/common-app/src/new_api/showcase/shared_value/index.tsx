@@ -1,18 +1,18 @@
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { COLORS, commonStyles } from '../../../common';
-import React from 'react';
-import { Text, View } from 'react-native';
 import {
   GestureDetector,
   useLongPressGesture,
   usePanGesture,
   useSimultaneousGestures,
 } from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  interpolateColor,
-  withTiming,
-} from 'react-native-reanimated';
+import { Text, View } from 'react-native';
+import React from 'react';
 
 export default function PanExample() {
   const translateX = useSharedValue(0);

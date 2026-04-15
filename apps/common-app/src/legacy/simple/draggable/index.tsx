@@ -1,9 +1,9 @@
-import React, { FC } from 'react';
-import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-
 import Animated, { useSharedValue } from 'react-native-reanimated';
-
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { ScrollView, StyleSheet } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
+import type { FC } from 'react';
+import React from 'react';
 
 type DraggableBoxProps = {
   minDist?: number;

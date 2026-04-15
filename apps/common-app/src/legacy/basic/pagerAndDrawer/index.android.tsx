@@ -1,10 +1,10 @@
-import ViewPagerAndroid from '@react-native-community/viewpager';
+import {
+  LegacyDrawerLayoutAndroid,
+  legacy_createNativeWrapper,
+} from 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {
-  legacy_createNativeWrapper,
-  LegacyDrawerLayoutAndroid,
-} from 'react-native-gesture-handler';
+import ViewPagerAndroid from '@react-native-community/viewpager';
 
 const WrappedViewPagerAndroid = legacy_createNativeWrapper(ViewPagerAndroid, {
   disallowInterruption: true,

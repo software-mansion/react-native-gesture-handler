@@ -1,16 +1,16 @@
-import React from 'react';
-import {
-  Gesture,
-  GestureDetector,
-  HoverEffect,
-} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useFrameCallback,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import {
+  Gesture,
+  GestureDetector,
+  HoverEffect,
+} from 'react-native-gesture-handler';
 import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
 const SVG = require('../../../common_assets/hoverable_icons/svg.png');

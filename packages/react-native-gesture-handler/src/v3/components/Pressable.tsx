@@ -1,3 +1,15 @@
+import { INT32_MAX, isTestEnv } from '../../utils';
+import type {
+  Insets,
+  LayoutChangeEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import type {
+  PressableDimensions,
+  PressableEvent,
+  PressableProps,
+} from '../../components/Pressable/PressableProps';
 import React, {
   useCallback,
   useEffect,
@@ -6,29 +18,16 @@ import React, {
   useState,
 } from 'react';
 import {
-  PressableDimensions,
-  PressableEvent,
-  PressableProps,
-} from '../../components/Pressable/PressableProps';
-import {
-  Insets,
-  LayoutChangeEvent,
-  Platform,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+  StateMachineEvent,
+  getStatesConfig,
+} from '../../components/Pressable/stateDefinitions';
 import {
   addInsets,
-  numberAsInset,
+  gestureToPressableEvent,
   gestureTouchToPressableEvent,
   isTouchWithinInset,
-  gestureToPressableEvent,
+  numberAsInset,
 } from '../../components/Pressable/utils';
-import {
-  getStatesConfig,
-  StateMachineEvent,
-} from '../../components/Pressable/stateDefinitions';
-import { PressableStateMachine } from '../../components/Pressable/StateMachine';
 import {
   useHoverGesture,
   useLongPressGesture,
@@ -36,10 +35,10 @@ import {
   useSimultaneousGestures,
 } from '../hooks';
 import { GestureDetector } from '../detectors';
-import { PureNativeButton } from './GestureButtons';
-
+import { Platform } from 'react-native';
 import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { INT32_MAX, isTestEnv } from '../../utils';
+import { PressableStateMachine } from '../../components/Pressable/StateMachine';
+import { PureNativeButton } from './GestureButtons';
 import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;

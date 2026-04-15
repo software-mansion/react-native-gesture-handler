@@ -1,16 +1,9 @@
-import {
+import type {
   GestureEvent,
   HandlerData,
-  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
-import { useGesture } from '../../useGesture';
-import {
-  getChangeEventCalculator,
-  maybeUnpackValue,
-  useClonedAndRemappedConfig,
-} from '../../utils';
-import {
+import type {
   OffsetProps,
   PanExtendedHandlerData,
   PanGesture,
@@ -20,6 +13,13 @@ import {
   PanGestureProperties,
   PanHandlerData,
 } from './PanTypes';
+import {
+  getChangeEventCalculator,
+  maybeUnpackValue,
+  useClonedAndRemappedConfig,
+} from '../../utils';
+import { SingleGestureName } from '../../../types';
+import { useGesture } from '../../useGesture';
 
 const PanPropsMapping = new Map<
   keyof PanGestureProperties,

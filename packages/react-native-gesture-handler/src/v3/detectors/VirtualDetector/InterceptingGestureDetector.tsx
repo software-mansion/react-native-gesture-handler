@@ -1,31 +1,28 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import HostGestureDetector from '../HostGestureDetector';
-import {
-  VirtualChild,
-  GestureHandlerEventWithHandlerData,
+import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
+import type {
   DetectorCallbacks,
+  GestureHandlerEventWithHandlerData,
+  VirtualChild,
 } from '../../types';
 import {
   InterceptingDetectorContext,
-  InterceptingDetectorContextValue,
   InterceptingDetectorMode,
 } from './useInterceptingDetectorContext';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { configureRelations, ensureNativeDetectorComponent } from '../utils';
-import { isComposedGesture } from '../../hooks/utils/relationUtils';
-import {
-  AnimatedNativeDetector,
-  InterceptingGestureDetectorProps,
-  nativeDetectorStyles,
-} from '../common';
-import { tagMessage } from '../../../utils';
-import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
-import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
-import { Platform } from 'react-native';
-import {
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import type {
   TouchAction,
   UserSelect,
 } from '../../../handlers/gestureHandlerCommon';
+import { configureRelations, ensureNativeDetectorComponent } from '../utils';
+import HostGestureDetector from '../HostGestureDetector';
+import type { InterceptingDetectorContextValue } from './useInterceptingDetectorContext';
+import type { InterceptingGestureDetectorProps } from '../common';
+import { Platform } from 'react-native';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import { tagMessage } from '../../../utils';
+import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
 
 interface StrippedVirtualChildren {
   viewTag: number;

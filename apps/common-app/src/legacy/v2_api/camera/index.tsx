@@ -1,8 +1,4 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  SharedValue,
   runOnJS,
   useAnimatedProps,
   useAnimatedStyle,
@@ -10,7 +6,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Circle, Svg } from 'react-native-svg';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import AnimatedCameraView from '../../../common_assets/AnimatedCameraView/AnimatedCameraView';
+import type { SharedValue } from 'react-native-reanimated';
 
 const FILTERS = ['red', 'green', 'blue', 'yellow', 'orange', 'cyan'];
 const CAROUSEL_SIZE = 100;

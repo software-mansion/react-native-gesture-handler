@@ -1,12 +1,12 @@
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {
-  Int32,
   DirectEventHandler,
-  UnsafeMixed,
   Double,
+  Int32,
+  UnsafeMixed,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
 import type { ViewProps } from 'react-native';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
 type GestureHandlerEvent = Readonly<{
   handlerTag: Int32;

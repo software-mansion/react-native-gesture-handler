@@ -1,12 +1,12 @@
-import { NativeProxy } from '../../NativeProxy';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import {
+import type {
   BaseGestureConfig,
   GestureCallbacks,
   SharedValue,
   SharedValueOrT,
 } from '../../types';
 import { HandlerCallbacks } from './propsWhiteList';
+import { NativeProxy } from '../../NativeProxy';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
 
 // Variant of djb2 hash function.
 // Taken from https://gist.github.com/eplawless/52813b1d8ad9af510d85?permalink_comment_id=3367765#gistcomment-3367765
