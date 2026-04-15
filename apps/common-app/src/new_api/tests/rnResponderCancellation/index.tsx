@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import {
   COLORS,
   Feedback,
@@ -25,19 +25,16 @@ export default function RNResponderCancellationExample() {
     setEvents((prev) => [event, ...prev].slice(0, MAX_EVENTS));
   }, []);
 
-  const panGesture = useMemo(
-    () =>
-      Gesture.Pan()
-        .minDistance(12)
-        .runOnJS(true)
-        .onStart(() => {
-          pushEvent('GH pan ACTIVE');
-        })
-        .onFinalize((_event, success) => {
-          pushEvent(`GH pan finalize (${success ? 'success' : 'cancel/fail'})`);
-        }),
-    [pushEvent]
-  );
+  const panGesture = usePanGesture({
+    minDistance: 12,
+    runOnJS: true,
+    onActivate: () => {
+      pushEvent('GH pan ACTIVE');
+    },
+    onFinalize: (_event, success) => {
+      pushEvent(`GH pan finalize (${success ? 'success' : 'cancel/fail'})`);
+    },
+  });
 
   return (
     <View style={styles.container}>
@@ -89,7 +86,12 @@ export default function RNResponderCancellationExample() {
       <Feedback ref={feedbackRef} duration={1300} />
       <View style={styles.logContainer}>
         {events.map((item) => (
-          <Text key={item} style={styles.logLine}>
+          <Text
+            key={item}
+            style={[
+              styles.logLine,
+              item.includes('GH pan ACTIVE') && styles.logLineActive,
+            ]}>
             {item}
           </Text>
         ))}
@@ -150,5 +152,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#2c3a4f',
     fontFamily: 'Courier',
+  },
+  logLineActive: {
+    color: '#1565c0',
+    fontWeight: 'bold',
   },
 });

@@ -45,7 +45,6 @@ import NestedRootViewExample from './tests/nestedRootView';
 import NestedPressablesExample from './tests/nestedPressables';
 import PressableExample from './tests/pressable';
 import RNResponderCancellationExample from './tests/rnResponderCancellation';
-import RNResponderCancellationPerRootExample from './tests/rnResponderCancellationPerRoot';
 
 import { ExamplesSection } from '../common';
 import EmptyExample from '../empty';
@@ -136,10 +135,6 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       {
         name: 'RN responder cancellation',
         component: RNResponderCancellationExample,
-      },
-      {
-        name: 'RN responder cancellation (per detector)',
-        component: RNResponderCancellationPerRootExample,
       },
     ],
   },

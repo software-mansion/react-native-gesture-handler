@@ -1,4 +1,3 @@
-
 #import "RNGestureHandler.h"
 #import "RNManualActivationRecognizer.h"
 
