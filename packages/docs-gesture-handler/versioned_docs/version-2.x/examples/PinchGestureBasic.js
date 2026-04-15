@@ -19,8 +19,7 @@ export default function App() {
 
   const centerX = useSharedValue(0);
   const centerY = useSharedValue(0);
-  const width = useSharedValue(0);
-  const height = useSharedValue(0);
+  const maxBoxSize = useSharedValue(0);
 
   const pointerPositionX = useSharedValue(0);
   const pointerPositionY = useSharedValue(0);
@@ -42,14 +41,9 @@ export default function App() {
 
     if (containerRef.current) {
       containerRef.current.measureInWindow((x, y, w, h) => {
-        width.value = w;
-        height.value = h;
+        maxBoxSize.value = Math.min(w, h);
 
-        boxWidth.value = clamp(
-          boxWidth.value,
-          100,
-          Math.min(w, h)
-        );
+        boxWidth.value = maxBoxSize.value / 2;
       });
     }
   }
@@ -83,8 +77,8 @@ export default function App() {
       const distanceY = Math.abs(event.absoluteY - centerY.value);
       boxWidth.value = clamp(
         Math.max(distanceX, distanceY) * 2 + distanceDifference.value,
-        100,
-        Math.min(width.value, height.value)
+        0,
+        maxBoxSize.value
       );
 
       pointerPositionX.value = event.absoluteX - centerX.value - 12;
@@ -101,36 +95,34 @@ export default function App() {
   }));
 
   return (
-    <GestureHandlerRootView>
-      <View ref={containerRef} style={styles.container}>
-        <GestureDetector gesture={pan}>
-          <Animated.View
-            ref={boxRef}
-            style={[styles.box, boxAnimatedStyles]}></Animated.View>
-        </GestureDetector>
+    <GestureHandlerRootView ref={containerRef} style={[styles.container, { height: maxBoxSize.value }]}>
+      <GestureDetector gesture={pan}>
         <Animated.View
-          style={[
-            styles.dot,
-            {
-              transform: [
-                { translateX: pointerPositionX },
-                { translateY: pointerPositionY },
-              ],
-              opacity: touchOpacity,
-            },
-          ]}></Animated.View>
-        <Animated.View
-          style={[
-            styles.dot,
-            {
-              transform: [
-                { translateX: negativePointerPositionX },
-                { translateY: negativePointerPositionY },
-              ],
-              opacity: touchOpacity,
-            },
-          ]}></Animated.View>
-      </View>
+          ref={boxRef}
+          style={[styles.box, boxAnimatedStyles]}></Animated.View>
+      </GestureDetector>
+      <Animated.View
+        style={[
+          styles.dot,
+          {
+            transform: [
+              { translateX: pointerPositionX },
+              { translateY: pointerPositionY },
+            ],
+            opacity: touchOpacity,
+          },
+        ]}></Animated.View>
+      <Animated.View
+        style={[
+          styles.dot,
+          {
+            transform: [
+              { translateX: negativePointerPositionX },
+              { translateY: negativePointerPositionY },
+            ],
+            opacity: touchOpacity,
+          },
+        ]}></Animated.View>
     </GestureHandlerRootView>
   );
 }
