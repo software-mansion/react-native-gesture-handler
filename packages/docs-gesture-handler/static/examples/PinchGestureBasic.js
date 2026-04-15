@@ -44,11 +44,7 @@ export default function App() {
       containerRef.current.measureInWindow((x, y, w, h) => {
         maxBoxSize.value = Math.min(w, h);
 
-        boxWidth.value = clamp(
-          boxWidth.value,
-          100,
-          maxBoxSize.value
-        );
+        boxWidth.value = maxBoxSize.value / 2;
       });
     }
   }
@@ -80,11 +76,7 @@ export default function App() {
     onUpdate: (event) => {
       const distanceX = Math.abs(event.absoluteX - centerX.value);
       const distanceY = Math.abs(event.absoluteY - centerY.value);
-      boxWidth.value = clamp(
-        Math.max(distanceX, distanceY) * 2 + distanceDifference.value,
-        100,
-        maxBoxSize.value
-      );
+      boxWidth.value = clamp(Math.max(distanceX, distanceY) * 2 + distanceDifference.value, 0, maxBoxSize.value);
 
       pointerPositionX.value = event.absoluteX - centerX.value - 12;
       pointerPositionY.value = event.absoluteY - centerY.value - 12;
