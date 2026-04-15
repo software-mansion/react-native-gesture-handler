@@ -58,7 +58,7 @@ Called each time a pointer tracked by the gesture changes state, typically due t
 onDeactivate: (event: GestureEndEvent<HandlerData>) => void
 ```
 
-Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. The event object contains a `canceled` property — if the handler was interrupted or failed to recognize the gesture, `canceled` is set to `true`. Otherwise it is set to `false`.
+Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. The event object contains a `canceled` property — if the gesture was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
 
 ### onFinalize
 
