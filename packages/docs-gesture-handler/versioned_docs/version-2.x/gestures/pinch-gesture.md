@@ -5,19 +5,12 @@ sidebar_label: Pinch gesture
 sidebar_position: 7
 ---
 
-import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+import { webContainer } from '@site/src/utils/getGestureStyles';
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-import PinchGestureBasic from '@site/static/examples/PinchGestureBasic';
-import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestureBasic';
+import PinchGestureBasic from '../examples/PinchGestureBasic';
+import PinchGestureBasicSrc from '!!raw-loader!../examples/PinchGestureBasic';
 
 <div className={webContainer}>
-  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/pinch.mp4")} type="video/mp4"/>
-    </video>
-  </div>
   <InteractiveExample
     component={<PinchGestureBasic/>}
     src={PinchGestureBasicSrc}
@@ -39,12 +32,6 @@ The distance between the fingers is reported as a scale factor. At the beginning
 Similarly, the scale factor decreases as the distance between the fingers decreases.
 Pinch gestures are used most commonly to change the size of objects or content onscreen.
 For example, map views use pinch gestures to change the zoom level of the map.
-
-  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/pinch.mp4")} type="video/mp4"/>
-    </video>
-  </div>
 
 <samp id="PinchGestureBasicSrc">Pinch Gesture</samp>
 
