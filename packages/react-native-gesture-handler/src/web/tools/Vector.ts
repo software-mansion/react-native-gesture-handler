@@ -1,6 +1,6 @@
 import { DiagonalDirections, Directions } from '../../Directions';
 import { MINIMAL_RECOGNIZABLE_MAGNITUDE } from '../constants';
-import PointerTracker from './PointerTracker';
+import type PointerTracker from './PointerTracker';
 
 export default class Vector {
   private readonly x;

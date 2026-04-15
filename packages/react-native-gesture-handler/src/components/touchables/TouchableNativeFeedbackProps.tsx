@@ -1,6 +1,6 @@
-import type { TouchableNativeFeedbackProps as RNTouchableNativeFeedbackProps } from 'react-native';
+import type { ExtraButtonProps } from './ExtraButtonProps';
 import type { GenericTouchableProps } from './GenericTouchableProps';
-import { ExtraButtonProps } from './ExtraButtonProps';
+import type { TouchableNativeFeedbackProps as RNTouchableNativeFeedbackProps } from 'react-native';
 
 export type TouchableNativeFeedbackExtraProps = ExtraButtonProps;
 /**

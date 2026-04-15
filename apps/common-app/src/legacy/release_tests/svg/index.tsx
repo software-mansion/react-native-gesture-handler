@@ -1,8 +1,7 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-
+import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Rect } from 'react-native-svg';
+import React from 'react';
 
 export default function SvgExample() {
   const circleElementTap = Gesture.Tap().onStart(() =>

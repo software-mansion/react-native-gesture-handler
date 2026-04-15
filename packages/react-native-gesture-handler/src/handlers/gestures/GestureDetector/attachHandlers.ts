@@ -1,21 +1,21 @@
-import React from 'react';
-import { GestureType, HandlerCallbacks } from '../gesture';
-import { registerHandler } from '../../handlersRegistry';
-import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import { filterConfig, scheduleFlushOperations } from '../../utils';
-import { ComposedGesture } from '../gestureComposition';
-import { ActionType } from '../../../ActionType';
-import { Platform } from 'react-native';
-import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
-import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
-import { AttachedGestureState } from './types';
 import {
-  extractGestureRelations,
-  checkGestureCallbacksForWorklets,
   ALLOWED_PROPS,
+  checkGestureCallbacksForWorklets,
+  extractGestureRelations,
 } from './utils';
+import type { GestureType, HandlerCallbacks } from '../gesture';
+import { filterConfig, scheduleFlushOperations } from '../../utils';
+import { ActionType } from '../../../ActionType';
+import type { AttachedGestureState } from './types';
+import type { ComposedGesture } from '../gestureComposition';
 import { MountRegistry } from '../../../mountRegistry';
-import { PropsRef } from '../../../web/interfaces';
+import { Platform } from 'react-native';
+import type { PropsRef } from '../../../web/interfaces';
+import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
+import type RNGestureHandlerModuleWeb from '../../../RNGestureHandlerModule.web';
+import type React from 'react';
+import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
+import { registerHandler } from '../../handlersRegistry';
 
 interface AttachHandlersConfig {
   preparedGesture: AttachedGestureState;

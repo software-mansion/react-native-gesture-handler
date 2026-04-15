@@ -1,9 +1,7 @@
-import { StyleSheet } from 'react-native';
-import Animated, {
-  SharedValue,
-  useAnimatedProps,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
+import type { SharedValue } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
 
 const CAROUSEL_SIZE = 100;
 const RECORD_INDICATOR_STROKE = 10;

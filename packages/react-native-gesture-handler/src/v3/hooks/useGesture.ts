@@ -1,21 +1,25 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
-import { useGestureCallbacks } from './useGestureCallbacks';
+import type {
+  BaseGestureConfig,
+  SingleGesture,
+  SingleGestureName,
+} from '../types';
 import {
-  prepareConfig,
-  prepareRelations,
   bindSharedValues,
-  unbindSharedValues,
+  prepareConfig,
   prepareConfigForNativeSide,
+  prepareRelations,
+  unbindSharedValues,
 } from './utils';
-import { tagMessage } from '../../utils';
-import { BaseGestureConfig, SingleGesture, SingleGestureName } from '../types';
-import { scheduleFlushOperations } from '../../handlers/utils';
 import {
   registerGesture,
   unregisterGesture,
 } from '../../handlers/handlersRegistry';
+import { useEffect, useMemo, useRef } from 'react';
 import { NativeProxy } from '../NativeProxy';
+import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
+import { scheduleFlushOperations } from '../../handlers/utils';
+import { tagMessage } from '../../utils';
+import { useGestureCallbacks } from './useGestureCallbacks';
 
 export function useGesture<
   TConfig,

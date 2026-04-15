@@ -1,12 +1,11 @@
-import React from 'react';
-
-import type { ActionType } from './ActionType';
-import { Gestures } from './web/Gestures';
 import type { Config, PropsRef } from './web/interfaces';
+import type { ActionType } from './ActionType';
+import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
+import type { GestureRelations } from './v3/types';
+import { Gestures } from './web/Gestures';
 import InteractionManager from './web/tools/InteractionManager';
 import NodeManager from './web/tools/NodeManager';
-import { GestureHandlerWebDelegate } from './web/tools/GestureHandlerWebDelegate';
-import { GestureRelations } from './v3/types';
+import React from 'react';
 
 // init method is called inside attachGestureHandler function. However, this function may
 // fail when received view is not valid HTML element. On the other hand, dropGestureHandler

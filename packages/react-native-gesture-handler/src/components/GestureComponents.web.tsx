@@ -1,13 +1,12 @@
 import * as React from 'react';
 import {
   FlatList as RNFlatList,
+  ScrollView as RNScrollView,
   Switch as RNSwitch,
   TextInput as RNTextInput,
-  ScrollView as RNScrollView,
-  FlatListProps,
   View,
 } from 'react-native';
-
+import type { FlatListProps } from 'react-native';
 import createNativeWrapper from '../handlers/createNativeWrapper';
 
 /**

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -7,7 +6,7 @@ import {
   VirtualGestureDetector,
   useTapGesture,
 } from 'react-native-gesture-handler';
-
+import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from './colors';
 
 function NativeDetectorExample() {

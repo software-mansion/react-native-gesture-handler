@@ -1,12 +1,12 @@
-import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-
-import React, { useRef } from 'react';
+import { Feedback, commonStyles } from '../../../common';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-import { commonStyles, Feedback, FeedbackHandle } from '../../../common';
+import React, { useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
+import type { FeedbackHandle } from '../../../common';
 
 const BOX_SIZE = 270;
 

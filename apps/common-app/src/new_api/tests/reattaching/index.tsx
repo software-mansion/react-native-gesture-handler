@@ -1,12 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { COLORS, Feedback, commonStyles } from '../../../common';
 import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
-import {
-  commonStyles,
-  COLORS,
-  Feedback,
-  FeedbackHandle,
-} from '../../../common';
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type { FeedbackHandle } from '../../../common';
 
 export default function TapExample() {
   const [isTopActive, setIsTopActive] = useState(false);

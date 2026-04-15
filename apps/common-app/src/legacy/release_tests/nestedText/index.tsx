@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { StyleSheet } from 'react-native';
 import {
-  LegacyText,
   GestureHandlerRootView,
+  LegacyText,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
+import { useState } from 'react';
 
 export default function NestedText() {
   const [counter, setCounter] = useState(0);

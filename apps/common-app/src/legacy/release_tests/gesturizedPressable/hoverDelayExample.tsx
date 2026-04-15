@@ -1,5 +1,5 @@
-import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import React from 'react';
 import TestingBase from './testingBase';
 
 export function DelayHoverExample() {

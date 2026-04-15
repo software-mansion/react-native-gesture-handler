@@ -1,12 +1,12 @@
-import { SingleGestureName } from '../../../types';
-import { useGesture } from '../../useGesture';
-import { useClonedAndRemappedConfig } from '../../utils';
-import {
+import type {
   NativeGesture,
   NativeGestureConfig,
   NativeGestureProperties,
   NativeHandlerData,
 } from './NativeTypes';
+import { SingleGestureName } from '../../../types';
+import { useClonedAndRemappedConfig } from '../../utils';
+import { useGesture } from '../../useGesture';
 
 export function useNativeGesture(config: NativeGestureConfig): NativeGesture {
   const nativeConfig = useClonedAndRemappedConfig<

@@ -1,16 +1,16 @@
-import React, { useRef } from 'react';
+import { COLORS, Feedback } from '../../../common';
 import {
+  Directions,
   GestureDetector,
   MouseButton,
-  Directions,
   ScrollView,
-  useTapGesture,
-  usePanGesture,
-  useLongPressGesture,
   useFlingGesture,
+  useLongPressGesture,
+  usePanGesture,
+  useTapGesture,
 } from 'react-native-gesture-handler';
-import { StyleSheet, View, Text } from 'react-native';
-import { COLORS, Feedback } from '../../../common';
+import React, { useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function Buttons() {
   const feedbackRef = useRef<{ showMessage: (msg: string) => void }>(null);

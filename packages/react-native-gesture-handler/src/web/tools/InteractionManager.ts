@@ -1,6 +1,7 @@
-import { GestureRelations, SingleGestureName } from '../../v3/types';
+import type { Config, Handler } from '../interfaces';
+import type { GestureRelations } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
-import { Config, Handler } from '../interfaces';
+import { SingleGestureName } from '../../v3/types';
 
 export default class InteractionManager {
   private static _instance: InteractionManager;

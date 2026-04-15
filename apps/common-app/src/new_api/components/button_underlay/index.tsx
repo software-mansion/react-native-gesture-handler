@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
 import {
   GestureHandlerRootView,
-  ScrollView,
   RawButton,
+  ScrollView,
 } from 'react-native-gesture-handler';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 
 const UNDERLAY_PROPS = {
   underlayColor: 'red',

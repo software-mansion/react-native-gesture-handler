@@ -1,15 +1,13 @@
-import { useMemo } from 'react';
-import {
-  Reanimated,
-  ReanimatedHandler,
-} from '../../../handlers/gestures/reanimatedWrapper';
-import {
+import type {
   ChangeCalculatorType,
   GestureCallbacks,
   GestureEvent,
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import type { ReanimatedHandler } from '../../../handlers/gestures/reanimatedWrapper';
 import { eventHandler } from './eventHandler';
+import { useMemo } from 'react';
 
 const workletNOOP = () => {
   'worklet';
