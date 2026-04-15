@@ -81,12 +81,10 @@ export default function App() {
   });
 
   return (
-    <GestureHandlerRootView>
-      <View ref={containerRef} style={styles.container}>
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
-        </GestureDetector>
-      </View>
+    <GestureHandlerRootView ref={containerRef} style={styles.container}>
+      <GestureDetector gesture={pan}>
+        <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
+      </GestureDetector>
     </GestureHandlerRootView>
   );
 }
@@ -96,11 +94,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    aspectRatio: 3,
   },
   box: {
     width: 100,
-    height: 100,
+    aspectRatio: 1,
     backgroundColor: '#b58df1',
     borderRadius: 20,
   },
