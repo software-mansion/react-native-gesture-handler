@@ -97,36 +97,34 @@ export default function App() {
   }));
 
   return (
-    <GestureHandlerRootView>
-      <View ref={containerRef} style={styles.container}>
-        <GestureDetector gesture={pan}>
-          <Animated.View
-            ref={boxRef}
-            style={[styles.box, boxAnimatedStyles]}></Animated.View>
-        </GestureDetector>
+    <GestureHandlerRootView ref={containerRef} style={styles.container}>
+      <GestureDetector gesture={pan}>
         <Animated.View
-          style={[
-            styles.dot,
-            {
-              transform: [
-                { translateX: pointerPositionX },
-                { translateY: pointerPositionY },
-              ],
-              opacity: touchOpacity,
-            },
-          ]}></Animated.View>
-        <Animated.View
-          style={[
-            styles.dot,
-            {
-              transform: [
-                { translateX: negativePointerPositionX },
-                { translateY: negativePointerPositionY },
-              ],
-              opacity: touchOpacity,
-            },
-          ]}></Animated.View>
-      </View>
+          ref={boxRef}
+          style={[styles.box, boxAnimatedStyles]}></Animated.View>
+      </GestureDetector>
+      <Animated.View
+        style={[
+          styles.dot,
+          {
+            transform: [
+              { translateX: pointerPositionX },
+              { translateY: pointerPositionY },
+            ],
+            opacity: touchOpacity,
+          },
+        ]}></Animated.View>
+      <Animated.View
+        style={[
+          styles.dot,
+          {
+            transform: [
+              { translateX: negativePointerPositionX },
+              { translateY: negativePointerPositionY },
+            ],
+            opacity: touchOpacity,
+          },
+        ]}></Animated.View>
     </GestureHandlerRootView>
   );
 }
