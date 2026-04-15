@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    aspectRatio: 3,
   },
   box: {
     aspectRatio: 1,

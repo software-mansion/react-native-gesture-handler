@@ -8,7 +8,7 @@ import {
   GestureDetector,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max);
@@ -38,7 +38,7 @@ export default function App() {
 
     containerRef.current.measureInWindow((x, y, width, height) => {
       maxTranslateX.value = width / 2 - 50;
-      maxTranslateY.value = height / 2 - 50;
+      maxTranslateY.value = height / 2;
     });
   };
 
@@ -80,12 +80,10 @@ export default function App() {
     });
 
   return (
-    <GestureHandlerRootView>
-      <View ref={containerRef} style={styles.container}>
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
-        </GestureDetector>
-      </View>
+    <GestureHandlerRootView ref={containerRef} style={styles.container}>
+      <GestureDetector gesture={pan}>
+        <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
+      </GestureDetector>
     </GestureHandlerRootView>
   );
 }
@@ -95,11 +93,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    aspectRatio: 3,
   },
   box: {
     width: 100,
-    height: 100,
+    aspectRatio: 1,
     backgroundColor: '#b58df1',
     borderRadius: 20,
   },
