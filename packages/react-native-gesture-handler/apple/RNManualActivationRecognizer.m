@@ -2,13 +2,13 @@
 #import "RNGestureHandler.h"
 
 @implementation RNManualActivationRecognizer {
-  RNGestureHandler *_handler;
+  __weak RNGestureHandler *_handler;
   int _activePointers;
 }
 
 - (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
-  if ((self = [super initWithTarget:self action:@selector(handleGesture:fromReset:)])) {
+  if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _handler = gestureHandler;
     _activePointers = 0;
     self.delegate = self;

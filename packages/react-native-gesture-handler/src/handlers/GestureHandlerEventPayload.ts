@@ -1,4 +1,4 @@
-import { StylusData } from '../web/interfaces';
+import type { StylusData } from './gestureHandlerCommon';
 
 export type FlingGestureHandlerEventPayload = {
   x: number;
@@ -129,7 +129,7 @@ export type PanGestureHandlerEventPayload = {
   /**
    * Object containing additional stylus data.
    */
-  stylusData?: StylusData;
+  stylusData?: StylusData | undefined;
 };
 
 export type PinchGestureHandlerEventPayload = {
@@ -225,5 +225,5 @@ export type HoverGestureHandlerEventPayload = {
   /**
    * Object containing additional stylus data.
    */
-  stylusData?: StylusData;
+  stylusData?: StylusData | undefined;
 };

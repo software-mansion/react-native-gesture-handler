@@ -1,11 +1,12 @@
-import { Platform, ColorValue } from 'react-native';
 import * as React from 'react';
+import type {
+  TouchableNativeFeedbackExtraProps,
+  TouchableNativeFeedbackProps,
+} from './TouchableNativeFeedbackProps';
+import type { ColorValue } from 'react-native';
 import { Component } from 'react';
 import GenericTouchable from './GenericTouchable';
-import {
-  TouchableNativeFeedbackProps,
-  TouchableNativeFeedbackExtraProps,
-} from './TouchableNativeFeedbackProps';
+import { Platform } from 'react-native';
 
 /**
  * @deprecated TouchableNativeFeedback will be removed in the future version of Gesture Handler. Use Pressable instead.
@@ -70,7 +71,7 @@ export default class TouchableNativeFeedback extends Component<TouchableNativeFe
     extraProps['foreground'] = this.props.useForeground;
     return extraProps;
   }
-  render() {
+  override render() {
     const { style = {}, ...rest } = this.props;
     return (
       <GenericTouchable

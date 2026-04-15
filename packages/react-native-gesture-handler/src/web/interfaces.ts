@@ -1,22 +1,28 @@
-import {
-  UserSelect,
+import type {
   ActiveCursor,
+  GestureTouchEvent,
   MouseButton,
+  StylusData,
   TouchAction,
+  UserSelect,
 } from '../handlers/gestureHandlerCommon';
-import { Directions } from '../Directions';
-import { State } from '../State';
-import { PointerType } from '../PointerType';
+import type {
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
+} from '../v3/types';
+import type { Directions } from '../Directions';
+import type { PointerType } from '../PointerType';
+import type { State } from '../State';
 
 export interface HitSlop {
-  left?: number;
-  right?: number;
-  top?: number;
-  bottom?: number;
-  horizontal?: number;
-  vertical?: number;
-  width?: number;
-  height?: number;
+  left?: number | undefined;
+  right?: number | undefined;
+  top?: number | undefined;
+  bottom?: number | undefined;
+  horizontal?: number | undefined;
+  vertical?: number | undefined;
+  width?: number | undefined;
+  height?: number | undefined;
 }
 
 export interface Handler {
@@ -26,6 +32,7 @@ export interface Handler {
 type ConfigArgs =
   | number
   | boolean
+  | string
   | HitSlop
   | UserSelect
   | TouchAction
@@ -37,17 +44,21 @@ type ConfigArgs =
 
 export interface Config extends Record<string, ConfigArgs> {
   enabled: boolean;
-  simultaneousHandlers?: Handler[] | null;
-  waitFor?: Handler[] | null;
-  blocksHandlers?: Handler[] | null;
-  hitSlop?: HitSlop;
-  shouldCancelWhenOutside?: boolean;
-  userSelect?: UserSelect;
-  activeCursor?: ActiveCursor;
-  mouseButton?: MouseButton;
-  enableContextMenu?: boolean;
-  touchAction?: TouchAction;
-  manualActivation?: boolean;
+  simultaneousHandlers?: Handler[] | null | undefined;
+  waitFor?: Handler[] | null | undefined;
+  blocksHandlers?: Handler[] | null | undefined;
+  hitSlop?: HitSlop | undefined;
+  shouldCancelWhenOutside?: boolean | undefined;
+  userSelect?: UserSelect | undefined;
+  activeCursor?: ActiveCursor | undefined;
+  mouseButton?: MouseButton | undefined;
+  enableContextMenu?: boolean | undefined;
+  touchAction?: TouchAction | undefined;
+  manualActivation?: boolean | undefined;
+  dispatchesAnimatedEvents?: false | undefined;
+  dispatchesReanimatedEvents?: boolean | undefined;
+  needsPointerData?: false | undefined;
+  testID?: string | undefined;
 
   activateAfterLongPress?: number;
   failOffsetXStart?: number;
@@ -82,13 +93,12 @@ export interface Config extends Record<string, ConfigArgs> {
 }
 
 type NativeEventArgs = number | State | boolean | undefined;
-interface NativeEvent extends Record<string, NativeEventArgs> {
+export interface GestureHandlerNativeEvent
+  extends Record<string, NativeEventArgs> {
   numberOfPointers: number;
   state: State;
-  pointerInside: boolean | undefined;
   handlerTag: number;
-  target: number;
-  oldState?: State;
+  oldState?: State | undefined;
   pointerType: PointerType;
 }
 
@@ -105,40 +115,27 @@ export interface PointerData {
   absoluteY: number;
 }
 
-type TouchNativeArgs = number | State | TouchEventType | PointerData[];
+// Native event has to stay for v2 compatibility
+type ResultEventType =
+  | GestureUpdateEventWithHandlerData<unknown>
+  | GestureStateChangeEventWithHandlerData<unknown>
+  | GestureTouchEvent
+  | GestureHandlerNativeEvent;
 
-interface NativeTouchEvent extends Record<string, TouchNativeArgs> {
-  handlerTag: number;
-  state: State;
-  eventType: TouchEventType;
-  changedTouches: PointerData[];
-  allTouches: PointerData[];
-  numberOfTouches: number;
-  pointerType: PointerType;
-}
-
-export interface ResultEvent extends Record<string, NativeEvent | number> {
-  nativeEvent: NativeEvent;
-  timeStamp: number;
-}
-
-export interface ResultTouchEvent
-  extends Record<string, NativeTouchEvent | number> {
-  nativeEvent: NativeTouchEvent;
+export interface ResultEvent<T extends ResultEventType = ResultEventType>
+  extends Record<string, T | number> {
+  nativeEvent: T;
   timeStamp: number;
 }
 
 export interface PropsRef {
-  onGestureHandlerEvent: () => void;
-  onGestureHandlerStateChange: () => void;
-}
-
-export interface StylusData {
-  tiltX: number;
-  tiltY: number;
-  azimuthAngle: number;
-  altitudeAngle: number;
-  pressure: number;
+  onGestureHandlerEvent: (e: ResultEvent) => void;
+  onGestureHandlerStateChange: (e: ResultEvent) => void;
+  onGestureHandlerTouchEvent: (e: ResultEvent) => void;
+  onGestureHandlerReanimatedEvent?: (e: ResultEvent) => void;
+  onGestureHandlerReanimatedStateChange?: (e: ResultEvent) => void;
+  onGestureHandlerReanimatedTouchEvent?: (e: ResultEvent) => void;
+  onGestureHandlerAnimatedEvent?: (e: ResultEvent) => void;
 }
 
 export interface AdaptedEvent {
@@ -150,9 +147,9 @@ export interface AdaptedEvent {
   eventType: EventTypes;
   pointerType: PointerType;
   time: number;
-  button?: MouseButton;
-  stylusData?: StylusData;
-  wheelDeltaY?: number;
+  button?: MouseButton | undefined;
+  stylusData?: StylusData | undefined;
+  wheelDeltaY?: number | undefined;
 }
 
 export enum EventTypes {
@@ -164,14 +161,6 @@ export enum EventTypes {
   ENTER,
   LEAVE,
   CANCEL,
-}
-
-export enum TouchEventType {
-  UNDETERMINED,
-  DOWN,
-  MOVE,
-  UP,
-  CANCELLED,
 }
 
 export enum WheelDevice {

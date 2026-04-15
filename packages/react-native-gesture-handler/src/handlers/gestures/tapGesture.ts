@@ -1,9 +1,10 @@
-import { BaseGestureConfig, BaseGesture } from './gesture';
-import { TapGestureConfig } from '../TapGestureHandler';
+import { BaseGesture } from './gesture';
+import type { BaseGestureConfig } from './gesture';
+import type { TapGestureConfig } from '../TapGestureHandler';
 import type { TapGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
-  public config: BaseGestureConfig & TapGestureConfig = {};
+  public override config: BaseGestureConfig & TapGestureConfig = {};
 
   constructor() {
     super();

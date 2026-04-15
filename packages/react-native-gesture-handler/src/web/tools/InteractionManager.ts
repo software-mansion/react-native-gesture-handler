@@ -1,5 +1,7 @@
+import type { Config, Handler } from '../interfaces';
+import type { GestureRelations } from '../../v3/types';
 import type IGestureHandler from '../handlers/IGestureHandler';
-import { Config, Handler } from '../interfaces';
+import { SingleGestureName } from '../../v3/types';
 
 export default class InteractionManager {
   private static _instance: InteractionManager;
@@ -11,19 +13,20 @@ export default class InteractionManager {
   // eslint-disable-next-line no-useless-constructor, @typescript-eslint/no-empty-function
   private constructor() {}
 
-  public configureInteractions(handler: IGestureHandler, config: Config) {
+  public configureInteractions(
+    handler: IGestureHandler,
+    config: GestureRelations | Config
+  ) {
     this.dropRelationsForHandlerWithTag(handler.handlerTag);
 
     if (config.waitFor) {
       const waitFor: number[] = [];
-      config.waitFor.forEach((otherHandler: Handler): void => {
-        // New API reference
-        if (typeof otherHandler === 'number') {
-          waitFor.push(otherHandler);
-        } else {
-          // Old API reference
-          waitFor.push(otherHandler.handlerTag);
-        }
+      config.waitFor.forEach((otherHandler: Handler | number) => {
+        waitFor.push(
+          typeof otherHandler === 'number'
+            ? otherHandler
+            : otherHandler.handlerTag
+        );
       });
 
       this.waitForRelations.set(handler.handlerTag, waitFor);
@@ -31,12 +34,12 @@ export default class InteractionManager {
 
     if (config.simultaneousHandlers) {
       const simultaneousHandlers: number[] = [];
-      config.simultaneousHandlers.forEach((otherHandler: Handler): void => {
-        if (typeof otherHandler === 'number') {
-          simultaneousHandlers.push(otherHandler);
-        } else {
-          simultaneousHandlers.push(otherHandler.handlerTag);
-        }
+      config.simultaneousHandlers.forEach((otherHandler: Handler | number) => {
+        simultaneousHandlers.push(
+          typeof otherHandler === 'number'
+            ? otherHandler
+            : otherHandler.handlerTag
+        );
       });
 
       this.simultaneousRelations.set(handler.handlerTag, simultaneousHandlers);
@@ -44,12 +47,12 @@ export default class InteractionManager {
 
     if (config.blocksHandlers) {
       const blocksHandlers: number[] = [];
-      config.blocksHandlers.forEach((otherHandler: Handler): void => {
-        if (typeof otherHandler === 'number') {
-          blocksHandlers.push(otherHandler);
-        } else {
-          blocksHandlers.push(otherHandler.handlerTag);
-        }
+      config.blocksHandlers.forEach((otherHandler: Handler | number) => {
+        blocksHandlers.push(
+          typeof otherHandler === 'number'
+            ? otherHandler
+            : otherHandler.handlerTag
+        );
       });
 
       this.blocksHandlersRelations.set(handler.handlerTag, blocksHandlers);
@@ -105,8 +108,7 @@ export default class InteractionManager {
     otherHandler: IGestureHandler
   ): boolean {
     // We check constructor name instead of using `instanceof` in order do avoid circular dependencies
-    const isNativeHandler =
-      otherHandler.constructor.name === 'NativeViewGestureHandler';
+    const isNativeHandler = otherHandler.name === SingleGestureName.Native;
     const isActive = otherHandler.active;
     const isButton = otherHandler.isButton?.() === true;
 

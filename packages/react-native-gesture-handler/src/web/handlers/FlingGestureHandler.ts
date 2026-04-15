@@ -1,8 +1,10 @@
-import { State } from '../../State';
+import type { AdaptedEvent, Config } from '../interfaces';
 import { DiagonalDirections, Directions } from '../../Directions';
-import { AdaptedEvent, Config } from '../interfaces';
-
 import GestureHandler from './GestureHandler';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import type IGestureHandler from './IGestureHandler';
+import { SingleGestureName } from '../../v3/types';
+import { State } from '../../State';
 import Vector from '../tools/Vector';
 import { coneToDeviation } from '../utils';
 
@@ -26,15 +28,23 @@ export default class FlingGestureHandler extends GestureHandler {
   private maxNumberOfPointersSimultaneously = 0;
   private keyPointer = NaN;
 
-  public updateGestureConfig({ enabled = true, ...props }: Config): void {
-    super.updateGestureConfig({ enabled: enabled, ...props });
+  public constructor(
+    delegate: GestureHandlerDelegate<unknown, IGestureHandler>
+  ) {
+    super(delegate);
 
-    if (this.config.direction) {
-      this.direction = this.config.direction;
+    this.name = SingleGestureName.Fling;
+  }
+
+  public override updateGestureConfig(config: Config): void {
+    super.updateGestureConfig(config);
+
+    if (config.direction) {
+      this.direction = config.direction;
     }
 
-    if (this.config.numberOfPointers) {
-      this.numberOfPointersRequired = this.config.numberOfPointers;
+    if (config.numberOfPointers) {
+      this.numberOfPointersRequired = config.numberOfPointers;
     }
   }
 
@@ -104,7 +114,7 @@ export default class FlingGestureHandler extends GestureHandler {
     }
   }
 
-  protected onPointerDown(event: AdaptedEvent): void {
+  protected override onPointerDown(event: AdaptedEvent): void {
     if (!this.isButtonInConfig(event.button)) {
       return;
     }
@@ -114,11 +124,9 @@ export default class FlingGestureHandler extends GestureHandler {
 
     super.onPointerDown(event);
     this.newPointerAction();
-
-    this.tryToSendTouchEvent(event);
   }
 
-  protected onPointerAdd(event: AdaptedEvent): void {
+  protected override onPointerAdd(event: AdaptedEvent): void {
     this.tracker.addToTracker(event);
     super.onPointerAdd(event);
     this.newPointerAction();
@@ -153,24 +161,24 @@ export default class FlingGestureHandler extends GestureHandler {
     this.tryEndFling();
   }
 
-  protected onPointerMove(event: AdaptedEvent): void {
+  protected override onPointerMove(event: AdaptedEvent): void {
     this.pointerMoveAction(event);
     super.onPointerMove(event);
   }
 
-  protected onPointerOutOfBounds(event: AdaptedEvent): void {
+  protected override onPointerOutOfBounds(event: AdaptedEvent): void {
     this.pointerMoveAction(event);
     super.onPointerOutOfBounds(event);
   }
 
-  protected onPointerUp(event: AdaptedEvent): void {
+  protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.onUp(event);
 
     this.keyPointer = NaN;
   }
 
-  protected onPointerRemove(event: AdaptedEvent): void {
+  protected override onPointerRemove(event: AdaptedEvent): void {
     super.onPointerRemove(event);
     this.onUp(event);
   }
@@ -183,12 +191,12 @@ export default class FlingGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
   }
 
-  public activate(force?: boolean): void {
+  public override activate(force?: boolean): void {
     super.activate(force);
     this.end();
   }
 
-  protected resetConfig(): void {
+  protected override resetConfig(): void {
     super.resetConfig();
     this.numberOfPointersRequired = DEFAULT_NUMBER_OF_TOUCHES_REQUIRED;
     this.direction = DEFAULT_DIRECTION;

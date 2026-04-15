@@ -1,6 +1,6 @@
 import { ContinousBaseGesture } from './gesture';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { PinchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
 export type PinchGestureChangeEventPayload = {
   scaleChange: number;
@@ -35,7 +35,7 @@ export class PinchGesture extends ContinousBaseGesture<
     this.handlerName = 'PinchGestureHandler';
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         PinchGestureHandlerEventPayload & PinchGestureChangeEventPayload

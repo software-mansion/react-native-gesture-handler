@@ -1,5 +1,6 @@
-import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { BaseGestureConfig } from './gesture';
+import { ContinousBaseGesture } from './gesture';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { HoverGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
 
 export type HoverGestureChangeEventPayload = {
@@ -44,7 +45,7 @@ export class HoverGesture extends ContinousBaseGesture<
   HoverGestureHandlerEventPayload,
   HoverGestureChangeEventPayload
 > {
-  public config: BaseGestureConfig & HoverGestureConfig = {};
+  public override config: BaseGestureConfig & HoverGestureConfig = {};
 
   constructor() {
     super();
@@ -61,7 +62,7 @@ export class HoverGesture extends ContinousBaseGesture<
     return this;
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         HoverGestureHandlerEventPayload & HoverGestureChangeEventPayload

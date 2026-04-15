@@ -1,9 +1,10 @@
-import { BaseGestureConfig, BaseGesture } from './gesture';
-import { NativeViewGestureConfig } from '../NativeViewGestureHandler';
+import { BaseGesture } from './gesture';
+import type { BaseGestureConfig } from './gesture';
+import type { NativeViewGestureConfig } from '../NativeViewGestureHandler';
 import type { NativeViewGestureHandlerPayload } from '../GestureHandlerEventPayload';
 
 export class NativeGesture extends BaseGesture<NativeViewGestureHandlerPayload> {
-  public config: BaseGestureConfig & NativeViewGestureConfig = {};
+  public override config: BaseGestureConfig & NativeViewGestureConfig = {};
 
   constructor() {
     super();

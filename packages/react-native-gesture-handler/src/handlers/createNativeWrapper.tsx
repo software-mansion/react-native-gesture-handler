@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useImperativeHandle, useRef } from 'react';
-
 import {
   NativeViewGestureHandler,
-  NativeViewGestureHandlerProps,
   nativeViewProps,
 } from './NativeViewGestureHandler';
+import { useImperativeHandle, useRef } from 'react';
+import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 
 /*
  * This array should consist of:
@@ -20,6 +19,9 @@ const NATIVE_WRAPPER_PROPS_FILTER = [
   'onGestureHandlerStateChange',
 ] as const;
 
+/**
+ * @deprecated `createNativeWrapper` is deprecated and will be removed in favor of using `GestureDetector` with `Native` gesture directly.
+ */
 export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
   config: Readonly<NativeViewGestureHandlerProps> = {}

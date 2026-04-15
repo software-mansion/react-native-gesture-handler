@@ -2,31 +2,13 @@
 // It's cross-compatible with all platforms despite
 // `DrawerLayoutAndroid` only being available on android
 
-import React, {
-  ReactNode,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from 'react';
-
-import {
-  StyleSheet,
-  Keyboard,
-  StatusBar,
-  I18nManager,
-  StatusBarAnimation,
-  StyleProp,
-  ViewStyle,
-  LayoutChangeEvent,
-  Platform,
-} from 'react-native';
-
+import type {
+  ActiveCursor,
+  HitSlop,
+  UserSelect,
+} from '../handlers/gestureHandlerCommon';
 import Animated, {
   Extrapolation,
-  SharedValue,
   interpolate,
   runOnJS,
   useAnimatedProps,
@@ -35,17 +17,33 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-
-import { GestureObjects as Gesture } from '../handlers/gestures/gestureObjects';
-import { GestureDetector } from '../handlers/gestures/GestureDetector';
 import {
-  UserSelect,
-  ActiveCursor,
-  MouseButton,
-  HitSlop,
-  GestureStateChangeEvent,
-} from '../handlers/gestureHandlerCommon';
-import { PanGestureHandlerEventPayload } from '../handlers/GestureHandlerEventPayload';
+  I18nManager,
+  Keyboard,
+  Platform,
+  StatusBar,
+  StyleSheet,
+} from 'react-native';
+import type {
+  LayoutChangeEvent,
+  StatusBarAnimation,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
+import { usePanGesture, useTapGesture } from '../v3/hooks/gestures';
+import { GestureDetector } from '../v3/detectors';
+import { MouseButton } from '../handlers/gestureHandlerCommon';
+import type { PanGestureActiveEvent } from '../v3/hooks/gestures';
+import type { ReactNode } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 
 const DRAG_TOSS = 0.05;
 
@@ -432,7 +430,7 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
     );
 
     const handleRelease = useCallback(
-      (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
+      (event: PanGestureActiveEvent) => {
         'worklet';
         let { translationX: dragX, velocityX, x: touchX } = event;
 
@@ -497,21 +495,19 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [animateDrawer]
     );
 
-    const overlayDismissGesture = useMemo(
-      () =>
-        Gesture.Tap()
-          .enabled(drawerOpened)
-          .maxDistance(25)
-          .onEnd(() => {
-            if (
-              isDrawerOpen.value &&
-              drawerLockMode !== DrawerLockMode.LOCKED_OPEN
-            ) {
-              closeDrawer();
-            }
-          }),
-      [closeDrawer, isDrawerOpen, drawerLockMode, drawerOpened]
-    );
+    const overlayDismissGesture = useTapGesture({
+      enabled: drawerOpened,
+      maxDistance: 25,
+      onDeactivate: () => {
+        'worklet';
+        if (
+          isDrawerOpen.value &&
+          drawerLockMode !== DrawerLockMode.LOCKED_OPEN
+        ) {
+          closeDrawer();
+        }
+      },
+    });
 
     const overlayAnimatedStyle = useAnimatedStyle(() => ({
       opacity: openValue.value,
@@ -523,86 +519,63 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
       [drawerWidth, isFromLeft]
     );
 
-    const panGesture = useMemo(() => {
-      return Gesture.Pan()
-        .activeCursor(activeCursor)
-        .mouseButton(mouseButton)
-        .hitSlop(drawerOpened ? fillHitSlop : edgeHitSlop)
-        .minDistance(drawerOpened ? 100 : 0)
-        .activeOffsetX(gestureOrientation * minSwipeDistance)
-        .failOffsetY([-15, 15])
-        .simultaneousWithExternalGesture(overlayDismissGesture)
-        .enableTrackpadTwoFingerGesture(enableTrackpadTwoFingerGesture)
-        .enabled(
-          drawerState !== DrawerState.SETTLING &&
-            (drawerOpened
-              ? drawerLockMode !== DrawerLockMode.LOCKED_OPEN
-              : drawerLockMode !== DrawerLockMode.LOCKED_CLOSED)
-        )
-        .onStart(() => {
-          emitStateChanged(DrawerState.DRAGGING, false);
-          runOnJS(setDrawerState)(DrawerState.DRAGGING);
-          if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
-            runOnJS(dismissKeyboard)();
-          }
-          if (hideStatusBar) {
-            runOnJS(setStatusBarHidden)(true, statusBarAnimation);
-          }
-        })
-        .onUpdate((event) => {
-          const startedOutsideTranslation = isFromLeft
-            ? interpolate(
-                event.x,
-                [0, drawerWidth, drawerWidth + 1],
-                [0, drawerWidth, drawerWidth]
-              )
-            : interpolate(
-                event.x - containerWidth,
-                [-drawerWidth - 1, -drawerWidth, 0],
-                [drawerWidth, drawerWidth, 0]
-              );
+    const panGesture = usePanGesture({
+      activeCursor: activeCursor,
+      mouseButton: mouseButton,
+      hitSlop: drawerOpened ? fillHitSlop : edgeHitSlop,
+      activeOffsetX: gestureOrientation * minSwipeDistance,
+      failOffsetY: [-15, 15],
+      simultaneousWith: overlayDismissGesture,
+      enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
+      enabled:
+        drawerState !== DrawerState.SETTLING &&
+        (drawerOpened
+          ? drawerLockMode !== DrawerLockMode.LOCKED_OPEN
+          : drawerLockMode !== DrawerLockMode.LOCKED_CLOSED),
+      onActivate: () => {
+        'worklet';
+        emitStateChanged(DrawerState.DRAGGING, false);
+        runOnJS(setDrawerState)(DrawerState.DRAGGING);
+        if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
+          runOnJS(dismissKeyboard)();
+        }
+        if (hideStatusBar) {
+          runOnJS(setStatusBarHidden)(true, statusBarAnimation);
+        }
+      },
+      onUpdate: (event) => {
+        'worklet';
+        const startedOutsideTranslation = isFromLeft
+          ? interpolate(
+              event.x,
+              [0, drawerWidth, drawerWidth + 1],
+              [0, drawerWidth, drawerWidth]
+            )
+          : interpolate(
+              event.x - containerWidth,
+              [-drawerWidth - 1, -drawerWidth, 0],
+              [drawerWidth, drawerWidth, 0]
+            );
 
-          const startedInsideTranslation =
-            sideCorrection *
-            (event.translationX +
-              (drawerOpened ? drawerWidth * -gestureOrientation : 0));
+        const startedInsideTranslation =
+          sideCorrection *
+          (event.translationX +
+            (drawerOpened ? drawerWidth * -gestureOrientation : 0));
 
-          const adjustedTranslation = Math.max(
-            drawerOpened ? startedOutsideTranslation : 0,
-            startedInsideTranslation
-          );
+        const adjustedTranslation = Math.max(
+          drawerOpened ? startedOutsideTranslation : 0,
+          startedInsideTranslation
+        );
 
-          openValue.value = interpolate(
-            adjustedTranslation,
-            [-drawerWidth, 0, drawerWidth],
-            [1, 0, 1],
-            Extrapolation.CLAMP
-          );
-        })
-        .onEnd(handleRelease);
-    }, [
-      drawerLockMode,
-      openValue,
-      drawerWidth,
-      emitStateChanged,
-      gestureOrientation,
-      handleRelease,
-      edgeHitSlop,
-      fillHitSlop,
-      minSwipeDistance,
-      hideStatusBar,
-      keyboardDismissMode,
-      overlayDismissGesture,
-      drawerOpened,
-      isFromLeft,
-      containerWidth,
-      sideCorrection,
-      drawerState,
-      activeCursor,
-      enableTrackpadTwoFingerGesture,
-      mouseButton,
-      statusBarAnimation,
-    ]);
+        openValue.value = interpolate(
+          adjustedTranslation,
+          [-drawerWidth, 0, drawerWidth],
+          [1, 0, 1],
+          Extrapolation.CLAMP
+        );
+      },
+      onDeactivate: handleRelease,
+    });
 
     // When using RTL, row and row-reverse flex directions are flipped.
     const reverseContentDirection = I18nManager.isRTL
@@ -693,7 +666,9 @@ const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
         userSelect={userSelect}
         enableContextMenu={enableContextMenu}>
         <Animated.View style={styles.main} onLayout={handleContainerLayout}>
-          <GestureDetector gesture={overlayDismissGesture}>
+          <GestureDetector
+            gesture={overlayDismissGesture}
+            userSelect={userSelect}>
             <Animated.View
               style={[
                 drawerType === DrawerType.FRONT
@@ -732,16 +707,16 @@ export default DrawerLayout;
 
 const styles = StyleSheet.create({
   drawerContainer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1001,
     flexDirection: 'row',
   },
   containerInFront: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1002,
   },
   containerOnBack: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   main: {
     flex: 1,
@@ -749,7 +724,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1000,
   },
 });

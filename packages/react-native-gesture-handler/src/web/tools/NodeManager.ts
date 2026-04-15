@@ -1,6 +1,6 @@
-import { ValueOf } from '../../typeUtils';
-import { Gestures } from '../Gestures';
+import type { Gestures } from '../Gestures';
 import type IGestureHandler from '../handlers/IGestureHandler';
+import type { ValueOf } from '../../typeUtils';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default abstract class NodeManager {
@@ -40,6 +40,14 @@ export default abstract class NodeManager {
 
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.gestures[handlerTag];
+  }
+
+  public static detachGestureHandler(handlerTag: number): void {
+    if (!(handlerTag in this.gestures)) {
+      return;
+    }
+
+    this.gestures[handlerTag].detach();
   }
 
   public static get nodes() {

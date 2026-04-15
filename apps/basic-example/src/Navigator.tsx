@@ -1,5 +1,5 @@
+import { BackHandler, Pressable, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, BackHandler } from 'react-native';
 
 export interface RouteInfo {
   component: React.ComponentType;
@@ -10,7 +10,7 @@ export interface RouteInfo {
 export type NavigatorRoutes = Record<string, RouteInfo>;
 
 export interface NavigatorProps {
-  initialRouteName: string;
+  initialRouteName?: string;
 }
 
 export interface ButtonProps {
@@ -74,11 +74,13 @@ export default class Navigator {
   };
 
   Navigator = (props: NavigatorProps) => {
-    const [currentRoute, setCurrentRoute] = useState(props.initialRouteName);
+    const [currentRoute, setCurrentRoute] = useState(
+      props.initialRouteName ?? Object.keys(this.routes)[0]
+    );
     this.setCurrentRoute = setCurrentRoute;
 
     useEffect(() => {
-      // eslint-disable-next-line @typescript-eslint/unbound-method
+      // eslint-disable-next-line @typescript-eslint/unbound-method, @eslint-react/web-api/no-leaked-event-listener
       return BackHandler.addEventListener('hardwareBackPress', this.backHandler)
         .remove;
     }, []);

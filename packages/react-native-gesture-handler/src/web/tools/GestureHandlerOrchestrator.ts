@@ -1,8 +1,7 @@
-import { PointerType } from '../../PointerType';
-import { State } from '../../State';
-
 import type IGestureHandler from '../handlers/IGestureHandler';
 import PointerTracker from './PointerTracker';
+import { PointerType } from '../../PointerType';
+import { State } from '../../State';
 
 export default class GestureHandlerOrchestrator {
   private static _instance: GestureHandlerOrchestrator;
@@ -20,7 +19,9 @@ export default class GestureHandlerOrchestrator {
 
   private scheduleFinishedHandlersCleanup(): void {
     if (this.handlingChangeSemaphore === 0) {
-      this.cleanupFinishedHandlers();
+      queueMicrotask(() => {
+        this.cleanupFinishedHandlers();
+      });
     }
   }
 

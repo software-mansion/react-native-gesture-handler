@@ -1,0 +1,125 @@
+import type {
+  BaseGestureConfig,
+  SingleGesture,
+  SingleGestureName,
+} from '../types';
+import {
+  bindSharedValues,
+  prepareConfig,
+  prepareConfigForNativeSide,
+  prepareRelations,
+  unbindSharedValues,
+} from './utils';
+import {
+  registerGesture,
+  unregisterGesture,
+} from '../../handlers/handlersRegistry';
+import { useEffect, useMemo, useRef } from 'react';
+import { NativeProxy } from '../NativeProxy';
+import { getNextHandlerTag } from '../../handlers/getNextHandlerTag';
+import { scheduleFlushOperations } from '../../handlers/utils';
+import { tagMessage } from '../../utils';
+import { useGestureCallbacks } from './useGestureCallbacks';
+
+export function useGesture<
+  TConfig,
+  THandlerData,
+  TExtendedHandlerData extends THandlerData = THandlerData,
+>(
+  type: SingleGestureName,
+  config: BaseGestureConfig<TConfig, THandlerData, TExtendedHandlerData>
+): SingleGesture<TConfig, THandlerData, TExtendedHandlerData> {
+  const handlerTag = useMemo(() => getNextHandlerTag(), []);
+  const disableReanimated = useMemo(() => config.disableReanimated, []);
+
+  if (config.disableReanimated !== disableReanimated) {
+    throw new Error(
+      tagMessage(
+        'The "disableReanimated" property must not be changed after the handler is created.'
+      )
+    );
+  }
+
+  // This has to be done ASAP as other hooks depend `shouldUseReanimatedDetector`.
+  prepareConfig(config);
+
+  // TODO: Call only necessary hooks depending on which callbacks are defined (?)
+  const { jsEventHandler, reanimatedEventHandler, animatedEventHandler } =
+    useGestureCallbacks(handlerTag, config);
+
+  if (config.shouldUseReanimatedDetector && !reanimatedEventHandler) {
+    throw new Error(tagMessage('Failed to create reanimated event handlers.'));
+  }
+
+  const gestureRelations = useMemo(
+    () =>
+      prepareRelations(
+        {
+          simultaneousWith: config.simultaneousWith,
+          requireToFail: config.requireToFail,
+          block: config.block,
+        },
+        handlerTag
+      ),
+    [handlerTag, config.simultaneousWith, config.requireToFail, config.block]
+  );
+
+  const currentGestureRef = useRef({ type: '', handlerTag: -1 });
+  if (
+    currentGestureRef.current.handlerTag !== handlerTag ||
+    currentGestureRef.current.type !== (type as string)
+  ) {
+    currentGestureRef.current = { type, handlerTag };
+    NativeProxy.createGestureHandler(type, handlerTag, {});
+  }
+
+  const gesture = useMemo(
+    () => ({
+      handlerTag,
+      type,
+      config,
+      detectorCallbacks: {
+        jsEventHandler,
+        animatedEventHandler,
+        reanimatedEventHandler,
+      },
+      gestureRelations,
+    }),
+    [
+      handlerTag,
+      type,
+      config,
+      jsEventHandler,
+      reanimatedEventHandler,
+      animatedEventHandler,
+      gestureRelations,
+    ]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (currentGestureRef.current.handlerTag === handlerTag) {
+        currentGestureRef.current = { type: '', handlerTag: -1 };
+      }
+
+      NativeProxy.dropGestureHandler(handlerTag);
+      scheduleFlushOperations();
+    };
+  }, [type, handlerTag]);
+
+  useEffect(() => {
+    const preparedConfig = prepareConfigForNativeSide(type, config);
+    NativeProxy.setGestureHandlerConfig(handlerTag, preparedConfig);
+    scheduleFlushOperations();
+
+    bindSharedValues(config, handlerTag);
+    registerGesture(handlerTag, gesture);
+
+    return () => {
+      unbindSharedValues(config, handlerTag);
+      unregisterGesture(handlerTag);
+    };
+  }, [handlerTag, config, type, gesture]);
+
+  return gesture;
+}

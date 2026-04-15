@@ -1,28 +1,20 @@
-import React, { useEffect } from 'react';
-import {
-  Platform,
-  ScrollViewProps,
-  SectionList,
-  SectionListProps,
-  StyleSheet,
-} from 'react-native';
 import Animated, {
-  SharedValue,
-  useAnimatedRef,
-  useScrollViewOffset,
-  useAnimatedReaction,
-  useSharedValue,
-  useAnimatedProps,
-  useAnimatedStyle,
   runOnJS,
+  useAnimatedProps,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
+  useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import type { AnimatedRef, SharedValue } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Header, { HEADER_HEIGHT } from './Header';
-import {
-  Gesture,
-  GestureDetector,
-  GestureType,
-} from 'react-native-gesture-handler';
+import { Platform, SectionList, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import type { ScrollViewProps, SectionListProps } from 'react-native';
+import type { GestureType } from 'react-native-gesture-handler';
 
 const IS_ANDROID = Platform.OS === 'android';
 
@@ -111,11 +103,14 @@ interface ScrollComponentWithOffsetProps extends ScrollViewProps {
   scrollOffset: SharedValue<number>;
   animatedScrollEnabled: SharedValue<boolean>;
   dragGesture: GestureType;
-  ref?: React.RefObject<Animated.ScrollView | null>;
+  ref?: AnimatedRef<Animated.ScrollView>;
 }
 
 const ScrollComponentWithOffset = ({
   ref,
+  scrollOffset,
+  animatedScrollEnabled,
+  dragGesture,
   ...props
 }: ScrollComponentWithOffsetProps) => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -126,7 +121,7 @@ const ScrollComponentWithOffset = ({
       return scrollViewOffset.value;
     },
     (offset) => {
-      props.scrollOffset.value = offset;
+      scrollOffset.value = offset;
     }
   );
 
@@ -138,13 +133,13 @@ const ScrollComponentWithOffset = ({
 
   const scrollProps = useAnimatedProps(() => {
     return {
-      scrollEnabled: props.animatedScrollEnabled.value,
+      scrollEnabled: animatedScrollEnabled.value,
     };
   });
 
   const scrollGesture = Gesture.Native()
     .disallowInterruption(true)
-    .simultaneousWithExternalGesture(props.dragGesture);
+    .simultaneousWithExternalGesture(dragGesture);
 
   return (
     <GestureDetector gesture={scrollGesture}>

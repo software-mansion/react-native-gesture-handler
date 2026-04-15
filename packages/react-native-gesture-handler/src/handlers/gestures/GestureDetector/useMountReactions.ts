@@ -1,8 +1,8 @@
-import { transformIntoHandlerTags } from '../../utils';
+import type { AttachedGestureState } from './types';
+import type { GestureRef } from '../gesture';
 import { MountRegistry } from '../../../mountRegistry';
-import { AttachedGestureState } from './types';
+import { transformIntoHandlerTags } from '../../utils';
 import { useEffect } from 'react';
-import { GestureRef } from '../gesture';
 
 function shouldUpdateDetector(
   relation: GestureRef[] | undefined,

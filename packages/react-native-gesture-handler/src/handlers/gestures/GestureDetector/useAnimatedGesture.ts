@@ -1,18 +1,17 @@
-import { HandlerCallbacks, CALLBACK_TYPE } from '../gesture';
-import { Reanimated } from '../reanimatedWrapper';
-import {
+import type {
+  GestureStateChangeEvent,
   GestureTouchEvent,
   GestureUpdateEvent,
-  GestureStateChangeEvent,
 } from '../../gestureHandlerCommon';
-import {
-  GestureStateManager,
-  GestureStateManagerType,
-} from '../gestureStateManager';
+import type { AttachedGestureState } from './types';
+import { CALLBACK_TYPE } from '../gesture';
+import { GestureStateManager } from '../gestureStateManager';
+import type { GestureStateManagerType } from '../gestureStateManager';
+import type { HandlerCallbacks } from '../gesture';
+import { Reanimated } from '../reanimatedWrapper';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { tagMessage } from '../../../utils';
-import { AttachedGestureState } from './types';
 
 function getHandler(
   type: CALLBACK_TYPE,
@@ -38,7 +37,7 @@ function getHandler(
       return gesture.onTouchesMove;
     case CALLBACK_TYPE.TOUCHES_UP:
       return gesture.onTouchesUp;
-    case CALLBACK_TYPE.TOUCHES_CANCELLED:
+    case CALLBACK_TYPE.TOUCHES_CANCEL:
       return gesture.onTouchesCancelled;
   }
 }
@@ -54,8 +53,8 @@ function touchEventTypeToCallbackType(
       return CALLBACK_TYPE.TOUCHES_MOVE;
     case TouchEventType.TOUCHES_UP:
       return CALLBACK_TYPE.TOUCHES_UP;
-    case TouchEventType.TOUCHES_CANCELLED:
-      return CALLBACK_TYPE.TOUCHES_CANCELLED;
+    case TouchEventType.TOUCHES_CANCEL:
+      return CALLBACK_TYPE.TOUCHES_CANCEL;
   }
   return CALLBACK_TYPE.UNDEFINED;
 }

@@ -1,0 +1,1 @@
+Properties supporting `SharedValue` can be updated dynamically via [Reanimated Shared Values](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#shared-value) without triggering a re-render.

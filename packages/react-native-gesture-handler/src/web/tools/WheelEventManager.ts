@@ -1,5 +1,6 @@
+import type { AdaptedEvent } from '../interfaces';
 import EventManager from './EventManager';
-import { AdaptedEvent, EventTypes } from '../interfaces';
+import { EventTypes } from '../interfaces';
 import { PointerType } from '../../PointerType';
 
 export default class WheelEventManager extends EventManager<HTMLElement> {
@@ -42,7 +43,7 @@ export default class WheelEventManager extends EventManager<HTMLElement> {
     };
   }
 
-  public resetManager(): void {
+  public override resetManager(): void {
     super.resetManager();
   }
 }

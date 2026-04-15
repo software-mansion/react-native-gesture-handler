@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.PointF
 import android.view.MotionEvent
 import com.swmansion.gesturehandler.core.RotationGestureDetector.OnRotationGestureListener
-import com.swmansion.gesturehandler.react.eventbuilders.RotationGestureHandlerEventDataBuilder
+import com.swmansion.gesturehandler.react.events.eventbuilders.RotationGestureHandlerEventDataBuilder
 import kotlin.math.abs
 
 class RotationGestureHandler : GestureHandler() {
@@ -35,19 +35,31 @@ class RotationGestureHandler : GestureHandler() {
     override fun onRotationBegin(detector: RotationGestureDetector) = true
 
     override fun onRotationEnd(detector: RotationGestureDetector) {
-      end()
+      if (state == STATE_ACTIVE) {
+        end()
+      } else {
+        fail()
+      }
     }
   }
 
+  override fun initialize(event: MotionEvent, sourceEvent: MotionEvent) {
+    resetProgress()
+    rotationGestureDetector = RotationGestureDetector(gestureListener)
+
+    // set the anchor to the position of the first pointer as NaN causes the event not to arrive
+    this.anchorX = event.x
+    this.anchorY = event.y
+  }
+
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
+    if (forceReinitializeDuringOnHandle) {
+      forceReinitializeDuringOnHandle = false
+      initialize(event, sourceEvent)
+    }
+
     if (state == STATE_UNDETERMINED) {
-      resetProgress()
-      rotationGestureDetector = RotationGestureDetector(gestureListener)
-
-      // set the anchor to the position of the first pointer as NaN causes the event not to arrive
-      this.anchorX = event.x
-      this.anchorY = event.y
-
+      initialize(event, sourceEvent)
       begin()
     }
     rotationGestureDetector?.onTouchEvent(sourceEvent)
@@ -56,12 +68,11 @@ class RotationGestureHandler : GestureHandler() {
       anchorX = point.x
       anchorY = point.y
     }
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
-      if (state == STATE_ACTIVE) {
-        end()
-      } else {
-        fail()
-      }
+
+    // ACTION_UP is already handled in rotationGestureDetector.onTouchEvent (and effectively in onRotationEnd)
+    // if more than one pointer was used
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP && state == STATE_BEGAN) {
+      fail()
     }
   }
 

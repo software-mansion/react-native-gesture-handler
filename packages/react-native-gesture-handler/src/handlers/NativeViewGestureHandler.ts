@@ -1,9 +1,7 @@
+import type { BaseGestureHandlerProps } from './gestureHandlerCommon';
 import type { NativeViewGestureHandlerPayload } from './GestureHandlerEventPayload';
+import { baseGestureHandlerProps } from './gestureHandlerCommon';
 import createHandler from './createHandler';
-import {
-  BaseGestureHandlerProps,
-  baseGestureHandlerProps,
-} from './gestureHandlerCommon';
 
 export const nativeViewGestureHandlerProps = [
   'shouldActivateOnStart',
@@ -17,13 +15,13 @@ export interface NativeViewGestureConfig {
    * Determines whether the handler should check for an existing touch event on
    * instantiation.
    */
-  shouldActivateOnStart?: boolean;
+  shouldActivateOnStart?: boolean | undefined;
 
   /**
    * When `true`, cancels all other gesture handlers when this
    * `NativeViewGestureHandler` receives an `ACTIVE` state event.
    */
-  disallowInterruption?: boolean;
+  disallowInterruption?: boolean | undefined;
 }
 
 /**

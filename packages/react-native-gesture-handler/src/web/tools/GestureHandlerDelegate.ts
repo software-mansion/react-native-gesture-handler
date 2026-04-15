@@ -1,5 +1,3 @@
-import { Config } from '../interfaces';
-
 export interface MeasureResult {
   pageX: number;
   pageY: number;
@@ -8,11 +6,17 @@ export interface MeasureResult {
 }
 
 export interface GestureHandlerDelegate<TComponent, THandler> {
-  view: TComponent;
+  view: TComponent | null;
 
   init(viewRef: number, handler: THandler): void;
+  detach(): void;
+  updateDOM(): void;
   isPointerInBounds({ x, y }: { x: number; y: number }): boolean;
   measureView(): MeasureResult;
+  absoluteToLocal(
+    absoluteX: number,
+    absoluteY: number
+  ): { x: number; y: number };
   reset(): void;
 
   onBegin(): void;
@@ -20,7 +24,7 @@ export interface GestureHandlerDelegate<TComponent, THandler> {
   onEnd(): void;
   onCancel(): void;
   onFail(): void;
-  onEnabledChange(enabled: boolean): void;
+  onEnabledChange(): void;
 
-  destroy(config: Config): void;
+  destroy(): void;
 }

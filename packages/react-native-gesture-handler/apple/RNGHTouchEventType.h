@@ -5,5 +5,5 @@ typedef NS_ENUM(NSInteger, RNGHTouchEventType) {
   RNGHTouchEventTypePointerDown,
   RNGHTouchEventTypePointerMove,
   RNGHTouchEventTypePointerUp,
-  RNGHTouchEventTypeCancelled,
+  RNGHTouchEventTypePointerCancel,
 };

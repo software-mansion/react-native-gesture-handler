@@ -1,108 +1,33 @@
 import * as React from 'react';
-import {
-  Platform,
-  UIManager,
-  DeviceEventEmitter,
-  EmitterSubscription,
-} from 'react-native';
-import { customDirectEventTypes } from './customDirectEventTypes';
-import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import { State } from '../State';
+import type {
+  BaseGestureHandlerProps,
+  GestureEvent,
+  HandlerStateChangeEvent,
+} from './gestureHandlerCommon';
+import { DeviceEventEmitter, Platform } from 'react-native';
+import { deepEqual, isTestEnv, tagMessage } from '../utils';
+import { filterConfig, scheduleFlushOperations } from './utils';
 import {
   handlerIDToTag,
   registerOldGestureHandler,
   unregisterOldGestureHandler,
 } from './handlersRegistry';
-import { getNextHandlerTag } from './getNextHandlerTag';
-
-import {
-  BaseGestureHandlerProps,
-  GestureEvent,
-  HandlerStateChangeEvent,
-} from './gestureHandlerCommon';
-import { filterConfig, scheduleFlushOperations } from './utils';
-import findNodeHandle from '../findNodeHandle';
-import { ValueOf } from '../typeUtils';
-import {
-  deepEqual,
-  isFabric,
-  isReact19,
-  isTestEnv,
-  tagMessage,
-} from '../utils';
 import { ActionType } from '../ActionType';
-import { PressabilityDebugView } from './PressabilityDebugView';
+import type { EmitterSubscription } from 'react-native';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
-import { ghQueueMicrotask } from '../ghQueueMicrotask';
 import { MountRegistry } from '../mountRegistry';
-import { ReactElement } from 'react';
-
-const UIManagerAny = UIManager as any;
+import { PressabilityDebugView } from './PressabilityDebugView';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
+import type { ReactElement } from 'react';
+import { State } from '../State';
+import type { ValueOf } from '../typeUtils';
+import { customDirectEventTypes } from './customDirectEventTypes';
+import findNodeHandle from '../findNodeHandle';
+import { getNextHandlerTag } from './getNextHandlerTag';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
 
 customDirectEventTypes.topGestureHandlerEvent = {
   registrationName: 'onGestureHandlerEvent',
-};
-
-const customGHEventsConfigFabricAndroid = {
-  topOnGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-  topOnGestureHandlerStateChange: {
-    registrationName: 'onGestureHandlerStateChange',
-  },
-};
-
-const customGHEventsConfig = {
-  onGestureHandlerEvent: { registrationName: 'onGestureHandlerEvent' },
-  onGestureHandlerStateChange: {
-    registrationName: 'onGestureHandlerStateChange',
-  },
-
-  // When using React Native Gesture Handler for Animated.event with useNativeDriver: true
-  // on Android with Fabric enabled, the native part still sends the native events to JS
-  // but prefixed with "top". We cannot simply rename the events above so they are prefixed
-  // with "top" instead of "on" because in such case Animated.events would not be registered.
-  // That's why we need to register another pair of event names.
-  // The incoming events will be queued but never handled.
-  // Without this piece of code below, you'll get the following JS error:
-  // Unsupported top level event type "topOnGestureHandlerEvent" dispatched
-  ...(isFabric() &&
-    Platform.OS === 'android' &&
-    customGHEventsConfigFabricAndroid),
-};
-
-// Add gesture specific events to genericDirectEventTypes object exported from UIManager
-// native module.
-// Once new event types are registered with react it is possible to dispatch these
-// events to all kind of native views.
-UIManagerAny.genericDirectEventTypes = {
-  ...UIManagerAny.genericDirectEventTypes,
-  ...customGHEventsConfig,
-};
-
-const UIManagerConstants = UIManagerAny.getViewManagerConfig?.('getConstants');
-
-if (UIManagerConstants) {
-  UIManagerConstants.genericDirectEventTypes = {
-    ...UIManagerConstants.genericDirectEventTypes,
-    ...customGHEventsConfig,
-  };
-}
-
-// Wrap JS responder calls and notify gesture handler manager
-const {
-  setJSResponder: oldSetJSResponder = () => {
-    // no-op
-  },
-  clearJSResponder: oldClearJSResponder = () => {
-    // no-op
-  },
-} = UIManagerAny;
-UIManagerAny.setJSResponder = (tag: number, blockNativeResponder: boolean) => {
-  RNGestureHandlerModule.handleSetJSResponder(tag, blockNativeResponder);
-  oldSetJSResponder(tag, blockNativeResponder);
-};
-UIManagerAny.clearJSResponder = () => {
-  RNGestureHandlerModule.handleClearJSResponder();
-  oldClearJSResponder();
 };
 
 let allowTouches = true;
@@ -184,7 +109,7 @@ export default function createHandler<
     HandlerState
   > {
     static displayName = name;
-    static contextType = GestureHandlerRootViewContext;
+    static override contextType = GestureHandlerRootViewContext;
 
     private handlerTag = -1;
     private config: Record<string, unknown>;
@@ -208,7 +133,7 @@ export default function createHandler<
       }
     }
 
-    componentDidMount() {
+    override componentDidMount() {
       const props: HandlerProps<U> = this.props;
       this.isMountedRef.current = true;
 
@@ -250,7 +175,7 @@ export default function createHandler<
       this.attachGestureHandler(findNodeHandle(this.viewNode) as number); // TODO(TS) - check if this can be null
     }
 
-    componentDidUpdate() {
+    override componentDidUpdate() {
       const viewTag = findNodeHandle(this.viewNode);
       if (this.viewTag !== viewTag) {
         this.attachGestureHandler(viewTag as number); // TODO(TS) - check interaction between _viewTag & findNodeHandle
@@ -258,7 +183,7 @@ export default function createHandler<
       this.update(UNRESOLVED_REFS_RETRY_LIMIT);
     }
 
-    componentWillUnmount() {
+    override componentWillUnmount() {
       this.inspectorToggleListener?.remove();
       this.isMountedRef.current = false;
       if (Platform.OS !== 'web') {
@@ -312,7 +237,7 @@ export default function createHandler<
       const child = React.Children.only(this.props.children);
       // @ts-ignore Since React 19 ref is accessible as standard prop
       // https://react.dev/blog/2024/04/25/react-19-upgrade-guide#deprecated-element-ref
-      const ref = isReact19() ? (child as ReactElement).props?.ref : child?.ref;
+      const ref = (child as ReactElement).props?.ref;
 
       if (!ref) {
         return;
@@ -396,12 +321,25 @@ export default function createHandler<
       });
     };
 
-    private updateGestureHandler = (
+    private setGestureHandlerConfig = (
       newConfig: Readonly<Record<string, unknown>>
     ) => {
       this.config = newConfig;
 
-      RNGestureHandlerModule.updateGestureHandler(this.handlerTag, newConfig);
+      RNGestureHandlerModule.setGestureHandlerConfig(
+        this.handlerTag,
+        newConfig
+      );
+
+      RNGestureHandlerModule.configureRelations(
+        this.handlerTag,
+        filterConfig(this.config, [
+          'waitFor',
+          'simultaneousHandlers',
+          'blocksHandlers',
+        ])
+      );
+
       scheduleFlushOperations();
     };
 
@@ -426,7 +364,7 @@ export default function createHandler<
           config
         );
         if (!deepEqual(this.config, newConfig)) {
-          this.updateGestureHandler(newConfig);
+          this.setGestureHandlerConfig(newConfig);
         }
       }
     }
@@ -439,10 +377,10 @@ export default function createHandler<
         [...allowedProps, ...customNativeProps],
         config
       );
-      this.updateGestureHandler(newConfig);
+      this.setGestureHandlerConfig(newConfig);
     }
 
-    render() {
+    override render() {
       if (__DEV__ && !this.context && !isTestEnv() && Platform.OS !== 'web') {
         throw new Error(
           name +

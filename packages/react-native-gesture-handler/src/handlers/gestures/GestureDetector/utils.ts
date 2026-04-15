@@ -1,28 +1,27 @@
-import { Platform } from 'react-native';
-
+import type {
+  GestureHandlerNativeEvent,
+  PropsRef,
+  ResultEvent,
+} from '../../../web/interfaces';
+import type { GestureRef, GestureType } from '../gesture';
 import { isTestEnv, tagMessage } from '../../../utils';
-import { GestureRef, BaseGesture, GestureType } from '../gesture';
-
+import {
+  panGestureHandlerCustomNativeProps,
+  panGestureHandlerProps,
+} from '../../PanGestureHandler';
+import { useCallback, useRef, useState } from 'react';
+import { BaseGesture } from '../gesture';
+import { Platform } from 'react-native';
+import { RNRenderer } from '../../../RNRenderer';
+import { Reanimated } from '../reanimatedWrapper';
+import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
 import { flingGestureHandlerProps } from '../../FlingGestureHandler';
 import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
-import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
-import {
-  panGestureHandlerProps,
-  panGestureHandlerCustomNativeProps,
-} from '../../PanGestureHandler';
-import { tapGestureHandlerProps } from '../../TapGestureHandler';
 import { hoverGestureHandlerProps } from '../hoverGesture';
+import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
 import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import {
-  HandlerStateChangeEvent,
-  baseGestureHandlerWithDetectorProps,
-} from '../../gestureHandlerCommon';
-import { isNewWebImplementationEnabled } from '../../../EnableNewWebImplementation';
-import { RNRenderer } from '../../../RNRenderer';
-import { useCallback, useRef, useState } from 'react';
-import { Reanimated } from '../reanimatedWrapper';
 import { onGestureHandlerEvent } from '../eventReceiver';
-import { WebEventHandler } from './types';
+import { tapGestureHandlerProps } from '../../TapGestureHandler';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -174,14 +173,15 @@ export function useForceRender() {
 }
 
 export function useWebEventHandlers() {
-  return useRef<WebEventHandler>({
-    onGestureHandlerEvent: (e: HandlerStateChangeEvent<unknown>) => {
-      onGestureHandlerEvent(e.nativeEvent);
+  return useRef<PropsRef>({
+    onGestureHandlerEvent: (e: ResultEvent) => {
+      onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
     },
-    onGestureHandlerStateChange: isNewWebImplementationEnabled()
-      ? (e: HandlerStateChangeEvent<unknown>) => {
-          onGestureHandlerEvent(e.nativeEvent);
-        }
-      : undefined,
+    onGestureHandlerStateChange: (e: ResultEvent) => {
+      onGestureHandlerEvent(e.nativeEvent as GestureHandlerNativeEvent);
+    },
+    onGestureHandlerTouchEvent: () => {
+      // no-op
+    },
   });
 }

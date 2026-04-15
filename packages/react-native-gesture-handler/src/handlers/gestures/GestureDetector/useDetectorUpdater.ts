@@ -1,18 +1,15 @@
-import React, { useCallback } from 'react';
-import { GestureType } from '../gesture';
-import { ComposedGesture } from '../gestureComposition';
-
-import {
-  AttachedGestureState,
-  GestureDetectorState,
-  WebEventHandler,
-} from './types';
-import { attachHandlers } from './attachHandlers';
-import { updateHandlers } from './updateHandlers';
-import { needsToReattach } from './needsToReattach';
-import { dropHandlers } from './dropHandlers';
+import type { AttachedGestureState, GestureDetectorState } from './types';
 import { useForceRender, validateDetectorChildren } from './utils';
+import type { ComposedGesture } from '../gestureComposition';
+import type { GestureType } from '../gesture';
+import type { PropsRef } from '../../../web/interfaces';
+import type React from 'react';
+import { attachHandlers } from './attachHandlers';
+import { dropHandlers } from './dropHandlers';
 import findNodeHandle from '../../../findNodeHandle';
+import { needsToReattach } from './needsToReattach';
+import { updateHandlers } from './updateHandlers';
+import { useCallback } from 'react';
 
 // Returns a function that's responsible for updating the attached gestures
 // If the view has changed, it will reattach the handlers to the new view
@@ -22,7 +19,7 @@ export function useDetectorUpdater(
   preparedGesture: AttachedGestureState,
   gesturesToAttach: GestureType[],
   gestureConfig: ComposedGesture | GestureType,
-  webEventHandlersRef: React.RefObject<WebEventHandler>
+  webEventHandlersRef: React.RefObject<PropsRef>
 ) {
   const forceRender = useForceRender();
   const updateAttachedGestures = useCallback(

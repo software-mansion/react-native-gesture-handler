@@ -1,21 +1,20 @@
 import * as React from 'react';
-import { Component } from 'react';
-import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import type { GenericTouchableProps } from './GenericTouchableProps';
-import {
-  StyleSheet,
-  View,
-  TouchableHighlightProps as RNTouchableHighlightProps,
+import type {
   ColorValue,
+  TouchableHighlightProps as RNTouchableHighlightProps,
   ViewProps,
 } from 'react-native';
+import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
+import { StyleSheet, View } from 'react-native';
+import { Component } from 'react';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 interface State {
   extraChildStyle: null | {
-    opacity?: number;
+    opacity?: number | undefined;
   };
   extraUnderlayStyle: null | {
-    backgroundColor?: ColorValue;
+    backgroundColor?: ColorValue | undefined;
   };
 }
 
@@ -103,7 +102,7 @@ export default class TouchableHighlight extends Component<
     }
   };
 
-  render() {
+  override render() {
     const { style = {}, ...rest } = this.props;
     const { extraUnderlayStyle } = this.state;
     return (

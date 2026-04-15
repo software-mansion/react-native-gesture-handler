@@ -1,7 +1,8 @@
-import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
-import { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
+import type { BaseGestureConfig } from './gesture';
+import { ContinousBaseGesture } from './gesture';
+import type { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
 import type { ForceTouchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 
 /**
  * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
@@ -36,7 +37,7 @@ export class ForceTouchGesture extends ContinousBaseGesture<
   ForceTouchGestureHandlerEventPayload,
   ForceTouchGestureChangeEventPayload
 > {
-  public config: BaseGestureConfig & ForceTouchGestureConfig = {};
+  public override config: BaseGestureConfig & ForceTouchGestureConfig = {};
 
   constructor() {
     super();
@@ -73,7 +74,7 @@ export class ForceTouchGesture extends ContinousBaseGesture<
     return this;
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         GestureUpdateEvent<

@@ -33,6 +33,15 @@ You will need to have an Android or iOS device or emulator connected.
 
 `react-native-gesture-handler` supports the three latest minor releases of `react-native`.
 
+### Gesture Handler 3
+
+Check out our [compatibility table](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation#requirements) in documentation.
+
+> [!IMPORTANT]
+> Minimal supported `react-native` version for Gesture Handler 3 is `0.82`
+
+### Gesture Handler 2
+
 | version | react-native version |
 | ------- | -------------------- |
 | 2.28.0+ | 0.79.0+              |

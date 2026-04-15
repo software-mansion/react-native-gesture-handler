@@ -1,17 +1,16 @@
-import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
-import { State } from '../../State';
-import { TouchEventType } from '../../TouchEventType';
-import {
+import type {
+  GestureStateChangeEvent,
   GestureTouchEvent,
   GestureUpdateEvent,
-  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { findHandler, findOldGestureHandler } from '../handlersRegistry';
-import { BaseGesture } from './gesture';
-import {
-  GestureStateManager,
-  GestureStateManagerType,
-} from './gestureStateManager';
+import type { BaseGesture } from './gesture';
+import { DeviceEventEmitter } from 'react-native';
+import type { EmitterSubscription } from 'react-native';
+import { GestureStateManager } from './gestureStateManager';
+import type { GestureStateManagerType } from './gestureStateManager';
+import { State } from '../../State';
+import { TouchEventType } from '../../TouchEventType';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null =
@@ -96,7 +95,7 @@ export function onGestureHandlerEvent(
         case TouchEventType.TOUCHES_UP:
           handler.handlers?.onTouchesUp?.(event, manager);
           break;
-        case TouchEventType.TOUCHES_CANCELLED:
+        case TouchEventType.TOUCHES_CANCEL:
           handler.handlers?.onTouchesCancelled?.(event, manager);
           break;
       }

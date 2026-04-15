@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function toArray<T>(object: T | T[]): T[] {
   if (!Array.isArray(object)) {
     return [object];
@@ -41,18 +39,8 @@ export function isTestEnv(): boolean {
 }
 
 export function tagMessage(msg: string) {
+  'worklet';
   return `[react-native-gesture-handler] ${msg}`;
-}
-
-// Helper method to check whether Fabric is enabled, however global.nativeFabricUIManager
-// may not be initialized before the first render
-export function isFabric(): boolean {
-  // @ts-expect-error nativeFabricUIManager is not yet included in the RN types
-  return !!global?.nativeFabricUIManager;
-}
-
-export function isReact19() {
-  return React.version.startsWith('19.');
 }
 
 export function isRemoteDebuggingEnabled(): boolean {

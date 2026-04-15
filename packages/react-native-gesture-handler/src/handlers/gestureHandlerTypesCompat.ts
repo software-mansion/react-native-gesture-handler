@@ -1,33 +1,33 @@
 import type {
-  BaseButtonProps,
-  BorderlessButtonProps,
-  RawButtonProps,
-  RectButtonProps,
-} from '../components/GestureButtonsProps';
-import {
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
+  LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  TapGestureHandlerEventPayload,
+} from './GestureHandlerEventPayload';
+import type {
   GestureEvent,
   GestureEventPayload,
   HandlerStateChangeEvent,
   HandlerStateChangeEventPayload,
 } from './gestureHandlerCommon';
-import type { FlingGestureHandlerProps } from './FlingGestureHandler';
 import type {
-  FlingGestureHandlerEventPayload,
-  ForceTouchGestureHandlerEventPayload,
-  LongPressGestureHandlerEventPayload,
-  PanGestureHandlerEventPayload,
-  PinchGestureHandlerEventPayload,
-  RotationGestureHandlerEventPayload,
-  TapGestureHandlerEventPayload,
-  NativeViewGestureHandlerPayload,
-} from './GestureHandlerEventPayload';
+  LegacyBaseButtonProps,
+  LegacyBorderlessButtonProps,
+  LegacyRawButtonProps,
+  LegacyRectButtonProps,
+} from '../components/GestureButtonsProps';
+import type { FlingGestureHandlerProps } from './FlingGestureHandler';
 import type { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
 import type { LongPressGestureHandlerProps } from './LongPressGestureHandler';
+import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 import type { PanGestureHandlerProps } from './PanGestureHandler';
 import type { PinchGestureHandlerProps } from './PinchGestureHandler';
 import type { RotationGestureHandlerProps } from './RotationGestureHandler';
 import type { TapGestureHandlerProps } from './TapGestureHandler';
-import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 
 // Events
 export type GestureHandlerGestureEventNativeEvent = GestureEventPayload;
@@ -94,8 +94,22 @@ export type FlingGestureHandlerProperties = FlingGestureHandlerProps;
  * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
  */
 export type ForceTouchGestureHandlerProperties = ForceTouchGestureHandlerProps;
+
 // Button props
-export type RawButtonProperties = RawButtonProps;
-export type BaseButtonProperties = BaseButtonProps;
-export type RectButtonProperties = RectButtonProps;
-export type BorderlessButtonProperties = BorderlessButtonProps;
+
+/**
+ * @deprecated Use RawButtonProperties instead
+ */
+export type LegacyRawButtonProperties = LegacyRawButtonProps;
+/**
+ * @deprecated Use BaseButtonProperties instead
+ */
+export type LegacyBaseButtonProperties = LegacyBaseButtonProps;
+/**
+ * @deprecated Use RectButtonProperties instead
+ */
+export type LegacyRectButtonProperties = LegacyRectButtonProps;
+/**
+ * @deprecated Use BorderlessButtonProperties instead
+ */
+export type LegacyBorderlessButtonProperties = LegacyBorderlessButtonProps;

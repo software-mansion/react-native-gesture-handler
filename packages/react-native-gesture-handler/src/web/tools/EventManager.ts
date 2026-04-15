@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { AdaptedEvent, EventTypes } from '../interfaces';
+import type { AdaptedEvent, EventTypes } from '../interfaces';
 
 type PointerEventCallback = (event: AdaptedEvent) => void;
 
@@ -92,6 +92,15 @@ export default abstract class EventManager<T> {
     }
 
     this.pointersInBounds.splice(index, 1);
+  }
+
+  public setEnabled(value: boolean | null) {
+    if (value) {
+      this.registerListeners();
+    } else {
+      this.resetManager();
+      this.unregisterListeners();
+    }
   }
 
   public resetManager(): void {

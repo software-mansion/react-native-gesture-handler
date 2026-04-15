@@ -1,6 +1,6 @@
 import { ContinousBaseGesture } from './gesture';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { RotationGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
 type RotationGestureChangeEventPayload = {
   rotationChange: number;
@@ -35,7 +35,7 @@ export class RotationGesture extends ContinousBaseGesture<
     this.handlerName = 'RotationGestureHandler';
   }
 
-  onChange(
+  override onChange(
     callback: (
       event: GestureUpdateEvent<
         RotationGestureHandlerEventPayload & RotationGestureChangeEventPayload

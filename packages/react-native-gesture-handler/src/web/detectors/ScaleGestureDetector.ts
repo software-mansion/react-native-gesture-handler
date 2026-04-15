@@ -1,7 +1,7 @@
+import type { AdaptedEvent } from '../interfaces';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, EventTypes } from '../interfaces';
-
-import PointerTracker from '../tools/PointerTracker';
+import { EventTypes } from '../interfaces';
+import type PointerTracker from '../tools/PointerTracker';
 
 export interface ScaleGestureListener {
   onScaleBegin: (detector: ScaleGestureDetector) => boolean;
@@ -76,7 +76,7 @@ export default class ScaleGestureDetector implements ScaleGestureListener {
 
     const div: number = pointerUp ? numOfPointers - 1 : numOfPointers;
 
-    const coordsSum = tracker.getAbsoluteCoordsSum();
+    const coordsSum = tracker.getAbsoluteCoordsSum(ignoredPointer);
 
     const focusX = coordsSum.x / div;
     const focusY = coordsSum.y / div;

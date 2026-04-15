@@ -1,3 +1,4 @@
+/* eslint-disable import-x/extensions */
 import React from 'react';
 import styles from './styles.module.css';
 import Arrow from '@site/static/img/Arrow.svg';
@@ -7,11 +8,11 @@ import clsx from 'clsx';
 
 const CollapseButton: React.FC<{
   label: string;
-  labelCollapsed: string;
+  expandedLabel: string;
   collapsed: boolean;
   onCollapse: () => void;
   className?: string;
-}> = ({ label, labelCollapsed, collapsed, onCollapse, className }) => {
+}> = ({ label, expandedLabel, collapsed, onCollapse, className }) => {
   const { colorMode } = useColorMode();
 
   return (
@@ -25,7 +26,7 @@ const CollapseButton: React.FC<{
         <ArrowDark className={styles.arrow} />
       )}
 
-      <button>{collapsed ? labelCollapsed : label}</button>
+      <button type="button">{collapsed ? label : expandedLabel}</button>
     </div>
   );
 };

@@ -1,0 +1,57 @@
+import type { GestureEvent, HandlerData } from '../../../types';
+import type {
+  RotationExtendedHandlerData,
+  RotationGesture,
+  RotationGestureConfig,
+  RotationGestureInternalConfig,
+  RotationGestureProperties,
+  RotationHandlerData,
+} from './RotationTypes';
+import {
+  getChangeEventCalculator,
+  useClonedAndRemappedConfig,
+} from '../../utils';
+import { SingleGestureName } from '../../../types';
+import { useGesture } from '../../useGesture';
+
+function diffCalculator(
+  current: HandlerData<RotationExtendedHandlerData>,
+  previous: HandlerData<RotationExtendedHandlerData> | null
+) {
+  'worklet';
+  return {
+    rotationChange: previous
+      ? current.rotation - previous.rotation
+      : current.rotation,
+  };
+}
+
+function fillInDefaultValues(event: GestureEvent<RotationExtendedHandlerData>) {
+  'worklet';
+  event.rotationChange = 0;
+}
+
+function transformRotationProps(
+  config: RotationGestureConfig & RotationGestureInternalConfig
+) {
+  config.changeEventCalculator = getChangeEventCalculator(diffCalculator);
+  config.fillInDefaultValues = fillInDefaultValues;
+
+  return config;
+}
+
+const RotationPropsMapping = new Map<string, string>();
+
+export function useRotationGesture(
+  config: RotationGestureConfig
+): RotationGesture {
+  const rotationConfig = useClonedAndRemappedConfig<
+    RotationGestureProperties,
+    RotationHandlerData,
+    // no internal props, pass record as RotationGestureProperties maps everything to never
+    Record<string, unknown>,
+    RotationExtendedHandlerData
+  >(config, RotationPropsMapping, transformRotationProps);
+
+  return useGesture(SingleGestureName.Rotation, rotationConfig);
+}

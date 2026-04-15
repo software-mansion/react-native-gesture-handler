@@ -1,8 +1,8 @@
-import { unregisterHandler } from '../../handlersRegistry';
+import type { AttachedGestureState } from './types';
+import { MountRegistry } from '../../../mountRegistry';
 import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
 import { scheduleFlushOperations } from '../../utils';
-import { AttachedGestureState } from './types';
-import { MountRegistry } from '../../../mountRegistry';
+import { unregisterHandler } from '../../handlersRegistry';
 
 export function dropHandlers(preparedGesture: AttachedGestureState) {
   for (const handler of preparedGesture.attachedGestures) {

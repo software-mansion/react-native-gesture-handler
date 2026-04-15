@@ -1,17 +1,14 @@
-import React from 'react';
-
-import { ActionType } from './ActionType';
-
-// GestureHandlers
-import PanGestureHandler from './web/handlers/PanGestureHandler';
-import TapGestureHandler from './web/handlers/TapGestureHandler';
-import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
-import PinchGestureHandler from './web/handlers/PinchGestureHandler';
-import RotationGestureHandler from './web/handlers/RotationGestureHandler';
+import type { ActionType } from './ActionType';
+import type { Config } from './web/interfaces';
 import FlingGestureHandler from './web/handlers/FlingGestureHandler';
-import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
 import ManualGestureHandler from './web/handlers/ManualGestureHandler';
-import { Config } from './web/interfaces';
+import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+import PanGestureHandler from './web/handlers/PanGestureHandler';
+import PinchGestureHandler from './web/handlers/PinchGestureHandler';
+import type React from 'react';
+import RotationGestureHandler from './web/handlers/RotationGestureHandler';
+import TapGestureHandler from './web/handlers/TapGestureHandler';
 
 export const Gestures = {
   NativeViewGestureHandler,
@@ -25,12 +22,6 @@ export const Gestures = {
 };
 
 export default {
-  handleSetJSResponder(_tag: number, _blockNativeResponder: boolean) {
-    // NO-OP
-  },
-  handleClearJSResponder() {
-    // NO-OP
-  },
   createGestureHandler<T>(
     _handlerName: keyof typeof Gestures,
     _handlerTag: number,
@@ -47,7 +38,10 @@ export default {
   ) {
     // NO-OP
   },
-  updateGestureHandler(_handlerTag: number, _newConfig: Config) {
+  setGestureHandlerConfig(_handlerTag: number, _newConfig: Config) {
+    // NO-OP
+  },
+  updateGestureHandlerConfig(_handlerTag: number, _newConfig: Config) {
     // NO-OP
   },
   getGestureHandlerNode(_handlerTag: number) {

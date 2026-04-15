@@ -10,12 +10,9 @@
 
 #import <React/UIView+React.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTEnhancedScrollView.h>
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
-#else
-#import <React/RCTScrollView.h>
-#endif
 
 @interface UIGestureRecognizer (GestureHandler)
 @property (nonatomic, readonly) RNGestureHandler *gestureHandler;
@@ -105,28 +102,34 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 - (void)resetConfig
 {
   self.enabled = YES;
+  self.testID = nil;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
-  _handlersToWaitFor = nil;
-  _simultaneousHandlers = nil;
-  _handlersThatShouldWait = nil;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
+  _dispatchesAnimatedEvents = NO;
+  _dispatchesReanimatedEvents = NO;
 #if !TARGET_OS_OSX
   _recognizer.cancelsTouchesInView = YES;
 #endif
 }
 
-- (void)configure:(NSDictionary *)config
+- (void)setConfig:(NSDictionary *)config
 {
   [self resetConfig];
-  _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
-  _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
-  _handlersThatShouldWait = [RCTConvert NSNumberArray:config[@"blocksHandlers"]];
+  [self updateConfig:config];
+}
 
+- (void)updateConfig:(NSDictionary *)config
+{
   id prop = config[@"enabled"];
   if (prop != nil) {
     self.enabled = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"testID"];
+  if (prop != nil) {
+    self.testID = [RCTConvert NSString:prop];
   }
 
   prop = config[@"shouldCancelWhenOutside"];
@@ -144,6 +147,16 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"needsPointerData"];
   if (prop != nil) {
     _needsPointerData = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"dispatchesAnimatedEvents"];
+  if (prop != nil) {
+    _dispatchesAnimatedEvents = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"dispatchesReanimatedEvents"];
+  if (prop != nil) {
+    _dispatchesReanimatedEvents = [RCTConvert BOOL:prop];
   }
 
   prop = config[@"manualActivation"];
@@ -178,14 +191,26 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   }
 }
 
+- (void)updateRelations:(NSDictionary *)relations
+{
+  _handlersToWaitFor = [RCTConvert NSNumberArray:relations[@"waitFor"]];
+  _simultaneousHandlers = [RCTConvert NSNumberArray:relations[@"simultaneousHandlers"]];
+  _handlersThatShouldWait = [RCTConvert NSNumberArray:relations[@"blocksHandlers"]];
+}
+
 - (void)setEnabled:(BOOL)enabled
 {
   _enabled = enabled;
   self.recognizer.enabled = enabled;
 }
 
+- (void)setCurrentPointerType:(RNGestureHandlerPointerType)pointerType
+{
+  _pointerType = pointerType;
+}
+
 #if !TARGET_OS_OSX
-- (void)setCurrentPointerType:(UIEvent *)event
+- (void)setCurrentPointerTypeForEvent:(UIEvent *)event
 {
   UITouch *touch = [[event allTouches] anyObject];
 
@@ -216,25 +241,25 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return (UITouchType)_pointerType;
 }
 
-#if RCT_NEW_ARCH_ENABLED
+- (BOOL)usesNativeOrVirtualDetector
+{
+  return _actionType == RNGestureHandlerActionTypeNativeDetector ||
+      _actionType == RNGestureHandlerActionTypeVirtualDetector;
+}
+
 - (BOOL)isViewParagraphComponent:(RNGHUIView *)view
 {
   return [view isKindOfClass:[RCTParagraphComponentView class]];
 }
-#endif
 
 - (void)bindToView:(RNGHUIView *)view
 {
   self.recognizer.delegate = self;
 
-#if RCT_NEW_ARCH_ENABLED
-  // Starting from react-native 0.79 `RCTParagraphTextView` overrides `hitTest` method to return `nil`. This results in
-  // native `UIGestureRecognizer` not responding to gestures. To fix this issue, we attach recognizer to its parent,
-  // i.e. `RCTParagraphComponentView`.
+  // Starting from react-native 0.79 `RCTParagraphTextView` overrides `hitTest` method to return `nil`.
+  // This results in native `UIGestureRecognizer` not responding to gestures.
+  // To fix this issue, we attach recognizer to its parent, i.e. `RCTParagraphComponentView`.
   RNGHUIView *recognizerView = [self isViewParagraphComponent:view.superview] ? view.superview : view;
-#else
-  RNGHUIView *recognizerView = view;
-#endif
 
 #if !TARGET_OS_OSX
   recognizerView.userInteractionEnabled = YES;
@@ -242,12 +267,18 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
   [recognizerView addGestureRecognizer:self.recognizer];
   [self bindManualActivationToView:recognizerView];
+
+  self.viewTag = view.reactTag;
 }
 
 - (void)unbindFromView
 {
   [self.recognizer.view removeGestureRecognizer:self.recognizer];
   self.recognizer.delegate = nil;
+
+  self.hostDetectorView = nil;
+  self.virtualViewTag = nil;
+  self.viewTag = nil;
 
   [self unbindManualActivation];
 }
@@ -273,21 +304,36 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
  */
 - (RNGHUIView *)chooseViewForInteraction:(UIGestureRecognizer *)recognizer
 {
-#if RCT_NEW_ARCH_ENABLED
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
-#else
-  return recognizer.view;
-#endif
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+{
+  [self handleGesture:recognizer fromReset:NO];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer fromReset:(BOOL)fromReset
 {
+  [self handleGesture:recognizer fromReset:fromReset fromManualStateChange:NO];
+}
+
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+                fromReset:(BOOL)fromReset
+    fromManualStateChange:(BOOL)fromManualStateChange
+{
+  // Don't dispatch state changes from undetermined when resetting handler. There will be no follow-up
+  // since the handler is being reset, so these events are wrong.
+  if (fromReset && _lastState == RNGestureHandlerStateUndetermined) {
+    return;
+  }
+
   RNGHUIView *view = [self chooseViewForInteraction:recognizer];
 
   // it may happen that the gesture recognizer is reset after it's been unbound from the view,
   // it that recognizer tried to send event, the app would crash because the target of the event
   // would be nil.
-  if (view.reactTag == nil) {
+  if (view.reactTag == nil && _actionType != RNGestureHandlerActionTypeNativeDetector &&
+      _actionType != RNGestureHandlerActionTypeVirtualDetector) {
     return;
   }
 
@@ -306,21 +352,58 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     _state = RNGestureHandlerStateFailed;
   }
 
-  [self handleGesture:recognizer inState:_state];
+  [self handleGesture:recognizer inState:_state fromManualStateChange:fromManualStateChange];
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer inState:(RNGestureHandlerState)state
 {
-  _state = state;
-  RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
-  RNGHUIView *view = [self chooseViewForInteraction:recognizer];
+  [self handleGesture:recognizer inState:state fromManualStateChange:NO];
+}
 
-  [self sendEventsInState:self.state forViewWithTag:view.reactTag withExtraData:eventData];
+- (void)handleGesture:(UIGestureRecognizer *)recognizer
+                  inState:(RNGestureHandlerState)state
+    fromManualStateChange:(BOOL)fromManualStateChange
+{
+  _state = state;
+
+  RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+
+  NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
+
+  if (tag == nil && _actionType == RNGestureHandlerActionTypeNativeDetector) {
+    tag = @(recognizer.view.tag);
+  }
+
+  if (_virtualViewTag != nil && _actionType == RNGestureHandlerActionTypeVirtualDetector) {
+    tag = _virtualViewTag;
+  }
+
+  react_native_assert(tag != nil && "Tag should be defined when dispatching an event");
+
+  [self sendEventsInState:self.state
+             forViewWithTag:tag
+              withExtraData:eventData
+      fromManualStateChange:fromManualStateChange];
+}
+
+- (RNGestureHandlerEventHandlerType)eventHandlerType
+{
+  return _dispatchesAnimatedEvents  ? RNGestureHandlerEventHandlerTypeAnimated
+      : _dispatchesReanimatedEvents ? RNGestureHandlerEventHandlerTypeReanimated
+                                    : RNGestureHandlerEventHandlerTypeJS;
 }
 
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  [self sendEventsInState:state forViewWithTag:reactTag withExtraData:extraData fromManualStateChange:NO];
+}
+
+- (void)sendEventsInState:(RNGestureHandlerState)state
+           forViewWithTag:(nonnull NSNumber *)reactTag
+            withExtraData:(RNGestureHandlerEventExtraData *)extraData
+    fromManualStateChange:(BOOL)fromManualStateChange
 {
   if (state != _lastState) {
     // don't send change events from END to FAILED or CANCELLED, this may happen when gesture is ended in `onTouchesUp`
@@ -339,6 +422,12 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       return;
     }
 
+    if (state == RNGestureHandlerStateEnd && _lastState == RNGestureHandlerStateUndetermined &&
+        (fromManualStateChange || _manualActivation)) {
+      _lastState = state;
+      return;
+    }
+
     if (state == RNGestureHandlerStateActive) {
       // Generate a unique coalescing-key each time the gesture-handler becomes active. All events will have
       // the same coalescing-key allowing RCTEventDispatcher to coalesce RNGestureHandlerEvents when events are
@@ -346,7 +435,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
       static uint16_t nextEventCoalescingKey = 0;
       self->_eventCoalescingKey = nextEventCoalescingKey++;
 
-    } else if (state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !_manualActivation) {
+    } else if (
+        state == RNGestureHandlerStateEnd && _lastState != RNGestureHandlerStateActive && !fromManualStateChange &&
+        !_manualActivation) {
+      // Otherwise send activate state change event to preserve correct gesture flow
       id event = [[RNGestureHandlerStateChange alloc] initWithReactTag:reactTag
                                                             handlerTag:_tag
                                                                  state:RNGestureHandlerStateActive
@@ -369,30 +461,49 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
                                                          handlerTag:_tag
                                                               state:state
                                                           extraData:extraData
+                                                     forHandlerType:[self eventHandlerType]
                                                       coalescingKey:self->_eventCoalescingKey];
     [self sendEvent:touchEvent];
   }
 }
 
+- (RNGHUIView *)findViewForEvents
+{
+  return [self usesNativeOrVirtualDetector] ? self.hostDetectorView : self.recognizer.view;
+}
+
 - (void)sendEvent:(RNGestureHandlerStateChange *)event
 {
-  [self.emitter sendEvent:event withActionType:self.actionType];
+  [self.emitter sendEvent:event
+           withActionType:self.actionType
+           forHandlerType:[self eventHandlerType]
+                  forView:[self findViewForEvents]];
 }
 
 - (void)sendTouchEventInState:(RNGestureHandlerState)state forViewWithTag:(NSNumber *)reactTag
 {
-  id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
-                                          withChangedPointers:_pointerTracker.changedPointersData
-                                              withAllPointers:_pointerTracker.allPointersData
-                                          withNumberOfTouches:_pointerTracker.trackedPointersCount
-                                              withPointerType:_pointerType];
-  id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
-                                                  handlerTag:_tag
-                                                       state:state
-                                                   extraData:extraData
-                                               coalescingKey:[_tag intValue]];
+  if (_actionType == RNGestureHandlerActionTypeNativeDetector) {
+    [self.emitter sendNativeTouchEventForGestureHandler:self
+                                        withPointerType:_pointerType
+                                         forHandlerType:[self eventHandlerType]];
+  } else {
+    id extraData = [RNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
+                                            withChangedPointers:_pointerTracker.changedPointersData
+                                                withAllPointers:_pointerTracker.allPointersData
+                                            withNumberOfTouches:_pointerTracker.trackedPointersCount
+                                                withPointerType:_pointerType];
+    id event = [[RNGestureHandlerEvent alloc] initWithReactTag:reactTag
+                                                    handlerTag:_tag
+                                                         state:state
+                                                     extraData:extraData
+                                                forHandlerType:[self eventHandlerType]
+                                                 coalescingKey:[_tag intValue]];
 
-  [self.emitter sendEvent:event withActionType:self.actionType];
+    [self.emitter sendEvent:event
+             withActionType:self.actionType
+             forHandlerType:[self eventHandlerType]
+                    forView:self.recognizer.view];
+  }
 }
 
 - (RNGestureHandlerState)recognizerState
@@ -595,20 +706,14 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (RNGHUIScrollView *)retrieveScrollView:(RNGHUIView *)view
 {
-#ifdef RCT_NEW_ARCH_ENABLED
+  if ([view isKindOfClass:[RCTEnhancedScrollView class]]) {
+    return (RCTEnhancedScrollView *)view;
+  }
+
   if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
     RNGHUIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
     return scrollView;
   }
-#else
-  if ([view isKindOfClass:[RCTScrollView class]]) {
-    // This part of the code is coupled with RN implementation of ScrollView native wrapper and
-    // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
-    // subview
-    RNGHUIScrollView *scrollView = [view.subviews objectAtIndex:0];
-    return scrollView;
-  }
-#endif
 
   return nil;
 }
@@ -627,9 +732,43 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 
 - (BOOL)containsPointInView
 {
-  CGPoint pt = [_recognizer locationInView:_recognizer.view];
-  CGRect hitFrame = RNGHHitSlopInsetRect(_recognizer.view.bounds, _hitSlop);
-  return CGRectContainsPoint(hitFrame, pt);
+  RNGHUIView *viewToHitTest = _recognizer.view;
+
+  if (_shouldCancelWhenOutside && [self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
+    viewToHitTest = _recognizer.view.subviews[0];
+  }
+
+  CGPoint location = [_recognizer locationInView:viewToHitTest];
+  CGRect hitFrame = RNGHHitSlopInsetRect(viewToHitTest.bounds, _hitSlop);
+
+  return CGRectContainsPoint(hitFrame, location);
+}
+
+- (BOOL)wantsToHandleEventsAtPoint:(CGPoint)point
+{
+  RNGHUIView *viewToHitTest = _recognizer.view;
+
+  if ([self usesNativeOrVirtualDetector] && [_recognizer.view.subviews count] > 0) {
+    viewToHitTest = _recognizer.view.subviews[0];
+    point = [_recognizer.view convertPoint:point toView:viewToHitTest];
+  }
+
+  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+    // In this case, logic detector is attached to the DetectorView, which has a single subview representing
+    // the actual target view in the RN hierarchy
+    if ([viewToHitTest respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      // If the view has touchEventEmitterAtPoint: method, it can be used to determine the viewtag
+      // of the view under the touch point
+      facebook::react::SharedTouchEventEmitter eventEmitter =
+          [(id<RCTTouchableComponentViewProtocol>)viewToHitTest touchEventEmitterAtPoint:point];
+      auto viewUnderTouch = eventEmitter->getEventTarget()->getTag();
+
+      return viewUnderTouch == [_virtualViewTag intValue];
+    }
+  }
+
+  CGRect hitFrame = RNGHHitSlopInsetRect(viewToHitTest.bounds, _hitSlop);
+  return CGRectContainsPoint(hitFrame, point);
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -644,6 +783,24 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
             return NO;
           }
         }
+      }
+    }
+  }
+
+  // Logic detector has a virtual view tag set only if the real hierarchy was folded into a single View
+  if (_actionType == RNGestureHandlerActionTypeVirtualDetector && _virtualViewTag != nil) {
+    // In this case, logic detector is attached to the DetectorView, which has a single subview representing
+    // the actual target view in the RN hierarchy
+    RNGHUIView *view = _recognizer.view.subviews[0];
+    if ([view respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      // If the view has touchEventEmitterAtPoint: method, it can be used to determine the viewtag
+      // of the view under the touch point
+      facebook::react::SharedTouchEventEmitter eventEmitter =
+          [(id<RCTTouchableComponentViewProtocol>)view touchEventEmitterAtPoint:[_recognizer locationInView:view]];
+      auto viewUnderTouch = eventEmitter->getEventTarget()->getTag();
+
+      if (viewUnderTouch != [_virtualViewTag intValue]) {
+        return NO;
       }
     }
   }
@@ -669,6 +826,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
     return CGRectContainsPoint(hitFrame, location);
   }
   return YES;
+}
+
+- (BOOL)wantsToAttachDirectlyToView
+{
+  return NO;
 }
 
 @end

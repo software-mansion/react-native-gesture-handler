@@ -1,8 +1,8 @@
-import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
-import { StyleProp, ViewStyle } from 'react-native';
-import { RelationPropType } from '../utils';
-import { HitSlop } from '../../handlers/gestureHandlerCommon';
+import type { StyleProp, ViewStyle } from 'react-native';
+import type { AnyGesture } from '../../v3/types';
+import type { HitSlop } from '../../handlers/gestureHandlerCommon';
+import type React from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 
 export enum SwipeDirection {
   LEFT = 'left',
@@ -13,7 +13,7 @@ export interface SwipeableProps {
   /**
    *
    */
-  ref?: React.RefObject<SwipeableMethods | null>;
+  ref?: React.Ref<SwipeableMethods>;
 
   /**
    * Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.
@@ -190,19 +190,19 @@ export interface SwipeableProps {
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  simultaneousWithExternalGesture?: RelationPropType;
+  simultaneousWith?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  requireExternalGestureToFail?: RelationPropType;
+  requireToFail?: AnyGesture | AnyGesture[];
 
   /**
    * A gesture object or an array of gesture objects containing the configuration and callbacks to be
    * used with the swipeable's gesture handler.
    */
-  blocksExternalGesture?: RelationPropType;
+  block?: AnyGesture | AnyGesture[];
 }
 
 export interface SwipeableMethods {

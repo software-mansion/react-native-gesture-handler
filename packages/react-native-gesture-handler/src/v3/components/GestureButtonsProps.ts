@@ -1,0 +1,82 @@
+import type { StyleProp, ViewStyle } from 'react-native';
+import type { ButtonProps } from '../../components/GestureHandlerButton';
+import type GestureHandlerButton from '../../components/GestureHandlerButton';
+import type { NativeWrapperProperties } from '../types/NativeWrapperType';
+
+/**
+ * @deprecated `RawButtonProps` is deprecated, use `ClickableProps` instead
+ */
+export interface RawButtonProps
+  extends Omit<
+      ButtonProps,
+      | 'defaultOpacity'
+      | 'defaultScale'
+      | 'defaultUnderlayOpacity'
+      | 'activeOpacity'
+      | 'activeScale'
+      | 'activeUnderlayOpacity'
+    >,
+    Omit<
+      NativeWrapperProperties<React.ComponentRef<typeof GestureHandlerButton>>,
+      'hitSlop' | 'enabled'
+    > {}
+
+/**
+ * @deprecated `BaseButtonProps` is deprecated, use `ClickableProps` instead
+ */
+export interface BaseButtonProps extends RawButtonProps {
+  /**
+   * Called when the button gets pressed (analogous to `onPress` in
+   * `TouchableHighlight` from RN core).
+   */
+  onPress?: ((pointerInside: boolean) => void) | undefined;
+
+  /**
+   * Called when the button gets pressed and is held for `delayLongPress`
+   * milliseconds.
+   */
+  onLongPress?: (() => void) | undefined;
+
+  /**
+   * Called when button changes from inactive to active and vice versa. It
+   * passes active state as a boolean variable as a first parameter for that
+   * method.
+   */
+  onActiveStateChange?: ((active: boolean) => void) | undefined;
+  style?: StyleProp<ViewStyle>;
+
+  /**
+   * Delay, in milliseconds, after which the `onLongPress` callback gets called.
+   * Defaults to 600.
+   */
+  delayLongPress?: number | undefined;
+}
+
+/**
+ * @deprecated `RectButtonProps` is deprecated, use `ClickableProps` instead
+ */
+export interface RectButtonProps extends BaseButtonProps {
+  /**
+   * Background color that will be dimmed when button is in active state.
+   */
+  underlayColor?: string | undefined;
+
+  /**
+   * iOS only.
+   *
+   * Opacity applied to the underlay when button is in active state.
+   */
+  activeOpacity?: number | undefined;
+}
+
+/**
+ * @deprecated `BorderlessButtonProps` is deprecated, use `ClickableProps` instead
+ */
+export interface BorderlessButtonProps extends BaseButtonProps {
+  /**
+   * iOS only.
+   *
+   * Opacity applied to the button when it is in an active state.
+   */
+  activeOpacity?: number | undefined;
+}
