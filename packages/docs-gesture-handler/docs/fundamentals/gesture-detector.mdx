@@ -219,16 +219,3 @@ enableContextMenu: boolean;
 ```
 
 Specifies whether the context menu should be enabled after clicking on the underlying view with the right mouse button. Default value is set to `false`.
-
-<HeaderWithBadges platforms={['ios', 'android']}>
-  ### preventRecognizers
-</HeaderWithBadges>
-
-```ts
-preventRecognizers?: boolean;
-```
-
-Controls whether activating a Gesture Handler recognizer should cancel React Native JS responders.
-
-- `true` (default): keeps current behavior where RN touch handlers are cancelled after Gesture Handler activates.
-- `false`: disables this cancellation, so Gesture Handler callbacks and RN responder callbacks can run at the same time.
