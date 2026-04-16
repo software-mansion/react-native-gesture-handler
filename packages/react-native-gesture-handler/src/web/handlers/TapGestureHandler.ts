@@ -1,10 +1,10 @@
+import { State } from '../../State';
+import { SingleGestureName } from '../../v3/types';
 import type { AdaptedEvent, Config } from '../interfaces';
 import { EventTypes } from '../interfaces';
-import GestureHandler from './GestureHandler';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
-import { SingleGestureName } from '../../v3/types';
-import { State } from '../../State';
 
 const DEFAULT_MAX_DURATION_MS = 500;
 const DEFAULT_MAX_DELAY_MS = 500;

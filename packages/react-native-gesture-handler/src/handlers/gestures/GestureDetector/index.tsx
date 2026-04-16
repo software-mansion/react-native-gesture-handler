@@ -1,20 +1,21 @@
 /* eslint-disable react/no-unused-prop-types */
-import { AnimatedWrap, Wrap } from './Wrap';
-import type { AttachedGestureState, GestureDetectorState } from './types';
 import React, { useEffect, useMemo, useRef } from 'react';
+
+import findNodeHandle from '../../../findNodeHandle';
+import { useIsomorphicLayoutEffect } from '../../../useIsomorphicLayoutEffect';
 import type { TouchAction, UserSelect } from '../../gestureHandlerCommon';
-import type { ComposedGesture } from '../gestureComposition';
 import type { GestureType } from '../gesture';
+import type { ComposedGesture } from '../gestureComposition';
 import { attachHandlers } from './attachHandlers';
 import { dropHandlers } from './dropHandlers';
-import findNodeHandle from '../../../findNodeHandle';
 import { needsToReattach } from './needsToReattach';
+import type { AttachedGestureState, GestureDetectorState } from './types';
 import { useAnimatedGesture } from './useAnimatedGesture';
 import { useDetectorUpdater } from './useDetectorUpdater';
-import { useIsomorphicLayoutEffect } from '../../../useIsomorphicLayoutEffect';
 import { useMountReactions } from './useMountReactions';
 import { useViewRefHandler } from './useViewRefHandler';
 import { useWebEventHandlers } from './utils';
+import { AnimatedWrap, Wrap } from './Wrap';
 
 function propagateDetectorConfig(
   props: GestureDetectorProps,

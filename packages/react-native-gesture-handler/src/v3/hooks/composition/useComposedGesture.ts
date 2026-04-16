@@ -1,3 +1,5 @@
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { tagMessage } from '../../../utils';
 import type {
   AnyGesture,
   ComposedGesture,
@@ -6,8 +8,6 @@ import type {
   GestureHandlerEventWithHandlerData,
 } from '../../types';
 import { containsDuplicates, isComposedGesture } from '../utils';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../../utils';
 
 // TODO: Simplify repeated relations (Simultaneous with Simultaneous, Exclusive with Exclusive, etc.)
 export function useComposedGesture(

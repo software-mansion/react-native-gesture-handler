@@ -1,10 +1,10 @@
 import type { FlingGestureNativeProperties } from '../hooks/gestures/fling/FlingTypes';
 import type { HoverGestureNativeProperties } from '../hooks/gestures/hover/HoverTypes';
-import type { InternalConfigProps } from './ConfigTypes';
 import type { LongPressGestureNativeProperties } from '../hooks/gestures/longPress/LongPressTypes';
 import type { NativeGestureNativeProperties } from '../hooks/gestures/native/NativeTypes';
 import type { PanGestureNativeProperties } from '../hooks/gestures/pan/PanTypes';
 import type { TapGestureNativeConfig } from '../hooks/gestures/tap/TapTypes';
+import type { InternalConfigProps } from './ConfigTypes';
 
 export type HandlersPropsWhiteList =
   | Set<keyof PanGestureNativeProperties>

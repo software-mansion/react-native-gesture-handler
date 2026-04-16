@@ -1,18 +1,19 @@
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import {
+  GestureDetector,
+  Pressable,
+  usePanGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { COLORS, Feedback, commonStyles } from '../../../common';
-import {
-  GestureDetector,
-  Pressable,
-  usePanGesture,
-} from 'react-native-gesture-handler';
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
 import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 const Colors = {
   enabled: COLORS.GREEN,

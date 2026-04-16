@@ -1,8 +1,9 @@
-import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import type { PropsWithChildren } from 'react';
+import * as React from 'react';
 import type { ViewProps } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 
 export interface GestureHandlerRootViewProps
   extends PropsWithChildren<ViewProps> {}

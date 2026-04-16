@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import type { PressableEvent } from './PressableProps';
 import type { StateDefinition } from './StateMachine';
 

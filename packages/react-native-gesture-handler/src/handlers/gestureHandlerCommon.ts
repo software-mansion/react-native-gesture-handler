@@ -3,6 +3,7 @@
 // e.g. React.createRef<TapGestureHandler> -> React.createRef<typeof TapGestureHandler>.
 // See https://www.typescriptlang.org/docs/handbook/classes.html#constructor-functions for reference.
 import type * as React from 'react';
+
 import type { PointerType } from '../PointerType';
 import type { State } from '../State';
 import type { TouchEventType } from '../TouchEventType';

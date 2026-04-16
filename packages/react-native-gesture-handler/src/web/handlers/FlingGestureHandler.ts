@@ -1,12 +1,12 @@
-import type { AdaptedEvent, Config } from '../interfaces';
 import { DiagonalDirections, Directions } from '../../Directions';
-import GestureHandler from './GestureHandler';
-import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import type IGestureHandler from './IGestureHandler';
-import { SingleGestureName } from '../../v3/types';
 import { State } from '../../State';
+import { SingleGestureName } from '../../v3/types';
+import type { AdaptedEvent, Config } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import Vector from '../tools/Vector';
 import { coneToDeviation } from '../utils';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MAX_DURATION_MS = 800;
 const DEFAULT_MIN_VELOCITY = 700;

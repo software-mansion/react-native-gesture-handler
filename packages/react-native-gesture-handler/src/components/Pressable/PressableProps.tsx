@@ -8,6 +8,7 @@ import type {
   ViewProps,
   ViewStyle,
 } from 'react-native';
+
 import type { AnyGesture } from '../../v3/types';
 import type { RelationPropType } from '../utils';
 

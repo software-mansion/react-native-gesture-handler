@@ -1,7 +1,8 @@
-import { COLORS, Feedback, commonStyles } from '../../../common';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
 import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import TestingBase from './testingBase';
 
 const HIT_SLOP = 40;

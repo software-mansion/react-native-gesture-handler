@@ -1,9 +1,10 @@
-import { COLORS, Feedback, commonStyles } from '../../../common';
-import { Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
 import React, { useRef } from 'react';
-import type { FeedbackHandle } from '../../../common';
-import { Pressable } from 'react-native-gesture-handler';
 import type { PressableStateCallbackType } from 'react-native';
+import { Pressable as RNPressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 export default function Example() {
   const feedbackRefRNGH = useRef<FeedbackHandle>(null);

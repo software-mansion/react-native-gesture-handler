@@ -1,10 +1,5 @@
+import React from 'react';
 import { Animated, Platform, StyleSheet } from 'react-native';
-import {
-  PanGestureHandler,
-  PinchGestureHandler,
-  RotationGestureHandler,
-  State,
-} from 'react-native-gesture-handler';
 import type {
   PanGestureHandlerGestureEvent,
   PanGestureHandlerStateChangeEvent,
@@ -13,7 +8,13 @@ import type {
   RotationGestureHandlerGestureEvent,
   RotationGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-import React from 'react';
+import {
+  PanGestureHandler,
+  PinchGestureHandler,
+  RotationGestureHandler,
+  State,
+} from 'react-native-gesture-handler';
+
 import { USE_NATIVE_DRIVER } from '../../../config';
 
 export class PinchableBox extends React.Component {

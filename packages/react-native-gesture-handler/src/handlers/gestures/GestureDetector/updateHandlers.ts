@@ -1,15 +1,15 @@
+import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
+import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
+import { registerHandler } from '../../handlersRegistry';
+import { filterConfig, scheduleFlushOperations } from '../../utils';
+import type { GestureType, HandlerCallbacks } from '../gesture';
+import type { ComposedGesture } from '../gestureComposition';
+import type { AttachedGestureState } from './types';
 import {
   ALLOWED_PROPS,
   checkGestureCallbacksForWorklets,
   extractGestureRelations,
 } from './utils';
-import type { GestureType, HandlerCallbacks } from '../gesture';
-import { filterConfig, scheduleFlushOperations } from '../../utils';
-import type { AttachedGestureState } from './types';
-import type { ComposedGesture } from '../gestureComposition';
-import RNGestureHandlerModule from '../../../RNGestureHandlerModule';
-import { ghQueueMicrotask } from '../../../ghQueueMicrotask';
-import { registerHandler } from '../../handlersRegistry';
 
 export function updateHandlers(
   preparedGesture: AttachedGestureState,

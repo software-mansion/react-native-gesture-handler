@@ -1,3 +1,8 @@
+import { fireEvent, render } from '@testing-library/react-native';
+import React from 'react';
+import { Text } from 'react-native';
+
+import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import {
   LegacyBaseButton,
   LegacyBorderlessButton,
@@ -12,17 +17,13 @@ import {
   LegacySwitch,
   LegacyTextInput,
 } from '../mocks/gestureComponents';
+import LegacyPressable from '../mocks/Pressable';
 import {
   TouchableHighlight,
   TouchableNativeFeedback,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from '../mocks/Touchables';
-import { fireEvent, render } from '@testing-library/react-native';
-import GestureHandlerRootView from '../components/GestureHandlerRootView';
-import LegacyPressable from '../mocks/Pressable';
-import React from 'react';
-import { Text } from 'react-native';
 import { Touchable } from '../v3/components';
 
 describe('Jest mocks – legacy components render without crashing', () => {

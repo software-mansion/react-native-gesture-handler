@@ -1,11 +1,12 @@
-import { COLORS, Feedback, commonStyles } from '../../../common';
-import {
-  InterceptingGestureDetector,
-  VirtualGestureDetector,
-  useTapGesture,
-} from 'react-native-gesture-handler';
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import {
+  InterceptingGestureDetector,
+  useTapGesture,
+  VirtualGestureDetector,
+} from 'react-native-gesture-handler';
+
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 function Box(props: {
   color: string;

@@ -1,14 +1,16 @@
+import type { StackScreenProps } from '@react-navigation/stack';
+import React, { Component } from 'react';
+import type { BackgroundPropType } from 'react-native';
 import {
   FlatList,
+  StyleSheet,
+  Text,
   TouchableHighlight as RNTouchableHighlight,
   TouchableNativeFeedback as RNTouchableNativeFeedback,
   TouchableOpacity as RNTouchableOpacity,
   TouchableWithoutFeedback as RNTouchableWithoutFeedback,
-  StyleSheet,
-  Text,
   View,
 } from 'react-native';
-import React, { Component } from 'react';
 import {
   RectButton,
   ScrollView,
@@ -17,8 +19,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
-import type { BackgroundPropType } from 'react-native';
-import type { StackScreenProps } from '@react-navigation/stack';
 
 const BOX_SIZE = 80;
 

@@ -1,3 +1,9 @@
+import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
+import { State } from '../../../State';
+import { TouchEventType } from '../../../TouchEventType';
+import { tagMessage } from '../../../utils';
 import type {
   ChangeCalculatorType,
   GestureCallbacks,
@@ -15,12 +21,6 @@ import {
   touchEventTypeToCallbackType,
 } from '../utils';
 import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
-import { State } from '../../../State';
-import { TouchEventType } from '../../../TouchEventType';
-import { tagMessage } from '../../../utils';
 
 function handleStateChangeEvent<
   THandlerData,

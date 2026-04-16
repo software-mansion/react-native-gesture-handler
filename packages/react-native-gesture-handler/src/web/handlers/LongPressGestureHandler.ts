@@ -1,10 +1,10 @@
-import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
 import type { ActionType } from '../../ActionType';
-import GestureHandler from './GestureHandler';
-import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import type IGestureHandler from './IGestureHandler';
-import { SingleGestureName } from '../../v3/types';
 import { State } from '../../State';
+import { SingleGestureName } from '../../v3/types';
+import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MIN_DURATION_MS = 500;
 const DEFAULT_MAX_DIST_DP = 10;

@@ -1,6 +1,6 @@
-import { ContinousBaseGesture } from './gesture';
 import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { RotationGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
+import { ContinousBaseGesture } from './gesture';
 
 type RotationGestureChangeEventPayload = {
   rotationChange: number;

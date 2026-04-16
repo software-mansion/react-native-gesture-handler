@@ -1,3 +1,6 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   measure,
@@ -7,9 +10,6 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { StyleSheet, View } from 'react-native';
-import React from 'react';
 
 const BOX_SIZE = 120;
 

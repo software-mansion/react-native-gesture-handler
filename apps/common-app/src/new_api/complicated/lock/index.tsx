@@ -1,10 +1,5 @@
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import { COLORS, commonStyles } from '../../../common';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   GestureDetector,
   useLongPressGesture,
@@ -12,8 +7,14 @@ import {
   useRotationGesture,
   useSimultaneousGestures,
 } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+import { COLORS, commonStyles } from '../../../common';
 
 export default function Lock() {
   const rotation = useSharedValue(-Math.PI / 2);

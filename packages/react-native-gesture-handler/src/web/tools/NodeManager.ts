@@ -1,6 +1,6 @@
+import type { ValueOf } from '../../typeUtils';
 import type { Gestures } from '../Gestures';
 import type IGestureHandler from '../handlers/IGestureHandler';
-import type { ValueOf } from '../../typeUtils';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export default abstract class NodeManager {

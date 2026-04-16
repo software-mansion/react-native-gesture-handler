@@ -1,7 +1,8 @@
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { StyleSheet, Text } from 'react-native';
-import { LoremIpsum } from '../../../common';
 import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+
+import { LoremIpsum } from '../../../common';
 
 export default function Example() {
   return (

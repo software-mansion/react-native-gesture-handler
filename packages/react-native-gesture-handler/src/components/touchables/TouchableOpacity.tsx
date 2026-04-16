@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Animated, Easing, StyleSheet, View } from 'react-native';
-import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import { Component } from 'react';
-import type { GenericTouchableProps } from './GenericTouchableProps';
 import type { TouchableOpacityProps as RNTouchableOpacityProps } from 'react-native';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
+
+import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 /**
  * @deprecated TouchableOpacity will be removed in the future version of Gesture Handler. Use Pressable instead.

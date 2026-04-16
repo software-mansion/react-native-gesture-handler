@@ -1,13 +1,14 @@
+import React, { useEffect } from 'react';
+
 import { GestureDetectorType, InterceptingGestureDetector } from './detectors';
+import { NativeDetector } from './detectors/NativeDetector';
+import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
+import { useNativeGesture } from './hooks/gestures';
+import { NativeWrapperProps } from './hooks/utils';
 import type {
   NativeWrapperProperties,
   WrapperSpecificProperties,
 } from './types/NativeWrapperType';
-import React, { useEffect } from 'react';
-import { NativeDetector } from './detectors/NativeDetector';
-import { NativeWrapperProps } from './hooks/utils';
-import { VirtualDetector } from './detectors/VirtualDetector/VirtualDetector';
-import { useNativeGesture } from './hooks/gestures';
 
 export default function createNativeWrapper<TRef = unknown, TProps = unknown>(
   Component: React.ComponentType<TProps>,

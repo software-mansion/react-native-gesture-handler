@@ -1,5 +1,5 @@
-import { TouchableNativeFeedback, View } from 'react-native';
 import React from 'react';
+import { TouchableNativeFeedback, View } from 'react-native';
 
 const RawButton = ({ enabled, children, ...rest }: any) => (
   <TouchableNativeFeedback disabled={enabled === false} {...rest}>

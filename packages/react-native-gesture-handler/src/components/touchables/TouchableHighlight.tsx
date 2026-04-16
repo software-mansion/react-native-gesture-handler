@@ -1,12 +1,13 @@
 import * as React from 'react';
+import { Component } from 'react';
 import type {
   ColorValue,
   TouchableHighlightProps as RNTouchableHighlightProps,
   ViewProps,
 } from 'react-native';
-import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import { StyleSheet, View } from 'react-native';
-import { Component } from 'react';
+
+import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
 import type { GenericTouchableProps } from './GenericTouchableProps';
 
 interface State {

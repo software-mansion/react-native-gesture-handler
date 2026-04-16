@@ -1,11 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import {
-  FlatList as RNFlatList,
-  RefreshControl as RNRefreshControl,
-  ScrollView as RNScrollView,
-  Switch as RNSwitch,
-  TextInput as RNTextInput,
-} from 'react-native';
+import React, { useState } from 'react';
 import type {
   FlatListProps as RNFlatListProps,
   RefreshControlProps as RNRefreshControlProps,
@@ -13,13 +7,20 @@ import type {
   SwitchProps as RNSwitchProps,
   TextInputProps as RNTextInputProps,
 } from 'react-native';
-import React, { useState } from 'react';
+import {
+  FlatList as RNFlatList,
+  RefreshControl as RNRefreshControl,
+  ScrollView as RNScrollView,
+  Switch as RNSwitch,
+  TextInput as RNTextInput,
+} from 'react-native';
+
+import { ghQueueMicrotask } from '../../ghQueueMicrotask';
+import createNativeWrapper from '../createNativeWrapper';
 import { GestureDetectorType } from '../detectors';
 import type { NativeGesture } from '../hooks/gestures/native/NativeTypes';
-import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 import { NativeWrapperProps } from '../hooks/utils';
-import createNativeWrapper from '../createNativeWrapper';
-import { ghQueueMicrotask } from '../../ghQueueMicrotask';
+import type { NativeWrapperProperties } from '../types/NativeWrapperType';
 
 export const RefreshControl = createNativeWrapper<
   RNRefreshControl,

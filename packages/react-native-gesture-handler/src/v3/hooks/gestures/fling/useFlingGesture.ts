@@ -1,12 +1,12 @@
+import { SingleGestureName } from '../../../types';
+import { useGesture } from '../../useGesture';
+import { useClonedAndRemappedConfig } from '../../utils';
 import type {
   FlingGesture,
   FlingGestureConfig,
   FlingGestureProperties,
   FlingHandlerData,
 } from './FlingTypes';
-import { SingleGestureName } from '../../../types';
-import { useClonedAndRemappedConfig } from '../../utils';
-import { useGesture } from '../../useGesture';
 
 export function useFlingGesture(config: FlingGestureConfig): FlingGesture {
   const flingConfig = useClonedAndRemappedConfig<
