@@ -20,7 +20,7 @@ const TouchableWithoutFeedback = ({
   },
   ...rest
 }: PropsWithChildren<TouchableWithoutFeedbackProps> & {
-  ref?: React.RefObject<GenericTouchable | null>;
+  ref?: React.Ref<GenericTouchable>;
 }) => (
   <GenericTouchable
     delayLongPress={delayLongPress}

@@ -95,7 +95,7 @@ export interface LegacyRawButtonProps
   testOnly_onLongPress?: Function | null | undefined;
 }
 interface ButtonWithRefProps {
-  innerRef?: React.RefObject<React.ComponentType<any>> | undefined;
+  innerRef?: React.Ref<React.ComponentType<any>> | undefined;
 }
 
 /**

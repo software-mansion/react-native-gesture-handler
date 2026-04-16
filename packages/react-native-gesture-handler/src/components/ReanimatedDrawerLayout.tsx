@@ -266,7 +266,7 @@ const dismissKeyboard = Keyboard.dismiss;
 
 const DrawerLayout = function DrawerLayout(
   props: DrawerLayoutProps & {
-    ref?: React.RefObject<DrawerLayoutMethods | null>;
+    ref?: React.Ref<DrawerLayoutMethods>;
   }
 ) {
   const [containerWidth, setContainerWidth] = useState(0);

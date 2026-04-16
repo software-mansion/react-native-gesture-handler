@@ -8,7 +8,7 @@ export const Wrap = ({
   ref,
   children,
 }: PropsWithChildren<{}> & {
-  ref: React.RefObject<HTMLDivElement | null>;
+  ref: React.Ref<HTMLDivElement>;
 }) => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
