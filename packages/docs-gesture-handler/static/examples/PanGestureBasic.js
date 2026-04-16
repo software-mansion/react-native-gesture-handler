@@ -38,7 +38,7 @@ export default function App() {
 
     containerRef.current.measureInWindow((x, y, width, height) => {
       maxTranslateX.value = width / 2 - 50;
-      maxTranslateY.value = height / 2;
+      maxTranslateY.value = height / 2 - 50;
     });
   };
 
