@@ -5,13 +5,14 @@ import type {
   RawButtonProps,
   RectButtonProps,
 } from './GestureButtonsProps';
+import type { GestureEndEvent, GestureEvent } from '../types';
 import React, { useRef } from 'react';
-import type { GestureEvent } from '../types';
 import GestureHandlerButton from '../../components/GestureHandlerButton';
 import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
 import createNativeWrapper from '../createNativeWrapper';
 
 type CallbackEventType = GestureEvent<NativeHandlerData>;
+type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
 
 /**
  * @deprecated `RawButton` is deprecated, use `Clickable` instead
@@ -66,23 +67,23 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onActivate?.(e);
   };
 
-  const onDeactivate = (e: CallbackEventType, didSucceed: boolean) => {
+  const onDeactivate = (e: EndCallbackEventType) => {
     onActiveStateChange?.(false);
 
-    if (didSucceed && !longPressDetected.current) {
+    if (!e.canceled && !longPressDetected.current) {
       onPress?.(e.pointerInside);
     }
 
-    props.onDeactivate?.(e, didSucceed);
+    props.onDeactivate?.(e);
   };
 
-  const onFinalize = (e: CallbackEventType, didSucceed: boolean) => {
+  const onFinalize = (e: EndCallbackEventType) => {
     if (longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
 
-    props.onFinalize?.(e, didSucceed);
+    props.onFinalize?.(e);
   };
 
   return (

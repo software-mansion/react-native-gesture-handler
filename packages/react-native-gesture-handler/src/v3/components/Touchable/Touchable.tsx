@@ -1,4 +1,8 @@
-import type { CallbackEventType, TouchableProps } from './TouchableProps';
+import type {
+  CallbackEventType,
+  EndCallbackEventType,
+  TouchableProps,
+} from './TouchableProps';
 import React, { useCallback, useRef } from 'react';
 import type { ButtonProps } from '../../../components/GestureHandlerButton';
 import GestureHandlerButton from '../../../components/GestureHandlerButton';
@@ -79,10 +83,10 @@ export const Touchable = (props: TouchableProps) => {
   );
 
   const onDeactivate = useCallback(
-    (e: CallbackEventType, success: boolean) => {
+    (e: EndCallbackEventType) => {
       onActiveStateChange?.(false);
 
-      if (success && !longPressDetected.current) {
+      if (!e.canceled && !longPressDetected.current) {
         onPress?.(e.pointerInside);
       }
     },
@@ -90,7 +94,7 @@ export const Touchable = (props: TouchableProps) => {
   );
 
   const onFinalize = useCallback(
-    (e: CallbackEventType) => {
+    (e: EndCallbackEventType) => {
       onPressOut?.(e);
 
       if (longPressTimeout.current !== undefined) {
