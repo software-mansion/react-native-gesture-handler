@@ -21,6 +21,7 @@ import { OLD_EXAMPLES } from './src/legacy';
 import { TouchableExample } from './src/legacy/release_tests/touchables';
 import { ListWithHeader } from './src/ListWithHeader';
 import { NEW_EXAMPLES } from './src/new_api';
+
 const OPEN_LAST_EXAMPLE_KEY = 'openLastExample';
 const SHOW_LEGACY_EXAMPLES_KEY = 'showLegacyExamples';
 const LAST_EXAMPLE_KEY = 'lastExample';
