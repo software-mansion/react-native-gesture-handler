@@ -2,10 +2,11 @@ import type { PressableAndroidRippleConfig as RNPressableAndroidRippleConfig } f
 
 import type { ButtonProps } from '../../../components/GestureHandlerButton';
 import type { NativeHandlerData } from '../../hooks/gestures/native/NativeTypes';
-import type { GestureEvent } from '../../types';
+import type { GestureEndEvent, GestureEvent } from '../../types';
 import type { BaseButtonProps, RawButtonProps } from '../GestureButtonsProps';
 
 export type CallbackEventType = GestureEvent<NativeHandlerData>;
+export type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
 
 type PressableAndroidRippleConfig = {
   [K in keyof RNPressableAndroidRippleConfig]?: Exclude<

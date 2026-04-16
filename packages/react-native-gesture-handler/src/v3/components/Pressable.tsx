@@ -274,13 +274,13 @@ const Pressable = (props: PressableProps) => {
       stateMachine.reset();
       handlePressOut(pressableEvent, false);
     },
-    onFinalize: (_event, success) => {
+    onFinalize: (event) => {
       if (Platform.OS !== 'web') {
         return;
       }
 
       stateMachine.handleEvent(
-        success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
+        event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
       );
 
       handleFinalize();
@@ -313,14 +313,14 @@ const Pressable = (props: PressableProps) => {
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }
     },
-    onFinalize: (_event, success) => {
+    onFinalize: (event) => {
       // On Web we use LongPress.onFinalize instead of Native.onFinalize,
       // as Native cancels on mouse move, and LongPress does not.
       if (Platform.OS === 'web') {
         return;
       }
       stateMachine.handleEvent(
-        success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
+        event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
       );
 
       handleFinalize();

@@ -3,7 +3,6 @@ export type {
   ComposedGestureConfig,
   GestureCallbacks,
   GestureEventCallback,
-  GestureEventCallbackWithDidSucceed,
   GestureRelations,
   GestureTouchEventCallback,
   InternalConfigProps,
