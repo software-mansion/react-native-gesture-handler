@@ -8,8 +8,7 @@ import type { ComposedGesture } from '../gestureComposition';
 import { attachHandlers } from './attachHandlers';
 import { dropHandlers } from './dropHandlers';
 import { needsToReattach } from './needsToReattach';
-import type AttachedGestureState from './types';
-import type { GestureDetectorState } from './types';
+import type { AttachedGestureState, GestureDetectorState } from './types';
 import { updateHandlers } from './updateHandlers';
 import { useForceRender, validateDetectorChildren } from './utils';
 

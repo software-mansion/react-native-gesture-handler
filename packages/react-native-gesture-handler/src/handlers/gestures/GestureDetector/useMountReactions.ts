@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { MountRegistry } from '../../../mountRegistry';
 import { transformIntoHandlerTags } from '../../utils';
 import type { GestureRef } from '../gesture';
-import type AttachedGestureState from './types';
+import type { AttachedGestureState } from './types';
 
 function shouldUpdateDetector(
   relation: GestureRef[] | undefined,

@@ -1,7 +1,7 @@
 import type { SharedValue } from '../../../v3/types';
 import type { GestureType, HandlerCallbacks } from '../gesture';
 
-export default interface AttachedGestureState {
+export interface AttachedGestureState {
   // Array of gestures that should be attached to the view under that gesture detector
   attachedGestures: GestureType[];
   // Event handler for the gesture, returned by `useEvent` from Reanimated

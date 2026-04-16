@@ -11,7 +11,7 @@ import { CALLBACK_TYPE } from '../gesture';
 import type { GestureStateManagerType } from '../gestureStateManager';
 import { GestureStateManager } from '../gestureStateManager';
 import { Reanimated } from '../reanimatedWrapper';
-import type AttachedGestureState from './types';
+import type { AttachedGestureState } from './types';
 
 function getHandler(
   type: CALLBACK_TYPE,

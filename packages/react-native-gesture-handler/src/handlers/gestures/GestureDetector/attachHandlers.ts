@@ -11,7 +11,7 @@ import { registerHandler } from '../../handlersRegistry';
 import { filterConfig, scheduleFlushOperations } from '../../utils';
 import type { GestureType, HandlerCallbacks } from '../gesture';
 import type { ComposedGesture } from '../gestureComposition';
-import type AttachedGestureState from './types';
+import type { AttachedGestureState } from './types';
 import {
   ALLOWED_PROPS,
   checkGestureCallbacksForWorklets,
