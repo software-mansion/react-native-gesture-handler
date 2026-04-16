@@ -391,7 +391,7 @@ open class GestureHandler {
     // in the coordinate system of the child view, but I'm not sure of the
     // consequences
     val detectorView = hostDetectorView
-    if (detectorView != null && detectorView.isNotEmpty()) {
+    if (detectorView != null && view == detectorView && detectorView.isNotEmpty()) {
       val outPoint = PointF()
       var foundChild = false
 
