@@ -31,6 +31,10 @@ In Gesture Handler 3 some of the callbacks were renamed, namely:
 
 Here is a comparison of the two APIs:
 
+### canceled instead of success
+
+In RNGH2, `onEnd` and `onFinalize` received a second `success` boolean parameter. In RNGH3, this has been replaced with a `canceled` property on the event object itself. Note that the logic is inverted — `canceled: true` corresponds to the old `success: false`.
+
 ### onChange
 
 `onChange` callback has been removed, and its functionality has been integrated into `onUpdate`. You can now access `change*` properties in `onUpdate` callback.

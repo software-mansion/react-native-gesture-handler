@@ -42,18 +42,18 @@ Called each time a pointer tracked by the gesture changes state, typically due t
 ### onDeactivate
 
 ```ts
-onDeactivate: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
+onDeactivate: (event: GestureEndEvent<HandlerData>) => void
 ```
 
-Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. If the handler was interrupted, the `didSucceed` argument is set to `false`. Otherwise it is set to `true`.
+Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. The event object contains a `canceled` property — if the gesture was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
 
 ### onFinalize
 
 ```ts
-onFinalize: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
+onFinalize: (event: GestureEndEvent<HandlerData>) => void
 ```
 
-Called when handler stops recognizing gestures. If the handler managed to activate, the `didSucceed` argument is set to `true` and `onFinalize` will be called right after `onDeactivate`. Otherwise it is set to `false`.
+Called when handler stops recognizing gestures. The event object contains a `canceled` property — if the handler failed to activate or was interrupted, `canceled` is set to `true`. If the handler managed to activate and completed successfully, `canceled` is set to `false` and `onFinalize` will be called right after `onDeactivate`.
 
 ### onTouchesDown
 
@@ -92,6 +92,10 @@ Called when there will be no more information about this pointer. It may be call
 ### GestureEvent
 
 `GestureEvent` contains properties common to all gestures (`handlerTag`, `numberOfPointers`, `pointerType`) along with gesture-specific data defined in each gesture's documentation.
+
+### GestureEndEvent
+
+`GestureEndEvent` extends `GestureEvent` with a `canceled` property. It is used in the [`onDeactivate`](#ondeactivate) and [`onFinalize`](#onfinalize) callbacks. When `canceled` is `true`, the gesture was interrupted or failed to activate. When `false`, the gesture completed successfully.
 
 ### TouchEvent
 

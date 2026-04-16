@@ -1277,18 +1277,18 @@ Called each time a pointer tracked by the gesture changes state, typically due t
 ### onDeactivate
 
 ```ts
-onDeactivate: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
+onDeactivate: (event: GestureEndEvent<HandlerData>) => void
 ```
 
-Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. If the handler was interrupted, the `didSucceed` argument is set to `false`. Otherwise it is set to `true`.
+Called when handler stops recognizing gestures, but only if the handler activated. It is called before `onFinalize`. The event object contains a `canceled` property — if the gesture was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
 
 ### onFinalize
 
 ```ts
-onFinalize: (event: GestureEvent<HandlerData>, didSucceed: boolean) => void
+onFinalize: (event: GestureEndEvent<HandlerData>) => void
 ```
 
-Called when handler stops recognizing gestures. If the handler managed to activate, the `didSucceed` argument is set to `true` and `onFinalize` will be called right after `onDeactivate`. Otherwise it is set to `false`.
+Called when handler stops recognizing gestures. The event object contains a `canceled` property — if the handler failed to activate or was interrupted, `canceled` is set to `true`. If the handler managed to activate and completed successfully, `canceled` is set to `false` and `onFinalize` will be called right after `onDeactivate`.
 
 ### onTouchesDown
 
@@ -1327,6 +1327,10 @@ Called when there will be no more information about this pointer. It may be call
 ### GestureEvent
 
 `GestureEvent` contains properties common to all gestures (`handlerTag`, `numberOfPointers`, `pointerType`) along with gesture-specific data defined in each gesture's documentation.
+
+### GestureEndEvent
+
+`GestureEndEvent` extends `GestureEvent` with a `canceled` property. It is used in the [`onDeactivate`](#ondeactivate) and [`onFinalize`](#onfinalize) callbacks. When `canceled` is `true`, the gesture was interrupted or failed to activate. When `false`, the gesture completed successfully.
 
 ### TouchEvent
 
@@ -2198,11 +2202,11 @@ Set the callback that is being called when the gesture is recognized by the hand
 
 ### onDeactivate
 
-Set the callback that is being called when the gesture that was recognized by the handler finishes. It will be called only if the handler was previously in the active state.
+Set the callback that is being called when the gesture that was recognized by the handler finishes. It will be called only if the handler was previously in the active state. The event object contains a `canceled` property — if the gesture was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
 
 ### onFinalize
 
-Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize.
+Set the callback that is being called when the handler finalizes handling gesture - the gesture was recognized and has finished or it failed to recognize. The event object contains a `canceled` property — if the gesture failed to activate or was interrupted, `canceled` is set to `true`. Otherwise it is set to `false`.
 
 ### onTouchesDown
 
@@ -3786,6 +3790,10 @@ In Gesture Handler 3 some of the callbacks were renamed, namely:
 | `onTouchesCancelled`   | `onTouchesCancel` |
 
 Here is a comparison of the two APIs:
+
+### canceled instead of success
+
+In RNGH2, `onEnd` and `onFinalize` received a second `success` boolean parameter. In RNGH3, this has been replaced with a `canceled` property on the event object itself. Note that the logic is inverted — `canceled: true` corresponds to the old `success: false`.
 
 ### onChange
 
@@ -5814,7 +5822,7 @@ States manage the internal recognition process. You can hook into these transiti
 | **`UNDETERMINED`** | The default initial state of every handler.                                              | —                                                                                                                                                                                                                                                                                  |
 | **`BEGAN`**        | The handler has started receiving touch data but hasn't yet met the activation criteria. | [`onBegin`](/docs/fundamentals/callbacks-events#onbegin)                                                                                                                                                                                                                           |
 | **`ACTIVE`**       | The gesture is recognized and activation criteria are met.                               | [`onActivate`](/docs/fundamentals/callbacks-events#onactivate) when it first transitions into the `ACTIVE` state.  [`onUpdate`](/docs/fundamentals/callbacks-events#onupdate) when it has new data about the gesture.                                                  |
-| **`END`**          | The user successfully completed the gesture.                                             | [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) with `didSucceed` parameter set to `true`.  [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) with `didSucceed` parameter set to `true`.                                                 |
-| **`FAILED`**       | The handler failed to recognize the gesture.                                             | [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) if the gesture was in `ACTIVE` state before. `didSucceed` parameter will be set to `false`  [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) with `didSucceed` parameter set to `false`. |
-| **`CANCELLED`**    | The system interrupted the gesture.                                                      | [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) if the gesture was in `ACTIVE` state before. `didSucceed` parameter will be set to `false`  [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) with `didSucceed` parameter set to `false`. |
+| **`END`**          | The user successfully completed the gesture.                                             | [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) with `event.canceled` set to `false`.  [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) with `event.canceled` set to `false`.                                                 |
+| **`FAILED`**       | The handler failed to recognize the gesture.                                             | [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) if the gesture was in `ACTIVE` state before, with `event.canceled` set to `true`.  [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) with `event.canceled` set to `true`. |
+| **`CANCELLED`**    | The system interrupted the gesture.                                                      | [`onDeactivate`](/docs/fundamentals/callbacks-events#ondeactivate) if the gesture was in `ACTIVE` state before, with `event.canceled` set to `true`.  [`onFinalize`](/docs/fundamentals/callbacks-events#onfinalize) with `event.canceled` set to `true`. |
 
