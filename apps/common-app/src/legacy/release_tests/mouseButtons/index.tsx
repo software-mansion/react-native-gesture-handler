@@ -1,3 +1,6 @@
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import type { GestureType } from 'react-native-gesture-handler';
 import {
   Directions,
   Gesture,
@@ -5,9 +8,6 @@ import {
   MouseButton,
   ScrollView,
 } from 'react-native-gesture-handler';
-import { StyleSheet, Text, View } from 'react-native';
-import type { GestureType } from 'react-native-gesture-handler';
-import React from 'react';
 
 const COLORS = ['darkmagenta', 'darkgreen', 'darkblue', 'crimson', 'pink'];
 

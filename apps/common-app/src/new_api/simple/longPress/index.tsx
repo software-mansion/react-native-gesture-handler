@@ -1,16 +1,17 @@
+import React from 'react';
+import { View } from 'react-native';
+import {
+  GestureDetector,
+  useLongPressGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+
 import { COLORS, commonStyles } from '../../../common';
-import {
-  GestureDetector,
-  useLongPressGesture,
-} from 'react-native-gesture-handler';
-import React from 'react';
-import { View } from 'react-native';
 
 export default function LongPressExample() {
   const colorProgress = useSharedValue(0);
@@ -38,8 +39,8 @@ export default function LongPressExample() {
         duration: 100,
       });
     },
-    onFinalize: (_, success) => {
-      finalise_color.value = success ? COLORS.GREEN : COLORS.RED;
+    onFinalize: (e) => {
+      finalise_color.value = e.canceled ? COLORS.RED : COLORS.GREEN;
       colorProgress.value = 1;
       colorProgress.value = withTiming(
         0,

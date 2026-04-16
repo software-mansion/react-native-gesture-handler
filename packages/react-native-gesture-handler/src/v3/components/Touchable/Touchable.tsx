@@ -1,9 +1,14 @@
-import type { CallbackEventType, TouchableProps } from './TouchableProps';
 import React, { useCallback, useRef } from 'react';
+import { Platform } from 'react-native';
+
 import type { ButtonProps } from '../../../components/GestureHandlerButton';
 import GestureHandlerButton from '../../../components/GestureHandlerButton';
-import { Platform } from 'react-native';
 import createNativeWrapper from '../../createNativeWrapper';
+import type {
+  CallbackEventType,
+  EndCallbackEventType,
+  TouchableProps,
+} from './TouchableProps';
 
 const TouchableButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
@@ -79,10 +84,10 @@ export const Touchable = (props: TouchableProps) => {
   );
 
   const onDeactivate = useCallback(
-    (e: CallbackEventType, success: boolean) => {
+    (e: EndCallbackEventType) => {
       onActiveStateChange?.(false);
 
-      if (success && !longPressDetected.current) {
+      if (!e.canceled && !longPressDetected.current) {
         onPress?.(e.pointerInside);
       }
     },
@@ -90,7 +95,7 @@ export const Touchable = (props: TouchableProps) => {
   );
 
   const onFinalize = useCallback(
-    (e: CallbackEventType) => {
+    (e: EndCallbackEventType) => {
       onPressOut?.(e);
 
       if (longPressTimeout.current !== undefined) {

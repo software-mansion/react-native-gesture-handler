@@ -1,3 +1,5 @@
+import type { StylusData } from '../../../../handlers/gestureHandlerCommon';
+import type { HoverEffect } from '../../../../handlers/gestures/hoverGesture';
 import type {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
@@ -5,8 +7,6 @@ import type {
   SingleGesture,
   WithSharedValue,
 } from '../../../types';
-import type { HoverEffect } from '../../../../handlers/gestures/hoverGesture';
-import type { StylusData } from '../../../../handlers/gestureHandlerCommon';
 
 export type HoverGestureExternalProperties = {
   /**

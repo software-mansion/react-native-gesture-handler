@@ -1,15 +1,3 @@
-import { INT32_MAX, isTestEnv } from '../../utils';
-import type {
-  Insets,
-  LayoutChangeEvent,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
-import type {
-  LegacyPressableProps,
-  PressableDimensions,
-  PressableEvent,
-} from './PressableProps';
 import React, {
   useCallback,
   useEffect,
@@ -17,8 +5,29 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import type {
+  Insets,
+  LayoutChangeEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import { Platform } from 'react-native';
+
+import { GestureDetector } from '../../handlers/gestures/GestureDetector';
+import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
+import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
+import { INT32_MAX, isTestEnv } from '../../utils';
+import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
 import type { RelationPropName, RelationPropType } from '../utils';
-import { StateMachineEvent, getStatesConfig } from './stateDefinitions';
+import { applyRelationProp } from '../utils';
+import type {
+  LegacyPressableProps,
+  PressableDimensions,
+  PressableEvent,
+} from './PressableProps';
+import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
+import { PressableStateMachine } from './StateMachine';
 import {
   addInsets,
   gestureToPressableEvent,
@@ -26,14 +35,6 @@ import {
   isTouchWithinInset,
   numberAsInset,
 } from './utils';
-import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
-import { GestureDetector } from '../../handlers/gestures/GestureDetector';
-import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
-import { Platform } from 'react-native';
-import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { PressableStateMachine } from './StateMachine';
-import { applyRelationProp } from '../utils';
-import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();

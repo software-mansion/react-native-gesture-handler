@@ -1,5 +1,5 @@
-import type { GestureType, HandlerCallbacks } from '../gesture';
 import type { SharedValue } from '../../../v3/types';
+import type { GestureType, HandlerCallbacks } from '../gesture';
 
 export interface AttachedGestureState {
   // Array of gestures that should be attached to the view under that gesture detector

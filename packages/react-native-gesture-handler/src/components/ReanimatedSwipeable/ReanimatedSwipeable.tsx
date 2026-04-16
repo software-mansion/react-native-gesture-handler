@@ -1,7 +1,11 @@
+import type { ForwardedRef } from 'react';
+import { useCallback, useImperativeHandle, useMemo } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
+import { I18nManager, StyleSheet, View } from 'react-native';
 import Animated, {
-  ReduceMotion,
   interpolate,
   measure,
+  ReduceMotion,
   runOnJS,
   runOnUI,
   useAnimatedRef,
@@ -9,17 +13,14 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { I18nManager, StyleSheet, View } from 'react-native';
+
+import { GestureDetector } from '../../v3/detectors';
+import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
+import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
 import type {
   SwipeableMethods,
   SwipeableProps,
 } from './ReanimatedSwipeableProps';
-import { useCallback, useImperativeHandle, useMemo } from 'react';
-import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
-import type { ForwardedRef } from 'react';
-import { GestureDetector } from '../../v3/detectors';
-import type { LayoutChangeEvent } from 'react-native';
-import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
 import { SwipeDirection } from './ReanimatedSwipeableProps';
 
 const DRAG_TOSS = 0.05;

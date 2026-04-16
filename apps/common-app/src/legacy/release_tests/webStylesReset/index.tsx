@@ -1,16 +1,16 @@
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import {
+  Gesture,
+  GestureDetector,
+  Pressable,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  Gesture,
-  GestureDetector,
-  Pressable,
-} from 'react-native-gesture-handler';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 
 const Colors = {
   enabled: '#32a852',

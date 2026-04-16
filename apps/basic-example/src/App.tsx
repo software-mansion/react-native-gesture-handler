@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Platform, SafeAreaView } from 'react-native';
-import ContentsButton from './ContentsButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import ContentsButton from './ContentsButton';
 import NativeDetector from './NativeDetector';
 import Navigator from './Navigator';
 import RuntimeDecoration from './RuntimeDecoration';

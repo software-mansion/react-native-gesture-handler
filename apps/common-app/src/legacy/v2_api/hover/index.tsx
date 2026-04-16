@@ -1,15 +1,15 @@
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import React from 'react';
+import { Text, View } from 'react-native';
+import type { GestureType } from 'react-native-gesture-handler';
 import {
   Gesture,
   GestureDetector,
   HoverEffect,
 } from 'react-native-gesture-handler';
-import { Text, View } from 'react-native';
-import type { GestureType } from 'react-native-gesture-handler';
-import React from 'react';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 function useHover(color: string): [GestureType, any] {
   const hovered = useSharedValue(false);

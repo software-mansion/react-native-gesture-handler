@@ -1,7 +1,8 @@
-import { Animated, StyleSheet, Text, View } from 'react-native';
-import { ForceTouchGestureHandler, State } from 'react-native-gesture-handler';
 import React, { Component } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import type { ForceTouchGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { ForceTouchGestureHandler, State } from 'react-native-gesture-handler';
+
 import { USE_NATIVE_DRIVER } from '../../../config';
 
 export default class Example extends Component {

@@ -1,16 +1,17 @@
+import React from 'react';
+import { Platform, StyleSheet } from 'react-native';
+import {
+  GestureDetector,
+  HoverEffect,
+  useHoverGesture,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useFrameCallback,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  GestureDetector,
-  HoverEffect,
-  useHoverGesture,
-} from 'react-native-gesture-handler';
-import { Platform, StyleSheet } from 'react-native';
-import React from 'react';
+
 import { commonStyles } from '../../../common';
 
 // eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires

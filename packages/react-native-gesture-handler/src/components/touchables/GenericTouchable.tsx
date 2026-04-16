@@ -1,14 +1,15 @@
 import * as React from 'react';
+import { Component } from 'react';
 import { Animated, Platform } from 'react-native';
+
 import type {
   GestureEvent,
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlerCommon';
-import { Component } from 'react';
-import type { GenericTouchableProps } from './GenericTouchableProps';
-import { LegacyBaseButton } from '../GestureButtons';
 import type { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
 import { State } from '../../State';
+import { LegacyBaseButton } from '../GestureButtons';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 /**
  * Each touchable is a states' machine which preforms transitions.

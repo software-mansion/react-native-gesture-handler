@@ -1,14 +1,15 @@
-import React, { useEffect, useMemo, useRef } from 'react';
 import type { Ref, RefObject } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { View } from 'react-native';
+
+import { ActionType } from '../../ActionType';
 import type {
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
-import { ActionType } from '../../ActionType';
-import type { PropsRef } from '../../web/interfaces';
 import RNGestureHandlerModule from '../../RNGestureHandlerModule.web';
-import { View } from 'react-native';
 import { tagMessage } from '../../utils';
+import type { PropsRef } from '../../web/interfaces';
 
 export interface GestureHandlerDetectorProps extends PropsRef {
   handlerTags: number[];

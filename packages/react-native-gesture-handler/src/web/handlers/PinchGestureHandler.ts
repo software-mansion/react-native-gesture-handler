@@ -1,13 +1,13 @@
-import type { AdaptedEvent, PropsRef } from '../interfaces';
 import type { ActionType } from '../../ActionType';
-import { DEFAULT_TOUCH_SLOP } from '../constants';
-import GestureHandler from './GestureHandler';
-import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import type IGestureHandler from './IGestureHandler';
-import ScaleGestureDetector from '../detectors/ScaleGestureDetector';
-import type { ScaleGestureListener } from '../detectors/ScaleGestureDetector';
-import { SingleGestureName } from '../../v3/types';
 import { State } from '../../State';
+import { SingleGestureName } from '../../v3/types';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import type { ScaleGestureListener } from '../detectors/ScaleGestureDetector';
+import ScaleGestureDetector from '../detectors/ScaleGestureDetector';
+import type { AdaptedEvent, PropsRef } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;

@@ -1,7 +1,8 @@
-import { COLORS, Feedback, commonStyles } from '../../../common';
-import { Platform, View } from 'react-native';
 import React, { useRef } from 'react';
+import { Platform, View } from 'react-native';
+
 import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import TestingBase from './testingBase';
 
 export function RippleExample() {

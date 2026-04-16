@@ -1,15 +1,15 @@
+import type { ReactNode } from 'react';
+import React, { useRef } from 'react';
+import { I18nManager, StyleSheet } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
+import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import { I18nManager, StyleSheet } from 'react-native';
-import React, { useRef } from 'react';
-import type { ReactNode } from 'react';
-import { RectButton } from 'react-native-gesture-handler';
-import type { SharedValue } from 'react-native-reanimated';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import type { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 interface LeftActionProps {
   dragX: SharedValue<number>;

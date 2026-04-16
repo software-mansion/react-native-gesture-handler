@@ -1,4 +1,18 @@
 import type {
+  LegacyBaseButtonProps,
+  LegacyBorderlessButtonProps,
+  LegacyRawButtonProps,
+  LegacyRectButtonProps,
+} from '../components/GestureButtonsProps';
+import type { FlingGestureHandlerProps } from './FlingGestureHandler';
+import type { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
+import type {
+  GestureEvent,
+  GestureEventPayload,
+  HandlerStateChangeEvent,
+  HandlerStateChangeEventPayload,
+} from './gestureHandlerCommon';
+import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
@@ -8,20 +22,6 @@ import type {
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
 } from './GestureHandlerEventPayload';
-import type {
-  GestureEvent,
-  GestureEventPayload,
-  HandlerStateChangeEvent,
-  HandlerStateChangeEventPayload,
-} from './gestureHandlerCommon';
-import type {
-  LegacyBaseButtonProps,
-  LegacyBorderlessButtonProps,
-  LegacyRawButtonProps,
-  LegacyRectButtonProps,
-} from '../components/GestureButtonsProps';
-import type { FlingGestureHandlerProps } from './FlingGestureHandler';
-import type { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
 import type { LongPressGestureHandlerProps } from './LongPressGestureHandler';
 import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 import type { PanGestureHandlerProps } from './PanGestureHandler';

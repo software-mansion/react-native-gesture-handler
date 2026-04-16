@@ -1,30 +1,31 @@
+import type { ReactElement } from 'react';
 import * as React from 'react';
+import type { EmitterSubscription } from 'react-native';
+import { DeviceEventEmitter, Platform } from 'react-native';
+
+import { ActionType } from '../ActionType';
+import findNodeHandle from '../findNodeHandle';
+import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
+import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { MountRegistry } from '../mountRegistry';
+import RNGestureHandlerModule from '../RNGestureHandlerModule';
+import { State } from '../State';
+import type { ValueOf } from '../typeUtils';
+import { deepEqual, isTestEnv, tagMessage } from '../utils';
+import { customDirectEventTypes } from './customDirectEventTypes';
 import type {
   BaseGestureHandlerProps,
   GestureEvent,
   HandlerStateChangeEvent,
 } from './gestureHandlerCommon';
-import { DeviceEventEmitter, Platform } from 'react-native';
-import { deepEqual, isTestEnv, tagMessage } from '../utils';
-import { filterConfig, scheduleFlushOperations } from './utils';
+import { getNextHandlerTag } from './getNextHandlerTag';
 import {
   handlerIDToTag,
   registerOldGestureHandler,
   unregisterOldGestureHandler,
 } from './handlersRegistry';
-import { ActionType } from '../ActionType';
-import type { EmitterSubscription } from 'react-native';
-import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
-import { MountRegistry } from '../mountRegistry';
 import { PressabilityDebugView } from './PressabilityDebugView';
-import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import type { ReactElement } from 'react';
-import { State } from '../State';
-import type { ValueOf } from '../typeUtils';
-import { customDirectEventTypes } from './customDirectEventTypes';
-import findNodeHandle from '../findNodeHandle';
-import { getNextHandlerTag } from './getNextHandlerTag';
-import { ghQueueMicrotask } from '../ghQueueMicrotask';
+import { filterConfig, scheduleFlushOperations } from './utils';
 
 customDirectEventTypes.topGestureHandlerEvent = {
   registrationName: 'onGestureHandlerEvent',

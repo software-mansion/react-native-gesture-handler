@@ -1,11 +1,12 @@
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withSpring,
 } from 'react-native-reanimated';
-import { StyleSheet, View } from 'react-native';
-import React from 'react';
+
 import TestingBase from './testingBase';
 
 const signalerConfig = {

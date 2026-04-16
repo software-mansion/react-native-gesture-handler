@@ -1,7 +1,7 @@
-import type { AdaptedEvent } from '../interfaces';
-import EventManager from './EventManager';
-import { EventTypes } from '../interfaces';
 import { PointerType } from '../../PointerType';
+import type { AdaptedEvent } from '../interfaces';
+import { EventTypes } from '../interfaces';
+import EventManager from './EventManager';
 
 export default class WheelEventManager extends EventManager<HTMLElement> {
   private wheelDelta = { x: 0, y: 0 };

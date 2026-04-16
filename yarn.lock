@@ -8460,6 +8460,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-simple-import-sort@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "eslint-plugin-simple-import-sort@npm:13.0.0"
+  peerDependencies:
+    eslint: ">=5.0.0"
+  checksum: 10c0/f561f3483c1c18dfa2705326d38d62c62d4aeb5947ed6d1f028299c5dc668586b5ef144926e68fe187b3a937ee0159738dcbca8c286fe56f489de52fd8f9e678
+  languageName: node
+  linkType: hard
+
 "eslint-rule-composer@npm:^0.3.0":
   version: 0.3.0
   resolution: "eslint-rule-composer@npm:0.3.0"
@@ -14531,6 +14540,7 @@ __metadata:
     eslint-plugin-jest: "npm:27.4.3"
     eslint-plugin-prettier: "npm:^5.0.1"
     eslint-plugin-react: "npm:^7.37.5"
+    eslint-plugin-simple-import-sort: "npm:^13.0.0"
     husky: "npm:^8.0.1"
     jest: "npm:^28.1.0"
     lint-staged: "npm:^12.3.2"

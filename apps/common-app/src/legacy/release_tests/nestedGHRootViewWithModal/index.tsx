@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { useState } from 'react';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+
 import { DraggableBox } from '../../basic/draggable';
-import { useState } from 'react';
 
 export default function App() {
   const [isModalVisible, setIsModalVisible] = useState(false);

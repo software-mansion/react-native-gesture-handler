@@ -1,11 +1,11 @@
+import type { StylusData } from '../../handlers/gestureHandlerCommon';
+import { State } from '../../State';
+import { SingleGestureName } from '../../v3/types';
 import type { AdaptedEvent } from '../interfaces';
-import GestureHandler from './GestureHandler';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
+import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
-import { SingleGestureName } from '../../v3/types';
-import { State } from '../../State';
-import type { StylusData } from '../../handlers/gestureHandlerCommon';
 
 export default class HoverGestureHandler extends GestureHandler {
   private stylusData: StylusData | undefined;

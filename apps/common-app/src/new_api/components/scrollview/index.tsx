@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
+
 import { COLORS } from '../../../common';
 
 const DATA = Array.from({ length: 20 }, (_, i) => ({

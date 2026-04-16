@@ -1,7 +1,8 @@
+import type { PropsWithChildren } from 'react';
 import * as React from 'react';
+
 import GenericTouchable from './GenericTouchable';
 import type { GenericTouchableProps } from './GenericTouchableProps';
-import type { PropsWithChildren } from 'react';
 
 /**
  * @deprecated TouchableWithoutFeedback will be removed in the future version of Gesture Handler. Use Pressable instead.

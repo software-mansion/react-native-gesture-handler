@@ -92,6 +92,32 @@ code2={
 `}
 />
 
+### canceled instead of success
+
+In RNGH2, `onEnd` and `onFinalize` received a second `success` boolean parameter. In RNGH3, this has been replaced with a `canceled` property on the event object itself. Note that the logic is inverted — `canceled: true` corresponds to the old `success: false`.
+
+<CodeComparison
+label1={"RNGH 2"}
+label2={"RNGH 3"}
+code1={
+`const gesture = Gesture.Tap()
+  .onEnd((event, success) => {
+    if (success) {
+      console.log('Gesture succeeded!');
+    }
+  });
+`}
+code2={
+`const gesture = useTapGesture({
+  onDeactivate: (event) => {
+    if (!event.canceled) {
+      console.log('Gesture succeeded!');
+    }
+  },
+});
+`}
+/>
+
 ### onChange
 
 `onChange` callback has been removed, and its functionality has been integrated into `onUpdate`. You can now access `change*` properties in `onUpdate` callback.

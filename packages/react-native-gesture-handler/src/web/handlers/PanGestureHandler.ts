@@ -1,12 +1,12 @@
-import type { AdaptedEvent, Config } from '../interfaces';
-import { DEFAULT_TOUCH_SLOP } from '../constants';
-import GestureHandler from './GestureHandler';
-import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import type IGestureHandler from './IGestureHandler';
-import { SingleGestureName } from '../../v3/types';
-import { State } from '../../State';
 import type { StylusData } from '../../handlers/gestureHandlerCommon';
+import { State } from '../../State';
+import { SingleGestureName } from '../../v3/types';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import type { AdaptedEvent, Config } from '../interfaces';
 import { WheelDevice } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
 const DEFAULT_MIN_POINTERS = 1;
 const DEFAULT_MAX_POINTERS = 10;

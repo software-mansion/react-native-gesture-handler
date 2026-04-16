@@ -1,15 +1,16 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { findNodeHandle, Platform } from 'react-native';
+
+import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
+import { tagMessage } from '../../../utils';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type { DetectorCallbacks, VirtualChild } from '../../types';
+import type { VirtualDetectorProps } from '../common';
+import { configureRelations } from '../utils';
 import {
   InterceptingDetectorMode,
   useInterceptingDetectorContext,
 } from './useInterceptingDetectorContext';
-import { Platform, findNodeHandle } from 'react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { VirtualDetectorProps } from '../common';
-import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
-import { configureRelations } from '../utils';
-import { isComposedGesture } from '../../hooks/utils/relationUtils';
-import { tagMessage } from '../../../utils';
 
 function useRequiredInterceptingDetectorContext() {
   const context = useInterceptingDetectorContext();

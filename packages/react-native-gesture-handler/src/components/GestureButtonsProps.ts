@@ -6,6 +6,7 @@ import type {
   StyleProp,
   ViewStyle,
 } from 'react-native';
+
 import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 
 /**

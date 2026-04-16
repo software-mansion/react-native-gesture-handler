@@ -16,7 +16,7 @@
     "project": ["./tsconfig.json"]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
-  "plugins": ["react", "jest"],
+  "plugins": ["react", "jest", "simple-import-sort"],
   "ignorePatterns": [
     "packages/react-native-gesture-handler/lib/**/*",
     "**/*.config.js",
@@ -88,6 +88,7 @@
     "curly": "error",
     "spaced-comment": "error",
     "no-alert": "warn",
-    "sort-imports": "error"
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   }
 }
