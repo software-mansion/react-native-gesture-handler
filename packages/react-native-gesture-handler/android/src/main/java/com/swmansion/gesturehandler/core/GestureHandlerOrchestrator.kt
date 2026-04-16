@@ -239,10 +239,6 @@ class GestureHandlerOrchestrator(
     }
     cleanupAwaitingHandlers()
 
-    if (handler.preventRecognizers) {
-      onPreventRecognizersRequested?.invoke(handler)
-    }
-
     // At this point the waiting handler is allowed to activate, so we need to send BEGAN -> ACTIVE event
     // as it wasn't sent before. If handler has finished recognizing the gesture before it was allowed to
     // activate, we also need to send ACTIVE -> END and END -> UNDETERMINED events, as it was blocked from
@@ -254,6 +250,10 @@ class GestureHandlerOrchestrator(
       currentState == GestureHandler.STATE_CANCELLED
     ) {
       return
+    }
+
+    if (handler.preventRecognizers) {
+      onPreventRecognizersRequested?.invoke(handler)
     }
 
     handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)
