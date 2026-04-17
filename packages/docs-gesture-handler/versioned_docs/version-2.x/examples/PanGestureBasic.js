@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: 100,
-    aspectRatio: 1,
+    height: 100,
     backgroundColor: '#b58df1',
     borderRadius: 20,
   },
