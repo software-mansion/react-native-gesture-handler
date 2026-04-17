@@ -15,25 +15,24 @@ import Animated, {
 const COLORS = ['#b58df1', '#fa7f7c', '#ffe780', '#82cab2'];
 
 export default function App() {
-  const colorIndex = useSharedValue(1);
+  const currentIndex = useSharedValue(0);
+  const nextIndex = useSharedValue(0);
+  const progress = useSharedValue(0);
 
   const tap = useTapGesture({
     onActivate: () => {
-      if (colorIndex.value > COLORS.length) {
-        colorIndex.value =
-          colorIndex.value % 1 === 0 ? 1 : colorIndex.value % 1;
-      }
-
-      const nextIndex = Math.ceil(colorIndex.value + 1);
-      colorIndex.value = withTiming(nextIndex, { duration: 250 });
+      currentIndex.value = nextIndex.value;
+      nextIndex.value = (nextIndex.value + 1) % COLORS.length;
+      progress.value = 0;
+      progress.value = withTiming(1, { duration: 250 });
     },
   });
 
   const animatedStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
-      colorIndex.value,
-      [0, ...COLORS.map((_, i) => i + 1), COLORS.length + 1],
-      [COLORS[COLORS.length - 1], ...COLORS, COLORS[0]]
+      progress.value,
+      [0, 1],
+      [COLORS[currentIndex.value], COLORS[nextIndex.value]]
     ),
   }));
 

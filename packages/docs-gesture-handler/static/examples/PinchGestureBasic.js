@@ -97,7 +97,7 @@ export default function App() {
 
   return (
     <GestureHandlerRootView>
-      <View ref={containerRef} style={[styles.container]}>
+      <View ref={containerRef} style={styles.container}>
         <GestureDetector gesture={pan}>
           <Animated.View
             ref={boxRef}
@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    aspectRatio: 3,
   },
   box: {
     aspectRatio: 1,
