@@ -6,15 +6,12 @@ import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import Animated, {
+  clamp,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('screen');
-
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
 
 export default function App() {
   const scale = useSharedValue(1);

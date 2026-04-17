@@ -7,14 +7,11 @@ import {
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
+  clamp,
   withTiming,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
 
 export default function App() {
   const translateX = useSharedValue(0);

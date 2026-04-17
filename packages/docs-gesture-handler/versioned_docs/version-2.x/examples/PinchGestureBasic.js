@@ -6,12 +6,11 @@ import {
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
+  clamp,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-
-const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 export default function App() {
   const boxWidth = useSharedValue(100);

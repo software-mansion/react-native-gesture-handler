@@ -1,5 +1,6 @@
 import React from 'react';
 import Animated, {
+  clamp,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
@@ -10,15 +11,9 @@ import {
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
-
 export default function App() {
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
-  const prevTranslationX = useSharedValue(0);
-  const prevTranslationY = useSharedValue(0);
   const grabbing = useSharedValue(false);
   const maxTranslateX = useSharedValue(0);
   const maxTranslateY = useSharedValue(0);
@@ -60,17 +55,15 @@ export default function App() {
     minDistance: 1,
     onBegin: () => {
       grabbing.value = true;
-      prevTranslationX.value = translationX.value;
-      prevTranslationY.value = translationY.value;
     },
     onUpdate: (event) => {
       translationX.value = clamp(
-        prevTranslationX.value + event.translationX,
+        translationX.value + event.changeX,
         -maxTranslateX.value,
         maxTranslateX.value
       );
       translationY.value = clamp(
-        prevTranslationY.value + event.translationY,
+        translationX.value + event.changeY,
         -maxTranslateY.value,
         maxTranslateY.value
       );
@@ -81,8 +74,8 @@ export default function App() {
   });
 
   return (
-    <GestureHandlerRootView >
-      <View ref={containerRef} style={styles.container} >
+    <GestureHandlerRootView>
+      <View ref={containerRef} style={styles.container}>
         <GestureDetector gesture={pan}>
           <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
         </GestureDetector>

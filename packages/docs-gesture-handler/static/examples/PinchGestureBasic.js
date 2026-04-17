@@ -6,12 +6,11 @@ import {
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
+  clamp,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-
-const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 export default function App() {
   const boxWidth = useSharedValue(100);
@@ -19,7 +18,7 @@ export default function App() {
 
   const centerX = useSharedValue(0);
   const centerY = useSharedValue(0);
-  const maxBoxSize = useSharedValue(0) ;
+  const maxBoxSize = useSharedValue(0);
   const minBoxSize = 20;
 
   const pointerPositionX = useSharedValue(0);
@@ -97,7 +96,7 @@ export default function App() {
   }));
 
   return (
-    <GestureHandlerRootView >
+    <GestureHandlerRootView>
       <View ref={containerRef} style={[styles.container]}>
         <GestureDetector gesture={pan}>
           <Animated.View
