@@ -82,7 +82,7 @@ export default function App() {
 
   return (
     <GestureHandlerRootView >
-      <View ref={containerRef} style={styles.container} >
+      <View ref={containerRef} style={styles.container}>
         <GestureDetector gesture={pan}>
           <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
         </GestureDetector>
