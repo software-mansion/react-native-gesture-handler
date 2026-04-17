@@ -97,34 +97,36 @@ export default function App() {
 
   return (
     <GestureHandlerRootView>
-      <View ref={containerRef} style={styles.container}>
-        <GestureDetector gesture={pan}>
+      <View style={styles.container}>
+        <View style={styles.innerContainer} ref={containerRef}>
+          <GestureDetector gesture={pan}>
+            <Animated.View
+              ref={boxRef}
+              style={[styles.box, boxAnimatedStyles]}></Animated.View>
+          </GestureDetector>
           <Animated.View
-            ref={boxRef}
-            style={[styles.box, boxAnimatedStyles]}></Animated.View>
-        </GestureDetector>
-        <Animated.View
-          style={[
-            styles.dot,
-            {
-              transform: [
-                { translateX: pointerPositionX },
-                { translateY: pointerPositionY },
-              ],
-              opacity: touchOpacity,
-            },
-          ]}></Animated.View>
-        <Animated.View
-          style={[
-            styles.dot,
-            {
-              transform: [
-                { translateX: negativePointerPositionX },
-                { translateY: negativePointerPositionY },
-              ],
-              opacity: touchOpacity,
-            },
-          ]}></Animated.View>
+            style={[
+              styles.dot,
+              {
+                transform: [
+                  { translateX: pointerPositionX },
+                  { translateY: pointerPositionY },
+                ],
+                opacity: touchOpacity,
+              },
+            ]}></Animated.View>
+          <Animated.View
+            style={[
+              styles.dot,
+              {
+                transform: [
+                  { translateX: negativePointerPositionX },
+                  { translateY: negativePointerPositionY },
+                ],
+                opacity: touchOpacity,
+              },
+            ]}></Animated.View>
+        </View>
       </View>
     </GestureHandlerRootView>
   );
@@ -135,7 +137,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    aspectRatio: 3,
+  },
+  innerContainer: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   box: {
     aspectRatio: 1,
