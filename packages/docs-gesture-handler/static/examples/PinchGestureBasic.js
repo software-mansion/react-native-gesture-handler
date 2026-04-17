@@ -19,7 +19,7 @@ export default function App() {
 
   const centerX = useSharedValue(0);
   const centerY = useSharedValue(0);
-  const maxBoxSize = useSharedValue(0);
+  const maxBoxSize = useSharedValue(0) ;
   const minBoxSize = 20;
 
   const pointerPositionX = useSharedValue(0);

@@ -8,7 +8,7 @@ sidebar_position: 6
 import { webContainer } from '@site/src/utils/getGestureStyles';
 
 import RotationGestureBasic from '../examples/RotationGestureBasic';
-import RotationGestureBasicSrc from '!!raw-loader!../examples/RotationGestureBasic';
+import RotationGestureBasicSrc from '!!raw-loader!../examples/RotationGestureBasicSrc';
 
 <div className={webContainer}>
   <InteractiveExample

@@ -8,7 +8,7 @@ sidebar_position: 7
 import { webContainer } from '@site/src/utils/getGestureStyles';
 
 import PinchGestureBasic from '../examples/PinchGestureBasic';
-import PinchGestureBasicSrc from '!!raw-loader!../examples/PinchGestureBasic';
+import PinchGestureBasicSrc from '!!raw-loader!../examples/PinchGestureBasicSrc';
 
 <div className={webContainer}>
   <InteractiveExample
