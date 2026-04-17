@@ -53,7 +53,7 @@ function SingleHandlerExample() {
   const feedbackRef = useRef<FeedbackHandle>(null);
   const sequenceRef = useRef(0);
   const [events, setEvents] = useState<string[]>([]);
-  const [preventRecognizers, setPreventRecognizers] = useState(true);
+  const [cancelsJSResponder, setCancelsJSResponder] = useState(true);
 
   const pushEvent = useCallback((label: string) => {
     sequenceRef.current += 1;
@@ -67,7 +67,7 @@ function SingleHandlerExample() {
   const panGesture = usePanGesture({
     minDistance: 12,
     runOnJS: true,
-    preventRecognizers,
+    cancelsJSResponder,
     onActivate: () => {
       pushEvent('GH pan ACTIVE');
     },
@@ -80,13 +80,13 @@ function SingleHandlerExample() {
     <View style={singleStyles.container}>
       <Text style={commonStyles.header}>RN responder cancellation</Text>
       <Text style={commonStyles.instructions}>
-        Toggle preventRecognizers and drag inside the box to compare behavior.
+        Toggle cancelsJSResponder and drag inside the box to compare behavior.
       </Text>
       <View style={singleStyles.settingsRow}>
-        <Text style={singleStyles.settingsLabel}>preventRecognizers</Text>
+        <Text style={singleStyles.settingsLabel}>cancelsJSResponder</Text>
         <Switch
-          value={preventRecognizers}
-          onValueChange={setPreventRecognizers}
+          value={cancelsJSResponder}
+          onValueChange={setCancelsJSResponder}
         />
       </View>
 
@@ -199,9 +199,9 @@ const singleStyles = StyleSheet.create({
 
 // ---------- Multi handler ---------------------------------------------------
 // Validates that when two Gesture Handler recognizers are active at the same
-// time, both with preventRecognizers set to true, finishing ONE of them does
+// time, both with cancelsJSResponder set to true, finishing ONE of them does
 // NOT unblock React Native JS responders — the block must stay in place until
-// the LAST preventing recognizer finishes.
+// the LAST cancelling recognizer finishes.
 //
 // Expected interaction to reproduce:
 //   1. Finger 1: drag inside "Pan A"           → GH_A ACTIVE  (RN blocked)
@@ -221,7 +221,7 @@ function MultiHandlerExample() {
   const feedbackRef = useRef<FeedbackHandle>(null);
   const sequenceRef = useRef(0);
   const [events, setEvents] = useState<string[]>([]);
-  const [preventRecognizers, setPreventRecognizers] = useState(true);
+  const [cancelsJSResponder, setCancelsJSResponder] = useState(true);
 
   const pushEvent = useCallback((label: string) => {
     sequenceRef.current += 1;
@@ -235,7 +235,7 @@ function MultiHandlerExample() {
   const panA = usePanGesture({
     minDistance: 8,
     runOnJS: true,
-    preventRecognizers,
+    cancelsJSResponder,
     onActivate: () => pushEvent('GH_A ACTIVE'),
     onFinalize: (_e, success) =>
       pushEvent(`GH_A finalize (${success ? 'success' : 'cancel/fail'})`),
@@ -244,7 +244,7 @@ function MultiHandlerExample() {
   const panB = usePanGesture({
     minDistance: 8,
     runOnJS: true,
-    // preventRecognizers,
+    cancelsJSResponder,
     onActivate: () => pushEvent('GH_B ACTIVE'),
     onFinalize: (_e, success) =>
       pushEvent(`GH_B finalize (${success ? 'success' : 'cancel/fail'})`),
@@ -257,17 +257,17 @@ function MultiHandlerExample() {
 
   return (
     <View style={multiStyles.container}>
-      <Text style={commonStyles.header}>preventRecognizers — multi</Text>
+      <Text style={commonStyles.header}>cancelsJSResponder — multi</Text>
       <Text style={commonStyles.instructions}>
         Drag A and B with two fingers simultaneously, then tap the RN zone with
         a third finger. Release one finger at a time and re-tap.
       </Text>
 
       <View style={multiStyles.settingsRow}>
-        <Text style={multiStyles.settingsLabel}>preventRecognizers</Text>
+        <Text style={multiStyles.settingsLabel}>cancelsJSResponder</Text>
         <Switch
-          value={preventRecognizers}
-          onValueChange={setPreventRecognizers}
+          value={cancelsJSResponder}
+          onValueChange={setCancelsJSResponder}
         />
         <Text onPress={clearLog} style={multiStyles.clearButton}>
           clear

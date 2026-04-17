@@ -42,8 +42,8 @@ class GestureHandlerOrchestrator(
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
 
-  var onPreventRecognizersRequested: ((GestureHandler) -> Unit)? = null
-  var onPreventRecognizersReleased: ((GestureHandler) -> Unit)? = null
+  var onCancelJSResponderRequested: ((GestureHandler) -> Unit)? = null
+  var onCancelJSResponderReleased: ((GestureHandler) -> Unit)? = null
 
   /**
    * Should be called from the view wrapper
@@ -147,10 +147,10 @@ class GestureHandlerOrchestrator(
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
 
-    if (isFinished(newState) && handler.isActive && handler.preventRecognizers) {
-      // Check if there are any other active handlers that are preventing recognizers.
-      if (gestureHandlers.none { it !== handler && it.isActive && it.preventRecognizers }) {
-        onPreventRecognizersReleased?.invoke(handler)
+    if (isFinished(newState) && handler.isActive && handler.cancelsJSResponder) {
+      // Check if there are any other active handlers that still request the JS responder to be cancelled.
+      if (gestureHandlers.none { it !== handler && it.isActive && it.cancelsJSResponder }) {
+        onCancelJSResponderReleased?.invoke(handler)
       }
     }
 
@@ -252,8 +252,8 @@ class GestureHandlerOrchestrator(
       return
     }
 
-    if (handler.preventRecognizers) {
-      onPreventRecognizersRequested?.invoke(handler)
+    if (handler.cancelsJSResponder) {
+      onCancelJSResponderRequested?.invoke(handler)
     }
 
     handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)

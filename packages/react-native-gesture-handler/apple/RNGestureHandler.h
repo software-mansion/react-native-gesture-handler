@@ -81,7 +81,7 @@
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
-@property (nonatomic) BOOL preventRecognizers;
+@property (nonatomic) BOOL cancelsJSResponder;
 @property (nonatomic) BOOL dispatchesAnimatedEvents;
 @property (nonatomic) BOOL dispatchesReanimatedEvents;
 @property (nonatomic, weak, nullable) RNGHUIView *hostDetectorView;

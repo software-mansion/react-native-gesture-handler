@@ -41,7 +41,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       rootView,
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
-      onPreventRecognizersRequested = { _ ->
+      onCancelJSResponderRequested = { _ ->
         shouldIntercept = true
         val time = SystemClock.uptimeMillis()
         val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
@@ -50,7 +50,7 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         }
         event.recycle()
       }
-      onPreventRecognizersReleased = { _ ->
+      onCancelJSResponderReleased = { _ ->
         shouldIntercept = false
       }
     }

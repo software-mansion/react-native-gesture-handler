@@ -56,7 +56,7 @@
   // to send an info to JS so that it cancels all JS responders, as long as the preventing
   // recognizer is from Gesture Handler, otherwise we might break some interactions
   RNGestureHandler *handler = [RNGestureHandler findGestureHandlerByRecognizer:preventingGestureRecognizer];
-  if (handler != nil && handler.preventRecognizers) {
+  if (handler != nil && handler.cancelsJSResponder) {
     [self.delegate gestureRecognizer:preventingGestureRecognizer didActivateInViewWithTouchHandler:self.view];
   }
 

@@ -150,16 +150,16 @@ activeCursor: ActiveCursor | SharedValue<ActiveCursor>;
 This parameter allows specifying which cursor should be used when the gesture activates. Supports all [CSS cursor values](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/cursor#keyword) (e.g. `"grab"`, `"zoom-in"`). Default value is set to `"auto"`.
 
 <HeaderWithBadges platforms={['ios', 'android']}>
-  ### preventRecognizers
+  ### cancelsJSResponder
 </HeaderWithBadges>
 
 ```ts
-preventRecognizers?: boolean;
+cancelsJSResponder?: boolean;
 ```
 
 Controls whether activating a Gesture Handler recognizer should cancel React Native JS responders.
 
-This option is configured per gesture handler (for example in `usePanGesture({ preventRecognizers: ... })`).
+This option is configured per gesture handler (for example in `usePanGesture({ cancelsJSResponder: ... })`).
 
 - `true` (default): when this gesture activates, it cancels React Native JS responders in the same root view.
 - `false`: disables that cancellation, so Gesture Handler callbacks and RN responder callbacks can run at the same time.
