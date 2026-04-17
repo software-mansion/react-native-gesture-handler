@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  useRotationGesture, // <-- RNGH v3 API Hook
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -14,16 +14,13 @@ export default function App() {
   const angle = useSharedValue(0);
   const startAngle = useSharedValue(0);
 
-  // RNGH v3 Configuration Object
-  const rotation = useRotationGesture({
-    // Note: onStart has been renamed to onActivate in v3
-    onActivate: () => {
+  const rotation = Gesture.Rotation()
+    .onStart(() => {
       startAngle.value = angle.value;
-    },
-    onUpdate: (event) => {
+    })
+    .onUpdate((event) => {
       angle.value = startAngle.value + event.rotation;
-    },
-  });
+    });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ rotate: `${angle.value}rad` }],
@@ -32,7 +29,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={rotation}>
-        <Animated.View style={[styles.box, boxAnimatedStyles]} />
+        <Animated.View style={[styles.box, boxAnimatedStyles]}></Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
   );
@@ -58,6 +55,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: '50%',
     top: '50%',
-    pointerEvents: 'none',
   },
 });

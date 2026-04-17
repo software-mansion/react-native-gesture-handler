@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   Directions,
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  useFlingGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -46,12 +46,12 @@ export default function App() {
     };
   }, []);
 
-  const fling = useFlingGesture({
-    direction: Directions.LEFT | Directions.RIGHT,
-    onBegin: (event) => {
+  const fling = Gesture.Fling()
+    .direction(Directions.LEFT | Directions.RIGHT)
+    .onBegin((event) => {
       startTranslateX.value = event.x;
-    },
-    onActivate: (event) => {
+    })
+    .onStart((event) => {
       translateX.value = withTiming(
         clamp(
           translateX.value + event.x - startTranslateX.value,
@@ -60,8 +60,7 @@ export default function App() {
         ),
         { duration: 200 }
       );
-    },
-  });
+    });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],

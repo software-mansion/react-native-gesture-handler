@@ -14,7 +14,7 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import RotationGestureBasic from '@site/static/examples/RotationGestureBasic';
-import RotationGestureBasicSrc from '!!raw-loader!@site/static/examples/RotationGestureBasicSrc';
+import RotationGestureBasicSrc from '!!raw-loader!@site/static/examples/RotationGestureBasic';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>

@@ -1,8 +1,8 @@
 import React from 'react';
 import {
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  useLongPressGesture,
 } from 'react-native-gesture-handler';
 import { Easing, StyleSheet } from 'react-native';
 import Animated, {
@@ -18,14 +18,14 @@ export default function App() {
   const colorIndex = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  const longPress = useLongPressGesture({
-    onBegin: () => {
+  const longPress = Gesture.LongPress()
+    .onBegin(() => {
       scale.value = withTiming(1.2, {
         duration: 500,
         easing: Easing.bezier(0.31, 0.04, 0.03, 1.04),
       });
-    },
-    onActivate: () => {
+    })
+    .onStart(() => {
       colorIndex.value = withTiming(
         (colorIndex.value + 1) % (COLORS.length + 1),
         { duration: 200 },
@@ -35,14 +35,13 @@ export default function App() {
           }
         }
       );
-    },
-    onFinalize: () => {
+    })
+    .onFinalize(() => {
       scale.value = withTiming(1, {
         duration: 250,
         easing: Easing.bezier(0.82, 0.06, 0.42, 1.01),
       });
-    },
-  });
+    });
 
   const animatedStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(

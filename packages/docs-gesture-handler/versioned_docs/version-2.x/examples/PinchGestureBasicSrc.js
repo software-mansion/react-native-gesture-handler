@@ -1,51 +1,42 @@
 import React from 'react';
+import { Dimensions, StyleSheet } from 'react-native';
 import {
-  Directions,
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
-import { Dimensions, StyleSheet } from 'react-native';
 import Animated, {
-  withTiming,
+  clamp,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-const { width } = Dimensions.get('screen');
-
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
+const { width, height } = Dimensions.get('screen');
 
 export default function App() {
-  const translateX = useSharedValue(0);
-  const startTranslateX = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const startScale = useSharedValue(0);
 
-  const fling = Gesture.Fling()
-    .direction(Directions.LEFT | Directions.RIGHT)
-    .onBegin((event) => {
-      startTranslateX.value = event.x;
+  const pinch = Gesture.Pinch()
+    .onStart(() => {
+      startScale.value = scale.value;
     })
-    .onStart((event) => {
-      translateX.value = withTiming(
-        clamp(
-          translateX.value + event.x - startTranslateX.value,
-          width / -2 + 50,
-          width / 2 - 50
-        ),
-        { duration: 200 }
+    .onUpdate((event) => {
+      scale.value = clamp(
+        startScale.value * event.scale,
+        0.5,
+        Math.min(width / 100, height / 100)
       );
     })
     .runOnJS(true);
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ scale: scale.value }],
   }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={fling}>
+      <GestureDetector gesture={pinch}>
         <Animated.View style={[styles.box, boxAnimatedStyles]}></Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
@@ -63,6 +54,15 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     backgroundColor: '#b58df1',
-    cursor: 'grab',
+  },
+  dot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ccc',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    pointerEvents: 'none',
   },
 });

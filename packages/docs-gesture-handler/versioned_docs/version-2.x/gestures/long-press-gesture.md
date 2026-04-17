@@ -5,19 +5,12 @@ sidebar_label: Long press gesture
 sidebar_position: 5
 ---
 
-import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+import { webContainer } from '@site/src/utils/getGestureStyles';
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
-import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
+import LongPressGestureBasic from '../examples/LongPressGestureBasic';
+import LongPressGestureBasicSrc from '!!raw-loader!../examples/LongPressGestureBasic';
 
 <div className={webContainer}>
-  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
-    </video>
-  </div>
   <InteractiveExample
     component={<LongPressGestureBasic/>}
     src={LongPressGestureBasicSrc}
@@ -32,12 +25,6 @@ import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
 A discrete gesture that activates when the corresponding view is pressed for a sufficiently long time.
 This gesture's state will turn into [END](/docs/2.x/fundamentals/states-events#end) immediately after the finger is released.
 The gesture will fail to recognize a touch event if the finger is lifted before the [minimum required time](/docs/2.x/gestures/long-press-gesture#mindurationvalue-number) or if the finger is moved further than the [allowable distance](/docs/2.x/gestures/long-press-gesture#maxdistancevalue-number).
-
-<div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/longpress.mp4")} type="video/mp4"/>
-    </video>
-</div>
 
 <samp id="LongPressGestureBasic">Long Press Gesture</samp>
 
