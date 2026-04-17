@@ -32,12 +32,9 @@ export const DrawerLayoutAndroid = () => {
 // on functional components
 export const RefreshControl = createNativeWrapper(View);
 
-export const FlatList = React.forwardRef(
-  <ItemT,>(props: FlatListProps<ItemT>, ref: any) => (
-    <RNFlatList
-      ref={ref}
-      {...props}
-      renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
-    />
-  )
+export const FlatList = <ItemT,>(props: FlatListProps<ItemT>) => (
+  <RNFlatList
+    {...props}
+    renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
+  />
 );

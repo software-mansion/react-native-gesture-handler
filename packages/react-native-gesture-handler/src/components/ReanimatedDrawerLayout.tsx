@@ -4,7 +4,6 @@
 
 import type { ReactNode } from 'react';
 import React, {
-  forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -265,444 +264,435 @@ const defaultProps = {
 const setStatusBarHidden = StatusBar.setHidden;
 const dismissKeyboard = Keyboard.dismiss;
 
-const DrawerLayout = forwardRef<DrawerLayoutMethods, DrawerLayoutProps>(
-  function DrawerLayout(props: DrawerLayoutProps, ref) {
-    const [containerWidth, setContainerWidth] = useState(0);
-    const [drawerState, setDrawerState] = useState<DrawerState>(
-      DrawerState.IDLE
-    );
-    const [drawerOpened, setDrawerOpened] = useState(false);
+const DrawerLayout = function DrawerLayout(
+  props: DrawerLayoutProps & {
+    ref?: React.Ref<DrawerLayoutMethods>;
+  }
+) {
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [drawerState, setDrawerState] = useState<DrawerState>(DrawerState.IDLE);
+  const [drawerOpened, setDrawerOpened] = useState(false);
 
-    const {
-      drawerPosition = defaultProps.drawerPosition,
-      drawerWidth = defaultProps.drawerWidth,
-      drawerType = defaultProps.drawerType,
-      drawerBackgroundColor,
-      drawerContainerStyle,
-      contentContainerStyle,
-      minSwipeDistance = defaultProps.minSwipeDistance,
-      edgeWidth = defaultProps.edgeWidth,
-      drawerLockMode = defaultProps.drawerLockMode,
-      overlayColor = defaultProps.overlayColor,
-      enableTrackpadTwoFingerGesture = defaultProps.enableTrackpadTwoFingerGesture,
-      activeCursor = defaultProps.activeCursor,
-      mouseButton = defaultProps.mouseButton,
-      statusBarAnimation = defaultProps.statusBarAnimation,
-      hideStatusBar,
-      keyboardDismissMode,
-      userSelect,
-      enableContextMenu,
-      renderNavigationView,
-      onDrawerSlide,
-      onDrawerClose,
-      onDrawerOpen,
-      onDrawerStateChanged,
-      animationSpeed: animationSpeedProp,
-    } = props;
+  const {
+    drawerPosition = defaultProps.drawerPosition,
+    drawerWidth = defaultProps.drawerWidth,
+    drawerType = defaultProps.drawerType,
+    drawerBackgroundColor,
+    drawerContainerStyle,
+    contentContainerStyle,
+    minSwipeDistance = defaultProps.minSwipeDistance,
+    edgeWidth = defaultProps.edgeWidth,
+    drawerLockMode = defaultProps.drawerLockMode,
+    overlayColor = defaultProps.overlayColor,
+    enableTrackpadTwoFingerGesture = defaultProps.enableTrackpadTwoFingerGesture,
+    activeCursor = defaultProps.activeCursor,
+    mouseButton = defaultProps.mouseButton,
+    statusBarAnimation = defaultProps.statusBarAnimation,
+    hideStatusBar,
+    keyboardDismissMode,
+    userSelect,
+    enableContextMenu,
+    renderNavigationView,
+    onDrawerSlide,
+    onDrawerClose,
+    onDrawerOpen,
+    onDrawerStateChanged,
+    animationSpeed: animationSpeedProp,
+  } = props;
 
-    const isFromLeft = drawerPosition === DrawerPosition.LEFT;
+  const isFromLeft = drawerPosition === DrawerPosition.LEFT;
 
-    const sideCorrection = isFromLeft ? 1 : -1;
+  const sideCorrection = isFromLeft ? 1 : -1;
 
-    // While closing the drawer when user starts gesture in the greyed out part of the window,
-    // we want the drawer to follow only once the finger reaches the edge of the drawer.
-    // See the diagram for reference. * = starting finger position, < = current finger position
-    // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|..<*..|    |XXXXXXXX|.<-*..|    |XXXXXXXX|<--*..|    |XXXXX|<-----*..|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
-    //    +---------------+    +---------------+    +---------------+    +---------------+
+  // While closing the drawer when user starts gesture in the greyed out part of the window,
+  // we want the drawer to follow only once the finger reaches the edge of the drawer.
+  // See the diagram for reference. * = starting finger position, < = current finger position
+  // 1) +---------------+ 2) +---------------+ 3) +---------------+ 4) +---------------+
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|..<*..|    |XXXXXXXX|.<-*..|    |XXXXXXXX|<--*..|    |XXXXX|<-----*..|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXXXXX|......|    |XXXXX|.........|
+  //    +---------------+    +---------------+    +---------------+    +---------------+
 
-    const openValue = useSharedValue<number>(0);
+  const openValue = useSharedValue<number>(0);
 
-    useDerivedValue(() => {
-      onDrawerSlide && runOnJS(onDrawerSlide)(openValue.value);
-    }, []);
+  useDerivedValue(() => {
+    onDrawerSlide && runOnJS(onDrawerSlide)(openValue.value);
+  }, []);
 
-    const isDrawerOpen = useSharedValue(false);
+  const isDrawerOpen = useSharedValue(false);
 
-    const handleContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-      setContainerWidth(nativeEvent.layout.width);
-    };
+  const handleContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+    setContainerWidth(nativeEvent.layout.width);
+  };
 
-    const emitStateChanged = useCallback(
-      (newState: DrawerState, drawerWillShow: boolean) => {
-        'worklet';
-        onDrawerStateChanged &&
-          runOnJS(onDrawerStateChanged)?.(newState, drawerWillShow);
-      },
-      [onDrawerStateChanged]
-    );
+  const emitStateChanged = useCallback(
+    (newState: DrawerState, drawerWillShow: boolean) => {
+      'worklet';
+      onDrawerStateChanged &&
+        runOnJS(onDrawerStateChanged)?.(newState, drawerWillShow);
+    },
+    [onDrawerStateChanged]
+  );
 
-    const drawerAnimatedProps = useAnimatedProps(() => ({
-      accessibilityViewIsModal: isDrawerOpen.value,
-    }));
+  const drawerAnimatedProps = useAnimatedProps(() => ({
+    accessibilityViewIsModal: isDrawerOpen.value,
+  }));
 
-    const overlayAnimatedProps = useAnimatedProps(() => ({
-      pointerEvents: isDrawerOpen.value ? ('auto' as const) : ('none' as const),
-    }));
+  const overlayAnimatedProps = useAnimatedProps(() => ({
+    pointerEvents: isDrawerOpen.value ? ('auto' as const) : ('none' as const),
+  }));
 
-    // While the drawer is hidden, it's hitSlop overflows onto the main view by edgeWidth
-    // This way it can be swiped open even when it's hidden
-    const [edgeHitSlop, setEdgeHitSlop] = useState<HitSlop>(
+  // While the drawer is hidden, it's hitSlop overflows onto the main view by edgeWidth
+  // This way it can be swiped open even when it's hidden
+  const [edgeHitSlop, setEdgeHitSlop] = useState<HitSlop>(
+    isFromLeft ? { left: 0, width: edgeWidth } : { right: 0, width: edgeWidth }
+  );
+
+  // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
+  const gestureOrientation = useMemo(
+    () => sideCorrection * (drawerOpened ? -1 : 1),
+    [sideCorrection, drawerOpened]
+  );
+
+  useEffect(() => {
+    setEdgeHitSlop(
       isFromLeft
         ? { left: 0, width: edgeWidth }
         : { right: 0, width: edgeWidth }
     );
+  }, [isFromLeft, edgeWidth]);
 
-    // gestureOrientation is 1 if the gesture is expected to move from left to right and -1 otherwise
-    const gestureOrientation = useMemo(
-      () => sideCorrection * (drawerOpened ? -1 : 1),
-      [sideCorrection, drawerOpened]
-    );
+  const animateDrawer = useCallback(
+    (toValue: number, initialVelocity: number, animationSpeed?: number) => {
+      'worklet';
+      const willShow = toValue !== 0;
+      isDrawerOpen.value = willShow;
 
-    useEffect(() => {
-      setEdgeHitSlop(
-        isFromLeft
-          ? { left: 0, width: edgeWidth }
-          : { right: 0, width: edgeWidth }
+      emitStateChanged(DrawerState.SETTLING, willShow);
+      runOnJS(setDrawerState)(DrawerState.SETTLING);
+
+      if (hideStatusBar) {
+        runOnJS(setStatusBarHidden)(willShow, statusBarAnimation);
+      }
+
+      const normalizedToValue = interpolate(
+        toValue,
+        [0, drawerWidth],
+        [0, 1],
+        Extrapolation.CLAMP
       );
-    }, [isFromLeft, edgeWidth]);
 
-    const animateDrawer = useCallback(
-      (toValue: number, initialVelocity: number, animationSpeed?: number) => {
-        'worklet';
-        const willShow = toValue !== 0;
-        isDrawerOpen.value = willShow;
+      const normalizedInitialVelocity = interpolate(
+        initialVelocity,
+        [0, drawerWidth],
+        [0, 1],
+        Extrapolation.CLAMP
+      );
 
-        emitStateChanged(DrawerState.SETTLING, willShow);
-        runOnJS(setDrawerState)(DrawerState.SETTLING);
-
-        if (hideStatusBar) {
-          runOnJS(setStatusBarHidden)(willShow, statusBarAnimation);
-        }
-
-        const normalizedToValue = interpolate(
-          toValue,
-          [0, drawerWidth],
-          [0, 1],
-          Extrapolation.CLAMP
-        );
-
-        const normalizedInitialVelocity = interpolate(
-          initialVelocity,
-          [0, drawerWidth],
-          [0, 1],
-          Extrapolation.CLAMP
-        );
-
-        openValue.value = withSpring(
-          normalizedToValue,
-          {
-            overshootClamping: true,
-            velocity: normalizedInitialVelocity,
-            mass: animationSpeed
-              ? 1 / animationSpeed
-              : 1 / (animationSpeedProp ?? 1),
-            damping: 40,
-            stiffness: 500,
-          },
-          (finished) => {
-            if (finished) {
-              emitStateChanged(DrawerState.IDLE, willShow);
-              runOnJS(setDrawerOpened)(willShow);
-              runOnJS(setDrawerState)(DrawerState.IDLE);
-              if (willShow) {
-                onDrawerOpen && runOnJS(onDrawerOpen)?.();
-              } else {
-                onDrawerClose && runOnJS(onDrawerClose)?.();
-              }
+      openValue.value = withSpring(
+        normalizedToValue,
+        {
+          overshootClamping: true,
+          velocity: normalizedInitialVelocity,
+          mass: animationSpeed
+            ? 1 / animationSpeed
+            : 1 / (animationSpeedProp ?? 1),
+          damping: 40,
+          stiffness: 500,
+        },
+        (finished) => {
+          if (finished) {
+            emitStateChanged(DrawerState.IDLE, willShow);
+            runOnJS(setDrawerOpened)(willShow);
+            runOnJS(setDrawerState)(DrawerState.IDLE);
+            if (willShow) {
+              onDrawerOpen && runOnJS(onDrawerOpen)?.();
+            } else {
+              onDrawerClose && runOnJS(onDrawerClose)?.();
             }
           }
-        );
-      },
-      [
-        openValue,
-        emitStateChanged,
-        isDrawerOpen,
-        hideStatusBar,
-        onDrawerClose,
-        onDrawerOpen,
-        drawerWidth,
-        statusBarAnimation,
-      ]
-    );
-
-    const handleRelease = useCallback(
-      (event: PanGestureActiveEvent) => {
-        'worklet';
-        let { translationX: dragX, velocityX, x: touchX } = event;
-
-        if (drawerPosition !== DrawerPosition.LEFT) {
-          // See description in _updateAnimatedEvent about why events are flipped
-          // for right-side drawer
-          dragX = -dragX;
-          touchX = containerWidth - touchX;
-          velocityX = -velocityX;
         }
+      );
+    },
+    [
+      openValue,
+      emitStateChanged,
+      isDrawerOpen,
+      hideStatusBar,
+      onDrawerClose,
+      onDrawerOpen,
+      drawerWidth,
+      statusBarAnimation,
+    ]
+  );
 
-        const gestureStartX = touchX - dragX;
-        let dragOffsetBasedOnStart = 0;
+  const handleRelease = useCallback(
+    (event: PanGestureActiveEvent) => {
+      'worklet';
+      let { translationX: dragX, velocityX, x: touchX } = event;
 
-        if (drawerType === DrawerType.FRONT) {
-          dragOffsetBasedOnStart =
-            gestureStartX > drawerWidth ? gestureStartX - drawerWidth : 0;
-        }
+      if (drawerPosition !== DrawerPosition.LEFT) {
+        // See description in _updateAnimatedEvent about why events are flipped
+        // for right-side drawer
+        dragX = -dragX;
+        touchX = containerWidth - touchX;
+        velocityX = -velocityX;
+      }
 
-        const startOffsetX =
-          dragX +
-          dragOffsetBasedOnStart +
-          (isDrawerOpen.value ? drawerWidth : 0);
+      const gestureStartX = touchX - dragX;
+      let dragOffsetBasedOnStart = 0;
 
-        const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
-
-        const shouldOpen = projOffsetX > drawerWidth / 2;
-
-        if (shouldOpen) {
-          animateDrawer(drawerWidth, velocityX);
-        } else {
-          animateDrawer(0, velocityX);
-        }
-      },
-      [
-        animateDrawer,
-        containerWidth,
-        drawerPosition,
-        drawerType,
-        drawerWidth,
-        isDrawerOpen,
-      ]
-    );
-
-    const openDrawer = useCallback(
-      (options: DrawerMovementOption = {}) => {
-        'worklet';
-        animateDrawer(
-          drawerWidth,
-          options.initialVelocity ?? 0,
-          options.animationSpeed
-        );
-      },
-      [animateDrawer, drawerWidth]
-    );
-
-    const closeDrawer = useCallback(
-      (options: DrawerMovementOption = {}) => {
-        'worklet';
-        animateDrawer(0, options.initialVelocity ?? 0, options.animationSpeed);
-      },
-      [animateDrawer]
-    );
-
-    const overlayDismissGesture = useTapGesture({
-      enabled: drawerOpened,
-      maxDistance: 25,
-      onDeactivate: () => {
-        'worklet';
-        if (
-          isDrawerOpen.value &&
-          drawerLockMode !== DrawerLockMode.LOCKED_OPEN
-        ) {
-          closeDrawer();
-        }
-      },
-    });
-
-    const overlayAnimatedStyle = useAnimatedStyle(() => ({
-      opacity: openValue.value,
-      backgroundColor: overlayColor,
-    }));
-
-    const fillHitSlop = useMemo(
-      () => (isFromLeft ? { left: drawerWidth } : { right: drawerWidth }),
-      [drawerWidth, isFromLeft]
-    );
-
-    const panGesture = usePanGesture({
-      activeCursor: activeCursor,
-      mouseButton: mouseButton,
-      hitSlop: drawerOpened ? fillHitSlop : edgeHitSlop,
-      activeOffsetX: gestureOrientation * minSwipeDistance,
-      failOffsetY: [-15, 15],
-      simultaneousWith: overlayDismissGesture,
-      enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
-      enabled:
-        drawerState !== DrawerState.SETTLING &&
-        (drawerOpened
-          ? drawerLockMode !== DrawerLockMode.LOCKED_OPEN
-          : drawerLockMode !== DrawerLockMode.LOCKED_CLOSED),
-      onActivate: () => {
-        'worklet';
-        emitStateChanged(DrawerState.DRAGGING, false);
-        runOnJS(setDrawerState)(DrawerState.DRAGGING);
-        if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
-          runOnJS(dismissKeyboard)();
-        }
-        if (hideStatusBar) {
-          runOnJS(setStatusBarHidden)(true, statusBarAnimation);
-        }
-      },
-      onUpdate: (event) => {
-        'worklet';
-        const startedOutsideTranslation = isFromLeft
-          ? interpolate(
-              event.x,
-              [0, drawerWidth, drawerWidth + 1],
-              [0, drawerWidth, drawerWidth]
-            )
-          : interpolate(
-              event.x - containerWidth,
-              [-drawerWidth - 1, -drawerWidth, 0],
-              [drawerWidth, drawerWidth, 0]
-            );
-
-        const startedInsideTranslation =
-          sideCorrection *
-          (event.translationX +
-            (drawerOpened ? drawerWidth * -gestureOrientation : 0));
-
-        const adjustedTranslation = Math.max(
-          drawerOpened ? startedOutsideTranslation : 0,
-          startedInsideTranslation
-        );
-
-        openValue.value = interpolate(
-          adjustedTranslation,
-          [-drawerWidth, 0, drawerWidth],
-          [1, 0, 1],
-          Extrapolation.CLAMP
-        );
-      },
-      onDeactivate: handleRelease,
-    });
-
-    // When using RTL, row and row-reverse flex directions are flipped.
-    const reverseContentDirection = I18nManager.isRTL
-      ? isFromLeft
-      : !isFromLeft;
-
-    const dynamicDrawerStyles = {
-      backgroundColor: drawerBackgroundColor,
-      width: drawerWidth,
-    };
-
-    const containerStyles = useAnimatedStyle(() => {
       if (drawerType === DrawerType.FRONT) {
-        return {};
+        dragOffsetBasedOnStart =
+          gestureStartX > drawerWidth ? gestureStartX - drawerWidth : 0;
       }
 
-      return {
-        transform: [
-          {
-            translateX: interpolate(
-              openValue.value,
-              [0, 1],
-              [0, drawerWidth * sideCorrection],
-              Extrapolation.CLAMP
-            ),
-          },
-        ],
-      };
-    });
+      const startOffsetX =
+        dragX + dragOffsetBasedOnStart + (isDrawerOpen.value ? drawerWidth : 0);
 
-    const drawerAnimatedStyle = useAnimatedStyle(() => {
-      const closedDrawerOffset = drawerWidth * -sideCorrection;
-      const isBack = drawerType === DrawerType.BACK;
-      const isIdle = drawerState === DrawerState.IDLE;
+      const projOffsetX = startOffsetX + DRAG_TOSS * velocityX;
 
-      if (isBack) {
-        return {
-          transform: [{ translateX: 0 }],
-          flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
-        };
-      }
+      const shouldOpen = projOffsetX > drawerWidth / 2;
 
-      let translateX = 0;
-
-      if (isIdle) {
-        translateX = drawerOpened ? 0 : closedDrawerOffset;
+      if (shouldOpen) {
+        animateDrawer(drawerWidth, velocityX);
       } else {
-        translateX = interpolate(
-          openValue.value,
-          [0, 1],
-          [closedDrawerOffset, 0],
-          Extrapolation.CLAMP
-        );
+        animateDrawer(0, velocityX);
       }
+    },
+    [
+      animateDrawer,
+      containerWidth,
+      drawerPosition,
+      drawerType,
+      drawerWidth,
+      isDrawerOpen,
+    ]
+  );
 
+  const openDrawer = useCallback(
+    (options: DrawerMovementOption = {}) => {
+      'worklet';
+      animateDrawer(
+        drawerWidth,
+        options.initialVelocity ?? 0,
+        options.animationSpeed
+      );
+    },
+    [animateDrawer, drawerWidth]
+  );
+
+  const closeDrawer = useCallback(
+    (options: DrawerMovementOption = {}) => {
+      'worklet';
+      animateDrawer(0, options.initialVelocity ?? 0, options.animationSpeed);
+    },
+    [animateDrawer]
+  );
+
+  const overlayDismissGesture = useTapGesture({
+    enabled: drawerOpened,
+    maxDistance: 25,
+    onDeactivate: () => {
+      'worklet';
+      if (isDrawerOpen.value && drawerLockMode !== DrawerLockMode.LOCKED_OPEN) {
+        closeDrawer();
+      }
+    },
+  });
+
+  const overlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: openValue.value,
+    backgroundColor: overlayColor,
+  }));
+
+  const fillHitSlop = useMemo(
+    () => (isFromLeft ? { left: drawerWidth } : { right: drawerWidth }),
+    [drawerWidth, isFromLeft]
+  );
+
+  const panGesture = usePanGesture({
+    activeCursor: activeCursor,
+    mouseButton: mouseButton,
+    hitSlop: drawerOpened ? fillHitSlop : edgeHitSlop,
+    activeOffsetX: gestureOrientation * minSwipeDistance,
+    failOffsetY: [-15, 15],
+    simultaneousWith: overlayDismissGesture,
+    enableTrackpadTwoFingerGesture: enableTrackpadTwoFingerGesture,
+    enabled:
+      drawerState !== DrawerState.SETTLING &&
+      (drawerOpened
+        ? drawerLockMode !== DrawerLockMode.LOCKED_OPEN
+        : drawerLockMode !== DrawerLockMode.LOCKED_CLOSED),
+    onActivate: () => {
+      'worklet';
+      emitStateChanged(DrawerState.DRAGGING, false);
+      runOnJS(setDrawerState)(DrawerState.DRAGGING);
+      if (keyboardDismissMode === DrawerKeyboardDismissMode.ON_DRAG) {
+        runOnJS(dismissKeyboard)();
+      }
+      if (hideStatusBar) {
+        runOnJS(setStatusBarHidden)(true, statusBarAnimation);
+      }
+    },
+    onUpdate: (event) => {
+      'worklet';
+      const startedOutsideTranslation = isFromLeft
+        ? interpolate(
+            event.x,
+            [0, drawerWidth, drawerWidth + 1],
+            [0, drawerWidth, drawerWidth]
+          )
+        : interpolate(
+            event.x - containerWidth,
+            [-drawerWidth - 1, -drawerWidth, 0],
+            [drawerWidth, drawerWidth, 0]
+          );
+
+      const startedInsideTranslation =
+        sideCorrection *
+        (event.translationX +
+          (drawerOpened ? drawerWidth * -gestureOrientation : 0));
+
+      const adjustedTranslation = Math.max(
+        drawerOpened ? startedOutsideTranslation : 0,
+        startedInsideTranslation
+      );
+
+      openValue.value = interpolate(
+        adjustedTranslation,
+        [-drawerWidth, 0, drawerWidth],
+        [1, 0, 1],
+        Extrapolation.CLAMP
+      );
+    },
+    onDeactivate: handleRelease,
+  });
+
+  // When using RTL, row and row-reverse flex directions are flipped.
+  const reverseContentDirection = I18nManager.isRTL ? isFromLeft : !isFromLeft;
+
+  const dynamicDrawerStyles = {
+    backgroundColor: drawerBackgroundColor,
+    width: drawerWidth,
+  };
+
+  const containerStyles = useAnimatedStyle(() => {
+    if (drawerType === DrawerType.FRONT) {
+      return {};
+    }
+
+    return {
+      transform: [
+        {
+          translateX: interpolate(
+            openValue.value,
+            [0, 1],
+            [0, drawerWidth * sideCorrection],
+            Extrapolation.CLAMP
+          ),
+        },
+      ],
+    };
+  });
+
+  const drawerAnimatedStyle = useAnimatedStyle(() => {
+    const closedDrawerOffset = drawerWidth * -sideCorrection;
+    const isBack = drawerType === DrawerType.BACK;
+    const isIdle = drawerState === DrawerState.IDLE;
+
+    if (isBack) {
       return {
-        transform: [{ translateX }],
+        transform: [{ translateX: 0 }],
         flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
       };
-    });
+    }
 
-    const containerAnimatedProps = useAnimatedProps(() => ({
-      importantForAccessibility:
-        Platform.OS === 'android'
-          ? isDrawerOpen.value
-            ? ('no-hide-descendants' as const)
-            : ('yes' as const)
-          : undefined,
-    }));
+    let translateX = 0;
 
-    const children =
-      typeof props.children === 'function'
-        ? props.children(openValue) // renderer function
-        : props.children;
+    if (isIdle) {
+      translateX = drawerOpened ? 0 : closedDrawerOffset;
+    } else {
+      translateX = interpolate(
+        openValue.value,
+        [0, 1],
+        [closedDrawerOffset, 0],
+        Extrapolation.CLAMP
+      );
+    }
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        openDrawer,
-        closeDrawer,
-      }),
-      [openDrawer, closeDrawer]
-    );
+    return {
+      transform: [{ translateX }],
+      flexDirection: reverseContentDirection ? 'row-reverse' : 'row',
+    };
+  });
 
-    return (
-      <GestureDetector
-        gesture={panGesture}
-        userSelect={userSelect}
-        enableContextMenu={enableContextMenu}>
-        <Animated.View style={styles.main} onLayout={handleContainerLayout}>
-          <GestureDetector
-            gesture={overlayDismissGesture}
-            userSelect={userSelect}>
-            <Animated.View
-              style={[
-                drawerType === DrawerType.FRONT
-                  ? styles.containerOnBack
-                  : styles.containerInFront,
-                containerStyles,
-                contentContainerStyle,
-              ]}
-              animatedProps={containerAnimatedProps}>
-              {children}
-              <Animated.View
-                animatedProps={overlayAnimatedProps}
-                style={[styles.overlay, overlayAnimatedStyle]}
-              />
-            </Animated.View>
-          </GestureDetector>
+  const containerAnimatedProps = useAnimatedProps(() => ({
+    importantForAccessibility:
+      Platform.OS === 'android'
+        ? isDrawerOpen.value
+          ? ('no-hide-descendants' as const)
+          : ('yes' as const)
+        : undefined,
+  }));
+
+  const children =
+    typeof props.children === 'function'
+      ? props.children(openValue) // renderer function
+      : props.children;
+
+  useImperativeHandle(
+    props.ref,
+    () => ({
+      openDrawer,
+      closeDrawer,
+    }),
+    [openDrawer, closeDrawer]
+  );
+
+  return (
+    <GestureDetector
+      gesture={panGesture}
+      userSelect={userSelect}
+      enableContextMenu={enableContextMenu}>
+      <Animated.View style={styles.main} onLayout={handleContainerLayout}>
+        <GestureDetector
+          gesture={overlayDismissGesture}
+          userSelect={userSelect}>
           <Animated.View
-            pointerEvents="box-none"
-            animatedProps={drawerAnimatedProps}
             style={[
-              styles.drawerContainer,
-              drawerAnimatedStyle,
-              drawerContainerStyle,
-            ]}>
-            <Animated.View style={dynamicDrawerStyles}>
-              {renderNavigationView(openValue)}
-            </Animated.View>
+              drawerType === DrawerType.FRONT
+                ? styles.containerOnBack
+                : styles.containerInFront,
+              containerStyles,
+              contentContainerStyle,
+            ]}
+            animatedProps={containerAnimatedProps}>
+            {children}
+            <Animated.View
+              animatedProps={overlayAnimatedProps}
+              style={[styles.overlay, overlayAnimatedStyle]}
+            />
+          </Animated.View>
+        </GestureDetector>
+        <Animated.View
+          pointerEvents="box-none"
+          animatedProps={drawerAnimatedProps}
+          style={[
+            styles.drawerContainer,
+            drawerAnimatedStyle,
+            drawerContainerStyle,
+          ]}>
+          <Animated.View style={dynamicDrawerStyles}>
+            {renderNavigationView(openValue)}
           </Animated.View>
         </Animated.View>
-      </GestureDetector>
-    );
-  }
-);
+      </Animated.View>
+    </GestureDetector>
+  );
+};
 
 export default DrawerLayout;
 

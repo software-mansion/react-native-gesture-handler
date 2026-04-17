@@ -50,14 +50,11 @@ export const LegacyRefreshControl = createNativeWrapper(View);
 /**
  * @deprecated use `FlatList` instead
  */
-export const LegacyFlatList = React.forwardRef(
-  <ItemT,>(props: FlatListProps<ItemT>, ref: any) => (
-    <RNFlatList
-      ref={ref}
-      {...props}
-      renderScrollComponent={(scrollProps) => (
-        <LegacyScrollView {...scrollProps} />
-      )}
-    />
-  )
+export const LegacyFlatList = <ItemT,>(props: FlatListProps<ItemT>) => (
+  <RNFlatList
+    {...props}
+    renderScrollComponent={(scrollProps) => (
+      <LegacyScrollView {...scrollProps} />
+    )}
+  />
 );
