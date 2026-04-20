@@ -39,7 +39,7 @@ export type GestureType =
   | BaseGesture<HoverGestureHandlerEventPayload>;
 
 /**
- * @deprecated `GestureRef` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ * @deprecated `GestureRef` is deprecated and will be removed in the future.
  */
 export type GestureRef =
   | number
