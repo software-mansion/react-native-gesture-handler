@@ -1,4 +1,4 @@
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import { ContinousBaseGesture } from './gesture';
 
 function changeEventCalculator(

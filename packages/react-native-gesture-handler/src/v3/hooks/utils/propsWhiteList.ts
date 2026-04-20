@@ -1,13 +1,13 @@
-import {
+import type {
   BaseGestureConfig,
   CommonGestureConfig,
   ExternalRelations,
   GestureCallbacks,
   HandlersPropsWhiteList,
   InternalConfigProps,
-  SingleGestureName,
 } from '../../types';
-import { NativeWrapperProperties } from '../../types/NativeWrapperType';
+import { SingleGestureName } from '../../types';
+import type { NativeWrapperProperties } from '../../types/NativeWrapperType';
 import { FlingNativeProperties } from '../gestures/fling/FlingTypes';
 import { HoverNativeProperties } from '../gestures/hover/HoverTypes';
 import { LongPressNativeProperties } from '../gestures/longPress/LongPressTypes';

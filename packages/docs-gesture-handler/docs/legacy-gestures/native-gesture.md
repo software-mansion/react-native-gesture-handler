@@ -80,7 +80,7 @@ Do not use `Native` gesture with components exported by React Native Gesture Han
 
 ### `shouldActivateOnStart(value: boolean)` (**Android only**)
 
-When `true`, underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/2.x/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/2.x/fundamentals/states-events#undetermined) state.
+When `true`, the underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/2.x/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/2.x/fundamentals/states-events#undetermined) state.
 
 ### `disallowInterruption(value: boolean)`
 
@@ -98,6 +98,6 @@ When `true`, cancels all other gesture handlers when this `NativeViewGestureHand
 
 ### `pointerInside`
 
-True if gesture was performed inside of containing view, false otherwise.
+True if the gesture was performed inside the containing view, false otherwise.
 
 <BaseEventData />

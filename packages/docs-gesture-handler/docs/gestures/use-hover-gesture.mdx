@@ -12,8 +12,6 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
 
-import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
-
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
@@ -93,9 +91,9 @@ const styles = StyleSheet.create({
 
 <SharedValueInfo />
 
-<HeaderWithBadges platforms={['iOS']}>
+<Badges platforms={['ios']}>
 ### effect
-</HeaderWithBadges>
+</Badges>
 
 <CollapsibleCode 
 label="Show composed types definitions"
@@ -112,7 +110,7 @@ enum HoverEffect {
 }
 `}/>
 
-Visual effect applied to the view while the view is hovered. Defaults to `HoverEffect.None`
+Visual effect applied to the view while the view is hovered. Defaults to `HoverEffect.None`.
 
 <BaseGestureConfig />
 

@@ -11,8 +11,6 @@ import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import BaseContinuousGestureCallbacks from './\_shared/base-continuous-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
-
 A gesture that allows other touch handling components to work within RNGH's gesture system. This streamlines interactions between gestures and the native component, allowing it to form [relations](/docs/fundamentals/gesture-composition) with other gestures.
 
 When used, the native component should be the direct child of a [`GestureDetector`](/docs/fundamentals/gesture-detectors#gesture-detector).
@@ -98,16 +96,16 @@ export default function App() {
 
 <SharedValueInfo />
 
-<HeaderWithBadges platforms={['android']}>
+<Badges platforms={['android']}>
 ### shouldActivateOnStart
-</HeaderWithBadges>
+</Badges>
 
 
 ```ts
 shouldActivateOnStart: boolean | SharedValue<boolean>;
 ```
 
-When `true`, underlying handler will activate unconditionally when it receives any touches.
+When `true`, the underlying handler will activate unconditionally when it receives any touches.
 
 ### disallowInterruption
 
@@ -115,7 +113,7 @@ When `true`, underlying handler will activate unconditionally when it receives a
 disallowInterruption: boolean | SharedValue<boolean>;
 ```
 
-When `true`, cancels all other gesture handlers when activates.
+When `true`, this handler cancels all other gesture handlers when it activates.
 
 <BaseGestureConfig />
 
@@ -131,6 +129,6 @@ When `true`, cancels all other gesture handlers when activates.
 pointerInside: boolean;
 ```
 
-`true` if gesture was performed inside of containing view, `false` otherwise.
+`true` if the gesture was performed inside the containing view, `false` otherwise.
 
 <BaseEventData />

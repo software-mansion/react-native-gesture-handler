@@ -1,7 +1,8 @@
-import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
-import { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
+import type { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { ForceTouchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import type { BaseGestureConfig } from './gesture';
+import { ContinousBaseGesture } from './gesture';
 
 /**
  * @deprecated ForceTouch gesture is deprecated and will be removed in the future.

@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { ColorValue, View, ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
+import { View } from 'react-native';
 
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
   enabled?: boolean;
-  animationDuration?: number;
+  pressAndHoldAnimationDuration?: number;
+  tapAnimationDuration?: number;
   activeOpacity?: number;
   activeScale?: number;
   activeUnderlayOpacity?: number;
@@ -16,7 +18,8 @@ type ButtonProps = ViewProps & {
 
 export const ButtonComponent = ({
   enabled = true,
-  animationDuration = 100,
+  pressAndHoldAnimationDuration: pressAndHoldAnimationDurationProp = -1,
+  tapAnimationDuration: tapAnimationDurationProp = 100,
   activeOpacity = 1,
   activeScale = 1,
   activeUnderlayOpacity = 0,
@@ -28,17 +31,66 @@ export const ButtonComponent = ({
   children,
   ...rest
 }: ButtonProps) => {
+  const tapAnimationDuration =
+    tapAnimationDurationProp < 0 ? 0 : tapAnimationDurationProp;
+  const pressAndHoldAnimationDuration =
+    pressAndHoldAnimationDurationProp < 0
+      ? tapAnimationDuration
+      : pressAndHoldAnimationDurationProp;
+
   const [pressed, setPressed] = React.useState(false);
+  const [currentDuration, setCurrentDuration] = React.useState(
+    pressAndHoldAnimationDuration
+  );
+  const pressInTimestamp = React.useRef(0);
+  const pressOutTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
+  React.useEffect(() => {
+    return () => {
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+      }
+    };
+  }, []);
 
   const pressIn = React.useCallback(() => {
     if (enabled) {
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+        pressOutTimer.current = null;
+      }
+      pressInTimestamp.current = performance.now();
+      setCurrentDuration(pressAndHoldAnimationDuration);
       setPressed(true);
     }
-  }, [enabled]);
+  }, [enabled, pressAndHoldAnimationDuration]);
 
   const pressOut = React.useCallback(() => {
-    setPressed(false);
-  }, []);
+    if (pressOutTimer.current != null) {
+      clearTimeout(pressOutTimer.current);
+      pressOutTimer.current = null;
+    }
+    const elapsed = performance.now() - pressInTimestamp.current;
+
+    if (elapsed >= pressAndHoldAnimationDuration) {
+      setCurrentDuration(pressAndHoldAnimationDuration);
+      setPressed(false);
+      // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
+    } else if (elapsed * 2 >= tapAnimationDuration) {
+      setCurrentDuration(elapsed);
+      setPressed(false);
+    } else {
+      // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time
+      const remaining = tapAnimationDuration - elapsed;
+      pressOutTimer.current = setTimeout(() => {
+        pressOutTimer.current = null;
+        setCurrentDuration(tapAnimationDuration);
+        setPressed(false);
+      }, remaining);
+    }
+  }, [pressAndHoldAnimationDuration, tapAnimationDuration]);
 
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity
@@ -49,13 +101,13 @@ export const ButtonComponent = ({
   const hasScale = activeScale !== 1 || defaultScale !== 1;
   const currentScale = pressed ? activeScale : defaultScale;
 
-  const easing = 'cubic-bezier(0, 0, 0.2, 1)';
+  const easing = 'cubic-bezier(0.5, 1, 0.89, 1)';
   const transitionProps: string[] = [];
   if (hasOpacity) {
-    transitionProps.push(`opacity ${animationDuration}ms ${easing}`);
+    transitionProps.push(`opacity ${currentDuration}ms ${easing}`);
   }
   if (hasScale) {
-    transitionProps.push(`transform ${animationDuration}ms ${easing}`);
+    transitionProps.push(`transform ${currentDuration}ms ${easing}`);
   }
   const transition = transitionProps.join(', ');
 
@@ -89,7 +141,7 @@ export const ButtonComponent = ({
             backgroundColor: underlayColor as string,
             opacity: currentUnderlayOpacity,
             // @ts-ignore - web-only CSS properties
-            transition: `opacity ${animationDuration}ms ${easing}`,
+            transition: `opacity ${currentDuration}ms ${easing}`,
             pointerEvents: 'none',
           }}
         />

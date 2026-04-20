@@ -1,6 +1,6 @@
+export { default } from './ReanimatedSwipeable';
 export {
-  type SwipeableProps,
   type SwipeableMethods,
+  type SwipeableProps,
   SwipeDirection,
 } from './ReanimatedSwipeableProps';
-export { default } from './ReanimatedSwipeable';

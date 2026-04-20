@@ -1,26 +1,26 @@
-import {
-  HitSlop,
-  CommonGestureConfig,
-  GestureTouchEvent,
-  GestureStateChangeEvent,
-  GestureUpdateEvent,
+import { isRemoteDebuggingEnabled } from '../../utils';
+import type {
   ActiveCursor,
+  CommonGestureConfig,
+  GestureStateChangeEvent,
+  GestureTouchEvent,
+  GestureUpdateEvent,
+  HitSlop,
   MouseButton,
 } from '../gestureHandlerCommon';
-import { getNextHandlerTag } from '../getNextHandlerTag';
-import { GestureStateManagerType } from './gestureStateManager';
 import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
+  HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
   PanGestureHandlerEventPayload,
   PinchGestureHandlerEventPayload,
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
-  NativeViewGestureHandlerPayload,
-  HoverGestureHandlerEventPayload,
 } from '../GestureHandlerEventPayload';
-import { isRemoteDebuggingEnabled } from '../../utils';
+import { getNextHandlerTag } from '../getNextHandlerTag';
+import type { GestureStateManagerType } from './gestureStateManager';
 
 export type GestureType =
   | BaseGesture<Record<string, unknown>>

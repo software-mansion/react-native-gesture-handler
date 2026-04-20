@@ -7,8 +7,6 @@ sidebar_label: Reanimated Swipeable
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery'
 
-import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
-
 :::info
 This component is a drop-in replacement for the `Swipeable` component, rewritten using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started).
 :::
@@ -242,9 +240,9 @@ blocksExternalGesture?: AnyGesture | AnyGesture[];
 
 Gestures that `Swipeable` will prevent from activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
 
-<HeaderWithBadges platforms={['iOS']}>
+<Badges platforms={['ios']}>
 ### enableTrackpadTwoFingerGesture
-</HeaderWithBadges>
+</Badges>
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean;
@@ -258,7 +256,7 @@ Enables two-finger gestures on supported devices, for example iPads with trackpa
 enabled: boolean;
 ```
 
-Indicates whether `ReanimatedSwipeable` should be analyzing stream of touch events or not. Defaults to `true`.
+Indicates whether `ReanimatedSwipeable` should be analyzing the stream of touch events or not. Defaults to `true`.
 
 ### testID
 
@@ -295,7 +293,7 @@ type HitSlop =
 `}/>
 
 This parameter enables control over what part of the connected view area can be used to begin recognizing the gesture.
-When a negative number is provided the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
+When a negative number is provided, the bounds of the view will reduce the area by the given number of points in each of the sides evenly.
 See [hitSlop section](/docs/gestures/use-pan-gesture#hitslop) in `Pan` gesture for more details.
 
 ## Swipeable ref methods

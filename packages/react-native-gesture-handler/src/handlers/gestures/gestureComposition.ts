@@ -1,4 +1,5 @@
-import { BaseGesture, Gesture, GestureRef, GestureType } from './gesture';
+import type { GestureRef, GestureType } from './gesture';
+import { BaseGesture, Gesture } from './gesture';
 
 function extendRelation(
   currentRelation: GestureRef[] | undefined,

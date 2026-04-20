@@ -3,10 +3,10 @@ id: introduction
 title: Introduction
 sidebar_label: Introduction
 sidebar_position: 1
-slug: /
+slug: /fundamentals/introduction
 ---
 
-Gesture Handler provides a declarative API exposing the native platform's touch and gesture system to React Native. It's designed to be a replacement of React Native's built in touch system called [Gesture Responder System](http://reactnative.dev/docs/gesture-responder-system). Using native touch handling allows to address the performance limitations of React Native's Gesture Responder System. It also provides more control over the platform's native components that can handle gestures on their own. If you want to learn more, we recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) in which he explains issues with the responder system.
+Gesture Handler provides a declarative API exposing the native platform's touch and gesture system to React Native. It's designed to be a replacement of React Native's built in touch system called [Gesture Responder System](http://reactnative.dev/docs/gesture-responder-system). Using native touch handling allows addressing the performance limitations of React Native's Gesture Responder System. It also provides more control over the platform's native components that can handle gestures on their own. If you want to learn more, we recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) in which he explains issues with the responder system.
 
 The main benefits of using React Native Gesture Handler are:
 
@@ -18,7 +18,7 @@ The main benefits of using React Native Gesture Handler are:
 - Ability to include any native component into the Gesture Handler's touch system, making it work alongside your gestures.
 
 :::info
-We recommended to use Reanimated to implement gesture-driven animations with Gesture Handler. Its more advanced features rely heavily on worklets and the UI runtime provided by Reanimated.
+We recommend using Reanimated to implement gesture-driven animations with Gesture Handler. Its more advanced features rely heavily on worklets and the UI runtime provided by Reanimated.
 :::
 
 ## Learning resources
@@ -29,17 +29,17 @@ We recommended to use Reanimated to implement gesture-driven animations with Ges
 
 ### Talks and workshops
 
-[Declarative future of gestures and animations in React Native](https://www.youtube.com/watch?v=kdq4z2708VM) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk that explains motivation behind creating gesture handler library. It also presents [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) and how and when it can be used with gesture handler.
+[Declarative future of gestures and animations in React Native](https://www.youtube.com/watch?v=kdq4z2708VM) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk that explains the motivation behind creating the gesture handler library. It also presents [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) and how and when it can be used with gesture handler.
 
-[React Native workshop with Expo team @ReactEurope 2018](https://youtu.be/JSIoE_ReeDk?t=41m49s) by [Brent Vatne](https://twitter.com/notbrent) – great workshop explaining gesture handler in details and presenting a few exercises that will help get you started.
+[React Native workshop with Expo team @ReactEurope 2018](https://youtu.be/JSIoE_ReeDk?t=41m49s) by [Brent Vatne](https://twitter.com/notbrent) – great workshop explaining gesture handler in detail and presenting a few exercises that will help get you started.
 
-[Living in an async world of React Native](https://www.youtube.com/watch?v=-Izgons3mec) by [Krzysztof Magiera](https://twitter.com/kzzzf) – talk which highlights some issue with the React Native's touch system Gesture Handler aims to address. Also the motivation for building this library is explained.
+[Living in an async world of React Native](https://www.youtube.com/watch?v=-Izgons3mec) by [Krzysztof Magiera](https://twitter.com/kzzzf) – talk which highlights some issues with the React Native's touch system Gesture Handler aims to address. Also the motivation for building this library is explained.
 
-[React Native Touch & Gesture](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk explaining JS responder system limitations and points out some of the core features of Gesture Handler.
+[React Native Touch & Gesture](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) - talk explaining JS responder system limitations and pointing out some of the core features of Gesture Handler.
 
 ## Contributing
 
-If you are interested in the project and want to contribute or support it in other ways don't hesitate to contact anyone from the team on Twitter or Bluesky (links below)!
+If you are interested in the project and want to contribute or support it in other ways, don't hesitate to contact anyone from the team on Twitter or Bluesky (links below)!
 
 All PRs are welcome, but talk to us before you start working on something big.
 
@@ -48,12 +48,12 @@ The easiest way to get started with contributing code is by:
 - Reviewing the list of [open issues](https://github.com/software-mansion/react-native-gesture-handler/issues) and trying to solve the one that seem approachable to you.
 - Updating the [documentation](https://github.com/software-mansion/react-native-gesture-handler/tree/main/packages/docs-gesture-handler) whenever you see some information is unclear, missing or out of date.
 
-Code is only one way how you can contribute. You may want to consider [replying on issues](https://github.com/software-mansion/react-native-gesture-handler/issues) if you know how to help.
+Code is only one way you can contribute. You may want to consider [replying on issues](https://github.com/software-mansion/react-native-gesture-handler/issues) if you know how to help.
 
 ## Community
 
-We are very proud of the community that has been build around this package. We really appreciate all your help regardless of it is a pull request, issue report, helping others by commenting on existing issues or posting some demo or video tutorial on social media.
-If you've build something with this library you'd like to share, please contact us as we'd love to help share it with others.
+We are very proud of the community that has been built around this package. We really appreciate all your help regardless of whether it is a pull request, issue report, helping others by commenting on existing issues or posting some demo or video tutorial on social media.
+If you've built something with this library you'd like to share, please contact us as we'd love to help share it with others.
 
 ### Gesture Handler Team 🚀
 

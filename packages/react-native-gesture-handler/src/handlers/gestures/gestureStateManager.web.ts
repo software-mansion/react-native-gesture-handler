@@ -1,6 +1,6 @@
 import { State } from '../../State';
 import NodeManager from '../../web/tools/NodeManager';
-import { GestureStateManagerType } from './gestureStateManager';
+import type { GestureStateManagerType } from './gestureStateManager';
 
 export const GestureStateManager = {
   create(handlerTag: number): GestureStateManagerType {

@@ -15,7 +15,6 @@
 #include <react/renderer/components/rngesturehandler_codegen/ShadowNodes.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-#include <react/renderer/components/rngesturehandler_codegen/RNGestureHandlerButtonWrapperComponentDescriptor.h>
 #include <react/renderer/components/rngesturehandler_codegen/RNGestureHandlerDetectorComponentDescriptor.h>
 
 namespace facebook::react {

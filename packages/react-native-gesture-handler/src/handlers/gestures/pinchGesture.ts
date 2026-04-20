@@ -1,6 +1,6 @@
-import { ContinousBaseGesture } from './gesture';
+import type { GestureUpdateEvent } from '../gestureHandlerCommon';
 import type { PinchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
-import { GestureUpdateEvent } from '../gestureHandlerCommon';
+import { ContinousBaseGesture } from './gesture';
 
 export type PinchGestureChangeEventPayload = {
   scaleChange: number;

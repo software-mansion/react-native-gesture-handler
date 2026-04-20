@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import {
-  Reanimated,
-  ReanimatedHandler,
-} from '../../../handlers/gestures/reanimatedWrapper';
-import {
+
+import type { ReanimatedHandler } from '../../../handlers/gestures/reanimatedWrapper';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import type {
   ChangeCalculatorType,
   GestureCallbacks,
   GestureEvent,

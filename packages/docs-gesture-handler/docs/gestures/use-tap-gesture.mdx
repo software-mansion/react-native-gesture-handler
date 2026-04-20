@@ -12,8 +12,6 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import TapGestureBasic from '@site/static/examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
 
-import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
-
 import MouseButtonProp from './\_shared/mouse-button.mdx';
 
 <div className={webContainer}>
@@ -34,8 +32,6 @@ import BaseGestureConfig from './\_shared/base-gesture-config.mdx';
 import BaseGestureCallbacks from './\_shared/base-gesture-callbacks.mdx';
 import SharedValueInfo from './\_shared/shared-value-info.md';
 
-import CollapsibleCode from '@site/src/components/CollapsibleCode';
-
 A discrete gesture that recognizes taps.
 
 Tap gestures detect one or more fingers briefly touching the screen.
@@ -43,7 +39,7 @@ The pointers involved in these gestures must not move significantly from their i
 The required number of taps and allowed distance from initial position may be configured.
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
-In order for a gesture to activate, specified gesture requirements such as [`minPointers`](#minpointers), [`numberOfTaps`](#numberoftaps), [`maxDistance`](#maxdistance), [`maxDuration`](#maxduration), and [`maxDelay`](#maxdelay) must be met.
+In order for a gesture to activate, the specified gesture requirements such as [`minPointers`](#minpointers), [`numberOfTaps`](#numberoftaps), [`maxDistance`](#maxdistance), [`maxDuration`](#maxduration), and [`maxDelay`](#maxdelay) must be met.
 
   <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
     <video playsInline autoPlay muted loop style={{maxWidth: 360}}>

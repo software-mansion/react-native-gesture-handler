@@ -1,14 +1,16 @@
-import React, { Component, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
+import React, { Component } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-
-import {
-  PanGestureHandler,
-  RotationGestureHandler,
-  State,
+import type {
   PanGestureHandlerGestureEvent,
   PanGestureHandlerStateChangeEvent,
   RotationGestureHandlerGestureEvent,
   RotationGestureHandlerStateChangeEvent,
+} from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  RotationGestureHandler,
+  State,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../../config';

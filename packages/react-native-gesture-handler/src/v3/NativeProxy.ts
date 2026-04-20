@@ -1,6 +1,6 @@
 import { scheduleOperationToBeFlushed } from '../handlers/utils';
 import RNGestureHandlerModule from '../RNGestureHandlerModule';
-import {
+import type {
   BaseGestureConfig,
   GestureRelations,
   SingleGestureName,

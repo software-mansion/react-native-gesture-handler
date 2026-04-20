@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useImperativeHandle, useRef } from 'react';
 
+import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 import {
   NativeViewGestureHandler,
-  NativeViewGestureHandlerProps,
   nativeViewProps,
 } from './NativeViewGestureHandler';
 
@@ -27,10 +27,12 @@ export default function createNativeWrapper<P>(
   Component: React.ComponentType<P>,
   config: Readonly<NativeViewGestureHandlerProps> = {}
 ) {
-  const ComponentWrapper = React.forwardRef<
-    React.ComponentType<any>,
-    P & NativeViewGestureHandlerProps
-  >((props, ref) => {
+  const ComponentWrapper = (
+    props: P &
+      NativeViewGestureHandlerProps & {
+        ref?: React.Ref<React.ComponentType<any> | null> | undefined;
+      }
+  ) => {
     // Filter out props that should be passed to gesture handler wrapper
     const { gestureHandlerProps, childProps } = Object.keys(props).reduce(
       (res, key) => {
@@ -57,7 +59,7 @@ export default function createNativeWrapper<P>(
     const _ref = useRef<React.ComponentType<P>>(null);
     const _gestureHandlerRef = useRef<React.ComponentType<P>>(null);
     useImperativeHandle(
-      ref,
+      props.ref,
       // @ts-ignore TODO(TS) decide how nulls work in this context
       () => {
         const node = _gestureHandlerRef.current;
@@ -79,7 +81,7 @@ export default function createNativeWrapper<P>(
         <Component {...childProps} ref={_ref} />
       </NativeViewGestureHandler>
     );
-  });
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   ComponentWrapper.displayName =

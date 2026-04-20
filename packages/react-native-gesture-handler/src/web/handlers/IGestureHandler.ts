@@ -1,16 +1,16 @@
-import type { PointerType } from '../../PointerType';
 import type {
   ActiveCursor,
   MouseButton,
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
+import type { PointerType } from '../../PointerType';
 import type { State } from '../../State';
+import type { SingleGestureName } from '../../v3/types';
 import type { Config } from '../interfaces';
 import type EventManager from '../tools/EventManager';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import type PointerTracker from '../tools/PointerTracker';
-import { SingleGestureName } from '../../v3/types';
 
 export default interface IGestureHandler {
   attached: boolean;

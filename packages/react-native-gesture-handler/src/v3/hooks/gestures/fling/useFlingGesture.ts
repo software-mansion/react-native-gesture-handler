@@ -1,7 +1,7 @@
 import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
-import {
+import type {
   FlingGesture,
   FlingGestureConfig,
   FlingGestureProperties,
