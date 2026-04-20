@@ -30,10 +30,12 @@ export default function App() {
       startY.value = event.y;
     },
     onUpdate: (event) => {
-      translateX.value = (event.x - startX.value) * 0.3;
-      translateY.value = (event.y - startY.value) * 0.3;
+      translateX.value = translateX.value + event.changeX * 0.3;
+      translateY.value = translateY.value + event.changeY * 0.3;
 
-      const distance = Math.sqrt(Math.pow(translateX.value, 2) + Math.pow(translateY.value, 2));
+      const distance = Math.sqrt(
+        Math.pow(translateX.value, 2) + Math.pow(translateY.value, 2)
+      );
 
       progress.value = distance / 35;
     },
@@ -62,7 +64,7 @@ export default function App() {
       progress.value,
       [0, 1],
       ['#b58df1', '#fa7f7c']
-    )
+    ),
   }));
 
   return (
