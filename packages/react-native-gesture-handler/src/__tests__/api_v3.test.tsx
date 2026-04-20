@@ -107,31 +107,6 @@ describe('[API v3] Components', () => {
       expect(pressFn).not.toHaveBeenCalled();
     });
 
-    test('calls onActiveStateChange with correct values', () => {
-      const activeStateFn = jest.fn();
-
-      const Example = () => (
-        <GestureHandlerRootView>
-          <Touchable testID="touchable" onActiveStateChange={activeStateFn} />
-        </GestureHandlerRootView>
-      );
-
-      render(<Example />);
-      const gesture = getByGestureTestId('touchable');
-
-      act(() => {
-        fireGestureHandler(gesture, [
-          { oldState: State.UNDETERMINED, state: State.BEGAN },
-          { oldState: State.BEGAN, state: State.ACTIVE },
-          { oldState: State.ACTIVE, state: State.END },
-        ]);
-      });
-
-      expect(activeStateFn).toHaveBeenCalledTimes(2);
-      expect(activeStateFn).toHaveBeenNthCalledWith(1, true);
-      expect(activeStateFn).toHaveBeenNthCalledWith(2, false);
-    });
-
     test('calls onLongPress after delayLongPress and suppresses onPress', () => {
       jest.useFakeTimers();
 

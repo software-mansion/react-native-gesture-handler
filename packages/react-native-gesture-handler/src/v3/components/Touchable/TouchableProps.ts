@@ -18,7 +18,7 @@ type PressableAndroidRippleConfig = {
 type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
 export type TouchableProps = Omit<ButtonProps, RippleProps | 'enabled'> &
-  Omit<BaseButtonProps, keyof RawButtonProps> & {
+  Omit<BaseButtonProps, keyof RawButtonProps | 'onActiveStateChange'> & {
     /**
      * Configuration for the ripple effect on Android.
      */
