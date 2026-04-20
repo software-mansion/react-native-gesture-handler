@@ -87,7 +87,7 @@ export const GestureObjects = {
   },
 
   /**
-   * @deprecated `Gesture.ForceTouch()` is deprecated and will be removed in the future. Please use `useForceTouchGesture` instead.
+   * @deprecated `Gesture.ForceTouch()` is deprecated and will be removed in the future.
    *
    *  #### iOS only
    * A continuous gesture that recognizes force of a touch. It allows for tracking pressure of touch on some iOS devices.
@@ -98,7 +98,7 @@ export const GestureObjects = {
   },
 
   /**
-   * @deprecated `Gesture.Native()` is deprecated and will be removed in the future.
+   * @deprecated `Gesture.Native()` is deprecated and will be removed in the future. Please use `useNativeGesture` instead.
    *
    * A gesture that allows other touch handling components to participate in RNGH's gesture system.
    * When used, the other component should be the direct child of a `GestureDetector`.
