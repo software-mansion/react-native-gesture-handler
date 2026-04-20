@@ -52,9 +52,10 @@ export default function App() {
       startTranslateX.value = event.x;
     },
     onActivate: (event) => {
+      const directionMultiplier = event.x - startTranslateX.value > 0 ? 1 : -1;
       translateX.value = withTiming(
         clamp(
-          translateX.value + event.x - startTranslateX.value,
+          translateX.value + directionMultiplier * 100,
           containerWidth.value / -2 + 50,
           containerWidth.value / 2 - 50
         ),
