@@ -32,7 +32,6 @@ export const Touchable = (props: TouchableProps) => {
     onPress,
     onPressIn,
     onPressOut,
-    onActiveStateChange,
     children,
     disabled = false,
     ref,
@@ -71,27 +70,20 @@ export const Touchable = (props: TouchableProps) => {
     [startLongPressTimer, onPressIn]
   );
 
-  const onActivate = useCallback(
-    (e: CallbackEventType) => {
-      onActiveStateChange?.(true);
-
-      if (!e.pointerInside && longPressTimeout.current !== undefined) {
-        clearTimeout(longPressTimeout.current);
-        longPressTimeout.current = undefined;
-      }
-    },
-    [onActiveStateChange]
-  );
+  const onActivate = useCallback((e: CallbackEventType) => {
+    if (!e.pointerInside && longPressTimeout.current !== undefined) {
+      clearTimeout(longPressTimeout.current);
+      longPressTimeout.current = undefined;
+    }
+  }, []);
 
   const onDeactivate = useCallback(
     (e: EndCallbackEventType) => {
-      onActiveStateChange?.(false);
-
       if (!e.canceled && !longPressDetected.current) {
         onPress?.(e.pointerInside);
       }
     },
-    [onActiveStateChange, onPress]
+    [onPress]
   );
 
   const onFinalize = useCallback(
