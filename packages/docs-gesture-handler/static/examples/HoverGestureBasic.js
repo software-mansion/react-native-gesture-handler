@@ -21,14 +21,7 @@ export default function App() {
 
   const progress = useSharedValue(0);
 
-  const startX = useSharedValue(0);
-  const startY = useSharedValue(0);
-
   const hover = useHoverGesture({
-    onActivate: (event) => {
-      startX.value = event.x;
-      startY.value = event.y;
-    },
     onUpdate: (event) => {
       translateX.value = translateX.value + event.changeX * 0.3;
       translateY.value = translateY.value + event.changeY * 0.3;
