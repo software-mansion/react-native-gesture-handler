@@ -685,10 +685,11 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
     } else {
       [self rngh_sendActionsForControlEvents:UIControlEventTouchUpOutside withEvent:event];
     }
+
+    _suppressSuperControlActionDispatch = YES;
   }
 
   _isTouchInsideBounds = NO;
-  _suppressSuperControlActionDispatch = YES;
 }
 
 - (BOOL)shouldHandleTouch:(RNGHUIView *)view atPoint:(CGPoint)point
