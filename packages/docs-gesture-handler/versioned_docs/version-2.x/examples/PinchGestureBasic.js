@@ -101,7 +101,8 @@ export default function App() {
           <GestureDetector gesture={pan}>
             <Animated.View
               ref={boxRef}
-              style={[styles.box, boxAnimatedStyles]}></Animated.View>
+              style={[styles.box, boxAnimatedStyles]}
+            />
           </GestureDetector>
           <Animated.View
             style={[
@@ -113,7 +114,8 @@ export default function App() {
                 ],
                 opacity: touchOpacity,
               },
-            ]}></Animated.View>
+            ]}
+          />
           <Animated.View
             style={[
               styles.dot,
@@ -124,7 +126,8 @@ export default function App() {
                 ],
                 opacity: touchOpacity,
               },
-            ]}></Animated.View>
+            ]}
+          />
         </View>
       </View>
     </GestureHandlerRootView>

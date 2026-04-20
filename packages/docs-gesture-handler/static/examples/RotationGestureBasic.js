@@ -91,9 +91,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={pan}>
-        <Animated.View
-          ref={boxRef}
-          style={[styles.box, boxAnimatedStyles]}></Animated.View>
+        <Animated.View ref={boxRef} style={[styles.box, boxAnimatedStyles]} />
       </GestureDetector>
       <Animated.View
         style={[
@@ -105,7 +103,8 @@ export default function App() {
             ],
             opacity: touchOpacity,
           },
-        ]}></Animated.View>
+        ]}
+      />
       <Animated.View
         style={[
           styles.dot,
@@ -116,7 +115,8 @@ export default function App() {
             ],
             opacity: touchOpacity,
           },
-        ]}></Animated.View>
+        ]}
+      />
     </GestureHandlerRootView>
   );
 }

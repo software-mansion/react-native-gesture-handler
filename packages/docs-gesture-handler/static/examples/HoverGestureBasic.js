@@ -63,7 +63,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={hover}>
-        <Animated.View style={[styles.box, boxAnimatedStyle]}></Animated.View>
+        <Animated.View style={[styles.box, boxAnimatedStyle]} />
       </GestureDetector>
     </GestureHandlerRootView>
   );

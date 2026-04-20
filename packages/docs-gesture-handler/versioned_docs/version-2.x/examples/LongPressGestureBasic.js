@@ -55,7 +55,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={longPress}>
-        <Animated.View style={[styles.box, animatedStyle]}></Animated.View>
+        <Animated.View style={[styles.box, animatedStyle]} />
       </GestureDetector>
     </GestureHandlerRootView>
   );

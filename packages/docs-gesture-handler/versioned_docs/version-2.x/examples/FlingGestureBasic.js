@@ -71,8 +71,7 @@ export default function App() {
     <GestureHandlerRootView>
       <View ref={containerRef} style={styles.container}>
         <GestureDetector gesture={fling}>
-          <Animated.View
-            style={[styles.box, boxAnimatedStyles]}></Animated.View>
+          <Animated.View style={[styles.box, boxAnimatedStyles]} />
         </GestureDetector>
       </View>
     </GestureHandlerRootView>

@@ -29,7 +29,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={rotation}>
-        <Animated.View style={[styles.box, boxAnimatedStyles]}></Animated.View>
+        <Animated.View style={[styles.box, boxAnimatedStyles]} />
       </GestureDetector>
     </GestureHandlerRootView>
   );
