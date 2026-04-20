@@ -9,6 +9,9 @@ function changeEventCalculator(
   return current;
 }
 
+/**
+ * @deprecated `ManualGesture` is deprecated and will be removed in the future. Please use `useManualGesture` instead.
+ */
 export class ManualGesture extends ContinousBaseGesture<
   Record<string, never>,
   Record<string, never>
@@ -29,6 +32,6 @@ export class ManualGesture extends ContinousBaseGesture<
 }
 
 /**
- * @deprecated Manual Gesture is deprecated and will be removed in the future. Please use `useManualGesture` instead.
+ * @deprecated `ManualGestureType` is deprecated and will be removed in the future. Please use `ManualGesture` instead.
  */
 export type ManualGestureType = InstanceType<typeof ManualGesture>;

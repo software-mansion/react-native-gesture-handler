@@ -3,7 +3,7 @@ import type { PinchGestureHandlerEventPayload } from '../GestureHandlerEventPayl
 import { ContinousBaseGesture } from './gesture';
 
 /**
- * @deprecated Pinch Gesture is deprecated and will be removed in the future. Please use `usePinchGesture` instead.
+ * @deprecated `PinchGestureChangeEventPayload` is deprecated and will be removed in the future. Please use `PinchGestureActiveEvent` instead.
  */
 export type PinchGestureChangeEventPayload = {
   scaleChange: number;
@@ -29,7 +29,7 @@ function changeEventCalculator(
 }
 
 /**
- * @deprecated Pinch Gesture is deprecated and will be removed in the future. Please use `usePinchGesture` instead.
+ * @deprecated `PinchGesture` is deprecated and will be removed in the future. Please use `usePinchGesture` instead.
  */
 export class PinchGesture extends ContinousBaseGesture<
   PinchGestureHandlerEventPayload,
@@ -55,6 +55,6 @@ export class PinchGesture extends ContinousBaseGesture<
 }
 
 /**
- * @deprecated Pinch Gesture is deprecated and will be removed in the future. Please use `usePinchGesture` instead.
+ * @deprecated `PinchGestureType` is deprecated and will be removed in the future. Please use `PinchGesture` instead.
  */
 export type PinchGestureType = InstanceType<typeof PinchGesture>;

@@ -26,7 +26,7 @@ function changeEventCalculator(
 }
 
 /**
- * @deprecated Rotation Gesture is deprecated and will be removed in the future. Please use `useRotationGesture` instead.
+ * @deprecated `RotationGesture` is deprecated and will be removed in the future. Please use `useRotationGesture` instead.
  */
 export class RotationGesture extends ContinousBaseGesture<
   RotationGestureHandlerEventPayload,
@@ -52,6 +52,6 @@ export class RotationGesture extends ContinousBaseGesture<
 }
 
 /**
- * @deprecated Rotation Gesture is deprecated and will be removed in the future. Please use `useRotationGesture` instead.
+ * @deprecated `RotationGestureType` is deprecated and will be removed in the future. Please use `RotationGesture` instead.
  */
 export type RotationGestureType = InstanceType<typeof RotationGesture>;

@@ -5,7 +5,7 @@ import type { BaseGestureConfig } from './gesture';
 import { ContinousBaseGesture } from './gesture';
 
 /**
- * @deprecated Pan Gesture is deprecated and will be removed in the future. Please use `usePanGesture` instead.
+ * @deprecated `PanGestureChangeEventPayload` is deprecated and will be removed in the future. Please use `PanGestureActiveEvent` instead.
  */
 export type PanGestureChangeEventPayload = {
   changeX: number;
@@ -34,7 +34,7 @@ function changeEventCalculator(
 }
 
 /**
- * @deprecated Pan Gesture is deprecated and will be removed in the future. Please use `usePanGesture` instead.
+ * @deprecated `PanGesture` is deprecated and will be removed in the future. Please use `usePanGesture` instead.
  */
 export class PanGesture extends ContinousBaseGesture<
   PanGestureHandlerEventPayload,
@@ -226,6 +226,6 @@ export class PanGesture extends ContinousBaseGesture<
 }
 
 /**
- * @deprecated Pan Gesture is deprecated and will be removed in the future. Please use `usePanGesture` instead.
+ * @deprecated `PanGestureType` is deprecated and will be removed in the future. Please use `PanGesture` instead.
  */
 export type PanGestureType = InstanceType<typeof PanGesture>;

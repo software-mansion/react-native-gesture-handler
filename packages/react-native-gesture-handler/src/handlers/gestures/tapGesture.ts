@@ -4,7 +4,7 @@ import type { BaseGestureConfig } from './gesture';
 import { BaseGesture } from './gesture';
 
 /**
- * @deprecated Tap Gesture is deprecated and will be removed in the future. Please use `useTapGesture` instead.
+ * @deprecated `TapGesture` is deprecated and will be removed in the future. Please use `useTapGesture` instead.
  */
 export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
   public override config: BaseGestureConfig & TapGestureConfig = {};
@@ -88,6 +88,6 @@ export class TapGesture extends BaseGesture<TapGestureHandlerEventPayload> {
 }
 
 /**
- * @deprecated Tap Gesture is deprecated and will be removed in the future. Please use `useTapGesture` instead.
+ * @deprecated `TapGestureType` is deprecated and will be removed in the future. Please use `TapGesture` instead.
  */
 export type TapGestureType = InstanceType<typeof TapGesture>;

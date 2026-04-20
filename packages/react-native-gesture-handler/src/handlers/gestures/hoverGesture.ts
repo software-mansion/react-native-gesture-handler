@@ -42,7 +42,7 @@ function changeEventCalculator(
 }
 
 /**
- * @deprecated Hover Gesture is deprecated and will be removed in the future. Please use `useHoverGesture` instead.
+ * @deprecated `HoverGesture` is deprecated and will be removed in the future. Please use `useHoverGesture` instead.
  */
 export class HoverGesture extends ContinousBaseGesture<
   HoverGestureHandlerEventPayload,
@@ -79,6 +79,6 @@ export class HoverGesture extends ContinousBaseGesture<
 }
 
 /**
- * @deprecated Hover Gesture is deprecated and will be removed in the future. Please use `useHoverGesture` instead.
+ * @deprecated `HoverGestureType` is deprecated and will be removed in the future. Please use `HoverGesture` instead.
  */
 export type HoverGestureType = InstanceType<typeof HoverGesture>;
