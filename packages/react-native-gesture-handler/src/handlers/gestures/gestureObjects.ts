@@ -98,7 +98,7 @@ export const GestureObjects = {
   },
 
   /**
-   * @deprecated `Gesture.Native()` is deprecated and will be removed in the future. Please use `useNativeGesture` instead.
+   * @deprecated `Gesture.Native()` is deprecated and will be removed in the future.
    *
    * A gesture that allows other touch handling components to participate in RNGH's gesture system.
    * When used, the other component should be the direct child of a `GestureDetector`.
