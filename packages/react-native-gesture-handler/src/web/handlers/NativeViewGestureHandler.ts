@@ -2,6 +2,8 @@ import { Platform } from 'react-native';
 
 import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
+import { deepEqual } from '../../utils';
+import type { HandlerData } from '../../v3/types';
 import { SingleGestureName } from '../../v3/types';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
 import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
@@ -19,6 +21,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startX = 0;
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
+
+  private lastActiveHandlerData: Record<string, unknown> | null = null;
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
@@ -198,5 +202,24 @@ export default class NativeViewGestureHandler extends GestureHandler {
         this.tracker.getAbsoluteCoordsAverage()
       ),
     };
+  }
+
+  protected override shouldSuppressActiveUpdate(
+    handlerData: HandlerData<unknown>
+  ): boolean {
+    const current = handlerData as Record<string, unknown>;
+    if (
+      this.lastActiveHandlerData &&
+      deepEqual(this.lastActiveHandlerData, current)
+    ) {
+      return true;
+    }
+    this.lastActiveHandlerData = current;
+    return false;
+  }
+
+  public override reset(): void {
+    super.reset();
+    this.lastActiveHandlerData = null;
   }
 }
