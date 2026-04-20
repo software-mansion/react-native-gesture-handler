@@ -1,6 +1,9 @@
 import { State } from '../../State';
 import { tagMessage } from '../../utils';
 
+/**
+ * @deprecated `GestureStateManagerType` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export interface GestureStateManagerType {
   begin: () => void;
   activate: () => void;
@@ -49,6 +52,9 @@ function create(handlerTag: number): GestureStateManagerType {
   };
 }
 
+/**
+ * @deprecated `GestureStateManager` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export const GestureStateManager = {
   create,
 };

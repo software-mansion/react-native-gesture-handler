@@ -22,6 +22,9 @@ import type {
 import { getNextHandlerTag } from '../getNextHandlerTag';
 import type { GestureStateManagerType } from './gestureStateManager';
 
+/**
+ * @deprecated Gesture is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export type GestureType =
   | BaseGesture<Record<string, unknown>>
   | BaseGesture<Record<string, never>>
@@ -35,6 +38,9 @@ export type GestureType =
   | BaseGesture<NativeViewGestureHandlerPayload>
   | BaseGesture<HoverGestureHandlerEventPayload>;
 
+/**
+ *  @deprecated GestureRef is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export type GestureRef =
   | number
   | GestureType

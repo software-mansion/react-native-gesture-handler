@@ -119,7 +119,19 @@ export class ExclusiveGesture extends ComposedGesture {
   }
 }
 
+/**
+ * @deprecated `ComposedGestureType` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export type ComposedGestureType = InstanceType<typeof ComposedGesture>;
+/**
+ * @deprecated `RaceGestureType` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export type RaceGestureType = ComposedGestureType;
+/**
+ * @deprecated `SimultaneousGestureType` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export type SimultaneousGestureType = InstanceType<typeof SimultaneousGesture>;
+/**
+ * @deprecated `ExclusiveGestureType` is deprecated and will be removed in the future. Please use the new, hook-based API instead.
+ */
 export type ExclusiveGestureType = InstanceType<typeof ExclusiveGesture>;

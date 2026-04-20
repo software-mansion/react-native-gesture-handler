@@ -28,4 +28,7 @@ export class ManualGesture extends ContinousBaseGesture<
   }
 }
 
+/**
+ * @deprecated Manual Gesture is deprecated and will be removed in the future. Please use `useManualGesture` instead.
+ */
 export type ManualGestureType = InstanceType<typeof ManualGesture>;
