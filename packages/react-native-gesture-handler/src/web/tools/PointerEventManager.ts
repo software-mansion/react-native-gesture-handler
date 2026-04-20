@@ -162,6 +162,18 @@ export default class PointerEventManager extends EventManager<HTMLElement> {
     const adaptedEvent: AdaptedEvent = this.mapEvent(event, EventTypes.LEAVE);
 
     this.onPointerMoveOut(adaptedEvent);
+
+    // When the view is not capturing the pointer (e.g. when `role="button"`),
+    // `pointermove` stops firing once the pointer leaves the view's bounds, so
+    // the out-of-bounds detection in `pointerMoveCallback` never runs. Fall back
+    // to the DOM `pointerleave` event for any tracked, in-bounds pointer.
+    if (
+      this.trackedPointers.has(event.pointerId) &&
+      this.pointersInBounds.indexOf(event.pointerId) >= 0
+    ) {
+      this.onPointerLeave(adaptedEvent);
+      this.markAsOutOfBounds(event.pointerId);
+    }
   };
 
   private lostPointerCaptureCallback = (event: PointerEvent) => {

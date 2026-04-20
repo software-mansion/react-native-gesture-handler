@@ -109,12 +109,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dy = this.startY - lastCoords.y;
     const distSq = dx * dx + dy * dy;
 
-    if (distSq >= this.minDistSq) {
-      if (this.buttonRole && this.state === State.ACTIVE) {
-        this.cancel();
-      } else if (!this.buttonRole && this.state === State.BEGAN) {
-        this.activate();
-      }
+    if (
+      distSq >= this.minDistSq &&
+      !this.buttonRole &&
+      this.state === State.BEGAN
+    ) {
+      this.activate();
     }
   }
 
