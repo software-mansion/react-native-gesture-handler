@@ -127,6 +127,11 @@ export const Touchable = (props: TouchableProps) => {
       } else {
         if (pointerState.current === PointerState.INSIDE) {
           onPressOut?.(e);
+
+          if (longPressTimeout.current !== undefined) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = undefined;
+          }
         }
         pointerState.current = PointerState.OUTSIDE;
       }
