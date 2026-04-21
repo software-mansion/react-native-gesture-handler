@@ -21,7 +21,7 @@ const TouchableButton = createNativeWrapper<
 const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 
-enum POINTER_STATE {
+enum PointerState {
   UNKNOWN,
   INSIDE,
   OUTSIDE,
@@ -47,7 +47,7 @@ export const Touchable = (props: TouchableProps) => {
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
-  const pointerState = useRef<POINTER_STATE>(POINTER_STATE.UNKNOWN);
+  const pointerState = useRef<PointerState>(PointerState.UNKNOWN);
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -69,13 +69,14 @@ export const Touchable = (props: TouchableProps) => {
   const onBegin = useCallback(
     (e: CallbackEventType) => {
       if (!e.pointerInside) {
+        pointerState.current = PointerState.OUTSIDE;
         return;
       }
 
       onPressIn?.(e);
       startLongPressTimer();
 
-      pointerState.current = POINTER_STATE.INSIDE;
+      pointerState.current = PointerState.INSIDE;
     },
     [startLongPressTimer, onPressIn]
   );
@@ -90,7 +91,7 @@ export const Touchable = (props: TouchableProps) => {
   const onDeactivate = useCallback(
     (e: EndCallbackEventType) => {
       if (!e.canceled && !longPressDetected.current && e.pointerInside) {
-        onPress?.(e.pointerInside);
+        onPress?.(e);
       }
     },
     [onPress]
@@ -99,7 +100,7 @@ export const Touchable = (props: TouchableProps) => {
   const onFinalize = useCallback(
     (e: EndCallbackEventType) => {
       onPressOut?.(e);
-      pointerState.current = POINTER_STATE.UNKNOWN;
+      pointerState.current = PointerState.UNKNOWN;
 
       if (longPressTimeout.current !== undefined) {
         clearTimeout(longPressTimeout.current);
@@ -111,20 +112,20 @@ export const Touchable = (props: TouchableProps) => {
 
   const onUpdate = useCallback(
     (e: CallbackEventType) => {
-      if (pointerState.current === POINTER_STATE.UNKNOWN) {
+      if (pointerState.current === PointerState.UNKNOWN) {
         return;
       }
 
       if (e.pointerInside) {
-        if (pointerState.current === POINTER_STATE.OUTSIDE) {
+        if (pointerState.current === PointerState.OUTSIDE) {
           onPressIn?.(e);
         }
-        pointerState.current = POINTER_STATE.INSIDE;
+        pointerState.current = PointerState.INSIDE;
       } else {
-        if (pointerState.current === POINTER_STATE.INSIDE) {
+        if (pointerState.current === PointerState.INSIDE) {
           onPressOut?.(e);
         }
-        pointerState.current = POINTER_STATE.OUTSIDE;
+        pointerState.current = PointerState.OUTSIDE;
       }
     },
     [onPressIn, onPressOut]

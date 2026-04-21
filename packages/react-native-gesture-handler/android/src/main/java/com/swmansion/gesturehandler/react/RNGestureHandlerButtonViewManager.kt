@@ -486,8 +486,8 @@ class RNGestureHandlerButtonViewManager :
 
         // Replay press-in / press-out animations across drag transitions.
         if (canRespondToTouches()) {
-          when (action) {
-            MotionEvent.ACTION_DOWN -> isPointerInsideBounds = true
+          when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> isPointerInsideBounds = true
             MotionEvent.ACTION_MOVE -> {
               val inside = event.x >= 0 && event.y >= 0 && event.x < width && event.y < height
               if (inside != isPointerInsideBounds) {
@@ -499,7 +499,9 @@ class RNGestureHandlerButtonViewManager :
                 }
               }
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> isPointerInsideBounds = false
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL ->
+              isPointerInsideBounds =
+                false
           }
         }
 
@@ -756,11 +758,8 @@ class RNGestureHandlerButtonViewManager :
         touchResponder = this
         return true
       }
-      return if (exclusive) {
-        touchResponder === this
-      } else {
-        !(touchResponder?.exclusive ?: false)
-      }
+
+      return canRespondToTouches()
     }
 
     private fun isChildTouched(children: Sequence<View> = this.children): Boolean {

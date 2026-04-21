@@ -18,11 +18,19 @@ type PressableAndroidRippleConfig = {
 type RippleProps = 'rippleColor' | 'rippleRadius' | 'borderless' | 'foreground';
 
 export type TouchableProps = Omit<ButtonProps, RippleProps | 'enabled'> &
-  Omit<BaseButtonProps, keyof RawButtonProps | 'onActiveStateChange'> & {
+  Omit<
+    BaseButtonProps,
+    keyof RawButtonProps | 'onActiveStateChange' | 'onPress'
+  > & {
     /**
      * Configuration for the ripple effect on Android.
      */
     androidRipple?: PressableAndroidRippleConfig | undefined;
+
+    /**
+     * Called when the component gets pressed.
+     */
+    onPress?: ((event: CallbackEventType) => void) | undefined;
 
     /**
      * Called when pointer touches the component.
@@ -41,6 +49,7 @@ export type TouchableProps = Omit<ButtonProps, RippleProps | 'enabled'> &
 
     /**
      * Whether the touch should be canceled when pointer leaves the component. By default set to true.
+     * On web this prop doesn't have any effect and behaves as if `true` was set.
      */
     cancelOnLeave?: boolean | undefined;
   };
