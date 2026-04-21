@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import {
   GestureDetector,
   GestureHandlerRootView,
-  useRotationGesture, // <-- RNGH v3 API Hook
+  useRotationGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -14,9 +14,7 @@ export default function App() {
   const angle = useSharedValue(0);
   const startAngle = useSharedValue(0);
 
-  // RNGH v3 Configuration Object
   const rotation = useRotationGesture({
-    // Note: onStart has been renamed to onActivate in v3
     onActivate: () => {
       startAngle.value = angle.value;
     },
