@@ -314,3 +314,13 @@ type PressableAndroidRippleConfig = {
 `}/>
 
 Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
+
+<Badges platforms={['android', 'ios']}>
+### cancelOnLeave
+</Badges>
+
+```ts
+cancelOnLeave?: boolean;
+```
+
+Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.

@@ -38,4 +38,9 @@ export type TouchableProps = Omit<ButtonProps, RippleProps | 'enabled'> &
      * Whether the component should ignore touches. By default set to false.
      */
     disabled?: boolean | undefined;
+
+    /**
+     * Whether the touch should be canceled when pointer leaves the component. By default set to true.
+     */
+    cancelOnLeave?: boolean | undefined;
   };

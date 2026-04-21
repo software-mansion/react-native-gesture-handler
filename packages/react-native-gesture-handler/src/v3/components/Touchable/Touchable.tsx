@@ -21,6 +21,12 @@ const TouchableButton = createNativeWrapper<
 const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
 
+enum POINTER_STATE {
+  UNKNOWN,
+  INSIDE,
+  OUTSIDE,
+}
+
 export const Touchable = (props: TouchableProps) => {
   const {
     underlayColor = 'black',
@@ -34,12 +40,14 @@ export const Touchable = (props: TouchableProps) => {
     onPressOut,
     children,
     disabled = false,
+    cancelOnLeave = true,
     ref,
     ...rest
   } = props;
 
   const shouldUseNativeRipple = isAndroid && androidRipple !== undefined;
 
+  const pointerState = useRef<POINTER_STATE>(POINTER_STATE.UNKNOWN);
   const longPressDetected = useRef(false);
   const longPressTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -66,6 +74,8 @@ export const Touchable = (props: TouchableProps) => {
 
       onPressIn?.(e);
       startLongPressTimer();
+
+      pointerState.current = POINTER_STATE.INSIDE;
     },
     [startLongPressTimer, onPressIn]
   );
@@ -79,7 +89,7 @@ export const Touchable = (props: TouchableProps) => {
 
   const onDeactivate = useCallback(
     (e: EndCallbackEventType) => {
-      if (!e.canceled && !longPressDetected.current) {
+      if (!e.canceled && !longPressDetected.current && e.pointerInside) {
         onPress?.(e.pointerInside);
       }
     },
@@ -89,6 +99,7 @@ export const Touchable = (props: TouchableProps) => {
   const onFinalize = useCallback(
     (e: EndCallbackEventType) => {
       onPressOut?.(e);
+      pointerState.current = POINTER_STATE.UNKNOWN;
 
       if (longPressTimeout.current !== undefined) {
         clearTimeout(longPressTimeout.current);
@@ -96,6 +107,27 @@ export const Touchable = (props: TouchableProps) => {
       }
     },
     [onPressOut]
+  );
+
+  const onUpdate = useCallback(
+    (e: CallbackEventType) => {
+      if (pointerState.current === POINTER_STATE.UNKNOWN) {
+        return;
+      }
+
+      if (e.pointerInside) {
+        if (pointerState.current === POINTER_STATE.OUTSIDE) {
+          onPressIn?.(e);
+        }
+        pointerState.current = POINTER_STATE.INSIDE;
+      } else {
+        if (pointerState.current === POINTER_STATE.INSIDE) {
+          onPressOut?.(e);
+        }
+        pointerState.current = POINTER_STATE.OUTSIDE;
+      }
+    },
+    [onPressIn, onPressOut]
   );
 
   const rippleProps = shouldUseNativeRipple
@@ -117,9 +149,11 @@ export const Touchable = (props: TouchableProps) => {
       onActivate={onActivate}
       onDeactivate={onDeactivate}
       onFinalize={onFinalize}
+      onUpdate={onUpdate}
       defaultOpacity={defaultOpacity}
       defaultUnderlayOpacity={defaultUnderlayOpacity}
-      underlayColor={underlayColor}>
+      underlayColor={underlayColor}
+      shouldCancelWhenOutside={cancelOnLeave}>
       {children}
     </TouchableButton>
   );

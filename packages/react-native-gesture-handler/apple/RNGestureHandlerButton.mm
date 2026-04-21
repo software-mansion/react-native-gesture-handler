@@ -80,7 +80,9 @@
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self setExclusiveTouch:YES];
-  [self addTarget:self action:@selector(handleAnimatePressIn) forControlEvents:UIControlEventTouchDown];
+  [self addTarget:self
+                action:@selector(handleAnimatePressIn)
+      forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
   [self addTarget:self
                 action:@selector(handleAnimatePressOut)
       forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
@@ -555,6 +557,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #if TARGET_OS_OSX
 - (void)mouseDown:(NSEvent *)event
 {
+  _isTouchInsideBounds = YES;
   [self handleAnimatePressIn];
   [super mouseDown:event];
 }
@@ -562,6 +565,7 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 - (void)mouseUp:(NSEvent *)event
 {
   [self handleAnimatePressOut];
+  _isTouchInsideBounds = NO;
   [super mouseUp:event];
 }
 
@@ -569,8 +573,13 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   NSPoint locationInWindow = [event locationInWindow];
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+  BOOL currentlyInside = NSPointInRect(locationInView, self.bounds);
 
-  if (!NSPointInRect(locationInView, self.bounds)) {
+  if (currentlyInside && !_isTouchInsideBounds) {
+    _isTouchInsideBounds = YES;
+    [self handleAnimatePressIn];
+  } else if (!currentlyInside && _isTouchInsideBounds) {
+    _isTouchInsideBounds = NO;
     [self handleAnimatePressOut];
   }
 }
