@@ -162,14 +162,6 @@ onLongPress?: () => void;
 
 Triggered when the button gets pressed for at least [`delayLongPress`](#delaylongpress) milliseconds.
 
-### onActiveStateChange
-
-```ts
-onActiveStateChange?: (active: boolean) => void;
-```
-
-Triggered when the button transitions between active and inactive states. It passes the current active state as a boolean variable to the method as the first parameter.
-
 ### delayLongPress
 
 ```ts
