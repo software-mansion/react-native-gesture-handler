@@ -1,12 +1,9 @@
 import React, { useRef } from 'react';
 import { Platform, View } from 'react-native';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import TestingBase from './testingBase';
-import {
-  COLORS,
-  commonStyles,
-  Feedback,
-  FeedbackHandle,
-} from '../../../common';
 
 export function RippleExample() {
   const feedbackRef = useRef<FeedbackHandle>(null);

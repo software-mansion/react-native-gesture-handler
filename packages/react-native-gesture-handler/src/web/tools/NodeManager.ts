@@ -1,5 +1,5 @@
-import { ValueOf } from '../../typeUtils';
-import { Gestures } from '../Gestures';
+import type { ValueOf } from '../../typeUtils';
+import type { Gestures } from '../Gestures';
 import type IGestureHandler from '../handlers/IGestureHandler';
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class

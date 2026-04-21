@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { TouchableProps } from 'react-native-gesture-handler';
 import {
   GestureHandlerRootView,
   Touchable,
-  TouchableProps,
 } from 'react-native-gesture-handler';
+
 import { COLORS } from '../../../common';
 
 type ButtonWrapperProps = TouchableProps & {

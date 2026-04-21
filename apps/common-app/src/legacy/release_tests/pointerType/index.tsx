@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import {
+  Gesture,
+  GestureDetector,
+  PointerType,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  GestureDetector,
-  Gesture,
-  PointerType,
-} from 'react-native-gesture-handler';
 
 const Colors = {
   Touch: '#7bbf98',

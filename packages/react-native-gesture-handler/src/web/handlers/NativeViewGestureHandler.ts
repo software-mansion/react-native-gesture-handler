@@ -1,13 +1,13 @@
 import { Platform } from 'react-native';
-import { State } from '../../State';
-import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, Config, PropsRef } from '../interfaces';
 
-import GestureHandler from './GestureHandler';
-import { ActionType } from '../../ActionType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import IGestureHandler from './IGestureHandler';
+import type { ActionType } from '../../ActionType';
+import { State } from '../../State';
 import { SingleGestureName } from '../../v3/types';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
@@ -109,12 +109,12 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dy = this.startY - lastCoords.y;
     const distSq = dx * dx + dy * dy;
 
-    if (distSq >= this.minDistSq) {
-      if (this.buttonRole && this.state === State.ACTIVE) {
-        this.cancel();
-      } else if (!this.buttonRole && this.state === State.BEGAN) {
-        this.activate();
-      }
+    if (
+      distSq >= this.minDistSq &&
+      !this.buttonRole &&
+      this.state === State.BEGAN
+    ) {
+      this.activate();
     }
   }
 

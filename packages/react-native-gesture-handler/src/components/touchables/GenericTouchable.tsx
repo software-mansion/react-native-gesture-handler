@@ -2,14 +2,13 @@ import * as React from 'react';
 import { Component } from 'react';
 import { Animated, Platform } from 'react-native';
 
-import { State } from '../../State';
-import { LegacyBaseButton } from '../GestureButtons';
-
-import {
+import type {
   GestureEvent,
   HandlerStateChangeEvent,
 } from '../../handlers/gestureHandlerCommon';
 import type { NativeViewGestureHandlerPayload } from '../../handlers/GestureHandlerEventPayload';
+import { State } from '../../State';
+import { LegacyBaseButton } from '../GestureButtons';
 import type { GenericTouchableProps } from './GenericTouchableProps';
 
 /**

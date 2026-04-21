@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { SafeAreaView, Platform } from 'react-native';
+import { Platform, SafeAreaView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import Navigator from './Navigator';
-
-import Text from './Text';
-import NativeDetector from './NativeDetector';
-import RuntimeDecoration from './RuntimeDecoration';
 import ContentsButton from './ContentsButton';
+import NativeDetector from './NativeDetector';
+import Navigator from './Navigator';
+import RuntimeDecoration from './RuntimeDecoration';
+import Text from './Text';
 
 const EXAMPLES = [
   {

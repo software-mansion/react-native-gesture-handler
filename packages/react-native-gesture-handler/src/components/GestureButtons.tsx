@@ -1,25 +1,24 @@
 import * as React from 'react';
+import type { HostComponent } from 'react-native';
 import { Animated, Platform, StyleSheet } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
-import GestureHandlerButton from './GestureHandlerButton';
-import { State } from '../State';
-
-import {
+import type {
   GestureEvent,
   HandlerStateChangeEvent,
 } from '../handlers/gestureHandlerCommon';
 import type { NativeViewGestureHandlerPayload } from '../handlers/GestureHandlerEventPayload';
+import { State } from '../State';
 import type {
   BaseButtonWithRefProps,
-  LegacyBaseButtonProps,
-  RectButtonWithRefProps,
-  LegacyRectButtonProps,
   BorderlessButtonWithRefProps,
+  LegacyBaseButtonProps,
   LegacyBorderlessButtonProps,
   LegacyRawButtonProps,
+  LegacyRectButtonProps,
+  RectButtonWithRefProps,
 } from './GestureButtonsProps';
-import type { HostComponent } from 'react-native';
+import GestureHandlerButton from './GestureHandlerButton';
 
 /**
  * @deprecated use `RawButton` instead
@@ -148,14 +147,14 @@ export const LegacyBaseButton = ({
   ref,
   ...props
 }: Omit<LegacyBaseButtonProps, 'innerRef'> & {
-  ref?: React.ForwardedRef<React.ComponentType<any>> | undefined;
+  ref?: React.Ref<React.ComponentType<any>> | undefined;
 }) => <InnerBaseButton innerRef={ref} {...props} />;
 
 const AnimatedBaseButton = ({
   ref,
   ...props
 }: Animated.AnimatedProps<BaseButtonWithRefProps> & {
-  ref?: React.ForwardedRef<React.ComponentType<any>> | undefined;
+  ref?: React.Ref<React.ComponentType<any>> | undefined;
 }) => <AnimatedInnerBaseButton innerRef={ref} {...props} />;
 
 const btnStyles = StyleSheet.create({
@@ -229,7 +228,7 @@ export const LegacyRectButton = ({
   ref,
   ...props
 }: Omit<LegacyRectButtonProps, 'innerRef'> & {
-  ref?: React.ForwardedRef<React.ComponentType<any>> | undefined;
+  ref?: React.Ref<React.ComponentType<any>> | undefined;
 }) => <InnerRectButton innerRef={ref} {...props} />;
 
 class InnerBorderlessButton extends React.Component<BorderlessButtonWithRefProps> {
@@ -277,7 +276,7 @@ export const LegacyBorderlessButton = ({
   ref,
   ...props
 }: Omit<LegacyBorderlessButtonProps, 'innerRef'> & {
-  ref?: React.ForwardedRef<React.ComponentType<any>> | undefined;
+  ref?: React.Ref<React.ComponentType<any>> | undefined;
 }) => <InnerBorderlessButton innerRef={ref} {...props} />;
 
 export { default as LegacyPureNativeButton } from './GestureHandlerButton';

@@ -40,6 +40,20 @@ In Gesture Handler 3 some of the callbacks were renamed, namely:
 - `onEnd` -> `onDeactivate`
 - `onTouchesCancelled` -> `onTouchesCancel`
 
+The `onDeactivate` and `onFinalize` callbacks no longer receive a second `didSucceed`/`success` boolean parameter. Instead, the event object now contains a `canceled` property. Note that the logic is inverted — `canceled: true` corresponds to the old `success: false`.
+
+```jsx
+// Old (RNGH2)
+.onEnd((event, success) => {
+  if (success) { /* gesture succeeded */ }
+})
+
+// New (RNGH3)
+onDeactivate: (event) => {
+  if (!event.canceled) { /* gesture succeeded */ }
+}
+```
+
 In the hooks API `onChange` is no longer available. Instead the `*change*` properties were moved to the event available inside `onUpdate`.
 
 All callbacks of a gesture are now using the same type:

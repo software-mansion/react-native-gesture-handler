@@ -1,28 +1,28 @@
+import { useCallback, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { isTestEnv, tagMessage } from '../../../utils';
-import { GestureRef, BaseGesture, GestureType } from '../gesture';
-
-import { flingGestureHandlerProps } from '../../FlingGestureHandler';
-import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
-import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
-import {
-  panGestureHandlerProps,
-  panGestureHandlerCustomNativeProps,
-} from '../../PanGestureHandler';
-import { tapGestureHandlerProps } from '../../TapGestureHandler';
-import { hoverGestureHandlerProps } from '../hoverGesture';
-import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
 import { RNRenderer } from '../../../RNRenderer';
-import { useCallback, useRef, useState } from 'react';
-import { Reanimated } from '../reanimatedWrapper';
-import { onGestureHandlerEvent } from '../eventReceiver';
-import {
+import { isTestEnv, tagMessage } from '../../../utils';
+import type {
   GestureHandlerNativeEvent,
   PropsRef,
   ResultEvent,
 } from '../../../web/interfaces';
+import { flingGestureHandlerProps } from '../../FlingGestureHandler';
+import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
+import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
+import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
+import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
+import {
+  panGestureHandlerCustomNativeProps,
+  panGestureHandlerProps,
+} from '../../PanGestureHandler';
+import { tapGestureHandlerProps } from '../../TapGestureHandler';
+import { onGestureHandlerEvent } from '../eventReceiver';
+import type { GestureRef, GestureType } from '../gesture';
+import { BaseGesture } from '../gesture';
+import { hoverGestureHandlerProps } from '../hoverGesture';
+import { Reanimated } from '../reanimatedWrapper';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,

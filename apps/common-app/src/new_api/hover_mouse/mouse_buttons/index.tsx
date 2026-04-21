@@ -1,15 +1,16 @@
 import React, { useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import {
+  Directions,
   GestureDetector,
   MouseButton,
-  Directions,
   ScrollView,
-  useTapGesture,
-  usePanGesture,
-  useLongPressGesture,
   useFlingGesture,
+  useLongPressGesture,
+  usePanGesture,
+  useTapGesture,
 } from 'react-native-gesture-handler';
-import { StyleSheet, View, Text } from 'react-native';
+
 import { COLORS, Feedback } from '../../../common';
 
 export default function Buttons() {

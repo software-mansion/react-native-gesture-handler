@@ -1,5 +1,7 @@
+import { cleanup, render } from '@testing-library/react-native';
 import React from 'react';
-import { render, cleanup } from '@testing-library/react-native';
+import { findNodeHandle, View } from 'react-native';
+
 import {
   Gesture,
   GestureDetector,
@@ -7,7 +9,6 @@ import {
   InterceptingGestureDetector,
   useTapGesture,
 } from '../index';
-import { findNodeHandle, View } from 'react-native';
 import { VirtualDetector } from '../v3/detectors/VirtualDetector/VirtualDetector';
 
 jest.mock('react-native-worklets', () =>

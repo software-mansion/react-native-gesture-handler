@@ -1,10 +1,14 @@
 import React, { useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
-import GestureHandlerButton, {
-  ButtonProps,
-} from '../../../components/GestureHandlerButton';
-import { CallbackEventType, TouchableProps } from './TouchableProps';
+
+import type { ButtonProps } from '../../../components/GestureHandlerButton';
+import GestureHandlerButton from '../../../components/GestureHandlerButton';
 import createNativeWrapper from '../../createNativeWrapper';
+import type {
+  CallbackEventType,
+  EndCallbackEventType,
+  TouchableProps,
+} from './TouchableProps';
 
 const TouchableButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
@@ -28,7 +32,6 @@ export const Touchable = (props: TouchableProps) => {
     onPress,
     onPressIn,
     onPressOut,
-    onActiveStateChange,
     children,
     disabled = false,
     ref,
@@ -67,31 +70,24 @@ export const Touchable = (props: TouchableProps) => {
     [startLongPressTimer, onPressIn]
   );
 
-  const onActivate = useCallback(
-    (e: CallbackEventType) => {
-      onActiveStateChange?.(true);
-
-      if (!e.pointerInside && longPressTimeout.current !== undefined) {
-        clearTimeout(longPressTimeout.current);
-        longPressTimeout.current = undefined;
-      }
-    },
-    [onActiveStateChange]
-  );
+  const onActivate = useCallback((e: CallbackEventType) => {
+    if (!e.pointerInside && longPressTimeout.current !== undefined) {
+      clearTimeout(longPressTimeout.current);
+      longPressTimeout.current = undefined;
+    }
+  }, []);
 
   const onDeactivate = useCallback(
-    (e: CallbackEventType, success: boolean) => {
-      onActiveStateChange?.(false);
-
-      if (success && !longPressDetected.current) {
+    (e: EndCallbackEventType) => {
+      if (!e.canceled && !longPressDetected.current) {
         onPress?.(e.pointerInside);
       }
     },
-    [onActiveStateChange, onPress]
+    [onPress]
   );
 
   const onFinalize = useCallback(
-    (e: CallbackEventType) => {
+    (e: EndCallbackEventType) => {
       onPressOut?.(e);
 
       if (longPressTimeout.current !== undefined) {

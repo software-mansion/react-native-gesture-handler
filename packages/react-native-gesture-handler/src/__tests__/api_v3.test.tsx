@@ -1,10 +1,11 @@
-import { usePanGesture } from '../v3/hooks/gestures';
 import { render, renderHook } from '@testing-library/react-native';
+import { act } from 'react';
+
+import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { fireGestureHandler, getByGestureTestId } from '../jestUtils';
 import { State } from '../State';
-import GestureHandlerRootView from '../components/GestureHandlerRootView';
 import { RectButton, Touchable } from '../v3/components';
-import { act } from 'react';
+import { usePanGesture } from '../v3/hooks/gestures';
 import type { SingleGesture } from '../v3/types';
 
 describe('[API v3] Hooks', () => {
@@ -104,31 +105,6 @@ describe('[API v3] Components', () => {
       });
 
       expect(pressFn).not.toHaveBeenCalled();
-    });
-
-    test('calls onActiveStateChange with correct values', () => {
-      const activeStateFn = jest.fn();
-
-      const Example = () => (
-        <GestureHandlerRootView>
-          <Touchable testID="touchable" onActiveStateChange={activeStateFn} />
-        </GestureHandlerRootView>
-      );
-
-      render(<Example />);
-      const gesture = getByGestureTestId('touchable');
-
-      act(() => {
-        fireGestureHandler(gesture, [
-          { oldState: State.UNDETERMINED, state: State.BEGAN },
-          { oldState: State.BEGAN, state: State.ACTIVE },
-          { oldState: State.ACTIVE, state: State.END },
-        ]);
-      });
-
-      expect(activeStateFn).toHaveBeenCalledTimes(2);
-      expect(activeStateFn).toHaveBeenNthCalledWith(1, true);
-      expect(activeStateFn).toHaveBeenNthCalledWith(2, false);
     });
 
     test('calls onLongPress after delayLongPress and suppresses onPress', () => {
