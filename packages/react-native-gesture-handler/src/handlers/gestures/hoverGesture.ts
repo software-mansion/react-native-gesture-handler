@@ -41,6 +41,9 @@ function changeEventCalculator(
   return { ...current, ...changePayload };
 }
 
+/**
+ * @deprecated `HoverGesture` is deprecated and will be removed in the future. Please use `useHoverGesture` instead.
+ */
 export class HoverGesture extends ContinousBaseGesture<
   HoverGestureHandlerEventPayload,
   HoverGestureChangeEventPayload
@@ -75,4 +78,7 @@ export class HoverGesture extends ContinousBaseGesture<
   }
 }
 
+/**
+ * @deprecated `HoverGestureType` is deprecated and will be removed in the future. Please use `HoverGesture` instead.
+ */
 export type HoverGestureType = InstanceType<typeof HoverGesture>;
