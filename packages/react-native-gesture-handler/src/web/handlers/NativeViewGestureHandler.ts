@@ -209,14 +209,13 @@ export default class NativeViewGestureHandler extends GestureHandler {
   protected override shouldSuppressActiveUpdate(
     handlerData: HandlerData<NativeHandlerData>
   ): boolean {
-    const current = handlerData;
     if (
       this.lastActiveHandlerData &&
-      deepEqual(this.lastActiveHandlerData, current)
+      deepEqual(this.lastActiveHandlerData, handlerData)
     ) {
       return true;
     }
-    this.lastActiveHandlerData = current;
+    this.lastActiveHandlerData = handlerData;
     return false;
   }
 
