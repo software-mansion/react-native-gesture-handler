@@ -13,8 +13,8 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import LongPressGestureBasic from '@site/static/examples/LongPressGestureBasic';
-import LongPressGestureBasicSrc from '!!raw-loader!@site/static/examples/LongPressGestureBasic';
+import LongPressGestureBasic from '../../versioned_docs/version-2.x/examples/LongPressGestureBasic';
+import LongPressGestureBasicSrc from '!!raw-loader!../../versioned_docs/version-2.x/examples/LongPressGestureBasic';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>

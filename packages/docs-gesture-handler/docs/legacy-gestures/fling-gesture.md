@@ -9,8 +9,8 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
-import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasic';
+import FlingGestureBasic from '../../versioned_docs/version-2.x/examples/FlingGestureBasic';
+import FlingGestureBasicSrc from '!!raw-loader!../../versioned_docs/version-2.x/examples/FlingGestureBasic';
 
 import OldAPIInfo from './\_shared/v2-info.md'
 

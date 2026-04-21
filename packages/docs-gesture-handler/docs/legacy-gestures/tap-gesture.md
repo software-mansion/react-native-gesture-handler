@@ -13,8 +13,8 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import TapGestureBasic from '@site/static/examples/TapGestureBasic';
-import TapGestureBasicSrc from '!!raw-loader!@site/static/examples/TapGestureBasic';
+import TapGestureBasic from '../../versioned_docs/version-2.x/examples/TapGestureBasic';
+import TapGestureBasicSrc from '!!raw-loader!../../versioned_docs/version-2.x/examples/TapGestureBasic';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>

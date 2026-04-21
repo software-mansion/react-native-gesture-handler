@@ -13,8 +13,8 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import HoverGestureBasic from '@site/static/examples/HoverGestureBasic';
-import HoverGestureBasicSrc from '!!raw-loader!@site/static/examples/HoverGestureBasic';
+import HoverGestureBasic from '../../versioned_docs/version-2.x/examples/HoverGestureBasic';
+import HoverGestureBasicSrc from '!!raw-loader!../../versioned_docs/version-2.x/examples/HoverGestureBasic';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>

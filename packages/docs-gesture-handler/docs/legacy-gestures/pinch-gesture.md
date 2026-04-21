@@ -13,8 +13,8 @@ import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/ge
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-import PinchGestureBasic from '@site/static/examples/PinchGestureBasic';
-import PinchGestureBasicSrc from '!!raw-loader!@site/static/examples/PinchGestureBasic';
+import PinchGestureBasic from '../../versioned_docs/version-2.x/examples/PinchGestureBasic';
+import PinchGestureBasicSrc from '!!raw-loader!../../versioned_docs/version-2.x/examples/PinchGestureBasicSrc';
 
 <div className={webContainer}>
   <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
