@@ -270,9 +270,28 @@ Triggered when the button gets released or the pointer moves outside of the butt
 
 ### onPress
 
-```ts
-onPress?: (pointerInside: boolean) => void;
-```
+<CollapsibleCode 
+label="Show composed types definitions"
+expandedLabel="Hide composed types definitions"
+lineBounds={[0, 1]}
+src={`
+onPress?: (e: GestureEvent<NativeHandlerData>) => void;
+
+type GestureEvent<NativeHandlerData> = {
+    handlerTag: number;
+    numberOfPointers: number;
+    pointerType: PointerType;
+    pointerInside: boolean;
+}
+
+enum PointerType {
+    TOUCH,
+    STYLUS,
+    MOUSE,
+    KEY,
+    OTHER,
+}
+`}/>
 
 Triggered when the button gets pressed (analogous to `onPress` in `Pressable` from RN core).
 
