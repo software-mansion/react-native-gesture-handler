@@ -485,7 +485,7 @@ class RNGestureHandlerButtonViewManager :
         val handled = super.onTouchEvent(event)
 
         // Replay press-in / press-out animations across drag transitions.
-        if (canRespondToTouches()) {
+        if (handled && canRespondToTouches()) {
           when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> isPointerInsideBounds = true
             MotionEvent.ACTION_MOVE -> {
