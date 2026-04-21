@@ -99,7 +99,10 @@ export const Touchable = (props: TouchableProps) => {
 
   const onFinalize = useCallback(
     (e: EndCallbackEventType) => {
-      onPressOut?.(e);
+      if (pointerState.current === PointerState.INSIDE) {
+        onPressOut?.(e);
+      }
+
       pointerState.current = PointerState.UNKNOWN;
 
       if (longPressTimeout.current !== undefined) {
