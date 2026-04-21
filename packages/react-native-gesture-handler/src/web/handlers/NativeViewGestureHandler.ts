@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
 import { deepEqual } from '../../utils';
+import type { NativeHandlerData } from '../../v3/hooks/gestures/native/NativeTypes';
 import type { HandlerData } from '../../v3/types';
 import { SingleGestureName } from '../../v3/types';
 import { DEFAULT_TOUCH_SLOP } from '../constants';
@@ -10,6 +11,7 @@ import type { AdaptedEvent, Config, PropsRef } from '../interfaces';
 import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
+
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
 
@@ -22,7 +24,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   private startY = 0;
   private minDistSq = DEFAULT_TOUCH_SLOP * DEFAULT_TOUCH_SLOP;
 
-  private lastActiveHandlerData: Record<string, unknown> | null = null;
+  private lastActiveHandlerData: HandlerData<NativeHandlerData> | null = null;
 
   public constructor(
     delegate: GestureHandlerDelegate<unknown, IGestureHandler>
@@ -205,9 +207,9 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   protected override shouldSuppressActiveUpdate(
-    handlerData: HandlerData<unknown>
+    handlerData: HandlerData<NativeHandlerData>
   ): boolean {
-    const current = handlerData as Record<string, unknown>;
+    const current = handlerData;
     if (
       this.lastActiveHandlerData &&
       deepEqual(this.lastActiveHandlerData, current)
