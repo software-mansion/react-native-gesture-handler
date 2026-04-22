@@ -57,28 +57,38 @@ export const ButtonComponent = ({
 
   const pressIn = React.useCallback(
     (event: NativeSyntheticEvent<unknown>) => {
-      event.stopPropagation();
-      if (enabled) {
-        if (pressOutTimer.current != null) {
-          clearTimeout(pressOutTimer.current);
-          pressOutTimer.current = null;
-        }
-        pressInTimestamp.current = performance.now();
-        setCurrentDuration(pressAndHoldAnimationDuration);
-        setPressed(true);
+      if (!enabled) {
+        return;
       }
+
+      event.stopPropagation();
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+        pressOutTimer.current = null;
+      }
+      pressInTimestamp.current = performance.now();
+      setCurrentDuration(pressAndHoldAnimationDuration);
+      setPressed(true);
     },
     [enabled, pressAndHoldAnimationDuration]
   );
 
   const pressOut = React.useCallback(
     (event: NativeSyntheticEvent<unknown>) => {
+      // Only release if a press-in was actually recorded — guards against
+      // stray pointer events and lets us complete the release cycle even if
+      // `enabled` flipped to false between press-in and press-out.
+      if (pressInTimestamp.current === 0) {
+        return;
+      }
+
       event.stopPropagation();
       if (pressOutTimer.current != null) {
         clearTimeout(pressOutTimer.current);
         pressOutTimer.current = null;
       }
       const elapsed = performance.now() - pressInTimestamp.current;
+      pressInTimestamp.current = 0;
 
       if (elapsed >= pressAndHoldAnimationDuration) {
         setCurrentDuration(pressAndHoldAnimationDuration);
