@@ -1,1 +1,0 @@
-../../versioned_docs/version-2.x/gestures/composed-gestures.md
