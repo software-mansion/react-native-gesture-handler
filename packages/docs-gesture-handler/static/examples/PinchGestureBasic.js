@@ -43,7 +43,7 @@ export default function App() {
       containerRef.current.measureInWindow((x, y, w, h) => {
         maxBoxSize.value = Math.min(w, h);
 
-        boxWidth.value = clamp(boxWidth.value, minBoxSize, maxBoxSize.value);
+        boxWidth.value = Math.min(minBoxSize * 2, maxBoxSize.value);
       });
     }
   }
