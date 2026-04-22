@@ -93,6 +93,7 @@ export default function App() {
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     width: boxWidth.value,
+    cursor: touchOpacity.value > 0 ? 'none' : 'grab',
   }));
 
   return (
