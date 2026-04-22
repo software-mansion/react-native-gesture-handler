@@ -13,9 +13,12 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const COLORS = ['#b58df1', '#fa7f7c', '#ffe780', '#82cab2'];
+const easing = Easing.bezier(0.31, 0.04, 0.03, 1.04);
 
 export default function App() {
   const colorIndex = useSharedValue(0);
+  const nextColorIndex = useSharedValue(0);
+  const progress = useSharedValue(0);
   const scale = useSharedValue(1);
 
   const longPress = Gesture.LongPress()
@@ -26,15 +29,13 @@ export default function App() {
       });
     })
     .onStart(() => {
-      colorIndex.value = withTiming(
-        (colorIndex.value + 1) % (COLORS.length + 1),
-        { duration: 200 },
-        () => {
-          if (colorIndex.value === COLORS.length) {
-            colorIndex.value = 0;
-          }
-        }
-      );
+      colorIndex.value = nextColorIndex.value;
+      nextColorIndex.value = (colorIndex.value + 1) % COLORS.length;
+      progress.value = 0;
+      progress.value = withTiming(1, {
+        duration: 500,
+        easing: Easing.bezier(0.31, 0.04, 0.03, 1.04),
+      });
     })
     .onFinalize(() => {
       scale.value = withTiming(1, {
@@ -45,9 +46,9 @@ export default function App() {
 
   const animatedStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
-      colorIndex.value,
-      [...COLORS.map((_, i) => i), COLORS.length],
-      [...COLORS, COLORS[0]]
+      progress.value,
+      [0, 1],
+      [COLORS[colorIndex.value], COLORS[nextColorIndex.value]]
     ),
     transform: [{ scale: scale.value }],
   }));
