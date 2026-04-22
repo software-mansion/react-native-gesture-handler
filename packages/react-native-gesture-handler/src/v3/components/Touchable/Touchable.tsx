@@ -16,6 +16,7 @@ const TouchableButton = createNativeWrapper<
 >(GestureHandlerButton, {
   shouldCancelWhenOutside: true,
   shouldActivateOnStart: false,
+  disallowInterruption: true,
 });
 
 const isAndroid = Platform.OS === 'android';
