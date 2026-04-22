@@ -9,19 +9,12 @@ import OldAPIInfo from './\_shared/v2-info.md'
 
 <OldAPIInfo />
 
-import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
-
-import useBaseUrl from '@docusaurus/useBaseUrl';
+import { webContainer } from '@site/src/utils/getGestureStyles';
 
 import TapGestureBasic from '../../versioned_docs/version-2.x/examples/TapGestureBasic';
 import TapGestureBasicSrc from '!!raw-loader!../../versioned_docs/version-2.x/examples/TapGestureBasic';
 
 <div className={webContainer}>
-  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
-    </video>
-  </div>
   <InteractiveExample
     component={<TapGestureBasic/>}
     src={TapGestureBasicSrc}
@@ -41,12 +34,6 @@ The required number of taps and allowed distance from initial position may be co
 For example, you might configure tap gesture recognizers to detect single taps, double taps, or triple taps.
 
 In order for a gesture to [activate](/docs/2.x/fundamentals/states-events#active), specified gesture requirements such as minPointers, numberOfTaps, maxDist, maxDuration, and maxDelayMs (explained below) must be met. Immediately after the gesture [activates](/docs/2.x/fundamentals/states-events#active), it will [end](/docs/2.x/fundamentals/states-events#end).
-
-  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/tap.mp4")} type="video/mp4"/>
-    </video>
-  </div>
 
 <samp id="TapGestureBasic">Tap Gesture</samp>
 

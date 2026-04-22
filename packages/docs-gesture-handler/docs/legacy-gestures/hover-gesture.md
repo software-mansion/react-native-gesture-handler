@@ -9,19 +9,12 @@ import OldAPIInfo from './\_shared/v2-info.md'
 
 <OldAPIInfo />
 
-import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
-
-import useBaseUrl from '@docusaurus/useBaseUrl';
+import { webContainer } from '@site/src/utils/getGestureStyles';
 
 import HoverGestureBasic from '../../versioned_docs/version-2.x/examples/HoverGestureBasic';
 import HoverGestureBasicSrc from '!!raw-loader!../../versioned_docs/version-2.x/examples/HoverGestureBasic';
 
 <div className={webContainer}>
-  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
-    </video>
-  </div>
   <InteractiveExample
     component={<HoverGestureBasic/>}
     src={HoverGestureBasicSrc}
@@ -37,12 +30,6 @@ import BaseContinuousEventCallbacks from './\_shared/base-continuous-gesture-cal
 A continuous gesture that can recognize hovering above the view it's attached to. The hover effect may be activated by moving a mouse or a stylus over the view.
 
 On iOS additional visual effects may be configured.
-
-  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/hover.mp4")} type="video/mp4"/>
-    </video>
-  </div>
 
 <samp id="HoverGestureBasic">Hover Gesture</samp>
 
