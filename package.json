@@ -7,8 +7,7 @@
     "apps/basic-example",
     "apps/expo-example",
     "apps/macos-example",
-    "apps/common-app",
-    "apps/e2e"
+    "apps/common-app"
   ],
   "scripts": {
     "postinstall": "yarn build",
