@@ -17,7 +17,6 @@ import TapGestureBasicSrc from '!!raw-loader!../examples/TapGestureBasic';
     disableMarginBottom={true}
   />
 </div>
-
 import BaseEventData from './\_shared/base-gesture-event-data.md';
 import BaseEventConfig from './\_shared/base-gesture-config.md';
 import BaseEventCallbacks from './\_shared/base-gesture-callbacks.md';
