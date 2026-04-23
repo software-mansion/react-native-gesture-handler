@@ -1,35 +1,42 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import {
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  useRotationGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
+  clamp,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-export default function App() {
-  const angle = useSharedValue(0);
-  const startAngle = useSharedValue(0);
+const { width, height } = Dimensions.get('screen');
 
-  const rotation = useRotationGesture({
-    onActivate: () => {
-      startAngle.value = angle.value;
-    },
-    onUpdate: (event) => {
-      angle.value = startAngle.value + event.rotation;
-    },
-  });
+export default function App() {
+  const scale = useSharedValue(1);
+  const startScale = useSharedValue(0);
+
+  const pinch = Gesture.Pinch()
+    .onStart(() => {
+      startScale.value = scale.value;
+    })
+    .onUpdate((event) => {
+      scale.value = clamp(
+        startScale.value * event.scale,
+        0.5,
+        Math.min(width / 100, height / 100)
+      );
+    })
+    .runOnJS(true);
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${angle.value}rad` }],
+    transform: [{ scale: scale.value }],
   }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={rotation}>
+      <GestureDetector gesture={pinch}>
         <Animated.View style={[styles.box, boxAnimatedStyles]} />
       </GestureDetector>
     </GestureHandlerRootView>

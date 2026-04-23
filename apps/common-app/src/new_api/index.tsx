@@ -35,6 +35,7 @@ import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
 import NestedPressablesExample from './tests/nestedPressables';
 import NestedRootViewExample from './tests/nestedRootView';
+import NestedTouchablesExample from './tests/nestedTouchables';
 import PointerTypeExample from './tests/pointerType';
 import PressableExample from './tests/pressable';
 import ReattachingExample from './tests/reattaching';
@@ -124,6 +125,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Reattaching', component: ReattachingExample },
       { name: 'Modal with Nested Root View', component: NestedRootViewExample },
       { name: 'Nested pressables', component: NestedPressablesExample },
+      { name: 'Nested touchables', component: NestedTouchablesExample },
       { name: 'Pressable', component: PressableExample },
     ],
   },
