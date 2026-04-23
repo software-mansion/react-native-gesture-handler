@@ -17,6 +17,13 @@
 #import <React/RCTTextInputComponentView.h>
 #import <React/UIView+React.h>
 
+#if !TARGET_OS_OSX
+@interface RNNativeViewGestureHandler ()
+- (void)handleTextViewTouchDown:(UIEvent *)event;
+- (void)handleTextViewTouchUp:(UIEvent *)event;
+@end
+#endif
+
 #pragma mark RNDummyGestureRecognizer
 
 @implementation RNDummyGestureRecognizer {
@@ -36,6 +43,10 @@
 {
   [_gestureHandler setCurrentPointerTypeForEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+
+  if ([self.view isKindOfClass:[UITextView class]]) {
+    [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchDown:event];
+  }
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
@@ -47,6 +58,11 @@
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+
+  if ([self.view isKindOfClass:[UITextView class]]) {
+    [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchUp:event];
+  }
+
   self.state = UIGestureRecognizerStateFailed;
 
   // For now, we are handling only the scroll view case.
@@ -137,15 +153,22 @@
 
 - (void)bindToView:(UIView *)view
 {
+  UIView *textInputChild = nil;
+
   // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[UIControl class]]) {
     _control = (UIControl *)view;
   } else if ([view isKindOfClass:[RCTTextInputComponentView class]]) {
-    // TextInput (RCTTextInputComponentView) contains a UITextField or UITextView as a subview.
+    // TextInput (RCTTextInputComponentView) contains a UITextField (single-line) or UITextView (multi-line) as a
+    // subview. UITextField is a UIControl, so we can use UIControl events. UITextView is not a UIControl, so we need to
+    // attach the gesture recognizer to it directly.
     for (UIView *subview in view.subviews) {
-      if ([subview isKindOfClass:[UITextField class]] || [subview isKindOfClass:[UITextView class]]) {
+      if ([subview isKindOfClass:[UITextField class]]) {
         _control = (UIControl *)subview;
+        break;
+      } else if ([subview isKindOfClass:[UITextView class]]) {
+        textInputChild = subview;
         break;
       }
     }
@@ -182,6 +205,16 @@
     }
   } else {
     [super bindToView:view];
+
+    // For multiline TextInput (UITextView), we need to move the gesture recognizer from the parent
+    // to the actual text view so it can receive touch events
+    if (textInputChild != nil) {
+      UIView *currentRecognizerView = self.recognizer.view;
+      if (currentRecognizerView != nil) {
+        [currentRecognizerView removeGestureRecognizer:self.recognizer];
+      }
+      [textInputChild addGestureRecognizer:self.recognizer];
+    }
   }
 
   // We can restore default scrollview behaviour to delay touches to scrollview's children
@@ -236,6 +269,28 @@
                                                            withPointerType:_pointerType]];
 
   [self reset];
+}
+
+- (void)handleTextViewTouchDown:(UIEvent *)event
+{
+  [self reset];
+
+  RNGestureHandlerEventExtraData *extraData = [RNGestureHandlerEventExtraData forPointerInside:YES
+                                                                           withNumberOfTouches:event.allTouches.count
+                                                                               withPointerType:_pointerType];
+
+  [self sendEventsInState:RNGestureHandlerStateBegan forViewWithTag:self.viewTag withExtraData:extraData];
+  [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:self.viewTag withExtraData:extraData];
+  _lastActiveExtraData = extraData;
+}
+
+- (void)handleTextViewTouchUp:(UIEvent *)event
+{
+  [self sendEventsInState:RNGestureHandlerStateEnd
+           forViewWithTag:self.viewTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
