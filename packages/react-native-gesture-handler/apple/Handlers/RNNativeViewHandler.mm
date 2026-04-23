@@ -14,6 +14,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTScrollViewComponentView.h>
+#import <React/RCTTextInputComponentView.h>
 #import <React/UIView+React.h>
 
 #pragma mark RNDummyGestureRecognizer
@@ -135,15 +136,28 @@
 
 - (void)bindToView:(UIView *)view
 {
+  UIControl *control = nil;
+
   // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[UIControl class]]) {
-    UIControl *control = (UIControl *)view;
+    control = (UIControl *)view;
+  } else if ([view isKindOfClass:[RCTTextInputComponentView class]]) {
+    // TextInput (RCTTextInputComponentView) contains a UITextField or UITextView as a subview.
+    // We need to attach to that subview to receive touch events.
+    for (UIView *subview in view.subviews) {
+      if ([subview isKindOfClass:[UITextField class]] || [subview isKindOfClass:[UITextView class]]) {
+        control = (UIControl *)subview;
+        break;
+      }
+    }
+  }
 
+  if (control) {
     // Pressing UISwitch triggers only touchUp and valueChanged callbacks. In order to align its behavior
     // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
     // touchesDown is not executed.
-    if ([view isKindOfClass:[UISwitch class]]) {
+    if ([control isKindOfClass:[UISwitch class]]) {
       _pointerType = RNGestureHandlerTouch;
       [control addTarget:self action:@selector(handleSwitch:) forControlEvents:UIControlEventValueChanged];
     } else {
@@ -183,6 +197,14 @@
 
   if ([view isKindOfClass:[UIControl class]]) {
     [(UIControl *)view removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
+  } else if ([view isKindOfClass:[RCTTextInputComponentView class]]) {
+    // Remove targets from the internal UITextField/UITextView
+    for (UIView *subview in view.subviews) {
+      if ([subview isKindOfClass:[UITextField class]] || [subview isKindOfClass:[UITextView class]]) {
+        [(UIControl *)subview removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
+        break;
+      }
+    }
   }
 
   // Restore the React Native's overriden behavor for not delaying content touches
