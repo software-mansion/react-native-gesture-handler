@@ -115,7 +115,7 @@
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
-  __weak UIControl *_targetControl;
+  __weak UIControl *_control;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -137,51 +137,48 @@
 
 - (void)bindToView:(UIView *)view
 {
-  UIControl *control = nil;
-
   // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[UIControl class]]) {
-    control = (UIControl *)view;
+    _control = (UIControl *)view;
   } else if ([view isKindOfClass:[RCTTextInputComponentView class]]) {
     // TextInput (RCTTextInputComponentView) contains a UITextField or UITextView as a subview.
-    // We need to attach to that subview to receive touch events.
     for (UIView *subview in view.subviews) {
       if ([subview isKindOfClass:[UITextField class]] || [subview isKindOfClass:[UITextView class]]) {
-        control = (UIControl *)subview;
+        _control = (UIControl *)subview;
         break;
       }
     }
   }
 
-  if (control) {
-    _targetControl = control;
-
+  if (_control) {
     // Pressing UISwitch triggers only touchUp and valueChanged callbacks. In order to align its behavior
     // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
     // touchesDown is not executed.
-    if ([control isKindOfClass:[UISwitch class]]) {
+    if ([_control isKindOfClass:[UISwitch class]]) {
       _pointerType = RNGestureHandlerTouch;
-      [control addTarget:self action:@selector(handleSwitch:) forControlEvents:UIControlEventValueChanged];
+      [_control addTarget:self action:@selector(handleSwitch:) forControlEvents:UIControlEventValueChanged];
     } else {
-      [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
-      [control addTarget:self
+      [_control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
+      [_control addTarget:self
                     action:@selector(handleTouchUpOutside:forEvent:)
           forControlEvents:UIControlEventTouchUpOutside];
-      [control addTarget:self
+      [_control addTarget:self
                     action:@selector(handleTouchUpInside:forEvent:)
           forControlEvents:UIControlEventTouchUpInside];
-      [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
-      [control addTarget:self
+      [_control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
+      [_control addTarget:self
                     action:@selector(handleDragInside:forEvent:)
           forControlEvents:UIControlEventTouchDragInside];
-      [control addTarget:self
+      [_control addTarget:self
                     action:@selector(handleDragOutside:forEvent:)
           forControlEvents:UIControlEventTouchDragOutside];
-      [control addTarget:self
+      [_control addTarget:self
                     action:@selector(handleDragEnter:forEvent:)
           forControlEvents:UIControlEventTouchDragEnter];
-      [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
+      [_control addTarget:self
+                    action:@selector(handleTouchCancel:forEvent:)
+          forControlEvents:UIControlEventTouchCancel];
     }
   } else {
     [super bindToView:view];
@@ -198,9 +195,9 @@
 {
   UIView *view = self.recognizer.view;
 
-  if (_targetControl) {
-    [_targetControl removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
-    _targetControl = nil;
+  if (_control) {
+    [_control removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
+    _control = nil;
   }
 
   // Restore the React Native's overriden behavor for not delaying content touches
