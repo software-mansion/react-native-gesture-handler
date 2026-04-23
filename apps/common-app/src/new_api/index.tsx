@@ -42,6 +42,15 @@ import RectButtonExample from './tests/rectButton';
 import TwoFingerPanExample from './tests/twoFingerPan';
 import WebStylesResetExample from './tests/webStylesReset';
 
+import pinchE2E from '../e2e_screens/gestures/pinch';
+import flingE2E from '../e2e_screens/gestures/fling';
+import hoverE2E from '../e2e_screens/gestures/hover';
+import longPressE2E from '../e2e_screens/gestures/long_press';
+import panE2E from '../e2e_screens/gestures/pan';
+import rotationE2E from '../e2e_screens/gestures/rotation';
+import tapE2E from '../e2e_screens/gestures/tap';
+
+
 export const NEW_EXAMPLES: ExamplesSection[] = [
   {
     sectionTitle: 'Empty',
@@ -127,4 +136,16 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Pressable', component: PressableExample },
     ],
   },
+  {
+    sectionTitle: 'E2E Tests',
+    data: [
+      {name: 'Pinch Gesture', component: pinchE2E },
+       {name: 'Fling Gesture', component: flingE2E },
+       {name: 'Hover Gesture', component: hoverE2E },
+       {name: 'Long Press Gesture', component: longPressE2E },
+       {name: 'Pan Gesture', component: panE2E },
+       {name: 'Rotation Gesture', component: rotationE2E },
+       {name: 'Tap Gesture', component: tapE2E }
+    ],
+  }
 ];
