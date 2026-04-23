@@ -9,7 +9,7 @@ Gesture callback can be used for continuous tracking of the touch pressure. It p
 At the beginning of the gesture, the pressure factor is 0.0. As the pressure increases, the pressure factor increases proportionally. The maximum pressure is 1.0.
 
 There's no implementation provided on Android and it simply renders children without any wrappers.
-Since this behaviour is only provided on some iOS devices, this gesture should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features to be accessed without this gesture as well.
+Since this behavior is only provided on some iOS devices, this gesture should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features accessible without this gesture as well.
 
 ## Reference
 
@@ -34,11 +34,11 @@ function App() {
 
 ### `minForce(value: number)`
 
-A minimal pressure that is required before the gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
+A minimal pressure that is required before gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
 
 ### `maxForce(value: number)`
 
-A maximal pressure that could be applied for the gesture. If the pressure is greater, the gesture [fails](/docs/2.x/fundamentals/states-events#failed). Should be a value from range `[0.0, 1.0]`.
+A maximal pressure that could be applied for gesture. If the pressure is greater, gesture [fails](/docs/2.x/fundamentals/states-events#failed). Should be a value from range `[0.0, 1.0]`.
 
 ### `feedbackOnActivation(value: boolean)`
 

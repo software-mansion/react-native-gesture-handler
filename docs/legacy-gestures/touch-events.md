@@ -24,7 +24,7 @@ Number representing the count of currently active touches.
 
 ### `id`
 
-A number representing id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
+A number representing the id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
 ### `x`
 

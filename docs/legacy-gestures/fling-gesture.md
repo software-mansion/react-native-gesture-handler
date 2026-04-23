@@ -1,6 +1,6 @@
 A discrete gesture that activates when the movement is sufficiently long and fast.
-The gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
-When the gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when the finger is released.
+Gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
+When gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
 
 Fling Gesture

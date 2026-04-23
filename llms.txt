@@ -84,7 +84,6 @@
 
 ## legacy-gestures
 
-- [Composed gestures](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/composed-gestures)
 - [Fling gesture](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/fling-gesture)
 - [Force touch gesture (iOS only)](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/force-touch-gesture)
 - [Gesture composition & interactions](https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/gesture-composition)

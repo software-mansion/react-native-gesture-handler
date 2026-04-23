@@ -64,7 +64,7 @@ function Rectangle({ color, scrollGesture }) {
 
 ### `shouldActivateOnStart(value: boolean)` (**Android only**)
 
-When `true`, the underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/2.x/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/2.x/fundamentals/states-events#undetermined) state.
+When `true`, underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/2.x/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/2.x/fundamentals/states-events#undetermined) state.
 
 ### `disallowInterruption(value: boolean)`
 
@@ -78,4 +78,4 @@ When `true`, cancels all other gesture handlers when this `NativeViewGestureHand
 
 ### `pointerInside`
 
-True if the gesture was performed inside the containing view, false otherwise.
+True if gesture was performed inside of containing view, false otherwise.

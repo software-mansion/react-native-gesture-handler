@@ -1,24 +1,19 @@
 import React from 'react';
 import Animated, {
+  clamp,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import {
-  Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  usePanGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
-
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max);
-}
 
 export default function App() {
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
-  const prevTranslationX = useSharedValue(0);
-  const prevTranslationY = useSharedValue(0);
   const grabbing = useSharedValue(false);
   const maxTranslateX = useSharedValue(0);
   const maxTranslateY = useSharedValue(0);
@@ -56,34 +51,33 @@ export default function App() {
     };
   }, []);
 
-  const pan = Gesture.Pan()
-    .minDistance(1)
-    .onBegin(() => {
+  const pan = usePanGesture({
+    minDistance: 1,
+    onBegin: () => {
       grabbing.value = true;
-      prevTranslationX.value = translationX.value;
-      prevTranslationY.value = translationY.value;
-    })
-    .onUpdate((event) => {
+    },
+    onUpdate: (event) => {
       translationX.value = clamp(
-        prevTranslationX.value + event.translationX,
+        translationX.value + event.changeX,
         -maxTranslateX.value,
         maxTranslateX.value
       );
       translationY.value = clamp(
-        prevTranslationY.value + event.translationY,
+        translationX.value + event.changeY,
         -maxTranslateY.value,
         maxTranslateY.value
       );
-    })
-    .onFinalize(() => {
+    },
+    onFinalize: () => {
       grabbing.value = false;
-    });
+    },
+  });
 
   return (
     <GestureHandlerRootView>
       <View ref={containerRef} style={styles.container}>
         <GestureDetector gesture={pan}>
-          <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
+          <Animated.View style={[animatedStyles, styles.box]} />
         </GestureDetector>
       </View>
     </GestureHandlerRootView>
@@ -95,7 +89,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    aspectRatio: 3,
   },
   box: {
     width: 100,

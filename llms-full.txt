@@ -4126,39 +4126,12 @@ function FunctionalComponent(props) {
 
 
 ---
-# URL: https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/composed-gestures
-# Title: Composed gestures
-
-Composed gestures (`Race`, `Simultaneous`, `Exclusive`) provide a simple way of building relations between gestures. See [Gesture Composition](/docs/2.x/fundamentals/gesture-composition) for more details.
-
-## Reference
-
-```jsx
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-
-function App() {
-  const pan = Gesture.Pan();
-  const longPress = Gesture.LongPress();
-
-  // highlight-next-line
-  const composed = Gesture.Race(pan, longPress);
-
-  return (
-    <GestureDetector gesture={composed}>
-      <Animated.View />
-    </GestureDetector>
-  );
-}
-```
-
-
----
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/fling-gesture
 # Title: Fling gesture
 
 A discrete gesture that activates when the movement is sufficiently long and fast.
-The gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
-When the gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when the finger is released.
+Gesture gets [ACTIVE](/docs/2.x/fundamentals/states-events#active) when movement is sufficiently long and it does not take too much time.
+When gesture gets activated it will turn into [END](/docs/2.x/fundamentals/states-events#end) state when finger is released.
 The gesture will fail to recognize if the finger is lifted before being activated.
 
 Fling Gesture
@@ -4283,7 +4256,7 @@ Gesture callback can be used for continuous tracking of the touch pressure. It p
 At the beginning of the gesture, the pressure factor is 0.0. As the pressure increases, the pressure factor increases proportionally. The maximum pressure is 1.0.
 
 There's no implementation provided on Android and it simply renders children without any wrappers.
-Since this behaviour is only provided on some iOS devices, this gesture should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features to be accessed without this gesture as well.
+Since this behavior is only provided on some iOS devices, this gesture should not be used for defining any crucial behaviors. Use it only as an additional improvement and make all features accessible without this gesture as well.
 
 ## Reference
 
@@ -4308,11 +4281,11 @@ function App() {
 
 ### `minForce(value: number)`
 
-A minimal pressure that is required before the gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
+A minimal pressure that is required before gesture can [activate](/docs/2.x/fundamentals/states-events#active). Should be a value from range `[0.0, 1.0]`. Default is `0.2`.
 
 ### `maxForce(value: number)`
 
-A maximal pressure that could be applied for the gesture. If the pressure is greater, the gesture [fails](/docs/2.x/fundamentals/states-events#failed). Should be a value from range `[0.0, 1.0]`.
+A maximal pressure that could be applied for gesture. If the pressure is greater, gesture [fails](/docs/2.x/fundamentals/states-events#failed). Should be a value from range `[0.0, 1.0]`.
 
 ### `feedbackOnActivation(value: boolean)`
 
@@ -4417,7 +4390,7 @@ function App() {
 All of the provided gestures can activate at the same time. Activation of one will not cancel the other.
 It is the equivalent to having some gesture handlers, each with `simultaneousHandlers` prop set to the other handlers.
 
-For example, if you want to make a gallery app, you might want the user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
+For example, if you want to make a gallery app, you might want user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
@@ -4595,7 +4568,7 @@ const styles = StyleSheet.create({
 
 ## blocksExternalGesture
 
-`blocksExternalGesture` works similarly to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
+`blocksExternalGesture` works similarly to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that is required to do is to pass a ref, for example:
 
 ```jsx
 import React, { useRef } from 'react';
@@ -4691,9 +4664,10 @@ import {
 } from 'react-native-gesture-handler';
 
 export default function Example() {
-  const innerTap = Gesture.Tap().onStart(() => {
-    console.log('inner tap');
-  });
+  const innerTap = Gesture.Tap()
+    .onStart(() => {
+      console.log('inner tap');
+    });
 
   const outerTap = Gesture.Tap()
     .onStart(() => {
@@ -4766,17 +4740,17 @@ A gesture object containing the configuration and callbacks. Can be any of the b
 
 > **Info**
 >
-> GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by the Reanimated will be utilized bringing the ability to handle gestures synchronously.
+> GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by Reanimated will be utilized, bringing the ability to handle gestures synchronously.
 >
 > Starting with Reanimated 2.3.0 Gesture Handler will provide a [StateManager](/docs/2.x/gestures/state-manager) in the [touch events](/docs/2.x/gestures/touch-events) that allows for managing the state of the gesture.
 
 ### `userSelect` (Web only)
 
-This parameter allows specifying which `userSelect` property should be applied to the underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
 
 ### `touchAction` (Web only)
 
-This parameter allows specifying which `touchAction` property should be applied to the underlying view. Supports all CSS `touch-action` values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
+This parameter allows to specify which `touchAction` property should be applied to underlying view. Supports all CSS `touch-action` values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
 
 ### `enableContextMenu(value: boolean)` (Web only)
 
@@ -5185,7 +5159,7 @@ function Rectangle({ color, scrollGesture }) {
 
 ### `shouldActivateOnStart(value: boolean)` (**Android only**)
 
-When `true`, the underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/2.x/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/2.x/fundamentals/states-events#undetermined) state.
+When `true`, underlying handler will activate unconditionally when it receives any touches in [`BEGAN`](/docs/2.x/fundamentals/states-events#began) or [`UNDETERMINED`](/docs/2.x/fundamentals/states-events#undetermined) state.
 
 ### `disallowInterruption(value: boolean)`
 
@@ -5199,7 +5173,7 @@ When `true`, cancels all other gesture handlers when this `NativeViewGestureHand
 
 ### `pointerInside`
 
-True if the gesture was performed inside the containing view, false otherwise.
+True if gesture was performed inside of containing view, false otherwise.
 
 
 ---
@@ -5277,9 +5251,9 @@ const styles = StyleSheet.create({
 
 ## Multi touch pan handling
 
-If your app relies on multi touch pan handling this section provides some information about how the default behavior differs between platforms and how (if necessary) it can be unified.
+If your app relies on multi touch pan handling this section provides some information on how the default behavior differs between platforms and how (if necessary) it can be unified.
 
-The difference in multi touch pan handling lies in the way how translation properties during the event are being calculated.
+The difference in multi touch pan handling lies in the way translation properties during the event are being calculated.
 On iOS the default behavior when more than one finger is placed on the screen is to treat this situation as if only one pointer was placed in the center of mass (average position of all the pointers).
 This applies also to many platform native components that handle touch even if not primarily interested in multi touch interactions like for example UIScrollView component.
 
@@ -5289,7 +5263,7 @@ This behavior can be changed on Android using [`averageTouches`](#averagetouches
 
 Note that on both Android and iOS when the additional finger is placed on the screen that translation prop is not affected even though the position of the pointer being tracked might have changed.
 Therefore it is safe to rely on translation most of the time as it only reflects the movement that happens regardless of how many fingers are placed on the screen and if that number changes over time.
-If you wish to track the "center of mass" virtual pointer and account for its changes when the number of fingers changes you can use relative or absolute position provided in the event ([`x`](#x) and [`y`](#y) or [`absoluteX`](#absolutex) and [`absoluteY`](#absolutey)).
+If you wish to track the "center of mass" virtual pointer and account for its changes when the number of finger changes you can use relative or absolute position provided in the event ([`x`](#x) and [`y`](#y) or [`absoluteX`](#absolutex) and [`absoluteY`](#absolutey)).
 
 ## Config
 
@@ -5314,25 +5288,25 @@ Duration in milliseconds of the `LongPress` gesture before `Pan` is allowed to [
 ### `activeOffsetX(value: number | number[])`
 
 Range along X axis (in points) where fingers travel without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `activeOffsetY(value: number | number[])`
 
 Range along Y axis (in points) where fingers travel without activation of gesture. Moving outside of this range implies activation of gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetY(value: number | number[])`
 
-When the finger moves outside this range (in points) along Y axis and the gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
+When the finger moves outside this range (in points) along Y axis and gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `failOffsetX(value: number | number[])`
 
-When the finger moves outside this range (in points) along X axis and the gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
-If range is set as an array, first value must be lower or equal to 0, and the second one higher or equal to 0.
+When the finger moves outside this range (in points) along X axis and gesture hasn't yet activated it will fail recognizing the gesture. Range can be given as an array or a single number.
+If range is set as an array, the first value must be lower or equal to 0 and the second one higher or equal to 0.
 If only one number `p` is given a range of `(-inf, p)` will be used if `p` is higher or equal to 0 and `(-p, inf)` otherwise.
 
 ### `averageTouches(value: boolean)` (Android only)
@@ -5584,7 +5558,7 @@ Y coordinate, expressed in points, of the gesture's central focal point (anchor)
 # URL: https://docs.swmansion.com/react-native-gesture-handler/docs/legacy-gestures/state-manager
 # Title: Gesture state manager
 
-`GestureStateManager` allows manually controlling the state of the gestures. Please note that `react-native-reanimated` is required to use it, since it allows for synchronously executing methods in worklets.
+`GestureStateManager` allows you to manually control the state of the gestures. Please note that `react-native-reanimated` is required to use it, since it allows for synchronously executing methods in worklets.
 
 ## Methods
 
@@ -5759,7 +5733,7 @@ Number representing the count of currently active touches.
 
 ### `id`
 
-A number representing id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
+A number representing the id of the touch. It may be used to track the touch between events as the id will not change while it is being tracked.
 
 ### `x`
 

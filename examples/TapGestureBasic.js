@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import {
-  Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  useTapGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -15,29 +15,31 @@ import Animated, {
 const COLORS = ['#b58df1', '#fa7f7c', '#ffe780', '#82cab2'];
 
 export default function App() {
-  const colorIndex = useSharedValue(1);
+  const currentIndex = useSharedValue(0);
+  const nextIndex = useSharedValue(0);
+  const progress = useSharedValue(0);
 
-  const tap = Gesture.Tap().onEnd(() => {
-    if (colorIndex.value > COLORS.length) {
-      colorIndex.value = colorIndex.value % 1 === 0 ? 1 : colorIndex.value % 1;
-    }
-
-    const nextIndex = Math.ceil(colorIndex.value + 1);
-    colorIndex.value = withTiming(nextIndex, { duration: 250 });
+  const tap = useTapGesture({
+    onActivate: () => {
+      currentIndex.value = nextIndex.value;
+      nextIndex.value = (nextIndex.value + 1) % COLORS.length;
+      progress.value = 0;
+      progress.value = withTiming(1, { duration: 250 });
+    },
   });
 
   const animatedStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
-      colorIndex.value,
-      [0, ...COLORS.map((_, i) => i + 1), COLORS.length + 1],
-      [COLORS[COLORS.length - 1], ...COLORS, COLORS[0]]
+      progress.value,
+      [0, 1],
+      [COLORS[currentIndex.value], COLORS[nextIndex.value]]
     ),
   }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={tap}>
-        <Animated.View style={[styles.box, animatedStyle]}></Animated.View>
+        <Animated.View style={[styles.box, animatedStyle]} />
       </GestureDetector>
     </GestureHandlerRootView>
   );
@@ -51,7 +53,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: 100,
-    height: 100,
+    aspectRatio: 1,
     borderRadius: 20,
     cursor: 'pointer',
   },

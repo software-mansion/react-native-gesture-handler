@@ -1,4 +1,4 @@
-`GestureStateManager` allows manually controlling the state of the gestures. Please note that `react-native-reanimated` is required to use it, since it allows for synchronously executing methods in worklets.
+`GestureStateManager` allows you to manually control the state of the gestures. Please note that `react-native-reanimated` is required to use it, since it allows for synchronously executing methods in worklets.
 
 ## Methods
 

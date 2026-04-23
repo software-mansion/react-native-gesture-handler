@@ -82,7 +82,7 @@ function App() {
 All of the provided gestures can activate at the same time. Activation of one will not cancel the other.
 It is the equivalent to having some gesture handlers, each with `simultaneousHandlers` prop set to the other handlers.
 
-For example, if you want to make a gallery app, you might want the user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
+For example, if you want to make a gallery app, you might want user to be able to zoom, rotate and pan around photos. You can do it with `Simultaneous`:
 
 > Note: the `useSharedValue` and `useAnimatedStyle` are part of [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/).
 
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
 
 ## blocksExternalGesture
 
-`blocksExternalGesture` works similarly to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that's required to do is to pass a ref, for example:
+`blocksExternalGesture` works similarly to `requireExternalGestureToFail` but the direction of the relation is reversed - instead of being a one-to-many relation, it's many-to-one. It's especially useful for making lists where the `ScrollView` component needs to wait for every gesture underneath it. All that is required to do is to pass a ref, for example:
 
 ```jsx
 import React, { useRef } from 'react';
@@ -356,9 +356,10 @@ import {
 } from 'react-native-gesture-handler';
 
 export default function Example() {
-  const innerTap = Gesture.Tap().onStart(() => {
-    console.log('inner tap');
-  });
+  const innerTap = Gesture.Tap()
+    .onStart(() => {
+      console.log('inner tap');
+    });
 
   const outerTap = Gesture.Tap()
     .onStart(() => {

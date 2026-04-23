@@ -25,17 +25,17 @@ A gesture object containing the configuration and callbacks. Can be any of the b
 
 > **Info**
 >
-> GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by the Reanimated will be utilized bringing the ability to handle gestures synchronously.
+> GestureDetector will decide whether to use Reanimated to process provided gestures based on callbacks they have. If any of the callbacks is a worklet, tools provided by Reanimated will be utilized, bringing the ability to handle gestures synchronously.
 >
 > Starting with Reanimated 2.3.0 Gesture Handler will provide a [StateManager](/docs/2.x/gestures/state-manager) in the [touch events](/docs/2.x/gestures/touch-events) that allows for managing the state of the gesture.
 
 ### `userSelect` (Web only)
 
-This parameter allows specifying which `userSelect` property should be applied to the underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
+This parameter allows to specify which `userSelect` property should be applied to underlying view. Possible values are `"none" | "auto" | "text"`. Default value is set to `"none"`.
 
 ### `touchAction` (Web only)
 
-This parameter allows specifying which `touchAction` property should be applied to the underlying view. Supports all CSS `touch-action` values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
+This parameter allows to specify which `touchAction` property should be applied to underlying view. Supports all CSS `touch-action` values (e.g. `"none"`, `"pan-y"`). Default value is set to `"none"`.
 
 ### `enableContextMenu(value: boolean)` (Web only)
 
