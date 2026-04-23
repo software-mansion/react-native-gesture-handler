@@ -173,6 +173,17 @@
       _underlayLayer.presentationLayer ? [_underlayLayer.presentationLayer opacity] : _underlayLayer.opacity;
   [_underlayLayer removeAllAnimations];
 
+  // CABasicAnimation with duration 0 resolves to the current CATransaction's
+  // default duration (0.25s), not "no animation". Snap the value directly
+  // with implicit actions disabled to get a true instant update.
+  if (durationMs <= 0) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    _underlayLayer.opacity = toOpacity;
+    [CATransaction commit];
+    return;
+  }
+
   CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
   anim.fromValue = @(_underlayLayer.opacity);
   anim.toValue = @(toOpacity);
