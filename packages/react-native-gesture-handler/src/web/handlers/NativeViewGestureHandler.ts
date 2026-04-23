@@ -137,10 +137,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.tracker.trackedPointersCount === 0) {
-      if (this.state === State.ACTIVE) {
-        this.end();
-      } else if (this.state === State.BEGAN && this.buttonRole) {
+      if (this.buttonRole && this.state === State.BEGAN) {
         this.activate();
+      }
+
+      if (this.state === State.ACTIVE) {
         this.end();
       } else {
         this.fail();
