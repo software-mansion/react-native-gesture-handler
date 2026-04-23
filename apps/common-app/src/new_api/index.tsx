@@ -44,6 +44,7 @@ import ReattachingExample from './tests/reattaching';
 import NestedRootViewExample from './tests/nestedRootView';
 import NestedPressablesExample from './tests/nestedPressables';
 import PressableExample from './tests/pressable';
+import KeyboardShouldPersistTapsExample from './tests/keyboardShouldPersistTaps';
 
 import { ExamplesSection } from '../common';
 import EmptyExample from '../empty';
@@ -131,6 +132,10 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Modal with Nested Root View', component: NestedRootViewExample },
       { name: 'Nested pressables', component: NestedPressablesExample },
       { name: 'Pressable', component: PressableExample },
+      {
+        name: 'Keyboard Should Persist Taps',
+        component: KeyboardShouldPersistTapsExample,
+      },
     ],
   },
 ];

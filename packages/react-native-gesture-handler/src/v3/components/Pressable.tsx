@@ -364,6 +364,17 @@ const Pressable = (props: PressableProps) => {
     [onLayout]
   );
 
+  // Claim the JS responder in the bubble phase so an ancestor RN ScrollView
+  // with keyboardShouldPersistTaps='handled' or 'always' cannot run its
+  // release-time TextInput blur. The GH tap still fires via the native
+  // recognizer; when it does, UIKit cancels touches.
+  const handleStartShouldSetResponder = useCallback(() => {
+    if (__DEV__) {
+      console.log('[GH Pressable] onStartShouldSetResponder -> true');
+    }
+    return true;
+  }, []);
+
   return (
     <GestureDetector gesture={gesture}>
       <PureNativeButton
@@ -376,6 +387,7 @@ const Pressable = (props: PressableProps) => {
         rippleColor={rippleColor}
         rippleRadius={android_ripple?.radius ?? undefined}
         style={[pointerStyle, styleProp]}
+        onStartShouldSetResponder={handleStartShouldSetResponder}
         testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
         testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
         testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
