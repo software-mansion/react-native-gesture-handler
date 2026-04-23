@@ -115,6 +115,7 @@
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
+  __weak UIControl *_targetControl;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -154,6 +155,8 @@
   }
 
   if (control) {
+    _targetControl = control;
+
     // Pressing UISwitch triggers only touchUp and valueChanged callbacks. In order to align its behavior
     // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
     // touchesDown is not executed.
@@ -195,16 +198,9 @@
 {
   UIView *view = self.recognizer.view;
 
-  if ([view isKindOfClass:[UIControl class]]) {
-    [(UIControl *)view removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
-  } else if ([view isKindOfClass:[RCTTextInputComponentView class]]) {
-    // Remove targets from the internal UITextField/UITextView
-    for (UIView *subview in view.subviews) {
-      if ([subview isKindOfClass:[UITextField class]] || [subview isKindOfClass:[UITextView class]]) {
-        [(UIControl *)subview removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
-        break;
-      }
-    }
+  if (_targetControl) {
+    [_targetControl removeTarget:self action:NULL forControlEvents:UIControlEventAllEvents];
+    _targetControl = nil;
   }
 
   // Restore the React Native's overriden behavor for not delaying content touches
