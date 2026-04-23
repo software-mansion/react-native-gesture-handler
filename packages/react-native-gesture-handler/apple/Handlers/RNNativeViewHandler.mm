@@ -139,22 +139,32 @@
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[UIControl class]]) {
     UIControl *control = (UIControl *)view;
-    [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
-    [control addTarget:self
-                  action:@selector(handleTouchUpOutside:forEvent:)
-        forControlEvents:UIControlEventTouchUpOutside];
-    [control addTarget:self
-                  action:@selector(handleTouchUpInside:forEvent:)
-        forControlEvents:UIControlEventTouchUpInside];
-    [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
-    [control addTarget:self
-                  action:@selector(handleDragInside:forEvent:)
-        forControlEvents:UIControlEventTouchDragInside];
-    [control addTarget:self
-                  action:@selector(handleDragOutside:forEvent:)
-        forControlEvents:UIControlEventTouchDragOutside];
-    [control addTarget:self action:@selector(handleDragEnter:forEvent:) forControlEvents:UIControlEventTouchDragEnter];
-    [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
+
+    // Pressing UISwitch triggers only touchUp and valueChanged callbacks. In order to align its behavior
+    // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
+    // touchesDown is not executed.
+    if ([view isKindOfClass:[UISwitch class]]) {
+      [control addTarget:self action:@selector(handleSwitch:forEvent:) forControlEvents:UIControlEventValueChanged];
+    } else {
+      [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
+      [control addTarget:self
+                    action:@selector(handleTouchUpOutside:forEvent:)
+          forControlEvents:UIControlEventTouchUpOutside];
+      [control addTarget:self
+                    action:@selector(handleTouchUpInside:forEvent:)
+          forControlEvents:UIControlEventTouchUpInside];
+      [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
+      [control addTarget:self
+                    action:@selector(handleDragInside:forEvent:)
+          forControlEvents:UIControlEventTouchDragInside];
+      [control addTarget:self
+                    action:@selector(handleDragOutside:forEvent:)
+          forControlEvents:UIControlEventTouchDragOutside];
+      [control addTarget:self
+                    action:@selector(handleDragEnter:forEvent:)
+          forControlEvents:UIControlEventTouchDragEnter];
+      [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
+    }
   } else {
     [super bindToView:view];
   }
@@ -189,6 +199,27 @@
 
   _lastActiveExtraData = extraData;
   [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:sender.reactTag withExtraData:extraData];
+}
+
+- (void)handleSwitch:(UIView *)sender forEvent:(UIEvent *)event
+{
+  [self sendEventsInState:RNGestureHandlerStateBegan
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateEnd
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
+
+  [self reset];
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
