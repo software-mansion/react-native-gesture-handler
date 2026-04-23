@@ -148,10 +148,6 @@ Triggered when the button gets released or the pointer moves outside of the butt
 
 ### onPress
 
-```ts
-onPress?: (pointerInside: boolean) => void;
-```
-
 Triggered when the button gets pressed (analogous to `onPress` in `Pressable` from RN core).
 
 ### onLongPress
@@ -173,3 +169,11 @@ Defines the delay, in milliseconds, after which the [`onLongPress`](#onlongpress
 ### androidRipple
 
 Configuration for the ripple effect on Android. If not provided, the ripple effect will be disabled. If `{}` is provided, the ripple effect will be enabled with default configuration.
+
+### cancelOnLeave
+
+```ts
+cancelOnLeave?: boolean;
+```
+
+Whether the touch should be canceled when the pointer leaves the component. By default set to `true`. On web this prop doesn't have any effect and behaves as if `true` was set.
