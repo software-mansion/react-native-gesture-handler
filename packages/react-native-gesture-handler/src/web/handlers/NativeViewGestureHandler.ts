@@ -14,6 +14,7 @@ import type IGestureHandler from './IGestureHandler';
 
 export default class NativeViewGestureHandler extends GestureHandler {
   private buttonRole!: boolean;
+  private switchRole!: boolean;
 
   // TODO: Implement logic for activation on start properly
   private shouldActivateOnStart = false;
@@ -49,6 +50,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.restoreViewStyles(view);
     this.buttonRole = view.getAttribute('role') === 'button';
+    this.switchRole = view.querySelector('input[role="switch"]') !== null;
   }
 
   public override updateGestureConfig(config: Config): void {
@@ -101,7 +103,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const view = this.delegate.view as HTMLElement;
     const isRNGHText = view.hasAttribute('rnghtext');
 
-    if ((this.buttonRole && this.shouldActivateOnStart) || isRNGHText) {
+    if (
+      (this.buttonRole && this.shouldActivateOnStart) ||
+      this.switchRole ||
+      isRNGHText
+    ) {
       this.activate();
     }
   }
@@ -114,11 +120,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dy = this.startY - lastCoords.y;
     const distSq = dx * dx + dy * dy;
 
-    if (
-      distSq >= this.minDistSq &&
-      !this.buttonRole &&
-      this.state === State.BEGAN
-    ) {
+    if (this.switchRole || this.buttonRole) {
+      return;
+    }
+
+    if (distSq >= this.minDistSq && this.state === State.BEGAN) {
       this.activate();
     }
   }
