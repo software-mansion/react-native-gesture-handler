@@ -13,9 +13,9 @@ export default function GestureHandlerRootView({
   ...rest
 }: GestureHandlerRootViewProps) {
   return (
-    <GestureHandlerRootViewContext.Provider value>
+    <GestureHandlerRootViewContext value>
       <View style={style ?? styles.container} {...rest} />
-    </GestureHandlerRootViewContext.Provider>
+    </GestureHandlerRootViewContext>
   );
 }
 

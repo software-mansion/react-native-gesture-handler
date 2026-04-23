@@ -14,6 +14,7 @@ import { tagMessage } from '../../utils';
 import type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
+  HandlerData,
   SingleGestureName,
 } from '../../v3/types';
 import type {
@@ -430,11 +431,13 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerReanimatedStateChange,
     }: PropsRef = this.propsRef!.current;
 
+    const isStateChange = this.lastSentState !== newState;
+
     const resultEvent: ResultEvent = !usesNativeOrVirtualDetector(
       this.actionType
     )
       ? this.transformEventData(newState, oldState)
-      : this.lastSentState !== newState
+      : isStateChange
         ? this.transformStateChangeEvent(newState, oldState)
         : this.transformUpdateEvent(newState);
 
@@ -442,7 +445,7 @@ export default abstract class GestureHandler implements IGestureHandler {
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
-    if (this.lastSentState !== newState) {
+    if (isStateChange) {
       this.lastSentState = newState;
 
       if (this.forReanimated) {
@@ -456,6 +459,16 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
+    // Cover only V3 path due to different event shape
+    if (!isStateChange && usesNativeOrVirtualDetector(this.actionType)) {
+      const handlerData = (
+        resultEvent.nativeEvent as GestureUpdateEventWithHandlerData<unknown>
+      ).handlerData;
+      if (this.shouldSuppressActiveUpdate(handlerData)) {
+        return;
+      }
+    }
+
     (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState = undefined;
 
     if (this.forReanimated) {
@@ -466,6 +479,12 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerEvent?.(resultEvent);
     }
   };
+
+  protected shouldSuppressActiveUpdate(
+    _handlerData: HandlerData<unknown>
+  ): boolean {
+    return false;
+  }
 
   private transformEventData(
     newState: State,

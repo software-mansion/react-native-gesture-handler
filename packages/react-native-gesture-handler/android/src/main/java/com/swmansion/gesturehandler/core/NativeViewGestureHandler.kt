@@ -31,6 +31,10 @@ class NativeViewGestureHandler : GestureHandler() {
 
   private var hook: NativeViewGestureHandlerHook = defaultHook
 
+  private data class ActiveUpdateSnapshot(val pointerInside: Boolean, val numberOfPointers: Int, val pointerType: Int)
+
+  private var lastActiveUpdate: ActiveUpdateSnapshot? = null
+
   init {
     shouldCancelWhenOutside = true
   }
@@ -163,6 +167,21 @@ class NativeViewGestureHandler : GestureHandler() {
 
   override fun onReset() {
     this.hook = defaultHook
+    lastActiveUpdate = null
+  }
+
+  override fun dispatchHandlerUpdate(event: MotionEvent) {
+    val snapshot = ActiveUpdateSnapshot(isWithinBounds, numberOfPointers, pointerType)
+    if (snapshot == lastActiveUpdate) {
+      return
+    }
+    lastActiveUpdate = snapshot
+    super.dispatchHandlerUpdate(event)
+  }
+
+  override fun dispatchStateChange(newState: Int, prevState: Int) {
+    lastActiveUpdate = null
+    super.dispatchStateChange(newState, prevState)
   }
 
   override fun wantsToAttachDirectlyToView() = true

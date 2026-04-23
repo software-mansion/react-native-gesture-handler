@@ -111,7 +111,33 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   const LayoutMetrics buttonMetrics = [self buildButtonMetrics:layoutMetrics];
   const LayoutMetrics oldbuttonMetrics = [self buildButtonMetrics:oldLayoutMetrics];
 
+  // The press-in animation sets a scale transform on `self.layer` (animationTarget
+  // is this wrapper). RN's layout path sets `self.frame = frame`, which is undefined
+  // behavior when the layer's transform is non-identity, so mid-press child re-layouts
+  // get squished against the old bounds before snapping to the new ones. Neutralize
+  // the transform and any in-flight animation around super's frame update, then
+  // restore both atomically within the same transaction.
+  CATransform3D savedTransform = self.layer.transform;
+  CAAnimation *savedTransformAnimation = [[self.layer animationForKey:@"transform"] copy];
+  BOOL hasPendingTransform = !CATransform3DIsIdentity(savedTransform) || savedTransformAnimation != nil;
+
+  if (hasPendingTransform) {
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    [self.layer removeAnimationForKey:@"transform"];
+    self.layer.transform = CATransform3DIdentity;
+  }
+
   [super updateLayoutMetrics:wrapperMetrics oldLayoutMetrics:oldWrapperMetrics];
+
+  if (hasPendingTransform) {
+    self.layer.transform = savedTransform;
+    if (savedTransformAnimation) {
+      [self.layer addAnimation:savedTransformAnimation forKey:@"transform"];
+    }
+    [CATransaction commit];
+  }
+
   [_buttonView updateLayoutMetrics:buttonMetrics oldLayoutMetrics:oldbuttonMetrics];
 }
 
@@ -134,8 +160,6 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
                                         right:borderMetrics.borderWidths.right
                                        bottom:borderMetrics.borderWidths.bottom
                                          left:borderMetrics.borderWidths.left];
-
-  [_buttonView applyStartAnimationState];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -243,6 +267,17 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
+  // Re-apply the idle visual state only on first mount or when one of the default
+  // values actually changed. Doing it on every commit interrupts in-flight press
+  // animations whenever React re-renders the children mid-press.
+  BOOL shouldApplyStartAnimationState = !oldProps;
+  if (oldProps) {
+    const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
+    shouldApplyStartAnimationState = oldButtonProps.defaultOpacity != newProps.defaultOpacity ||
+        oldButtonProps.defaultScale != newProps.defaultScale ||
+        oldButtonProps.defaultUnderlayOpacity != newProps.defaultUnderlayOpacity;
+  }
+
   _buttonView.userEnabled = newProps.enabled;
   _buttonView.pressAndHoldAnimationDuration = newProps.pressAndHoldAnimationDuration;
   _buttonView.tapAnimationDuration = newProps.tapAnimationDuration > 0 ? newProps.tapAnimationDuration : 0;
@@ -279,7 +314,9 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   }
 
   [super updateProps:props oldProps:oldProps];
-  [_buttonView applyStartAnimationState];
+  if (shouldApplyStartAnimationState) {
+    [_buttonView applyStartAnimationState];
+  }
 }
 
 #if !TARGET_OS_OSX

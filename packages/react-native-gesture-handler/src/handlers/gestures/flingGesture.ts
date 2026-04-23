@@ -3,6 +3,9 @@ import type { FlingGestureHandlerEventPayload } from '../GestureHandlerEventPayl
 import type { BaseGestureConfig } from './gesture';
 import { BaseGesture } from './gesture';
 
+/**
+ * @deprecated `FlingGesture` is deprecated and will be removed in the future. Please use `useFlingGesture` instead.
+ */
 export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
   public override config: BaseGestureConfig & FlingGestureConfig = {};
 
@@ -34,4 +37,7 @@ export class FlingGesture extends BaseGesture<FlingGestureHandlerEventPayload> {
   }
 }
 
+/**
+ * @deprecated `FlingGestureType` is deprecated and will be removed in the future. Please use `FlingGesture` instead.
+ */
 export type FlingGestureType = InstanceType<typeof FlingGesture>;
