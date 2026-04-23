@@ -1,8 +1,8 @@
 import React from 'react';
 import {
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  usePanGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -62,17 +62,17 @@ export default function App() {
     };
   }, []);
 
-  const pan = usePanGesture({
-    minDistance: 1,
-    onActivate: (event) => {
+  const pan = Gesture.Pan()
+    .minDistance(1)
+    .onStart((event) => {
       const distanceX = Math.abs(event.absoluteX - centerX.value);
       const distanceY = Math.abs(event.absoluteY - centerY.value);
       const width = Math.max(distanceX, distanceY) * 2;
       distanceDifference.value = boxWidth.value - width;
 
       touchOpacity.value = withTiming(0.4, { duration: 200 });
-    },
-    onUpdate: (event) => {
+    })
+    .onUpdate((event) => {
       const distanceX = Math.abs(event.absoluteX - centerX.value);
       const distanceY = Math.abs(event.absoluteY - centerY.value);
       boxWidth.value = clamp(
@@ -85,11 +85,10 @@ export default function App() {
       pointerPositionY.value = event.absoluteY - centerY.value - 12;
       negativePointerPositionX.value = centerX.value - event.absoluteX - 12;
       negativePointerPositionY.value = centerY.value - event.absoluteY - 12;
-    },
-    onDeactivate: () => {
+    })
+    .onEnd(() => {
       touchOpacity.value = withTiming(0, { duration: 200 });
-    },
-  });
+    });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     width: boxWidth.value,
@@ -98,8 +97,8 @@ export default function App() {
 
   return (
     <GestureHandlerRootView>
-      <View style={styles.container}>
-        <View style={styles.innerContainer} ref={containerRef}>
+      <View ref={containerRef} style={styles.container}>
+        <View style={styles.innerContainer}>
           <GestureDetector gesture={pan}>
             <Animated.View
               ref={boxRef}
@@ -142,16 +141,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  innerContainer: {
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   box: {
     aspectRatio: 1,
     borderRadius: 20,
     backgroundColor: '#b58df1',
     cursor: 'pointer',
+  },
+  innerContainer: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dot: {
     width: 24,

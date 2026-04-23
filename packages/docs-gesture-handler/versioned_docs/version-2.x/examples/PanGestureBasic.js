@@ -1,19 +1,21 @@
 import React from 'react';
 import Animated, {
-  clamp,
   useSharedValue,
   useAnimatedStyle,
+  clamp,
 } from 'react-native-reanimated';
 import {
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  usePanGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 
 export default function App() {
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
+  const prevTranslationX = useSharedValue(0);
+  const prevTranslationY = useSharedValue(0);
   const grabbing = useSharedValue(false);
   const maxTranslateX = useSharedValue(0);
   const maxTranslateY = useSharedValue(0);
@@ -51,27 +53,28 @@ export default function App() {
     };
   }, []);
 
-  const pan = usePanGesture({
-    minDistance: 1,
-    onBegin: () => {
+  const pan = Gesture.Pan()
+    .minDistance(1)
+    .onBegin(() => {
       grabbing.value = true;
-    },
-    onUpdate: (event) => {
+      prevTranslationX.value = translationX.value;
+      prevTranslationY.value = translationY.value;
+    })
+    .onUpdate((event) => {
       translationX.value = clamp(
-        translationX.value + event.changeX,
+        prevTranslationX.value + event.translationX,
         -maxTranslateX.value,
         maxTranslateX.value
       );
       translationY.value = clamp(
-        translationX.value + event.changeY,
+        prevTranslationY.value + event.translationY,
         -maxTranslateY.value,
         maxTranslateY.value
       );
-    },
-    onFinalize: () => {
+    })
+    .onFinalize(() => {
       grabbing.value = false;
-    },
-  });
+    });
 
   return (
     <GestureHandlerRootView>
