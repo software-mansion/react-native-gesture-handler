@@ -12,9 +12,15 @@ import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
 import GestureHandler from './GestureHandler';
 import type IGestureHandler from './IGestureHandler';
 
+enum ControlType {
+  Button,
+  Switch,
+  TextInput,
+  Other,
+}
+
 export default class NativeViewGestureHandler extends GestureHandler {
-  private buttonRole!: boolean;
-  private switchRole!: boolean;
+  private controlType!: ControlType;
 
   // TODO: Implement logic for activation on start properly
   private shouldActivateOnStart = false;
@@ -49,8 +55,16 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const view = this.delegate.view as HTMLElement;
 
     this.restoreViewStyles(view);
-    this.buttonRole = view.getAttribute('role') === 'button';
-    this.switchRole = view.querySelector('input[role="switch"]') !== null;
+
+    if (view.getAttribute('role') === 'button') {
+      this.controlType = ControlType.Button;
+    } else if (view.querySelector('input[role="switch"]') !== null) {
+      this.controlType = ControlType.Switch;
+    } else if (view.matches('input:not([role]), textarea')) {
+      this.controlType = ControlType.TextInput;
+    } else {
+      this.controlType = ControlType.Other;
+    }
   }
 
   public override updateGestureConfig(config: Config): void {
@@ -104,8 +118,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const isRNGHText = view.hasAttribute('rnghtext');
 
     if (
-      (this.buttonRole && this.shouldActivateOnStart) ||
-      this.switchRole ||
+      (this.controlType === ControlType.Button && this.shouldActivateOnStart) ||
+      this.controlType === ControlType.Switch ||
       isRNGHText
     ) {
       this.activate();
@@ -120,7 +134,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const dy = this.startY - lastCoords.y;
     const distSq = dx * dx + dy * dy;
 
-    if (this.switchRole || this.buttonRole) {
+    if (
+      this.controlType === ControlType.Switch ||
+      this.controlType === ControlType.Button
+    ) {
       return;
     }
 
@@ -149,7 +166,10 @@ export default class NativeViewGestureHandler extends GestureHandler {
     this.tracker.removeFromTracker(event.pointerId);
 
     if (this.tracker.trackedPointersCount === 0) {
-      if (this.buttonRole && this.state === State.BEGAN) {
+      if (
+        this.controlType === ControlType.Button &&
+        this.state === State.BEGAN
+      ) {
         this.activate();
       }
 
@@ -204,7 +224,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
   }
 
   public isButton(): boolean {
-    return this.buttonRole;
+    return this.controlType === ControlType.Button;
   }
 
   protected override transformNativeEvent(): Record<string, unknown> {
