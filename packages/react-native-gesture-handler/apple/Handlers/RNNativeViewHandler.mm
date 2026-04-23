@@ -201,8 +201,27 @@
   [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:sender.reactTag withExtraData:extraData];
 }
 
+- (void)startInteraction:(UIEvent *)event
+{
+  [self setCurrentPointerTypeForEvent:event];
+  [self reset];
+
+  if (_disallowInterruption) {
+    // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
+    // gets DOWN event
+    for (RNGHUITouch *touch in [event allTouches]) {
+      for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
+        recogn.enabled = NO;
+        recogn.enabled = YES;
+      }
+    }
+  }
+}
+
 - (void)handleSwitch:(UIView *)sender forEvent:(UIEvent *)event
 {
+  [self startInteraction:event];
+
   [self sendEventsInState:RNGestureHandlerStateBegan
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
@@ -218,25 +237,11 @@
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
-
-  [self reset];
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self setCurrentPointerTypeForEvent:event];
-  [self reset];
-
-  if (_disallowInterruption) {
-    // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
-    // gets DOWN event
-    for (RNGHUITouch *touch in [event allTouches]) {
-      for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
-        recogn.enabled = NO;
-        recogn.enabled = YES;
-      }
-    }
-  }
+  [self startInteraction:event];
 
   [self sendEventsInState:RNGestureHandlerStateBegan
            forViewWithTag:sender.reactTag
