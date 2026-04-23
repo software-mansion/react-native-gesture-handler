@@ -85,7 +85,7 @@ export default function App() {
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ rotate: `${angle.value}rad` }],
-    cursor: grabbing.value ? 'grabbing' : 'grab',
+    cursor: grabbing.value ? 'none' : 'grab',
   }));
 
   return (
