@@ -144,7 +144,8 @@
     // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
     // touchesDown is not executed.
     if ([view isKindOfClass:[UISwitch class]]) {
-      [control addTarget:self action:@selector(handleSwitch:forEvent:) forControlEvents:UIControlEventValueChanged];
+      _pointerType = RNGestureHandlerTouch;
+      [control addTarget:self action:@selector(handleSwitch:) forControlEvents:UIControlEventValueChanged];
     } else {
       [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
       [control addTarget:self
@@ -201,22 +202,22 @@
   [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:sender.reactTag withExtraData:extraData];
 }
 
-- (void)handleSwitch:(UIView *)sender forEvent:(UIEvent *)event
+- (void)handleSwitch:(UIView *)sender
 {
   [self sendEventsInState:RNGestureHandlerStateBegan
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:event.allTouches.count
+                                                       withNumberOfTouches:1
                                                            withPointerType:_pointerType]];
   [self sendEventsInState:RNGestureHandlerStateActive
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:event.allTouches.count
+                                                       withNumberOfTouches:1
                                                            withPointerType:_pointerType]];
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:sender.reactTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:event.allTouches.count
+                                                       withNumberOfTouches:1
                                                            withPointerType:_pointerType]];
 
   [self reset];
