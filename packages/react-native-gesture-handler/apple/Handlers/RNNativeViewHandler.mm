@@ -47,11 +47,12 @@
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerTypeForEvent:event];
-  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
   if ([self isAttachedToTextView]) {
     [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchDown:event];
   }
+
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
