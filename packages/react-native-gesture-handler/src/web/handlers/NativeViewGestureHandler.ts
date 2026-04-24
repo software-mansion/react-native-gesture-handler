@@ -60,7 +60,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
       this.controlType = ControlType.Button;
     } else if (view.querySelector('input[role="switch"]') !== null) {
       this.controlType = ControlType.Switch;
-    } else if (view.matches('input:not([role]), textarea')) {
+    } else if (view.matches('input:not([role]):not([type]), textarea')) {
       this.controlType = ControlType.TextInput;
     } else {
       this.controlType = ControlType.Other;
