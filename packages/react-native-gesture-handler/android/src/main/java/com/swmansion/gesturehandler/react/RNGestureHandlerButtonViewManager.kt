@@ -493,6 +493,11 @@ class RNGestureHandlerButtonViewManager :
               if (inside != isPointerInsideBounds) {
                 isPointerInsideBounds = inside
                 if (inside) {
+                  // Re-establish View's pressed flag to restore ripple and the
+                  // UP handler runs its normal release cleanup.
+                  if (!isPressed) {
+                    super.setPressed(true)
+                  }
                   animatePressIn()
                 } else {
                   animatePressOut()
