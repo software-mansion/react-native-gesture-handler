@@ -131,7 +131,9 @@
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
+#if !TARGET_OS_OSX
   __weak UIControl *_control;
+#endif
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
