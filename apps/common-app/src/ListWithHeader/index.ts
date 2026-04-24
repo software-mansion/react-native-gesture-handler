@@ -1,2 +1,2 @@
+export { COLLAPSED_HEADER_HEIGHT, HEADER_HEIGHT } from './Header';
 export { ListWithHeader } from './ListWithHeader';
-export { HEADER_HEIGHT, COLLAPSED_HEADER_HEIGHT } from './Header';

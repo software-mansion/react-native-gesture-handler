@@ -674,7 +674,7 @@ class GestureHandlerOrchestrator(
             is ViewGroup -> {
               extractGestureHandlers(view, coords, pointerId, event).also { found ->
                 // A child view is handling touch, also extract handlers attached to this view
-                if (found) {
+                if (found || view is RNGestureHandlerDetectorView) {
                   recordViewHandlersForPointer(view, coords, pointerId, event)
                 }
               }

@@ -6,16 +6,14 @@ import {
   UIManager,
   View,
 } from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
+import type { PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+
 import { ANIMATE_TO_NEW_PLACE_DURATION, getSizeConstants } from './constants';
 import Draggable from './Draggable';
 

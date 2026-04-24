@@ -1,12 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-import {
-  COLORS,
-  Feedback,
-  FeedbackHandle,
-  commonStyles,
-} from '../../../common';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 const SECTION_MIN_HEIGHT = 640;
 
@@ -71,7 +68,7 @@ function SingleHandlerExample() {
     onActivate: () => {
       pushEvent('GH pan ACTIVE');
     },
-    onFinalize: (_event, success) => {
+    onFinalize: (success) => {
       pushEvent(`GH pan finalize (${success ? 'success' : 'cancel/fail'})`);
     },
   });
@@ -237,7 +234,7 @@ function MultiHandlerExample() {
     runOnJS: true,
     cancelsJSResponder,
     onActivate: () => pushEvent('GH_A ACTIVE'),
-    onFinalize: (_e, success) =>
+    onFinalize: (success) =>
       pushEvent(`GH_A finalize (${success ? 'success' : 'cancel/fail'})`),
   });
 
@@ -246,7 +243,7 @@ function MultiHandlerExample() {
     runOnJS: true,
     cancelsJSResponder,
     onActivate: () => pushEvent('GH_B ACTIVE'),
-    onFinalize: (_e, success) =>
+    onFinalize: (success) =>
       pushEvent(`GH_B finalize (${success ? 'success' : 'cancel/fail'})`),
   });
 

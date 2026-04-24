@@ -1,4 +1,3 @@
-import { COLORS, commonStyles, Feedback } from '../../../common';
 import React, { useRef } from 'react';
 import { View } from 'react-native';
 import {
@@ -7,6 +6,8 @@ import {
   VirtualGestureDetector,
 } from 'react-native-gesture-handler';
 import Svg, { Circle, Rect } from 'react-native-svg';
+
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 export default function LogicDetectorExample() {
   const feedbackRef = useRef<{ showMessage: (msg: string) => void }>(null);

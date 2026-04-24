@@ -1,7 +1,8 @@
-import { Animated, NativeSyntheticEvent } from 'react-native';
-import { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
-import { PointerType } from '../../PointerType';
-import { State } from '../../State';
+import type { Animated, NativeSyntheticEvent } from 'react-native';
+
+import type { GestureTouchEvent } from '../../handlers/gestureHandlerCommon';
+import type { PointerType } from '../../PointerType';
+import type { State } from '../../State';
 
 type EventPayload = {
   handlerTag: number;
@@ -58,6 +59,10 @@ export type TouchEvent =
 export type GestureEvent<THandlerData> = {
   handlerTag: number;
 } & HandlerData<THandlerData>;
+
+export type GestureEndEvent<THandlerData> = {
+  canceled: boolean;
+} & GestureEvent<THandlerData>;
 
 export type UnpackedGestureHandlerEvent<THandlerData> =
   | GestureEvent<THandlerData>

@@ -1,18 +1,17 @@
-import { HandlerCallbacks, CALLBACK_TYPE } from '../gesture';
-import { Reanimated } from '../reanimatedWrapper';
-import {
-  GestureTouchEvent,
-  GestureUpdateEvent,
-  GestureStateChangeEvent,
-} from '../../gestureHandlerCommon';
-import {
-  GestureStateManager,
-  GestureStateManagerType,
-} from '../gestureStateManager';
 import { State } from '../../../State';
 import { TouchEventType } from '../../../TouchEventType';
 import { tagMessage } from '../../../utils';
-import { AttachedGestureState } from './types';
+import type {
+  GestureStateChangeEvent,
+  GestureTouchEvent,
+  GestureUpdateEvent,
+} from '../../gestureHandlerCommon';
+import type { HandlerCallbacks } from '../gesture';
+import { CALLBACK_TYPE } from '../gesture';
+import type { GestureStateManagerType } from '../gestureStateManager';
+import { GestureStateManager } from '../gestureStateManager';
+import { Reanimated } from '../reanimatedWrapper';
+import type { AttachedGestureState } from './types';
 
 function getHandler(
   type: CALLBACK_TYPE,

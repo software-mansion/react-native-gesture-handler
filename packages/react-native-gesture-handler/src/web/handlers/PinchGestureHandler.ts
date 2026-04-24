@@ -1,15 +1,13 @@
+import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { DEFAULT_TOUCH_SLOP } from '../constants';
-import { AdaptedEvent, PropsRef } from '../interfaces';
-
-import GestureHandler from './GestureHandler';
-import ScaleGestureDetector, {
-  ScaleGestureListener,
-} from '../detectors/ScaleGestureDetector';
-import { ActionType } from '../../ActionType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import IGestureHandler from './IGestureHandler';
 import { SingleGestureName } from '../../v3/types';
+import { DEFAULT_TOUCH_SLOP } from '../constants';
+import type { ScaleGestureListener } from '../detectors/ScaleGestureDetector';
+import ScaleGestureDetector from '../detectors/ScaleGestureDetector';
+import type { AdaptedEvent, PropsRef } from '../interfaces';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandler from './GestureHandler';
+import type IGestureHandler from './IGestureHandler';
 
 export default class PinchGestureHandler extends GestureHandler {
   private scale = 1;
@@ -70,9 +68,14 @@ export default class PinchGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent() {
+    const focal = this.delegate.absoluteToLocal(
+      this.scaleGestureDetector.focusX,
+      this.scaleGestureDetector.focusY
+    );
+
     return {
-      focalX: this.scaleGestureDetector.focusX,
-      focalY: this.scaleGestureDetector.focusY,
+      focalX: focal.x,
+      focalY: focal.y,
       velocity: this.velocity,
       scale: this.scale,
     };
@@ -93,12 +96,11 @@ export default class PinchGestureHandler extends GestureHandler {
   protected override onPointerUp(event: AdaptedEvent): void {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
-    if (this.state !== State.ACTIVE) {
-      return;
-    }
-    this.scaleGestureDetector.onTouchEvent(event, this.tracker);
 
     if (this.state === State.ACTIVE) {
+      // We don't have to call it in the else branch as it would simply return `true`.
+      this.scaleGestureDetector.onTouchEvent(event, this.tracker);
+
       this.end();
     } else {
       this.fail();
