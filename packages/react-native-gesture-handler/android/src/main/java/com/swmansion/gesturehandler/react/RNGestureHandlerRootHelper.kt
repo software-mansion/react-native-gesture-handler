@@ -13,6 +13,7 @@ import com.facebook.react.uimanager.RootView
 import com.facebook.react.uimanager.ThemedReactContext
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
+import com.swmansion.gesturehandler.core.OnJSResponderCancelListener
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup, private val moduleId: Int) {
   private val orchestrator: GestureHandlerOrchestrator?
@@ -34,11 +35,26 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       ReactConstants.TAG,
       "[GESTURE HANDLER] Initialize gesture handler for root view $rootView",
     )
+    val onJSResponderCancelListener = object : OnJSResponderCancelListener {
+      override fun onCancelJSResponderRequested(handler: GestureHandler) {
+        val time = SystemClock.uptimeMillis()
+        val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
+        if (rootView is RootView) {
+          rootView.onChildStartedNativeGesture(rootView, event)
+        }
+        event.recycle()
+      }
+
+      override fun onCancelJSResponderReleased(handler: GestureHandler) {
+        shouldIntercept = false
+      }
+    }
     orchestrator = GestureHandlerOrchestrator(
       wrappedView,
       registry,
       RNViewConfigurationHelper(),
       rootView,
+      onJSResponderCancelListener,
     ).apply {
       minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
@@ -95,14 +111,6 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
 
     override fun onCancel() {
       shouldIntercept = true
-      val time = SystemClock.uptimeMillis()
-      val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0).apply {
-        action = MotionEvent.ACTION_CANCEL
-      }
-      if (rootView is RootView) {
-        rootView.onChildStartedNativeGesture(rootView, event)
-      }
-      event.recycle()
     }
   }
 

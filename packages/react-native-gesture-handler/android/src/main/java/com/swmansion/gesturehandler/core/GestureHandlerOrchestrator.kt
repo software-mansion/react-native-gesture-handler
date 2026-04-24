@@ -19,6 +19,7 @@ class GestureHandlerOrchestrator(
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
   private val rootView: ViewGroup,
+  private val onJSResponderCancelListener: OnJSResponderCancelListener? = null,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -143,6 +144,14 @@ class GestureHandlerOrchestrator(
   /*package*/
   fun onHandlerStateChange(handler: GestureHandler, newState: Int, prevState: Int) {
     handlingChangeSemaphore += 1
+
+    if (isFinished(newState) && handler.isActive && handler.cancelsJSResponder) {
+      // Check if there are any other active handlers that still request the JS responder to be cancelled.
+      if (gestureHandlers.none { it !== handler && it.isActive && it.cancelsJSResponder }) {
+        onJSResponderCancelListener?.onCancelJSResponderReleased(handler)
+      }
+    }
+
     if (isFinished(newState)) {
       // We have to loop through copy in order to avoid modifying collection
       // while iterating over its elements
@@ -239,6 +248,10 @@ class GestureHandlerOrchestrator(
       currentState == GestureHandler.STATE_CANCELLED
     ) {
       return
+    }
+
+    if (handler.cancelsJSResponder) {
+      onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
     handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)

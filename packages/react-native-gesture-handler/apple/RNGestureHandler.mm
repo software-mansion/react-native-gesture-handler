@@ -105,6 +105,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   self.testID = nil;
   self.manualActivation = NO;
   _shouldCancelWhenOutside = NO;
+  _cancelsJSResponder = YES;
   _hitSlop = RNGHHitSlopEmpty;
   _needsPointerData = NO;
   _dispatchesAnimatedEvents = NO;
@@ -162,6 +163,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   prop = config[@"manualActivation"];
   if (prop != nil) {
     self.manualActivation = [RCTConvert BOOL:prop];
+  }
+
+  prop = config[@"cancelsJSResponder"];
+  if (prop != nil) {
+    _cancelsJSResponder = [RCTConvert BOOL:prop];
   }
 
   prop = config[@"hitSlop"];
