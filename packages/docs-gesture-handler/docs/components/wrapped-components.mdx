@@ -1,0 +1,71 @@
+---
+id: wrapped-components
+title: Wrapped Components
+sidebar_label: Wrapped Components
+---
+
+Some components come with [`Native`](/docs/gestures/use-native-gesture) gesture preapplied. This allows them to participate in gesture recognition process. Have a look at the example below.
+
+```tsx
+import { useState } from 'react';
+import { Switch } from 'react-native';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useTapGesture,
+  Switch as RNGHSwitch,
+} from 'react-native-gesture-handler';
+
+export default function App() {
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const tap1 = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped!');
+    },
+  });
+
+  const tap2 = useTapGesture({
+    onDeactivate: () => {
+      console.log('Tapped!');
+    },
+  });
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1, paddingTop: 100 }}>
+      <GestureDetector gesture={tap1}>
+        <Switch value={isEnabled} onValueChange={setIsEnabled} />
+      </GestureDetector>
+      <GestureDetector gesture={tap2}>
+        <RNGHSwitch value={isEnabled} onValueChange={setIsEnabled} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+```
+
+On Android, in this scenario, the `Switch` from React Native cannot be toggled on because the `tap1` gesture intercepts it. However, using `RNGHSwitch` makes it capable of participating in the gesture recognition process. This setup allows the switch to be toggled on while still enabling `tap2` to recognize taps on it.
+
+## List of wrapped components
+
+Components listed below come with a preapplied `Native` gesture.
+
+- `FlatList`
+- `ScrollView`
+- `RefreshControl`
+- `TextInput`
+- `Switch`
+
+## onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER
+
+:::danger
+This callback may lead to infinite re-renders if not used carefully.
+:::
+
+Those components also receive an additional prop named `onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER`.
+
+```ts
+onGestureUpdate_CAN_CAUSE_INFINITE_RERENDER?: (gesture: NativeGesture) => void;
+```
+
+This callback is triggered on every update of the `Native` gesture associated with the wrapped component, providing access to the underlying gesture. This can be helpful when setting up [relations](/docs/fundamentals/gesture-composition) with other gestures. You can check example usage in our [`ScrollView`](https://github.com/software-mansion/react-native-gesture-handler/blob/main/packages/react-native-gesture-handler/src/v3/components/GestureComponents.tsx#L78) component.
