@@ -1,6 +1,4 @@
-import React from 'react';
 import { View } from 'react-native';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
   measure,
@@ -11,6 +9,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import React from 'react';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import { COLORS, commonStyles } from '../../../common';
 
 const BOX_SIZE = 120;

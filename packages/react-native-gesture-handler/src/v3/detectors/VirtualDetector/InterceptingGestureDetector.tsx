@@ -1,29 +1,31 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import HostGestureDetector from '../HostGestureDetector';
+import {
+  VirtualChild,
+  GestureHandlerEventWithHandlerData,
+  DetectorCallbacks,
+} from '../../types';
+import {
+  InterceptingDetectorContext,
+  InterceptingDetectorContextValue,
+  InterceptingDetectorMode,
+} from './useInterceptingDetectorContext';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import { configureRelations, ensureNativeDetectorComponent } from '../utils';
+import { isComposedGesture } from '../../hooks/utils/relationUtils';
+import {
+  AnimatedNativeDetector,
+  InterceptingGestureDetectorProps,
+  nativeDetectorStyles,
+} from '../common';
+import { tagMessage } from '../../../utils';
+import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
+import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
 import { Platform } from 'react-native';
-
-import type {
+import {
   TouchAction,
   UserSelect,
 } from '../../../handlers/gestureHandlerCommon';
-import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../../utils';
-import { isComposedGesture } from '../../hooks/utils/relationUtils';
-import type {
-  DetectorCallbacks,
-  GestureHandlerEventWithHandlerData,
-  VirtualChild,
-} from '../../types';
-import type { InterceptingGestureDetectorProps } from '../common';
-import { AnimatedNativeDetector, nativeDetectorStyles } from '../common';
-import HostGestureDetector from '../HostGestureDetector';
-import { ReanimatedNativeDetector } from '../ReanimatedNativeDetector';
-import { useEnsureGestureHandlerRootView } from '../useEnsureGestureHandlerRootView';
-import { configureRelations, ensureNativeDetectorComponent } from '../utils';
-import type { InterceptingDetectorContextValue } from './useInterceptingDetectorContext';
-import {
-  InterceptingDetectorContext,
-  InterceptingDetectorMode,
-} from './useInterceptingDetectorContext';
 
 interface StrippedVirtualChildren {
   viewTag: number;

@@ -8,27 +8,30 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  clamp,
 } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('screen');
+
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
 
 export default function App() {
   const scale = useSharedValue(1);
   const startScale = useSharedValue(0);
 
- const pinch = usePinchGesture({
-    onActivate: () => {
+  const pinch = Gesture.Pinch()
+    .onStart(() => {
       startScale.value = scale.value;
-    },
-    onUpdate: (event) => {
+    })
+    .onUpdate((event) => {
       scale.value = clamp(
         startScale.value * event.scale,
         0.5,
         Math.min(width / 100, height / 100)
       );
-    },
-  }); 
+    })
+    .runOnJS(true);
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -37,7 +40,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={pinch}>
-        <Animated.View style={[styles.box, boxAnimatedStyles]} />
+        <Animated.View style={[styles.box, boxAnimatedStyles]}></Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
   );

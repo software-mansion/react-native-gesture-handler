@@ -1,5 +1,5 @@
-import type { StylusData } from '../../../../handlers/gestureHandlerCommon';
-import type {
+import { StylusData } from '../../../../handlers/gestureHandlerCommon';
+import {
   BaseGestureConfig,
   ExcludeInternalConfigProps,
   GestureEvent,

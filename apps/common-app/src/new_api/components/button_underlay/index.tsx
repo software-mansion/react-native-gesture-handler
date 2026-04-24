@@ -1,9 +1,9 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
 import {
   GestureHandlerRootView,
-  RawButton,
   ScrollView,
+  RawButton,
 } from 'react-native-gesture-handler';
 
 const UNDERLAY_PROPS = {

@@ -7,6 +7,8 @@ sidebar_label: Reanimated Swipeable
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery'
 
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
+
 :::info
 This component is a drop-in replacement for the `Swipeable` component, rewritten using [Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started).
 :::
@@ -240,9 +242,9 @@ blocksExternalGesture?: AnyGesture | AnyGesture[];
 
 Gestures that `Swipeable` will prevent from activating (see [gesture composition section](/docs/fundamentals/gesture-composition#simultaneouswith)).
 
-<Badges platforms={['ios']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### enableTrackpadTwoFingerGesture
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 enableTrackpadTwoFingerGesture?: boolean;

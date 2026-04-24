@@ -2,12 +2,12 @@
 // Without those types, we'd introduce breaking change, forcing users to prefix every handler type specification with typeof
 // e.g. React.createRef<TapGestureHandler> -> React.createRef<typeof TapGestureHandler>.
 // See https://www.typescriptlang.org/docs/handbook/classes.html#constructor-functions for reference.
-import type * as React from 'react';
+import * as React from 'react';
 
-import type { PointerType } from '../PointerType';
-import type { State } from '../State';
-import type { TouchEventType } from '../TouchEventType';
-import type { ValueOf } from '../typeUtils';
+import { State } from '../State';
+import { TouchEventType } from '../TouchEventType';
+import { ValueOf } from '../typeUtils';
+import { PointerType } from '../PointerType';
 
 const commonProps = [
   'id',

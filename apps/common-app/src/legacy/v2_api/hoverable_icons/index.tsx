@@ -1,5 +1,4 @@
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -11,12 +10,18 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { Platform, StyleSheet } from 'react-native';
 
-import FREEZE from '../../../common_assets/hoverable_icons/freeze.png';
-import GH from '../../../common_assets/hoverable_icons/gh.png';
-import REA from '../../../common_assets/hoverable_icons/rea.png';
-import SCREENS from '../../../common_assets/hoverable_icons/screens.png';
-import SVG from '../../../common_assets/hoverable_icons/svg.png';
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
+const SVG = require('../../../common_assets/hoverable_icons/svg.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
+const FREEZE = require('../../../common_assets/hoverable_icons/freeze.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
+const REA = require('../../../common_assets/hoverable_icons/rea.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
+const GH = require('../../../common_assets/hoverable_icons/gh.png');
+// eslint-disable-next-line import-x/no-commonjs, @typescript-eslint/no-var-requires
+const SCREENS = require('../../../common_assets/hoverable_icons/screens.png');
 
 const images = [GH, REA, SCREENS, SVG, FREEZE];
 const SIZE = 100;

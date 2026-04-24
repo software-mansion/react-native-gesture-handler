@@ -35,11 +35,7 @@ class RotationGestureHandler : GestureHandler() {
     override fun onRotationBegin(detector: RotationGestureDetector) = true
 
     override fun onRotationEnd(detector: RotationGestureDetector) {
-      if (state == STATE_ACTIVE) {
-        end()
-      } else {
-        fail()
-      }
+      end()
     }
   }
 
@@ -68,11 +64,12 @@ class RotationGestureHandler : GestureHandler() {
       anchorX = point.x
       anchorY = point.y
     }
-
-    // ACTION_UP is already handled in rotationGestureDetector.onTouchEvent (and effectively in onRotationEnd)
-    // if more than one pointer was used
-    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP && state == STATE_BEGAN) {
-      fail()
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
+      if (state == STATE_ACTIVE) {
+        end()
+      } else {
+        fail()
+      }
     }
   }
 

@@ -1,5 +1,4 @@
-import type { GestureRef, GestureType } from './gesture';
-import { BaseGesture, Gesture } from './gesture';
+import { BaseGesture, Gesture, GestureRef, GestureType } from './gesture';
 
 function extendRelation(
   currentRelation: GestureRef[] | undefined,
@@ -12,9 +11,6 @@ function extendRelation(
   }
 }
 
-/**
- * @deprecated `ComposedGesture` is deprecated and will be removed in the future. Please use `useCompetingGestures` instead.
- */
 export class ComposedGesture extends Gesture {
   protected gestures: Gesture[] = [];
   protected simultaneousGestures: GestureType[] = [];
@@ -73,9 +69,6 @@ export class ComposedGesture extends Gesture {
   }
 }
 
-/**
- * @deprecated `SimultaneousGesture` is deprecated and will be removed in the future. Please use `useSimultaneousGestures` instead.
- */
 export class SimultaneousGesture extends ComposedGesture {
   override prepare() {
     // This piece of magic works something like this:
@@ -102,9 +95,6 @@ export class SimultaneousGesture extends ComposedGesture {
   }
 }
 
-/**
- * @deprecated `ExclusiveGesture` is deprecated and will be removed in the future. Please use `useExclusiveGestures` instead.
- */
 export class ExclusiveGesture extends ComposedGesture {
   override prepare() {
     // Transforms the array of gestures into array of grouped raw (not composed) gestures
@@ -128,19 +118,7 @@ export class ExclusiveGesture extends ComposedGesture {
   }
 }
 
-/**
- * @deprecated `ComposedGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
- */
 export type ComposedGestureType = InstanceType<typeof ComposedGesture>;
-/**
- * @deprecated `RaceGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
- */
 export type RaceGestureType = ComposedGestureType;
-/**
- * @deprecated `SimultaneousGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
- */
 export type SimultaneousGestureType = InstanceType<typeof SimultaneousGesture>;
-/**
- * @deprecated `ExclusiveGestureType` is deprecated and will be removed in the future. Please use `ComposedGesture` instead.
- */
 export type ExclusiveGestureType = InstanceType<typeof ExclusiveGesture>;

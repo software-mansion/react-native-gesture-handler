@@ -5,15 +5,23 @@ sidebar_label: Fling gesture
 sidebar_position: 6
 ---
 
-import { webContainer } from '@site/src/utils/getGestureStyles';
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import FlingGestureBasic from '@site/static/examples/FlingGestureBasic';
-import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasic';
+import FlingGestureBasicSrc from '!!raw-loader!@site/static/examples/FlingGestureBasicSrc';
 
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 import MouseButtonProp from './\_shared/mouse-button.mdx';
 
 <div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
+    </video>
+  </div>
   <InteractiveExample
     component={<FlingGestureBasic/>}
     src={FlingGestureBasicSrc}
@@ -29,6 +37,12 @@ import SharedValueInfo from './\_shared/shared-value-info.md';
 The gesture that tracks quick, sufficiently long movement in specified [direction](#direction).
 When the gesture gets activated it will end when the finger is released.
 The gesture will fail if the finger is lifted before the gesture could activate.
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/fling.mp4")} type="video/mp4"/>
+    </video>
+  </div>
 
 ## Example
 

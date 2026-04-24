@@ -11,9 +11,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-
-import type { FeedbackHandle } from '../../../common';
-import { COLORS, commonStyles, Feedback } from '../../../common';
+import {
+  COLORS,
+  commonStyles,
+  Feedback,
+  FeedbackHandle,
+} from '../../../common';
 
 const Colors = {
   enabled: COLORS.GREEN,

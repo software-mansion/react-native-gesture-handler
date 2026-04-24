@@ -1,4 +1,4 @@
-import type { StylusData } from './gestureHandlerCommon';
+import { StylusData } from './gestureHandlerCommon';
 
 export type FlingGestureHandlerEventPayload = {
   x: number;

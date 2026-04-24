@@ -1,5 +1,4 @@
-import type { AnyGesture } from '../../types';
-import { ComposedGestureName } from '../../types';
+import { AnyGesture, ComposedGestureName } from '../../types';
 import { useComposedGesture } from './useComposedGesture';
 
 export function useCompetingGestures(...gestures: AnyGesture[]) {

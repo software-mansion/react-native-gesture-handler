@@ -1,6 +1,6 @@
-import type { RefObject } from 'react';
-import React, { useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { COLORS, commonStyles, Feedback } from '../../../common';
+import React, { RefObject, useRef } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import {
   GestureDetector,
   HoverEffect,
@@ -10,8 +10,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-
-import { COLORS, commonStyles, Feedback } from '../../../common';
 
 function useColoredHover(
   color: string,
@@ -31,8 +29,8 @@ function useColoredHover(
     onActivate: () => {
       console.log('hover start', color);
     },
-    onDeactivate: (e) => {
-      console.log('hover end', color, 'failed', e.canceled);
+    onDeactivate: (_, success) => {
+      console.log('hover end', color, 'failed', !success);
     },
     onFinalize: () => {
       hovered.value = false;

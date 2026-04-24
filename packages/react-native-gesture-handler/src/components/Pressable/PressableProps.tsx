@@ -1,16 +1,15 @@
-import type {
+import {
   AccessibilityProps,
-  Insets,
-  PressableAndroidRippleConfig as RNPressableAndroidRippleConfig,
-  PressableStateCallbackType as RNPressableStateCallbackType,
-  StyleProp,
-  View,
   ViewProps,
+  Insets,
+  StyleProp,
   ViewStyle,
+  PressableStateCallbackType as RNPressableStateCallbackType,
+  PressableAndroidRippleConfig as RNPressableAndroidRippleConfig,
+  View,
 } from 'react-native';
-
-import type { AnyGesture } from '../../v3/types';
-import type { RelationPropType } from '../utils';
+import { RelationPropType } from '../utils';
+import { AnyGesture } from '../../v3/types';
 
 export type PressableDimensions = { width: number; height: number };
 

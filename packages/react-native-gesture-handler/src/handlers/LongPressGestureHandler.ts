@@ -1,7 +1,9 @@
+import { LongPressGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
-import type { BaseGestureHandlerProps } from './gestureHandlerCommon';
-import { baseGestureHandlerProps } from './gestureHandlerCommon';
-import type { LongPressGestureHandlerEventPayload } from './GestureHandlerEventPayload';
+import {
+  BaseGestureHandlerProps,
+  baseGestureHandlerProps,
+} from './gestureHandlerCommon';
 
 export const longPressGestureHandlerProps = [
   'minDurationMs',

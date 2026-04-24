@@ -1,15 +1,17 @@
-import type React from 'react';
+import React from 'react';
 
-import type { ActionType } from './ActionType';
-import FlingGestureHandler from './web/handlers/FlingGestureHandler';
-import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
-import ManualGestureHandler from './web/handlers/ManualGestureHandler';
-import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+import { ActionType } from './ActionType';
+
+// GestureHandlers
 import PanGestureHandler from './web/handlers/PanGestureHandler';
+import TapGestureHandler from './web/handlers/TapGestureHandler';
+import LongPressGestureHandler from './web/handlers/LongPressGestureHandler';
 import PinchGestureHandler from './web/handlers/PinchGestureHandler';
 import RotationGestureHandler from './web/handlers/RotationGestureHandler';
-import TapGestureHandler from './web/handlers/TapGestureHandler';
-import type { Config } from './web/interfaces';
+import FlingGestureHandler from './web/handlers/FlingGestureHandler';
+import NativeViewGestureHandler from './web/handlers/NativeViewGestureHandler';
+import ManualGestureHandler from './web/handlers/ManualGestureHandler';
+import { Config } from './web/interfaces';
 
 export const Gestures = {
   NativeViewGestureHandler,

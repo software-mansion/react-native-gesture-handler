@@ -1,13 +1,17 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import type {
+import {
+  PanGestureHandlerEventPayload,
+  Gesture,
+  GestureDetector,
   LegacyPanGesture,
   LegacyTapGesture,
-  PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import type { SharedValue } from 'react-native-reanimated';
-import Animated, { runOnJS, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  SharedValue,
+} from 'react-native-reanimated';
 
 type AnimatedPostion = {
   x: SharedValue<number>;

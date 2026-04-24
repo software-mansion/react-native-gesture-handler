@@ -1,18 +1,18 @@
-import type { Directions } from '../Directions';
-import type {
-  ActiveCursor,
-  GestureTouchEvent,
-  MouseButton,
-  StylusData,
-  TouchAction,
+import {
   UserSelect,
+  ActiveCursor,
+  MouseButton,
+  TouchAction,
+  StylusData,
+  GestureTouchEvent,
 } from '../handlers/gestureHandlerCommon';
-import type { PointerType } from '../PointerType';
-import type { State } from '../State';
-import type {
+import { Directions } from '../Directions';
+import { PointerType } from '../PointerType';
+import {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
 } from '../v3/types';
+import { State } from '../State';
 
 export interface HitSlop {
   left?: number | undefined;

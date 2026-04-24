@@ -41,7 +41,6 @@
  */
 @implementation RNGestureHandlerButton {
   BOOL _isTouchInsideBounds;
-  BOOL _suppressSuperControlActionDispatch;
   CALayer *_underlayLayer;
   CGFloat _underlayCornerRadii[8]; // [tlH, tlV, trH, trV, blH, blV, brH, brV] outer radii in points
   UIEdgeInsets _underlayBorderInsets; // border widths for padding-box inset
@@ -80,9 +79,7 @@
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX
   [self setExclusiveTouch:YES];
-  [self addTarget:self
-                action:@selector(handleAnimatePressIn)
-      forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragEnter];
+  [self addTarget:self action:@selector(handleAnimatePressIn) forControlEvents:UIControlEventTouchDown];
   [self addTarget:self
                 action:@selector(handleAnimatePressOut)
       forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchDragExit |
@@ -174,17 +171,6 @@
   _underlayLayer.opacity =
       _underlayLayer.presentationLayer ? [_underlayLayer.presentationLayer opacity] : _underlayLayer.opacity;
   [_underlayLayer removeAllAnimations];
-
-  // CABasicAnimation with duration 0 resolves to the current CATransaction's
-  // default duration (0.25s), not "no animation". Snap the value directly
-  // with implicit actions disabled to get a true instant update.
-  if (durationMs <= 0) {
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    _underlayLayer.opacity = toOpacity;
-    [CATransaction commit];
-    return;
-  }
 
   CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"opacity"];
   anim.fromValue = @(_underlayLayer.opacity);
@@ -568,7 +554,6 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 #if TARGET_OS_OSX
 - (void)mouseDown:(NSEvent *)event
 {
-  _isTouchInsideBounds = YES;
   [self handleAnimatePressIn];
   [super mouseDown:event];
 }
@@ -576,7 +561,6 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 - (void)mouseUp:(NSEvent *)event
 {
   [self handleAnimatePressOut];
-  _isTouchInsideBounds = NO;
   [super mouseUp:event];
 }
 
@@ -584,13 +568,8 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 {
   NSPoint locationInWindow = [event locationInWindow];
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-  BOOL currentlyInside = NSPointInRect(locationInView, self.bounds);
 
-  if (currentlyInside && !_isTouchInsideBounds) {
-    _isTouchInsideBounds = YES;
-    [self handleAnimatePressIn];
-  } else if (!currentlyInside && _isTouchInsideBounds) {
-    _isTouchInsideBounds = NO;
+  if (!NSPointInRect(locationInView, self.bounds)) {
     [self handleAnimatePressOut];
   }
 }
@@ -612,52 +591,9 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
   return [super beginTrackingWithTouch:touch withEvent:event];
 }
 
-// Mirrors `sendActionsForControlEvents:` but preserves the real `UIEvent`
-// so target-actions with a `forEvent:` parameter receive the touches.
-// The public `sendActionsForControlEvents:` passes a nil event, which would
-// make handlers reading `event.allTouches.count` observe 0 pointers.
-- (void)rngh_sendActionsForControlEvents:(UIControlEvents)controlEvents withEvent:(UIEvent *)event
-{
-  for (id target in [self allTargets]) {
-    for (NSString *actionName in [self actionsForTarget:target forControlEvent:controlEvents]) {
-      [self sendAction:NSSelectorFromString(actionName) to:target forEvent:event];
-    }
-  }
-}
-
-// UIControl's default `touchesMoved:` / `touchesEnded:` invoke
-// `{continue|end}TrackingWithTouch:` and THEN dispatch their own Drag* / Up*
-// actions via `sendAction:to:forEvent:` using Apple's 70-point retention-offset
-// hit-test. That double-fires our handlers (once from our manual dispatch in
-// the tracking hooks, once from UIControl's retention-offset path). We swallow
-// UIControl's dispatch via this override; the flag is armed by our tracking
-// hooks only after our own dispatch has already run.
-- (void)sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event
-{
-  if (_suppressSuperControlActionDispatch) {
-    return;
-  }
-  [super sendAction:action to:target forEvent:event];
-}
-
-- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-  [super touchesMoved:touches withEvent:event];
-  _suppressSuperControlActionDispatch = NO;
-}
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-  [super touchesEnded:touches withEvent:event];
-  _suppressSuperControlActionDispatch = NO;
-}
-
 - (BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-  // We take over drag event generation to enforce strict hitslop bounds
-  // (bypassing Apple's retention offset). After our dispatch, set the
-  // suppress flag so UIControl's default post-tracking dispatch in
-  // `touchesMoved:` gets swallowed by our `sendAction:to:forEvent:` override.
+  // DO NOT call super. We are entirely taking over the drag event generation.
 
   CGPoint location = [touch locationInView:self];
   CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
@@ -665,27 +601,25 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
   if (currentlyInside) {
     if (!_isTouchInsideBounds) {
-      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragEnter withEvent:event];
+      [self sendActionsForControlEvents:UIControlEventTouchDragEnter];
       _isTouchInsideBounds = YES;
     }
 
     // Targets may call `cancelTrackingWithEvent:` in response to DragEnter.
     if (self.tracking) {
-      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragInside withEvent:event];
+      [self sendActionsForControlEvents:UIControlEventTouchDragInside];
     }
   } else {
     if (_isTouchInsideBounds) {
-      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragExit withEvent:event];
+      [self sendActionsForControlEvents:UIControlEventTouchDragExit];
       _isTouchInsideBounds = NO;
     }
 
     // Targets may call `cancelTrackingWithEvent:` in response to DragExit.
     if (self.tracking) {
-      [self rngh_sendActionsForControlEvents:UIControlEventTouchDragOutside withEvent:event];
+      [self sendActionsForControlEvents:UIControlEventTouchDragOutside];
     }
   }
-
-  _suppressSuperControlActionDispatch = YES;
 
   // If `cancelTrackingWithEvent` was called, `self.tracking` will be NO.
   return self.tracking;
@@ -693,20 +627,17 @@ static CATransform3D RNGHCenterScaleTransform(NSRect bounds, CGFloat scale)
 
 - (void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
-  // Same rationale as `continueTrackingWithTouch:` — we dispatch the final
-  // Up* event ourselves using strict hitslop bounds, then set the suppress
-  // flag so UIControl's default dispatch in `touchesEnded:` gets swallowed.
+  // Also bypass super here so that the final "up" event respects the
+  // strict bounds, rather than Apple's 70-point.
 
   if (touch != nil) {
     CGPoint location = [touch locationInView:self];
     CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
     if (CGRectContainsPoint(hitFrame, location)) {
-      [self rngh_sendActionsForControlEvents:UIControlEventTouchUpInside withEvent:event];
+      [self sendActionsForControlEvents:UIControlEventTouchUpInside];
     } else {
-      [self rngh_sendActionsForControlEvents:UIControlEventTouchUpOutside withEvent:event];
+      [self sendActionsForControlEvents:UIControlEventTouchUpOutside];
     }
-
-    _suppressSuperControlActionDispatch = YES;
   }
 
   _isTouchInsideBounds = NO;

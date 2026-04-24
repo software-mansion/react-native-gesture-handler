@@ -113,7 +113,6 @@
 @implementation RNNativeViewGestureHandler {
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
-  RNGestureHandlerEventExtraData *_lastActiveExtraData;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -139,33 +138,22 @@
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[UIControl class]]) {
     UIControl *control = (UIControl *)view;
-
-    // Pressing UISwitch triggers only touchUp and valueChanged callbacks. In order to align its behavior
-    // with other UIControls, we have to dispatch full Gesture Handler events flow in one callback, as
-    // touchesDown is not executed.
-    if ([view isKindOfClass:[UISwitch class]]) {
-      _pointerType = RNGestureHandlerTouch;
-      [control addTarget:self action:@selector(handleSwitch:) forControlEvents:UIControlEventValueChanged];
-    } else {
-      [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
-      [control addTarget:self
-                    action:@selector(handleTouchUpOutside:forEvent:)
-          forControlEvents:UIControlEventTouchUpOutside];
-      [control addTarget:self
-                    action:@selector(handleTouchUpInside:forEvent:)
-          forControlEvents:UIControlEventTouchUpInside];
-      [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
-      [control addTarget:self
-                    action:@selector(handleDragInside:forEvent:)
-          forControlEvents:UIControlEventTouchDragInside];
-      [control addTarget:self
-                    action:@selector(handleDragOutside:forEvent:)
-          forControlEvents:UIControlEventTouchDragOutside];
-      [control addTarget:self
-                    action:@selector(handleDragEnter:forEvent:)
-          forControlEvents:UIControlEventTouchDragEnter];
-      [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
-    }
+    [control addTarget:self action:@selector(handleTouchDown:forEvent:) forControlEvents:UIControlEventTouchDown];
+    [control addTarget:self
+                  action:@selector(handleTouchUpOutside:forEvent:)
+        forControlEvents:UIControlEventTouchUpOutside];
+    [control addTarget:self
+                  action:@selector(handleTouchUpInside:forEvent:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [control addTarget:self action:@selector(handleDragExit:forEvent:) forControlEvents:UIControlEventTouchDragExit];
+    [control addTarget:self
+                  action:@selector(handleDragInside:forEvent:)
+        forControlEvents:UIControlEventTouchDragInside];
+    [control addTarget:self
+                  action:@selector(handleDragOutside:forEvent:)
+        forControlEvents:UIControlEventTouchDragOutside];
+    [control addTarget:self action:@selector(handleDragEnter:forEvent:) forControlEvents:UIControlEventTouchDragEnter];
+    [control addTarget:self action:@selector(handleTouchCancel:forEvent:) forControlEvents:UIControlEventTouchCancel];
   } else {
     [super bindToView:view];
   }
@@ -192,37 +180,6 @@
   [super unbindFromView];
 }
 
-- (void)sendActiveStateEventIfChangedForView:(UIView *)sender extraData:(RNGestureHandlerEventExtraData *)extraData
-{
-  if ([_lastActiveExtraData.data isEqualToDictionary:extraData.data]) {
-    return;
-  }
-
-  _lastActiveExtraData = extraData;
-  [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:sender.reactTag withExtraData:extraData];
-}
-
-- (void)handleSwitch:(UIView *)sender
-{
-  [self sendEventsInState:RNGestureHandlerStateBegan
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
-  [self sendEventsInState:RNGestureHandlerStateActive
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:1
-                                                           withPointerType:_pointerType]];
-
-  [self reset];
-}
-
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 {
   [self setCurrentPointerTypeForEvent:event];
@@ -245,11 +202,11 @@
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
 
-  _lastActiveExtraData = nil;
-  [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
@@ -281,27 +238,30 @@
     UIControl *control = (UIControl *)sender;
     [control cancelTrackingWithEvent:event];
   } else {
-    [self sendActiveStateEventIfChangedForView:sender
-                                     extraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                                            withNumberOfTouches:event.allTouches.count
-                                                                                withPointerType:_pointerType]];
+    [self sendEventsInState:RNGestureHandlerStateActive
+             forViewWithTag:sender.reactTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                         withNumberOfTouches:event.allTouches.count
+                                                             withPointerType:_pointerType]];
   }
 }
 
 - (void)handleDragEnter:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleDragInside:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleDragOutside:(UIView *)sender forEvent:(UIEvent *)event
@@ -310,10 +270,11 @@
     return;
   }
 
-  [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
+  [self sendEventsInState:RNGestureHandlerStateActive
+           forViewWithTag:sender.reactTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleTouchCancel:(UIView *)sender forEvent:(UIEvent *)event

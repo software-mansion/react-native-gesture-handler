@@ -1,8 +1,7 @@
-import React, { useRef } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
-import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-
 import { COLORS, commonStyles } from '../../../common';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 
 const { width } = Dimensions.get('window');
 

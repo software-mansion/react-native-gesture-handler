@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import { Animated, Dimensions, StyleSheet } from 'react-native';
-import type {
+import {
+  PanGestureHandler,
+  TapGestureHandler,
+  State,
   PanGestureHandlerGestureEvent,
   TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
-import {
   LegacyScrollView,
-  PanGestureHandler,
-  State,
-  TapGestureHandler,
 } from 'react-native-gesture-handler';
 
-import { LoremIpsum } from '../../../common';
 import { USE_NATIVE_DRIVER } from '../../../config';
+import { LoremIpsum } from '../../../common';
 
 const windowWidth = Dimensions.get('window').width;
 const circleRadius = 30;

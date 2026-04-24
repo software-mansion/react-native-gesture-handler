@@ -1,16 +1,15 @@
-import type React from 'react';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
+import { GestureType } from '../gesture';
+import { ComposedGesture } from '../gestureComposition';
 
-import findNodeHandle from '../../../findNodeHandle';
-import type { PropsRef } from '../../../web/interfaces';
-import type { GestureType } from '../gesture';
-import type { ComposedGesture } from '../gestureComposition';
+import { AttachedGestureState, GestureDetectorState } from './types';
 import { attachHandlers } from './attachHandlers';
-import { dropHandlers } from './dropHandlers';
-import { needsToReattach } from './needsToReattach';
-import type { AttachedGestureState, GestureDetectorState } from './types';
 import { updateHandlers } from './updateHandlers';
+import { needsToReattach } from './needsToReattach';
+import { dropHandlers } from './dropHandlers';
 import { useForceRender, validateDetectorChildren } from './utils';
+import findNodeHandle from '../../../findNodeHandle';
+import { PropsRef } from '../../../web/interfaces';
 
 // Returns a function that's responsible for updating the attached gestures
 // If the view has changed, it will reattach the handlers to the new view

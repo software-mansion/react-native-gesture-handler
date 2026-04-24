@@ -1,18 +1,23 @@
-import type { Dispatch, SetStateAction } from 'react';
-import React, { useRef, useState } from 'react';
-import type { LayoutChangeEvent, LayoutRectangle } from 'react-native';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import {
-  Gesture,
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  LayoutChangeEvent,
+  LayoutRectangle,
+} from 'react-native';
+import {
   GestureDetector,
+  Gesture,
   LegacyScrollView,
 } from 'react-native-gesture-handler';
-import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
-  runOnJS,
-  useAnimatedStyle,
+  SharedValue,
   useSharedValue,
+  useAnimatedStyle,
   withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
 
 const DRAG_ANIMATION_DURATION = 300;

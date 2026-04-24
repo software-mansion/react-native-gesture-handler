@@ -7,9 +7,7 @@ sidebar_label: Buttons
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import GifGallery from '@site/components/GifGallery';
 
-:::danger
-Button components described in this section are deprecated and will be removed in the future. Please use [`Touchable`](/docs/components/touchable) instead.
-:::
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 <GifGallery>
   <img src={useBaseUrl('gifs/samplebutton.gif')} width="280" />
@@ -39,11 +37,11 @@ The most basic button component does not provide any feedback and lacks props su
 exclusive?: boolean;
 ```
 
-Defines whether pressing this button prevents other buttons exported by Gesture Handler from being pressed. By default set to `true`.
+Defines if more than one button could be pressed simultaneously. By default set to `true`.
 
-<Badges platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### rippleColor
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 rippleColor?: number | ColorValue | null;
@@ -51,9 +49,9 @@ rippleColor?: number | ColorValue | null;
 
 Defines [color](https://reactnative.dev/docs/colors) of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-<Badges platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### rippleRadius
-</Badges>
+</HeaderWithBadges>
 
 
 ```ts
@@ -62,9 +60,9 @@ rippleRadius?: number | null;
 
 Defines radius of native [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation.
 
-<Badges platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### borderless
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 borderless?: boolean;
@@ -72,9 +70,9 @@ borderless?: boolean;
 
 If set to `false`, [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation will render only within view bounds.
 
-<Badges platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### foreground
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 foreground?: boolean;
@@ -82,9 +80,9 @@ foreground?: boolean;
 
 Defines whether the [ripple](https://developer.android.com/reference/android/graphics/drawable/RippleDrawable) animation should be drawn on the foreground of the view.
 
-<Badges platforms={['android']}>
+<HeaderWithBadges platforms={['android']}>
 ### touchSoundDisabled
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 touchSoundDisabled?: boolean;
@@ -142,9 +140,9 @@ underlayColor?: string;
 
 Background color that will be dimmed when the button is in an active state.
 
-<Badges platforms={['ios']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### activeOpacity
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 activeOpacity?: number;
@@ -156,9 +154,9 @@ Opacity applied to the underlay when the button is in an active state.
 
 This type of button component should be used with simple icon-only or text-only buttons. The interaction will be different depending on platform: on Android a borderless ripple will be rendered (it means that the ripple will animate into a circle that can span outside of the view bounds), whereas on iOS the button will be dimmed (similar to how `TouchableOpacity` works). In addition to the props of [`BaseButton`](#basebutton), it accepts the following:
 
-<Badges platforms={['ios']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### activeOpacity
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 activeOpacity?: number;
@@ -196,7 +194,7 @@ If you wish to get specific information about platforms design patterns, visit [
 
 This library allows the use of native components with native feedback in adequate situations.
 
-If you do not wish to implement a custom design approach, [`RectButton`](#rectbutton) and [`BorderlessButton`](#borderlessbutton) seem to be absolutely enough and there's no need to use anything else. In all the remaining cases, you can always rely on [`BaseButton`](#basebutton) which is a superclass for the other button classes and can be used as a generic React Native `Touchable` replacement that can be customized to your needs.
+If you do not wish to implement a custom design approach, [`RectButton`](#rectbutton) and [`BorderlessButton`](#borderlessbutton) seem to be absolutely enough and there's no need to use anything else. In all the remaining cases, you can always rely on [`BaseButton`](#basebutton) which is a superclass for the other button classes and can be used as a generic `Touchable` replacement that can be customized to your needs.
 
 Below we list some of the common usecases for button components to be used along with the type of button that should be used according to the platform specific design guidelines.
 

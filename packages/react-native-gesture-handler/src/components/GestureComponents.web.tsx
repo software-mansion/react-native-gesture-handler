@@ -1,10 +1,10 @@
 import * as React from 'react';
-import type { FlatListProps } from 'react-native';
 import {
   FlatList as RNFlatList,
-  ScrollView as RNScrollView,
   Switch as RNSwitch,
   TextInput as RNTextInput,
+  ScrollView as RNScrollView,
+  FlatListProps,
   View,
 } from 'react-native';
 
@@ -50,11 +50,14 @@ export const LegacyRefreshControl = createNativeWrapper(View);
 /**
  * @deprecated use `FlatList` instead
  */
-export const LegacyFlatList = <ItemT,>(props: FlatListProps<ItemT>) => (
-  <RNFlatList
-    {...props}
-    renderScrollComponent={(scrollProps) => (
-      <LegacyScrollView {...scrollProps} />
-    )}
-  />
+export const LegacyFlatList = React.forwardRef(
+  <ItemT,>(props: FlatListProps<ItemT>, ref: any) => (
+    <RNFlatList
+      ref={ref}
+      {...props}
+      renderScrollComponent={(scrollProps) => (
+        <LegacyScrollView {...scrollProps} />
+      )}
+    />
+  )
 );

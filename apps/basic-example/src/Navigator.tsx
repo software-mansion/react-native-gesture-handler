@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BackHandler, Pressable, Text, View } from 'react-native';
+import { View, Text, Pressable, BackHandler } from 'react-native';
 
 export interface RouteInfo {
   component: React.ComponentType;

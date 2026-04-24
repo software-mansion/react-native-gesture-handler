@@ -1,11 +1,10 @@
-import type { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
-import type { GestureUpdateEvent } from '../gestureHandlerCommon';
+import { BaseGestureConfig, ContinousBaseGesture } from './gesture';
+import { ForceTouchGestureConfig } from '../ForceTouchGestureHandler';
 import type { ForceTouchGestureHandlerEventPayload } from '../GestureHandlerEventPayload';
-import type { BaseGestureConfig } from './gesture';
-import { ContinousBaseGesture } from './gesture';
+import { GestureUpdateEvent } from '../gestureHandlerCommon';
 
 /**
- * @deprecated `ForceTouchGestureChangeEventPayload` is deprecated and will be removed in the future.
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
  */
 export type ForceTouchGestureChangeEventPayload = {
   forceChange: number;
@@ -31,7 +30,7 @@ function changeEventCalculator(
 }
 
 /**
- * @deprecated `ForceTouchGesture` is deprecated and will be removed in the future.
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
  */
 export class ForceTouchGesture extends ContinousBaseGesture<
   ForceTouchGestureHandlerEventPayload,
@@ -91,6 +90,6 @@ export class ForceTouchGesture extends ContinousBaseGesture<
 }
 
 /**
- * @deprecated `ForceTouchGestureType` is deprecated and will be removed in the future.
+ * @deprecated ForceTouch gesture is deprecated and will be removed in the future.
  */
 export type ForceTouchGestureType = InstanceType<typeof ForceTouchGesture>;

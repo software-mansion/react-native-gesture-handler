@@ -1,7 +1,6 @@
-import type { PropsWithChildren } from 'react';
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-
+import { PropsWithChildren } from 'react';
+import { View, StyleSheet } from 'react-native';
 import GestureHandlerRootViewContext from '../GestureHandlerRootViewContext';
 import type { RootViewNativeProps } from '../specs/RNGestureHandlerRootViewNativeComponent';
 
@@ -13,9 +12,9 @@ export default function GestureHandlerRootView({
   ...rest
 }: GestureHandlerRootViewProps) {
   return (
-    <GestureHandlerRootViewContext value>
+    <GestureHandlerRootViewContext.Provider value>
       <View style={style ?? styles.container} {...rest} />
-    </GestureHandlerRootViewContext>
+    </GestureHandlerRootViewContext.Provider>
   );
 }
 

@@ -1,4 +1,4 @@
-import type {
+import {
   BaseDiscreteGestureConfig,
   DiscreteSingleGesture,
   ExcludeInternalConfigProps,

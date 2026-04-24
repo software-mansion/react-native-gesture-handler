@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
-import { Animated, StyleSheet } from 'react-native';
-import type {
-  PanGestureHandlerGestureEvent,
-  PanGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
+import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+
 import {
   PanGestureHandler,
-  ScrollView,
   State,
+  PanGestureHandlerStateChangeEvent,
+  PanGestureHandlerGestureEvent,
+  ScrollView,
 } from 'react-native-gesture-handler';
 
-import { LoremIpsum } from '../../../common';
 import { USE_NATIVE_DRIVER } from '../../../config';
+import { LoremIpsum } from '../../../common';
 
 type DraggableBoxProps = {
   minDist?: number;

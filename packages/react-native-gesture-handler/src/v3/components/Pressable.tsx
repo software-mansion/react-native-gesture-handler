@@ -5,42 +5,42 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import type {
-  Insets,
-  LayoutChangeEvent,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
-import { Platform } from 'react-native';
-
-import type {
+import {
   PressableDimensions,
   PressableEvent,
   PressableProps,
 } from '../../components/Pressable/PressableProps';
+import {
+  Insets,
+  LayoutChangeEvent,
+  Platform,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import {
+  addInsets,
+  numberAsInset,
+  gestureTouchToPressableEvent,
+  isTouchWithinInset,
+  gestureToPressableEvent,
+} from '../../components/Pressable/utils';
 import {
   getStatesConfig,
   StateMachineEvent,
 } from '../../components/Pressable/stateDefinitions';
 import { PressableStateMachine } from '../../components/Pressable/StateMachine';
 import {
-  addInsets,
-  gestureToPressableEvent,
-  gestureTouchToPressableEvent,
-  isTouchWithinInset,
-  numberAsInset,
-} from '../../components/Pressable/utils';
-import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
-import { INT32_MAX, isTestEnv } from '../../utils';
-import { GestureDetector } from '../detectors';
-import {
   useHoverGesture,
   useLongPressGesture,
   useNativeGesture,
   useSimultaneousGestures,
 } from '../hooks';
+import { GestureDetector } from '../detectors';
 import { PureNativeButton } from './GestureButtons';
+
+import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { INT32_MAX, isTestEnv } from '../../utils';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();
@@ -274,13 +274,13 @@ const Pressable = (props: PressableProps) => {
       stateMachine.reset();
       handlePressOut(pressableEvent, false);
     },
-    onFinalize: (event) => {
+    onFinalize: (_event, success) => {
       if (Platform.OS !== 'web') {
         return;
       }
 
       stateMachine.handleEvent(
-        event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
+        success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
       );
 
       handleFinalize();
@@ -313,14 +313,14 @@ const Pressable = (props: PressableProps) => {
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }
     },
-    onFinalize: (event) => {
+    onFinalize: (_event, success) => {
       // On Web we use LongPress.onFinalize instead of Native.onFinalize,
       // as Native cancels on mouse move, and LongPress does not.
       if (Platform.OS === 'web') {
         return;
       }
       stateMachine.handleEvent(
-        event.canceled ? StateMachineEvent.CANCEL : StateMachineEvent.FINALIZE
+        success ? StateMachineEvent.FINALIZE : StateMachineEvent.CANCEL
       );
 
       handleFinalize();

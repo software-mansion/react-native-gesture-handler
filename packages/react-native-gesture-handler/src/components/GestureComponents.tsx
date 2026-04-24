@@ -1,24 +1,31 @@
-import type { PropsWithChildren, ReactElement } from 'react';
 import * as React from 'react';
-import type {
-  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
-  FlatListProps as RNFlatListProps,
-  ScrollViewProps as RNScrollViewProps,
-  SwitchProps as RNSwitchProps,
-  TextInputProps as RNTextInputProps,
-} from 'react-native';
 import {
-  DrawerLayoutAndroid as RNDrawerLayoutAndroid,
-  FlatList as RNFlatList,
-  RefreshControl as RNRefreshControl,
+  PropsWithChildren,
+  ForwardedRef,
+  RefAttributes,
+  ReactElement,
+} from 'react';
+import {
   ScrollView as RNScrollView,
+  ScrollViewProps as RNScrollViewProps,
   Switch as RNSwitch,
+  SwitchProps as RNSwitchProps,
   TextInput as RNTextInput,
+  TextInputProps as RNTextInputProps,
+  DrawerLayoutAndroid as RNDrawerLayoutAndroid,
+  DrawerLayoutAndroidProps as RNDrawerLayoutAndroidProps,
+  FlatList as RNFlatList,
+  FlatListProps as RNFlatListProps,
+  RefreshControl as RNRefreshControl,
 } from 'react-native';
 
 import createNativeWrapper from '../handlers/createNativeWrapper';
-import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
-import { nativeViewProps } from '../handlers/NativeViewGestureHandler';
+
+import {
+  NativeViewGestureHandlerProps,
+  nativeViewProps,
+} from '../handlers/NativeViewGestureHandler';
+
 import { toArray } from '../utils';
 
 /**
@@ -44,18 +51,18 @@ const GHScrollView = createNativeWrapper<PropsWithChildren<RNScrollViewProps>>(
 /**
  * @deprecated use `ScrollView` instead
  */
-export const LegacyScrollView = (
-  props: RNScrollViewProps &
-    NativeViewGestureHandlerProps & {
-      ref?: React.Ref<RNScrollView | null>;
-    }
-) => {
+export const LegacyScrollView = React.forwardRef<
+  RNScrollView,
+  RNScrollViewProps & NativeViewGestureHandlerProps
+>((props, ref) => {
   const refreshControlGestureRef = React.useRef<LegacyRefreshControl>(null);
   const { refreshControl, waitFor, ...rest } = props;
 
   return (
     <GHScrollView
       {...rest}
+      // @ts-ignore `ref` exists on `GHScrollView`
+      ref={ref}
       waitFor={[...toArray(waitFor ?? []), refreshControlGestureRef]}
       // @ts-ignore we don't pass `refreshing` prop as we only want to override the ref
       refreshControl={
@@ -68,7 +75,7 @@ export const LegacyScrollView = (
       }
     />
   );
-};
+});
 
 // Backward type compatibility with https://github.com/software-mansion/react-native-gesture-handler/blob/db78d3ca7d48e8ba57482d3fe9b0a15aa79d9932/react-native-gesture-handler.d.ts#L440-L457
 // include methods of wrapped components by creating an intersection type with the RN component instead of duplicating them.
@@ -107,14 +114,7 @@ export type LegacyDrawerLayoutAndroid = typeof LegacyDrawerLayoutAndroid &
 /**
  * @deprecated use `FlatList` instead
  */
-export const LegacyFlatList = <ItemT,>(
-  props: PropsWithChildren<
-    Omit<RNFlatListProps<ItemT>, 'renderScrollComponent'> &
-      NativeViewGestureHandlerProps & {
-        ref?: React.Ref<RNFlatList<ItemT> | null>;
-      }
-  >
-): ReactElement | null => {
+export const LegacyFlatList = React.forwardRef((props, ref) => {
   const refreshControlGestureRef = React.useRef<LegacyRefreshControl>(null);
 
   const { waitFor, refreshControl, ...rest } = props;
@@ -137,6 +137,7 @@ export const LegacyFlatList = <ItemT,>(
   return (
     // @ts-ignore - this function cannot have generic type so we have to ignore this error
     <RNFlatList
+      ref={ref}
       {...flatListProps}
       renderScrollComponent={(scrollProps) => (
         <LegacyScrollView
@@ -158,8 +159,14 @@ export const LegacyFlatList = <ItemT,>(
       }
     />
   );
-};
-
+}) as <ItemT = any>(
+  props: PropsWithChildren<
+    Omit<RNFlatListProps<ItemT>, 'renderScrollComponent'> &
+      RefAttributes<LegacyFlatList<ItemT>> &
+      NativeViewGestureHandlerProps
+  >,
+  ref?: ForwardedRef<LegacyFlatList<ItemT>>
+) => ReactElement | null;
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type LegacyFlatList<ItemT = any> = typeof LegacyFlatList &
   RNFlatList<ItemT>;

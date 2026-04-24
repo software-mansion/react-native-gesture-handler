@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+import { COLORS } from './colors';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-
-import { COLORS } from './colors';
+import { useState } from 'react';
 
 export function RuntimeChecker({
   runGestureOnJS,

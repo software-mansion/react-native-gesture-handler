@@ -1,7 +1,6 @@
-import HomepageButton from '@site/src/components/HomepageButton';
 import React from 'react';
-
 import styles from './styles.module.css';
+import HomepageButton from '@site/src/components/HomepageButton';
 
 const StartScreen = () => {
   return (
@@ -20,7 +19,7 @@ const StartScreen = () => {
         <div className={styles.lowerHeading}>
           <div className={styles.buttonContainer}>
             <HomepageButton
-              href="/react-native-gesture-handler/docs/fundamentals/introduction"
+              href="/react-native-gesture-handler/docs/"
               title="Get started"
             />
           </div>

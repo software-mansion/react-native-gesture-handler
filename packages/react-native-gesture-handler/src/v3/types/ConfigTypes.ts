@@ -1,4 +1,4 @@
-import type {
+import {
   ActiveCursor,
   GestureTouchEvent,
   HitSlop,
@@ -6,20 +6,20 @@ import type {
   TouchAction,
   UserSelect,
 } from '../../handlers/gestureHandlerCommon';
-import type {
+import {
   AnimatedEvent,
   ChangeCalculatorType,
-  GestureEndEvent,
   GestureEvent,
 } from './EventTypes';
-import type { WithSharedValue } from './ReanimatedTypes';
+import { WithSharedValue } from './ReanimatedTypes';
 
 export type GestureEventCallback<THandlerData> = (
   event: GestureEvent<THandlerData>
 ) => void;
 
-export type GestureEndEventCallback<THandlerData> = (
-  event: GestureEndEvent<THandlerData>
+export type GestureEventCallbackWithDidSucceed<THandlerData> = (
+  event: GestureEvent<THandlerData>,
+  didSucceed: boolean
 ) => void;
 
 export type GestureTouchEventCallback = (event: GestureTouchEvent) => void;
@@ -34,8 +34,10 @@ export type GestureCallbacks<
     | GestureEventCallback<TExtendedHandlerData>
     | AnimatedEvent
     | undefined;
-  onDeactivate?: GestureEndEventCallback<TExtendedHandlerData> | undefined;
-  onFinalize?: GestureEndEventCallback<THandlerData> | undefined;
+  onDeactivate?:
+    | GestureEventCallbackWithDidSucceed<TExtendedHandlerData>
+    | undefined;
+  onFinalize?: GestureEventCallbackWithDidSucceed<THandlerData> | undefined;
   onTouchesDown?: GestureTouchEventCallback | undefined;
   onTouchesMove?: GestureTouchEventCallback | undefined;
   onTouchesUp?: GestureTouchEventCallback | undefined;

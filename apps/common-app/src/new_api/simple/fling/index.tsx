@@ -1,3 +1,4 @@
+import { COLORS, commonStyles } from '../../../common';
 import React from 'react';
 import { View } from 'react-native';
 import {
@@ -6,14 +7,12 @@ import {
   useFlingGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
   Easing,
   interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
-
-import { COLORS, commonStyles } from '../../../common';
 
 export default function FlingExample() {
   const position = useSharedValue(0);

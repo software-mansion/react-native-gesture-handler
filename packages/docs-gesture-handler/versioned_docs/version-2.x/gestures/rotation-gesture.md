@@ -5,12 +5,19 @@ sidebar_label: Rotation gesture
 sidebar_position: 6
 ---
 
-import { webContainer } from '@site/src/utils/getGestureStyles';
+import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
 
-import RotationGestureBasic from '../examples/RotationGestureBasic';
-import RotationGestureBasicSrc from '!!raw-loader!../examples/RotationGestureBasicSrc';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import RotationGestureBasic from '@site/static/examples/RotationGestureBasic';
+import RotationGestureBasicSrc from '!!raw-loader!@site/static/examples/RotationGestureBasicSrc';
 
 <div className={webContainer}>
+  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/rotation.mp4")} type="video/mp4"/>
+    </video>
+  </div>
   <InteractiveExample
     component={<RotationGestureBasic/>}
     src={RotationGestureBasicSrc}
@@ -29,6 +36,12 @@ A continuous gesture that can recognize a rotation gesture and track its movemen
 The gesture [activates](/docs/2.x/fundamentals/states-events#active) when fingers are placed on the screen and change position in a proper way.
 
 Gesture callback can be used for continuous tracking of the rotation gesture. It provides information about the gesture such as the amount rotated, the focal point of the rotation (anchor), and its instantaneous velocity.
+
+  <div className={appearOnMobile} style={{ display: 'flex', justifyContent: 'center' }}>
+    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
+      <source src={useBaseUrl("/video/rotation.mp4")} type="video/mp4"/>
+    </video>
+  </div>
 
 <samp id="RotationGestureBasicSrc">Rotation Gesture</samp>
 

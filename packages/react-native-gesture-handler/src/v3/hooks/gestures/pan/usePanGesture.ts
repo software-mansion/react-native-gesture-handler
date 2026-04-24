@@ -1,16 +1,16 @@
-import type {
+import {
   GestureEvent,
   HandlerData,
+  SingleGestureName,
   WithSharedValue,
 } from '../../../types';
-import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
   getChangeEventCalculator,
   maybeUnpackValue,
   useClonedAndRemappedConfig,
 } from '../../utils';
-import type {
+import {
   OffsetProps,
   PanExtendedHandlerData,
   PanGesture,

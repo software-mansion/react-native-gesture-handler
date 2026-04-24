@@ -1,10 +1,12 @@
 import React, { useRef } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-
-import type { FeedbackHandle } from '../../../common';
-import { COLORS, commonStyles, Feedback } from '../../../common';
+import {
+  COLORS,
+  commonStyles,
+  Feedback,
+  FeedbackHandle,
+} from '../../../common';
 
 export default function RectButtonBorders() {
   const feedbackRef = useRef<FeedbackHandle>(null);

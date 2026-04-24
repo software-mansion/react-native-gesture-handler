@@ -1,16 +1,15 @@
-import { useHeaderHeight } from '@react-navigation/elements';
 import React, { useState } from 'react';
-import type { ImageStyle, LayoutChangeEvent } from 'react-native';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ImageStyle, LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
+  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 const CHAT_HEADS = [
   { imageUrl: 'https://avatars0.githubusercontent.com/u/379606?v=4&s=460' },

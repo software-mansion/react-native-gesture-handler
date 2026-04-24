@@ -1,17 +1,20 @@
 import React from 'react';
 import {
   Directions,
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  useFlingGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  clamp,
   withTiming,
   useSharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+
+function clamp(val, min, max) {
+  return Math.min(Math.max(val, min), max);
+}
 
 export default function App() {
   const translateX = useSharedValue(0);
@@ -46,23 +49,21 @@ export default function App() {
     };
   }, []);
 
-  const fling = useFlingGesture({
-    direction: Directions.LEFT | Directions.RIGHT,
-    onBegin: (event) => {
+  const fling = Gesture.Fling()
+    .direction(Directions.LEFT | Directions.RIGHT)
+    .onBegin((event) => {
       startTranslateX.value = event.x;
-    },
-    onActivate: (event) => {
-      const directionMultiplier = Math.sign(event.x - startTranslateX.value);
+    })
+    .onStart((event) => {
       translateX.value = withTiming(
         clamp(
-          translateX.value + directionMultiplier * 100,
+          translateX.value + event.x - startTranslateX.value,
           containerWidth.value / -2 + 50,
           containerWidth.value / 2 - 50
         ),
         { duration: 200 }
       );
-    },
-  });
+    });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -72,7 +73,8 @@ export default function App() {
     <GestureHandlerRootView>
       <View ref={containerRef} style={styles.container}>
         <GestureDetector gesture={fling}>
-          <Animated.View style={[styles.box, boxAnimatedStyles]} />
+          <Animated.View
+            style={[styles.box, boxAnimatedStyles]}></Animated.View>
         </GestureDetector>
       </View>
     </GestureHandlerRootView>

@@ -1,5 +1,5 @@
-import type { GestureType } from '../gesture';
-import type { AttachedGestureState } from './types';
+import { GestureType } from '../gesture';
+import { AttachedGestureState } from './types';
 
 // Checks whether the gesture should be reattached to the view, this will happen when:
 // - The number of gestures in the preparedGesture is different than the number of gestures in the gesture

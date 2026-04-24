@@ -1,5 +1,6 @@
 import { PointerType } from '../../PointerType';
 import { State } from '../../State';
+
 import type IGestureHandler from '../handlers/IGestureHandler';
 import PointerTracker from './PointerTracker';
 

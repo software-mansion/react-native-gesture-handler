@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import type { GestureType } from 'react-native-gesture-handler';
+import { View, Text } from 'react-native';
 import {
   Gesture,
   GestureDetector,
+  GestureType,
   HoverEffect,
 } from 'react-native-gesture-handler';
 import Animated, {

@@ -1,17 +1,17 @@
-import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
-import { tagMessage } from '../../utils';
-import type {
+import { useGestureEventHandler } from './callbacks/useGestureEventHandler';
+import {
   AnimatedEvent,
   BaseGestureConfig,
   GestureUpdateEventWithHandlerData,
 } from '../types';
-import { useGestureEventHandler } from './callbacks/useGestureEventHandler';
-import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
 import {
   checkMappingForChangeProperties,
   isNativeAnimatedEvent,
   useMemoizedGestureCallbacks,
 } from './utils';
+import { useReanimatedEventHandler } from './callbacks/useReanimatedEventHandler';
+import { tagMessage } from '../../utils';
+import { Reanimated } from '../../handlers/gestures/reanimatedWrapper';
 
 function guardJSAnimatedEvent(handler: (...args: unknown[]) => void) {
   return (...args: unknown[]) => {

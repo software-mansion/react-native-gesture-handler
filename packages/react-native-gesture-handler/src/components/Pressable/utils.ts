@@ -1,21 +1,20 @@
-import type { Insets } from 'react-native';
-
-import type {
-  GestureStateChangeEvent,
-  GestureTouchEvent,
-  TouchData,
-} from '../../handlers/gestureHandlerCommon';
+import { Insets } from 'react-native';
 import type {
   HoverGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
 } from '../../handlers/GestureHandlerEventPayload';
-import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
-import type { HoverGestureActiveEvent } from '../../v3/hooks';
 import type {
-  InnerPressableEvent,
+  TouchData,
+  GestureStateChangeEvent,
+  GestureTouchEvent,
+} from '../../handlers/gestureHandlerCommon';
+import type {
   PressableDimensions,
+  InnerPressableEvent,
   PressableEvent,
 } from './PressableProps';
+import type { HoverGestureEvent, LongPressGestureEvent } from '../../v3';
+import type { HoverGestureActiveEvent } from '../../v3/hooks';
 
 const numberAsInset = (value: number): Insets => ({
   left: value,
@@ -143,9 +142,9 @@ const gestureTouchToPressableEvent = (
 };
 
 export {
+  numberAsInset,
   addInsets,
+  isTouchWithinInset,
   gestureToPressableEvent,
   gestureTouchToPressableEvent,
-  isTouchWithinInset,
-  numberAsInset,
 };

@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
-import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
-import { State, TapGestureHandler } from 'react-native-gesture-handler';
+
+import {
+  State,
+  TapGestureHandler,
+  TapGestureHandlerStateChangeEvent,
+} from 'react-native-gesture-handler';
 
 interface PressBoxProps {
   setDuration?: (duration: number) => void;

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
-import type { FlingGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import {
-  Directions,
   FlingGestureHandler,
+  Directions,
   State,
+  FlingGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
 import { USE_NATIVE_DRIVER } from '../../../config';

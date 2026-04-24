@@ -1,11 +1,11 @@
 ---
-id: legacy-touchables
-title: Legacy Touchables
-sidebar_label: Legacy Touchables
+id: touchables
+title: Touchables
+sidebar_label: Touchables
 ---
 
 :::warning
-Touchables will be removed in the future version of Gesture Handler. Use [`Touchable`](/docs/components/touchable) instead.
+Touchables will be removed in the future version of Gesture Handler. Use [`Pressable`](/docs/components/pressable) instead.
 :::
 
 Gesture Handler library provides an implementation of RN's touchable components that are based on [native buttons](buttons.mdx) and do not rely on the JS responder system utilized by RN. Our touchable implementation follows the same API and aims to be a drop-in replacement for touchables available in React Native.

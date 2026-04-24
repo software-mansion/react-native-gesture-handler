@@ -1,12 +1,11 @@
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import React, { useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import {
   InterceptingGestureDetector,
   useTapGesture,
   VirtualGestureDetector,
 } from 'react-native-gesture-handler';
-
-import { COLORS, commonStyles, Feedback } from '../../../common';
 
 function Box(props: {
   color: string;
@@ -32,8 +31,8 @@ function OverlapSiblings() {
   const [elevated, setElevated] = React.useState('');
 
   const tapPurple = useTapGesture({
-    onDeactivate: (e) => {
-      if (!e.canceled) {
+    onDeactivate: (_e, success) => {
+      if (success) {
         setElevated('purple');
         feedbackRef.current?.showMessage('Tapped purple');
       }
@@ -42,8 +41,8 @@ function OverlapSiblings() {
   });
 
   const tapBlue = useTapGesture({
-    onDeactivate: (e) => {
-      if (!e.canceled) {
+    onDeactivate: (_e, success) => {
+      if (success) {
         setElevated('blue');
         feedbackRef.current?.showMessage('Tapped blue');
       }
@@ -76,8 +75,8 @@ function OverlapParents() {
   const [elevated, setElevated] = React.useState('');
 
   const tapRed = useTapGesture({
-    onDeactivate: (e) => {
-      if (!e.canceled) {
+    onDeactivate: (_e, success) => {
+      if (success) {
         feedbackRef.current?.showMessage('Tapped purple');
         setElevated('purple');
       }
@@ -86,8 +85,8 @@ function OverlapParents() {
   });
 
   const tapGreen = useTapGesture({
-    onDeactivate: (e) => {
-      if (!e.canceled) {
+    onDeactivate: (_e, success) => {
+      if (success) {
         feedbackRef.current?.showMessage('Tapped blue');
         setElevated('blue');
       }

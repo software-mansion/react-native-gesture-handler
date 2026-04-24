@@ -1,3 +1,4 @@
+import { COLORS } from '../../../common';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -5,8 +6,6 @@ import {
   MouseButton,
   usePanGesture,
 } from 'react-native-gesture-handler';
-
-import { COLORS } from '../../../common';
 
 export default function ContextMenuExample() {
   const p1 = usePanGesture({ mouseButton: MouseButton.RIGHT });

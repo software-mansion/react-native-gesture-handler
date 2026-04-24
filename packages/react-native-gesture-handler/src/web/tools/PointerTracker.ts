@@ -1,4 +1,4 @@
-import type { AdaptedEvent, Point } from '../interfaces';
+import { AdaptedEvent, Point } from '../interfaces';
 import VelocityTracker from './VelocityTracker';
 
 export interface TrackerElement {

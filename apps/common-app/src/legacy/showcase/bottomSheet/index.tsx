@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
-import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { Animated, Dimensions, StyleSheet, View } from 'react-native';
-import type {
-  PanGestureHandlerGestureEvent,
-  PanGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
 import {
-  NativeViewGestureHandler,
+  Animated,
+  StyleSheet,
+  View,
+  Dimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from 'react-native';
+import {
   PanGestureHandler,
+  NativeViewGestureHandler,
   State,
   TapGestureHandler,
+  PanGestureHandlerStateChangeEvent,
+  PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../../../common';
@@ -126,10 +130,10 @@ export class BottomSheet extends Component<
         maxDurationMs={100000}
         ref={this.masterdrawer}
         maxDeltaY={this.state.lastSnap - SNAP_POINTS_FROM_TOP[0]}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
           <Animated.View
             style={[
-              StyleSheet.absoluteFill,
+              StyleSheet.absoluteFillObject,
               {
                 transform: [{ translateY: this.translateY }],
               },

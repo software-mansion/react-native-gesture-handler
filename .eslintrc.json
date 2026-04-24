@@ -16,7 +16,7 @@
     "project": ["./tsconfig.json"]
   },
   "env": { "browser": true, "node": true, "jest/globals": true },
-  "plugins": ["react", "jest", "simple-import-sort"],
+  "plugins": ["react", "jest"],
   "ignorePatterns": [
     "packages/react-native-gesture-handler/lib/**/*",
     "**/*.config.js",
@@ -43,8 +43,6 @@
     "@typescript-eslint/no-unsafe-return": "warn",
     "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/ban-types": "warn",
-    "@typescript-eslint/consistent-type-imports": "error",
-    "@typescript-eslint/consistent-type-exports": "error",
 
     // common
     "@typescript-eslint/explicit-module-boundary-types": "off",
@@ -87,8 +85,6 @@
     ],
     "curly": "error",
     "spaced-comment": "error",
-    "no-alert": "warn",
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error"
+    "no-alert": "warn"
   }
 }

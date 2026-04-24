@@ -1,27 +1,27 @@
-import type { ForwardedRef } from 'react';
-import { useCallback, useImperativeHandle, useMemo } from 'react';
-import type { LayoutChangeEvent } from 'react-native';
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { useMemo, useCallback, useImperativeHandle, ForwardedRef } from 'react';
+import { LayoutChangeEvent, View, I18nManager, StyleSheet } from 'react-native';
 import Animated, {
-  interpolate,
-  measure,
-  ReduceMotion,
-  runOnJS,
-  runOnUI,
-  useAnimatedRef,
-  useAnimatedStyle,
   useSharedValue,
+  interpolate,
+  runOnJS,
+  ReduceMotion,
   withSpring,
+  useAnimatedRef,
+  measure,
+  runOnUI,
+  useAnimatedStyle,
 } from 'react-native-reanimated';
-
-import { GestureDetector } from '../../v3/detectors';
-import type { PanGestureActiveEvent } from '../../v3/hooks/gestures';
-import { usePanGesture, useTapGesture } from '../../v3/hooks/gestures';
-import type {
-  SwipeableMethods,
+import {
   SwipeableProps,
+  SwipeableMethods,
+  SwipeDirection,
 } from './ReanimatedSwipeableProps';
-import { SwipeDirection } from './ReanimatedSwipeableProps';
+import {
+  PanGestureActiveEvent,
+  usePanGesture,
+  useTapGesture,
+} from '../../v3/hooks/gestures';
+import { GestureDetector } from '../../v3/detectors';
 
 const DRAG_TOSS = 0.05;
 
@@ -552,12 +552,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   leftActions: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     overflow: 'hidden',
   },
   rightActions: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
     overflow: 'hidden',
   },

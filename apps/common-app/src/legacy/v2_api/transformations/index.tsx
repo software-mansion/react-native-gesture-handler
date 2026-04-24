@@ -1,11 +1,12 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { StyleSheet, View, Image } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
+// @ts-ignore it's an image
 import SIGNET from '../../../ListWithHeader/signet.png';
 
 function Photo() {

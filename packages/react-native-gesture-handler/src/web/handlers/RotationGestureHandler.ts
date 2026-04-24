@@ -1,12 +1,14 @@
-import type { ActionType } from '../../ActionType';
 import { State } from '../../State';
-import { SingleGestureName } from '../../v3/types';
-import type { RotationGestureListener } from '../detectors/RotationGestureDetector';
-import RotationGestureDetector from '../detectors/RotationGestureDetector';
-import type { AdaptedEvent, PropsRef } from '../interfaces';
-import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import { AdaptedEvent, PropsRef } from '../interfaces';
+
 import GestureHandler from './GestureHandler';
-import type IGestureHandler from './IGestureHandler';
+import RotationGestureDetector, {
+  RotationGestureListener,
+} from '../detectors/RotationGestureDetector';
+import { ActionType } from '../../ActionType';
+import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import IGestureHandler from './IGestureHandler';
+import { SingleGestureName } from '../../v3/types';
 
 const ROTATION_RECOGNITION_THRESHOLD = Math.PI / 36;
 
@@ -39,11 +41,7 @@ export default class RotationGestureHandler extends GestureHandler {
       return true;
     },
     onRotationEnd: (_detector: RotationGestureDetector): void => {
-      if (this.state === State.ACTIVE) {
-        this.end();
-      } else {
-        this.fail();
-      }
+      this.end();
     },
   };
 
@@ -68,25 +66,24 @@ export default class RotationGestureHandler extends GestureHandler {
   }
 
   protected override transformNativeEvent() {
-    const anchor = this.getAnchor();
-
     return {
       rotation: this.rotation ? this.rotation : 0,
-      anchorX: anchor.x,
-      anchorY: anchor.y,
+      anchorX: this.getAnchorX(),
+      anchorY: this.getAnchorY(),
       velocity: this.velocity ? this.velocity : 0,
     };
   }
 
-  private getAnchor(): { x: number; y: number } {
-    const absX = this.rotationGestureDetector.anchorX;
-    const absY = this.rotationGestureDetector.anchorY;
+  public getAnchorX(): number {
+    const anchorX = this.rotationGestureDetector.anchorX;
 
-    if (Number.isFinite(absX) && Number.isFinite(absY)) {
-      return this.delegate.absoluteToLocal(absX, absY);
-    }
+    return anchorX ? anchorX : this.cachedAnchorX;
+  }
 
-    return { x: this.cachedAnchorX, y: this.cachedAnchorY };
+  public getAnchorY(): number {
+    const anchorY = this.rotationGestureDetector.anchorY;
+
+    return anchorY ? anchorY : this.cachedAnchorY;
   }
 
   protected override onPointerDown(event: AdaptedEvent): void {
@@ -107,9 +104,12 @@ export default class RotationGestureHandler extends GestureHandler {
       return;
     }
 
-    const anchor = this.getAnchor();
-    this.cachedAnchorX = anchor.x;
-    this.cachedAnchorY = anchor.y;
+    if (this.getAnchorX()) {
+      this.cachedAnchorX = this.getAnchorX();
+    }
+    if (this.getAnchorY()) {
+      this.cachedAnchorY = this.getAnchorY();
+    }
 
     this.tracker.track(event);
 
@@ -123,9 +123,12 @@ export default class RotationGestureHandler extends GestureHandler {
       return;
     }
 
-    const anchor = this.getAnchor();
-    this.cachedAnchorX = anchor.x;
-    this.cachedAnchorY = anchor.y;
+    if (this.getAnchorX()) {
+      this.cachedAnchorX = this.getAnchorX();
+    }
+    if (this.getAnchorY()) {
+      this.cachedAnchorY = this.getAnchorY();
+    }
 
     this.tracker.track(event);
 
@@ -138,6 +141,16 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
+
+    if (this.state !== State.ACTIVE) {
+      return;
+    }
+
+    if (this.state === State.ACTIVE) {
+      this.end();
+    } else {
+      this.fail();
+    }
   }
 
   protected override onPointerRemove(event: AdaptedEvent): void {

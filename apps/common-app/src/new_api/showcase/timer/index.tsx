@@ -1,22 +1,25 @@
 import React, { useRef } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, View, Text, TextInput } from 'react-native';
 import {
+  useLongPressGesture,
   GestureDetector,
   GestureHandlerRootView,
-  useLongPressGesture,
 } from 'react-native-gesture-handler';
 import Animated, {
-  cancelAnimation,
-  Easing,
-  interpolateColor,
-  useAnimatedProps,
-  useAnimatedStyle,
   useSharedValue,
   withTiming,
+  cancelAnimation,
+  Easing,
+  useAnimatedProps,
+  useAnimatedStyle,
+  interpolateColor,
 } from 'react-native-reanimated';
-
-import type { FeedbackHandle } from '../../../common';
-import { COLORS, commonStyles, Feedback } from '../../../common';
+import {
+  Feedback,
+  FeedbackHandle,
+  COLORS,
+  commonStyles,
+} from '../../../common';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 

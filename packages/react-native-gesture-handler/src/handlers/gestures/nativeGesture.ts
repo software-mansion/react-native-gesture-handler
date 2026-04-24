@@ -1,11 +1,7 @@
+import { BaseGestureConfig, BaseGesture } from './gesture';
+import { NativeViewGestureConfig } from '../NativeViewGestureHandler';
 import type { NativeViewGestureHandlerPayload } from '../GestureHandlerEventPayload';
-import type { NativeViewGestureConfig } from '../NativeViewGestureHandler';
-import type { BaseGestureConfig } from './gesture';
-import { BaseGesture } from './gesture';
 
-/**
- * @deprecated `NativeGesture` is deprecated and will be removed in the future. Please use `useNativeGesture` instead.
- */
 export class NativeGesture extends BaseGesture<NativeViewGestureHandlerPayload> {
   public override config: BaseGestureConfig & NativeViewGestureConfig = {};
 
@@ -34,7 +30,4 @@ export class NativeGesture extends BaseGesture<NativeViewGestureHandlerPayload> 
   }
 }
 
-/**
- * @deprecated `NativeGestureType` is deprecated and will be removed in the future. Please use `NativeGesture` instead.
- */
 export type NativeGestureType = InstanceType<typeof NativeGesture>;

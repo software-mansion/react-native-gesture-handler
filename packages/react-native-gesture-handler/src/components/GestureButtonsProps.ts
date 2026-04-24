@@ -1,12 +1,11 @@
-import type * as React from 'react';
-import type {
+import * as React from 'react';
+import {
   AccessibilityProps,
   ColorValue,
   LayoutChangeEvent,
   StyleProp,
   ViewStyle,
 } from 'react-native';
-
 import type { NativeViewGestureHandlerProps } from '../handlers/NativeViewGestureHandler';
 
 /**
@@ -95,7 +94,7 @@ export interface LegacyRawButtonProps
   testOnly_onLongPress?: Function | null | undefined;
 }
 interface ButtonWithRefProps {
-  innerRef?: React.Ref<React.ComponentType<any>> | undefined;
+  innerRef?: React.ForwardedRef<React.ComponentType<any>> | undefined;
 }
 
 /**

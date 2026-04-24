@@ -1,8 +1,8 @@
 import React from 'react';
 import {
+  Gesture,
   GestureDetector,
   GestureHandlerRootView,
-  usePanGesture,
 } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -48,9 +48,9 @@ export default function App() {
     };
   }, []);
 
-  const pan = usePanGesture({
-    minDistance: 1,
-    onBegin: (event) => {
+  const pan = Gesture.Pan()
+    .minDistance(1)
+    .onBegin((event) => {
       startAngle.value =
         angle.value -
         Math.atan2(
@@ -64,8 +64,8 @@ export default function App() {
       pointerPositionY.value = event.absoluteY - centerY.value - 12;
       negativePointerPositionX.value = centerX.value - event.absoluteX - 12;
       negativePointerPositionY.value = centerY.value - event.absoluteY - 12;
-    },
-    onUpdate: (event) => {
+    })
+    .onUpdate((event) => {
       angle.value =
         startAngle.value +
         Math.atan2(
@@ -76,22 +76,23 @@ export default function App() {
       pointerPositionY.value = event.absoluteY - centerY.value - 12;
       negativePointerPositionX.value = centerX.value - event.absoluteX - 12;
       negativePointerPositionY.value = centerY.value - event.absoluteY - 12;
-    },
-    onFinalize: () => {
+    })
+    .onFinalize(() => {
       touchOpacity.value = withTiming(0, { duration: 200 });
       grabbing.value = false;
-    },
-  });
+    });
 
   const boxAnimatedStyles = useAnimatedStyle(() => ({
     transform: [{ rotate: `${angle.value}rad` }],
-    cursor: grabbing.value ? 'none' : 'grab',
+    cursor: grabbing.value ? 'grabbing' : 'grab',
   }));
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={pan}>
-        <Animated.View ref={boxRef} style={[styles.box, boxAnimatedStyles]} />
+        <Animated.View
+          ref={boxRef}
+          style={[styles.box, boxAnimatedStyles]}></Animated.View>
       </GestureDetector>
       <Animated.View
         style={[
@@ -103,8 +104,7 @@ export default function App() {
             ],
             opacity: touchOpacity,
           },
-        ]}
-      />
+        ]}></Animated.View>
       <Animated.View
         style={[
           styles.dot,
@@ -115,8 +115,7 @@ export default function App() {
             ],
             opacity: touchOpacity,
           },
-        ]}
-      />
+        ]}></Animated.View>
     </GestureHandlerRootView>
   );
 }

@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type {
-  LongPressGestureHandlerStateChangeEvent,
-  TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
+import { StyleSheet, View, Text } from 'react-native';
+
 import {
   LongPressGestureHandler,
   ScrollView,
   State,
   TapGestureHandler,
+  LongPressGestureHandlerStateChangeEvent,
+  TapGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
 import { LoremIpsum } from '../../../common';

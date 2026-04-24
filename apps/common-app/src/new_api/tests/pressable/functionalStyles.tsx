@@ -1,9 +1,7 @@
 import React from 'react';
-import type { PressableStateCallbackType } from 'react-native';
-import { View } from 'react-native';
-
-import { COLORS, commonStyles } from '../../../common';
+import { PressableStateCallbackType, View } from 'react-native';
 import TestingBase from './testingBase';
+import { COLORS, commonStyles } from '../../../common';
 
 export function FunctionalStyleExample() {
   const functionalStyle = (state: PressableStateCallbackType) => {

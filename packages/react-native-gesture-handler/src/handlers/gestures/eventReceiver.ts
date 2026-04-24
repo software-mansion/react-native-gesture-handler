@@ -1,17 +1,17 @@
-import type { EmitterSubscription } from 'react-native';
-import { DeviceEventEmitter } from 'react-native';
-
+import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { State } from '../../State';
 import { TouchEventType } from '../../TouchEventType';
-import type {
-  GestureStateChangeEvent,
+import {
   GestureTouchEvent,
   GestureUpdateEvent,
+  GestureStateChangeEvent,
 } from '../gestureHandlerCommon';
 import { findHandler, findOldGestureHandler } from '../handlersRegistry';
-import type { BaseGesture } from './gesture';
-import type { GestureStateManagerType } from './gestureStateManager';
-import { GestureStateManager } from './gestureStateManager';
+import { BaseGesture } from './gesture';
+import {
+  GestureStateManager,
+  GestureStateManagerType,
+} from './gestureStateManager';
 
 let gestureHandlerEventSubscription: EmitterSubscription | null = null;
 let gestureHandlerStateChangeEventSubscription: EmitterSubscription | null =

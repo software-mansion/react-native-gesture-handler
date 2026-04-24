@@ -1,12 +1,9 @@
-import type {
-  TouchAction,
-  UserSelect,
-} from '../../handlers/gestureHandlerCommon';
-import type {
+import {
   AnimatedEvent,
-  GestureHandlerEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
+  GestureHandlerEventWithHandlerData,
 } from './EventTypes';
+import { TouchAction, UserSelect } from '../../handlers/gestureHandlerCommon';
 
 export type DetectorCallbacks<
   THandlerData,

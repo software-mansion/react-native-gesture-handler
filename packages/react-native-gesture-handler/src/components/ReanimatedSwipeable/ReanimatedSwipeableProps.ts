@@ -1,9 +1,8 @@
-import type React from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
-import type { SharedValue } from 'react-native-reanimated';
-
-import type { HitSlop } from '../../handlers/gestureHandlerCommon';
-import type { AnyGesture } from '../../v3/types';
+import React from 'react';
+import { SharedValue } from 'react-native-reanimated';
+import { StyleProp, ViewStyle } from 'react-native';
+import { HitSlop } from '../../handlers/gestureHandlerCommon';
+import { AnyGesture } from '../../v3/types';
 
 export enum SwipeDirection {
   LEFT = 'left',
@@ -14,7 +13,7 @@ export interface SwipeableProps {
   /**
    *
    */
-  ref?: React.Ref<SwipeableMethods>;
+  ref?: React.RefObject<SwipeableMethods | null>;
 
   /**
    * Sets a `testID` property, allowing for querying `ReanimatedSwipeable` for it in tests.

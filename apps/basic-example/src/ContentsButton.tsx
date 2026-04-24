@@ -1,9 +1,9 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
 import {
   GestureHandlerRootView,
-  RectButton,
   ScrollView,
+  RectButton,
 } from 'react-native-gesture-handler';
 
 export default function ComplexUI() {

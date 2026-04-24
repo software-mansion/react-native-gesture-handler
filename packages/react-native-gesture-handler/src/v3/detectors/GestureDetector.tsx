@@ -1,9 +1,11 @@
+import { NativeDetectorProps } from './common';
 import { BaseGesture } from '../../handlers/gestures/gesture';
-import { ComposedGesture } from '../../handlers/gestures/gestureComposition';
-import type { GestureDetectorProps as LegacyGestureDetectorProps } from '../../handlers/gestures/GestureDetector';
-import { GestureDetector as LegacyGestureDetector } from '../../handlers/gestures/GestureDetector';
-import type { NativeDetectorProps } from './common';
 import { NativeDetector } from './NativeDetector';
+import { ComposedGesture } from '../../handlers/gestures/gestureComposition';
+import {
+  GestureDetectorProps as LegacyGestureDetectorProps,
+  GestureDetector as LegacyGestureDetector,
+} from '../../handlers/gestures/GestureDetector';
 import { useEnsureGestureHandlerRootView } from './useEnsureGestureHandlerRootView';
 
 export function GestureDetector<

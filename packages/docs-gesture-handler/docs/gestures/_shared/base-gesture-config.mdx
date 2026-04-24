@@ -1,4 +1,6 @@
+import CollapsibleCode from '@site/src/components/CollapsibleCode';
 
+import HeaderWithBadges from '@site/src/components/HeaderWithBadges';
 
 ### enabled
 
@@ -67,9 +69,9 @@ testID: string;
 
 Sets a `testID` property for gesture object, allowing for querying for it in tests.
 
-<Badges platforms={['ios']}>
+<HeaderWithBadges platforms={['iOS']}>
 ### cancelsTouchesInView
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 cancelsTouchesInView: boolean | SharedValue<boolean>;
@@ -137,9 +139,9 @@ useAnimated: boolean;
 
 Setting this property to `true` ensures that the [Animated API](/docs/fundamentals/animated-interactions) functions correctly when `useNativeDriver` is set to `false`. The default value is set to `false`.
 
-<Badges platforms={['web']}>
+<HeaderWithBadges platforms={['web']}>
 ### activeCursor
-</Badges>
+</HeaderWithBadges>
 
 ```ts
 activeCursor: ActiveCursor | SharedValue<ActiveCursor>;

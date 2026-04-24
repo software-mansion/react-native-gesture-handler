@@ -1,7 +1,9 @@
-import createHandler from './createHandler';
-import type { BaseGestureHandlerProps } from './gestureHandlerCommon';
-import { baseGestureHandlerProps } from './gestureHandlerCommon';
 import type { NativeViewGestureHandlerPayload } from './GestureHandlerEventPayload';
+import createHandler from './createHandler';
+import {
+  BaseGestureHandlerProps,
+  baseGestureHandlerProps,
+} from './gestureHandlerCommon';
 
 export const nativeViewGestureHandlerProps = [
   'shouldActivateOnStart',

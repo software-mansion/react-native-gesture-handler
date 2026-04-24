@@ -1,13 +1,19 @@
-import type { RefObject } from 'react';
 import React, {
+  RefObject,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
-import type { Platform, StyleProp, ViewStyle } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  ViewStyle,
+  StyleProp,
+  View,
+  Platform,
+} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,

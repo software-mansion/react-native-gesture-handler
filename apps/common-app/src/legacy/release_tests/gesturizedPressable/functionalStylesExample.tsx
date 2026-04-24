@@ -1,7 +1,5 @@
 import React from 'react';
-import type { PressableStateCallbackType } from 'react-native';
-import { StyleSheet, View } from 'react-native';
-
+import { PressableStateCallbackType, StyleSheet, View } from 'react-native';
 import TestingBase from './testingBase';
 
 export function FunctionalStyleExample() {

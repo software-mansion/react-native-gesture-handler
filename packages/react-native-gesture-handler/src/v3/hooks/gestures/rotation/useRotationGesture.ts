@@ -1,11 +1,10 @@
-import type { GestureEvent, HandlerData } from '../../../types';
-import { SingleGestureName } from '../../../types';
+import { GestureEvent, HandlerData, SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import {
-  getChangeEventCalculator,
   useClonedAndRemappedConfig,
+  getChangeEventCalculator,
 } from '../../utils';
-import type {
+import {
   RotationExtendedHandlerData,
   RotationGesture,
   RotationGestureConfig,

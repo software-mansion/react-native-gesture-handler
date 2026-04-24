@@ -1,27 +1,27 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { ParamListBase } from '@react-navigation/native';
-import { NavigationContainer } from '@react-navigation/native';
-import type {
+import { useEffect, useState } from 'react';
+import { Text, View, StyleSheet, Platform, Dimensions } from 'react-native';
+import {
+  createStackNavigator,
   StackNavigationProp,
   StackScreenProps,
 } from '@react-navigation/stack';
-import { createStackNavigator } from '@react-navigation/stack';
-import { Icon } from '@swmansion/icons';
-import { useEffect, useState } from 'react';
-import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer, ParamListBase } from '@react-navigation/native';
 import {
   GestureHandlerRootView,
   RectButton,
   Switch,
 } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { COLORS } from './src/common';
+
+import { Icon } from '@swmansion/icons';
+
 import { OLD_EXAMPLES } from './src/legacy';
+import { NEW_EXAMPLES } from './src/new_api';
 import { TouchableExample } from './src/legacy/release_tests/touchables';
 import { ListWithHeader } from './src/ListWithHeader';
-import { NEW_EXAMPLES } from './src/new_api';
-
 const OPEN_LAST_EXAMPLE_KEY = 'openLastExample';
 const SHOW_LEGACY_EXAMPLES_KEY = 'showLegacyExamples';
 const LAST_EXAMPLE_KEY = 'lastExample';

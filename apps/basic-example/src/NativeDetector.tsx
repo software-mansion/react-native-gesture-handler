@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Animated, Button, useAnimatedValue } from 'react-native';
 import {
-  GestureDetector,
   GestureHandlerRootView,
+  GestureDetector,
   usePanGesture,
 } from 'react-native-gesture-handler';
 

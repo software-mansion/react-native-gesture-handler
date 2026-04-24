@@ -10,8 +10,7 @@ import {
   prepareRelations,
 } from '../hooks/utils/relationUtils';
 import { NativeProxy } from '../NativeProxy';
-import type { Gesture } from '../types';
-import { ComposedGestureName } from '../types';
+import { ComposedGestureName, Gesture } from '../types';
 
 // The tree consists of ComposedGestures and NativeGestures. NativeGestures are always leaf nodes.
 export const traverseAndConfigureRelations = (

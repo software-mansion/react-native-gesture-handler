@@ -1,10 +1,10 @@
-import type { ColorValue, ViewProps } from 'react-native';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {
-  Float,
   Int32,
   WithDefault,
+  Float,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type { ViewProps, ColorValue } from 'react-native';
 
 // @ts-ignore - Redefining pointerEvents with WithDefault for codegen, conflicts with ViewProps type but codegen needs it
 interface NativeProps extends ViewProps {

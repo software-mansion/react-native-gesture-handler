@@ -6,10 +6,10 @@ import {
   GestureDetector,
 } from 'react-native-gesture-handler';
 import Animated, {
-  Easing,
-  useAnimatedStyle,
   useSharedValue,
+  useAnimatedStyle,
   withTiming,
+  Easing,
 } from 'react-native-reanimated';
 
 export default function Example() {

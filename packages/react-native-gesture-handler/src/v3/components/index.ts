@@ -1,23 +1,27 @@
+export type {
+  RawButtonProps,
+  BaseButtonProps,
+  RectButtonProps,
+  BorderlessButtonProps,
+} from './GestureButtonsProps';
+
 export {
+  RawButton,
   BaseButton,
+  RectButton,
   BorderlessButton,
   PureNativeButton,
-  RawButton,
-  RectButton,
 } from './GestureButtons';
-export type {
-  BaseButtonProps,
-  BorderlessButtonProps,
-  RawButtonProps,
-  RectButtonProps,
-} from './GestureButtonsProps';
+
 export {
-  FlatList,
-  RefreshControl,
   ScrollView,
   Switch,
   TextInput,
+  FlatList,
+  RefreshControl,
 } from './GestureComponents';
+
 export { default as Pressable } from './Pressable';
-export { Touchable } from './Touchable/Touchable';
-export type { TouchableProps } from './Touchable/TouchableProps';
+
+export { Clickable } from './Clickable/Clickable';
+export type { ClickableProps } from './Clickable/ClickableProps';

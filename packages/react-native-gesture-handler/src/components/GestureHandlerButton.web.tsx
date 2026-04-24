@@ -1,6 +1,5 @@
 import * as React from 'react';
-import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
-import { View } from 'react-native';
+import { ColorValue, View, ViewProps } from 'react-native';
 
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
@@ -55,13 +54,8 @@ export const ButtonComponent = ({
     };
   }, []);
 
-  const pressIn = React.useCallback(
-    (event: NativeSyntheticEvent<unknown>) => {
-      if (!enabled) {
-        return;
-      }
-
-      event.stopPropagation();
+  const pressIn = React.useCallback(() => {
+    if (enabled) {
       if (pressOutTimer.current != null) {
         clearTimeout(pressOutTimer.current);
         pressOutTimer.current = null;
@@ -69,46 +63,33 @@ export const ButtonComponent = ({
       pressInTimestamp.current = performance.now();
       setCurrentDuration(pressAndHoldAnimationDuration);
       setPressed(true);
-    },
-    [enabled, pressAndHoldAnimationDuration]
-  );
+    }
+  }, [enabled, pressAndHoldAnimationDuration]);
 
-  const pressOut = React.useCallback(
-    (event: NativeSyntheticEvent<unknown>) => {
-      // Only release if a press-in was actually recorded — guards against
-      // stray pointer events and lets us complete the release cycle even if
-      // `enabled` flipped to false between press-in and press-out.
-      if (pressInTimestamp.current === 0) {
-        return;
-      }
+  const pressOut = React.useCallback(() => {
+    if (pressOutTimer.current != null) {
+      clearTimeout(pressOutTimer.current);
+      pressOutTimer.current = null;
+    }
+    const elapsed = performance.now() - pressInTimestamp.current;
 
-      event.stopPropagation();
-      if (pressOutTimer.current != null) {
-        clearTimeout(pressOutTimer.current);
+    if (elapsed >= pressAndHoldAnimationDuration) {
+      setCurrentDuration(pressAndHoldAnimationDuration);
+      setPressed(false);
+      // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
+    } else if (elapsed * 2 >= tapAnimationDuration) {
+      setCurrentDuration(elapsed);
+      setPressed(false);
+    } else {
+      // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time
+      const remaining = tapAnimationDuration - elapsed;
+      pressOutTimer.current = setTimeout(() => {
         pressOutTimer.current = null;
-      }
-      const elapsed = performance.now() - pressInTimestamp.current;
-      pressInTimestamp.current = 0;
-
-      if (elapsed >= pressAndHoldAnimationDuration) {
-        setCurrentDuration(pressAndHoldAnimationDuration);
+        setCurrentDuration(tapAnimationDuration);
         setPressed(false);
-        // elapsed * 2 to ensure there is at least half of the tapAnimationDuration left for the animation to play
-      } else if (elapsed * 2 >= tapAnimationDuration) {
-        setCurrentDuration(elapsed);
-        setPressed(false);
-      } else {
-        // Let the in-progress CSS press-in transition continue; schedule press-out after remaining time
-        const remaining = tapAnimationDuration - elapsed;
-        pressOutTimer.current = setTimeout(() => {
-          pressOutTimer.current = null;
-          setCurrentDuration(tapAnimationDuration);
-          setPressed(false);
-        }, remaining);
-      }
-    },
-    [pressAndHoldAnimationDuration, tapAnimationDuration]
-  );
+      }, remaining);
+    }
+  }, [pressAndHoldAnimationDuration, tapAnimationDuration]);
 
   const currentUnderlayOpacity = pressed
     ? activeUnderlayOpacity

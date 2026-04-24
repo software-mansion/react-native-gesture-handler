@@ -5,36 +5,38 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import type {
+import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
+import { GestureDetector } from '../../handlers/gestures/GestureDetector';
+import {
+  PressableEvent,
+  PressableDimensions,
+  LegacyPressableProps,
+} from './PressableProps';
+import {
   Insets,
   LayoutChangeEvent,
+  Platform,
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import { Platform } from 'react-native';
-
-import { GestureDetector } from '../../handlers/gestures/GestureDetector';
-import { GestureObjects as Gesture } from '../../handlers/gestures/gestureObjects';
-import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
-import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
-import { INT32_MAX, isTestEnv } from '../../utils';
 import { ButtonComponent as NativeButton } from '../GestureHandlerButton';
-import type { RelationPropName, RelationPropType } from '../utils';
-import { applyRelationProp } from '../utils';
-import type {
-  LegacyPressableProps,
-  PressableDimensions,
-  PressableEvent,
-} from './PressableProps';
-import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
-import { PressableStateMachine } from './StateMachine';
 import {
-  addInsets,
   gestureToPressableEvent,
+  addInsets,
+  numberAsInset,
   gestureTouchToPressableEvent,
   isTouchWithinInset,
-  numberAsInset,
 } from './utils';
+import { PressabilityDebugView } from '../../handlers/PressabilityDebugView';
+import { INT32_MAX, isTestEnv } from '../../utils';
+import {
+  applyRelationProp,
+  RelationPropName,
+  RelationPropType,
+} from '../utils';
+import { getStatesConfig, StateMachineEvent } from './stateDefinitions';
+import { PressableStateMachine } from './StateMachine';
+import { useIsScreenReaderEnabled } from '../../useIsScreenReaderEnabled';
 
 const DEFAULT_LONG_PRESS_DURATION = 500;
 const IS_TEST_ENV = isTestEnv();

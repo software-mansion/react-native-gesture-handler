@@ -3,7 +3,7 @@ id: introduction
 title: Introduction
 sidebar_label: Introduction
 sidebar_position: 1
-slug: /fundamentals/introduction
+slug: /
 ---
 
 Gesture Handler provides a declarative API exposing the native platform's touch and gesture system to React Native. It's designed to be a replacement of React Native's built in touch system called [Gesture Responder System](http://reactnative.dev/docs/gesture-responder-system). Using native touch handling allows addressing the performance limitations of React Native's Gesture Responder System. It also provides more control over the platform's native components that can handle gestures on their own. If you want to learn more, we recommend [this talk](https://www.youtube.com/watch?v=V8maYc4R2G0) by [Krzysztof Magiera](https://twitter.com/kzzzf) in which he explains issues with the responder system.

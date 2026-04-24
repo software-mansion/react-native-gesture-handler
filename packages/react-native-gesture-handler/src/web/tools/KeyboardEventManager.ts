@@ -1,7 +1,6 @@
-import { PointerType } from '../../PointerType';
-import type { AdaptedEvent } from '../interfaces';
-import { EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 import EventManager from './EventManager';
+import { PointerType } from '../../PointerType';
 
 export default class KeyboardEventManager extends EventManager<HTMLElement> {
   private static activationKeys = ['Enter', ' '];

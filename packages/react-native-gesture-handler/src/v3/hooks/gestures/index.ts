@@ -1,127 +1,127 @@
 import type {
-  FlingGesture,
-  FlingGestureActiveEvent,
-  FlingGestureConfig,
   FlingGestureEvent,
+  FlingGestureActiveEvent,
+  FlingGesture,
+  FlingGestureConfig,
 } from './fling/FlingTypes';
 import type {
+  HoverGestureEvent,
   HoverGesture,
   HoverGestureActiveEvent,
   HoverGestureConfig,
-  HoverGestureEvent,
 } from './hover/HoverTypes';
 import type {
-  LongPressGesture,
-  LongPressGestureActiveEvent,
-  LongPressGestureConfig,
   LongPressGestureEvent,
+  LongPressGestureActiveEvent,
+  LongPressGesture,
+  LongPressGestureConfig,
 } from './longPress/LongPressTypes';
 import type {
-  ManualGesture,
-  ManualGestureActiveEvent,
-  ManualGestureConfig,
   ManualGestureEvent,
+  ManualGestureActiveEvent,
+  ManualGesture,
+  ManualGestureConfig,
 } from './manual/ManualTypes';
 import type {
-  NativeGesture,
-  NativeGestureActiveEvent,
-  NativeGestureConfig,
   NativeGestureEvent,
+  NativeGestureActiveEvent,
+  NativeGesture,
+  NativeGestureConfig,
 } from './native/NativeTypes';
 import type {
+  PanGestureEvent,
   PanGesture,
   PanGestureActiveEvent,
   PanGestureConfig,
-  PanGestureEvent,
 } from './pan/PanTypes';
 import type {
+  PinchGestureEvent,
   PinchGesture,
   PinchGestureActiveEvent,
   PinchGestureConfig,
-  PinchGestureEvent,
 } from './pinch/PinchTypes';
 import type {
-  RotationGesture,
-  RotationGestureActiveEvent,
-  RotationGestureConfig,
   RotationGestureEvent,
+  RotationGestureActiveEvent,
+  RotationGesture,
+  RotationGestureConfig,
 } from './rotation/RotationTypes';
 import type {
+  TapGestureEvent,
   TapGesture,
   TapGestureActiveEvent,
   TapGestureConfig,
-  TapGestureEvent,
 } from './tap/TapTypes';
 
 export type {
   TapGesture,
+  TapGestureEvent,
   TapGestureActiveEvent,
   TapGestureConfig,
-  TapGestureEvent,
 };
 export { useTapGesture } from './tap/useTapGesture';
 
 export type {
   FlingGesture,
-  FlingGestureActiveEvent,
   FlingGestureConfig,
   FlingGestureEvent,
+  FlingGestureActiveEvent,
 };
 export { useFlingGesture } from './fling/useFlingGesture';
 
 export type {
   LongPressGesture,
-  LongPressGestureActiveEvent,
-  LongPressGestureConfig,
   LongPressGestureEvent,
+  LongPressGestureConfig,
+  LongPressGestureActiveEvent,
 };
 export { useLongPressGesture } from './longPress/useLongPressGesture';
 
 export type {
   PinchGesture,
+  PinchGestureEvent,
   PinchGestureActiveEvent,
   PinchGestureConfig,
-  PinchGestureEvent,
 };
 export { usePinchGesture } from './pinch/usePinchGesture';
 
 export type {
   RotationGesture,
+  RotationGestureEvent,
   RotationGestureActiveEvent,
   RotationGestureConfig,
-  RotationGestureEvent,
 };
 export { useRotationGesture } from './rotation/useRotationGesture';
 
 export type {
   HoverGesture,
-  HoverGestureActiveEvent,
-  HoverGestureConfig,
   HoverGestureEvent,
+  HoverGestureConfig,
+  HoverGestureActiveEvent,
 };
 export { useHoverGesture } from './hover/useHoverGesture';
 
 export type {
   ManualGesture,
-  ManualGestureActiveEvent,
-  ManualGestureConfig,
   ManualGestureEvent,
+  ManualGestureConfig,
+  ManualGestureActiveEvent,
 };
 export { useManualGesture } from './manual/useManualGesture';
 
 export type {
   NativeGesture,
+  NativeGestureEvent,
   NativeGestureActiveEvent,
   NativeGestureConfig,
-  NativeGestureEvent,
 };
 export { useNativeGesture } from './native/useNativeGesture';
 
 export type {
   PanGesture,
-  PanGestureActiveEvent,
-  PanGestureConfig,
   PanGestureEvent,
+  PanGestureConfig,
+  PanGestureActiveEvent,
 };
 export { usePanGesture } from './pan/usePanGesture';
 

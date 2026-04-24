@@ -1,4 +1,4 @@
-import type { BaseGesture, GestureRef } from '../handlers/gestures/gesture';
+import { BaseGesture, GestureRef } from '../handlers/gestures/gesture';
 
 export type RelationPropName =
   | 'simultaneousWithExternalGesture'

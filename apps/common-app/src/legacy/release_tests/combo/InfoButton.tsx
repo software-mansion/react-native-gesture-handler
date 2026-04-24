@@ -1,7 +1,8 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { BorderlessButtonProps } from 'react-native-gesture-handler';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import React, { View, Text, StyleSheet } from 'react-native';
+import {
+  BorderlessButton,
+  BorderlessButtonProps,
+} from 'react-native-gesture-handler';
 
 export const InfoButton = (props: BorderlessButtonProps & { name: string }) => (
   <BorderlessButton

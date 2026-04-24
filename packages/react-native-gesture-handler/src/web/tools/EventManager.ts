@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import type { AdaptedEvent, EventTypes } from '../interfaces';
+import { AdaptedEvent, EventTypes } from '../interfaces';
 
 type PointerEventCallback = (event: AdaptedEvent) => void;
 

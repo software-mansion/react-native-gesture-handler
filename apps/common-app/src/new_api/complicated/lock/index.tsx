@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
 import {
   GestureDetector,
   useLongPressGesture,
@@ -7,13 +13,6 @@ import {
   useRotationGesture,
   useSimultaneousGestures,
 } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-
 import { COLORS, commonStyles } from '../../../common';
 
 export default function Lock() {

@@ -1,12 +1,10 @@
+import { Platform, ColorValue } from 'react-native';
 import * as React from 'react';
 import { Component } from 'react';
-import type { ColorValue } from 'react-native';
-import { Platform } from 'react-native';
-
 import GenericTouchable from './GenericTouchable';
-import type {
-  TouchableNativeFeedbackExtraProps,
+import {
   TouchableNativeFeedbackProps,
+  TouchableNativeFeedbackExtraProps,
 } from './TouchableNativeFeedbackProps';
 
 /**
