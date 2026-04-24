@@ -1,7 +1,10 @@
-import { useState } from "react";
+import {
+  GestureHandlerRootView,
+  useHoverGesture,
+} from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { GestureHandlerRootView, useHoverGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
 import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
