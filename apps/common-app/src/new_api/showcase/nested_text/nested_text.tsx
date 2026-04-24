@@ -4,8 +4,8 @@ import {
   Gesture,
   GestureDetector,
   InterceptingGestureDetector,
-  VirtualGestureDetector,
   useTapGesture,
+  VirtualGestureDetector,
 } from 'react-native-gesture-handler';
 
 import { COLORS, commonStyles, Feedback } from '../../../common';

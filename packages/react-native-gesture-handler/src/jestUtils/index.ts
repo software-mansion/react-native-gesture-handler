@@ -1,1 +1,1 @@
-export { getByGestureTestId, fireGestureHandler } from './jestUtils';
+export { fireGestureHandler, getByGestureTestId } from './jestUtils';

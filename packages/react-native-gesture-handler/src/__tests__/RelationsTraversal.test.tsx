@@ -1,13 +1,15 @@
+import { renderHook } from '@testing-library/react-native';
+
 import { tagMessage } from '../utils';
+import { configureRelations } from '../v3/detectors/utils';
 import {
-  useExclusiveGestures,
   useCompetingGestures,
+  useExclusiveGestures,
   useSimultaneousGestures,
 } from '../v3/hooks/composition';
 import { useGesture } from '../v3/hooks/useGesture';
-import { configureRelations } from '../v3/detectors/utils';
-import { SingleGesture, SingleGestureName } from '../v3/types';
-import { renderHook } from '@testing-library/react-native';
+import type { SingleGesture } from '../v3/types';
+import { SingleGestureName } from '../v3/types';
 
 type AnySingleGesture = SingleGesture<unknown, unknown, unknown>;
 

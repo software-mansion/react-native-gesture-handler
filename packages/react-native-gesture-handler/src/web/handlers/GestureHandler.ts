@@ -1,37 +1,39 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { State } from '../../State';
-import {
-  Config,
-  AdaptedEvent,
-  PropsRef,
-  ResultEvent,
-  PointerData,
-  EventTypes,
-  HitSlop,
-  GestureHandlerNativeEvent,
-} from '../interfaces';
-import EventManager from '../tools/EventManager';
-import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
-import InteractionManager from '../tools/InteractionManager';
-import PointerTracker, { TrackerElement } from '../tools/PointerTracker';
-import IGestureHandler from './IGestureHandler';
-import {
+import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
+import type {
   ActiveCursor,
+  GestureTouchEvent,
   TouchAction,
   UserSelect,
-  GestureTouchEvent,
-  MouseButton,
 } from '../../handlers/gestureHandlerCommon';
+import { MouseButton } from '../../handlers/gestureHandlerCommon';
 import { PointerType } from '../../PointerType';
-import { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
-import { ActionType, usesNativeOrVirtualDetector } from '../../ActionType';
+import { State } from '../../State';
+import { TouchEventType } from '../../TouchEventType';
 import { tagMessage } from '../../utils';
-import {
+import type {
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
+  HandlerData,
   SingleGestureName,
 } from '../../v3/types';
-import { TouchEventType } from '../../TouchEventType';
+import type {
+  AdaptedEvent,
+  Config,
+  GestureHandlerNativeEvent,
+  HitSlop,
+  PointerData,
+  PropsRef,
+  ResultEvent,
+} from '../interfaces';
+import { EventTypes } from '../interfaces';
+import type EventManager from '../tools/EventManager';
+import type { GestureHandlerDelegate } from '../tools/GestureHandlerDelegate';
+import GestureHandlerOrchestrator from '../tools/GestureHandlerOrchestrator';
+import InteractionManager from '../tools/InteractionManager';
+import type { TrackerElement } from '../tools/PointerTracker';
+import PointerTracker from '../tools/PointerTracker';
+import type IGestureHandler from './IGestureHandler';
 
 export default abstract class GestureHandler implements IGestureHandler {
   private _name!: SingleGestureName;
@@ -404,15 +406,15 @@ export default abstract class GestureHandler implements IGestureHandler {
       return;
     }
 
-    if (usesNativeOrVirtualDetector(this.actionType)) {
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedTouchEvent
-          : onGestureHandlerTouchEvent,
-        touchEvent
-      );
+    if (!usesNativeOrVirtualDetector(this.actionType)) {
+      onGestureHandlerEvent?.(touchEvent);
+      return;
+    }
+
+    if (this.forReanimated) {
+      onGestureHandlerReanimatedTouchEvent?.(touchEvent);
     } else {
-      invokeNullableMethod(onGestureHandlerEvent, touchEvent);
+      onGestureHandlerTouchEvent?.(touchEvent);
     }
   }
 
@@ -429,11 +431,13 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerReanimatedStateChange,
     }: PropsRef = this.propsRef!.current;
 
+    const isStateChange = this.lastSentState !== newState;
+
     const resultEvent: ResultEvent = !usesNativeOrVirtualDetector(
       this.actionType
     )
       ? this.transformEventData(newState, oldState)
-      : this.lastSentState !== newState
+      : isStateChange
         ? this.transformStateChangeEvent(newState, oldState)
         : this.transformUpdateEvent(newState);
 
@@ -441,29 +445,46 @@ export default abstract class GestureHandler implements IGestureHandler {
     // Here the order is flipped to avoid workarounds such as making backup of the state and setting it to undefined first, then changing it back
     // Flipping order with setting oldState to undefined solves issue, when events were being sent twice instead of once
     // However, this may cause trouble in the future (but for now we don't know that)
-    if (this.lastSentState !== newState) {
+    if (isStateChange) {
       this.lastSentState = newState;
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedStateChange
-          : onGestureHandlerStateChange,
-        resultEvent
-      );
-    }
-    if (this.state === State.ACTIVE) {
-      (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState =
-        undefined;
 
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedEvent
-          : this.forAnimated
-            ? onGestureHandlerAnimatedEvent
-            : onGestureHandlerEvent,
-        resultEvent
-      );
+      if (this.forReanimated) {
+        onGestureHandlerReanimatedStateChange?.(resultEvent);
+      } else {
+        onGestureHandlerStateChange?.(resultEvent);
+      }
+    }
+
+    if (this.state !== State.ACTIVE) {
+      return;
+    }
+
+    // Cover only V3 path due to different event shape
+    if (!isStateChange && usesNativeOrVirtualDetector(this.actionType)) {
+      const handlerData = (
+        resultEvent.nativeEvent as GestureUpdateEventWithHandlerData<unknown>
+      ).handlerData;
+      if (this.shouldSuppressActiveUpdate(handlerData)) {
+        return;
+      }
+    }
+
+    (resultEvent.nativeEvent as GestureHandlerNativeEvent).oldState = undefined;
+
+    if (this.forReanimated) {
+      onGestureHandlerReanimatedEvent?.(resultEvent);
+    } else if (this.forAnimated) {
+      onGestureHandlerAnimatedEvent?.(resultEvent);
+    } else {
+      onGestureHandlerEvent?.(resultEvent);
     }
   };
+
+  protected shouldSuppressActiveUpdate(
+    _handlerData: HandlerData<unknown>
+  ): boolean {
+    return false;
+  }
 
   private transformEventData(
     newState: State,
@@ -672,15 +693,15 @@ export default abstract class GestureHandler implements IGestureHandler {
       onGestureHandlerTouchEvent,
     }: PropsRef = this.propsRef!.current;
 
-    if (this.actionType === ActionType.NATIVE_DETECTOR) {
-      invokeNullableMethod(
-        this.forReanimated
-          ? onGestureHandlerReanimatedTouchEvent
-          : onGestureHandlerTouchEvent,
-        cancelEvent
-      );
+    if (this.actionType !== ActionType.NATIVE_DETECTOR) {
+      onGestureHandlerEvent?.(cancelEvent);
+      return;
+    }
+
+    if (this.forReanimated) {
+      onGestureHandlerReanimatedTouchEvent?.(cancelEvent);
     } else {
-      invokeNullableMethod(onGestureHandlerEvent, cancelEvent);
+      onGestureHandlerTouchEvent?.(cancelEvent);
     }
   }
 
@@ -1081,59 +1102,4 @@ export default abstract class GestureHandler implements IGestureHandler {
       this.state === State.CANCELLED
     );
   }
-}
-
-function invokeNullableMethod(
-  method:
-    | ((event: ResultEvent) => void)
-    | { __getHandler: () => (event: ResultEvent) => void }
-    | { __nodeConfig: { argMapping: unknown[] } }
-    | null
-    | undefined,
-  event: ResultEvent
-): void {
-  if (!method) {
-    return;
-  }
-
-  if (typeof method === 'function') {
-    method(event);
-    return;
-  }
-
-  if ('__getHandler' in method && typeof method.__getHandler === 'function') {
-    const handler = method.__getHandler();
-    invokeNullableMethod(handler, event);
-    return;
-  }
-
-  if (!('__nodeConfig' in method)) {
-    return;
-  }
-
-  const { argMapping }: { argMapping: unknown } = method.__nodeConfig;
-  if (!Array.isArray(argMapping)) {
-    return;
-  }
-
-  for (const [index, [key, value]] of argMapping.entries()) {
-    if (!(key in event.nativeEvent)) {
-      continue;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const nativeValue = (event.nativeEvent as any)[key];
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (value?.setValue) {
-      // Reanimated API
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      value.setValue(nativeValue);
-    } else {
-      // RN Animated API
-      method.__nodeConfig.argMapping[index] = [key, nativeValue];
-    }
-  }
-
-  return;
 }

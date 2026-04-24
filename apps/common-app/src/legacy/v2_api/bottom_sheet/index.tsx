@@ -1,22 +1,15 @@
 import React, { useRef, useState } from 'react';
-import {
-  Dimensions,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {
-  Gesture,
-  GestureDetector,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler';
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import type { PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+
 import { LoremIpsum } from '../../../common';
 
 const HEADER_HEIGTH = 50;
@@ -148,7 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'coral',
   },
   bottomSheet: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#ff9f7A',
   },
 });

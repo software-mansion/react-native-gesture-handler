@@ -1,28 +1,28 @@
+import { useCallback, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { isTestEnv, tagMessage } from '../../../utils';
-import { GestureRef, BaseGesture, GestureType } from '../gesture';
-
-import { flingGestureHandlerProps } from '../../FlingGestureHandler';
-import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
-import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
-import {
-  panGestureHandlerProps,
-  panGestureHandlerCustomNativeProps,
-} from '../../PanGestureHandler';
-import { tapGestureHandlerProps } from '../../TapGestureHandler';
-import { hoverGestureHandlerProps } from '../hoverGesture';
-import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
-import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
 import { RNRenderer } from '../../../RNRenderer';
-import { useCallback, useRef, useState } from 'react';
-import { Reanimated } from '../reanimatedWrapper';
-import { onGestureHandlerEvent } from '../eventReceiver';
-import {
+import { isTestEnv, tagMessage } from '../../../utils';
+import type {
   GestureHandlerNativeEvent,
   PropsRef,
   ResultEvent,
 } from '../../../web/interfaces';
+import { flingGestureHandlerProps } from '../../FlingGestureHandler';
+import { forceTouchGestureHandlerProps } from '../../ForceTouchGestureHandler';
+import { baseGestureHandlerWithDetectorProps } from '../../gestureHandlerCommon';
+import { longPressGestureHandlerProps } from '../../LongPressGestureHandler';
+import { nativeViewGestureHandlerProps } from '../../NativeViewGestureHandler';
+import {
+  panGestureHandlerCustomNativeProps,
+  panGestureHandlerProps,
+} from '../../PanGestureHandler';
+import { tapGestureHandlerProps } from '../../TapGestureHandler';
+import { onGestureHandlerEvent } from '../eventReceiver';
+import type { GestureRef, GestureType } from '../gesture';
+import { BaseGesture } from '../gesture';
+import { hoverGestureHandlerProps } from '../hoverGesture';
+import { Reanimated } from '../reanimatedWrapper';
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
@@ -35,6 +35,16 @@ export const ALLOWED_PROPS = [
   ...hoverGestureHandlerProps,
   ...nativeViewGestureHandlerProps,
 ];
+
+// In some environments (e.g. `Next.js`) Reanimated Babel plugin might not be used.
+// In that case we would wrongly suggest to add `runOnJS` to gesture configuration, even if the user doesn't use worklets at all.
+// To prevent this, we check whether the plugin is enabled by defining a worklet and checking if the `__workletHash` property is available.
+function emptyWorklet() {
+  'worklet';
+}
+
+// @ts-expect-error if `emptyWorklet` is a worklet, `__workletHash` will be available, if not then the check will return false.
+const wasBabelPluginEnabled = emptyWorklet.__workletHash !== undefined;
 
 function convertToHandlerTag(ref: GestureRef): number {
   if (typeof ref === 'number') {
@@ -105,7 +115,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
   // If none of the callbacks are worklets and the gesture is not explicitly marked with
   // `.runOnJS(true)` show a warning
-  if (areAllNotWorklets && !isTestEnv()) {
+  if (areAllNotWorklets && wasBabelPluginEnabled && !isTestEnv()) {
     console.warn(
       tagMessage(
         `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`

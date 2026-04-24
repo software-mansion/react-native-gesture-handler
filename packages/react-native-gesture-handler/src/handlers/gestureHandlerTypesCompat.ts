@@ -4,30 +4,30 @@ import type {
   LegacyRawButtonProps,
   LegacyRectButtonProps,
 } from '../components/GestureButtonsProps';
-import {
+import type { FlingGestureHandlerProps } from './FlingGestureHandler';
+import type { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
+import type {
   GestureEvent,
   GestureEventPayload,
   HandlerStateChangeEvent,
   HandlerStateChangeEventPayload,
 } from './gestureHandlerCommon';
-import type { FlingGestureHandlerProps } from './FlingGestureHandler';
 import type {
   FlingGestureHandlerEventPayload,
   ForceTouchGestureHandlerEventPayload,
   LongPressGestureHandlerEventPayload,
+  NativeViewGestureHandlerPayload,
   PanGestureHandlerEventPayload,
   PinchGestureHandlerEventPayload,
   RotationGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
-  NativeViewGestureHandlerPayload,
 } from './GestureHandlerEventPayload';
-import type { ForceTouchGestureHandlerProps } from './ForceTouchGestureHandler';
 import type { LongPressGestureHandlerProps } from './LongPressGestureHandler';
+import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 import type { PanGestureHandlerProps } from './PanGestureHandler';
 import type { PinchGestureHandlerProps } from './PinchGestureHandler';
 import type { RotationGestureHandlerProps } from './RotationGestureHandler';
 import type { TapGestureHandlerProps } from './TapGestureHandler';
-import type { NativeViewGestureHandlerProps } from './NativeViewGestureHandler';
 
 // Events
 export type GestureHandlerGestureEventNativeEvent = GestureEventPayload;

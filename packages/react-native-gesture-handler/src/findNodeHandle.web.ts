@@ -1,4 +1,5 @@
 import { FlatList } from 'react-native';
+
 import type { GestureHandlerRef, SVGRef } from './web/interfaces';
 import { isRNSVGElement } from './web/utils';
 

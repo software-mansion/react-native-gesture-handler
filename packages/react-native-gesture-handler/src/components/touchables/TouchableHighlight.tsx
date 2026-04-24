@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Component } from 'react';
-import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
-import type { GenericTouchableProps } from './GenericTouchableProps';
-import {
-  StyleSheet,
-  View,
-  TouchableHighlightProps as RNTouchableHighlightProps,
+import type {
   ColorValue,
+  TouchableHighlightProps as RNTouchableHighlightProps,
   ViewProps,
 } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import GenericTouchable, { TOUCHABLE_STATE } from './GenericTouchable';
+import type { GenericTouchableProps } from './GenericTouchableProps';
 
 interface State {
   extraChildStyle: null | {

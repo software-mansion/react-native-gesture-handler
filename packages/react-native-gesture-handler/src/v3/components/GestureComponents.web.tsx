@@ -1,10 +1,10 @@
 import * as React from 'react';
+import type { FlatListProps } from 'react-native';
 import {
   FlatList as RNFlatList,
+  ScrollView as RNScrollView,
   Switch as RNSwitch,
   TextInput as RNTextInput,
-  ScrollView as RNScrollView,
-  FlatListProps,
   View,
 } from 'react-native';
 
@@ -32,12 +32,9 @@ export const DrawerLayoutAndroid = () => {
 // on functional components
 export const RefreshControl = createNativeWrapper(View);
 
-export const FlatList = React.forwardRef(
-  <ItemT,>(props: FlatListProps<ItemT>, ref: any) => (
-    <RNFlatList
-      ref={ref}
-      {...props}
-      renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
-    />
-  )
+export const FlatList = <ItemT,>(props: FlatListProps<ItemT>) => (
+  <RNFlatList
+    {...props}
+    renderScrollComponent={(scrollProps) => <ScrollView {...scrollProps} />}
+  />
 );

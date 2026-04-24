@@ -1,12 +1,9 @@
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 import TestingBase from './testingBase';
-import {
-  COLORS,
-  commonStyles,
-  Feedback,
-  FeedbackHandle,
-} from '../../../common';
 
 const HIT_SLOP = 40;
 const PRESS_RETENTION_OFFSET = HIT_SLOP;

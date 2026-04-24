@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { TouchEventType } from '../../../TouchEventType';
+
 import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import {
+import { TouchEventType } from '../../../TouchEventType';
+import type {
   GestureCallbacks,
+  GestureEndEventCallback,
   GestureEventCallback,
-  GestureEventCallbackWithDidSucceed,
   GestureTouchEventCallback,
   UnpackedGestureHandlerEvent,
 } from '../../types';
@@ -55,8 +56,8 @@ function getHandler<THandlerData, TExtendedHandlerData extends THandlerData>(
 ):
   | GestureEventCallback<THandlerData>
   | GestureEventCallback<TExtendedHandlerData>
-  | GestureEventCallbackWithDidSucceed<THandlerData>
-  | GestureEventCallbackWithDidSucceed<TExtendedHandlerData>
+  | GestureEndEventCallback<THandlerData>
+  | GestureEndEventCallback<TExtendedHandlerData>
   | GestureTouchEventCallback
   | undefined {
   'worklet';
@@ -100,7 +101,6 @@ export function touchEventTypeToCallbackType(
 }
 
 type SingleParameterCallback<T> = (event: T) => void;
-type DoubleParameterCallback<T> = (event: T, didSucceed: boolean) => void;
 
 export function runCallback<
   THandlerData,
@@ -108,8 +108,7 @@ export function runCallback<
 >(
   type: CALLBACK_TYPE,
   callbacks: GestureCallbacks<THandlerData, TExtendedHandlerData>,
-  event: UnpackedGestureHandlerEvent<THandlerData>,
-  didSucceed?: boolean
+  event: UnpackedGestureHandlerEvent<THandlerData>
 ) {
   'worklet';
   const handler = getHandler(type, callbacks);
@@ -118,9 +117,5 @@ export function runCallback<
     return;
   }
 
-  if (didSucceed === undefined) {
-    (handler as SingleParameterCallback<typeof event>)(event);
-  } else {
-    (handler as DoubleParameterCallback<typeof event>)(event, didSucceed);
-  }
+  (handler as SingleParameterCallback<typeof event>)(event);
 }

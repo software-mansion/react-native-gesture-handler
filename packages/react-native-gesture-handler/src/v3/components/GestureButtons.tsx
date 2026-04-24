@@ -1,7 +1,10 @@
 import React, { useRef } from 'react';
-import { Platform, StyleSheet, Animated } from 'react-native';
-import createNativeWrapper from '../createNativeWrapper';
+import { Animated, Platform, StyleSheet } from 'react-native';
+
 import GestureHandlerButton from '../../components/GestureHandlerButton';
+import createNativeWrapper from '../createNativeWrapper';
+import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
+import type { GestureEndEvent, GestureEvent } from '../types';
 import type {
   BaseButtonProps,
   BorderlessButtonProps,
@@ -9,11 +12,12 @@ import type {
   RectButtonProps,
 } from './GestureButtonsProps';
 
-import type { GestureEvent } from '../types';
-import type { NativeHandlerData } from '../hooks/gestures/native/NativeTypes';
-
 type CallbackEventType = GestureEvent<NativeHandlerData>;
+type EndCallbackEventType = GestureEndEvent<NativeHandlerData>;
 
+/**
+ * @deprecated `RawButton` is deprecated, use `Clickable` instead
+ */
 export const RawButton = createNativeWrapper<
   React.ComponentRef<typeof GestureHandlerButton>,
   RawButtonProps
@@ -23,7 +27,7 @@ export const RawButton = createNativeWrapper<
 });
 
 /**
- * @deprecated `BaseButton` is deprecated, use `Clickable` instead
+ * @deprecated `BaseButton` is deprecated, use `Touchable` instead
  */
 export const BaseButton = (props: BaseButtonProps) => {
   const longPressDetected = useRef(false);
@@ -64,23 +68,23 @@ export const BaseButton = (props: BaseButtonProps) => {
     props.onActivate?.(e);
   };
 
-  const onDeactivate = (e: CallbackEventType, didSucceed: boolean) => {
+  const onDeactivate = (e: EndCallbackEventType) => {
     onActiveStateChange?.(false);
 
-    if (didSucceed && !longPressDetected.current) {
+    if (!e.canceled && !longPressDetected.current) {
       onPress?.(e.pointerInside);
     }
 
-    props.onDeactivate?.(e, didSucceed);
+    props.onDeactivate?.(e);
   };
 
-  const onFinalize = (e: CallbackEventType, didSucceed: boolean) => {
+  const onFinalize = (e: EndCallbackEventType) => {
     if (longPressTimeout.current !== undefined) {
       clearTimeout(longPressTimeout.current);
       longPressTimeout.current = undefined;
     }
 
-    props.onFinalize?.(e, didSucceed);
+    props.onFinalize?.(e);
   };
 
   return (
@@ -108,7 +112,7 @@ const btnStyles = StyleSheet.create({
 });
 
 /**
- * @deprecated `RectButton` is deprecated, use `Clickable` with `underlayActiveOpacity={0.7}` instead
+ * @deprecated `RectButton` is deprecated, use `Touchable` with `activeUnderlayOpacity={0.7}` instead
  */
 export const RectButton = (props: RectButtonProps) => {
   const {
@@ -156,7 +160,7 @@ export const RectButton = (props: RectButtonProps) => {
 };
 
 /**
- * @deprecated `BorderlessButton` is deprecated, use `Clickable` with `activeOpacity={0.3}` instead
+ * @deprecated `BorderlessButton` is deprecated, use `Touchable` with `activeOpacity={0.3}` instead
  */
 export const BorderlessButton = (props: BorderlessButtonProps) => {
   const activeOpacity = props.activeOpacity ?? 0.3;

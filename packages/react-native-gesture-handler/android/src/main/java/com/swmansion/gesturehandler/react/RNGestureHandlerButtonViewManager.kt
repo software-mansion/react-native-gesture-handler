@@ -379,6 +379,7 @@ class RNGestureHandlerButtonViewManager :
     private var underlayDrawable: PaintDrawable? = null
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
+    private var isPointerInsideBounds = false
 
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
@@ -481,7 +482,30 @@ class RNGestureHandlerButtonViewManager :
       if (lastEventTime != eventTime || lastAction != action || action == MotionEvent.ACTION_CANCEL) {
         lastEventTime = eventTime
         lastAction = action
-        return super.onTouchEvent(event)
+        val handled = super.onTouchEvent(event)
+
+        // Replay press-in / press-out animations across drag transitions.
+        if (handled && canRespondToTouches()) {
+          when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> isPointerInsideBounds = true
+            MotionEvent.ACTION_MOVE -> {
+              val inside = event.x >= 0 && event.y >= 0 && event.x < width && event.y < height
+              if (inside != isPointerInsideBounds) {
+                isPointerInsideBounds = inside
+                if (inside) {
+                  animatePressIn()
+                } else {
+                  animatePressOut()
+                }
+              }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL ->
+              isPointerInsideBounds =
+                false
+          }
+        }
+
+        return handled
       }
       return false
     }
@@ -719,6 +743,12 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
+    private fun canRespondToTouches(): Boolean = if (exclusive) {
+      touchResponder === this
+    } else {
+      !(touchResponder?.exclusive ?: false)
+    }
+
     private fun tryGrabbingResponder(): Boolean {
       if (isChildTouched()) {
         return false
@@ -728,11 +758,8 @@ class RNGestureHandlerButtonViewManager :
         touchResponder = this
         return true
       }
-      return if (exclusive) {
-        touchResponder === this
-      } else {
-        !(touchResponder?.exclusive ?: false)
-      }
+
+      return canRespondToTouches()
     }
 
     private fun isChildTouched(children: Sequence<View> = this.children): Boolean {
