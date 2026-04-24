@@ -1,41 +1,46 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import GestureLink from "./components/GestureLink";
+import {  StyleSheet } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const gestureScreens = [
-  { key: "tap", title: "Tap", href: "/gestures/tap" as const },
-  { key: "pan", title: "Pan", href: "/gestures/pan" as const },
-  {
-    key: "long-press",
-    title: "Long Press",
-    href: "/gestures/long-press" as const,
-  },
-  { key: "rotation", title: "Rotation", href: "/gestures/rotation" as const },
-  { key: "pinch", title: "Pinch", href: "/gestures/pinch" as const },
-  { key: "fling", title: "Fling", href: "/gestures/fling" as const },
-  { key: "hover", title: "Hover", href: "/gestures/hover" as const },
-];
+import Fling from "./gestures/fling";
+import Tap from "./gestures/tap";
+import Pinch from "./gestures/pinch";
+import Rotation from "./gestures/rotation";
+import Hover from "./gestures/hover";
+import LongPress from "./gestures/long_press";
+import Pan from "./gestures/pan";
+import { createStaticNavigation } from "@react-navigation/native";
+
+const RootStack = createNativeStackNavigator({
+  screens: {
+    Tap: {
+      screen: Tap
+    },
+    Pinch: {
+      screen: Pinch
+    },
+    Rotation: {
+      screen: Rotation
+    },
+    Hover: {
+      screen: Hover
+    },
+    "Long Press": {
+      screen: LongPress
+    },
+    Pan: {
+      screen: Pan
+    },
+    Fling: {
+      screen: Fling
+    }
+  }
+});
+
+const Navigation = createStaticNavigation(RootStack);
 
 export default function Index() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>
-            Gesture Screens
-          </Text>
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            {gestureScreens.map((screen) => (
-              <GestureLink
-                key={screen.key}
-                href={screen.href}
-                label={screen.title}
-              />
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-    </GestureHandlerRootView>
+    <Navigation/>
   );
 }
 
