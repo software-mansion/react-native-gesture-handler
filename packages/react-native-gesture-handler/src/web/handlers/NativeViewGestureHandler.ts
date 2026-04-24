@@ -120,6 +120,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     if (
       (this.controlType === ControlType.Button && this.shouldActivateOnStart) ||
       this.controlType === ControlType.Switch ||
+      this.controlType === ControlType.TextInput ||
       isRNGHText
     ) {
       this.activate();
