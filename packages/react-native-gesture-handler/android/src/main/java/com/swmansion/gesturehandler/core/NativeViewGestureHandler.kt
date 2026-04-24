@@ -93,6 +93,7 @@ class NativeViewGestureHandler : GestureHandler() {
       is ReactTextView -> this.hook = TextViewHook()
       is ReactViewGroup -> this.hook = ReactViewGroupHook()
     }
+    hook.attachHandler(this)
   }
 
   override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
@@ -166,6 +167,7 @@ class NativeViewGestureHandler : GestureHandler() {
   override fun onFail() = dispatchCancelEventToView()
 
   override fun onReset() {
+    hook.detachHandler()
     this.hook = defaultHook
     lastActiveUpdate = null
   }
@@ -275,6 +277,19 @@ class NativeViewGestureHandler : GestureHandler() {
      * Passes the event down to the underlying view using the correct method.
      */
     fun sendTouchEvent(view: View?, event: MotionEvent) = view?.onTouchEvent(event)
+
+    /**
+     * Called after the handler has prepared itself on this hook's view. The hook
+     * can retain the handler reference to drive state transitions from the view's
+     * own lifecycle (e.g. calling `activate()`, `fail()` or `cancel()` in
+     * response to native view state changes).
+     */
+    fun attachHandler(handler: NativeViewGestureHandler) = Unit
+
+    /**
+     * Called on handler reset so the hook can drop its retained handler reference.
+     */
+    fun detachHandler() = Unit
   }
 
   private class TextViewHook : NativeViewGestureHandlerHook {
