@@ -1,5 +1,6 @@
-import { AdaptedEvent, EventTypes } from '../interfaces';
-import PointerTracker from '../tools/PointerTracker';
+import type { AdaptedEvent } from '../interfaces';
+import { EventTypes } from '../interfaces';
+import type PointerTracker from '../tools/PointerTracker';
 
 export interface RotationGestureListener {
   onRotationBegin: (detector: RotationGestureDetector) => boolean;
@@ -75,12 +76,11 @@ export default class RotationGestureDetector
   }
 
   private finish(): void {
-    if (!this.isInProgress) {
-      return;
+    if (this.isInProgress) {
+      this.isInProgress = false;
+      this.keyPointers = [NaN, NaN];
     }
 
-    this.isInProgress = false;
-    this.keyPointers = [NaN, NaN];
     this.onRotationEnd(this);
   }
 
@@ -138,9 +138,8 @@ export default class RotationGestureDetector
         break;
 
       case EventTypes.UP:
-        if (this.isInProgress) {
-          this.finish();
-        }
+        this.finish();
+
         break;
     }
 

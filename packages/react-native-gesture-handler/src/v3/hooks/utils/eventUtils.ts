@@ -1,16 +1,17 @@
-import { NativeSyntheticEvent } from 'react-native';
-import {
+import type { NativeSyntheticEvent } from 'react-native';
+
+import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { tagMessage } from '../../../utils';
+import type {
   AnimatedEvent,
   BaseGestureConfig,
   ChangeCalculatorType,
   DiffCalculatorType,
+  GestureEvent,
   GestureHandlerEventWithHandlerData,
   GestureStateChangeEventWithHandlerData,
   GestureUpdateEventWithHandlerData,
-  GestureEvent,
 } from '../../types';
-import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
-import { tagMessage } from '../../../utils';
 
 function isNativeEvent<THandlerData, TExtendedHandlerData extends THandlerData>(
   event: GestureHandlerEventWithHandlerData<THandlerData, TExtendedHandlerData>

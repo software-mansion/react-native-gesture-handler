@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Animated, LayoutChangeEvent, StyleSheet, View } from 'react-native';
-
-import {
-  PanGestureHandler,
-  State,
-  PanGestureHandlerStateChangeEvent,
+import type { LayoutChangeEvent } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import type {
   PanGestureHandlerGestureEvent,
+  PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 const USE_NATIVE_DRIVER = false;
 

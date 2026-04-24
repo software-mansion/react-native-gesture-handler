@@ -1,8 +1,6 @@
 import { StyleSheet, View } from 'react-native';
-import Animated, {
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 interface FilterCarouselProps {
   filters: string[];

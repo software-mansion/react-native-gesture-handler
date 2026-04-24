@@ -1,13 +1,14 @@
-import { COLORS, commonStyles } from '../../../common';
 import React from 'react';
 import { View } from 'react-native';
 import { GestureDetector, useHoverGesture } from 'react-native-gesture-handler';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
   interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
+
+import { COLORS, commonStyles } from '../../../common';
 
 export default function TapExample() {
   const colorProgress = useSharedValue(0);

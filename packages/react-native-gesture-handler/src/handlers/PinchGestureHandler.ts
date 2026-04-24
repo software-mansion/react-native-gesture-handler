@@ -1,9 +1,7 @@
-import { PinchGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 import createHandler from './createHandler';
-import {
-  BaseGestureHandlerProps,
-  baseGestureHandlerProps,
-} from './gestureHandlerCommon';
+import type { BaseGestureHandlerProps } from './gestureHandlerCommon';
+import { baseGestureHandlerProps } from './gestureHandlerCommon';
+import type { PinchGestureHandlerEventPayload } from './GestureHandlerEventPayload';
 
 /**
  * @deprecated PinchGestureHandler will be removed in the future version of Gesture Handler. Use `Gesture.Pinch()` instead.

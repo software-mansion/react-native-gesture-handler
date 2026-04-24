@@ -1,15 +1,20 @@
-import { useMemo } from 'react';
-import {
-  Reanimated,
-  ReanimatedHandler,
-} from '../../../handlers/gestures/reanimatedWrapper';
-import {
+import { useEffect, useMemo, useRef } from 'react';
+
+import type { ReanimatedHandler } from '../../../handlers/gestures/reanimatedWrapper';
+import { Reanimated } from '../../../handlers/gestures/reanimatedWrapper';
+import type {
   ChangeCalculatorType,
   GestureCallbacks,
   GestureEvent,
   UnpackedGestureHandlerEventWithHandlerData,
 } from '../../types';
 import { eventHandler } from './eventHandler';
+
+const REANIMATED_EVENT_NAMES = [
+  'onGestureHandlerReanimatedEvent',
+  'onGestureHandlerReanimatedStateChange',
+  'onGestureHandlerReanimatedTouchEvent',
+];
 
 const workletNOOP = () => {
   'worklet';
@@ -60,14 +65,24 @@ export function useReanimatedEventHandler<
     );
   };
 
+  // Fast Refresh invalidates `useMemo` caches but preserves `useRef`, so the
+  // `handlerTag` computed with `useMemo([])` in `useGesture` can regenerate
+  // on FR. Without forcing a rebuild, the registered worklet keeps the old
+  // `handlerTag` in its closure and `isEventForHandlerWithTag` rejects every
+  // event emitted by the freshly-created native handler.
+  const prevHandlerTagRef = useRef(handlerTag);
+  const handlerTagChanged = prevHandlerTagRef.current !== handlerTag;
+
+  // Write after commit so interrupted or re-invoked renders don't desync the
+  // ref from what was actually committed.
+  useEffect(() => {
+    prevHandlerTagRef.current = handlerTag;
+  }, [handlerTag]);
+
   const reanimatedEvent = Reanimated?.useEvent(
     callback,
-    [
-      'onGestureHandlerReanimatedEvent',
-      'onGestureHandlerReanimatedStateChange',
-      'onGestureHandlerReanimatedTouchEvent',
-    ],
-    !!reanimatedHandler?.doDependenciesDiffer
+    REANIMATED_EVENT_NAMES,
+    handlerTagChanged || !!reanimatedHandler?.doDependenciesDiffer
   );
 
   return reanimatedEvent;

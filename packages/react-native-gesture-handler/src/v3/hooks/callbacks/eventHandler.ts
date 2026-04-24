@@ -1,3 +1,18 @@
+import type { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
+import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
+import type { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
+import { State } from '../../../State';
+import { TouchEventType } from '../../../TouchEventType';
+import { tagMessage } from '../../../utils';
+import type {
+  ChangeCalculatorType,
+  GestureCallbacks,
+  GestureEndEvent,
+  GestureEvent,
+  GestureHandlerEventWithHandlerData,
+  GestureStateChangeEventWithHandlerData,
+  GestureUpdateEventWithHandlerData,
+} from '../../types';
 import {
   flattenAndFilterEvent,
   isEventForHandlerWithTag,
@@ -5,20 +20,6 @@ import {
   runCallback,
   touchEventTypeToCallbackType,
 } from '../utils';
-import { tagMessage } from '../../../utils';
-import { ReanimatedContext } from '../../../handlers/gestures/reanimatedWrapper';
-import {
-  ChangeCalculatorType,
-  GestureCallbacks,
-  GestureEvent,
-  GestureHandlerEventWithHandlerData,
-  GestureStateChangeEventWithHandlerData,
-  GestureUpdateEventWithHandlerData,
-} from '../../types';
-import { CALLBACK_TYPE } from '../../../handlers/gestures/gesture';
-import { State } from '../../../State';
-import { TouchEventType } from '../../../TouchEventType';
-import { GestureTouchEvent } from '../../../handlers/gestureHandlerCommon';
 import { isStateChangeEvent, isTouchEvent } from '../utils/eventUtils';
 
 function handleStateChangeEvent<
@@ -44,25 +45,29 @@ function handleStateChangeEvent<
   ) {
     fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
     runCallback(CALLBACK_TYPE.START, callbacks, event);
-  } else if (oldState !== state && state === State.END) {
-    if (oldState === State.ACTIVE) {
-      fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
-      runCallback(CALLBACK_TYPE.END, callbacks, event, true);
-    }
-    runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, true);
-
-    if (context) {
-      context.lastUpdateEvent = undefined;
-    }
   } else if (
-    (state === State.FAILED || state === State.CANCELLED) &&
-    state !== oldState
+    oldState !== state &&
+    (state === State.END || state === State.FAILED || state === State.CANCELLED)
   ) {
+    const canceled = state === State.FAILED || state === State.CANCELLED;
+    const endEvent: GestureEndEvent<THandlerData> = {
+      ...event,
+      canceled,
+    };
+
     if (oldState === State.ACTIVE) {
-      fillInDefaultValues?.(event as GestureEvent<TExtendedHandlerData>);
-      runCallback(CALLBACK_TYPE.END, callbacks, event, false);
+      fillInDefaultValues?.(endEvent as GestureEndEvent<TExtendedHandlerData>);
+      runCallback<THandlerData, TExtendedHandlerData>(
+        CALLBACK_TYPE.END,
+        callbacks,
+        endEvent
+      );
     }
-    runCallback(CALLBACK_TYPE.FINALIZE, callbacks, event, false);
+    runCallback<THandlerData, TExtendedHandlerData>(
+      CALLBACK_TYPE.FINALIZE,
+      callbacks,
+      endEvent
+    );
 
     if (context) {
       context.lastUpdateEvent = undefined;

@@ -1,11 +1,11 @@
 import { SingleGestureName } from '../../../types';
 import { useGesture } from '../../useGesture';
 import { useClonedAndRemappedConfig } from '../../utils';
-import {
-  ManualGestureProperties,
-  ManualHandlerData,
+import type {
   ManualGesture,
   ManualGestureConfig,
+  ManualGestureProperties,
+  ManualHandlerData,
 } from './ManualTypes';
 
 export function useManualGesture(config: ManualGestureConfig): ManualGesture {

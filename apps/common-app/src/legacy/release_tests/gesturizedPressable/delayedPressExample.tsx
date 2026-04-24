@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import TestingBase from './testingBase';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withSpring,
 } from 'react-native-reanimated';
+
+import TestingBase from './testingBase';
 
 const signalerConfig = {
   stiffness: 500,

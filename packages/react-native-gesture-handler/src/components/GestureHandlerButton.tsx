@@ -1,4 +1,4 @@
-import {
+import type {
   AccessibilityProps,
   ColorValue,
   HostComponent,
@@ -7,6 +7,7 @@ import {
   ViewProps,
   ViewStyle,
 } from 'react-native';
+
 import RNGestureHandlerButtonNativeComponent from '../specs/RNGestureHandlerButtonNativeComponent';
 
 export interface ButtonProps extends ViewProps, AccessibilityProps {

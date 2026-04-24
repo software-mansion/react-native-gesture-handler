@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
-  LegacyText,
   GestureHandlerRootView,
+  LegacyText,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
 

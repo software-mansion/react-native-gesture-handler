@@ -1,23 +1,31 @@
-import AnimatedExample from './showcase/animated';
-import BottomSheetExample from './showcase/bottom_sheet';
-import NestedTextExample from './showcase/nested_text/nested_text';
-import OverlapExample from './showcase/overlap';
-import SharedValueExample from './showcase/shared_value';
-import SvgExample from './showcase/svg';
-import StateManagerExample from './showcase/state_manager';
-import TimerExample from './showcase/timer';
-
+import type { ExamplesSection } from '../common';
+import EmptyExample from '../empty';
 import CameraExample from './complicated/camera';
 import ChatHeadsExample from './complicated/chat_heads';
 import LockExample from './complicated/lock';
 import VelocityExample from './complicated/velocity_test';
-
+import ButtonUnderlayExample from './components/button_underlay';
+import ButtonsExample from './components/buttons';
+import ReanimatedDrawerLayout from './components/drawer';
+import FlatListExample from './components/flatlist';
+import ScrollViewExample from './components/scrollview';
+import Swipeable from './components/swipeable/index';
+import SwitchTextInputExample from './components/switchAndInput';
+import TouchableExample from './components/touchable';
+import TouchableStressExample from './components/touchable_stress';
 import ContextMenuExample from './hover_mouse/context_menu';
 import HoverIconsExample from './hover_mouse/hover';
 import HoverableIconsExample from './hover_mouse/hoverable_icons';
 import MouseButtonsExample from './hover_mouse/mouse_buttons';
 import StylusDataExample from './hover_mouse/stylus_data';
-
+import AnimatedExample from './showcase/animated';
+import BottomSheetExample from './showcase/bottom_sheet';
+import NestedTextExample from './showcase/nested_text/nested_text';
+import OverlapExample from './showcase/overlap';
+import SharedValueExample from './showcase/shared_value';
+import StateManagerExample from './showcase/state_manager';
+import SvgExample from './showcase/svg';
+import TimerExample from './showcase/timer';
 import FlingExample from './simple/fling';
 import HoverExample from './simple/hover';
 import LongPressExample from './simple/longPress';
@@ -25,29 +33,16 @@ import PanExample from './simple/pan';
 import PinchExample from './simple/pinch';
 import RotationExample from './simple/rotation';
 import TapExample from './simple/tap';
-
-import ButtonsExample from './components/buttons';
-import ButtonUnderlayExample from './components/button_underlay';
-import ClickableExample from './components/clickable';
-import ClickableStressExample from './components/clickable_stress';
-import ReanimatedDrawerLayout from './components/drawer';
-import FlatListExample from './components/flatlist';
-import ScrollViewExample from './components/scrollview';
-import Swipeable from './components/swipeable/index';
-import SwitchTextInputExample from './components/switchAndInput';
-
+import NestedPressablesExample from './tests/nestedPressables';
+import NestedRootViewExample from './tests/nestedRootView';
+import NestedTouchablesExample from './tests/nestedTouchables';
+import PointerTypeExample from './tests/pointerType';
+import PressableExample from './tests/pressable';
+import ReattachingExample from './tests/reattaching';
 import RectButtonExample from './tests/rectButton';
 import TwoFingerPanExample from './tests/twoFingerPan';
 import WebStylesResetExample from './tests/webStylesReset';
-import PointerTypeExample from './tests/pointerType';
-import ReattachingExample from './tests/reattaching';
-import NestedRootViewExample from './tests/nestedRootView';
-import NestedPressablesExample from './tests/nestedPressables';
-import PressableExample from './tests/pressable';
 import RNResponderCancellationExample from './tests/rnResponderCancellation';
-
-import { ExamplesSection } from '../common';
-import EmptyExample from '../empty';
 
 export const NEW_EXAMPLES: ExamplesSection[] = [
   {
@@ -110,8 +105,8 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'ScrollView example', component: ScrollViewExample },
       { name: 'Buttons example', component: ButtonsExample },
       { name: 'Button underlay example', component: ButtonUnderlayExample },
-      { name: 'Clickable example', component: ClickableExample },
-      { name: 'Clickable stress test', component: ClickableStressExample },
+      { name: 'Touchable example', component: TouchableExample },
+      { name: 'Touchable stress test', component: TouchableStressExample },
       { name: 'Switch & TextInput', component: SwitchTextInputExample },
       { name: 'Reanimated Swipeable', component: Swipeable },
       { name: 'Reanimated Drawer Layout', component: ReanimatedDrawerLayout },
@@ -131,6 +126,7 @@ export const NEW_EXAMPLES: ExamplesSection[] = [
       { name: 'Reattaching', component: ReattachingExample },
       { name: 'Modal with Nested Root View', component: NestedRootViewExample },
       { name: 'Nested pressables', component: NestedPressablesExample },
+      { name: 'Nested touchables', component: NestedTouchablesExample },
       { name: 'Pressable', component: PressableExample },
       {
         name: 'RN responder cancellation',

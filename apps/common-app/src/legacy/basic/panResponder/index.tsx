@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  PanResponder,
-  I18nManager,
+import type {
   GestureResponderEvent,
-  PanResponderGestureState,
   GestureResponderHandlers,
+  PanResponderGestureState,
 } from 'react-native';
-
+import { I18nManager, PanResponder, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
-import { DraggableBox } from '../draggable';
 import { LoremIpsum } from '../../../common';
+import { DraggableBox } from '../draggable';
 
 const CIRCLE_SIZE = 80;
 
