@@ -297,11 +297,21 @@
 
 - (void)handleTextViewTouchUp:(UIEvent *)event
 {
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:self.viewTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:event.allTouches.count
-                                                           withPointerType:_pointerType]];
+  BOOL isInside = [self containsPointInView];
+
+  if (!isInside && self.shouldCancelWhenOutside) {
+    [self sendEventsInState:RNGestureHandlerStateFailed
+             forViewWithTag:self.viewTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
+                                                         withNumberOfTouches:event.allTouches.count
+                                                             withPointerType:_pointerType]];
+  } else {
+    [self sendEventsInState:RNGestureHandlerStateEnd
+             forViewWithTag:self.viewTag
+              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:isInside
+                                                         withNumberOfTouches:event.allTouches.count
+                                                             withPointerType:_pointerType]];
+  }
 }
 
 - (void)handleTextViewTouchCancel:(UIEvent *)event
