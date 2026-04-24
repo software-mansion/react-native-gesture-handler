@@ -67,7 +67,7 @@ export const Touchable = (props: TouchableProps) => {
     }
   }, [onLongPress, delayLongPress, wrappedLongPress]);
 
-  const onBegin = useCallback(
+  const onActivate = useCallback(
     (e: CallbackEventType) => {
       if (!e.pointerInside) {
         pointerState.current = PointerState.OUTSIDE;
@@ -79,26 +79,10 @@ export const Touchable = (props: TouchableProps) => {
 
       pointerState.current = PointerState.INSIDE;
     },
-    [startLongPressTimer, onPressIn]
+    [onPressIn, startLongPressTimer]
   );
-
-  const onActivate = useCallback((e: CallbackEventType) => {
-    if (!e.pointerInside && longPressTimeout.current !== undefined) {
-      clearTimeout(longPressTimeout.current);
-      longPressTimeout.current = undefined;
-    }
-  }, []);
 
   const onDeactivate = useCallback(
-    (e: EndCallbackEventType) => {
-      if (!e.canceled && !longPressDetected.current && e.pointerInside) {
-        onPress?.(e);
-      }
-    },
-    [onPress]
-  );
-
-  const onFinalize = useCallback(
     (e: EndCallbackEventType) => {
       if (pointerState.current === PointerState.INSIDE) {
         onPressOut?.(e);
@@ -110,8 +94,12 @@ export const Touchable = (props: TouchableProps) => {
         clearTimeout(longPressTimeout.current);
         longPressTimeout.current = undefined;
       }
+
+      if (!e.canceled && !longPressDetected.current && e.pointerInside) {
+        onPress?.(e);
+      }
     },
-    [onPressOut]
+    [onPress, onPressOut]
   );
 
   const onUpdate = useCallback(
@@ -155,10 +143,8 @@ export const Touchable = (props: TouchableProps) => {
       {...rippleProps}
       ref={ref ?? null}
       enabled={!disabled}
-      onBegin={onBegin}
       onActivate={onActivate}
       onDeactivate={onDeactivate}
-      onFinalize={onFinalize}
       onUpdate={onUpdate}
       defaultOpacity={defaultOpacity}
       defaultUnderlayOpacity={defaultUnderlayOpacity}

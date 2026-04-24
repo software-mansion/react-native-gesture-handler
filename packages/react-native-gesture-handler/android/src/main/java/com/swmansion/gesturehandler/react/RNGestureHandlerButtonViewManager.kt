@@ -42,6 +42,7 @@ import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
+import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
@@ -380,6 +381,7 @@ class RNGestureHandlerButtonViewManager :
     private var pressInTimestamp = 0L
     private var pendingPressOut: Runnable? = null
     private var isPointerInsideBounds = false
+    private var attachedHandler: NativeViewGestureHandler? = null
 
     // When non-null the ripple is drawn in dispatchDraw (above background, below children).
     // When null the ripple lives on the foreground drawable instead.
@@ -715,6 +717,14 @@ class RNGestureHandlerButtonViewManager :
       }
     }
 
+    override fun attachHandler(handler: NativeViewGestureHandler) {
+      attachedHandler = handler
+    }
+
+    override fun detachHandler() {
+      attachedHandler = null
+    }
+
     override fun canBegin(event: MotionEvent): Boolean {
       if (event.action == MotionEvent.ACTION_CANCEL ||
         event.action == MotionEvent.ACTION_UP ||
@@ -816,6 +826,9 @@ class RNGestureHandlerButtonViewManager :
         super.setPressed(pressed)
 
         if (pressed) {
+          attachedHandler?.takeIf {
+            it.state == GestureHandler.STATE_UNDETERMINED || it.state == GestureHandler.STATE_BEGAN
+          }?.activate()
           animatePressIn()
         } else {
           animatePressOut()
