@@ -19,6 +19,7 @@ class GestureHandlerOrchestrator(
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
   private val rootView: ViewGroup,
+  private val onJSResponderCancelListener: OnJSResponderCancelListener? = null,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
@@ -41,9 +42,6 @@ class GestureHandlerOrchestrator(
   private var handlingChangeSemaphore = 0
   private var finishedHandlersCleanupScheduled = false
   private var activationIndex = 0
-
-  var onCancelJSResponderRequested: ((GestureHandler) -> Unit)? = null
-  var onCancelJSResponderReleased: ((GestureHandler) -> Unit)? = null
 
   /**
    * Should be called from the view wrapper
@@ -150,7 +148,7 @@ class GestureHandlerOrchestrator(
     if (isFinished(newState) && handler.isActive && handler.cancelsJSResponder) {
       // Check if there are any other active handlers that still request the JS responder to be cancelled.
       if (gestureHandlers.none { it !== handler && it.isActive && it.cancelsJSResponder }) {
-        onCancelJSResponderReleased?.invoke(handler)
+        onJSResponderCancelListener?.onCancelJSResponderReleased(handler)
       }
     }
 
@@ -253,7 +251,7 @@ class GestureHandlerOrchestrator(
     }
 
     if (handler.cancelsJSResponder) {
-      onCancelJSResponderRequested?.invoke(handler)
+      onJSResponderCancelListener?.onCancelJSResponderRequested(handler)
     }
 
     handler.dispatchStateChange(GestureHandler.STATE_ACTIVE, GestureHandler.STATE_BEGAN)

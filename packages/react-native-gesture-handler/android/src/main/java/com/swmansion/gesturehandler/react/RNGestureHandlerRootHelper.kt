@@ -13,6 +13,7 @@ import com.facebook.react.uimanager.RootView
 import com.facebook.react.uimanager.ThemedReactContext
 import com.swmansion.gesturehandler.core.GestureHandler
 import com.swmansion.gesturehandler.core.GestureHandlerOrchestrator
+import com.swmansion.gesturehandler.core.OnJSResponderCancelListener
 
 class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView: ViewGroup, private val moduleId: Int) {
   private val orchestrator: GestureHandlerOrchestrator?
@@ -34,15 +35,8 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
       ReactConstants.TAG,
       "[GESTURE HANDLER] Initialize gesture handler for root view $rootView",
     )
-    orchestrator = GestureHandlerOrchestrator(
-      wrappedView,
-      registry,
-      RNViewConfigurationHelper(),
-      rootView,
-    ).apply {
-      minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
-      onCancelJSResponderRequested = { _ ->
-        shouldIntercept = true
+    val onJSResponderCancelListener = object : OnJSResponderCancelListener {
+      override fun onCancelJSResponderRequested(handler: GestureHandler) {
         val time = SystemClock.uptimeMillis()
         val event = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
         if (rootView is RootView) {
@@ -50,9 +44,19 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
         }
         event.recycle()
       }
-      onCancelJSResponderReleased = { _ ->
+
+      override fun onCancelJSResponderReleased(handler: GestureHandler) {
         shouldIntercept = false
       }
+    }
+    orchestrator = GestureHandlerOrchestrator(
+      wrappedView,
+      registry,
+      RNViewConfigurationHelper(),
+      rootView,
+      onJSResponderCancelListener,
+    ).apply {
+      minimumAlphaForTraversal = MIN_ALPHA_FOR_TOUCH
     }
     jsGestureHandler = RootViewGestureHandler(handlerTag = -wrappedViewTag)
     registry.registerHandler(jsGestureHandler)
@@ -104,6 +108,10 @@ class RNGestureHandlerRootHelper(private val context: ReactContext, wrappedView:
     override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) = handleEvent(event)
 
     override fun onHandleHover(event: MotionEvent, sourceEvent: MotionEvent) = handleEvent(event)
+
+    override fun onCancel() {
+      shouldIntercept = true
+    }
   }
 
   fun requestDisallowInterceptTouchEvent() {
