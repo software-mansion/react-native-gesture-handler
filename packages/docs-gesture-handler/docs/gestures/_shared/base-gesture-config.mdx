@@ -159,7 +159,5 @@ cancelsJSResponder?: boolean;
 
 Controls whether activating a Gesture Handler recognizer should cancel React Native JS responders.
 
-This option is configured per gesture handler (for example in `usePanGesture({ cancelsJSResponder: ... })`).
-
 - `true` (default): when this gesture activates, it cancels React Native JS responders in the same root view.
 - `false`: disables that cancellation, so Gesture Handler callbacks and RN responder callbacks can run at the same time.
