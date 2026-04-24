@@ -1,12 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-import {
-  COLORS,
-  Feedback,
-  FeedbackHandle,
-  commonStyles,
-} from '../../../common';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 // Validates that when two Gesture Handler recognizers are active at the same
 // time, both with cancelsJSResponder set to true, finishing ONE of them does
@@ -47,8 +44,8 @@ export function MultiHandlerExample() {
     runOnJS: true,
     cancelsJSResponder,
     onActivate: () => pushEvent('GH_A ACTIVE'),
-    onFinalize: (_e, success) =>
-      pushEvent(`GH_A finalize (${success ? 'success' : 'cancel/fail'})`),
+    onFinalize: (e) =>
+      pushEvent(`GH_A finalize (${e.canceled ? 'cancel/fail' : 'success'})`),
   });
 
   const panB = usePanGesture({
@@ -56,8 +53,8 @@ export function MultiHandlerExample() {
     runOnJS: true,
     cancelsJSResponder,
     onActivate: () => pushEvent('GH_B ACTIVE'),
-    onFinalize: (_e, success) =>
-      pushEvent(`GH_B finalize (${success ? 'success' : 'cancel/fail'})`),
+    onFinalize: (e) =>
+      pushEvent(`GH_B finalize (${e.canceled ? 'cancel/fail' : 'success'})`),
   });
 
   const clearLog = useCallback(() => {

@@ -1,12 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-import {
-  COLORS,
-  Feedback,
-  FeedbackHandle,
-  commonStyles,
-} from '../../../common';
+
+import type { FeedbackHandle } from '../../../common';
+import { COLORS, commonStyles, Feedback } from '../../../common';
 
 const SINGLE_MAX_EVENTS = 8;
 
@@ -32,8 +29,10 @@ export function SingleHandlerExample() {
     onActivate: () => {
       pushEvent('GH pan ACTIVE');
     },
-    onFinalize: (_event, success) => {
-      pushEvent(`GH pan finalize (${success ? 'success' : 'cancel/fail'})`);
+    onFinalize: (event) => {
+      pushEvent(
+        `GH pan finalize (${event.canceled ? 'cancel/fail' : 'success'})`
+      );
     },
   });
 

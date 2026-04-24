@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+
 import { COLORS } from '../../../common';
-import { SingleHandlerExample } from './SingleHandlerExample';
 import { MultiHandlerExample } from './MultiHandlerExample';
+import { SingleHandlerExample } from './SingleHandlerExample';
 
 type Tab = 'single' | 'multi';
 
