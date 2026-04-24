@@ -39,12 +39,17 @@
 }
 
 #if !TARGET_OS_OSX
+- (BOOL)isAttachedToTextView
+{
+  return [self.view isKindOfClass:[UITextView class]];
+}
+
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerTypeForEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 
-  if ([self.view isKindOfClass:[UITextView class]]) {
+  if ([self isAttachedToTextView]) {
     [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchDown:event];
   }
 }
@@ -59,7 +64,7 @@
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 
-  if ([self.view isKindOfClass:[UITextView class]]) {
+  if ([self isAttachedToTextView]) {
     [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchUp:event];
   }
 
