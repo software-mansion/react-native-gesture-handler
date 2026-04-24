@@ -48,11 +48,6 @@
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerTypeForEvent:event];
-
-  if ([self isAttachedToTextView]) {
-    [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchDown:event];
-  }
-
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
@@ -66,10 +61,6 @@
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
 
-  if ([self isAttachedToTextView]) {
-    [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchUp:event];
-  }
-
   self.state = UIGestureRecognizerStateFailed;
 
   // For now, we are handling only the scroll view case.
@@ -82,10 +73,6 @@
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-
-  if ([self isAttachedToTextView]) {
-    [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchCancel:event];
-  }
 
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
@@ -181,9 +168,6 @@
       if ([subview isKindOfClass:[UITextField class]]) {
         _control = (UIControl *)subview;
         break;
-      } else if ([subview isKindOfClass:[UITextView class]]) {
-        textInputChild = subview;
-        break;
       }
     }
   }
@@ -218,14 +202,7 @@
           forControlEvents:UIControlEventTouchCancel];
     }
   } else {
-    // For multiline TextInput (UITextView), bind to the child view so the recognizer receives
-    // touch events directly, then restore viewTag to the parent's react tag.
-    if (textInputChild != nil) {
-      [super bindToView:textInputChild];
-      self.viewTag = view.reactTag;
-    } else {
-      [super bindToView:view];
-    }
+    [super bindToView:view];
   }
 
   // We can restore default scrollview behaviour to delay touches to scrollview's children
@@ -280,47 +257,6 @@
                                                            withPointerType:_pointerType]];
 
   [self reset];
-}
-
-- (void)handleTextViewTouchDown:(UIEvent *)event
-{
-  [self reset];
-
-  RNGestureHandlerEventExtraData *extraData = [RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                           withNumberOfTouches:event.allTouches.count
-                                                                               withPointerType:_pointerType];
-
-  [self sendEventsInState:RNGestureHandlerStateBegan forViewWithTag:self.viewTag withExtraData:extraData];
-  [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:self.viewTag withExtraData:extraData];
-  _lastActiveExtraData = extraData;
-}
-
-- (void)handleTextViewTouchUp:(UIEvent *)event
-{
-  BOOL isInside = [self containsPointInView];
-
-  if (!isInside && self.shouldCancelWhenOutside) {
-    [self sendEventsInState:RNGestureHandlerStateFailed
-             forViewWithTag:self.viewTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                         withNumberOfTouches:event.allTouches.count
-                                                             withPointerType:_pointerType]];
-  } else {
-    [self sendEventsInState:RNGestureHandlerStateEnd
-             forViewWithTag:self.viewTag
-              withExtraData:[RNGestureHandlerEventExtraData forPointerInside:isInside
-                                                         withNumberOfTouches:event.allTouches.count
-                                                             withPointerType:_pointerType]];
-  }
-}
-
-- (void)handleTextViewTouchCancel:(UIEvent *)event
-{
-  [self sendEventsInState:RNGestureHandlerStateCancelled
-           forViewWithTag:self.viewTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
-                                                       withNumberOfTouches:event.allTouches.count
-                                                           withPointerType:_pointerType]];
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
