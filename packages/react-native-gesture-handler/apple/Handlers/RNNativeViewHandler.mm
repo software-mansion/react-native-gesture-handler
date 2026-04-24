@@ -211,16 +211,13 @@
           forControlEvents:UIControlEventTouchCancel];
     }
   } else {
-    [super bindToView:view];
-
-    // For multiline TextInput (UITextView), we need to move the gesture recognizer from the parent
-    // to the actual text view so it can receive touch events
+    // For multiline TextInput (UITextView), bind to the child view so the recognizer receives
+    // touch events directly, then restore viewTag to the parent's react tag.
     if (textInputChild != nil) {
-      UIView *currentRecognizerView = self.recognizer.view;
-      if (currentRecognizerView != nil) {
-        [currentRecognizerView removeGestureRecognizer:self.recognizer];
-      }
-      [textInputChild addGestureRecognizer:self.recognizer];
+      [super bindToView:textInputChild];
+      self.viewTag = view.reactTag;
+    } else {
+      [super bindToView:view];
     }
   }
 
