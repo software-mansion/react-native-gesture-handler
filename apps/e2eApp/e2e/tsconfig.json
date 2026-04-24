@@ -1,0 +1,16 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "types": [
+            "jest",
+            "detox",
+            "node"
+        ],
+        "skipLibCheck": true
+    },
+    "include": [
+        "**/*.ts"
+    ]
+}
