@@ -26,7 +26,6 @@ import {
 
 export const ALLOWED_PROPS = [
   ...baseGestureHandlerWithDetectorProps,
-  'cancelsJSResponder',
   ...tapGestureHandlerProps,
   ...panGestureHandlerProps,
   ...panGestureHandlerCustomNativeProps,
