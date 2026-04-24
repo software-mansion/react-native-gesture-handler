@@ -378,6 +378,7 @@ const Pressable = (props: PressableProps) => {
   return (
     <GestureDetector gesture={gesture}>
       <PureNativeButton
+        onStartShouldSetResponder={handleStartShouldSetResponder}
         {...remainingProps}
         onLayout={setDimensions}
         accessible={accessible !== false}
@@ -387,7 +388,6 @@ const Pressable = (props: PressableProps) => {
         rippleColor={rippleColor}
         rippleRadius={android_ripple?.radius ?? undefined}
         style={[pointerStyle, styleProp]}
-        onStartShouldSetResponder={handleStartShouldSetResponder}
         testOnly_onPress={IS_TEST_ENV ? onPress : undefined}
         testOnly_onPressIn={IS_TEST_ENV ? onPressIn : undefined}
         testOnly_onPressOut={IS_TEST_ENV ? onPressOut : undefined}
