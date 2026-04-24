@@ -21,6 +21,7 @@
 @interface RNNativeViewGestureHandler ()
 - (void)handleTextViewTouchDown:(UIEvent *)event;
 - (void)handleTextViewTouchUp:(UIEvent *)event;
+- (void)handleTextViewTouchCancel:(UIEvent *)event;
 @end
 #endif
 
@@ -81,6 +82,11 @@
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+
+  if ([self isAttachedToTextView]) {
+    [(RNNativeViewGestureHandler *)_gestureHandler handleTextViewTouchCancel:event];
+  }
+
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
 }
@@ -294,6 +300,15 @@
   [self sendEventsInState:RNGestureHandlerStateEnd
            forViewWithTag:self.viewTag
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
+                                                       withNumberOfTouches:event.allTouches.count
+                                                           withPointerType:_pointerType]];
+}
+
+- (void)handleTextViewTouchCancel:(UIEvent *)event
+{
+  [self sendEventsInState:RNGestureHandlerStateCancelled
+           forViewWithTag:self.viewTag
+            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:NO
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
 }
