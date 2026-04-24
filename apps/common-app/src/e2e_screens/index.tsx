@@ -17,19 +17,41 @@ function MainScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Gesture Screens</Text>
       <View style={styles.list}>
-        <Button title="Tap" onPress={() => navigation.navigate("Tap")} />
-        <Button title="Pan" onPress={() => navigation.navigate("Pan")} />
-        <Button title="Pinch" onPress={() => navigation.navigate("Pinch")} />
+        <Button
+          title="Tap"
+          testID="nav-tap"
+          onPress={() => navigation.navigate("Tap")}
+        />
+        <Button
+          title="Pan"
+          testID="nav-pan"
+          onPress={() => navigation.navigate("Pan")}
+        />
+        <Button
+          title="Pinch"
+          testID="nav-pinch"
+          onPress={() => navigation.navigate("Pinch")}
+        />
         <Button
           title="Rotation"
+          testID="nav-rotation"
           onPress={() => navigation.navigate("Rotation")}
         />
         <Button
           title="Long Press"
+          testID="nav-long-press"
           onPress={() => navigation.navigate("Long Press")}
         />
-        <Button title="Fling" onPress={() => navigation.navigate("Fling")} />
-        <Button title="Hover" onPress={() => navigation.navigate("Hover")} />
+        <Button
+          title="Fling"
+          testID="nav-fling"
+          onPress={() => navigation.navigate("Fling")}
+        />
+        <Button
+          title="Hover"
+          testID="nav-hover"
+          onPress={() => navigation.navigate("Hover")}
+        />
       </View>
     </View>
   );

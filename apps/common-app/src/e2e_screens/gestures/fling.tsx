@@ -2,22 +2,22 @@ import {
   Directions,
   GestureHandlerRootView,
   useFlingGesture,
-} from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { scheduleOnRN } from "react-native-worklets";
-import GestureBox from "../components/GestureBox";
-import { WRONG_BOX_COLOR } from "../components/gestureColors";
+} from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { scheduleOnRN } from 'react-native-worklets';
+import GestureBox from '../components/GestureBox';
+import { WRONG_BOX_COLOR } from '../components/gestureColors';
 
 export default function FlingScreen() {
   const navigation = useNavigation<any>();
-  const [testID, setTestID] = useState("fling-idle");
-  const activateFling = () => setTestID("fling-activated");
+  const [testID, setTestID] = useState('fling-idle');
+  const activateFling = () => setTestID('fling-activated');
   const flingGesture = useFlingGesture({
     direction: Directions.RIGHT,
     onActivate: () => {
-      "worklet";
+      'worklet';
       scheduleOnRN(activateFling);
     },
   });
@@ -30,16 +30,18 @@ export default function FlingScreen() {
         <GestureBox gesture={flingGesture} testID={testID} />
       </View>
 
-      <Button
-        title="Reset"
-        onPress={() => setTestID("fling-idle")}
-        testID="reset"
-      />
-      <Button
-        title="Back to main"
-        onPress={() => navigation.navigate("Main")}
-        testID="back-to-main"
-      />
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Reset"
+          onPress={() => setTestID('fling-idle')}
+          testID="reset"
+        />
+        <Button
+          title="Back to main"
+          onPress={() => navigation.navigate('Main')}
+          testID="back-to-main"
+        />
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -50,14 +52,18 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontWeight: "700",
+    fontWeight: '700',
     fontSize: 24,
-    textAlign: "center",
+    textAlign: 'center',
   },
   content: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 16,
+  },
+  buttonContainer: {
+    justifyContent: 'center',
+    marginBottom: 40,
   },
 });

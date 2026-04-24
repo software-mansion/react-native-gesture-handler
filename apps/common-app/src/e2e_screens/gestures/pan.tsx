@@ -1,21 +1,21 @@
 import {
   GestureHandlerRootView,
   usePanGesture,
-} from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { scheduleOnRN } from "react-native-worklets";
-import GestureBox from "../components/GestureBox";
-import { WRONG_BOX_COLOR } from "../components/gestureColors";
+} from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { scheduleOnRN } from 'react-native-worklets';
+import GestureBox from '../components/GestureBox';
+import { WRONG_BOX_COLOR } from '../components/gestureColors';
 
 export default function PanScreen() {
   const navigation = useNavigation<any>();
-  const [testID, setTestID] = useState("pan-idle");
-  const activatePan = () => setTestID("pan-activated");
+  const [testID, setTestID] = useState('pan-idle');
+  const activatePan = () => setTestID('pan-activated');
   const panGesture = usePanGesture({
     onActivate: () => {
-      "worklet";
+      'worklet';
       scheduleOnRN(activatePan);
     },
   });
@@ -28,16 +28,18 @@ export default function PanScreen() {
         <GestureBox gesture={panGesture} testID={testID} />
       </View>
 
-      <Button
-        title="Reset"
-        onPress={() => setTestID("pan-idle")}
-        testID="reset"
-      />
-      <Button
-        title="Back to main"
-        onPress={() => navigation.navigate("Main")}
-        testID="back-to-main"
-      />
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Reset"
+          onPress={() => setTestID('pan-idle')}
+          testID="reset"
+        />
+        <Button
+          title="Back to main"
+          onPress={() => navigation.navigate('Main')}
+          testID="back-to-main"
+        />
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -48,14 +50,18 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontWeight: "700",
+    fontWeight: '700',
     fontSize: 24,
-    textAlign: "center",
+    textAlign: 'center',
   },
   content: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 16,
+  },
+  buttonContainer: {
+    justifyContent: 'center',
+    marginBottom: 40,
   },
 });
