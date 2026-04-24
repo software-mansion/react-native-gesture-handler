@@ -28,7 +28,6 @@ export function NativeDetector<
       : HostGestureDetector;
 
   ensureNativeDetectorComponent(NativeDetectorComponent);
-
   configureRelations(gesture);
 
   const handlerTags = useMemo(() => {
