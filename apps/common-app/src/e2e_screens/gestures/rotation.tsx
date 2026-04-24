@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView, useRotationGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
@@ -6,6 +7,7 @@ import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
 
 export default function RotationScreen() {
+  const navigation = useNavigation<any>();
   const [testID, setTestID] = useState("rotation-idle");
   const activateRotation = () => setTestID("rotation-activated");
   const rotationGesture = useRotationGesture({
@@ -27,6 +29,11 @@ export default function RotationScreen() {
         title="Reset"
         onPress={() => setTestID("rotation-idle")}
         testID="reset"
+      />
+      <Button
+        title="Back to main"
+        onPress={() => navigation.navigate("Main")}
+        testID="back-to-main"
       />
     </GestureHandlerRootView>
   );

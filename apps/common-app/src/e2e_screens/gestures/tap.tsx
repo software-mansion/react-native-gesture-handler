@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView, useTapGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
@@ -6,6 +7,7 @@ import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
 
 export default function TapScreen() {
+  const navigation = useNavigation<any>();
   const [testID, setTestID] = useState("tap-idle");
   const activateTap = () => setTestID("tap-activated");
   const tapGesture = useTapGesture({
@@ -28,6 +30,11 @@ export default function TapScreen() {
         title="Reset"
         onPress={() => setTestID("tap-idle")}
         testID="reset"
+      />
+      <Button
+        title="Back to main"
+        onPress={() => navigation.navigate("Main")}
+        testID="back-to-main"
       />
     </GestureHandlerRootView>
   );

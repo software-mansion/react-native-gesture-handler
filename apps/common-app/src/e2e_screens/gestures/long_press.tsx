@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView, useLongPressGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
@@ -6,6 +7,7 @@ import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
 
 export default function LongPressScreen() {
+  const navigation = useNavigation<any>();
   const [testID, setTestID] = useState("long-press-idle");
   const activateLongPress = () => setTestID("long-press-activated");
   const longPressGesture = useLongPressGesture({
@@ -28,6 +30,11 @@ export default function LongPressScreen() {
         title="Reset"
         onPress={() => setTestID("long-press-idle")}
         testID="reset"
+      />
+      <Button
+        title="Back to main"
+        onPress={() => navigation.navigate("Main")}
+        testID="back-to-main"
       />
     </GestureHandlerRootView>
   );

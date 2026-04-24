@@ -1,74 +1,102 @@
-import {  StyleSheet } from "react-native";
+import { createStaticNavigation, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Button, StyleSheet, Text, View } from "react-native";
 
 import Fling from "./gestures/fling";
-import Tap from "./gestures/tap";
-import Pinch from "./gestures/pinch";
-import Rotation from "./gestures/rotation";
 import Hover from "./gestures/hover";
 import LongPress from "./gestures/long_press";
 import Pan from "./gestures/pan";
-import { createStaticNavigation } from "@react-navigation/native";
+import Pinch from "./gestures/pinch";
+import Rotation from "./gestures/rotation";
+import Tap from "./gestures/tap";
+
+function MainScreen() {
+  const navigation = useNavigation<any>();
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Gesture Screens</Text>
+      <View style={styles.list}>
+        <Button title="Tap" onPress={() => navigation.navigate("Tap")} />
+        <Button title="Pan" onPress={() => navigation.navigate("Pan")} />
+        <Button title="Pinch" onPress={() => navigation.navigate("Pinch")} />
+        <Button
+          title="Rotation"
+          onPress={() => navigation.navigate("Rotation")}
+        />
+        <Button
+          title="Long Press"
+          onPress={() => navigation.navigate("Long Press")}
+        />
+        <Button title="Fling" onPress={() => navigation.navigate("Fling")} />
+        <Button title="Hover" onPress={() => navigation.navigate("Hover")} />
+      </View>
+    </View>
+  );
+}
+
+const linking = {
+  prefixes: ["e2eApp://"],
+  screens: {
+    Main: "",
+    Tap: "gestures/tap",
+    Pinch: "gestures/pinch",
+    Rotation: "gestures/rotation",
+    Hover: "gestures/hover",
+    "Long Press": "gestures/long-press",
+    Pan: "gestures/pan",
+    Fling: "gestures/fling",
+  },
+};
 
 const RootStack = createNativeStackNavigator({
   screens: {
+    Main: {
+      screen: MainScreen,
+    },
     Tap: {
-      screen: Tap
+      screen: Tap,
     },
     Pinch: {
-      screen: Pinch
+      screen: Pinch,
     },
     Rotation: {
-      screen: Rotation
+      screen: Rotation,
     },
     Hover: {
-      screen: Hover
+      screen: Hover,
     },
     "Long Press": {
-      screen: LongPress
+      screen: LongPress,
     },
     Pan: {
-      screen: Pan
+      screen: Pan,
     },
     Fling: {
-      screen: Fling
-    }
-  }
+      screen: Fling,
+    },
+  },
 });
 
 const Navigation = createStaticNavigation(RootStack);
 
 export default function Index() {
-  return (
-    <Navigation/>
-  );
+  return <Navigation linking={linking} />;
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingVertical: 24,
-    width: "100%",
-  },
-  content: {
-    flex: 1,
-    width: "100%",
+    padding: 24,
+    justifyContent: "center",
+    gap: 16,
   },
   title: {
-    marginBottom: 12,
-    fontWeight: "600",
-    fontSize: 20,
+    fontWeight: "700",
+    fontSize: 24,
     textAlign: "center",
   },
-  scrollContent: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "center",
+  list: {
     gap: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 24,
   },
 });

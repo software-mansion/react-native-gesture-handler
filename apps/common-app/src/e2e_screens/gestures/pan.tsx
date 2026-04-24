@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView, usePanGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
@@ -6,6 +7,7 @@ import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
 
 export default function PanScreen() {
+  const navigation = useNavigation<any>();
   const [testID, setTestID] = useState("pan-idle");
   const activatePan = () => setTestID("pan-activated");
   const panGesture = usePanGesture({
@@ -27,6 +29,11 @@ export default function PanScreen() {
         title="Reset"
         onPress={() => setTestID("pan-idle")}
         testID="reset"
+      />
+      <Button
+        title="Back to main"
+        onPress={() => navigation.navigate("Main")}
+        testID="back-to-main"
       />
     </GestureHandlerRootView>
   );
