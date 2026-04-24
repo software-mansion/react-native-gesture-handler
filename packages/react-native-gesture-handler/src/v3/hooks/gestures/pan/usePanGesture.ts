@@ -139,7 +139,11 @@ function transformPanProps(
   return config;
 }
 
-export function usePanGesture(config: PanGestureConfig): PanGesture {
+const EMPTY_PAN_CONFIG: PanGestureConfig = {};
+
+export function usePanGesture(
+  config: PanGestureConfig = EMPTY_PAN_CONFIG
+): PanGesture {
   if (__DEV__) {
     validatePanConfig(config);
   }

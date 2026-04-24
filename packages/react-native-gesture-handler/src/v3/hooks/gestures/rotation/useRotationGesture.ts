@@ -42,8 +42,10 @@ function transformRotationProps(
 
 const RotationPropsMapping = new Map<string, string>();
 
+const EMPTY_ROTATION_CONFIG: RotationGestureConfig = {};
+
 export function useRotationGesture(
-  config: RotationGestureConfig
+  config: RotationGestureConfig = EMPTY_ROTATION_CONFIG
 ): RotationGesture {
   const rotationConfig = useClonedAndRemappedConfig<
     RotationGestureProperties,
