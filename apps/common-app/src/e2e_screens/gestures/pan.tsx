@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { usePanGesture } from "react-native-gesture-handler";
+import { GestureHandlerRootView, usePanGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
 import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
@@ -16,7 +16,7 @@ export default function PanScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Pan Gesture</Text>
       <View style={styles.content}>
         <GestureBox testID="wrong-element" color={WRONG_BOX_COLOR} />
@@ -28,7 +28,7 @@ export default function PanScreen() {
         onPress={() => setTestID("pan-idle")}
         testID="reset"
       />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

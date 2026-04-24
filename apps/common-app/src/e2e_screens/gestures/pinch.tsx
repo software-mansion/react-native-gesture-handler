@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { usePinchGesture } from "react-native-gesture-handler";
+import { GestureHandlerRootView, usePinchGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
 import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
@@ -16,7 +16,7 @@ export default function PinchScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Pinch Gesture</Text>
       <View style={styles.content}>
         <GestureBox testID="wrong-element" color={WRONG_BOX_COLOR} />
@@ -28,7 +28,7 @@ export default function PinchScreen() {
         onPress={() => setTestID("pinch-idle")}
         testID="reset"
       />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { useHoverGesture } from "react-native-gesture-handler";
+import { GestureHandlerRootView, useHoverGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
 import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
@@ -16,7 +16,7 @@ export default function HoverScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Hover Gesture</Text>
       <View style={styles.content}>
         <GestureBox testID="wrong-element" color={WRONG_BOX_COLOR} />
@@ -28,7 +28,7 @@ export default function HoverScreen() {
         onPress={() => setTestID("hover-idle")}
         testID="reset"
       />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

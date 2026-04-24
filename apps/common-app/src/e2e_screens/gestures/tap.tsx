@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { useTapGesture } from "react-native-gesture-handler";
+import { GestureHandlerRootView, useTapGesture } from "react-native-gesture-handler";
 import { scheduleOnRN } from "react-native-worklets";
 import GestureBox from "../components/GestureBox";
 import { WRONG_BOX_COLOR } from "../components/gestureColors";
@@ -15,7 +15,7 @@ export default function TapScreen() {
     },
   });
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title} testID="title">
         Tap Gesture
       </Text>
@@ -29,7 +29,7 @@ export default function TapScreen() {
         onPress={() => setTestID("tap-idle")}
         testID="reset"
       />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
