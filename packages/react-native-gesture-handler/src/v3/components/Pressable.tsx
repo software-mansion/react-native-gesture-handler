@@ -331,6 +331,7 @@ const Pressable = (props: PressableProps) => {
     block,
     requireToFail,
     hitSlop: appliedHitSlop,
+    shouldActivateOnStart: Platform.OS === 'web',
   });
 
   const gesture = useSimultaneousGestures(
