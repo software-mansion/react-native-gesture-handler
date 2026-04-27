@@ -308,7 +308,7 @@ const Pressable = (props: PressableProps) => {
       stateMachine.handleEvent(StateMachineEvent.NATIVE_BEGIN);
     },
     onActivate: () => {
-      if (Platform.OS !== 'android' && Platform.OS !== 'ios') {
+      if (Platform.OS !== 'android') {
         // Native.onActivate is broken with Android + hitSlop
         stateMachine.handleEvent(StateMachineEvent.NATIVE_START);
       }

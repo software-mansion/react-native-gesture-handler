@@ -62,6 +62,9 @@ function getIosStatesConfig(
       callback: handlePressIn,
     },
     {
+      eventName: StateMachineEvent.NATIVE_START,
+    },
+    {
       eventName: StateMachineEvent.FINALIZE,
       callback: handlePressOut,
     },
