@@ -27,7 +27,7 @@ export const LegacyRawButton = createNativeWrapper<LegacyRawButtonProps>(
   GestureHandlerButton as unknown as HostComponent<LegacyRawButtonProps>,
   {
     shouldCancelWhenOutside: false,
-    shouldActivateOnStart: false,
+    shouldActivateOnStart: Platform.OS === 'web',
   }
 );
 

@@ -323,7 +323,8 @@ const LegacyPressable = (props: LegacyPressableProps) => {
               handleFinalize();
             }
           }
-        }),
+        })
+        .shouldActivateOnStart(Platform.OS === 'web'),
     [stateMachine, handlePressOut, handleFinalize]
   );
 

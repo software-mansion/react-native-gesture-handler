@@ -5,19 +5,12 @@ sidebar_label: Pan gesture
 sidebar_position: 3
 ---
 
-import { vanishOnMobile, appearOnMobile, webContainer } from '@site/src/utils/getGestureStyles';
+import { webContainer } from '@site/src/utils/getGestureStyles';
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-import PanGestureBasic from '@site/static/examples/PanGestureBasic';
-import PanGestureBasicSrc from '!!raw-loader!@site/static/examples/PanGestureBasic';
+import PanGestureBasic from '../examples/PanGestureBasic';
+import PanGestureBasicSrc from '!!raw-loader!../examples/PanGestureBasic';
 
 <div className={webContainer}>
-  <div className={vanishOnMobile} style={{ display: 'flex', justifyContent: 'center', maxWidth: 360 }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
-    </video>
-  </div>
   <InteractiveExample
     component={<PanGestureBasic/>}
     src={PanGestureBasicSrc}
@@ -38,12 +31,6 @@ The gesture [activates](/docs/2.x/fundamentals/states-events#active) when a fing
 Configurations such as a minimum initial distance, specific vertical or horizontal pan detection and [number of fingers](/docs/2.x/gestures/pan-gesture#minpointersvalue-number) required for activation (allowing for multifinger swipes) may be specified.
 
 Gesture callback can be used for continuous tracking of the pan gesture. It provides information about the gesture such as its XY translation from the starting point as well as its instantaneous velocity.
-
-  <div className={appearOnMobile} style={{ display: 'flex', margin: '16px 0', justifyContent: 'center' }}>
-    <video playsInline autoPlay muted loop style={{maxWidth: 360}}>
-      <source src={useBaseUrl("/video/pan.mp4")} type="video/mp4"/>
-    </video>
-  </div>
 
 <samp id="PanGestureBasicSrc">Pan Gesture</samp>
 

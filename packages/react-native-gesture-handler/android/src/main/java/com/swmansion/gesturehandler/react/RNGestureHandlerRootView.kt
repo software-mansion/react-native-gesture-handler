@@ -45,10 +45,21 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
     rootHelper?.recordHandlerIfNotPresent(handler)
   }
 
-  override fun dispatchTouchEvent(event: MotionEvent) = if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
-    true
-  } else {
-    super.dispatchTouchEvent(event)
+  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    // When starting a new event stream, dispatch CANCEL event so the subtree
+    // can clean up its internal state that may be stale due to Gesture Handler
+    // starting to intercept events mid-stream.
+    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+      val cancelEvent = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_CANCEL }
+      super.dispatchTouchEvent(cancelEvent)
+      cancelEvent.recycle()
+    }
+
+    return if (rootViewEnabled && rootHelper!!.dispatchTouchEvent(event)) {
+      true
+    } else {
+      super.dispatchTouchEvent(event)
+    }
   }
 
   override fun dispatchGenericMotionEvent(ev: MotionEvent) =
