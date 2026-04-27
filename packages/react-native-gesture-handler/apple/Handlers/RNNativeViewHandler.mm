@@ -192,13 +192,22 @@
   [super unbindFromView];
 }
 
-- (void)sendActiveStateEventIfChangedForView:(UIView *)sender extraData:(RNGestureHandlerEventExtraData *)extraData
+- (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData
 {
-  if ([_lastActiveExtraData.data isEqualToDictionary:extraData.data]) {
-    return;
+  if (_lastActiveExtraData != nil && [_lastActiveExtraData.data isEqualToDictionary:extraData.data]) {
+    return YES;
   }
 
   _lastActiveExtraData = extraData;
+  return NO;
+}
+
+- (void)sendActiveStateEventIfChangedForView:(UIView *)sender extraData:(RNGestureHandlerEventExtraData *)extraData
+{
+  if ([self shouldSuppressActiveEvent:extraData]) {
+    return;
+  }
+
   [self sendEventsInState:RNGestureHandlerStateActive forViewWithTag:sender.reactTag withExtraData:extraData];
 }
 
@@ -245,7 +254,6 @@
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
 
-  _lastActiveExtraData = nil;
   [self sendActiveStateEventIfChangedForView:sender
                                    extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
                                                                           withNumberOfTouches:event.allTouches.count
@@ -330,7 +338,13 @@
   return YES;
 }
 
-#else
+- (void)reset
+{
+  [super reset];
+  _lastActiveExtraData = nil;
+}
+
+#endif
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNDummyGestureRecognizer *)recognizer
 {
@@ -338,7 +352,5 @@
                                       withNumberOfTouches:1
                                           withPointerType:RNGestureHandlerMouse];
 }
-
-#endif
 
 @end
