@@ -50,7 +50,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.restoreViewStyles(view);
     this.buttonRole = view.getAttribute('role') === 'button';
-    this.switchRole = view.querySelector('input[role="switch"]') !== null;
+    this.switchRole =
+      view.querySelector(':scope > input[role="switch"]') !== null;
   }
 
   public override updateGestureConfig(config: Config): void {
@@ -103,11 +104,19 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const view = this.delegate.view as HTMLElement;
     const isRNGHText = view.hasAttribute('rnghtext');
 
+    console.log(
+      this.buttonRole,
+      this.switchRole,
+      this.shouldActivateOnStart,
+      view
+    );
+
     if (
       (this.buttonRole && this.shouldActivateOnStart) ||
       this.switchRole ||
       isRNGHText
     ) {
+      console.log('siema');
       this.activate();
     }
   }
