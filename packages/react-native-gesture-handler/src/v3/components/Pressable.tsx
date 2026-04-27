@@ -295,6 +295,7 @@ const Pressable = (props: PressableProps) => {
 
   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
   const buttonGesture = useNativeGesture({
+    shouldActivateOnStart: Platform.OS === 'web',
     onTouchesCancel: (event) => {
       if (Platform.OS !== 'macos' && Platform.OS !== 'web') {
         // On MacOS cancel occurs in middle of gesture

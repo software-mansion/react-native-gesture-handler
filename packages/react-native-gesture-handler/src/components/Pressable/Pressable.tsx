@@ -291,6 +291,7 @@ const LegacyPressable = (props: LegacyPressableProps) => {
   const buttonGesture = useMemo(
     () =>
       Gesture.Native()
+        .shouldActivateOnStart(Platform.OS === 'web')
         .onTouchesCancelled((event) => {
           if (Platform.OS !== 'macos' && Platform.OS !== 'web') {
             // On MacOS cancel occurs in middle of gesture
