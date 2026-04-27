@@ -104,19 +104,11 @@ export default class NativeViewGestureHandler extends GestureHandler {
     const view = this.delegate.view as HTMLElement;
     const isRNGHText = view.hasAttribute('rnghtext');
 
-    console.log(
-      this.buttonRole,
-      this.switchRole,
-      this.shouldActivateOnStart,
-      view
-    );
-
     if (
       (this.buttonRole && this.shouldActivateOnStart) ||
       this.switchRole ||
       isRNGHText
     ) {
-      console.log('siema');
       this.activate();
     }
   }
