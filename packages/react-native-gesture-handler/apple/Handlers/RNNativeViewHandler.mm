@@ -32,6 +32,11 @@
 }
 
 #if !TARGET_OS_OSX
+- (BOOL)isAttachedToTextView
+{
+  return [self.view isKindOfClass:[UITextView class]];
+}
+
 - (void)touchesBegan:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler setCurrentPointerTypeForEvent:event];
@@ -47,6 +52,7 @@
 - (void)touchesEnded:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+
   self.state = UIGestureRecognizerStateFailed;
 
   // For now, we are handling only the scroll view case.
@@ -59,6 +65,7 @@
 - (void)touchesCancelled:(NSSet<RNGHUITouch *> *)touches withEvent:(UIEvent *)event
 {
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
 }
