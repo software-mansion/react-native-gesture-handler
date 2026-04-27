@@ -8,6 +8,7 @@ import { Button, Text, View } from 'react-native';
 import { gestureStyles as styles } from '../gestureStyles';
 import { scheduleOnRN } from 'react-native-worklets';
 import GestureBox from '../components/GestureBox';
+import NormalBox from '../components/NormalBox';
 import { WRONG_BOX_COLOR } from '../components/gestureColors';
 
 export default function TapScreen() {
@@ -27,7 +28,7 @@ export default function TapScreen() {
       </Text>
       <View style={styles.content}>
         <GestureBox gesture={tapGesture} testID={testID} />
-        <GestureBox color={WRONG_BOX_COLOR} />
+        <NormalBox color={WRONG_BOX_COLOR} />
       </View>
 
       <View style={styles.buttonContainer}>

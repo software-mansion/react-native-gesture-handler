@@ -8,6 +8,7 @@ import { Button, Text, View } from 'react-native';
 import { gestureStyles as styles } from '../gestureStyles';
 import { scheduleOnRN } from 'react-native-worklets';
 import GestureBox from '../components/GestureBox';
+import NormalBox from '../components/NormalBox';
 import { WRONG_BOX_COLOR } from '../components/gestureColors';
 
 export default function PanScreen() {
@@ -25,7 +26,7 @@ export default function PanScreen() {
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Pan Gesture</Text>
       <View style={styles.content}>
-        <GestureBox testID="wrong-element" color={WRONG_BOX_COLOR} />
+        <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={panGesture} testID={testID} />
       </View>
 
