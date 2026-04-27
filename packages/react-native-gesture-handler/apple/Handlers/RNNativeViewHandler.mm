@@ -17,6 +17,14 @@
 #import <React/RCTTextInputComponentView.h>
 #import <React/UIView+React.h>
 
+#if !TARGET_OS_OSX
+@interface RNNativeViewGestureHandler ()
+- (void)handleTextViewTouchDown:(UIEvent *)event;
+- (void)handleTextViewTouchUp:(UIEvent *)event;
+- (void)handleTextViewTouchCancel:(UIEvent *)event;
+@end
+#endif
+
 #pragma mark RNDummyGestureRecognizer
 
 @implementation RNDummyGestureRecognizer {
@@ -146,6 +154,8 @@
 
 - (void)bindToView:(UIView *)view
 {
+  UIView *textInputChild = nil;
+
   // For UIControl based views (UIButton, UISwitch) we provide special handling that would allow
   // for properties like `disallowInterruption` to work.
   if ([view isKindOfClass:[UIControl class]]) {
