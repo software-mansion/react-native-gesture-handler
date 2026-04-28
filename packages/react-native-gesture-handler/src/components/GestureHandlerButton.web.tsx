@@ -72,6 +72,11 @@ export const ButtonComponent = ({
     };
     const handleGestureCanceled = () => {
       gestureEnabledRef.current = false;
+      if (pressOutTimer.current != null) {
+        clearTimeout(pressOutTimer.current);
+        pressOutTimer.current = null;
+      }
+      pressInTimestamp.current = 0;
       setPressed(false);
     };
 
