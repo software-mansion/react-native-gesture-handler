@@ -741,7 +741,12 @@ class RNGestureHandlerButtonViewManager :
     }
 
     override fun shouldBeginWithRecorded(recorded: List<GestureHandler>, handler: NativeViewGestureHandler): Boolean =
-      recorded.all { it.shouldRecognizeSimultaneously(handler) || it.view == this || it is HoverGestureHandler }
+      recorded.all {
+        it.shouldRecognizeSimultaneously(handler) ||
+          handler.shouldRecognizeSimultaneously(it) ||
+          it.view == this ||
+          it is HoverGestureHandler
+      }
 
     private fun tryFreeingResponder() {
       if (touchResponder === this) {
