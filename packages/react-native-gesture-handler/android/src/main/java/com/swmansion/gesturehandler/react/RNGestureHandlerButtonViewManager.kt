@@ -42,6 +42,8 @@ import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
+import com.swmansion.gesturehandler.core.GestureHandler
+import com.swmansion.gesturehandler.core.HoverGestureHandler
 import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
@@ -737,6 +739,9 @@ class RNGestureHandlerButtonViewManager :
       tryFreeingResponder()
       isTouched = false
     }
+
+    override fun shouldBeginWithRecorded(recorded: List<GestureHandler>, handler: NativeViewGestureHandler): Boolean =
+      recorded.all { it.shouldRecognizeSimultaneously(handler) || it.view == this || it is HoverGestureHandler }
 
     private fun tryFreeingResponder() {
       if (touchResponder === this) {
