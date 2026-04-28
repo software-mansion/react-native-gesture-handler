@@ -12,6 +12,7 @@ export default function NestedTouchablesExample() {
   const [log, setLog] = useState<string[]>([]);
 
   const pushLog = (message: string) => {
+    console.log(message);
     setLog((prev) =>
       [...prev, `[${new Date().toLocaleTimeString()}] ${message}`].slice(-6)
     );
@@ -20,11 +21,13 @@ export default function NestedTouchablesExample() {
   const outerTap = useTapGesture({
     runOnJS: true,
     onActivate: () => pushLog('outer tap gesture'),
+    testID: 'outer-tap',
   });
 
   const innerTap = useTapGesture({
     runOnJS: true,
     onActivate: () => pushLog('inner tap gesture'),
+    testID: 'inner-tap',
   });
 
   return (
@@ -40,6 +43,11 @@ export default function NestedTouchablesExample() {
 
           <Touchable
             style={[styles.layer, styles.outerTouchable]}
+            testID="outer-touchable"
+            activeUnderlayOpacity={0.3}
+            onPressIn={() => pushLog('outer press in')}
+            onPressOut={() => pushLog('outer press out')}
+            onLongPress={() => pushLog('outer long press')}
             onPress={() => pushLog('outer Touchable')}>
             <Text style={styles.layerLabel}>Outer Touchable</Text>
 
@@ -49,6 +57,11 @@ export default function NestedTouchablesExample() {
 
                 <Touchable
                   style={[styles.layer, styles.innerTouchable]}
+                  testID="inner-touchable"
+                  activeUnderlayOpacity={0.3}
+                  onPressIn={() => pushLog('inner press in')}
+                  onPressOut={() => pushLog('inner press out')}
+                  onLongPress={() => pushLog('inner long press')}
                   onPress={() => pushLog('inner Touchable')}>
                   <Text style={styles.layerLabel}>Inner Touchable</Text>
                 </Touchable>
