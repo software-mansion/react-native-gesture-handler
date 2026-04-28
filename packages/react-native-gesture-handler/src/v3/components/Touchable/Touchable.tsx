@@ -93,10 +93,10 @@ export const Touchable = (props: TouchableProps) => {
     (e: EndCallbackEventType) => {
       if (pointerState.current === PointerState.INSIDE) {
         onPressOut?.(e);
+      }
 
-        if (!e.canceled && !longPressDetected.current) {
-          onPress?.(e);
-        }
+      if (!e.canceled && !longPressDetected.current && e.pointerInside) {
+        onPress?.(e);
       }
 
       pointerState.current = PointerState.UNKNOWN;
@@ -106,7 +106,7 @@ export const Touchable = (props: TouchableProps) => {
         longPressTimeout.current = undefined;
       }
     },
-    [onPressOut]
+    [onPressOut, onPress]
   );
 
   const onUpdate = useCallback(
