@@ -18,7 +18,11 @@ const TapPropsMapping = new Map<
   ['maxDelay', 'maxDelayMs'],
 ]);
 
-export function useTapGesture(config: TapGestureConfig): TapGesture {
+const EMPTY_TAP_CONFIG: TapGestureConfig = {};
+
+export function useTapGesture(
+  config: TapGestureConfig = EMPTY_TAP_CONFIG
+): TapGesture {
   const tapConfig = useClonedAndRemappedConfig<
     TapGestureProperties,
     TapHandlerData,
