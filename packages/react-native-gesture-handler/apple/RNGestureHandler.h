@@ -96,6 +96,7 @@
 - (void)setConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateConfig:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)updateRelations:(nonnull NSDictionary *)relations;
+- (BOOL)shouldSuppressActiveEvent:(nonnull RNGestureHandlerEventExtraData *)extraData;
 - (void)handleGesture:(nonnull id)recognizer;
 - (void)handleGesture:(nonnull id)recognizer fromReset:(BOOL)fromReset;
 - (void)handleGesture:(nonnull id)recognizer

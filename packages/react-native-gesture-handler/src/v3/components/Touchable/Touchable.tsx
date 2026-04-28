@@ -89,19 +89,14 @@ export const Touchable = (props: TouchableProps) => {
     }
   }, []);
 
-  const onDeactivate = useCallback(
-    (e: EndCallbackEventType) => {
-      if (!e.canceled && !longPressDetected.current && e.pointerInside) {
-        onPress?.(e);
-      }
-    },
-    [onPress]
-  );
-
   const onFinalize = useCallback(
     (e: EndCallbackEventType) => {
       if (pointerState.current === PointerState.INSIDE) {
         onPressOut?.(e);
+      }
+
+      if (!e.canceled && !longPressDetected.current && e.pointerInside) {
+        onPress?.(e);
       }
 
       pointerState.current = PointerState.UNKNOWN;
@@ -111,7 +106,7 @@ export const Touchable = (props: TouchableProps) => {
         longPressTimeout.current = undefined;
       }
     },
-    [onPressOut]
+    [onPressOut, onPress]
   );
 
   const onUpdate = useCallback(
@@ -157,7 +152,6 @@ export const Touchable = (props: TouchableProps) => {
       enabled={!disabled}
       onBegin={onBegin}
       onActivate={onActivate}
-      onDeactivate={onDeactivate}
       onFinalize={onFinalize}
       onUpdate={onUpdate}
       defaultOpacity={defaultOpacity}

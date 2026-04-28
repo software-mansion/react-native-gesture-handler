@@ -307,6 +307,11 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   return [self isViewParagraphComponent:recognizer.view] ? recognizer.view.subviews[0] : recognizer.view;
 }
 
+- (BOOL)shouldSuppressActiveEvent:(RNGestureHandlerEventExtraData *)extraData
+{
+  return NO;
+}
+
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
   [self handleGesture:recognizer fromReset:NO];
@@ -367,6 +372,10 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
   _state = state;
 
   RNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
+
+  if (state == RNGestureHandlerStateActive && [self shouldSuppressActiveEvent:eventData]) {
+    return;
+  }
 
   NSNumber *tag = [self chooseViewForInteraction:recognizer].reactTag;
 

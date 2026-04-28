@@ -50,7 +50,8 @@ export default class NativeViewGestureHandler extends GestureHandler {
 
     this.restoreViewStyles(view);
     this.buttonRole = view.getAttribute('role') === 'button';
-    this.switchRole = view.querySelector('input[role="switch"]') !== null;
+    this.switchRole =
+      view.querySelector(':scope > input[role="switch"]') !== null;
   }
 
   public override updateGestureConfig(config: Config): void {

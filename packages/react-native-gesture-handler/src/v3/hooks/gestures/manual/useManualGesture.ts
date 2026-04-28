@@ -8,7 +8,11 @@ import type {
   ManualHandlerData,
 } from './ManualTypes';
 
-export function useManualGesture(config: ManualGestureConfig): ManualGesture {
+const EMPTY_MANUAL_CONFIG: ManualGestureConfig = {};
+
+export function useManualGesture(
+  config: ManualGestureConfig = EMPTY_MANUAL_CONFIG
+): ManualGesture {
   const manualConfig = useClonedAndRemappedConfig<
     ManualGestureProperties,
     ManualHandlerData

@@ -8,7 +8,11 @@ import type {
   NativeHandlerData,
 } from './NativeTypes';
 
-export function useNativeGesture(config: NativeGestureConfig): NativeGesture {
+const EMPTY_NATIVE_CONFIG: NativeGestureConfig = {};
+
+export function useNativeGesture(
+  config: NativeGestureConfig = EMPTY_NATIVE_CONFIG
+): NativeGesture {
   const nativeConfig = useClonedAndRemappedConfig<
     NativeGestureProperties,
     NativeHandlerData
