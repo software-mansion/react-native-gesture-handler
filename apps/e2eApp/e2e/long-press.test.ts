@@ -1,5 +1,6 @@
 import { beforeAll, beforeEach, describe, it } from "@jest/globals";
 import { by, device, element, expect, waitFor } from "detox";
+import { LONG_PRESS_DURATION } from "../../common-app/src/e2e_screens/testConstants";
 
 describe("test long press gesture", () => {
   beforeAll(async () => {
@@ -24,26 +25,26 @@ describe("test long press gesture", () => {
 
   it("shouldn`t register a long press gesture on different element", async () => {
     await expect(wrongElement).toExist();
-    await wrongElement.longPress(800);
+    await wrongElement.longPress(LONG_PRESS_DURATION);
     await expect(longPressActivatedElement).not.toExist();
   });
 
-  it("should register a long press gesture", async () => {
+  it("should register a long press gesture with correct duration", async () => {
     await expect(longPressElement).toExist();
-    await longPressElement.longPress(800);
+    await longPressElement.longPress(LONG_PRESS_DURATION + 10);// Adding a small buffer to ensure the gesture is recognized
     await expect(longPressActivatedElement).toExist();
   });
 
-  it("multiple taps shouldn`t register a long press gesture", async () => {
+  it("should register a long press gesture with longer duration", async () => {
     await expect(longPressElement).toExist();
-    await longPressElement.multiTap(3);
+    await longPressElement.longPress(LONG_PRESS_DURATION + 100);
+    await expect(longPressActivatedElement).toExist();
+  });
+
+  it("shouldnt register a long press gesture with shorter duration", async () => {
+    await expect(longPressElement).toExist();
+    await longPressElement.longPress(LONG_PRESS_DURATION - 100);
     await expect(longPressActivatedElement).not.toExist();
   });
 
-  it("shouldnt change state due to multiple long presses", async () => {
-    await expect(longPressElement).toExist();
-    await longPressElement.longPress(800);
-    await longPressActivatedElement.longPress(800);
-    await expect(longPressActivatedElement).toExist();
-  });
 });

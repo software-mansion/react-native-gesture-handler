@@ -10,13 +10,14 @@ import { scheduleOnRN } from 'react-native-worklets';
 import GestureBox from '../components/GestureBox';
 import NormalBox from '../components/NormalBox';
 import { WRONG_BOX_COLOR } from '../components/gestureColors';
+import { LONG_PRESS_DURATION } from '../testConstants';
 
 export default function LongPressScreen() {
   const navigation = useNavigation<any>();
   const [testID, setTestID] = useState('long-press-idle');
   const activateLongPress = () => setTestID('long-press-activated');
   const longPressGesture = useLongPressGesture({
-    minDuration: 500,
+    minDuration: LONG_PRESS_DURATION,
     onActivate: () => {
       'worklet';
       scheduleOnRN(activateLongPress);

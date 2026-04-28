@@ -16,12 +16,18 @@ export default function RotationScreen() {
   const [testID, setTestID] = useState('rotation-idle');
   const activateRotation = () => setTestID('rotation-activated');
   const rotationGesture = useRotationGesture({
+    onTouchesDown: () => {
+      'worklet';
+      console.log('Rotation gesture started');
+    },
     onActivate: () => {
       'worklet';
       scheduleOnRN(activateRotation);
+      console.log('Rotation activated');
     },
   });
 
+  console.log('Cwel');
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Rotation Gesture</Text>
