@@ -2,6 +2,8 @@ import * as React from 'react';
 import type { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 import { View } from 'react-native';
 
+import { GestureLifecycleEvent } from '../web/tools/GestureLifecycleEvents';
+
 type ButtonProps = ViewProps & {
   ref?: React.Ref<React.ComponentRef<typeof View>>;
   enabled?: boolean;
@@ -17,6 +19,7 @@ type ButtonProps = ViewProps & {
 };
 
 export const ButtonComponent = ({
+  ref: externalRef,
   enabled = true,
   pressAndHoldAnimationDuration: pressAndHoldAnimationDurationProp = -1,
   tapAnimationDuration: tapAnimationDurationProp = 100,
@@ -46,9 +49,47 @@ export const ButtonComponent = ({
   const pressOutTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
+  const gestureEnabledRef = React.useRef(true);
+  const viewRef = React.useRef<HTMLElement | null>(null);
+
+  const setRef = React.useCallback(
+    (node: React.ComponentRef<typeof View> | null) => {
+      viewRef.current = node as unknown as HTMLElement | null;
+      if (typeof externalRef === 'function') {
+        externalRef(node);
+      } else if (externalRef != null) {
+        externalRef.current = node;
+      }
+    },
+    [externalRef]
+  );
 
   React.useEffect(() => {
+    const node = viewRef.current;
+
+    const handleGestureBegan = () => {
+      gestureEnabledRef.current = true;
+    };
+    const handleGestureCanceled = () => {
+      gestureEnabledRef.current = false;
+      setPressed(false);
+    };
+
+    node?.addEventListener(GestureLifecycleEvent.Began, handleGestureBegan);
+    node?.addEventListener(
+      GestureLifecycleEvent.Canceled,
+      handleGestureCanceled
+    );
+
     return () => {
+      node?.removeEventListener(
+        GestureLifecycleEvent.Began,
+        handleGestureBegan
+      );
+      node?.removeEventListener(
+        GestureLifecycleEvent.Canceled,
+        handleGestureCanceled
+      );
       if (pressOutTimer.current != null) {
         clearTimeout(pressOutTimer.current);
       }
@@ -57,7 +98,7 @@ export const ButtonComponent = ({
 
   const pressIn = React.useCallback(
     (event: NativeSyntheticEvent<unknown>) => {
-      if (!enabled) {
+      if (!enabled || !gestureEnabledRef.current) {
         return;
       }
 
@@ -78,7 +119,7 @@ export const ButtonComponent = ({
       // Only release if a press-in was actually recorded — guards against
       // stray pointer events and lets us complete the release cycle even if
       // `enabled` flipped to false between press-in and press-out.
-      if (pressInTimestamp.current === 0) {
+      if (pressInTimestamp.current === 0 || !gestureEnabledRef.current) {
         return;
       }
 
@@ -131,6 +172,7 @@ export const ButtonComponent = ({
 
   return (
     <View
+      ref={setRef}
       accessibilityRole="button"
       style={[
         style,

@@ -303,6 +303,10 @@ export default abstract class GestureHandler implements IGestureHandler {
     );
   }
 
+  public shouldBeginWithRecorded(_recorded: IGestureHandler[]): boolean {
+    return true;
+  }
+
   public shouldAttachGestureToChildView(): boolean {
     return false;
   }
