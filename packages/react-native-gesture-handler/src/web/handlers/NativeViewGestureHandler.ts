@@ -217,7 +217,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
     return this.buttonRole;
   }
 
-  public override shouldBeginWithRecorded(
+  public override shouldBeginWithRecordedHandlers(
     recorded: IGestureHandler[]
   ): boolean {
     if (!this.isButton()) {

@@ -274,7 +274,7 @@ export default class GestureHandlerOrchestrator {
     handler.awaiting = false;
     handler.activationIndex = Number.MAX_SAFE_INTEGER;
 
-    if (!handler.shouldBeginWithRecorded(this.gestureHandlers)) {
+    if (!handler.shouldBeginWithRecordedHandlers(this.gestureHandlers)) {
       handler.cancel();
     }
 
