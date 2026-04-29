@@ -224,7 +224,7 @@ export default class NativeViewGestureHandler extends GestureHandler {
       return true;
     }
 
-    const self = this as unknown as IGestureHandler;
+    const self = this as IGestureHandler;
     return recorded.every(
       (other) =>
         other.shouldRecognizeSimultaneously(self) ||
