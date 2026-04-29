@@ -83,8 +83,8 @@ class NativeViewGestureHandler : GestureHandler() {
 
   override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = !disallowInterruption
 
-  override fun shouldBeginWithRecorded(recorded: List<GestureHandler>): Boolean =
-    hook.shouldBeginWithRecorded(recorded, this)
+  override fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>): Boolean =
+    hook.shouldBeginWithRecordedHandlers(recorded, this)
 
   override fun onPrepare() {
     when (val view = view) {
@@ -281,7 +281,8 @@ class NativeViewGestureHandler : GestureHandler() {
      * @param recorded handlers already recorded for the current touch
      * @param handler the handler being recorded
      */
-    fun shouldBeginWithRecorded(recorded: List<GestureHandler>, handler: NativeViewGestureHandler): Boolean = true
+    fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>, handler: NativeViewGestureHandler): Boolean =
+      true
 
     /**
      * Passes the event down to the underlying view using the correct method.

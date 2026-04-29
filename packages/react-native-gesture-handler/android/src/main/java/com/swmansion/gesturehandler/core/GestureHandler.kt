@@ -693,7 +693,7 @@ open class GestureHandler {
     return interactionController?.shouldHandlerBeCancelledBy(this, handler) ?: false
   }
 
-  open fun shouldBeginWithRecorded(recorded: List<GestureHandler>): Boolean = true
+  open fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>): Boolean = true
 
   fun isWithinBounds(view: View?, posX: Float, posY: Float): Boolean {
     if (RNSVGHitTester.isSvgElement(view!!)) {

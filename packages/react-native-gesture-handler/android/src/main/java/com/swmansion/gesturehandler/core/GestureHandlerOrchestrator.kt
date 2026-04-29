@@ -453,7 +453,7 @@ class GestureHandlerOrchestrator(
     handler.activationIndex = Int.MAX_VALUE
     handler.prepare(view, this)
 
-    if (!handler.shouldBeginWithRecorded(gestureHandlers)) {
+    if (!handler.shouldBeginWithRecordedHandlers(gestureHandlers)) {
       handler.cancel()
     }
 
