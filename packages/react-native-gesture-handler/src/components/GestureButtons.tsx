@@ -50,7 +50,8 @@ class InnerBaseButton extends React.Component<BaseButtonWithRefProps> {
     nativeEvent,
   }: HandlerStateChangeEvent<NativeViewGestureHandlerPayload>) => {
     const { state, oldState, pointerInside } = nativeEvent;
-    const active = pointerInside && state === State.ACTIVE;
+    const active =
+      pointerInside && (state === State.BEGAN || state === State.ACTIVE);
 
     if (active !== this.lastActive && this.props.onActiveStateChange) {
       this.props.onActiveStateChange(active);
