@@ -50,6 +50,14 @@
 - (void)applyStartAnimationState;
 
 /**
+ * Resets all transient press/animation state so the button can be safely reused
+ * by Fabric view recycling. Cancels pending press-out blocks, removes in-flight
+ * animations, and unconditionally restores the animation target's transform/alpha
+ * and the underlay opacity to neutral values.
+ */
+- (void)prepareForRecycle;
+
+/**
  * Updates the underlay layer's corner radii with separate horizontal/vertical
  * components per corner, supporting elliptical inner corners when border widths
  * are uneven. Handles both uniform and per-corner (CAShapeLayer mask) cases.
