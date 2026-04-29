@@ -27,7 +27,6 @@ export default function RotationScreen() {
     },
   });
 
-  console.log('Cwel');
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Rotation Gesture</Text>
@@ -44,7 +43,7 @@ export default function RotationScreen() {
         />
         <Button
           title="Back to main"
-          onPress={() => navigation.navigate('Main')}
+          onPress={() => navigation.navigate('Gesture Tests')}
           testID="back-to-main"
         />
       </View>

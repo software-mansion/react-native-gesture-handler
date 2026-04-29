@@ -40,7 +40,7 @@ export default function LongPressScreen() {
         />
         <Button
           title="Back to main"
-          onPress={() => navigation.navigate('Main')}
+          onPress={() => navigation.navigate('Gesture Tests')}
           testID="back-to-main"
         />
       </View>
