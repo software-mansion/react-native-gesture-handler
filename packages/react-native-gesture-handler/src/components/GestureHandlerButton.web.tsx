@@ -169,4 +169,6 @@ export const ButtonComponent = ({
   );
 };
 
+ButtonComponent.displayName = 'Button';
+
 export default ButtonComponent;
