@@ -52,9 +52,4 @@ export default class HoverGestureHandler extends GestureHandler {
 
     super.onPointerMove(event);
   }
-
-  protected override onPointerCancel(event: AdaptedEvent): void {
-    super.onPointerCancel(event);
-    this.reset();
-  }
 }

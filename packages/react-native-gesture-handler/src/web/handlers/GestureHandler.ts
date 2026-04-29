@@ -363,7 +363,6 @@ export default abstract class GestureHandler implements IGestureHandler {
     // No need to send a cancel touch event explicitly here. `cancel` will
     // handle cancelling all tracked touches if the handler expects pointer data.
     this.cancel();
-    this.reset();
   }
   protected onPointerOutOfBounds(event: AdaptedEvent): void {
     this.tryToSendMoveEvent(true, event);
