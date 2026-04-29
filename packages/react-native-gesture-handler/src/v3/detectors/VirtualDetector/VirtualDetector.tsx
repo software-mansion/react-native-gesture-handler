@@ -3,6 +3,8 @@ import { findNodeHandle, Platform } from 'react-native';
 
 import { Wrap } from '../../../handlers/gestures/GestureDetector/Wrap';
 import { tagMessage } from '../../../utils';
+import { NATIVE_GESTURE_ROLE_ATTRIBUTE } from '../../../web/constants';
+import { NativeGestureRole } from '../../../web/interfaces';
 import { isComposedGesture } from '../../hooks/utils/relationUtils';
 import type { DetectorCallbacks, VirtualChild } from '../../types';
 import type { VirtualDetectorProps } from '../common';
@@ -36,7 +38,7 @@ export function VirtualDetector<
   const { register, unregister, setMode } =
     useRequiredInterceptingDetectorContext();
 
-  const viewRef = useRef(null);
+  const viewRef = useRef<HTMLElement | null>(null);
   const [viewTag, setViewTag] = useState<number>(-1);
 
   const handleRef = useCallback(
@@ -53,6 +55,34 @@ export function VirtualDetector<
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.children]
   );
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !viewRef.current) {
+      return;
+    }
+
+    // @ts-ignore This exists on React.ReactNode
+    const displayName = props.children?.type?.displayName as string;
+    // On web we need to use `firstChild` as `current` will refer to `Wrap`
+    const element = viewRef.current.firstChild as HTMLElement;
+
+    if (displayName === 'ScrollView') {
+      element.setAttribute(
+        NATIVE_GESTURE_ROLE_ATTRIBUTE,
+        NativeGestureRole.ScrollView
+      );
+    } else if (displayName === 'Switch') {
+      element.setAttribute(
+        NATIVE_GESTURE_ROLE_ATTRIBUTE,
+        NativeGestureRole.Switch
+      );
+    } else if (displayName === 'Button') {
+      element.setAttribute(
+        NATIVE_GESTURE_ROLE_ATTRIBUTE,
+        NativeGestureRole.Button
+      );
+    }
+  }, [props.children, viewTag]);
 
   useEffect(() => {
     if (viewTag === -1) {
