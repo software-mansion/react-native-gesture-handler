@@ -6,8 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import HomeScreen from './HomeScreen';
 import GesturesNavigation from './gesturesNavigation';
 import IntegrationNavigation from './integrationNavigation';
-import DrawerLayoutScreen from './integration/DrawerLayout';
-import SwipeableScreen from './integration/Swipeable';
+import CompositionNavigation from './compositionNavigation';
 import MultipleHandlersScreen from './integration/MultipleHandlers';
 import TapScreen from './gestures/tap';
 import PanScreen from './gestures/pan';
@@ -28,6 +27,9 @@ export default function MainNavigation() {
       },
       'Integration Tests': {
         screen: IntegrationNavigation,
+      },
+      'Composition & Interaction': {
+        screen: CompositionNavigation,
       },
       Tap: {
         screen: TapScreen,
@@ -50,12 +52,6 @@ export default function MainNavigation() {
       Hover: {
         screen: HoverScreen,
       },
-      DrawerLayout: {
-        screen: DrawerLayoutScreen,
-      },
-      Swipeable: {
-        screen: SwipeableScreen,
-      },
       MultipleHandlers: {
         screen: MultipleHandlersScreen,
       },
@@ -77,8 +73,7 @@ export default function MainNavigation() {
       Fling: 'gestures/fling',
       Hover: 'gestures/hover',
       'Integration Tests': 'integration',
-      DrawerLayout: 'integration/drawer',
-      Swipeable: 'integration/swipeable',
+      'Composition & Interaction': 'composition-interaction',
       MultipleHandlers: 'integration/multiple',
     },
   };

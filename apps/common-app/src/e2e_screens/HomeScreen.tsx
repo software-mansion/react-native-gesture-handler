@@ -19,6 +19,12 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate('Integration Tests')}>
         <Text style={styles.buttonText}>Integration Tests</Text>
       </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate('Composition & Interaction')}>
+        <Text style={styles.buttonText}>Composition & Interaction</Text>
+      </Pressable>
     </View>
   );
 }
