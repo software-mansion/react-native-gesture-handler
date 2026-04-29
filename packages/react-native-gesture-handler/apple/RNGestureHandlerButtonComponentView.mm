@@ -70,18 +70,13 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
 - (void)prepareForRecycle
 {
-  // Reset the wrapper layer's transform (and any in-flight transform animation)
-  // before super resets _props, so the recycled view starts in a clean visual
-  // state regardless of whether the next updateProps: re-runs applyStartAnimationState.
   [self.layer removeAnimationForKey:@"transform"];
   self.layer.transform = CATransform3DIdentity;
 
   [_buttonView prepareForRecycle];
 
-  // The next updateProps: comparison treats this view as having "previous"
-  // props equal to defaults, so identical defaults across mounts won't trigger
-  // applyStartAnimationState — leaving non-1.0 default opacity/scale/underlay
-  // values unapplied. Force a one-shot reset on the next updateProps:.
+  // Force the next updateProps: to re-run applyStartAnimationState even if
+  // the new mount's defaults match the previous mount's.
   _needsAnimationStateReset = YES;
 
   [super prepareForRecycle];
@@ -163,24 +158,29 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
-  // super.finalizeUpdates calls invalidateLayer, which unconditionally sets
-  // self.layer.opacity = _props->opacity (the React style.opacity, default
-  // 1.0). That overwrites the alpha set by applyStartAnimationState for non-
-  // 1.0 defaultOpacity, and would also interrupt in-flight press animations
-  // on a mid-press React re-render. Snapshot opacity (and any animation) and
-  // restore it atomically.
+  // super's invalidateLayer (called via finalizeUpdates) unconditionally sets
+  // self.layer.opacity to the React style.opacity, overwriting our
+  // applyStartAnimationState alpha and interrupting in-flight press
+  // animations. Save/restore around super, but only touch what super actually
+  // disturbed — re-adding an unchanged animation resets its progress.
   float savedOpacity = self.layer.opacity;
-  CAAnimation *savedOpacityAnimation = [[self.layer animationForKey:@"opacity"] copy];
+  CAAnimation *savedOpacityAnimation = [self.layer animationForKey:@"opacity"];
 
   [super finalizeUpdates:updateMask];
 
-  if (savedOpacity != self.layer.opacity || savedOpacityAnimation != nil) {
+  BOOL opacityChanged = savedOpacity != self.layer.opacity;
+  BOOL animationChanged = savedOpacityAnimation != [self.layer animationForKey:@"opacity"];
+  if (opacityChanged || animationChanged) {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    [self.layer removeAnimationForKey:@"opacity"];
-    self.layer.opacity = savedOpacity;
-    if (savedOpacityAnimation) {
-      [self.layer addAnimation:savedOpacityAnimation forKey:@"opacity"];
+    if (animationChanged) {
+      [self.layer removeAnimationForKey:@"opacity"];
+      if (savedOpacityAnimation) {
+        [self.layer addAnimation:savedOpacityAnimation forKey:@"opacity"];
+      }
+    }
+    if (opacityChanged) {
+      self.layer.opacity = savedOpacity;
     }
     [CATransaction commit];
   }
@@ -307,13 +307,15 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
 {
   const auto &newProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(props);
 
-  // Re-apply the idle visual state only on first mount, after recycling, or
-  // when one of the default values actually changed. Doing it on every commit
-  // interrupts in-flight press animations whenever React re-renders the children
-  // mid-press.
-  BOOL shouldApplyStartAnimationState = !oldProps || _needsAnimationStateReset;
+  // After recycling, treat diffing branches as a fresh mount so values that
+  // survived recycling on _buttonView (e.g. pointerEvents) get re-applied.
+  BOOL treatAsFirstMount = !oldProps || _needsAnimationStateReset;
   _needsAnimationStateReset = NO;
-  if (oldProps && !shouldApplyStartAnimationState) {
+
+  // Avoid re-running applyStartAnimationState on every commit — it would
+  // interrupt in-flight press animations during mid-press re-renders.
+  BOOL shouldApplyStartAnimationState = treatAsFirstMount;
+  if (!treatAsFirstMount) {
     const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
     shouldApplyStartAnimationState = oldButtonProps.defaultOpacity != newProps.defaultOpacity ||
         oldButtonProps.defaultScale != newProps.defaultScale ||
@@ -345,7 +347,7 @@ static RNGestureHandlerPointerEvents RCTPointerEventsToEnum(facebook::react::Poi
   // This is necessary because pointerEvents is redefined in the spec,
   // which shadows the base property with a different, incompatible type.
   const auto &newViewProps = static_cast<const ViewProps &>(newProps);
-  if (!oldProps) {
+  if (treatAsFirstMount) {
     _buttonView.pointerEvents = RCTPointerEventsToEnum(newViewProps.pointerEvents);
   } else {
     const auto &oldButtonProps = *std::static_pointer_cast<const RNGestureHandlerButtonProps>(oldProps);
