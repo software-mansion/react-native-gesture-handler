@@ -91,9 +91,11 @@
 /**
  The view whose coordinate space should be used when reporting event positions to JS.
  Handlers attached via the V3 NativeDetector are bound to the `RNGestureHandlerDetector` wrapper,
- which never carries user-applied transforms — those live on the detector's single subview.
- Descending one level keeps reported coordinates consistent with V2 and the V3
- InterceptingGestureDetector path. For all other attachment styles this is just `recognizer.view`.
+ which never carries user-applied transforms — those live on its child. When the detector has
+ exactly one subview we descend into it so reported coordinates match the visible (transformed)
+ view, the same coordinate space V2 and the V3 InterceptingGestureDetector report in. With
+ multiple subviews there is no JS-side way to disambiguate which child caught the pointer, so we
+ keep the detector itself as the reference frame.
  */
 @property (nonatomic, readonly, nullable) RNGHUIView *coordinateView;
 
