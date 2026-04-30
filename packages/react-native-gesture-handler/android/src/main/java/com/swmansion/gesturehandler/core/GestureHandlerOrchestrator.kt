@@ -19,7 +19,7 @@ class GestureHandlerOrchestrator(
   private val handlerRegistry: GestureHandlerRegistry,
   private val viewConfigHelper: ViewConfigurationHelper,
   private val rootView: ViewGroup,
-  private val onJSResponderCancelListener: OnJSResponderCancelListener? = null,
+  private val onJSResponderCancelListener: OnJSResponderCancelListener,
 ) {
   /**
    * Minimum alpha (value from 0 to 1) that should be set to a view so that it can be treated as a
