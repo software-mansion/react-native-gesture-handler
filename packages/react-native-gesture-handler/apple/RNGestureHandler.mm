@@ -14,10 +14,6 @@
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTScrollViewComponentView.h>
 
-@interface UIGestureRecognizer (GestureHandler)
-@property (nonatomic, readonly) RNGestureHandler *gestureHandler;
-@end
-
 @implementation UIGestureRecognizer (GestureHandler)
 
 - (RNGestureHandler *)gestureHandler

@@ -113,6 +113,7 @@
 @implementation RNNativeViewGestureHandler {
   BOOL _shouldActivateOnStart;
   BOOL _disallowInterruption;
+  BOOL _yieldsToNativeGestures;
   RNGestureHandlerEventExtraData *_lastActiveExtraData;
 }
 
@@ -129,6 +130,7 @@
   [super updateConfig:config];
   _shouldActivateOnStart = [RCTConvert BOOL:config[@"shouldActivateOnStart"]];
   _disallowInterruption = [RCTConvert BOOL:config[@"disallowInterruption"]];
+  _yieldsToNativeGestures = [RCTConvert BOOL:config[@"yieldsToNativeGestures"]];
 }
 
 #if !TARGET_OS_OSX
@@ -239,9 +241,17 @@
 
   if (_disallowInterruption) {
     // When `disallowInterruption` is set we cancel all gesture handlers when this UIControl
-    // gets DOWN event
+    // gets DOWN event. When `yieldsToNativeGestures` is also set we leave alone:
+    //   - non-RNGH recognizers (e.g. UIScrollView's pan), so native containers can take over
+    //   - peer NativeViewGestureHandler recognizers (RNDummyGestureRecognizer), so wrapping
+    //     RNGH-managed scrollables/native handlers can still take over
     for (RNGHUITouch *touch in [event allTouches]) {
       for (UIGestureRecognizer *recogn in [touch gestureRecognizers]) {
+        if (_yieldsToNativeGestures &&
+            (recogn.gestureHandler == nil || [recogn isKindOfClass:[RNDummyGestureRecognizer class]])) {
+          continue;
+        }
+
         recogn.enabled = NO;
         recogn.enabled = YES;
       }

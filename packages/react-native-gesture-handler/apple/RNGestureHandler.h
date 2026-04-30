@@ -141,3 +141,7 @@
 #endif
 
 @end
+
+@interface UIGestureRecognizer (GestureHandler)
+@property (nonatomic, readonly, nullable) RNGestureHandler *gestureHandler;
+@end
