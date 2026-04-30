@@ -88,6 +88,15 @@
 @property (nonatomic, copy, nullable) NSNumber *viewTag;
 @property (nonatomic, readonly) RNGestureHandlerState lastState;
 
+/**
+ The view whose coordinate space should be used when reporting event positions to JS.
+ Handlers attached via the V3 NativeDetector are bound to the `RNGestureHandlerDetector` wrapper,
+ which never carries user-applied transforms — those live on the detector's single subview.
+ Descending one level keeps reported coordinates consistent with V2 and the V3
+ InterceptingGestureDetector path. For all other attachment styles this is just `recognizer.view`.
+ */
+@property (nonatomic, readonly, nullable) RNGHUIView *coordinateView;
+
 - (BOOL)isViewParagraphComponent:(nullable RNGHUIView *)view;
 - (nonnull RNGHUIView *)chooseViewForInteraction:(nonnull UIGestureRecognizer *)recognizer;
 - (void)bindToView:(nonnull RNGHUIView *)view;

@@ -452,7 +452,7 @@
 #if TARGET_OS_OSX
 - (RNGestureHandlerEventExtraData *)eventExtraData:(NSPanGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:recognizer.view]
+  return [RNGestureHandlerEventExtraData forPan:[recognizer locationInView:self.coordinateView]
                            withAbsolutePosition:[recognizer locationInView:recognizer.view.window.contentView]
                                 withTranslation:[recognizer translationInView:recognizer.view.window.contentView]
                                    withVelocity:[recognizer velocityInView:recognizer.view.window.contentView]
@@ -466,7 +466,7 @@
   RNBetterPanGestureRecognizer *panRecognizer = (RNBetterPanGestureRecognizer *)recognizer;
 
   return [RNGestureHandlerEventExtraData
-                    forPan:[recognizer locationInView:recognizer.view]
+                    forPan:[recognizer locationInView:self.coordinateView]
       withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
            withTranslation:[recognizer translationInView:recognizer.view.window]
               withVelocity:[recognizer velocityInView:recognizer.view.window]
