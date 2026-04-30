@@ -48,6 +48,24 @@ open class GestureHandler {
       }
     }
 
+  /**
+   * The view whose coordinate space should be used when reporting event positions to JS.
+   *
+   * Handlers attached via the V3 NativeDetector are registered against the DetectorView
+   * which never carries user-applied transforms — those live on the detector's single child.
+   * Descending one level keeps reported coordinates consistent with V2 and the V3
+   * InterceptingGestureDetector path. For all other attachment styles this is just [view].
+   */
+  val coordinateView: View?
+    get() {
+      val v = view
+      return if (v is RNGestureHandlerDetectorView && v.isNotEmpty()) {
+        v.getChildAt(0)
+      } else {
+        v
+      }
+    }
+
   var state = STATE_UNDETERMINED
     private set
   var x = 0f
@@ -387,42 +405,13 @@ open class GestureHandler {
 
     numberOfPointers = adaptedTransformedEvent.pointerCount
 
-    // TODO: this is likely wrong, and the transformed event itself should be
-    // in the coordinate system of the child view, but I'm not sure of the
-    // consequences
-    val detectorView = hostDetectorView
-    if (detectorView != null && view == detectorView && detectorView.isNotEmpty()) {
-      val outPoint = PointF()
-      var foundChild = false
-
-      for (i in 0 until detectorView.childCount) {
-        val child = detectorView.getChildAt(i)
-        GestureHandlerOrchestrator.transformPointToChildViewCoords(
-          adaptedTransformedEvent.x,
-          adaptedTransformedEvent.y,
-          detectorView,
-          child,
-          outPoint,
-        )
-        if (isWithinBounds(child, outPoint.x, outPoint.y)) {
-          x = outPoint.x
-          y = outPoint.y
-          isWithinBounds = true
-          foundChild = true
-          break
-        }
-      }
-
-      if (!foundChild) {
-        x = adaptedTransformedEvent.x
-        y = adaptedTransformedEvent.y
-        isWithinBounds = false
-      }
-    } else {
-      x = adaptedTransformedEvent.x
-      y = adaptedTransformedEvent.y
-      isWithinBounds = isWithinBounds(view, x, y)
-    }
+    x = adaptedTransformedEvent.x
+    y = adaptedTransformedEvent.y
+    // The orchestrator transforms incoming events into the coordinate space of the detector's
+    // child (when the handler is attached to a NativeDetector wrapper), so bounds-checking must
+    // also use that child rather than the wrapper, otherwise hit-testing would ignore the user's
+    // transforms applied to the visible view.
+    isWithinBounds = isWithinBounds(coordinateView, x, y)
 
     if (shouldCancelWhenOutside) {
       if (!isWithinBounds && (state == STATE_ACTIVE || state == STATE_BEGAN)) {
@@ -872,7 +861,7 @@ open class GestureHandler {
    * This method modifies and transforms the received point.
    */
   protected fun transformPoint(point: PointF): PointF =
-    orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+    orchestrator?.transformPointToViewCoords(coordinateView, point) ?: run {
       point.x = Float.NaN
       point.y = Float.NaN
       point
