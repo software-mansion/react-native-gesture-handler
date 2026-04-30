@@ -170,7 +170,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNForceTouchGestureRecognizer *)recognizer
 {
   return [RNGestureHandlerEventExtraData forForce:recognizer.force
-                                      forPosition:[recognizer locationInView:recognizer.view]
+                                      forPosition:[recognizer locationInView:self.coordinateView]
                              withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
                               withNumberOfTouches:recognizer.numberOfTouches
                                   withPointerType:_pointerType];
