@@ -270,7 +270,7 @@ export default class GestureHandlerOrchestrator {
   }
 
   public recordHandlerIfNotPresent(handler: IGestureHandler): void {
-    if (this.gestureHandlers.includes(handler)) {
+    if (this.isHandlerRecorded(handler)) {
       return;
     }
 
