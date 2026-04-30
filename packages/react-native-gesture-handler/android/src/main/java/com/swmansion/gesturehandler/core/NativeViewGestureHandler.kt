@@ -29,6 +29,14 @@ class NativeViewGestureHandler : GestureHandler() {
   var disallowInterruption = false
     private set
 
+  /**
+   * Composes with [disallowInterruption]. When both are `true`, the handler still resists
+   * generic gesture peers (Pan, Tap, etc.) but yields to other [NativeViewGestureHandler] peers
+   * such as a wrapping ScrollView. No-op when [disallowInterruption] is `false`.
+   */
+  var yieldsToNativeGestures = false
+    private set
+
   private var hook: NativeViewGestureHandlerHook = defaultHook
 
   private data class ActiveUpdateSnapshot(val pointerInside: Boolean, val numberOfPointers: Int, val pointerType: Int)
@@ -43,6 +51,7 @@ class NativeViewGestureHandler : GestureHandler() {
     super.resetConfig()
     shouldActivateOnStart = DEFAULT_SHOULD_ACTIVATE_ON_START
     disallowInterruption = DEFAULT_DISALLOW_INTERRUPTION
+    yieldsToNativeGestures = DEFAULT_YIELDS_TO_NATIVE_GESTURES
     shouldCancelWhenOutside = DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE
   }
 
@@ -61,12 +70,16 @@ class NativeViewGestureHandler : GestureHandler() {
       // For the `disallowInterruption` to work correctly we need to check the property when
       // accessed as a peer, because simultaneous recognizers can be set on either side of the
       // connection.
-      if (handler.state == STATE_ACTIVE && handler.disallowInterruption) {
+      if (handler.state == STATE_ACTIVE &&
+        handler.disallowInterruption &&
+        !handler.yieldsToNativeGestures
+      ) {
         // other handler is active and it disallows interruption, we don't want to get into its way
         return false
       }
     }
-    val canBeInterrupted = !disallowInterruption
+    val canBeInterrupted = !disallowInterruption ||
+      (yieldsToNativeGestures && handler is NativeViewGestureHandler)
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
       // if both handlers are active and the current handler can be interrupted it we return `false`
@@ -81,7 +94,8 @@ class NativeViewGestureHandler : GestureHandler() {
     // otherwise we can only return `true` if already in an active state
   }
 
-  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = !disallowInterruption
+  override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = !disallowInterruption ||
+    (yieldsToNativeGestures && handler is NativeViewGestureHandler)
 
   override fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>): Boolean =
     hook.shouldBeginWithRecordedHandlers(recorded, this)
@@ -203,6 +217,9 @@ class NativeViewGestureHandler : GestureHandler() {
       if (config.hasKey(KEY_DISALLOW_INTERRUPTION)) {
         handler.disallowInterruption = config.getBoolean(KEY_DISALLOW_INTERRUPTION)
       }
+      if (config.hasKey(KEY_YIELDS_TO_NATIVE_GESTURES)) {
+        handler.yieldsToNativeGestures = config.getBoolean(KEY_YIELDS_TO_NATIVE_GESTURES)
+      }
     }
 
     override fun createEventBuilder(handler: NativeViewGestureHandler) = NativeGestureHandlerEventDataBuilder(handler)
@@ -210,6 +227,7 @@ class NativeViewGestureHandler : GestureHandler() {
     companion object {
       private const val KEY_SHOULD_ACTIVATE_ON_START = "shouldActivateOnStart"
       private const val KEY_DISALLOW_INTERRUPTION = "disallowInterruption"
+      private const val KEY_YIELDS_TO_NATIVE_GESTURES = "yieldsToNativeGestures"
     }
   }
 
@@ -217,6 +235,7 @@ class NativeViewGestureHandler : GestureHandler() {
     private const val DEFAULT_SHOULD_CANCEL_WHEN_OUTSIDE = true
     private const val DEFAULT_SHOULD_ACTIVATE_ON_START = false
     private const val DEFAULT_DISALLOW_INTERRUPTION = false
+    private const val DEFAULT_YIELDS_TO_NATIVE_GESTURES = false
 
     private fun tryIntercept(view: View, event: MotionEvent) = view is ViewGroup && view.onInterceptTouchEvent(event)
 

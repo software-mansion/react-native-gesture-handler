@@ -50,7 +50,8 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
 
   override fun shouldHandlerBeCancelledBy(handler: GestureHandler, otherHandler: GestureHandler): Boolean {
     if (otherHandler is NativeViewGestureHandler) {
-      return otherHandler.disallowInterruption
+      return otherHandler.disallowInterruption &&
+        (handler !is NativeViewGestureHandler || !otherHandler.yieldsToNativeGestures)
     }
 
     if (otherHandler is RNGestureHandlerRootHelper.RootViewGestureHandler) {
