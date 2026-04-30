@@ -311,7 +311,7 @@ static NSHashTable<RNGestureHandler *> *allGestureHandlers;
 {
   RNGHUIView *recognizerView = _recognizer.view;
   if ([self usesNativeOrVirtualDetector] && recognizerView == self.hostDetectorView &&
-      recognizerView.subviews.count > 0) {
+      recognizerView.subviews.count == 1) {
     return recognizerView.subviews[0];
   }
   return recognizerView;

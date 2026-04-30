@@ -9,7 +9,6 @@ import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
-import androidx.core.view.isNotEmpty
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
@@ -51,15 +50,17 @@ open class GestureHandler {
   /**
    * The view whose coordinate space should be used when reporting event positions to JS.
    *
-   * Handlers attached via the V3 NativeDetector are registered against the DetectorView
-   * which never carries user-applied transforms — those live on the detector's single child.
-   * Descending one level keeps reported coordinates consistent with V2 and the V3
-   * InterceptingGestureDetector path. For all other attachment styles this is just [view].
+   * Handlers attached via the V3 NativeDetector are registered against the DetectorView wrapper,
+   * which never carries user-applied transforms — those live on its child. When the detector has
+   * exactly one child we descend into it so reported coordinates match the visible (transformed)
+   * view, the same coordinate space V2 and the V3 InterceptingGestureDetector report in. With
+   * multiple children there is no JS-side way to disambiguate which child caught the pointer,
+   * so we keep the detector itself as the reference frame.
    */
   val coordinateView: View?
     get() {
       val v = view
-      return if (v is RNGestureHandlerDetectorView && v.isNotEmpty()) {
+      return if (v is RNGestureHandlerDetectorView && v.childCount == 1) {
         v.getChildAt(0)
       } else {
         v
