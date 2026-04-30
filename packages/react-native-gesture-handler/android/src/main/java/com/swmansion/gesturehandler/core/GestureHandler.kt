@@ -53,7 +53,7 @@ open class GestureHandler {
    * Handlers attached via the V3 NativeDetector are registered against the DetectorView wrapper,
    * which never carries user-applied transforms — those live on its child. When the detector has
    * exactly one child we descend into it so reported coordinates match the visible (transformed)
-   * view, the same coordinate space V2 and the V3 InterceptingGestureDetector report in. With
+   * view, the same coordinate space V2 and the V3 VirtualGestureDetector report in. With
    * multiple children there is no JS-side way to disambiguate which child caught the pointer,
    * so we keep the detector itself as the reference frame.
    */
