@@ -131,6 +131,8 @@ export const Touchable = (props: TouchableProps) => {
     onActivate,
     onFinalize,
     onUpdate,
+    hitSlop: props.hitSlop,
+    testID: props.testID,
     enabled: !disabled,
     shouldCancelWhenOutside: cancelOnLeave,
     disableReanimated: true,
