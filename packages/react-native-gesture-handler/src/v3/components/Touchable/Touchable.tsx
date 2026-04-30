@@ -17,6 +17,7 @@ const TouchableButton = createNativeWrapper<
   shouldCancelWhenOutside: true,
   shouldActivateOnStart: false,
   disallowInterruption: true,
+  yieldsToNativeGestures: true,
 });
 
 const isAndroid = Platform.OS === 'android';
