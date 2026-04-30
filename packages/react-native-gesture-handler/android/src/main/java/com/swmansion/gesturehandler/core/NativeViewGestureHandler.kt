@@ -99,7 +99,10 @@ class NativeViewGestureHandler : GestureHandler() {
   }
 
   override fun shouldBeCancelledBy(handler: GestureHandler): Boolean = !disallowInterruption ||
-    (yieldsToNativeGestures && handler is NativeViewGestureHandler)
+    (
+      yieldsToNativeGestures &&
+        (handler is NativeViewGestureHandler || handler is RNGestureHandlerRootHelper.RootViewGestureHandler)
+      )
 
   override fun shouldBeginWithRecordedHandlers(recorded: List<GestureHandler>): Boolean =
     hook.shouldBeginWithRecordedHandlers(recorded, this)
