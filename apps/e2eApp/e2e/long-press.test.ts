@@ -5,6 +5,7 @@ import { LONG_PRESS_DURATION } from "../../common-app/src/e2e_screens/testConsta
 describe("test long press gesture", () => {
   beforeAll(async () => {
     await device.launchApp({ newInstance: false });
+    await element(by.id("nav-gesture-tests")).tap();
     await element(by.id("nav-long-press")).tap();
   });
 

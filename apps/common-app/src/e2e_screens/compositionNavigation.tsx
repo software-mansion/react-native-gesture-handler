@@ -8,14 +8,14 @@ export default function CompositionNavigation() {
       <Text style={styles.title}>Composition & Interaction</Text>
       <View style={styles.list}>
         <Button
-          title="Drawer Layout"
-          testID="nav-drawer"
-          onPress={() => navigation.navigate('DrawerLayout')}
+          title="Require to Fail"
+          testID="nav-require-to-fail"
+          onPress={() => navigation.navigate('Require to Fail')}
         />
         <Button
-          title="Swipeable"
-          testID="nav-swipeable"
-          onPress={() => navigation.navigate('Swipeable')}
+          title="Competing Gestures"
+          testID="nav-competing-gestures"
+          onPress={() => navigation.navigate('Competing Gestures')}
         />
         <Button
           title="Multiple Handlers"

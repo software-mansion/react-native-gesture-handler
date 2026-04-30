@@ -4,6 +4,7 @@ import { by, device, element, expect } from "detox";
 describe("test pan gesture", () => {
   beforeAll(async () => {
     await device.launchApp({ newInstance: false });
+    await element(by.id("nav-gesture-tests")).tap();
     await element(by.id("nav-pan")).tap();
   });
 

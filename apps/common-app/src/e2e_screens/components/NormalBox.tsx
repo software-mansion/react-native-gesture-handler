@@ -2,17 +2,17 @@ import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { RIGHT_BOX_COLOR } from './gestureColors';
 
-type GestureBoxProps = {
+type NormalBoxProps = {
   size?: number;
   testID?: string;
   color?: string;
 };
 
-export default function GestureBox({
+export default function NormalBox({
   size = 120,
   testID,
   color = RIGHT_BOX_COLOR,
-}: GestureBoxProps) {
+}: NormalBoxProps) {
   return (
     <Animated.View
       testID={testID}

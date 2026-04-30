@@ -9,18 +9,21 @@ export default function HomeScreen() {
       <Text style={styles.title}>E2E Tests</Text>
 
       <Pressable
+        testID="nav-gesture-tests"
         style={styles.button}
         onPress={() => navigation.navigate('Gesture Tests')}>
         <Text style={styles.buttonText}>Gesture Tests</Text>
       </Pressable>
 
       <Pressable
+        testID="nav-integration-tests"
         style={styles.button}
         onPress={() => navigation.navigate('Integration Tests')}>
         <Text style={styles.buttonText}>Integration Tests</Text>
       </Pressable>
 
       <Pressable
+        testID="nav-composition"
         style={styles.button}
         onPress={() => navigation.navigate('Composition & Interaction')}>
         <Text style={styles.buttonText}>Composition & Interaction</Text>

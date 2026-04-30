@@ -4,6 +4,7 @@ import { by, device, element, expect } from 'detox';
 describe('test fling gesture', () => {
   beforeAll(async () => {
     await device.launchApp({ newInstance: false });
+    await element(by.id('nav-gesture-tests')).tap();
     await element(by.id('nav-fling')).tap();
   });
 

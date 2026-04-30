@@ -8,6 +8,8 @@ import GesturesNavigation from './gesturesNavigation';
 import IntegrationNavigation from './integrationNavigation';
 import CompositionNavigation from './compositionNavigation';
 import MultipleHandlersScreen from './integration/MultipleHandlers';
+import RequireToFailScreen from './composition_and_interactions/requireToFail';
+import CompetingGesturesScreen from './composition_and_interactions/competingGestures';
 import TapScreen from './gestures/tap';
 import PanScreen from './gestures/pan';
 import PinchScreen from './gestures/pinch';
@@ -30,6 +32,9 @@ export default function MainNavigation() {
       },
       'Composition & Interaction': {
         screen: CompositionNavigation,
+      },
+      'Competing Gestures': {
+        screen: CompetingGesturesScreen,
       },
       Tap: {
         screen: TapScreen,
@@ -55,6 +60,9 @@ export default function MainNavigation() {
       MultipleHandlers: {
         screen: MultipleHandlersScreen,
       },
+      'Require to Fail': {
+        screen: RequireToFailScreen,
+      },
     },
   });
 
@@ -73,8 +81,10 @@ export default function MainNavigation() {
       Fling: 'gestures/fling',
       Hover: 'gestures/hover',
       'Integration Tests': 'integration',
-      'Composition & Interaction': 'composition-interaction',
       MultipleHandlers: 'integration/multiple',
+      'Composition & Interaction': 'composition-interaction',
+      'Competing Gestures': 'composition-interaction/competing-gestures',
+      'Require to Fail': 'composition-interaction/require-to-fail',
     },
   };
 
