@@ -1,23 +1,14 @@
 import React, { useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 
-import type { ButtonProps } from '../../../components/GestureHandlerButton';
 import GestureHandlerButton from '../../../components/GestureHandlerButton';
-import createNativeWrapper from '../../createNativeWrapper';
+import { NativeDetector } from '../../detectors/NativeDetector';
+import { useNativeGesture } from '../../hooks';
 import type {
   CallbackEventType,
   EndCallbackEventType,
   TouchableProps,
 } from './TouchableProps';
-
-const TouchableButton = createNativeWrapper<
-  React.ComponentRef<typeof GestureHandlerButton>,
-  ButtonProps
->(GestureHandlerButton, {
-  shouldCancelWhenOutside: true,
-  shouldActivateOnStart: false,
-  disallowInterruption: true,
-});
 
 const isAndroid = Platform.OS === 'android';
 const TRANSPARENT_RIPPLE = { rippleColor: 'transparent' as const };
@@ -135,6 +126,18 @@ export const Touchable = (props: TouchableProps) => {
     [onPressIn, onPressOut]
   );
 
+  const nativeGesture = useNativeGesture({
+    onBegin,
+    onActivate,
+    onFinalize,
+    onUpdate,
+    enabled: !disabled,
+    shouldCancelWhenOutside: cancelOnLeave,
+    disableReanimated: true,
+    shouldActivateOnStart: false,
+    disallowInterruption: true,
+  });
+
   const rippleProps = shouldUseNativeRipple
     ? {
         rippleColor: androidRipple?.color,
@@ -145,20 +148,17 @@ export const Touchable = (props: TouchableProps) => {
     : TRANSPARENT_RIPPLE;
 
   return (
-    <TouchableButton
-      {...rest}
-      {...rippleProps}
-      ref={ref ?? null}
-      enabled={!disabled}
-      onBegin={onBegin}
-      onActivate={onActivate}
-      onFinalize={onFinalize}
-      onUpdate={onUpdate}
-      defaultOpacity={defaultOpacity}
-      defaultUnderlayOpacity={defaultUnderlayOpacity}
-      underlayColor={underlayColor}
-      shouldCancelWhenOutside={cancelOnLeave}>
-      {children}
-    </TouchableButton>
+    <NativeDetector gesture={nativeGesture}>
+      <GestureHandlerButton
+        {...rest}
+        {...rippleProps}
+        ref={ref ?? null}
+        enabled={!disabled}
+        defaultOpacity={defaultOpacity}
+        defaultUnderlayOpacity={defaultUnderlayOpacity}
+        underlayColor={underlayColor}>
+        {children}
+      </GestureHandlerButton>
+    </NativeDetector>
   );
 };
