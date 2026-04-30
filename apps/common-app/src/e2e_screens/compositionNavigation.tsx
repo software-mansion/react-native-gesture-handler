@@ -18,6 +18,11 @@ export default function CompositionNavigation() {
           onPress={() => navigation.navigate('Competing Gestures')}
         />
         <Button
+          title="Exclusive Gestures"
+          testID="nav-exclusive-gestures"
+          onPress={() => navigation.navigate('Exclusive Gestures')}
+        />
+        <Button
           title="Multiple Handlers"
           testID="nav-multiple"
           onPress={() => navigation.navigate('MultipleHandlers')}

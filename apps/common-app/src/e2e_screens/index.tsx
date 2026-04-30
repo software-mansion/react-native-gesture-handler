@@ -10,6 +10,7 @@ import CompositionNavigation from './compositionNavigation';
 import MultipleHandlersScreen from './integration/MultipleHandlers';
 import RequireToFailScreen from './composition_and_interactions/requireToFail';
 import CompetingGesturesScreen from './composition_and_interactions/competingGestures';
+import ExclusiveGesturesScreen from './composition_and_interactions/exclusiveGestures';
 import TapScreen from './gestures/tap';
 import PanScreen from './gestures/pan';
 import PinchScreen from './gestures/pinch';
@@ -35,6 +36,9 @@ export default function MainNavigation() {
       },
       'Competing Gestures': {
         screen: CompetingGesturesScreen,
+      },
+      'Exclusive Gestures': {
+        screen: ExclusiveGesturesScreen,
       },
       Tap: {
         screen: TapScreen,
@@ -84,6 +88,7 @@ export default function MainNavigation() {
       MultipleHandlers: 'integration/multiple',
       'Composition & Interaction': 'composition-interaction',
       'Competing Gestures': 'composition-interaction/competing-gestures',
+      'Exclusive Gestures': 'composition-interaction/exclusive-gestures',
       'Require to Fail': 'composition-interaction/require-to-fail',
     },
   };

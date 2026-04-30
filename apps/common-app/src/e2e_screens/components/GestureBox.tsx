@@ -23,7 +23,7 @@ export type AnyGesture =
 
 type GestureBoxProps = {
   size?: number;
-  gesture: AnyGesture;
+  gesture: any;
   testID?: string;
   color?: string;
 };
@@ -35,7 +35,7 @@ export default function GestureBox({
   color = RIGHT_BOX_COLOR,
 }: GestureBoxProps) {
   return (
-    <GestureDetector gesture={gesture as any}>
+    <GestureDetector gesture={gesture}>
       <Animated.View
         testID={testID}
         style={[
