@@ -25,6 +25,9 @@ export default function HoverScreen() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Hover Gesture</Text>
+      <Text style={styles.stateIndicator}>
+        {testID === 'hover-activated' ? 'Hover Activated' : 'Idle'}
+      </Text>
       <View style={styles.content}>
         <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={hoverGesture} testID={testID} />

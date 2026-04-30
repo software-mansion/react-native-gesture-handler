@@ -27,6 +27,9 @@ export default function LongPressScreen() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Long Press Gesture</Text>
+      <Text style={styles.stateIndicator}>
+        {testID === 'long-press-activated' ? 'Long Press Activated' : 'Idle'}
+      </Text>
       <View style={styles.content}>
         <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={longPressGesture} testID={testID} />

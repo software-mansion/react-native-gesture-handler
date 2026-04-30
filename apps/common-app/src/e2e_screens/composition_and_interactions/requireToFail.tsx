@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { GestureDetector, useTapGesture } from 'react-native-gesture-handler';
 import { useState } from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { Button, StyleSheet, Text } from 'react-native';
 import { scheduleOnRN } from 'react-native-worklets';
 
 export default function RequireToFail() {
@@ -32,6 +32,13 @@ export default function RequireToFail() {
   });
   return (
     <View style={styles.container}>
+      <Text style={styles.stateIndicator}>
+        {outerTestID === 'outer-activated'
+          ? 'Outer Single Tap Activated'
+          : innerTestID === 'inner-activated'
+            ? 'Inner Double Tap Activated'
+            : 'Idle'}
+      </Text>
       <GestureDetector gesture={outerTap}>
         <View style={styles.outerBox} testID={outerTestID}>
           <GestureDetector gesture={innerTap}>
@@ -47,6 +54,12 @@ export default function RequireToFail() {
 }
 
 const styles = StyleSheet.create({
+  stateIndicator: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 24,
+    color: '#333',
+  },
   innerBox: {
     width: 100,
     height: 100,

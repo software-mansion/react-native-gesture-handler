@@ -25,6 +25,9 @@ export default function PinchScreen() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Pinch Gesture</Text>
+      <Text style={styles.stateIndicator}>
+        {testID === 'pinch-activated' ? 'Pinch Activated' : 'Idle'}
+      </Text>
       <View style={styles.content}>
         <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={pinchGesture} testID={testID} />

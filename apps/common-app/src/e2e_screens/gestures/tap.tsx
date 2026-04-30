@@ -26,6 +26,9 @@ export default function TapScreen() {
       <Text style={styles.title} testID="title">
         Tap Gesture
       </Text>
+      <Text style={styles.stateIndicator}>
+        {testID === 'tap-activated' ? 'Tap Activated' : 'Idle'}
+      </Text>
       <View style={styles.content}>
         <GestureBox gesture={tapGesture} testID={testID} />
         <NormalBox color={WRONG_BOX_COLOR} />

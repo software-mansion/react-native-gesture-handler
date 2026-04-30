@@ -27,6 +27,9 @@ export default function FlingScreen() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Fling Gesture</Text>
+      <Text style={styles.stateIndicator}>
+        {testID === 'fling-activated' ? 'Fling Activated' : 'Idle'}
+      </Text>
       <View style={styles.content}>
         <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={flingGesture} testID={testID} />

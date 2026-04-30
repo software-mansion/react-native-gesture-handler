@@ -30,6 +30,9 @@ export default function RotationScreen() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Rotation Gesture</Text>
+      <Text style={styles.stateIndicator}>
+        {testID === 'rotation-activated' ? 'Rotation Activated' : 'Idle'}
+      </Text>
       <View style={styles.content}>
         <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={rotationGesture} testID={testID} />

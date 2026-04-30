@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Button, StyleSheet } from 'react-native';
 import { scheduleOnRN } from 'react-native-worklets';
 import GestureBox from '../components/GestureBox';
+import { Text } from 'react-native';
 
 export default function ExclusiveGestures() {
   const [testID, setTestID] = useState('exclusive-idle');
@@ -37,6 +38,13 @@ export default function ExclusiveGestures() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.stateIndicator}>
+        {testID === 'exclusive-double-tap-activated'
+          ? 'Double Tap Activated'
+          : testID === 'exclusive-single-tap-activated'
+            ? 'Single Tap Activated'
+            : 'Idle'}
+      </Text>
       <GestureBox gesture={gesture} testID={testID} />
       <View style={styles.buttonContainer}>
         <Button title="Reset" onPress={reset} testID="reset" />
@@ -46,6 +54,12 @@ export default function ExclusiveGestures() {
 }
 
 const styles = StyleSheet.create({
+  stateIndicator: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 24,
+    color: '#333',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

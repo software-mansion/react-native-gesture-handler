@@ -10,6 +10,13 @@ export const gestureStyles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
   },
+  stateIndicator: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 16,
+    color: '#333',
+  },
   content: {
     flex: 1,
     justifyContent: 'center',

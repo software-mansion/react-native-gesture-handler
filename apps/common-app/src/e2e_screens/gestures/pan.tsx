@@ -25,6 +25,9 @@ export default function PanScreen() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <Text style={styles.title}>Pan Gesture</Text>
+      <Text style={styles.stateIndicator}>
+        {testID === 'pan-activated' ? 'Pan Activated' : 'Idle'}
+      </Text>
       <View style={styles.content}>
         <NormalBox testID="wrong-element" color={WRONG_BOX_COLOR} />
         <GestureBox gesture={panGesture} testID={testID} />
