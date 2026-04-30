@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
 import {
   GestureHandlerRootView,
-  RectButton,
   Switch,
   Touchable,
 } from 'react-native-gesture-handler';
@@ -159,7 +158,9 @@ export default function App() {
     }
     return (
       <View style={styles.settings}>
-        <RectButton
+        <Touchable
+          androidRipple={{}}
+          activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
           style={styles.settingsButton}
           onPress={() => {
             updateKeepSetting(!openLastExample);
@@ -178,8 +179,10 @@ export default function App() {
               }}
             />
           </View>
-        </RectButton>
-        <RectButton
+        </Touchable>
+        <Touchable
+          androidRipple={{}}
+          activeUnderlayOpacity={Platform.OS !== 'android' ? 0.1 : 0}
           style={styles.settingsButton}
           onPress={() => {
             updateVersionSetting(!showLegacyVersion);
@@ -198,7 +201,7 @@ export default function App() {
               }}
             />
           </View>
-        </RectButton>
+        </Touchable>
       </View>
     );
   }
