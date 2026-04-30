@@ -15,6 +15,7 @@ import com.facebook.react.views.text.ReactTextView
 import com.facebook.react.views.textinput.ReactEditText
 import com.facebook.react.views.view.ReactViewGroup
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+import com.swmansion.gesturehandler.react.RNGestureHandlerRootHelper
 import com.swmansion.gesturehandler.react.events.eventbuilders.NativeGestureHandlerEventDataBuilder
 import com.swmansion.gesturehandler.react.isScreenReaderOn
 
@@ -79,7 +80,10 @@ class NativeViewGestureHandler : GestureHandler() {
       }
     }
     val canBeInterrupted = !disallowInterruption ||
-      (yieldsToNativeGestures && (handler is NativeViewGestureHandler || handler.tag < 0))
+      (
+        yieldsToNativeGestures &&
+          (handler is NativeViewGestureHandler || handler is RNGestureHandlerRootHelper.RootViewGestureHandler)
+        )
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
       // if both handlers are active and the current handler can be interrupted it we return `false`
@@ -336,11 +340,10 @@ class NativeViewGestureHandler : GestureHandler() {
       }
     }
 
-    // recognize alongside every handler besides RootViewGestureHandler, which is a private inner class
-    // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
+    // recognize alongside every handler besides RootViewGestureHandler;
     // also if other handler is NativeViewGestureHandler then don't override the default implementation
     override fun shouldRecognizeSimultaneously(handler: GestureHandler) =
-      handler.tag > 0 && handler !is NativeViewGestureHandler
+      handler !is RNGestureHandlerRootHelper.RootViewGestureHandler && handler !is NativeViewGestureHandler
 
     override fun wantsToHandleEventBeforeActivation() = true
 
