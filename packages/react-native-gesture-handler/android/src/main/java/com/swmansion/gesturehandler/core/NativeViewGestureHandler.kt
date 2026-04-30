@@ -79,7 +79,7 @@ class NativeViewGestureHandler : GestureHandler() {
       }
     }
     val canBeInterrupted = !disallowInterruption ||
-      (yieldsToNativeGestures && handler is NativeViewGestureHandler)
+      (yieldsToNativeGestures && (handler is NativeViewGestureHandler || handler.tag < 0))
     val otherState = handler.state
     return if (state == STATE_ACTIVE && otherState == STATE_ACTIVE && canBeInterrupted) {
       // if both handlers are active and the current handler can be interrupted it we return `false`
