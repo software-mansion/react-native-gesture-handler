@@ -771,7 +771,6 @@ export default abstract class GestureHandler implements IGestureHandler {
 
     if (config.hitSlop !== undefined) {
       this.hitSlop = config.hitSlop;
-      this.hitSlop = config.hitSlop;
       this.validateHitSlops();
     }
 
