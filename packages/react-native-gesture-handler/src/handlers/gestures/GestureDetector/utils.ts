@@ -36,6 +36,16 @@ export const ALLOWED_PROPS = [
   ...nativeViewGestureHandlerProps,
 ];
 
+// In some environments (e.g. `Next.js`) Reanimated Babel plugin might not be used.
+// In that case we would wrongly suggest to add `runOnJS` to gesture configuration, even if the user doesn't use worklets at all.
+// To prevent this, we check whether the plugin is enabled by defining a worklet and checking if the `__workletHash` property is available.
+function emptyWorklet() {
+  'worklet';
+}
+
+// @ts-expect-error if `emptyWorklet` is a worklet, `__workletHash` will be available, if not then the check will return false.
+const wasBabelPluginEnabled = emptyWorklet.__workletHash !== undefined;
+
 function convertToHandlerTag(ref: GestureRef): number {
   if (typeof ref === 'number') {
     return ref;
@@ -105,7 +115,7 @@ export function checkGestureCallbacksForWorklets(gesture: GestureType) {
   const areAllNotWorklets = !areSomeWorklets && areSomeNotWorklets;
   // If none of the callbacks are worklets and the gesture is not explicitly marked with
   // `.runOnJS(true)` show a warning
-  if (areAllNotWorklets && !isTestEnv()) {
+  if (areAllNotWorklets && wasBabelPluginEnabled && !isTestEnv()) {
     console.warn(
       tagMessage(
         `None of the callbacks in the gesture are worklets. If you wish to run them on the JS thread use '.runOnJS(true)' modifier on the gesture to make this explicit. Otherwise, mark the callbacks as 'worklet' to run them on the UI thread.`
