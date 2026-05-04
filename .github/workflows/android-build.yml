@@ -47,4 +47,4 @@ jobs:
 
       - name: Build app
         working-directory: ${{ matrix.working-directory }}/android
-        run: ./gradlew assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
+        run: ./gradlew :app:assembleDebug --console=plain -PreactNativeArchitectures=arm64-v8a
