@@ -263,11 +263,6 @@
             withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
                                                        withNumberOfTouches:event.allTouches.count
                                                            withPointerType:_pointerType]];
-
-  [self sendActiveStateEventIfChangedForView:sender
-                                   extraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                                          withNumberOfTouches:event.allTouches.count
-                                                                              withPointerType:_pointerType]];
 }
 
 - (void)handleTouchUpOutside:(UIView *)sender forEvent:(UIEvent *)event
@@ -285,11 +280,12 @@
 
 - (void)handleTouchUpInside:(UIView *)sender forEvent:(UIEvent *)event
 {
-  [self sendEventsInState:RNGestureHandlerStateEnd
-           forViewWithTag:sender.reactTag
-            withExtraData:[RNGestureHandlerEventExtraData forPointerInside:YES
-                                                       withNumberOfTouches:event.allTouches.count
-                                                           withPointerType:_pointerType]];
+  RNGestureHandlerEventExtraData *extraData = [RNGestureHandlerEventExtraData forPointerInside:YES
+                                                                           withNumberOfTouches:event.allTouches.count
+                                                                               withPointerType:_pointerType];
+
+  [self sendActiveStateEventIfChangedForView:sender extraData:extraData];
+  [self sendEventsInState:RNGestureHandlerStateEnd forViewWithTag:sender.reactTag withExtraData:extraData];
 }
 
 - (void)handleDragExit:(UIView *)sender forEvent:(UIEvent *)event

@@ -297,7 +297,7 @@ class GestureHandlerOrchestrator(
     }
 
     val action = sourceEvent.actionMasked
-    val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
+    val event = transformEventToViewCoords(handler.coordinateView, MotionEvent.obtain(sourceEvent))
 
     if (handler.needsPointerData) {
       handler.updatePointerData(event, sourceEvent)
