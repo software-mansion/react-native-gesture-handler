@@ -37,7 +37,11 @@ export default class RotationGestureHandler extends GestureHandler {
       return true;
     },
     onRotationEnd: (_detector: RotationGestureDetector): void => {
-      this.end();
+      if (this.state === State.ACTIVE) {
+        this.end();
+      } else {
+        this.fail();
+      }
     },
   };
 
@@ -128,16 +132,6 @@ export default class RotationGestureHandler extends GestureHandler {
     super.onPointerUp(event);
     this.tracker.removeFromTracker(event.pointerId);
     this.rotationGestureDetector.onTouchEvent(event, this.tracker);
-
-    if (this.state !== State.ACTIVE) {
-      return;
-    }
-
-    if (this.state === State.ACTIVE) {
-      this.end();
-    } else {
-      this.fail();
-    }
   }
 
   protected onPointerRemove(event: AdaptedEvent): void {
