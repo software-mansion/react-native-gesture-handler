@@ -3,7 +3,7 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 // Use RNRepo in CI builds
-if (System.getenv("CI") == "true") {
+if (["1", "true"].contains(System.getenv("CI"))) {
   apply plugin: "org.rnrepo.tools.prebuilds-plugin"
 }
 
